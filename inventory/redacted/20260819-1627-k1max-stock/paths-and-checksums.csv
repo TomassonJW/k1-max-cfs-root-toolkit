@@ -1,0 +1,14 @@
+path,sha256,size_bytes,role,content_published
+/usr/data/printer_data/config/printer.cfg,272640237e20659cf01f3268ed4cb0282b098c3d613e94bf84a3b80caac3c3b0,9958,active configuration entrypoint,no
+/usr/data/printer_data/config/gcode_macro.cfg,864fedde88fbb345c220ae5658f7b04779b3981bd78d68eda6fa63c59c79a04f,29411,startup homing levelling and print macros,no
+/usr/data/printer_data/config/box.cfg,e7a6b26df58a9fa8e49d3af6845f5a0937a790c8ef494b96ec72fd7392abc7a7,2592,CFS transport and material macros,no
+/usr/data/printer_data/config/sensorless.cfg,76cd7575ca98ce287cdb390edf6fc6894d8cbbb3bad3fe497a1541ff6f085bf9,5925,sensorless homing helpers,no
+/usr/data/printer_data/config/printer_params.cfg,f39ace4c7d667674542d2e73d81fa41253eb888a09c6c0f9eb375aea307c3381,528,custom temperatures and printer parameters,no
+/usr/data/printer_data/config/factory_printer.cfg,ea926d158a93a53978582fd5deb8300bcba72e6d564aaae572f52b44eebe992e,7980,factory fallback configuration,no
+/etc/init.d/S50dropbear,e72ec4f2c93e9cc43f0e3f2ea6161f3d3e39daf42c3043df1dafc5a12282d800,1355,SSH service definition,no
+/etc/init.d/S55klipper_service,276e092dfc2bb9510ae48b0021290f31116e13a702eb2369861f7251f07447c3,7775,Klipper startup and configuration migration,no
+/etc/init.d/S57klipper_mcu,f5f75dff77cc25b6f2629d6af7e312e4bb22b18985dab03eadd669593b12b29f,1330,host MCU service definition,no
+/etc/init.d/S70cx_ai_middleware,7e3836a723d32e5d10b6c24419c13e77ab1075bd3666569d71404fb15bc7efd8,856,AI camera middleware service,no
+/etc/init.d/S97webrtc,4e69ac64d57b67eadbfe75eda6d814826e8ef0abfa901bba8a893a5f15e41102,2082,remote video service,no
+/etc/init.d/S99mdns,3917724fef412615da9928b65d44a257cd36c83ca93b42a9495c923697907b42,649,local discovery service,no
+/etc/init.d/S99start_app,741bf397cf2ddd0defd0f387266c8660f853c224f09cfbbd4742288b4cd65176,2550,Creality application stack startup,no

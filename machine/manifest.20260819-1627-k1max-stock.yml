@@ -1,0 +1,88 @@
+schema_version: 1
+capture:
+  id: "20260819-1627-k1max-stock"
+  captured_at_utc: "2026-08-19T14:46:22Z"
+  acquisition_mode: "read-only"
+  remote_write_performed: false
+  redaction_reviewed: true
+
+printer:
+  manufacturer: "Creality"
+  model: "K1 Max"
+  hardware_generation: "older-generation K1 Max"
+  board_marking_observed: "not physically verified"
+  board_identity_reported_by_software: "CR4CU220812S11"
+  active_configuration_board_header: "CR4CU220812S12"
+  board_identity_conflict: true
+  serial_redacted: true
+
+upgrades:
+  cfs_upgrade_family: "classic K1 CFS upgrade"
+  cfs_unit_count: 2
+  bed_notes: "yellow springs; improved levelling; no effect on the pre-existing Z issue"
+
+firmware:
+  printer_version: "2.3.5.34"
+  printer_build_time: "2025-06-12 12:11:00"
+  kernel: "Linux 4.4.94, MIPS"
+  operating_system: "Buildroot 2020.02.1"
+  klipper_version: "unknown; vendor tree observed without a reliable version identifier"
+  moonraker_version: "not applicable or not observed; no Moonraker process found"
+
+cfs:
+  unit_count: 2
+  units:
+    - logical_id: "cfs-1"
+      firmware_version: "1.1.3"
+      version_source: "visible UI reported by operator; not independently read from a remote version file"
+      serial_redacted: true
+    - logical_id: "cfs-2"
+      firmware_version: "1.1.3"
+      version_source: "visible UI reported by operator; not independently read from a remote version file"
+      serial_redacted: true
+
+storage:
+  root_filesystem: "read-only squashfs with writable ext4 overlay"
+  persistent_data_filesystem: "ext4 mounted at /usr/data"
+  persistent_data_capacity: "6.5 GiB"
+  persistent_data_used: "1.8 GiB"
+  klipper_logs_used: "approximately 1.6 GiB"
+  active_config_entrypoint: "/usr/data/printer_data/config/printer.cfg"
+  mounts_manifest: "inventory/redacted/20260819-1627-k1max-stock/mounts.md"
+  log_paths:
+    - "/usr/data/printer_data/logs"
+    - "/usr/data/creality/userdata/log"
+
+services:
+  init_system: "Buildroot init scripts under /etc/init.d"
+  inventory: "inventory/redacted/20260819-1627-k1max-stock/services.md"
+  listener_inventory_complete: false
+
+configuration:
+  include_graph: "inventory/redacted/20260819-1627-k1max-stock/config-include-graph.md"
+  checksum_inventory: "inventory/redacted/20260819-1627-k1max-stock/paths-and-checksums.csv"
+  macro_index: "inventory/redacted/20260819-1627-k1max-stock/macro-index.md"
+  vendor_files_published: false
+
+privacy:
+  private_ip_addresses_removed: true
+  hostnames_removed: true
+  mac_addresses_removed: true
+  serials_and_device_ids_removed: true
+  credentials_detected_in_public_outputs: false
+  files_withheld:
+    - "raw SSH capture"
+    - "full printer configuration files"
+    - "raw and rotated logs"
+    - "cloud and network configuration"
+    - "print history and thumbnails"
+  residual_uncertainty:
+    - "software-reported board identity conflicts with the active configuration header"
+    - "CFS firmware versions were reported from the UI, not recovered from a machine file"
+    - "listener command returned no usable output"
+    - "recovery image and USB procedure were not validated locally"
+
+validation:
+  command_log: "inventory/redacted/20260819-1627-k1max-stock/command-log.md"
+  sanitisation_report: "inventory/redacted/20260819-1627-k1max-stock/sanitisation-report.md"
+  reviewer: "Codex, pending human review"
