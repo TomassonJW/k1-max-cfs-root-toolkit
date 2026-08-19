@@ -1,6 +1,6 @@
 # Protocole G3 — traces comparables avant installation customisée
 
-Statut : **préparé localement, non exécuté**
+Statut : **A1/B/A2 exécuté mais non qualifié ; observation passive de production en cours**
 
 Périmètre : firmware stock rooté `2.3.5.34`, K1 Max S12 structure 0, deux CFS `1.1.3` déclarés par l’écran
 

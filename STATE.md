@@ -4,7 +4,7 @@ Last updated: 2026-08-19
 
 ## Current phase
 
-**P2 — G3 session not qualified; G4-SSH-KEY deployed; passive production traces next**
+**P2 — passive production trace active after non-qualified G3 session**
 
 The repository baseline, stock acquisition and targeted source follow-up are complete. The A1/B/A2 physical session was executed by Thomas while Codex collected logs in read-only mode. The separate `G4-SSH-KEY` change has since added one dedicated SSH public key. Codex performed no restart, movement, heating, calibration, print, cancellation or printer-behaviour change.
 
@@ -13,6 +13,7 @@ The repository baseline, stock acquisition and targeted source follow-up are com
 - Codex has standing authority to manage the complete Git and GitHub lifecycle of this repository, including pull-request fusion into `main`, without another `GO`; printer mutations remain controlled separately by G4.
 - Passwordless root SSH is active through the local alias `k1max-root`. The alias selects one dedicated ECDSA P-256 key, refuses password fallback and passed two independent final connections.
 - The machine runs Dropbear `2019.78`; Ed25519 public-key authentication is unavailable in this version, so the working key is ECDSA P-256.
+- Passive session `20260819-215124-long` is active and waiting for Thomas to launch a normal useful print. Its initial state is standby, with pressure advance `0.03` and visible Z homing origin `+0.27 mm`.
 
 - Target machine: older-generation Creality K1 Max.
 - Printer firmware: `2.3.5.34`, Buildroot 2020.02.1, Linux 4.4.94 on MIPS.
@@ -78,10 +79,11 @@ The repository baseline, stock acquisition and targeted source follow-up are com
 - `G4-SSH-KEY` prepared, approved, deployed and validated without any service restart.
 - Final `/root/.ssh/authorized_keys` state: one active ECDSA key, root ownership, mode `600`, final recorded SHA-256 `eae61f0314dbcdfaa9a02a42352592e3b175a5d35a0d501cb909b365697eb6af`.
 - Local SSH configuration was backed up before adding the tested `k1max-root` alias.
+- Read-only production observer added and validated with a six-second subscription probe: one persistent Klipper connection, three state samples, no repeated query traffic and no socket-close errors inside the capture.
 
 ## Next safe action
 
-Do not launch another sacrificial print. Collect the next trace passively around a normal long production print and the following differently configured or multi-object job. First compare any available problematic multi-object G-code offline.
+Keep session `20260819-215124-long` open while Thomas runs the next normal long and useful print. Record any live Z correction with its time and value. After the machine returns to standby, close the capture and prepare a separate passive session for the following differently configured or multi-object job.
 
 Use `k1max-root` for future bounded SSH work; a password prompt is now a failure condition, not a normal step. Keep the next printer-behaviour change separate and subject it to its own named G4.
 

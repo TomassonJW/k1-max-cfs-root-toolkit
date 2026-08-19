@@ -1,14 +1,16 @@
 # HANDOFF
 
 Date: 2026-08-19  
-Phase: P2 / G3 remains open; G4-SSH-KEY deployed and validated
-Next operator: Codex for passive production evidence and offline analysis; Thomas only for normal production printing
+Phase: P2 / passive long-production capture active
+Next operator: Thomas launches and watches a normal useful print; Codex only observes
 
 ## Current state
 
 The baseline acquisition, targeted source follow-up, physical session `20260819-185157-g3-aba` and separate `G4-SSH-KEY` deployment are complete. Thomas performed the prints and mechanical adjustments. Codex changed only root SSH access by adding one dedicated public key; no printer behaviour, service or configuration was changed. Raw captures remain local and ignored; only redacted inventories and conclusions are publishable.
 
 Passwordless SSH is now available through local alias `k1max-root`. It selects the dedicated ECDSA P-256 key and forbids password fallback. Two independent final connections passed. A future password prompt must be treated as a failure and diagnosed, not shown to Thomas as a normal step.
+
+Read-only session `20260819-215124-long` started from standby. Initial active pressure advance is `0.03`, visible Z homing origin is `+0.27 mm`, and both heaters are untargeted near `31 °C`. The observer uses one persistent Klipper subscription and follows only new log data. It cannot send a print, movement, heating, calibration or configuration command.
 
 Codex has permanent authority to complete all normal Git and GitHub operations for this repository, including push, pull-request management, fusion into `main` and cleanup, without requesting another `GO`. This authority does not replace the printer mutation gates.
 
@@ -29,7 +31,7 @@ Codex has permanent authority to complete all normal Git and GitHub operations f
 
 ## Next bounded Codex mission
 
-Do not repeat A1/B/A2 or launch a fourth sacrificial print. Compare any future problematic multi-object G-code offline, then capture read-only evidence around a normal long production print and the next differently configured job.
+Do not repeat A1/B/A2 or launch a fourth sacrificial print. Let Thomas use the active session for a normal long production print. When it is complete and the machine has returned to standby, close the observer and retain the raw capture. Then open a separate passive session around the next differently configured or multi-object job.
 
 Keep every later printer behaviour change behind its own named G4. Do not treat the completed SSH convenience change as permission to modify Z, mesh, cleaning, CFS or services.
 
@@ -43,7 +45,7 @@ Codex must stop without attempting a workaround if:
 - root access fails;
 - a required action may write to the printer;
 - a command is not confidently read-only;
-- the machine is printing or performing calibration;
+- the machine is printing or calibrating before an unplanned operation; the already authorised passive observer may remain connected during the job;
 - a captured file contains secrets or unclear proprietary content;
 - the observed hardware or firmware contradicts the assumed target.
 
