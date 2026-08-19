@@ -31,7 +31,7 @@ if (-not (Test-Path -LiteralPath $PublicKeyPath -PathType Leaf)) {
 }
 
 $publicKey = (Get-Content -LiteralPath $PublicKeyPath -Raw).Trim()
-if ($publicKey -notmatch '^ssh-ed25519 [A-Za-z0-9+/]+={0,3} [A-Za-z0-9._@-]+$') {
+if ($publicKey -notmatch '^(ssh-ed25519|ecdsa-sha2-nistp256) [A-Za-z0-9+/]+={0,3} [A-Za-z0-9._@-]+$') {
     throw "La cle publique dediee n'a pas le format attendu."
 }
 
@@ -125,13 +125,17 @@ Write-Host 'Une derniere authentification par mot de passe est necessaire.'
 Write-Host 'La saisie reste invisible. Ne ferme pas cette fenetre avant le resultat.'
 Write-Host ''
 
+$remoteScriptBytes = [System.Text.Encoding]::UTF8.GetBytes($remoteScript.Replace("`r`n", "`n"))
+$remoteScriptBase64 = [Convert]::ToBase64String($remoteScriptBytes)
+$remoteCommand = "echo $remoteScriptBase64 | base64 -d | sh"
+
 & ssh.exe `
     -tt `
     -o "UserKnownHostsFile=$KnownHostsPath" `
     -o 'StrictHostKeyChecking=yes' `
     -o 'PubkeyAuthentication=no' `
     $Target `
-    $remoteScript 2>&1 | Tee-Object -LiteralPath $EvidencePath
+    $remoteCommand | Tee-Object -LiteralPath $EvidencePath
 
 $sshExitCode = $LASTEXITCODE
 if ($sshExitCode -eq 0) {

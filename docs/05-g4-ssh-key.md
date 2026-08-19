@@ -10,7 +10,7 @@ La clé privée reste uniquement dans le profil Windows de Thomas. Elle n'est ja
 
 ## Préparation et sauvegarde
 
-- clé locale dédiée : type Ed25519, sans phrase secrète pour supprimer les demandes interactives ;
+- clé locale dédiée : type ECDSA P-256, sans phrase secrète pour supprimer les demandes interactives ;
 - cible distante unique : `/root/.ssh/authorized_keys` ;
 - sauvegarde distante si le fichier existe : `/root/.ssh/authorized_keys.codex-backup-<identifiant>` ;
 - empreinte SHA-256 calculée avant et après la copie ;
@@ -22,6 +22,8 @@ Le script refuse de continuer si `.ssh` n'est pas un dossier, si `authorized_key
 ## Installation
 
 Le script [install-ssh-public-key.ps1](../scripts/install-ssh-public-key.ps1) conserve les clés déjà présentes, ajoute la nouvelle clé une seule fois, puis impose les droits `700` au dossier et `600` au fichier. Le remplacement final du fichier est fait en une seule opération.
+
+Le choix ECDSA P-256 est imposé par la machine observée : son serveur Dropbear `2019.78` est antérieur à la prise en charge des clés Ed25519 dans `authorized_keys`, ajoutée dans Dropbear `2020.79`.
 
 Une seule dernière saisie du mot de passe root est attendue pendant cette installation. Le mot de passe n'est ni affiché ni conservé.
 
