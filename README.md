@@ -2,7 +2,7 @@
 
 Unofficial, evidence-driven tooling and documentation for taking controlled ownership of a rooted Creality K1 Max equipped with the classic K1 CFS upgrade and multiple CFS units.
 
-> **Status:** repository bootstrap only. No change to the printer has been performed or authorized by this repository yet.
+> **Status:** P2 / Gate G3 preparation. Stock read-only acquisition and the comparable-trace protocol are complete; no printer configuration change has been performed or authorised.
 
 ## Target configuration
 
@@ -12,7 +12,7 @@ The initial investigation targets one real machine:
 - classic K1 CFS upgrade kit;
 - two chained CFS units;
 - Unicorn nozzle and upgraded toolhead hardware;
-- reported printer firmware `CR4CU220812S11_ota_img_V2.3.5.34`, still to be verified directly on the machine;
+- confirmed printer firmware `2.3.5.34`; manufacturing identity and runtime selection indicate S12 structure 0, while stale OTA metadata still names S11;
 - OrcaSlicer as the usual slicer, with Creality Print retained where proprietary CFS integration remains useful.
 
 The repository must not generalize findings to every K1/K1 Max/CFS revision until hardware and firmware compatibility have been demonstrated.
@@ -68,7 +68,7 @@ Until the repository gate explicitly changes:
 - no destructive shell command;
 - no publication of raw backups, credentials, network details, serial identifiers or proprietary firmware files.
 
-Read [`AGENTS.md`](AGENTS.md), [`GATES.md`](GATES.md) and [`docs/01-read-only-acquisition.md`](docs/01-read-only-acquisition.md) before any SSH session.
+Read [`AGENTS.md`](AGENTS.md), [`GATES.md`](GATES.md) and the protocol applicable to the mission before any SSH session. The next controlled proof is defined in [`docs/03-z-offset-diagnostic-protocol.md`](docs/03-z-offset-diagnostic-protocol.md).
 
 ## Repository map
 
@@ -79,6 +79,7 @@ Read [`AGENTS.md`](AGENTS.md), [`GATES.md`](GATES.md) and [`docs/01-read-only-ac
 - `DECISIONS.md` — durable project decisions and rationale;
 - `HANDOFF.md` — current operational handoff;
 - `docs/` — acquisition, redaction, diagnostics and recovery procedures;
+- `experiments/g3/` — public templates for private comparable trace sessions;
 - `prompts/` — bounded prompts for Codex missions;
 - `machine/` — publishable machine manifests and schemas;
 - `inventory/redacted/` — sanitised evidence suitable for Git;

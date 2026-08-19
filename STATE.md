@@ -4,7 +4,7 @@ Last updated: 2026-08-19
 
 ## Current phase
 
-**P2 — local diagnosis preparation after read-only acquisition**
+**P2 — G3 comparable-trace protocol ready, execution pending**
 
 The repository baseline, stock acquisition and targeted source follow-up are complete. The printer was accessed only in read-only mode on 2026-08-19. No remote write, restart, movement, heating or calibration occurred.
 
@@ -58,12 +58,15 @@ The repository baseline, stock acquisition and targeted source follow-up are com
 - Follow-up read-only acquisition `20260819-1726-k1max-targeted-sources` completed.
 - S11/S12 runtime configuration identity resolved as S12 structure 0.
 - Readable CX, persistence, homing and PR Touch sources mapped; compiled CFS boundary recorded.
+- Comparable `R1`/`R2` trace protocol completed with fixed conditions, Q1–Q5 qualification and a custom-installation decision matrix.
+- Private session, event timeline and comparison templates added under `experiments/g3/`.
+- Bounded future execution prompt prepared; no trace run, print or calibration was launched.
 
 ## Next safe action
 
-Analyse the captured sources and histories locally for Gate G3. Distinguish Z measurement variability from Z value replacement and prepare a trace protocol for two identical jobs. The readable implementations needed for `CX_*`, `CXSAVE_CONFIG`, `G28` and PR Touch are now present privately. Treat `BOX_*` and `ACCURATE_HOME_Z` as compiled or dynamically registered boundaries and observe their effects in traces rather than inventing source behaviour.
+Thomas selects one private G-code known to expose the first-layer problem, ideally a short first-layer reproducer, then gives a named `GO` for one `R1`/`R2` session. Codex prepares the ignored raw directory and collects only read-only snapshots and existing logs while Thomas performs every physical launch and safety action.
 
-Do not reconnect merely to fill a low-value inventory gap. Do not modify the printer.
+Do not reconnect before the exact session inputs and authority are recorded. Do not modify the printer or automatically run a third test.
 
 ## Not authorised yet
 
@@ -80,7 +83,8 @@ Do not reconnect merely to fill a low-value inventory gap. Do not modify the pri
 - Recovery artefacts and procedure have not been matched locally to the exact revision.
 - The core `BOX_*` state machine is compiled and its readable source is not present on the machine.
 - The literal registration of `ACCURATE_HOME_Z` was not found in readable Python, although the underlying `G28` and PR Touch path is mapped.
-- No paired traces from identical jobs exist yet.
+- The protocol is ready, but no qualified pair of identical-job traces exists yet.
+- Stock logs may leave `ACCURATE_HOME_Z` or internal `BOX_*` values non-observable; this must be measured before proposing instrumentation.
 
 ## Exit condition for this phase
 

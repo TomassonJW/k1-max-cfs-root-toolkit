@@ -2,7 +2,7 @@
 
 ## P0 — Repository and safety baseline
 
-Status: **in progress**
+Status: **completed**
 
 - define scope and non-goals;
 - separate public artefacts from private raw data;
@@ -13,7 +13,7 @@ Exit: Gate G1.
 
 ## P1 — Root and stock acquisition
 
-Status: **not started**
+Status: **completed**
 
 - enable root manually;
 - verify machine, board, printer firmware and both CFS firmware versions;
@@ -26,7 +26,7 @@ Exit: Gate G2.
 
 ## P2 — Behaviour map and diagnosis
 
-Status: **not started**
+Status: **in progress — comparable trace protocol ready**
 
 - reconstruct configuration includes and service ownership;
 - build call graphs for startup, Z homing, levelling, tool changes, loading, cutting, flushing and resume;
