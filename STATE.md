@@ -1,10 +1,10 @@
 # STATE
 
-Last updated: 2026-08-19
+Last updated: 2026-08-20
 
 ## Current phase
 
-**P2 — passive production trace active after non-qualified G3 session**
+**P2 — first passive production trace complete; next-job comparison pending**
 
 The repository baseline, stock acquisition and targeted source follow-up are complete. The A1/B/A2 physical session was executed by Thomas while Codex collected logs in read-only mode. The separate `G4-SSH-KEY` change has since added one dedicated SSH public key. Codex performed no restart, movement, heating, calibration, print, cancellation or printer-behaviour change.
 
@@ -13,7 +13,12 @@ The repository baseline, stock acquisition and targeted source follow-up are com
 - Codex has standing authority to manage the complete Git and GitHub lifecycle of this repository, including pull-request fusion into `main`, without another `GO`; printer mutations remain controlled separately by G4.
 - Passwordless root SSH is active through the local alias `k1max-root`. The alias selects one dedicated ECDSA P-256 key, refuses password fallback and passed two independent final connections.
 - The machine runs Dropbear `2019.78`; Ed25519 public-key authentication is unavailable in this version, so the working key is ECDSA P-256.
-- Passive session `20260819-215124-long` is active and waiting for Thomas to launch a normal useful print. Its initial state is standby, with pressure advance `0.03` and visible Z homing origin `+0.27 mm`.
+- Passive session `20260819-215124-long` completed automatically after a normal long production print returned to standby. Codex performed no printer-side mutation.
+- The stock startup applied pressure advance `0.044`; the print file then restored `0.03` at the first layer. The active value remained `0.03` through the automatic CFS refill and to the end.
+- The CFS detected runout, selected another slot it classified as equivalent PLA and resumed automatically in about 2 minutes 54 seconds.
+- During that equivalent-material refill, the temperature sequence was `195 -> 140 -> 220 -> 195 -> 220 °C`. The resumed print stayed at `220 °C` until Thomas manually restored `190 °C` at `23:04`.
+- Visible Z homing origin remained `+0.27 mm` for the whole session; no live Z correction was reported.
+- After completion and return to standby, the stock runtime briefly requested `150 °C` before returning the nozzle target to zero.
 
 - Target machine: older-generation Creality K1 Max.
 - Printer firmware: `2.3.5.34`, Buildroot 2020.02.1, Linux 4.4.94 on MIPS.
@@ -50,7 +55,6 @@ The repository baseline, stock acquisition and targeted source follow-up are com
 - Physical board marking; software selection is S12 structure 0, but physical confirmation remains desirable before firmware recovery.
 - Exact Klipper commit/version.
 - Recovery image compatibility with this exact machine revision.
-- Whether `0.03` regains control after the observed runtime injection of pressure advance `0.044`.
 - Whether a long print followed by a differently configured or multi-object file triggers the large historical Z shift reported by Thomas.
 
 ## Completed
@@ -80,10 +84,16 @@ The repository baseline, stock acquisition and targeted source follow-up are com
 - Final `/root/.ssh/authorized_keys` state: one active ECDSA key, root ownership, mode `600`, final recorded SHA-256 `eae61f0314dbcdfaa9a02a42352592e3b175a5d35a0d501cb909b365697eb6af`.
 - Local SSH configuration was backed up before adding the tested `k1max-root` alias.
 - Read-only production observer added and validated with a six-second subscription probe: one persistent Klipper connection, three state samples, no repeated query traffic and no socket-close errors inside the capture.
+- Long production capture `20260819-215124-long` completed with 6,748 state records and an automatic observer shutdown after standby.
+- Cleaned findings, event summary and sanitisation report produced for the long capture; raw evidence remains local and ignored.
+- Final pressure advance ownership measured: startup `0.044`, then file-requested `0.03` active through the CFS refill and print end.
+- Equivalent-PLA CFS refill temperature override measured and confirmed: stock resume returned to `220 °C` instead of preserving the prior print temperature.
 
 ## Next safe action
 
-Keep session `20260819-215124-long` open while Thomas runs the next normal long and useful print. Record any live Z correction with its time and value. After the machine returns to standby, close the capture and prepare a separate passive session for the following differently configured or multi-object job.
+Prepare a separate passive session for the next genuinely different or multi-object production job. Record any live Z correction with its time and value. Do not repeat the completed long print solely for diagnosis.
+
+In parallel, prepare but do not deploy one narrow CFS temperature-restoration overlay: remember the pre-pause print temperature, distinguish equivalent-material refill from a real material change, and restore the remembered value before resuming. Keep pressure ownership and Z changes in separate future G4 packages.
 
 Use `k1max-root` for future bounded SSH work; a password prompt is now a failure condition, not a normal step. Keep the next printer-behaviour change separate and subject it to its own named G4.
 
@@ -103,7 +113,7 @@ Use `k1max-root` for future bounded SSH work; a password prompt is now a failure
 - The core `BOX_*` state machine is compiled and its readable source is not present on the machine.
 - The literal registration of `ACCURATE_HOME_Z` was not found in readable Python, although the underlying `G28` and PR Touch path is mapped.
 - The executed pair is not qualified because the bed screws changed and A1 startup capture is incomplete.
-- Stock logs left the final active pressure advance and parts of `ACCURATE_HOME_Z` non-observable.
+- Parts of `ACCURATE_HOME_Z` remain non-observable, although pressure advance ownership is now measured.
 - No real multi-object problematic G-code is available locally for offline comparison.
 
 ## Exit condition for this phase
