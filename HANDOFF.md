@@ -1,36 +1,29 @@
 # HANDOFF
 
 Date: 2026-08-19  
-Phase: P0  
-Next operator: Thomas, then Codex
+Phase: P2 / Gate G3 preparation
+Next operator: Codex for local analysis, then Thomas for a future trace gate
 
 ## Current state
 
-The public repository baseline is being established. No SSH acquisition or printer mutation has occurred through this project.
+The public repository baseline and read-only acquisition `20260819-1627-k1max-stock` are complete. No printer mutation occurred. Raw captures remain local and ignored; redacted outputs are under `inventory/redacted/20260819-1627-k1max-stock/`.
 
-## Next safe action for Thomas
+## Confirmed acquisition outcomes
 
-1. On the printer, record the visible printer firmware, board/revision indication if exposed, and both CFS firmware versions.
-2. Enable the supported root account manually.
-3. Do not install a helper script, Mainsail, Fluidd, packages or a different firmware.
-4. Do not paste the root password into GitHub, Notion or ChatGPT.
-5. Configure a local SSH target or temporary environment variable outside the repository.
-6. Clone the repository locally.
+- firmware `2.3.5.34`, Buildroot 2020.02.1, Linux 4.4.94 MIPS;
+- firmware board identity `CR4CU220812S11` versus active configuration header `CR4CU220812S12`;
+- active configuration and four includes mapped;
+- CFS temperature value `Tn_extrude_temp: 220` identified;
+- active saved Z offset at zero and one transient historical `-0.025` identified;
+- startup, CFS, homing and levelling macro chains indexed;
+- persistent storage and large Klipper log footprint documented;
+- no remote write performed.
 
 ## Next bounded Codex mission
 
-Use `prompts/01-codex-read-only-acquisition.md` after Gate G1 is satisfied.
+Work locally from the ignored capture. Build a source-level map for `BOX_*`, `CX_*`, `ACCURATE_HOME_Z` and `CXSAVE_CONFIG`, determine which components can write or replace Z and temperature state, and prepare the two-run comparison protocol required by G3.
 
-Expected outputs:
-
-- ignored raw capture under `private/` or `inventory/raw/`;
-- redacted machine manifest;
-- command log without credentials;
-- configuration and service inventory;
-- checksums and source-path map;
-- sanitisation report;
-- updated `STATE.md` and `HANDOFF.md`;
-- draft pull request containing only publishable artefacts.
+Do not reconnect to the printer unless a named evidence gap cannot be resolved locally. Do not deploy or prepare a combined patch.
 
 ## Stop conditions
 
@@ -44,6 +37,8 @@ Codex must stop without attempting a workaround if:
 - a captured file contains secrets or unclear proprietary content;
 - the observed hardware or firmware contradicts the assumed target.
 
+The last condition is currently active as an investigation item: S11 and S12 metadata conflict. It blocks mutation, not local analysis.
+
 ## Information to bring back for analysis
 
 - redacted manifest;
@@ -54,3 +49,5 @@ Codex must stop without attempting a workaround if:
 - relevant redacted logs;
 - one G-code file that reproduced the bad first layer, kept private until reviewed;
 - ideally, two logs from identical G-code executions with different Z outcomes.
+
+The first six items now exist in private/redacted form. Comparable execution traces and one private reproducing G-code remain missing.

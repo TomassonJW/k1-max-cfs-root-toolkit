@@ -15,7 +15,7 @@ Criteria:
 
 ## G1 — Ready for read-only acquisition
 
-Status: **not passed**
+Status: **passed on 2026-08-19**
 
 Required:
 
@@ -32,7 +32,7 @@ Passing G1 authorises read-only commands and remote-to-local copying only.
 
 ## G2 — Stock acquisition complete
 
-Status: **not passed**
+Status: **passed on 2026-08-19 with documented limitations**
 
 Required:
 
@@ -47,6 +47,8 @@ Required:
 - no remote mutation occurred.
 
 Passing G2 authorises analysis of captured evidence, not printer changes.
+
+Recorded limitations: listener output was incomplete, CFS versions remain UI-reported, and the online recovery image/procedure has not been validated locally. These do not authorise widening the scope or mutating the printer.
 
 ## G3 — Diagnosis sufficiently grounded
 
