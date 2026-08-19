@@ -16,49 +16,50 @@ Paire comparable : oui / non
 
 | Run | Classe première couche | Gravité | Photo privée | Intervention |
 |---|---|---:|---|---|
-| R1 | | | | |
-| R2 | | | | |
+| A1 | | | | |
+| B | | | | |
+| A2 | | | | |
 
 ## PR Touch et référence Z
 
-| Mesure | R1 | R2 | Différence |
-|---|---:|---:|---:|
-| échantillon 1 | | | |
-| échantillon 2 | | | |
-| échantillon 3 | | | |
-| échantillon 4 | | | |
-| échantillon 5 | | | |
-| médiane | | | |
-| étendue | | | |
-| écart absolu médian | | | |
-| Z sauvegardé avant | | | |
-| Z sauvegardé après | | | |
-| Z après homing final observable | | | |
+| Mesure | A1 | B | A2 | Différence A1/A2 |
+|---|---:|---:|---:|---:|
+| échantillon 1 | | | | |
+| échantillon 2 | | | | |
+| échantillon 3 | | | | |
+| échantillon 4 | | | | |
+| échantillon 5 | | | | |
+| médiane | | | | |
+| étendue | | | | |
+| écart absolu médian | | | | |
+| Z sauvegardé avant | | | | |
+| Z sauvegardé après | | | | |
+| Z après homing final observable | | | | |
 
 Dernière opération capable d’établir ou remplacer Z avant extrusion :
 
 ## Chemin d’exécution
 
-| Événement | R1 ordre/heure | R2 ordre/heure | Équivalent |
-|---|---|---|---|
-| `START_PRINT` | | | oui / non / inconnu |
-| `BOX_START_PRINT` | | | oui / non / inconnu |
-| `CX_ROUGH_G28` / `G28` | | | oui / non / inconnu |
-| `CX_NOZZLE_CLEAR` | | | oui / non / inconnu |
-| `ACCURATE_G28` / `ACCURATE_HOME_Z` | | | oui / non / inconnu |
-| mesh / `G29` / `CXSAVE_CONFIG` | | | oui / non / inconnu |
-| `BOX_START_PRINT_EXTRUDE_MATERIAL` | | | oui / non / inconnu |
-| première extrusion | | | oui / non / inconnu |
+| Événement | A1 ordre/heure | B ordre/heure | A2 ordre/heure | Équivalent |
+|---|---|---|---|---|
+| `START_PRINT` | | | | oui / non / inconnu |
+| `BOX_START_PRINT` | | | | oui / non / inconnu |
+| `CX_ROUGH_G28` / `G28` | | | | oui / non / inconnu |
+| `CX_NOZZLE_CLEAR` | | | | oui / non / inconnu |
+| `ACCURATE_G28` / `ACCURATE_HOME_Z` | | | | oui / non / inconnu |
+| contrôle ou nouveau nivellement / `CXSAVE_CONFIG` | | | | oui / non / inconnu |
+| `BOX_START_PRINT_EXTRUDE_MATERIAL` | | | | oui / non / inconnu |
+| première extrusion | | | | oui / non / inconnu |
 
 ## Température et CFS
 
-| Mesure | R1 | R2 | Différence |
-|---|---:|---:|---:|
-| cible G-code buse | | | |
-| cible maximale imposée par `BOX_*` | | | |
-| écart maximal | | | |
-| durée de l’écart | | | |
-| cible restaurée avant première couche | | | |
+| Mesure | A1 | B | A2 | Différence A1/A2 |
+|---|---:|---:|---:|---:|
+| cible G-code buse | | | | |
+| cible maximale imposée par `BOX_*` | | | | |
+| écart maximal | | | | |
+| durée de l’écart | | | | |
+| cible restaurée avant première couche | | | | |
 
 ## Hypothèses
 
@@ -69,6 +70,7 @@ Dernière opération capable d’établir ou remplacer Z avant extrusion :
 | chemin de préparation variable | | | | |
 | état thermique / nettoyage | | | | |
 | remplacement de cible par CFS | | | | |
+| effet du seul millimètre A/B | | | | |
 
 ## Décision
 

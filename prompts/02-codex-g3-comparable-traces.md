@@ -6,7 +6,7 @@ Utiliser ce prompt uniquement après un `GO` explicite nommant la session de tra
 
 Travaille dans le clone local de `TomassonJW/k1-max-cfs-root-toolkit`.
 
-Ta mission est de collecter et comparer `R1` et `R2` selon `docs/03-z-offset-diagnostic-protocol.md`. L’imprimante reste en configuration stock rootée. Thomas réalise toutes les actions physiques et tous les lancements depuis l’interface de la machine ; Codex reste en lecture seule sur la machine.
+Ta mission est de collecter et comparer la séquence `A1`, `B`, `A2` selon `docs/03-z-offset-diagnostic-protocol.md`. A1 et A2 utilisent le même fichier `200 × 200 mm`; B utilise les mêmes réglages avec `200 × 201 mm`. L’imprimante reste en configuration stock rootée. Thomas réalise toutes les actions physiques et tous les lancements depuis l’interface de la machine ; Codex reste en lecture seule sur la machine.
 
 ## Avant toute action
 
@@ -33,7 +33,7 @@ Ta mission est de collecter et comparer `R1` et `R2` selon `docs/03-z-offset-dia
 
 Après validation de l’hôte, limiter les commandes distantes à la lecture : identité, date, uptime, températures et états exposés, `stat`, `sha256sum`, listes bornées, recherche ciblée dans les journaux existants et copie imprimante-vers-poste. Ne jamais tronquer ou faire tourner un journal.
 
-Avant et après chaque run, relever au minimum :
+Avant et après chaque essai, relever au minimum :
 
 - heure machine et heure locale ;
 - uptime ;
@@ -44,16 +44,17 @@ Avant et après chaque run, relever au minimum :
 - état ou identifiant de mesh observable ;
 - fichiers copiés et leurs SHA-256 locaux.
 
-Thomas confirme plaque, buse, filament, CFS, chemin de lancement et options visibles. Thomas lance `R1`, puis `R2`, et intervient uniquement pour la sécurité ou pour l’arrêt manuel convenu.
+Thomas confirme plaque, buse, filament, CFS, chemin de lancement et options visibles. Thomas lance `A1`, puis `B`, puis `A2`, et intervient uniquement pour la sécurité ou pour l’arrêt manuel convenu. Aucun redémarrage n’a lieu entre les trois essais.
 
 ## Marqueurs de progression
 
 Ne produire chaque marqueur qu’après contrôle réel :
 
 - `G3_PAIR_PREFLIGHT_OK`
-- `G3_R1_CAPTURE_OK`
+- `G3_A1_CAPTURE_OK`
+- `G3_B_CAPTURE_OK`
 - `G3_RESET_CONDITIONS_OK`
-- `G3_R2_CAPTURE_OK`
+- `G3_A2_CAPTURE_OK`
 - `G3_PAIR_QUALIFIED_OK` ou `G3_PAIR_NOT_COMPARABLE`
 
 ## Analyse locale
@@ -65,7 +66,7 @@ Ne produire chaque marqueur qu’après contrôle réel :
 5. Comparer les chemins mesh, `CXSAVE_CONFIG` et `ACCURATE_HOME_Z`.
 6. Comparer les cibles du G-code et celles imposées/restaurées par `BOX_*`.
 7. Choisir une seule première intervention ou conclure que la preuve reste insuffisante.
-8. Ne pas lancer automatiquement un troisième run.
+8. Ne pas lancer automatiquement un quatrième essai, un redémarrage ou un test CFS.
 
 ## Publication
 
@@ -80,7 +81,7 @@ Rendre :
 - verdict comparable ou non comparable ;
 - faits confirmés sur Z, mesh et température CFS ;
 - valeurs non observables ;
-- différence physique R1/R2 ;
+- différence physique A1/B/A2 ;
 - première intervention unique recommandée ;
 - critères de succès, échec et rollback ;
 - état de G3 et prochaine autorité nécessaire ;

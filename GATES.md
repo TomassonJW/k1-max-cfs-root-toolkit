@@ -58,7 +58,7 @@ Follow-up evidence on 2026-08-19 resolved the runtime board selection as S12 str
 
 Status: **not passed**
 
-Preparation status: the comparable `R1`/`R2` protocol, private-session templates, qualification gates Q1–Q5 and decision matrix were completed locally on 2026-08-19. No trace run has been executed. The remaining evidence gate is one qualified pair, not more unbounded source discovery.
+Preparation status: the protocol, private-session templates, qualification gates Q1–Q5 and decision matrix were completed locally on 2026-08-19. Inputs A/B were then compared: 637 slicer settings and all control commands are identical; only `200 × 200` versus `200 × 201 mm` geometry and resulting movements differ. The retained sequence is A1/B/A2 in one boot session. No trace has been executed.
 
 Required:
 
