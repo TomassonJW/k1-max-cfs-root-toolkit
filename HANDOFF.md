@@ -2,7 +2,7 @@
 
 Date: 2026-08-19  
 Phase: P2 / Gate G3 preparation after targeted source acquisition
-Next operator: Codex for local trace design, then Thomas for a future controlled trace gate
+Next operator: Thomas to select the private reproducer and authorise one named trace pair, then Codex for read-only capture
 
 ## Current state
 
@@ -27,9 +27,9 @@ Codex has permanent authority to complete all normal Git and GitHub operations f
 
 ## Next bounded Codex mission
 
-Work locally from both ignored captures to prepare the two-run comparison protocol required by G3. Do not reconnect for further source hunting: `BOX_*` is compiled, and `ACCURATE_HOME_Z` is not literally defined in the readable Python tree. Instrument or observe these boundaries only in a future explicitly approved trace phase.
+The local protocol and templates are ready. After Thomas selects one unchanged private G-code and gives a `GO` naming the session, execute exactly one `R1`/`R2` pair through `prompts/02-codex-g3-comparable-traces.md`.
 
-Do not deploy or prepare a combined patch.
+Thomas launches and stops prints from the printer interface. Codex only records read-only snapshots and copies existing logs. Qualify Q1–Q5 before considering another run. Do not deploy, instrument or prepare a combined patch.
 
 ## Stop conditions
 
@@ -56,4 +56,4 @@ The S11/S12 configuration-selection conflict is resolved in favour of S12 struct
 - one G-code file that reproduced the bad first layer, kept private until reviewed;
 - ideally, two logs from identical G-code executions with different Z outcomes.
 
-The first six items and the readable extension sources now exist in private/redacted form. Comparable execution traces and one private reproducing G-code remain missing. Compiled CFS behaviour must be measured, not inferred from unavailable source.
+The first six items and the readable extension sources now exist in private/redacted form. The comparison protocol exists, but one private reproducing G-code and its qualified `R1`/`R2` traces remain missing. Compiled CFS behaviour must be measured, not inferred from unavailable source.
