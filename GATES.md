@@ -50,6 +50,8 @@ Passing G2 authorises analysis of captured evidence, not printer changes.
 
 Recorded limitations: listener output was incomplete, CFS versions remain UI-reported, and the online recovery image/procedure has not been validated locally. These do not authorise widening the scope or mutating the printer.
 
+Follow-up evidence on 2026-08-19 resolved the runtime board selection as S12 structure 0 and mapped the readable CX, persistence, homing and PR Touch sources. The CFS state machine remains a compiled boundary. G2 remains passed; G3 still requires comparable traces and a narrow intervention.
+
 ## G3 — Diagnosis sufficiently grounded
 
 Status: **not passed**

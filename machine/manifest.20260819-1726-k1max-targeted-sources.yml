@@ -1,0 +1,57 @@
+schema_version: 1
+capture:
+  id: "20260819-1726-k1max-targeted-sources"
+  captured_on: "2026-08-19"
+  acquisition_mode: "read-only-targeted"
+  remote_write_performed: false
+  redaction_reviewed: true
+
+board_identity:
+  model_from_manufacturing_partition: "CR-K1 Max"
+  board_from_manufacturing_partition: "CR4CU220812S12"
+  structure_version: 0
+  selected_stock_config: "K1_MAX_CR4CU220812S12"
+  active_config_version: "v1.0.5"
+  ota_metadata_board: "CR4CU220812S11"
+  conclusion: "runtime configuration selection is S12 structure 0; OTA metadata is inconsistent"
+  physical_marking_verified: false
+
+internal_components:
+  cx_commands:
+    path: "/usr/share/klipper/klippy/extras/custom_macro.py"
+    sha256: "6873f7e7296462072d6bff0c531adcec0f9c92bfb32b245075ef7c9e0858d830"
+    readable_source_captured_privately: true
+  config_persistence:
+    path: "/usr/share/klipper/klippy/configfile.py"
+    sha256: "230f37d5c3d4ccb28daf4d698ac05fd2002d667de46a49daa21ff17dea3084af"
+    readable_source_captured_privately: true
+  homing:
+    path: "/usr/share/klipper/klippy/extras/homing.py"
+    sha256: "6decdcd9d78fa47ed9494eb08043c98c389eb406e56f82b908bff6f578556ffe"
+    readable_source_captured_privately: true
+  prtouch:
+    path: "/usr/share/klipper/klippy/extras/prtouch.py"
+    sha256: "a628c5ba6e53377872ee9c7a1ef1d3c7d4f8601d97b220ac4e5861310e0f3d85"
+    readable_source_captured_privately: true
+  cfs_loader:
+    path: "/usr/share/klipper/klippy/extras/box.py"
+    sha256: "6d7486e1a15cde03f3152eef0d771d0bdd4a90df9b5ef7ecb88bc5d944f20ac4"
+    size_bytes: 129
+  cfs_state_machine:
+    path: "/usr/share/klipper/klippy/extras/box_wrapper.cpython-38-mipsel-linux-gnu.so"
+    sha256: "af630c02ccdb51b57585114e5be2be7fcf91fdb10d88872eb6a0c65f048de777"
+    size_bytes: 2071412
+    readable_source_available_on_machine: false
+
+privacy:
+  raw_capture_published: false
+  vendor_source_published: false
+  vendor_binary_published: false
+  credentials_recorded: false
+  private_network_data_removed: true
+
+validation:
+  findings: "inventory/redacted/20260819-1726-k1max-targeted-sources/findings.md"
+  command_log: "inventory/redacted/20260819-1726-k1max-targeted-sources/command-log.md"
+  checksum_inventory: "inventory/redacted/20260819-1726-k1max-targeted-sources/paths-and-checksums.csv"
+  sanitisation_report: "inventory/redacted/20260819-1726-k1max-targeted-sources/sanitisation-report.md"
