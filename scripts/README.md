@@ -9,6 +9,10 @@ Planned script classes:
 - local validation and tests;
 - later, gated deployment and rollback tooling.
 
+The first gated deployment helper is `install-ssh-public-key.ps1`. It is limited
+to the named `G4-SSH-KEY` change and requires all private target, key and evidence
+paths as explicit runtime parameters.
+
 During P0/P1, scripts must default to no remote write and fail closed on ambiguity.
 
 A future remote-mutating script must:
