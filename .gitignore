@@ -1,0 +1,65 @@
+# Local secrets and credentials
+.env
+.env.*
+!.env.example
+*.key
+*.pem
+*.p12
+*.pfx
+*.crt
+*.pub
+.ssh/
+ssh/
+secrets/
+
+# Raw printer data and private backups
+private/
+backups/
+inventory/raw/
+inventory/local/
+machine/local/
+recovery/local/
+
+# Logs are private by default; explicitly redacted fixtures may be committed
+*.log
+!inventory/redacted/**/*.log
+!tests/fixtures/**/*.log
+
+# Archives and firmware images
+*.tar
+*.tar.gz
+*.tgz
+*.zip
+*.7z
+*.img
+*.bin
+*.ota
+*.swu
+*.uf2
+
+# Local command transcripts and captures
+*.capture
+*.session
+*.transcript
+command-history.txt
+
+# OS, IDE and Python noise
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.mypy_cache/
+.venv/
+venv/
+
+# Temporary and generated files
+*.tmp
+*.bak
+*.orig
+*.rej
+build/
+dist/
+coverage/

@@ -1,0 +1,129 @@
+# AGENTS.md — K1 Max CFS Root Toolkit
+
+## Mission
+
+Build a reproducible, evidence-driven and reversible way to diagnose and improve a rooted Creality K1 Max with the classic CFS upgrade and two chained CFS units.
+
+The printer is production hardware. It is never treated as a disposable sandbox.
+
+## Current authority and phase
+
+The active phase is **P0/P1 — repository bootstrap and read-only acquisition**.
+
+Authority order:
+
+1. an explicit decision from Thomas;
+2. this repository's `GATES.md`, `STATE.md`, `DECISIONS.md` and current handoff;
+3. observed machine state, captured files, logs and checksums;
+4. original scripts, tests and documented results in this repository;
+5. external documentation, which must not silently override evidence from the exact machine revision.
+
+When instructions conflict, fail closed and report the conflict.
+
+## Hard prohibitions during P0/P1
+
+Until Gate G4 is explicitly opened for a named change, an agent must not:
+
+- write, create, replace, rename or delete any file on the printer;
+- install or update a package, helper script, service, firmware or dependency;
+- run a firmware downgrade or recovery flash;
+- restart, stop, kill, enable or disable any process or service;
+- reboot or power-cycle the printer;
+- remount a filesystem or change permissions, ownership or links;
+- run remote commands using output redirection, `tee`, `sed -i`, `rm`, `mv`, `cp`, `chmod`, `chown`, `ln`, `mount`, package managers or an installer;
+- upload a file to the printer through SSH, SCP, Moonraker, Creality APIs or another path;
+- modify `printer.cfg`, included configuration, `START_PRINT`, homing, levelling or CFS macros;
+- launch a print, extrusion, heater command, movement or calibration on its own initiative;
+- persist an SSH key or credential on the printer;
+- commit raw captures, backups, credentials, private network data, cloud identifiers, serial numbers or unreviewed vendor files.
+
+A command being reversible in theory does not make it authorised.
+
+## Allowed work during P0/P1
+
+An agent may:
+
+- inspect the local repository and create ignored local working directories;
+- connect to the exact host supplied by Thomas;
+- run read-only commands listed or classified in `docs/01-read-only-acquisition.md`;
+- copy files **from the printer to the local workstation** without changing the remote source;
+- calculate hashes locally or remotely using read-only tools;
+- build an inventory, dependency map and macro call graph;
+- sanitise local copies;
+- commit only reviewed, redacted and legally publishable artefacts;
+- update repository documentation, tests and the current handoff;
+- stop immediately when a path, command or side effect is uncertain.
+
+## SSH and secret handling
+
+- Receive the printer target through an existing SSH config alias or a local environment variable such as `PRINTER_HOST`.
+- Never write an IP address, password, token, SSID, MAC address or private hostname into tracked files.
+- Do not echo credentials into a shell history, log, prompt or report.
+- Prefer an already configured local SSH agent. Creating persistent access on the printer is outside P0/P1.
+- Record the executed command class and result, not secret-bearing connection strings.
+
+## Acquisition discipline
+
+Before connecting:
+
+1. read `STATE.md`, `GATES.md`, `HANDOFF.md` and `docs/01-read-only-acquisition.md`;
+2. inspect `git status` and avoid mixing unrelated changes;
+3. create a unique capture ID;
+4. create raw storage only under ignored local paths;
+5. verify that the printer is idle and that Thomas has completed the manual root step.
+
+During acquisition:
+
+- execute the smallest command set needed;
+- log each command and whether it succeeded;
+- avoid broad recursive reads until targeted paths are known;
+- preserve timestamps and calculate checksums where practical;
+- never infer that two similarly named files have the same role.
+
+After acquisition:
+
+- retain raw material outside Git;
+- produce a redaction report;
+- commit only sanitised outputs;
+- update `STATE.md` and `HANDOFF.md` with facts, unknowns and the next safe action;
+- open a draft pull request rather than merging an acquisition automatically.
+
+## Mutation discipline after G4
+
+A future mutation task requires all of the following:
+
+- exact scope and expected effect;
+- source and destination paths;
+- pre-change backup with checksum;
+- reviewed diff;
+- validation command or physical test;
+- explicit rollback procedure;
+- explicit authorisation from Thomas for that named change;
+- one change class at a time.
+
+Prefer original overlay files and wrappers over editing manufacturer files in place. Never combine root setup, helper installation, macro replacement, CFS changes and Z tuning into one deployment.
+
+## Git discipline
+
+- Use a dedicated branch for each acquisition, experiment or deployment.
+- Keep commits narrow and readable.
+- Never commit secrets or unreviewed raw files, even temporarily.
+- Do not rewrite published history or force-push without explicit instruction.
+- Record vendor file hashes and paths; do not publish copied vendor content unless redistribution is clearly permitted.
+- Update tests and documentation with each behaviour-changing patch.
+
+## Reporting
+
+Reports must distinguish:
+
+- confirmed facts;
+- measured results;
+- hypotheses;
+- unverified assumptions;
+- changes made;
+- changes not made;
+- validation performed;
+- remaining risks;
+- next safe action.
+
+Never report a printer change unless the remote state was actually modified and verified.

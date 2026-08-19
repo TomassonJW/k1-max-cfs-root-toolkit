@@ -1,0 +1,69 @@
+schema_version: 1
+capture:
+  id: "YYYYMMDD-HHMM-k1max-stock"
+  captured_at_utc: "YYYY-MM-DDTHH:MM:SSZ"
+  acquisition_mode: "read-only"
+  remote_write_performed: false
+  redaction_reviewed: false
+
+printer:
+  manufacturer: "Creality"
+  model: "K1 Max"
+  hardware_generation: "unknown"
+  board_marking_observed: "unknown"
+  board_identity_reported_by_software: "unknown"
+  serial_redacted: true
+
+upgrades:
+  cfs_upgrade_family: "classic K1 CFS upgrade"
+  toolhead_notes: "Unicorn nozzle; upgraded extruder/toolhead board reported, verify"
+  bed_notes: "yellow springs; improved levelling; no effect on pre-existing Z issue"
+
+firmware:
+  printer_version: "unknown"
+  printer_build_id: "unknown"
+  klipper_version: "unknown"
+  moonraker_version: "unknown"
+  creality_components: []
+
+cfs:
+  unit_count: 2
+  units:
+    - logical_id: "cfs-1"
+      hardware_revision: "unknown"
+      firmware_version: "unknown"
+      serial_redacted: true
+    - logical_id: "cfs-2"
+      hardware_revision: "unknown"
+      firmware_version: "unknown"
+      serial_redacted: true
+
+storage:
+  root_filesystem: "unknown"
+  mounts_manifest: "inventory/redacted/<capture-id>/mounts.md"
+  persistent_paths: []
+  active_config_entrypoint: "unknown"
+  log_paths: []
+
+services:
+  init_system: "unknown"
+  inventory: "inventory/redacted/<capture-id>/services.md"
+  listeners_redacted: true
+
+configuration:
+  include_graph: "inventory/redacted/<capture-id>/config-include-graph.md"
+  checksum_inventory: "inventory/redacted/<capture-id>/paths-and-checksums.csv"
+  vendor_files_published: false
+
+privacy:
+  private_ip_addresses_removed: true
+  hostnames_removed: true
+  mac_addresses_removed: true
+  credentials_detected: "unknown"
+  files_withheld: []
+  residual_uncertainty: []
+
+validation:
+  command_log: "inventory/redacted/<capture-id>/command-log.md"
+  sanitisation_report: "inventory/redacted/<capture-id>/sanitisation-report.md"
+  reviewer: "unknown"
