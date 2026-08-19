@@ -36,4 +36,4 @@ Le fichier actif conserve `z_offset = 0.000`. Parmi les instantanés datés capt
 
 ## Limites
 
-Certaines commandes `BOX_*`, `CX_*`, `ACCURATE_HOME_Z` et `CXSAVE_CONFIG` proviennent d’extensions Python constructeur, pas de macros déclarées dans les quatre fichiers inclus. Leur code doit être analysé localement lors de G3.
+Certaines commandes `BOX_*`, `CX_*`, `ACCURATE_HOME_Z` et `CXSAVE_CONFIG` proviennent d’extensions Python constructeur, pas de macros déclarées dans les quatre fichiers inclus. Leur code n’a pas été copié dans cette capture. Il faudra d’abord acquérir en lecture seule uniquement les modules concernés, en une connexion bornée, si l’analyse locale des configurations ne suffit pas.

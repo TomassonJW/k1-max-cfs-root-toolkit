@@ -38,4 +38,4 @@
 
 ## Prochaine gate
 
-G2 peut être considérée atteinte pour l’acquisition stock ciblée. La suite autorisée est l’analyse locale G3 : cartographier les extensions Python `BOX_*`, `CX_*`, `ACCURATE_HOME_Z` et `CXSAVE_CONFIG`, puis établir un protocole de traces reproductibles. Aucune modification de l’imprimante n’est autorisée.
+G2 peut être considérée atteinte pour l’acquisition stock ciblée. La suite autorisée commence par l’analyse locale G3 et la préparation d’un protocole de traces reproductibles. Les sources Python des extensions `BOX_*`, `CX_*`, `ACCURATE_HOME_Z` et `CXSAVE_CONFIG` n’ayant pas été copiées, une acquisition ultérieure limitée à ces modules pourra être nécessaire. Aucune modification de l’imprimante n’est autorisée.

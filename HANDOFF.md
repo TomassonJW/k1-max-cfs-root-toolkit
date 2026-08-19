@@ -21,9 +21,9 @@ The public repository baseline and read-only acquisition `20260819-1627-k1max-st
 
 ## Next bounded Codex mission
 
-Work locally from the ignored capture. Build a source-level map for `BOX_*`, `CX_*`, `ACCURATE_HOME_Z` and `CXSAVE_CONFIG`, determine which components can write or replace Z and temperature state, and prepare the two-run comparison protocol required by G3.
+Work locally from the ignored capture to analyse configuration history, separate Z hypotheses and prepare the two-run comparison protocol required by G3. The Python implementations of `BOX_*`, `CX_*`, `ACCURATE_HOME_Z` and `CXSAVE_CONFIG` are not present in the current capture.
 
-Do not reconnect to the printer unless a named evidence gap cannot be resolved locally. Do not deploy or prepare a combined patch.
+If those implementations remain necessary, prepare one single-login, read-only acquisition limited to the exact source modules and their hashes. Do not reconnect merely for general exploration. Do not deploy or prepare a combined patch.
 
 ## Stop conditions
 
@@ -50,4 +50,4 @@ The last condition is currently active as an investigation item: S11 and S12 met
 - one G-code file that reproduced the bad first layer, kept private until reviewed;
 - ideally, two logs from identical G-code executions with different Z outcomes.
 
-The first six items now exist in private/redacted form. Comparable execution traces and one private reproducing G-code remain missing.
+The first six items now exist in private/redacted form at configuration level. Extension source modules, comparable execution traces and one private reproducing G-code remain missing.

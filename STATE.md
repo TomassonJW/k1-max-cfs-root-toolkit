@@ -52,7 +52,7 @@ The repository baseline and one targeted stock acquisition are complete. The pri
 
 ## Next safe action
 
-Analyse the captured material locally for Gate G3. Map the implementations and callers of `BOX_*`, `CX_*`, `ACCURATE_HOME_Z` and `CXSAVE_CONFIG`; distinguish Z measurement variability from Z value replacement; prepare a trace protocol for two identical jobs.
+Analyse the captured configurations and histories locally for Gate G3. Distinguish Z measurement variability from Z value replacement and prepare a trace protocol for two identical jobs. The implementations of `BOX_*`, `CX_*`, `ACCURATE_HOME_Z` and `CXSAVE_CONFIG` were not copied in this capture; acquire only their exact source modules in one future bounded read-only connection if local evidence cannot resolve them.
 
 Do not reconnect merely to fill a low-value inventory gap. Do not modify the printer.
 
@@ -70,7 +70,7 @@ Do not reconnect merely to fill a low-value inventory gap. Do not modify the pri
 
 - S11 firmware metadata conflicts with the S12 header in the active configuration.
 - Recovery artefacts and procedure have not been matched locally to the exact revision.
-- Internal implementations of several `BOX_*` and `CX_*` commands are not yet mapped.
+- Internal implementations of several `BOX_*` and `CX_*` commands were not captured and are not yet mapped.
 - No paired traces from identical jobs exist yet.
 
 ## Exit condition for this phase
