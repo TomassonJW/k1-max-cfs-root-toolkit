@@ -1,0 +1,14 @@
+path,sha256,size_bytes,role,content_published
+/usr/bin/get_sn_mac.sh,d7f3cebdcc142b6ac57c0b0c326031b0f99d3832a538fbdb815abf236c9ae4a4,2751,manufacturer identity reader,no
+/usr/share/klipper/klippy/configfile.py,230f37d5c3d4ccb28daf4d698ac05fd2002d667de46a49daa21ff17dea3084af,23097,CXSAVE_CONFIG implementation,no
+/usr/share/klipper/klippy/extras/custom_macro.py,6873f7e7296462072d6bff0c531adcec0f9c92bfb32b245075ef7c9e0858d830,14068,CX startup and temperature helpers,no
+/usr/share/klipper/klippy/extras/homing.py,6decdcd9d78fa47ed9494eb08043c98c389eb406e56f82b908bff6f578556ffe,16630,G28 implementation,no
+/usr/share/klipper/klippy/extras/prtouch.py,a628c5ba6e53377872ee9c7a1ef1d3c7d4f8601d97b220ac4e5861310e0f3d85,46664,PR Touch probing implementation,no
+/usr/share/klipper/klippy/extras/box.py,6d7486e1a15cde03f3152eef0d771d0bdd4a90df9b5ef7ecb88bc5d944f20ac4,129,CFS binary loader,no
+/usr/share/klipper/klippy/extras/box.pyc,16bc2b96ae45540e5f52d50463cc4afba1ba8b191f6a5c1d456659e69dca9f4c,308,CFS loader bytecode,no
+/usr/share/klipper/klippy/extras/box_wrapper.cpython-38-mipsel-linux-gnu.so,af630c02ccdb51b57585114e5be2be7fcf91fdb10d88872eb6a0c65f048de777,2071412,compiled CFS state machine,no
+/usr/share/klipper/config/K1_MAX_CR4CU220812S11/printer.cfg,931ace4b70b7dabaeec92a404c1b819fadd90f317d59b1ebccd338be7fefe52c,5967,stock S11 configuration,no
+/usr/share/klipper/config/K1_MAX_CR4CU220812S12/printer.cfg,be77ff7f4b35be61a13c0078fc2909cfb9b051c9d77a392ec57e10877cfe0efb,8750,stock S12 structure 0 configuration,no
+/usr/data/printer_data/config/printer.cfg,272640237e20659cf01f3268ed4cb0282b098c3d613e94bf84a3b80caac3c3b0,9958,active configuration,no
+local targeted-sources.raw.txt,fca1a929335c589a0990c9e352c18eba8d9fccbd355f41b10123ccde9d1c8316,346785,private raw capture,no
+local targeted-gap.raw.txt,c6e9c17153590fb180155c651f9789460b40dc668ce225be2ae21c85d3f6fe4a,144437,private raw capture,no
