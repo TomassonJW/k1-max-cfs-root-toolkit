@@ -8,6 +8,8 @@ Next operator: Codex for local trace design, then Thomas for a future controlled
 
 The baseline acquisition `20260819-1627-k1max-stock` and targeted follow-up `20260819-1726-k1max-targeted-sources` are complete. No printer mutation occurred. Raw captures remain local and ignored; only redacted inventories and conclusions are publishable.
 
+Codex has permanent authority to complete all normal Git and GitHub operations for this repository, including push, pull-request management, fusion into `main` and cleanup, without requesting another `GO`. This authority does not replace the printer mutation gates.
+
 ## Confirmed acquisition outcomes
 
 - firmware `2.3.5.34`, Buildroot 2020.02.1, Linux 4.4.94 MIPS;

@@ -2,6 +2,8 @@
 
 Progression is evidence-based. Passing a gate authorises only the next bounded phase, not every later action.
 
+These gates control evidence collection and changes affecting the printer. They do not gate normal Git or GitHub operations: under D-010, Codex may complete branches, commits, pushes, pull requests, merges into `main` and cleanup without requesting another operator approval. Repository integration never expands the printer-side authority granted by a gate.
+
 ## G0 — Repository bootstrap
 
 Status: **passed**

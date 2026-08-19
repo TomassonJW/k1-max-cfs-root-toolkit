@@ -10,6 +10,8 @@ The repository baseline, stock acquisition and targeted source follow-up are com
 
 ## Confirmed facts
 
+- Codex has standing authority to manage the complete Git and GitHub lifecycle of this repository, including pull-request fusion into `main`, without another `GO`; printer mutations remain controlled separately by G4.
+
 - Target machine: older-generation Creality K1 Max.
 - Printer firmware: `2.3.5.34`, Buildroot 2020.02.1, Linux 4.4.94 on MIPS.
 - The manufacturing identity partition reports board `CR4CU220812S12`, structure version `0`.

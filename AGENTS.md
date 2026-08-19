@@ -8,7 +8,7 @@ The printer is production hardware. It is never treated as a disposable sandbox.
 
 ## Current authority and phase
 
-The active phase is **P0/P1 — repository bootstrap and read-only acquisition**.
+The active phase is **P2 — local diagnosis and Gate G3 preparation**.
 
 Authority order:
 
@@ -86,7 +86,7 @@ After acquisition:
 - produce a redaction report;
 - commit only sanitised outputs;
 - update `STATE.md` and `HANDOFF.md` with facts, unknowns and the next safe action;
-- open a draft pull request rather than merging an acquisition automatically.
+- open a draft pull request, review its publishable scope, then complete the normal GitHub integration without requiring another operator approval.
 
 ## Mutation discipline after G4
 
@@ -104,6 +104,14 @@ A future mutation task requires all of the following:
 Prefer original overlay files and wrappers over editing manufacturer files in place. Never combine root setup, helper installation, macro replacement, CFS changes and Z tuning into one deployment.
 
 ## Git discipline
+
+### Permanent Git and GitHub authority for this repository
+
+Thomas permanently delegates to Codex the complete Git and GitHub lifecycle for this project. Codex may inspect, branch, stage, commit, fetch, pull, rebase, merge, push, tag, create or update pull requests, mark them ready, merge them into `main`, and clean up merged mission branches without requesting another `GO` or human validation.
+
+This standing authority applies to repository integration only. Gates G0–G5 and named deployment approvals continue to govern every action that can affect the printer. Platform-enforced safety controls also remain applicable.
+
+Codex must still preserve unrelated work, worktrees and useful history; keep secrets, raw captures and unreviewed vendor material out of Git; avoid force-push or published-history rewrites unless Thomas explicitly names that exceptional operation; and verify both local and remote state after integration.
 
 - Use a dedicated branch for each acquisition, experiment or deployment.
 - Keep commits narrow and readable.
