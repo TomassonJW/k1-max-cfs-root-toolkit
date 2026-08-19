@@ -77,7 +77,20 @@ Next evidence should be captured passively around a real long production print a
 
 ## G4 — One mutation ready for deployment
 
-Status: **not passed**
+Status: **passed and deployed on 2026-08-19 for `G4-SSH-KEY` only**
+
+The named change installed one dedicated ECDSA P-256 public key in
+`/root/.ssh/authorized_keys`. The original file and directory were absent. The
+final file contains exactly one active key, is owned by root with mode `600`,
+and two independent connections succeeded with password authentication disabled.
+
+An initial Ed25519 attempt was rejected because the observed Dropbear `2019.78`
+predates Ed25519 `authorized_keys` support. Its malformed first transfer was
+repaired, the unsupported key was removed, and its unused local private key was
+deleted. Private evidence and backup checksums remain outside Git.
+
+This pass does not authorise any other printer mutation. Every future named
+change must satisfy G4 independently.
 
 Required for each named change:
 

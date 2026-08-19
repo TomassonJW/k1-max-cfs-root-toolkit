@@ -98,3 +98,16 @@ Status: accepted
 Session `20260819-185157-g3-aba` completed A1/B/A2 but did not produce a qualified geometry comparison because the bed screws changed between the trials. It nevertheless confirmed variable Z retries, multiple Z-establishing phases and a competing pressure-advance value.
 
 Thomas's reported production symptom — especially after a long print followed by a differently configured or multi-object file — is treated as valid diagnostic context, not as a claim that must be proven through repeated plastic-consuming tests. Future traces will be collected passively around useful production jobs. No fourth print or broad combinatorial campaign is launched without one narrow question that cannot be answered offline or from existing logs.
+
+## D-014 — Dedicated ECDSA key for the stock SSH server
+
+Date: 2026-08-19
+Status: accepted and deployed
+
+The K1 Max uses Dropbear `2019.78`, which predates Ed25519 support for
+`authorized_keys`. Passwordless access therefore uses one dedicated ECDSA P-256
+key, selected by local alias `k1max-root`, with password fallback disabled.
+
+The key is for this printer only. Its private half stays in the Windows SSH
+profile and outside Git. This access change does not authorise printer-behaviour
+changes and does not weaken the named G4 requirement for later deployments.

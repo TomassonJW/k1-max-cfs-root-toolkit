@@ -4,13 +4,15 @@ Last updated: 2026-08-19
 
 ## Current phase
 
-**P2 — G3 session executed but not qualified; passive production traces next**
+**P2 — G3 session not qualified; G4-SSH-KEY deployed; passive production traces next**
 
-The repository baseline, stock acquisition and targeted source follow-up are complete. The A1/B/A2 physical session was executed by Thomas while Codex collected logs in read-only mode. Codex performed no remote write, restart, movement, heating, calibration, print or cancellation.
+The repository baseline, stock acquisition and targeted source follow-up are complete. The A1/B/A2 physical session was executed by Thomas while Codex collected logs in read-only mode. The separate `G4-SSH-KEY` change has since added one dedicated SSH public key. Codex performed no restart, movement, heating, calibration, print, cancellation or printer-behaviour change.
 
 ## Confirmed facts
 
 - Codex has standing authority to manage the complete Git and GitHub lifecycle of this repository, including pull-request fusion into `main`, without another `GO`; printer mutations remain controlled separately by G4.
+- Passwordless root SSH is active through the local alias `k1max-root`. The alias selects one dedicated ECDSA P-256 key, refuses password fallback and passed two independent final connections.
+- The machine runs Dropbear `2019.78`; Ed25519 public-key authentication is unavailable in this version, so the working key is ECDSA P-256.
 
 - Target machine: older-generation Creality K1 Max.
 - Printer firmware: `2.3.5.34`, Buildroot 2020.02.1, Linux 4.4.94 on MIPS.
@@ -73,19 +75,22 @@ The repository baseline, stock acquisition and targeted source follow-up are com
 - The stock bed check selects four near-corner points randomly, measures each three times and can regenerate and save the mesh when at least two corners exceed its tolerance.
 - A1/B/A2 is now the selected first physical sequence; reboot and multi-filament CFS tests are deferred.
 - A1/B/A2 session report and cleaned event summary produced. Q1 passed, Q2–Q4 did not pass and Q5 is inconclusive.
+- `G4-SSH-KEY` prepared, approved, deployed and validated without any service restart.
+- Final `/root/.ssh/authorized_keys` state: one active ECDSA key, root ownership, mode `600`, final recorded SHA-256 `eae61f0314dbcdfaa9a02a42352592e3b175a5d35a0d501cb909b365697eb6af`.
+- Local SSH configuration was backed up before adding the tested `k1max-root` alias.
 
 ## Next safe action
 
 Do not launch another sacrificial print. Collect the next trace passively around a normal long production print and the following differently configured or multi-object job. First compare any available problematic multi-object G-code offline.
 
-Prepare a separate G4 proposal for passwordless SSH using a dedicated public key, with backup, validation and rollback. This convenience mutation must not be bundled with Z, mesh, cleaning or CFS changes.
+Use `k1max-root` for future bounded SSH work; a password prompt is now a failure condition, not a normal step. Keep the next printer-behaviour change separate and subject it to its own named G4.
 
 ## Not authorised yet
 
 - Helper Script installation.
 - Mainsail, Fluidd or Moonraker changes.
 - Firmware downgrade or replacement.
-- Any SSH write.
+- Any SSH write other than the completed `G4-SSH-KEY` deployment.
 - Service restart or reboot initiated by an agent.
 - Macro or configuration modification.
 - Z, mesh, temperature or CFS tuning.

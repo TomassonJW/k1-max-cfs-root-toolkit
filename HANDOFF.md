@@ -1,12 +1,14 @@
 # HANDOFF
 
 Date: 2026-08-19  
-Phase: P2 / Gate G3 remains open after non-qualified A1/B/A2 session
-Next operator: Codex for offline analysis and a separate passwordless-SSH G4 proposal; Thomas only for normal production printing
+Phase: P2 / G3 remains open; G4-SSH-KEY deployed and validated
+Next operator: Codex for passive production evidence and offline analysis; Thomas only for normal production printing
 
 ## Current state
 
-The baseline acquisition, targeted source follow-up and physical session `20260819-185157-g3-aba` are complete. Thomas performed the prints and mechanical adjustments; Codex made no remote change. Raw captures remain local and ignored; only redacted inventories and conclusions are publishable.
+The baseline acquisition, targeted source follow-up, physical session `20260819-185157-g3-aba` and separate `G4-SSH-KEY` deployment are complete. Thomas performed the prints and mechanical adjustments. Codex changed only root SSH access by adding one dedicated public key; no printer behaviour, service or configuration was changed. Raw captures remain local and ignored; only redacted inventories and conclusions are publishable.
+
+Passwordless SSH is now available through local alias `k1max-root`. It selects the dedicated ECDSA P-256 key and forbids password fallback. Two independent final connections passed. A future password prompt must be treated as a failure and diagnosed, not shown to Thomas as a normal step.
 
 Codex has permanent authority to complete all normal Git and GitHub operations for this repository, including push, pull-request management, fusion into `main` and cleanup, without requesting another `GO`. This authority does not replace the printer mutation gates.
 
@@ -29,7 +31,7 @@ Codex has permanent authority to complete all normal Git and GitHub operations f
 
 Do not repeat A1/B/A2 or launch a fourth sacrificial print. Compare any future problematic multi-object G-code offline, then capture read-only evidence around a normal long production print and the next differently configured job.
 
-Prepare passwordless SSH as a separate named mutation: dedicated key, exact remote file, backup and checksum, validation, rollback and no password retained. Do not bundle it with printer behaviour changes.
+Keep every later printer behaviour change behind its own named G4. Do not treat the completed SSH convenience change as permission to modify Z, mesh, cleaning, CFS or services.
 
 For the first behaviour overlay, keep five independent candidates: deterministic Z reference, explicit mesh policy, end-of-print nozzle cleaning plus pre-probe fallback, final pressure-advance ownership after CFS, and read-only observability. Select only one under a future G4.
 
