@@ -58,15 +58,19 @@ The repository baseline, stock acquisition and targeted source follow-up are com
 - Follow-up read-only acquisition `20260819-1726-k1max-targeted-sources` completed.
 - S11/S12 runtime configuration identity resolved as S12 structure 0.
 - Readable CX, persistence, homing and PR Touch sources mapped; compiled CFS boundary recorded.
-- Comparable `R1`/`R2` trace protocol completed with fixed conditions, Q1–Q5 qualification and a custom-installation decision matrix.
+- Comparable A1/B/A2 trace protocol completed with fixed conditions, Q1–Q5 qualification and a custom-installation decision matrix.
 - Private session, event timeline and comparison templates added under `experiments/g3/`.
-- Bounded future execution prompt prepared; no trace run, print or calibration was launched.
+- Bounded future execution prompt prepared; no trace, print or calibration was launched.
+- Private G3 files A/B compared locally: 637 slicer settings and all 34 non-motion control commands are identical.
+- Both files apply Z protection `+0.27 mm` and pressure advance `0.03` after `START_PRINT`; B changes only the Y dimension from `200` to `201 mm` and the resulting movements.
+- The stock bed check selects four near-corner points randomly, measures each three times and can regenerate and save the mesh when at least two corners exceed its tolerance.
+- A1/B/A2 is now the selected first physical sequence; reboot and multi-filament CFS tests are deferred.
 
 ## Next safe action
 
-Thomas selects one private G-code known to expose the first-layer problem, ideally a short first-layer reproducer, then gives a named `GO` for one `R1`/`R2` session. Codex prepares the ignored raw directory and collects only read-only snapshots and existing logs while Thomas performs every physical launch and safety action.
+With the printer idle, Thomas gives a named `GO` for the prepared A1/B/A2 session. Codex prepares the ignored raw session directory and collects only read-only snapshots and existing logs while Thomas performs every launch and safety action.
 
-Do not reconnect before the exact session inputs and authority are recorded. Do not modify the printer or automatically run a third test.
+Do not reconnect before the exact session inputs and authority are recorded. Do not modify the printer or automatically launch a fourth test.
 
 ## Not authorised yet
 
@@ -83,7 +87,7 @@ Do not reconnect before the exact session inputs and authority are recorded. Do 
 - Recovery artefacts and procedure have not been matched locally to the exact revision.
 - The core `BOX_*` state machine is compiled and its readable source is not present on the machine.
 - The literal registration of `ACCURATE_HOME_Z` was not found in readable Python, although the underlying `G28` and PR Touch path is mapped.
-- The protocol is ready, but no qualified pair of identical-job traces exists yet.
+- Inputs and protocol are ready, but no qualified A1/A2 pair or B comparison has been executed yet.
 - Stock logs may leave `ACCURATE_HOME_Z` or internal `BOX_*` values non-observable; this must be measured before proposing instrumentation.
 
 ## Exit condition for this phase

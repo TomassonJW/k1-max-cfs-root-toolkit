@@ -40,32 +40,34 @@ Le protocole n’autorise pas :
 
 ## 3. Unité expérimentale
 
-La preuve primaire est une paire `R1` / `R2` réalisée avec **le même fichier G-code, octet pour octet**, dans une même session de démarrage et sans changement volontaire de configuration.
+La preuve primaire contient deux essais `A1` / `A2` réalisés avec **le même fichier G-code, octet pour octet**, dans une même session de démarrage et sans changement volontaire de configuration.
 
-Le fichier idéal est un petit reproducer de première couche qui se termine seul. Si un travail plus long doit être arrêté après la première couche, Thomas effectue manuellement la même action au même point sur les deux runs et cette intervention est enregistrée. Une annulation différente entre les runs invalide la comparaison d’état après impression.
+Pour la session préparée le 19 août 2026, un essai intermédiaire `B` utilise les mêmes 637 réglages et ne change que la géométrie de `200 × 200 mm` à `200 × 201 mm`. L’ordre est donc `A1`, `B`, `A2`. A1/A2 mesurent la répétabilité ; B teste si un seul millimètre supplémentaire déclenche un autre comportement.
+
+Le fichier idéal est un petit reproducer de première couche qui se termine seul. Si un travail plus long doit être arrêté après la première couche, Thomas effectue manuellement la même action au même point sur les trois essais et cette intervention est enregistrée. Une annulation différente entre les essais invalide la comparaison d’état après impression.
 
 Le G-code et les captures brutes restent privés. Seuls leur SHA-256, les événements nettoyés et les conclusions peuvent entrer dans Git.
 
 ## 4. Conditions fixes obligatoires
 
-Avant `R1`, les valeurs suivantes sont choisies et copiées dans `session-record.md`. Elles ne changent pas avant la fin de `R2` :
+Avant `A1`, les valeurs suivantes sont choisies et copiées dans `session-record.md`. Elles ne changent pas avant la fin de `A2` :
 
 | Domaine | Condition fixe |
 |---|---|
 | G-code | même fichier et même SHA-256 |
-| Trancheur | aucune nouvelle génération entre les runs |
+| Trancheur | aucune nouvelle génération entre les essais |
 | Plateau | même plaque, même face, même orientation, non déplacée |
 | Buse | même buse ; procédure de nettoyage manuel identique |
 | Filament | même bobine, même emplacement CFS et même trajet |
 | CFS | mêmes unités sous tension et même sélection de matériau |
 | Interface | même chemin de lancement et mêmes options visibles de calibration |
 | Configuration | aucun fichier, offset, mesh, macro ou paramètre modifié |
-| Démarrage | même session de boot ; aucun reboot ni restart entre `R1` et `R2` |
+| Démarrage | même session de boot ; aucun reboot ni restart entre `A1`, `B` et `A2` |
 | Intervention | aucune correction Z, extrusion ou commande manuelle pendant la première couche |
 
-Avant chaque run, le lit et la buse doivent revenir dans la même fenêtre thermique : écart `R1`/`R2` inférieur ou égal à `2 °C` pour chacun, avec une variation inférieure ou égale à `1 °C` pendant les cinq minutes précédant le lancement. Les valeurs réelles sont enregistrées ; elles ne sont pas remplacées par les seules consignes.
+Avant chaque essai, le lit et la buse doivent revenir dans la même fenêtre thermique : écart entre les trois départs inférieur ou égal à `2 °C` pour chacun, avec une variation inférieure ou égale à `1 °C` pendant les cinq minutes précédant le lancement. Les valeurs réelles sont enregistrées ; elles ne sont pas remplacées par les seules consignes.
 
-Si l’une de ces conditions n’est pas tenue, le run reste une observation utile mais la paire n’est pas déclarée comparable.
+Si l’une de ces conditions n’est pas tenue, l’essai reste une observation utile mais la paire n’est pas déclarée comparable.
 
 ## 5. Preflight de session
 
@@ -75,7 +77,7 @@ Sous `inventory/raw/g3-traces/<session-id>/`, conserver :
 
 - le G-code privé ou son emplacement local contrôlé ;
 - `session-record.md` rempli à partir du modèle ;
-- un `event-timeline.csv` par run ;
+- un `event-timeline.csv` par essai ;
 - les journaux bruts copiés de l’imprimante ;
 - les photos originales ;
 - les sorties des commandes de lecture et leurs horodatages ;
@@ -94,23 +96,23 @@ Avant connexion ou lancement :
 9. consigner les températures réelles pendant cinq minutes ;
 10. arrêter si une lecture risque d’écrire, de faire tourner les logs ou de modifier un service.
 
-## 6. Exécution de `R1`
+## 6. Exécution de `A1`
 
 1. Thomas applique la procédure manuelle de nettoyage convenue.
-2. Codex effectue uniquement le snapshot de lecture pré-run explicitement prévu.
+2. Codex effectue uniquement le relevé de lecture avant essai explicitement prévu.
 3. Thomas lance le fichier depuis l’interface choisie.
 4. Aucune correction n’est appliquée pendant la première couche, sauf arrêt de sécurité.
-5. Relever l’heure visible du lancement et photographier la première couche avec les mêmes cadrage et éclairage prévus pour `R2`.
+5. Relever l’heure visible du lancement et photographier la première couche avec les mêmes cadrage et éclairage prévus pour `B` et `A2`.
 6. Attribuer un résultat : `trop_haut`, `acceptable`, `trop_bas`, `contact_dangereux` ou `mixte`.
 7. Si le travail ne se termine pas seul, Thomas l’arrête manuellement au point convenu.
 8. Après l’arrêt ou la fin, copier les journaux existants vers le poste local sans les tronquer ni les faire tourner.
 9. Relever de nouveau la valeur Z sauvegardée, le mesh actif identifiable, les températures et les métadonnées des fichiers concernés.
 
-Un bruit anormal, un contact buse/plateau, une extrusion dangereuse ou une erreur machine impose l’arrêt manuel immédiat. Le run est classé `sécurité`, pas `échec fonctionnel`.
+Un bruit anormal, un contact buse/plateau, une extrusion dangereuse ou une erreur machine impose l’arrêt manuel immédiat. L’essai est classé `sécurité`, pas `échec fonctionnel`.
 
 ## 7. Retour à l’état de départ
 
-Avant `R2` :
+Avant chaque essai suivant :
 
 1. ne pas redémarrer la machine et ne modifier aucun fichier ;
 2. retirer seulement la pièce imprimée, sans déplacer la plaque ;
@@ -121,11 +123,13 @@ Avant `R2` :
 
 Si le firmware a spontanément changé de mesh, de valeur sauvegardée ou de chemin de préparation, cette différence est une donnée importante. Elle n’est toutefois pas une raison pour prétendre que les conditions étaient identiques.
 
-## 8. Exécution de `R2`
+## 8. Exécution de `B`, puis de `A2`
 
-Répéter strictement les étapes de `R1` avec le même opérateur, le même fichier, le même chemin de lancement, les mêmes observations et les mêmes bornes de collecte.
+Exécuter B avec le même opérateur, le même chemin de lancement, les mêmes observations et les mêmes bornes de collecte. B conserve tous les réglages de A et change seulement la dimension Y de `200` à `201 mm`.
 
-Ne pas relancer automatiquement un troisième run. La paire est d’abord qualifiée et analysée. Une nouvelle paire demande un nouvel identifiant et une décision fondée sur le manque de preuve constaté.
+Après le même retour à l’état de départ, exécuter A2 avec le fichier exact de A1. Vérifier son SHA-256 avant lancement. Ne pas redémarrer entre les trois essais.
+
+Ne pas lancer automatiquement un quatrième essai ni un test CFS. La séquence A1/B/A2 est d’abord qualifiée et analysée. Un essai après redémarrage demande une nouvelle décision fondée sur le résultat obtenu.
 
 ## 9. Événements à extraire des journaux
 
@@ -153,7 +157,7 @@ La comparaison passe successivement cinq gates locales :
 ### Q1 — Intégrité
 
 - SHA-256 du G-code identique ;
-- captures attribuables sans ambiguïté à `R1` ou `R2` ;
+- captures attribuables sans ambiguïté à `A1`, `B` ou `A2` ;
 - horodatages suffisamment alignés pour reconstruire l’ordre.
 
 ### Q2 — Conditions initiales
@@ -175,7 +179,8 @@ La comparaison passe successivement cinq gates locales :
 
 ### Q5 — Pouvoir discriminant
 
-- résultats différents : la paire peut expliquer la variabilité si Q1–Q4 passent ;
+- A1 et A2 différents : la paire peut expliquer la variabilité si Q1–Q4 passent ;
+- A1 et A2 équivalents mais B différent : la géométrie ou une couche informée de son contour devient la piste principale ;
 - résultats identiques et corrects : la paire ne reproduit pas le défaut ;
 - résultats identiques et mauvais : la paire confirme un défaut déterministe mais ne localise pas seule sa cause.
 
@@ -189,11 +194,11 @@ Pour chaque série PR Touch observable :
 - médiane ;
 - minimum, maximum et étendue ;
 - écart absolu médian ;
-- différence de médiane entre `R1` et `R2`.
+- différence de médiane entre `A1` et `A2`.
 
 Pour le Z effectif :
 
-- valeur sauvegardée avant et après chaque run ;
+- valeur sauvegardée avant et après chaque essai ;
 - valeur affichée ou journalisée après le premier `G28` ;
 - valeur après `ACCURATE_HOME_Z` si observable ;
 - dernière opération capable de changer la référence avant la première extrusion.
@@ -214,7 +219,7 @@ Les calculs gardent la précision source. Aucun seuil d’acceptation mécanique
 |---|---|---|
 | PR Touch dispersé sous conditions stables | traiter propreté, contact, thermique ou répétabilité mécanique ; nouvelle série bornée | ajouter un offset logiciel permanent |
 | PR Touch stable mais Z change après `ACCURATE_HOME_Z` | override minimal appliqué après la dernière remise à zéro, avec backup et rollback | remplacer toute la pile Klipper |
-| Chemin de calibration différent entre runs | wrapper de démarrage explicite avec modes référence/rapide | modifier simultanément Z, mesh et CFS |
+| Chemin de calibration différent entre essais | wrapper de démarrage explicite avec modes référence/rapide | modifier simultanément Z, mesh et CFS |
 | `CXSAVE_CONFIG` persiste une valeur remplacée ailleurs | corriger le producteur de valeur ou l’ordre, pas le mécanisme de sauvegarde | supprimer aveuglément la persistance |
 | `BOX_*` impose `220 °C` puis restaure mal | paramétrage ou wrapper CFS minimal autour de la transition | abandonner les deux CFS ou forker OrcaSlicer |
 | Logs stock insuffisants pour localiser une frontière | instrumentation minimale et temporaire préparée sous G4 | installer une interface complète uniquement pour « voir plus » |
