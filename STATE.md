@@ -4,9 +4,9 @@ Last updated: 2026-08-19
 
 ## Current phase
 
-**P2 — G3 comparable-trace protocol ready, execution pending**
+**P2 — G3 session executed but not qualified; passive production traces next**
 
-The repository baseline, stock acquisition and targeted source follow-up are complete. The printer was accessed only in read-only mode on 2026-08-19. No remote write, restart, movement, heating or calibration occurred.
+The repository baseline, stock acquisition and targeted source follow-up are complete. The A1/B/A2 physical session was executed by Thomas while Codex collected logs in read-only mode. Codex performed no remote write, restart, movement, heating, calibration, print or cancellation.
 
 ## Confirmed facts
 
@@ -35,6 +35,11 @@ The repository baseline, stock acquisition and targeted source follow-up are com
 - CFS filament changes can override intended nozzle temperatures.
 - Startup and calibration sequences can be excessively long and opaque.
 - Earlier G-code post-processing successfully removed a redundant tool command and applied a temporary ironing offset, proving that some slicer-side workarounds are useful but insufficient against later firmware macro overrides.
+- Session `20260819-185157-g3-aba` completed A1, B and A2 without reboot and without a fourth print.
+- B and A2 each exposed multiple Z-establishing phases around nozzle cleaning; A2 reached retry index 7 and contained large internal outliers before converging near the `0.21–0.26` group.
+- The stock runtime injected pressure advance `0.044` during B and A2 even though both private G-codes request `0.03` after `START_PRINT`; the final active value was not observable in this capture.
+- Thomas changed bed-screw tension between the trials and again around A2. This may have improved the layer but makes the geometry comparison non-qualified.
+- A1, B and A2 all completed with broadly usable physical results after manual tuning.
 
 ## Reported but not yet verified from the machine
 
@@ -42,6 +47,8 @@ The repository baseline, stock acquisition and targeted source follow-up are com
 - Physical board marking; software selection is S12 structure 0, but physical confirmation remains desirable before firmware recovery.
 - Exact Klipper commit/version.
 - Recovery image compatibility with this exact machine revision.
+- Whether `0.03` regains control after the observed runtime injection of pressure advance `0.044`.
+- Whether a long print followed by a differently configured or multi-object file triggers the large historical Z shift reported by Thomas.
 
 ## Completed
 
@@ -60,17 +67,18 @@ The repository baseline, stock acquisition and targeted source follow-up are com
 - Readable CX, persistence, homing and PR Touch sources mapped; compiled CFS boundary recorded.
 - Comparable A1/B/A2 trace protocol completed with fixed conditions, Q1–Q5 qualification and a custom-installation decision matrix.
 - Private session, event timeline and comparison templates added under `experiments/g3/`.
-- Bounded future execution prompt prepared; no trace, print or calibration was launched.
+- Bounded execution prompt prepared and used; all physical actions were performed by Thomas.
 - Private G3 files A/B compared locally: 637 slicer settings and all 34 non-motion control commands are identical.
 - Both files apply Z protection `+0.27 mm` and pressure advance `0.03` after `START_PRINT`; B changes only the Y dimension from `200` to `201 mm` and the resulting movements.
 - The stock bed check selects four near-corner points randomly, measures each three times and can regenerate and save the mesh when at least two corners exceed its tolerance.
 - A1/B/A2 is now the selected first physical sequence; reboot and multi-filament CFS tests are deferred.
+- A1/B/A2 session report and cleaned event summary produced. Q1 passed, Q2–Q4 did not pass and Q5 is inconclusive.
 
 ## Next safe action
 
-With the printer idle, Thomas gives a named `GO` for the prepared A1/B/A2 session. Codex prepares the ignored raw session directory and collects only read-only snapshots and existing logs while Thomas performs every launch and safety action.
+Do not launch another sacrificial print. Collect the next trace passively around a normal long production print and the following differently configured or multi-object job. First compare any available problematic multi-object G-code offline.
 
-Do not reconnect before the exact session inputs and authority are recorded. Do not modify the printer or automatically launch a fourth test.
+Prepare a separate G4 proposal for passwordless SSH using a dedicated public key, with backup, validation and rollback. This convenience mutation must not be bundled with Z, mesh, cleaning or CFS changes.
 
 ## Not authorised yet
 
@@ -87,8 +95,9 @@ Do not reconnect before the exact session inputs and authority are recorded. Do 
 - Recovery artefacts and procedure have not been matched locally to the exact revision.
 - The core `BOX_*` state machine is compiled and its readable source is not present on the machine.
 - The literal registration of `ACCURATE_HOME_Z` was not found in readable Python, although the underlying `G28` and PR Touch path is mapped.
-- Inputs and protocol are ready, but no qualified A1/A2 pair or B comparison has been executed yet.
-- Stock logs may leave `ACCURATE_HOME_Z` or internal `BOX_*` values non-observable; this must be measured before proposing instrumentation.
+- The executed pair is not qualified because the bed screws changed and A1 startup capture is incomplete.
+- Stock logs left the final active pressure advance and parts of `ACCURATE_HOME_Z` non-observable.
+- No real multi-object problematic G-code is available locally for offline comparison.
 
 ## Exit condition for this phase
 

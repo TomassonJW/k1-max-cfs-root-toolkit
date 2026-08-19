@@ -1,0 +1,14 @@
+run,event,timestamp,value,qualification
+A1,operator_start,2026-08-19T19:02:00+02:00,,operator_reported
+A1,print_end,2026-08-19T19:27:14+02:00,70731 bytes,log_confirmed
+B,g28_first_start,2026-08-19T19:32:32+02:00,,log_confirmed
+B,nozzle_clear_start,2026-08-19T19:33:36+02:00,,log_confirmed
+B,nozzle_cooldown,2026-08-19T19:34:10+02:00,,log_confirmed
+B,pressure_advance_injected,2026-08-19T19:35:54+02:00,0.044,log_confirmed
+B,g28_second_start,2026-08-19T19:36:18+02:00,,log_confirmed
+B,print_end,2026-08-19T19:56:47+02:00,70797 bytes,log_confirmed
+A2,nozzle_clear_start,2026-08-19T20:00:33+02:00,,log_confirmed
+A2,nozzle_clear_finish,2026-08-19T20:02:16+02:00,,log_confirmed
+A2,pressure_advance_injected,2026-08-19T20:03:01+02:00,0.044,log_confirmed
+A2,g28_retry_window,2026-08-19T20:03:30+02:00,attempt indexes 0 through 7,log_confirmed
+A2,print_end,2026-08-19T20:24:21+02:00,70731 bytes,log_confirmed

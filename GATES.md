@@ -58,7 +58,9 @@ Follow-up evidence on 2026-08-19 resolved the runtime board selection as S12 str
 
 Status: **not passed**
 
-Preparation status: the protocol, private-session templates, qualification gates Q1–Q5 and decision matrix were completed locally on 2026-08-19. Inputs A/B were then compared: 637 slicer settings and all control commands are identical; only `200 × 200` versus `200 × 201 mm` geometry and resulting movements differ. The retained sequence is A1/B/A2 in one boot session. No trace has been executed.
+Execution status: session `20260819-185157-g3-aba` completed A1/B/A2 in one boot session on 2026-08-19. Q1 passed. Q2 failed because Thomas adjusted the bed screws between the prints and again around A2. Q3 failed because the Z retry path differed, Q4 remained incomplete, and Q5 is inconclusive. The session is useful evidence but is not a qualified comparable pair.
+
+Observed evidence includes two Z-establishing phases around cleaning, A2 retrying through index 7 with large internal outliers, and runtime pressure advance `0.044` competing with the files' requested `0.03`. No fourth print is authorised or needed for this session.
 
 Required:
 
@@ -70,6 +72,8 @@ Required:
 - success and failure criteria are measurable.
 
 Passing G3 authorises preparation of a patch and rollback plan, not deployment.
+
+Next evidence should be captured passively around a real long production print and the next differently configured or multi-object job. It must not become a broad sacrificial print campaign.
 
 ## G4 — One mutation ready for deployment
 
