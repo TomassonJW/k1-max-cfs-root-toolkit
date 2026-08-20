@@ -13,7 +13,7 @@ son adaptateur réel et les macros métier ne sont pas prêts.
 - Moonraker MIPS : paquet du Helper Script au commit
   `b46787a61b3ce2f04ec04d115a73a46c26814057`, contenant Moonraker
   `fccffa96c63ed77dc3953e18615e9fe9cd3d69ea` et son environnement Python 3.8 ;
-- nginx MIPS : archive du même commit ;
+- nginx MIPS `1.17.7` : archive du même commit ;
 - Mainsail : `v2.18.2`, commit
   `009ae11fc0676a6f3b0d4697f5d28aa345c697ff` ;
 
@@ -35,10 +35,11 @@ paquet, repasse les tests et reçoit un nouveau GO.
 - pas de mise à jour automatique, caméra, MQTT, découverte réseau, notification
   ou service cloud dans ce premier paquet.
 
-Moonraker effectue sa propre rotation quotidienne. La politique
-`config/logrotate-k1-control` borne le journal nginx. Le futur préflight doit
-d'abord prouver, par un contrôle sans écriture, que le `logrotate` déjà présent
-sur la machine accepte cette politique. Sinon, la pose s'arrête avant copie.
+Le préflight réel de V1 a prouvé que la machine ne possède ni `logrotate`, ni
+`/etc/logrotate.d`. V1 a donc été arrêtée avant toute copie. V2 ne rajoute
+aucune dépendance : Moonraker conserve sa rotation quotidienne interne et nginx
+envoie ses erreurs au `syslogd` BusyBox déjà actif par `/dev/log`. Sur cette
+machine, son aide confirme la rotation par défaut à 200 Kio avec une sauvegarde.
 
 ## Ressources et arrêt automatique
 
@@ -58,6 +59,6 @@ versionnés et de nouveaux services, sans toucher à `printer.cfg`,
 `gcode_macro.cfg`, `box.cfg`, au Klipper constructeur ni au nginx constructeur.
 
 Les fichiers `config/` et `services/` sont des originaux du projet. Ils servent
-au simulateur de pose et à la revue de `G4-K1-CONTROL-FOUNDATION-V1`. Cette gate
+au simulateur de pose et à la revue de `G4-K1-CONTROL-FOUNDATION-V2`. Cette gate
 est préparée mais **pas autorisée** : aucun fichier ne doit encore être copié
 sur l'imprimante.

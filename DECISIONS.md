@@ -267,3 +267,23 @@ fait par tunnel SSH et le port LAN ne s'ouvre qu'après création du compte.
 Cette séparation sert à mesurer mémoire, stabilité et coexistence avant de
 confier à la nouvelle pile le moindre comportement d'impression. Le candidat
 s'appelle `G4-K1-CONTROL-FOUNDATION-V1` et requiert son propre GO exact.
+
+## D-023 — V1 arrêtée au préflight, V2 réutilise le syslog stock borné
+
+Date: 2026-08-20
+
+Status: accepté pour le paquet hors imprimante ; V2 non autorisée
+
+Thomas a donné le GO exact V1. Le préflight réel a confirmé la bonne machine,
+l'état au repos, les chauffes à zéro, les deux CFS, les ressources et l'absence
+des cibles. Il a aussi prouvé que `logrotate` et `/etc/logrotate.d` n'existent
+pas. V1 exigeait cette dépendance ; elle a donc été arrêtée avant toute copie et
+son nom est fermé.
+
+La machine possède déjà `/sbin/syslogd -n` et `/dev/log`. L'aide de son BusyBox
+confirme une rotation par défaut à 200 Kio avec une sauvegarde. V2 envoie les
+erreurs nginx à ce journal stock et conserve la rotation interne de Moonraker.
+Elle n'installe aucun paquet, cron ou troisième service.
+
+Le remplacement s'appelle `G4-K1-CONTROL-FOUNDATION-V2`. Le GO V1 ne l'autorise
+pas. V2 exige un nouveau GO exact après reconstruction et tests du paquet.

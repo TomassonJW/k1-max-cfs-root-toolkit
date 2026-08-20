@@ -279,9 +279,11 @@ Le prototype hors imprimante a maintenant réalisé les cinq points annoncés :
 pile épinglée, faux Moonraker relié à l'interface et au moteur, 17/17 scénarios
 verts, contrat Orca avec fixtures et paquet de fondation préparé.
 
-`G4-K1-CONTROL-FOUNDATION-V1` est la prochaine gate humaine. Elle concerne
-uniquement Moonraker et Mainsail en observation, sans changement de comportement
-et sans import Orca. `K1 Control` réel, le Z, le mesh, le démarrage, la purge et
+V1 a reçu son GO, puis son préflight a détecté l'absence de `logrotate` avant
+toute mutation. Son nom est fermé. `G4-K1-CONTROL-FOUNDATION-V2` est la
+prochaine gate humaine. Elle garde uniquement Moonraker et Mainsail en
+observation, sans changement de comportement ni import Orca, et réutilise le
+syslog stock borné. `K1 Control` réel, le Z, le mesh, le démarrage, la purge et
 les températures CFS restent dans les poses suivantes.
 
 Toute installation, écriture, chauffe, mouvement, calibration ou impression

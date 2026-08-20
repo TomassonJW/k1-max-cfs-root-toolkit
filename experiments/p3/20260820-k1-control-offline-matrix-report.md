@@ -41,7 +41,7 @@ mouvement, calibration, extrusion ou travail n'a été lancé.
 
 Commande : `python -m prototype.scenario_matrix`.
 
-La suite complète du dépôt passe également : `49/49` contrôles avec
+À cette étape, la suite complète du dépôt passait également `49/49` contrôles avec
 `python -m unittest discover -s tests -v`. La syntaxe des deux futurs services
 Buildroot passe `bash -n`.
 
@@ -68,5 +68,10 @@ Le bundle local a été réellement préparé avec les trois archives épinglée
 - Mainsail `v2.18.2` : SHA-256
   `df2ba7c301f7bfc8ac9f122741a6ba08356d679ecfa1f62f898d0337802d5de5`.
 
-Le résultat temporaire reste hors Git et sera supprimé après la revue. La gate
-`G4-K1-CONTROL-FOUNDATION-V1` est préparée mais non autorisée.
+Le résultat temporaire restait hors Git jusqu'à la revue. À cette date, la gate
+`G4-K1-CONTROL-FOUNDATION-V1` était préparée mais non autorisée.
+
+Mise à jour ultérieure : Thomas a autorisé V1, mais son préflight réel a prouvé
+l'absence de `logrotate` et l'a arrêtée avant toute mutation. V1 est fermée ; le
+remplacement sans dépendance s'appelle `G4-K1-CONTROL-FOUNDATION-V2`. Après son
+durcissement, la suite complète passe `54/54` contrôles.

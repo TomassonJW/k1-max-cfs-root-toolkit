@@ -139,17 +139,23 @@ deployed**. Son nom ne peut plus recevoir de GO. Les fichiers restants sont des
 preuves historiques marquées `rejected_never_deploy` ; le macro échoue
 volontairement s'il est chargé par erreur.
 
-Candidate `G4-K1-CONTROL-FOUNDATION-V1`: **prepared offline on 2026-08-20 and
-not authorised**. Cette première pose ajoute uniquement Moonraker et Mainsail en
-observation. Elle ne modifie ni macros, ni Z, ni mesh, ni CFS, ni Orca. Les
-versions, archives, empreintes, chemins, démarrage avec compte créé par tunnel,
-seuils de ressources et rollback sont fixés dans le paquet et le document 12.
+Candidate `G4-K1-CONTROL-FOUNDATION-V1`: **GO reçu, préflight KO le 2026-08-20,
+jamais déployée, nom fermé**. La machine réelle ne possède ni `logrotate`, ni
+`/etc/logrotate.d`, alors que V1 les exigeait avant toute copie. Le préflight a
+arrêté la pose sans créer de dossier, fichier, service ou port sur la machine.
+Un autre GO V1 ne peut pas rouvrir ce paquet.
 
-Le prototype produit a passé 17/17 scénarios hors imprimante. Cela permet de
-présenter la gate de fondation ; cela ne prouve pas encore la consommation ou
-la coexistence sur la machine réelle. Seul un GO portant exactement le nom
-`G4-K1-CONTROL-FOUNDATION-V1` autorisera cette pose. Il n'autorise ni commande
-G-code, ni chauffe, ni mouvement, ni changement Orca, ni pose comportementale.
+Candidate `G4-K1-CONTROL-FOUNDATION-V2`: **prepared offline on 2026-08-20 and
+not authorised**. V2 garde exactement Moonraker/Mainsail en observation, retire
+la dépendance absente et envoie les erreurs nginx au `syslogd` BusyBox déjà
+actif par `/dev/log`. Son comportement observé est borné à 200 Kio et une
+sauvegarde ; Moonraker garde sa rotation interne. Aucun paquet, cron ou service
+de journal supplémentaire n'est ajouté.
+
+Le prototype produit reste vert à 17/17. V2 ne modifie toujours ni macros, ni Z,
+ni mesh, ni CFS, ni Orca et n'autorise aucune commande G-code. Seul un nouveau
+GO portant exactement `G4-K1-CONTROL-FOUNDATION-V2` pourra autoriser cette pose.
+Le GO V1 déjà donné ne vaut pas pour V2.
 
 Required for each named change:
 
