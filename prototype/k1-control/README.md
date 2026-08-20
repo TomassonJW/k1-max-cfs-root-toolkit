@@ -2,10 +2,11 @@
 
 Statut : **simulation hors imprimante uniquement**.
 
-Ce dossier montre le fonctionnement quotidien validé par ADR-004 sans appeler
-Moonraker, Klipper, Orca ou la K1 Max. Il utilise uniquement HTML, CSS et
-JavaScript natifs afin de ne pas ajouter un second service lourd sur une machine
-qui ne possède qu'environ 209 Mio de RAM.
+Ce dossier montre le fonctionnement quotidien validé par ADR-004. L'écran parle
+à `prototype/moonraker_simulator.py`, un faux Moonraker lié au moteur d'état
+Python. Ce serveur reste sur `127.0.0.1`, ne connaît aucune adresse d'imprimante
+et n'expose qu'une poignée de commandes de simulation. L'interface utilise
+uniquement HTML, CSS et JavaScript natifs afin de rester statique en production.
 
 ## Ce que le prototype démontre
 
@@ -25,18 +26,19 @@ une valeur par défaut du produit.
 
 ## Lancer localement
 
-Le navigateur doit recevoir les fichiers par HTTP pour charger le JSON :
+Lancer le faux Moonraker depuis la racine du dépôt :
 
 ```powershell
-python -m http.server 8765 --directory prototype/k1-control
+python -m prototype.moonraker_simulator --port 8765
 ```
 
 Puis ouvrir `http://127.0.0.1:8765`. Cette commande ne contacte pas
-l'imprimante. Elle ne doit pas être utilisée comme service de production.
+l'imprimante. Les boutons utilisent les routes Moonraker simulées
+`/server/info`, `/printer/objects/query` et `/printer/gcode/script`.
 
 ## Suite
 
-Le branchement futur remplace seulement `mock-state.json` par un adaptateur
-Moonraker limité et versionné. La logique persistante reste dans la couche
-d'état/macros testée, pas dans le navigateur. La sélection des versions et la
-sécurité réseau doivent encore passer la matrice de compatibilité avant G4.
+Le futur branchement réel conservera cette interface d'adaptateur, ajoutera
+l'authentification et les événements WebSocket, puis traduira uniquement les
+commandes autorisées vers les macros originales du projet. La logique
+persistante reste dans la couche d'état/macros testée, pas dans le navigateur.

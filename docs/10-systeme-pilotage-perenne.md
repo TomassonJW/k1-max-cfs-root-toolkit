@@ -273,17 +273,17 @@ Le premier écran local et le moteur d'état pur sont présents sous `prototype/
 Ils utilisent uniquement des données synthétiques et ne connaissent aucune
 adresse d'imprimante.
 
-## Prochaine étape déjà lancée
+## Prototype terminé et prochaine gate
 
-La mission active est le prototype complet hors imprimante :
+Le prototype hors imprimante a maintenant réalisé les cinq points annoncés :
+pile épinglée, faux Moonraker relié à l'interface et au moteur, 17/17 scénarios
+verts, contrat Orca avec fixtures et paquet de fondation préparé.
 
-1. épingler le paquet Moonraker/Mainsail minimal à partir du relevé MIPS,
-   Python, mémoire et ports maintenant disponible ;
-2. brancher le moteur d'état et l'interface sur un adaptateur Moonraker simulé ;
-3. exécuter les 17 scénarios Z/mesh/température/deux-CFS/rollback ;
-4. produire le contrat Orca versionné et ses fixtures ;
-5. préparer seulement ensuite un nouveau paquet G4.
+`G4-K1-CONTROL-FOUNDATION-V1` est la prochaine gate humaine. Elle concerne
+uniquement Moonraker et Mainsail en observation, sans changement de comportement
+et sans import Orca. `K1 Control` réel, le Z, le mesh, le démarrage, la purge et
+les températures CFS restent dans les poses suivantes.
 
-Il n'existe actuellement **aucun paquet G4 de comportement à autoriser**.
 Toute installation, écriture, chauffe, mouvement, calibration ou impression
-reste interdite jusqu'à un futur GO portant le nom exact d'un nouveau paquet.
+reste interdite jusqu'à un GO portant exactement ce nom. Le GO de fondation
+n'autoriserait toujours aucune commande G-code ni impression lancée par Codex.

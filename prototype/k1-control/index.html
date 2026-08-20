@@ -28,7 +28,7 @@
             <span class="status-dot" aria-hidden="true"></span>
             <h2 id="readiness-title">Chargement…</h2>
           </div>
-          <p id="readiness-detail">Lecture du faux état local.</p>
+          <p id="readiness-detail">Lecture du faux Moonraker local.</p>
         </div>
         <div class="hero-actions">
           <button class="primary-button" id="begin-calibration" type="button">Calibrer le Z</button>
@@ -140,9 +140,9 @@
     </main>
 
     <footer>
-      Prototype hors imprimante · aucune connexion réseau · aucune commande Klipper
+      Prototype hors imprimante · boucle locale uniquement · aucune imprimante connectée
     </footer>
 
-    <script src="app.js"></script>
+    <script type="module" src="app-moonraker.js"></script>
   </body>
 </html>

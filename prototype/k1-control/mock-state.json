@@ -1,6 +1,6 @@
 {
   "simulation": true,
-  "connection": "Faux Klipper local",
+  "connection": "Faux Moonraker local",
   "ready": true,
   "blockReason": null,
   "plate": {
@@ -16,7 +16,8 @@
     "probeReference": "demo-reference-7",
     "nozzle": "Unicorn 0,4 mm",
     "provisionalSeedMm": 0.31,
-    "session": null
+    "session": null,
+    "canRestore": false
   },
   "mesh": {
     "mode": "adaptive",

@@ -1,0 +1,29 @@
+{
+  "contract_id": "K1-CONTROL-V1-ORCA",
+  "contract_version": 1,
+  "status": "offline_candidate_never_import",
+  "printer_mutation_authorized": false,
+  "validated_orca_version": "2.4.2",
+  "plate_name_rule": "uppercase stable token matching [A-Z0-9][A-Z0-9_-]{0,63}",
+  "fields": {
+    "machine_start_gcode": "machine-start.gcode",
+    "machine_end_gcode": "machine-end.gcode",
+    "change_filament_gcode": "change-filament.gcode"
+  },
+  "atomic_cutover": [
+    "machine_start_gcode",
+    "machine_end_gcode",
+    "change_filament_gcode",
+    "printer_side_contract",
+    "legacy_z_postprocessor_removal"
+  ],
+  "current_profile_changed": false,
+  "legacy_z_postprocessor_still_active": true,
+  "maximum_logical_tools": 8,
+  "temperature_rules": {
+    "initial": "first_layer_temperature for the initial tool",
+    "equivalent_refill": "preserve the current explicit owner target",
+    "intentional_change": "new_filament_temp from Orca",
+    "operator_override": "preserve until the next explicit G-code target"
+  }
+}

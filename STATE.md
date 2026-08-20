@@ -4,7 +4,7 @@ Last updated: 2026-08-20
 
 ## Current phase
 
-**P3 — architecture corrigée et prototype complet hors imprimante lancé**
+**P3 terminé — prototype hors imprimante vert ; P4 attend une gate humaine**
 
 The repository baseline, stock acquisition, complete Orca/G-code intake and
 passive P1–P5/PETG trace are complete. Gate G3 is passed for offline design and
@@ -20,7 +20,9 @@ The active target is `K1-CONTROL-V1`: one coherent, parameterised product with
 a simple daily interface, a Mainsail expert view candidate, persistent accepted
 Z calibration, meshes by plate/temperature, safe configurable start/clean/purge,
 dynamic two-CFS temperature ownership and one versioned Orca contract. It is
-being prototyped entirely offline. No G4 behaviour candidate is active.
+being prepared by reversible slices. The complete offline prototype is now
+green. `G4-K1-CONTROL-FOUNDATION-V1` is prepared for Moonraker/Mainsail
+observation only, but it is not authorised and changes no print behaviour.
 
 ## Confirmed facts
 
@@ -52,9 +54,10 @@ being prototyped entirely offline. No G4 behaviour candidate is active.
 - The accepted Z rule is explicit: live changes belong to a calibration session;
   only `Enregistrer` creates the persistent record. It survives print end and
   reboot, but a new reference calibration invalidates it.
-- Mainsail and Moonraker are candidates, not approved installers. The exact
-  versions, security, memory, ports and coexistence with the screen and two CFS
-  still need proof.
+- Moonraker MIPS is pinned to embedded commit
+  `fccffa96c63ed77dc3953e18615e9fe9cd3d69ea`; Mainsail is pinned to `v2.18.2`.
+  Their archives, security policy and paths are fixed, but memory and
+  coexistence with the screen and two CFS still require the named G4.
 - A bounded read-only capacity snapshot found about 209 MiB total RAM, 118 MiB
   available, Python 3.8.2, 4.2 GiB free on `/usr/data`, no Moonraker process and
   no listener on its usual port. No remote mutation occurred.
@@ -148,7 +151,16 @@ being prototyped entirely offline. No G4 behaviour candidate is active.
 - Desktop and narrow-screen browser checks passed. Live adjustment, explicit
   commit, simulated restart persistence and reference-calibration invalidation
   behaved as intended with no JavaScript error.
-- The complete current offline suite passes 37 tests.
+- The screen now talks to a loopback-only fake Moonraker that applies the Python
+  state rules instead of changing browser state directly.
+- The executable offline matrix passes all 17 required Z, mesh, sequence,
+  temperature, two-CFS, Orca and rollback scenarios.
+- The full Orca start/end/tool-change contract and expanded fixtures are ready;
+  the active Orca profile and legacy `+0.27 mm` post-processor are unchanged.
+- A local bundle containing the three pinned Moonraker/nginx/Mainsail archives
+  was built and verified. Binary payloads remain temporary and outside Git.
+- `G4-K1-CONTROL-FOUNDATION-V1` now has exact paths, first-login tunnel,
+  backup, checksums, no-motion validation, resource gates and rollback.
 
 - Complete-system audit, A/B/C comparison, safety invariant, input contract and
   time-bounded roadmap documented in
@@ -200,26 +212,22 @@ being prototyped entirely offline. No G4 behaviour candidate is active.
 
 ## Next safe action
 
-Continue the offline `K1-CONTROL-V1` prototype as one product:
+The next state-changing action is a human gate: Thomas may explicitly approve
+or refuse `G4-K1-CONTROL-FOUNDATION-V1`. A generic `GO` is insufficient. Until
+that exact approval, do not upload, install, start or expose any service.
 
-1. use the completed baseline capacity/port snapshot to pin a minimal
-   Moonraker/Mainsail candidate and model its resource budget;
-2. connect the existing state engine and screen to a simulated Moonraker
-   adapter;
-3. generate the versioned Orca start/end/tool-change contract and fixtures;
-4. run the complete two-CFS transition and rollback matrix;
-5. only then prepare a newly named G4 candidate.
+If approved, the first pose installs only Moonraker and Mainsail in observation,
+creates the initial account through an SSH tunnel, performs no G-code command,
+and stops or rolls back on any checksum, login, coexistence or resource failure.
 
 Do not remove or disable the current Orca `+0.27 mm` post-processor. Its
-retirement must be atomic with the proven replacement on both Orca and printer.
-
-No diagnostic print or physical action is requested. There is currently no
-printer-side gate to review and no behaviour package to deploy.
+retirement remains atomic with the later proven machine/Orca replacement.
 
 ## Not authorised yet
 
 - Helper Script installation.
-- Mainsail, Fluidd, Moonraker or `K1 Control` installation/change.
+- `G4-K1-CONTROL-FOUNDATION-V1` until Thomas names it in an explicit GO.
+- Any other Mainsail, Fluidd, Moonraker or `K1 Control` installation/change.
 - BTT Eddy preparation, installation, firmware or calibration.
 - Firmware downgrade or replacement.
 - Any SSH write other than the completed `G4-SSH-KEY` deployment.
@@ -257,13 +265,13 @@ printer-side gate to review and no behaviour package to deploy.
 - The compiled `BOX_*` owner may contain a late temperature write that no macro
   can intercept. The complete matrix decides whether a small replacement owner
   is required.
-- The exact pinned Moonraker/Mainsail versions and secure network policy are not
-  yet accepted for deployment.
+- The pinned Moonraker/Mainsail package has not yet run on the real machine, so
+  its RAM, stability and coexistence are not proven.
+- The real `K1 Control` adapter and the printer-side Z/mesh/start/CFS wrappers
+  are intentionally deferred until the observation foundation is accepted.
 
 ## Exit condition for this phase
 
-P3 exits only when `K1-CONTROL-V1` possède un prototype local utilisable, un
-moteur d'état testé, un contrat Orca complet, une sélection de versions prouvée,
-la matrice Z/mesh/température/deux-CFS verte et les poses/rollbacks entièrement
-préparés. Un nouveau paquet G4 pourra alors être nommé ; sa préparation ne
-vaudra toujours pas autorisation de toucher à l'imprimante.
+P3 has reached its exit condition: usable local prototype, tested state engine,
+complete Orca contract, pinned versions, green 17-scenario matrix and prepared
+foundation rollback. P4 remains closed until the exact named G4 is approved.

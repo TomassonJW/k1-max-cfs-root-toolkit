@@ -33,6 +33,21 @@ Le moteur d'état et l'interface locale ont leurs contrôles dédiés :
 python -m unittest tests.test_k1_control_prototype -v
 ```
 
+Le premier paquet de fondation, le contrat Orca et la matrice complète se
+contrôlent ainsi :
+
+```powershell
+python -m unittest tests.test_control_foundation_package -v
+python -m unittest tests.test_orca_control_contract -v
+python -m prototype.scenario_matrix
+```
+
+La suite complète doit être lancée avec un dossier de découverte explicite :
+
+```powershell
+python -m unittest discover -s tests -v
+```
+
 L'ancien paquet rejeté `G4-ZSAFE-START-V1` conserve ses tests historiques et un
 contrôle qui prouve qu'il échoue volontairement s'il est chargé :
 
