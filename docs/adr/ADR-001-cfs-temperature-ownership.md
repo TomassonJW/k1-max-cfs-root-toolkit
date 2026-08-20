@@ -1,7 +1,7 @@
 # ADR-001 — Reprendre la température du CFS sans remplacer son pilote
 
 Date : 2026-08-20
-Statut : proposé, préparé localement, non déployé
+Statut : rejeté par Thomas le 2026-08-20 ; jamais déployé
 
 ## Problème confirmé
 
@@ -50,15 +50,16 @@ Retenu comme premier candidat G4. Le pilote d'origine reste en place :
   `190 °C`, une garde courte remet immédiatement la valeur mémorisée ;
 - tout autre contrat est bloqué avant le premier appel au CFS.
 
-## Décision et portée
+## Rejet et portée historique
 
-Préparer l'option 3 sans la déployer. Elle corrige le cas réellement observé et
-évite le saut à `220 °C`, mais ce n'est pas encore une gestion générale de tous
-les matériaux.
+L'option 3 a été préparée localement puis rejetée avant tout déploiement. Son
+couple fixe `190/195`, son profil Geeetech obligatoire et son refus des autres
+matériaux sont incompatibles avec l'usage réel de la machine.
 
-Le démarrage du CFS purge à `195 °C`, soit la température normale du PLA testé,
-puis le G-code reprend `190 °C` pour la première couche. Le pilote d'origine ne
-permet pas de lui transmettre proprement une valeur différente à chaque appel.
+Le besoin corrigé est défini dans `docs/07-dynamic-cfs-temperature-requirements.md` :
+pendant une impression, la dernière température explicite du G-code ou de Thomas
+doit toujours gagner. Aucun couple de températures et aucun matériau ne sera
+codé en dur dans le prochain candidat.
 
 ## Conséquences
 
@@ -68,7 +69,7 @@ permet pas de lui transmettre proprement une valeur différente à chaque appel.
 - La déclaration PLA des bobines dans le CFS doit correspondre au filament réel.
 - Z, nivellement, pression d'avance, ironing et nettoyage de buse restent hors
   de ce changement.
-- Le déploiement exigera un `G4-CFS-TEMP-PLA` explicite.
+- Aucun `G4-CFS-TEMP-PLA` ne sera ouvert ; ce candidat est retiré.
 
 ## Sources de comparaison
 

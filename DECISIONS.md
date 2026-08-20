@@ -115,20 +115,17 @@ changes and does not weaken the named G4 requirement for later deployments.
 ## D-015 — Premier correctif CFS limité au Geeetech PLA 190/195
 
 Date: 2026-08-20
-Status: accepted for local preparation; not deployed
+Status: rejected on 2026-08-20; never deployed
 
-Le premier candidat de changement de comportement conserve le pilote CFS
-d'origine. Il remplace sa température fixe `220` par `195 °C`, exige un contrat
-de fichier explicite `GEEETECH_PLA` avec première couche `190 °C` et impression
-normale `195 °C`, puis protège la cible mémorisée pendant un remplacement
-automatique équivalent.
+Ce premier candidat remplaçait la température fixe `220` par `195 °C` et
+imposait un contrat Geeetech PLA `190/195`. Thomas l'a rejeté : il aurait empêché
+les changements normaux de marque, de matériau, de profil et de température.
 
-Tout autre matériau ou couple de températures est refusé avant le premier appel
-au CFS. Cette limite est volontaire : le pilote compilé d'origine n'offre qu'une
-température CFS fixe et son interface à chaud ne permet pas de la modifier. Une
-gestion générale par bobine nécessiterait un remplacement ou une modification du
-pilote et fera l'objet d'une décision séparée.
+La décision qui la remplace est fonctionnelle : pendant une impression, le
+G-code ou la dernière modification explicite de Thomas est l'unique source de
+vérité. Un remplacement équivalent conserve la cible active ; un vrai changement
+reçoit la cible du prochain outil depuis le G-code. La base générique CFS ne doit
+jamais écraser ces valeurs.
 
-Ce lot ne touche pas au Z, au mesh, à la pression d'avance, à l'ironing ou au
-nettoyage de buse. Son déploiement reste interdit sans le G4 nommé
-`G4-CFS-TEMP-PLA`.
+Les fichiers déployables du candidat et son test ont été retirés de `main`. Son
+ADR reste comme historique d'une option refusée. Aucun G4 ne porte son nom.

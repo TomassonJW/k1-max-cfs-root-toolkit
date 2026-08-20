@@ -1,8 +1,8 @@
 # HANDOFF
 
 Date: 2026-08-20
-Phase: P2 / CFS temperature package prepared locally; next-job Z comparison pending
-Next operator: Thomas decides whether to open named deployment `G4-CFS-TEMP-PLA`; Codex otherwise prepares the next passive observer
+Phase: P2 / dynamic CFS temperature ownership under design; next-job Z comparison pending
+Next operator: Codex proves macro-wrapper coverage versus compiled-driver replacement; no temperature deployment is available
 
 ## Current state
 
@@ -25,12 +25,15 @@ temperature or pressure advance. During refill, stock `RESUME` restores
 `195 °C`, then the file reader replays the new physical tool and the compiled
 CFS module reapplies `220 °C` afterward.
 
-Candidate `G4-CFS-TEMP-PLA` is now prepared locally and tested against exact
-copies of the three active configuration files. It lowers the fixed CFS
-operation temperature to `195 °C`, requires an explicit Geeetech PLA `190/195`
-contract and adds a bounded post-resume guard for a previously memorised
-`190 °C` target. It fails closed for every other material or temperature. It has
-not been copied to the printer and no service has been restarted.
+The static `G4-CFS-TEMP-PLA` candidate was rejected by Thomas before deployment.
+It hard-coded Geeetech PLA and `190/195 °C`, so it did not meet the production
+need. Its deployable files were removed from `main`; no printer file or service
+was changed.
+
+The accepted requirement is now explicit: while a print is active, G-code or
+Thomas owns nozzle temperature. Equivalent refill preserves the active target.
+An intentional material change receives the next tool's temperature from the
+G-code. The CFS database may not silently replace either value.
 
 Codex has permanent authority to complete all normal Git and GitHub operations for this repository, including push, pull-request management, fusion into `main` and cleanup, without requesting another `GO`. This authority does not replace the printer mutation gates.
 
@@ -53,11 +56,13 @@ Codex has permanent authority to complete all normal Git and GitHub operations f
 
 Do not repeat A1/B/A2 or the completed long production print. Open a separate passive session around the next genuinely different or multi-object production job. This is intended to test the reported post-job Z instability without consuming plastic solely for diagnosis.
 
-The separate local CFS preparation is complete. The next printer-side action is
-a human gate decision: either Thomas explicitly says `GO G4-CFS-TEMP-PLA` while
-the machine is idle, or the candidate remains local. Deployment must follow
-`overrides/cfs-temperature-contract/DEPLOYMENT.md` exactly and stop on any source
-hash mismatch. It must not absorb pressure, ironing, Z, mesh or nozzle cleaning.
+No temperature deployment is ready. The next bounded mission is read-only and
+offline: map every temperature write through startup, `T0`–`T15`, both physical
+CFS units, purge, equivalent refill, intentional material change and resume.
+Then decide whether wrappers cover every path or whether the compiled owner must
+be replaced. The decision must satisfy
+`docs/07-dynamic-cfs-temperature-requirements.md` without hard-coded material or
+temperature.
 
 Keep every later printer behaviour change behind its own named G4. Do not treat the completed SSH convenience change as permission to modify Z, mesh, cleaning, CFS or services.
 

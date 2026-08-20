@@ -4,7 +4,7 @@ Last updated: 2026-08-20
 
 ## Current phase
 
-**P2 — CFS temperature correction prepared locally; next-job Z comparison pending**
+**P2 — dynamic CFS temperature ownership under design; next-job Z comparison pending**
 
 The repository baseline, stock acquisition and targeted source follow-up are complete. The A1/B/A2 physical session was executed by Thomas while Codex collected logs in read-only mode. The separate `G4-SSH-KEY` change has since added one dedicated SSH public key. Codex performed no restart, movement, heating, calibration, print, cancellation or printer-behaviour change.
 
@@ -94,21 +94,23 @@ The repository baseline, stock acquisition and targeted source follow-up are com
   retrieved read-only and matched their recorded SHA-256 hashes.
 - The production G-code contains no `M104`/`M109` request for `220 °C`; the CFS
   module and its generic PLA database own that value.
-- Candidate `G4-CFS-TEMP-PLA` is prepared locally with an ADR, a minimal patch,
-  an original helper, an OrcaSlicer contract, validation, rollback and a static
-  test against the exact active files.
-- Local test result: fixture hashes OK, patch application OK, fail-closed
-  contract OK and refill-guard order OK.
+- The static `G4-CFS-TEMP-PLA` candidate was rejected by Thomas before
+  deployment because it hard-coded Geeetech PLA and `190/195 °C`.
+- Its deployable patch, helper, OrcaSlicer contract, deployment procedure and
+  dedicated test were removed from `main`; the rejected ADR remains as history.
+- The accepted requirement is dynamic: G-code or Thomas owns the temperature
+  during a print, equivalent refill preserves the active target, and intentional
+  material changes receive the next tool's target from G-code.
 
 ## Next safe action
 
 Prepare a separate passive session for the next genuinely different or multi-object production job. Record any live Z correction with its time and value. Do not repeat the completed long print solely for diagnosis.
 
-The narrow CFS temperature package is now prepared but not deployed. The next
-printer-side decision is whether Thomas explicitly opens `G4-CFS-TEMP-PLA` while
-the machine is idle. That gate would cover only the Geeetech PLA `190/195`
-contract, its four active files, one controlled Klipper restart and its written
-validation/rollback procedure.
+Do not deploy or recreate `G4-CFS-TEMP-PLA`. The next temperature mission is
+read-only and offline: determine whether every stock CFS temperature write can
+be intercepted by macros. If not, define the smallest maintainable replacement
+for the compiled temperature owner. Compare both routes against
+`docs/07-dynamic-cfs-temperature-requirements.md` before preparing any patch.
 
 Independently, prepare a passive session for the next genuinely different or
 multi-object production job. Keep pressure ownership, ironing, cleaning and Z
@@ -125,7 +127,7 @@ Use `k1max-root` for future bounded SSH work; a password prompt is now a failure
 - Service restart or reboot initiated by an agent.
 - Macro or configuration modification.
 - Z, mesh, temperature or CFS tuning.
-- Deployment of the locally prepared `G4-CFS-TEMP-PLA` candidate.
+- Any static material-specific CFS temperature candidate.
 
 ## Current blockers
 
