@@ -4,7 +4,7 @@ Last updated: 2026-08-20
 
 ## Current phase
 
-**P2 — first passive production trace complete; next-job comparison pending**
+**P2 — CFS temperature correction prepared locally; next-job Z comparison pending**
 
 The repository baseline, stock acquisition and targeted source follow-up are complete. The A1/B/A2 physical session was executed by Thomas while Codex collected logs in read-only mode. The separate `G4-SSH-KEY` change has since added one dedicated SSH public key. Codex performed no restart, movement, heating, calibration, print, cancellation or printer-behaviour change.
 
@@ -90,12 +90,29 @@ The repository baseline, stock acquisition and targeted source follow-up are com
 - Cleaned findings, event summary and sanitisation report produced for the long capture; raw evidence remains local and ignored.
 - Final pressure advance ownership measured: startup `0.044`, then file-requested `0.03` active through the CFS refill and print end.
 - Equivalent-PLA CFS refill temperature override measured and confirmed: stock resume returned to `220 °C` instead of preserving the prior print temperature.
+- Exact live copies of `printer.cfg`, `gcode_macro.cfg` and `box.cfg` were
+  retrieved read-only and matched their recorded SHA-256 hashes.
+- The production G-code contains no `M104`/`M109` request for `220 °C`; the CFS
+  module and its generic PLA database own that value.
+- Candidate `G4-CFS-TEMP-PLA` is prepared locally with an ADR, a minimal patch,
+  an original helper, an OrcaSlicer contract, validation, rollback and a static
+  test against the exact active files.
+- Local test result: fixture hashes OK, patch application OK, fail-closed
+  contract OK and refill-guard order OK.
 
 ## Next safe action
 
 Prepare a separate passive session for the next genuinely different or multi-object production job. Record any live Z correction with its time and value. Do not repeat the completed long print solely for diagnosis.
 
-In parallel, prepare but do not deploy one narrow CFS temperature-ownership overlay covering the initial load/purge and automatic refill. It must consume explicit first-layer, normal-print and new-material temperatures, preserve the pre-pause value for equivalent refill, and remove the silent `220 °C` fallback. Keep pressure ownership, ironing and Z changes in separate future G4 packages.
+The narrow CFS temperature package is now prepared but not deployed. The next
+printer-side decision is whether Thomas explicitly opens `G4-CFS-TEMP-PLA` while
+the machine is idle. That gate would cover only the Geeetech PLA `190/195`
+contract, its four active files, one controlled Klipper restart and its written
+validation/rollback procedure.
+
+Independently, prepare a passive session for the next genuinely different or
+multi-object production job. Keep pressure ownership, ironing, cleaning and Z
+changes in separate future G4 packages.
 
 Use `k1max-root` for future bounded SSH work; a password prompt is now a failure condition, not a normal step. Keep the next printer-behaviour change separate and subject it to its own named G4.
 
@@ -108,6 +125,7 @@ Use `k1max-root` for future bounded SSH work; a password prompt is now a failure
 - Service restart or reboot initiated by an agent.
 - Macro or configuration modification.
 - Z, mesh, temperature or CFS tuning.
+- Deployment of the locally prepared `G4-CFS-TEMP-PLA` candidate.
 
 ## Current blockers
 
