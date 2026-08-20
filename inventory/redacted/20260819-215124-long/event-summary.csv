@@ -3,6 +3,7 @@ timestamp,event,value,source
 2026-08-19T22:19:25,pressure_advance_set,0.044,stock_startup
 2026-08-19T22:19:29,print_state,printing,passive_state
 2026-08-19T22:20:11,nozzle_target,220,passive_state
+2026-08-19T22:20:11,cfs_flush_fallback,"failed to read flush speed; flush temperature 220",printer_log
 2026-08-19T22:22:03,nozzle_target,190,passive_state
 2026-08-19T22:22:53,pressure_advance_set,0.03,print_file_or_called_macro
 2026-08-19T22:26:19,nozzle_target,195,passive_state

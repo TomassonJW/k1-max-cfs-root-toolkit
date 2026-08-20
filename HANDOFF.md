@@ -16,6 +16,8 @@ This session closed the pressure-advance observability gap: startup applied `0.0
 
 The automatic equivalent-PLA refill did overwrite temperature. Runout paused the print, selected another PLA slot and resumed in about 2 minutes 54 seconds. The resumed target returned to `220 °C` and stayed there until Thomas manually restored `190 °C`. Visible Z origin remained `+0.27 mm` throughout, with no live correction reported.
 
+The same defect occurs during startup. The job supplies `190 °C` for the first layer and later uses `195 °C`, but the first CFS tool operation reports that it cannot read the purge speed and falls back to a `220 °C` purge. The file only regains control after the CFS load and purge. Thomas judged the final part broadly correct; granular ironing remains a separate OrcaSlicer-tuning hypothesis.
+
 Codex has permanent authority to complete all normal Git and GitHub operations for this repository, including push, pull-request management, fusion into `main` and cleanup, without requesting another `GO`. This authority does not replace the printer mutation gates.
 
 ## Confirmed acquisition outcomes
@@ -37,7 +39,7 @@ Codex has permanent authority to complete all normal Git and GitHub operations f
 
 Do not repeat A1/B/A2 or the completed long production print. Open a separate passive session around the next genuinely different or multi-object production job. This is intended to test the reported post-job Z instability without consuming plastic solely for diagnosis.
 
-Separately prepare, without deploying, a minimal CFS temperature-restoration overlay. It should remember the print temperature before an automatic pause, distinguish an equivalent-material refill from a real material change and restore the remembered target before resuming. Its patch, validation and rollback must remain independent of pressure, Z, mesh and nozzle-cleaning changes.
+Separately prepare, without deploying, a minimal CFS temperature-ownership overlay for both startup purge and automatic refill. It should use explicit first-layer and normal-print temperatures, remember the temperature before an automatic pause, distinguish an equivalent-material refill from a real material change and restore the correct target before resuming. Its patch, validation and rollback must remain independent of pressure, ironing, Z, mesh and nozzle-cleaning changes.
 
 Keep every later printer behaviour change behind its own named G4. Do not treat the completed SSH convenience change as permission to modify Z, mesh, cleaning, CFS or services.
 

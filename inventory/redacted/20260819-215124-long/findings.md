@@ -22,6 +22,17 @@ La trace brute, le nom du fichier imprimé, les données réseau et les identifi
 - Retour complet au repos à `01:43:38`.
 - Aucune variation de la correction Z visible : `+0,27 mm` pendant toute la capture.
 - Aucun réglage Z en direct n'a été signalé par Thomas.
+- Thomas juge la pièce globalement correcte. Les zones traitées par ironing sont grumeleuses ; la piste principale est actuellement le réglage OrcaSlicer, sans attribution définitive.
+
+## Démarrage : la première purge ignore déjà les températures du fichier
+
+Le problème de température ne commence pas au remplacement de la bobine. Le démarrage reçoit explicitement une température de première couche de `190 °C`. Lors du premier appel d'outil CFS, le journal indique qu'il ne parvient pas à récupérer la vitesse de purge dans le fichier et annonce ensuite `flush_temp: 220`.
+
+Le CFS charge et purge alors réellement le filament à `220 °C`. Cette phase dure environ 1 minute 50 secondes. Le fichier reprend ensuite la main : cible `190 °C` à `22:22:03` pour la première couche, puis passage normal à `195 °C` à `22:26:19` pour les couches suivantes.
+
+La séquence observée est donc : préparation partielle à basse température, montée CFS à `220 °C`, purge à `220 °C`, refroidissement vers la température de première couche, puis nouvelle montée vers la température normale d'impression. Elle ajoute une attente inutile et purge le filament à une température différente de celle demandée par le trancheur.
+
+Ce comportement correspond à la valeur fixe `Tn_extrude_temp: 220` déjà trouvée dans la configuration active. Le cœur CFS étant compilé, la trace ne permet pas de prouver si l'échec de lecture de la vitesse déclenche directement cette température. Elle prouve en revanche que la chaîne CFS utilise `220 °C` au lieu de la température fournie par le travail.
 
 ## Pression du filament : propriétaire désormais identifiable
 
@@ -45,7 +56,7 @@ La cible de buse suit cette séquence :
 
 La cible reste ensuite à `220 °C` jusqu'à ce que Thomas la remette manuellement à `190 °C` à `23:04:00`. La machine atteint environ `190 °C` trente secondes plus tard.
 
-Le défaut est donc établi : même quand le système classe les deux bobines comme le même matériau PLA, la reprise ne restaure pas durablement la température d'impression précédente. Elle applique la valeur CFS stock de `220 °C`. La couleur et le type de matériau servent à choisir la bobine de remplacement, mais la température personnalisée du filament n'est pas respectée dans cette chaîne.
+Le défaut est donc établi à deux endroits : chargement et purge de démarrage, puis remplacement automatique en cours d'impression. Même quand le système classe les deux bobines comme le même matériau PLA, la reprise ne restaure pas durablement la température d'impression précédente. Elle applique la valeur CFS stock de `220 °C`. La couleur et le type de matériau servent à choisir la bobine de remplacement, mais la température personnalisée du filament n'est pas respectée dans cette chaîne.
 
 ## Fin d'impression et nettoyage
 
@@ -58,12 +69,12 @@ Cette capture confirme qu'une action thermique tardive existe déjà. Elle ne pr
 Cette session apporte une preuve qualifiée pour deux sujets :
 
 - la valeur finale de pression et sa stabilité pendant un changement CFS ;
-- l'écrasement de la température d'impression par la reprise CFS.
+- l'écrasement des températures demandées pendant la première purge et pendant la reprise CFS.
 
 Elle ne suffit pas à expliquer les grands écarts Z historiques : aucune correction Z et aucune variation de l'origine Z visible ne se sont produites pendant ce travail. Le prochain travail réellement différent ou composé de plusieurs objets doit être observé dans une session séparée, sans impression sacrificielle.
 
-Gate G3 reste ouverte pour la question Z globale. En revanche, un correctif indépendant de propriété de température après CFS peut désormais être préparé avec une règle mesurable : après un remplacement automatique, restaurer la température active avant la pause, sauf changement explicite de matériau.
+Gate G3 reste ouverte pour la question Z globale. En revanche, un correctif indépendant de propriété de température CFS peut désormais être préparé avec des règles mesurables : utiliser la température de première couche pour le chargement et la purge initiale, puis restaurer la température active avant pause après un remplacement automatique équivalent. Un changement explicite de matériau doit utiliser la température du nouveau matériau.
 
 ## Prochaine action sûre
 
-Préparer une seconde capture passive autour du prochain fichier réellement différent ou multi-objet. En parallèle, documenter sans déployer un premier correctif CFS minimal et réversible : mémoriser la température avant pause, distinguer remplacement équivalent et changement réel de matériau, puis restaurer la température correcte avant reprise.
+Préparer une seconde capture passive autour du prochain fichier réellement différent ou multi-objet. En parallèle, documenter sans déployer un correctif CFS minimal et réversible couvrant toute la chaîne : température de première purge, température normale d'impression, température avant pause et température du nouveau matériau en cas de vrai changement.

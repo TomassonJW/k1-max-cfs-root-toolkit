@@ -16,9 +16,11 @@ The repository baseline, stock acquisition and targeted source follow-up are com
 - Passive session `20260819-215124-long` completed automatically after a normal long production print returned to standby. Codex performed no printer-side mutation.
 - The stock startup applied pressure advance `0.044`; the print file then restored `0.03` at the first layer. The active value remained `0.03` through the automatic CFS refill and to the end.
 - The CFS detected runout, selected another slot it classified as equivalent PLA and resumed automatically in about 2 minutes 54 seconds.
+- At startup, the CFS reported that it could not read the purge-speed data and then used its fixed `220 °C` purge temperature despite first-layer and normal print targets of `190 °C` and `195 °C`; the compiled implementation prevents proving the exact causal link between those two events.
 - During that equivalent-material refill, the temperature sequence was `195 -> 140 -> 220 -> 195 -> 220 °C`. The resumed print stayed at `220 °C` until Thomas manually restored `190 °C` at `23:04`.
 - Visible Z homing origin remained `+0.27 mm` for the whole session; no live Z correction was reported.
 - After completion and return to standby, the stock runtime briefly requested `150 °C` before returning the nozzle target to zero.
+- Thomas judged the finished part broadly correct, with rough/granular ironing areas provisionally attributed to OrcaSlicer settings rather than the observed CFS temperature ownership.
 
 - Target machine: older-generation Creality K1 Max.
 - Printer firmware: `2.3.5.34`, Buildroot 2020.02.1, Linux 4.4.94 on MIPS.
@@ -93,7 +95,7 @@ The repository baseline, stock acquisition and targeted source follow-up are com
 
 Prepare a separate passive session for the next genuinely different or multi-object production job. Record any live Z correction with its time and value. Do not repeat the completed long print solely for diagnosis.
 
-In parallel, prepare but do not deploy one narrow CFS temperature-restoration overlay: remember the pre-pause print temperature, distinguish equivalent-material refill from a real material change, and restore the remembered value before resuming. Keep pressure ownership and Z changes in separate future G4 packages.
+In parallel, prepare but do not deploy one narrow CFS temperature-ownership overlay covering the initial load/purge and automatic refill. It must consume explicit first-layer, normal-print and new-material temperatures, preserve the pre-pause value for equivalent refill, and remove the silent `220 °C` fallback. Keep pressure ownership, ironing and Z changes in separate future G4 packages.
 
 Use `k1max-root` for future bounded SSH work; a password prompt is now a failure condition, not a normal step. Keep the next printer-behaviour change separate and subject it to its own named G4.
 
