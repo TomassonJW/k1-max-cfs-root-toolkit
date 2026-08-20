@@ -134,6 +134,13 @@ Candidate `G4-CFS-TEMP-PLA`: **rejected and never deployed**. It must not be
 reopened. A future G4 requires a new name and a dynamic, material-independent
 design backed by the full transition matrix.
 
+Candidate `G4-ZSAFE-START-V1`: **prepared offline on 2026-08-20; not passed and
+not deployed**. The original overlay, Orca start/end snippets, sequence contract,
+offline tests, backup, validation and rollback procedure exist. Offline tests do
+not prove that the old Klipper runtime will load and execute the overlay on the
+machine. Passing this G4 still requires Thomas's explicit approval for this exact
+name, followed first by the documented high-clearance no-extrusion validation.
+
 Required for each named change:
 
 - exact files and commands identified;

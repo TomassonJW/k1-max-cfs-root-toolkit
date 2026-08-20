@@ -175,3 +175,21 @@ actif jusqu'à la validation complète de son remplacement.
 Les températures CFS dynamiques, le nettoyage, la pression d'avance, l'ironing
 et l'interface sont des paquets séparés. BTT Eddy reste conditionnel à une
 instabilité physique encore mesurée après suppression des conflits de séquence.
+
+## D-018 — Point d'entrée `START_PRINT` conservé, corps surchargé par include
+
+Date: 2026-08-20
+
+Status: accepté pour préparation hors imprimante ; aucun déploiement autorisé
+
+Le premier paquet Z conserve le nom public `START_PRINT`. Un fichier original,
+chargé après `gcode_macro.cfg`, remplace seulement son corps grâce au comportement
+`RawConfigParser(strict=False)` observé dans la version capturée de Klipper.
+Le fichier stock reste intact et le post-traitement Orca actuel continue donc à
+reconnaître `START_PRINT` et à réappliquer sa correction absolue `+0,27 mm`.
+
+Le paquet exige un nettoyage manuel confirmé, charge explicitement le mesh
+`default`, applique et vérifie `+0,27 mm`, puis ouvre une garde avant tout appel
+CFS ou purge. La correction finale est capturée avant la fin stock, mais reste
+un candidat non réappliqué automatiquement. ADR-003 porte la comparaison des
+options et les conséquences.

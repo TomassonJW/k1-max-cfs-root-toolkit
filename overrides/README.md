@@ -6,9 +6,8 @@ présence dans Git ne signifie pas qu'ils sont installés sur l'imprimante.
 Le candidat statique Geeetech PLA `190/195` a été rejeté avant déploiement et
 retiré. Aucun correctif CFS de température n'est actuellement déployable.
 
-This directory will contain original, reviewable configuration overlays and wrapper macros after diagnosis.
-
-It is intentionally empty during P0/P1.
+`g4-zsafe-start/` contient le premier candidat de comportement : un overlay de
+sécurité Z préparé hors imprimante. Il n'est pas autorisé ni déployé.
 
 Rules:
 

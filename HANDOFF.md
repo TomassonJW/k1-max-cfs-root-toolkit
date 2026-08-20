@@ -1,10 +1,31 @@
 # HANDOFF
 
 Date: 2026-08-20
-Phase: P3 / Gate G3 passed, controlled offline design
-Next operator: Codex designs and simulates one reversible Z-safety package; no printer deployment is authorised
+Phase: P3 / `G4-ZSAFE-START-V1` prepared offline, human G4 pending
+Next operator: Thomas reviews the named gate; Codex deploys only after an explicit GO for this exact package
 
 ## Current state
+
+The first Z-safety package is prepared under `overrides/g4-zsafe-start/`. It has
+not been copied to, parsed by or executed on the printer. Its offline tests pass;
+final repository validation is recorded at mission close.
+
+The package keeps the public name `START_PRINT`, so the existing Orca
+post-processor still inserts its absolute `+0.27 mm` after the macro. The new
+macro applies and verifies the same value before any CFS action or purge. Orca's
+old preliminary `G28` and `T0` are removed by the prepared start snippet.
+
+Automatic startup cleaning is deliberately not included: Thomas cleans the
+nozzle and sends `ZSAFE_CONFIRM_NOZZLE_CLEAN`, valid for one start. The package
+then performs stock rough/final reference, loads the existing `default` mesh
+without recalculation or save, applies the reviewed correction and opens a
+runtime guard. `BOX_START_PRINT`, initial `Tn`, CFS flush and line purge occur
+only after that guard.
+
+`ZSAFE_END_PRINT` captures the final visible correction into a separate
+candidate variable before calling the unchanged stock end. It does not accept
+or reapply that candidate automatically; this preserves evidence without
+turning an accidental click into a permanent calibration.
 
 A complete-system audit now proposes a strengthened stock route: preserve
 firmware `2.3.5.34`, Creality interfaces and CFS, analyse first, then introduce
@@ -103,17 +124,15 @@ Codex has permanent authority to complete all normal Git and GitHub operations f
 - persistent storage and large Klipper log footprint documented;
 - no remote write performed.
 
-## Next bounded Codex mission
+## Next bounded mission
 
-Design offline one named Z-safety package for the strengthened stock route. It
-must order cleaning, Z reference, mesh policy, final correction and purge so
-that no purge or low movement happens while the correction is absent. It must
-also prevent the end sequence from silently destroying a validated correction.
+Human gate only: review `docs/09-g4-zsafe-start-package.md`, then either refuse
+the candidate or issue an explicit GO naming `G4-ZSAFE-START-V1`.
 
-Prepare exact source and destination paths, backup and hashes, reviewed diff,
-rollback, offline simulation and a high-clearance no-extrusion validation. Do
-not deploy it and do not remove the Orca post-processor until its own G4 is
-explicitly passed for that exact package.
+After that GO only, Codex rechecks live hashes and drift, takes private backups,
+installs the single overlay plus include and two Orca fields, restarts Klipper
+once, and runs `VALIDATE_ONLY=1` at high clearance without CFS or extrusion. Any
+KO rolls back or stops before a first-layer test.
 
 Keep temperature ownership separate. Continue its offline call-path analysis
 against `docs/07-dynamic-cfs-temperature-requirements.md`; use no material- or

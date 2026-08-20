@@ -43,7 +43,7 @@ Exit: Gate G3.
 
 ## P3 — Controlled experiments
 
-Status: **in progress — first Z-safety package to be designed offline**
+Status: **in progress — `G4-ZSAFE-START-V1` prepared offline, human G4 pending**
 
 - establish Z repeatability at defined thermal states;
 - characterise meshes by plate and bed temperature;
@@ -53,6 +53,9 @@ Status: **in progress — first Z-safety package to be designed offline**
 - simulate useful startup, refill, tool-change, pause, cancel and end scenarios
   before requesting another physical run;
 - prepare a no-extrusion, high-clearance validation for the first safety change.
+
+The first package now exists under `overrides/g4-zsafe-start/`. Its offline
+simulation is green. No printer-side validation or deployment has occurred.
 
 Exit: Gate G4 for one named change.
 

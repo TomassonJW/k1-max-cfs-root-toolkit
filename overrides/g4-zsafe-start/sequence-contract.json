@@ -1,0 +1,23 @@
+{
+  "change_id": "G4-ZSAFE-START-V1",
+  "supported_target": {
+    "printer": "Creality K1 Max S12 structure 0",
+    "firmware": "2.3.5.34",
+    "initial_tools": [0, 1, 2, 3, 4, 5, 6, 7],
+    "mesh_profile": "default",
+    "authorized_z_correction_mm": 0.27
+  },
+  "stages": [
+    {"id": "manual_clean_confirmation", "command": "ZSAFE_CONFIRM_NOZZLE_CLEAN", "sets": ["clean"]},
+    {"id": "rough_reference", "command": "CX_ROUGH_G28", "requires": ["clean"], "sets": ["rough_reference"]},
+    {"id": "final_reference", "command": "ZSAFE_FINAL_REFERENCE", "requires": ["rough_reference"], "sets": ["final_reference"]},
+    {"id": "mesh_policy", "command": "ZSAFE_LOAD_MESH PROFILE=default", "requires": ["final_reference"], "sets": ["mesh"]},
+    {"id": "effective_correction", "command": "ZSAFE_APPLY_CORRECTION Z=0.27", "requires": ["final_reference", "mesh"], "sets": ["correction"]},
+    {"id": "arm_low_moves", "command": "ZSAFE_ARM_LOW_MOVES", "requires": ["final_reference", "mesh", "correction"], "sets": ["armed"]},
+    {"id": "cfs_initial_tool_and_flush", "command": "ZSAFE_SAFE_CFS_AND_PURGE", "requires": ["armed"], "hazard": "extrusion_or_low_move"},
+    {"id": "stock_line_purge", "command": "ZSAFE_DRAW_LINE", "requires": ["armed"], "hazard": "extrusion_or_low_move"},
+    {"id": "print", "command": "first model move", "requires": ["armed"], "hazard": "extrusion_or_low_move"},
+    {"id": "capture_final_correction", "command": "ZSAFE_CAPTURE_CORRECTION_CANDIDATE", "sets": ["candidate_saved"]},
+    {"id": "stock_end", "command": "END_PRINT", "requires": ["candidate_saved"]}
+  ]
+}
