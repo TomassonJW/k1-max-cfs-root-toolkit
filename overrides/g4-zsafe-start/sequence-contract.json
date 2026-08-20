@@ -1,5 +1,15 @@
 {
   "change_id": "G4-ZSAFE-START-V1",
+  "status": "rejected_never_deploy",
+  "rejected_on": "2026-08-20",
+  "deployment_authorized": false,
+  "rejection_reasons": [
+    "fixed_z_correction",
+    "single_default_mesh",
+    "no_persistent_accepted_calibration",
+    "no_temperature_or_cfs_ownership",
+    "no_complete_control_interface"
+  ],
   "supported_target": {
     "printer": "Creality K1 Max S12 structure 0",
     "firmware": "2.3.5.34",

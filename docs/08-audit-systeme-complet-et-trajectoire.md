@@ -4,6 +4,12 @@ Date : 2026-08-20
 
 Statut : **recommandation d'architecture ; aucune installation ni modification de l'imprimante**
 
+> Mise à jour du 2026-08-20 : le paquet Z fixe préparé après cet audit a été
+> rejeté avant déploiement. La cible détaillée et active est désormais le
+> système cohérent décrit dans `10-systeme-pilotage-perenne.md` et ADR-004. Le
+> découpage en poses sert au rollback ; il ne découpe pas le produit quotidien
+> en réglages indépendants.
+
 ## Décision recommandée
 
 La prochaine installation ne doit être ni un lot générique du Helper Script, ni

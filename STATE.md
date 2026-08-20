@@ -4,20 +4,23 @@ Last updated: 2026-08-20
 
 ## Current phase
 
-**P3 — first offline Z-safety package prepared after Gate G3**
+**P3 — architecture corrigée et prototype complet hors imprimante lancé**
 
 The repository baseline, stock acquisition, complete Orca/G-code intake and
 passive P1–P5/PETG trace are complete. Gate G3 is passed for offline design and
-simulation only. The selected route remains a strengthened stock Level A; no
-printer-behaviour deployment is authorised. The separate `G4-SSH-KEY` change is
-the only deployed printer-side change.
+simulation only. No printer-behaviour deployment is authorised. The separate
+`G4-SSH-KEY` access change remains the only deployed printer-side change.
 
-`G4-ZSAFE-START-V1` is now prepared under `overrides/g4-zsafe-start/`. Its
-overlay keeps the public `START_PRINT` name, removes Orca's preliminary `G28/T0`,
-loads the stock `default` mesh explicitly, applies `+0.27 mm` before CFS/purge,
-guards every low production path and captures the final correction candidate
-before the unchanged stock end. Offline tests are green; the package has not
-been loaded, parsed or executed on the printer.
+Thomas rejected `G4-ZSAFE-START-V1` before deployment. Its fixed `+0.27 mm`,
+single `default` mesh and manual clean flow are not a production solution. The
+remaining files are historical, marked `rejected_never_deploy`, and fail closed
+if loaded accidentally.
+
+The active target is `K1-CONTROL-V1`: one coherent, parameterised product with
+a simple daily interface, a Mainsail expert view candidate, persistent accepted
+Z calibration, meshes by plate/temperature, safe configurable start/clean/purge,
+dynamic two-CFS temperature ownership and one versioned Orca contract. It is
+being prototyped entirely offline. No G4 behaviour candidate is active.
 
 ## Confirmed facts
 
@@ -43,7 +46,18 @@ been loaded, parsed or executed on the printer.
   becomes active roughly three minutes later.
 
 - The accepted design route is a strengthened stock stack before BTT Eddy or a
-  full firmware replacement. This authorises offline design, not deployment.
+  full firmware replacement. It now means one coherent control product, not a
+  fixed Z patch followed by unrelated settings. This authorises offline design,
+  not deployment.
+- The accepted Z rule is explicit: live changes belong to a calibration session;
+  only `Enregistrer` creates the persistent record. It survives print end and
+  reboot, but a new reference calibration invalidates it.
+- Mainsail and Moonraker are candidates, not approved installers. The exact
+  versions, security, memory, ports and coexistence with the screen and two CFS
+  still need proof.
+- A bounded read-only capacity snapshot found about 209 MiB total RAM, 118 MiB
+  available, Python 3.8.2, 4.2 GiB free on `/usr/data`, no Moonraker process and
+  no listener on its usual port. No remote mutation occurred.
 - A private, Git-ignored intake exists under
   `inventory/raw/user-inputs/20260820-full-system-audit/` for Orca exports,
   existing projects, G-codes, custom scripts, photos and recovery artefacts.
@@ -118,15 +132,23 @@ been loaded, parsed or executed on the printer.
 
 ## Completed
 
-- `G4-ZSAFE-START-V1` architecture recorded in ADR-003.
-- Original `zsafe_g4.cfg`, Orca start/end snippets and a declarative sequence
-  contract prepared without copying or changing a vendor file.
-- Offline simulation proves that declared purge and print hazards cannot run
-  before final reference, explicit `default` mesh, effective `+0.27 mm` and the
-  armed gate.
-- High-clearance `VALIDATE_ONLY=1` path, exact backup/install boundaries, OK/KO
-  criteria and full rollback documented in
-  `docs/09-g4-zsafe-start-package.md`.
+- `G4-ZSAFE-START-V1`, ADR-003 and their former gate are explicitly rejected;
+  the historical macro now fails closed if loaded by mistake.
+- The durable product need and target behaviour are recorded in
+  `docs/10-systeme-pilotage-perenne.md` and ADR-004.
+- Mainsail, Moonraker, Creality K1 Series Annex, Creality Helper Script, its CFS
+  fork, KAMP and the available calibration approaches were compared against the
+  exact captured stack in `docs/11-compatibilite-interfaces-et-calibration.md`.
+- A machine-readable `K1-CONTROL-V1` contract now forbids a universal fixed Z,
+  requires explicit persistence/invalidation, keys meshes by plate/temperature,
+  fixes dynamic temperature ownership and guards every production hazard.
+- Offline contract tests were added before any printer-side implementation.
+- A dependency-free `K1 Control` web prototype and pure Python Z/mesh/temperature
+  state engine now run only on synthetic data under `prototype/`.
+- Desktop and narrow-screen browser checks passed. Live adjustment, explicit
+  commit, simulated restart persistence and reference-calibration invalidation
+  behaved as intended with no JavaScript error.
+- The complete current offline suite passes 37 tests.
 
 - Complete-system audit, A/B/C comparison, safety invariant, input contract and
   time-bounded roadmap documented in
@@ -178,29 +200,26 @@ been loaded, parsed or executed on the printer.
 
 ## Next safe action
 
-Review the exact package `G4-ZSAFE-START-V1`. The next printer-side action is a
-human gate: Thomas either refuses it or gives an explicit GO naming this package.
-After GO, Codex must re-read and hash the live files before any write, stop on
-drift, deploy only the reviewed include/overlay and Orca fields, then run the
-high-clearance `VALIDATE_ONLY=1` path before any extrusion.
+Continue the offline `K1-CONTROL-V1` prototype as one product:
 
-Do not remove the Orca post-processor yet. Its retirement is an acceptance
-criterion of the future package, after the replacement protects both startup
-and print moves.
+1. use the completed baseline capacity/port snapshot to pin a minimal
+   Moonraker/Mainsail candidate and model its resource budget;
+2. connect the existing state engine and screen to a simulated Moonraker
+   adapter;
+3. generate the versioned Orca start/end/tool-change contract and fixtures;
+4. run the complete two-CFS transition and rollback matrix;
+5. only then prepare a newly named G4 candidate.
 
-Keep dynamic CFS temperature ownership in a separate later package. Determine
-offline whether every stock write can be intercepted; otherwise define the
-smallest maintainable replacement for the compiled owner. Never hard-code a
-material or temperature.
+Do not remove or disable the current Orca `+0.27 mm` post-processor. Its
+retirement must be atomic with the proven replacement on both Orca and printer.
 
-No additional diagnostic print is requested now. The next physical action is
-the explicitly authorised high-clearance validation of `G4-ZSAFE-START-V1`.
-Use `k1max-root`; a password prompt remains a failure condition.
+No diagnostic print or physical action is requested. There is currently no
+printer-side gate to review and no behaviour package to deploy.
 
 ## Not authorised yet
 
 - Helper Script installation.
-- Mainsail, Fluidd or Moonraker changes.
+- Mainsail, Fluidd, Moonraker or `K1 Control` installation/change.
 - BTT Eddy preparation, installation, firmware or calibration.
 - Firmware downgrade or replacement.
 - Any SSH write other than the completed `G4-SSH-KEY` deployment.
@@ -208,8 +227,10 @@ Use `k1max-root`; a password prompt remains a failure condition.
 - Macro or configuration modification.
 - Z, mesh, temperature or CFS tuning.
 - Any static material-specific CFS temperature candidate.
-- `G4-ZSAFE-START-V1` deployment, restart, homing, high-clearance validation or
-  Orca profile change until the exact named GO is received.
+- Any import or change of Orca fields on the workstation profile.
+- `G4-ZSAFE-START-V1` forever: this rejected name cannot receive a GO.
+- Any future `K1-CONTROL-V1` deployment until a new exact G4 package exists and
+  receives its own explicit approval.
 
 ## Current blockers
 
@@ -225,16 +246,24 @@ Use `k1max-root`; a password prompt remains a failure condition.
   because both the second filament and the stock CFS request `220 °C`.
 - The large historical Z shifts have not been reproduced, although the late
   application and end-of-print erasure mechanisms are now directly proven.
-- The overlay has not been parsed by the exact printer runtime. The duplicate
-  section merge is proven from captured source and simulated locally, but the
-  first real config load remains a G4 validation.
-- The first package deliberately supports only the reviewed `+0.27 mm` and the
-  existing `default` mesh. PETG `+0.38 mm`, accepted persistence and mesh
-  adaptation remain later decisions.
+- Long-run memory headroom and per-service use still need proof; the one-shot
+  read-only capture confirms only the baseline.
+- The exact Creality Klipper commit is unknown; the captured `bed_mesh.py` must
+  remain the implementation authority for the mesh adapter.
+- Persistence of named mesh data outside the manufacturer file must be proven
+  against the captured parser and restart behaviour.
+- Every reference-changing Creality calibration path must be detected or
+  wrapped so that an old accepted Z cannot survive a real recalibration.
+- The compiled `BOX_*` owner may contain a late temperature write that no macro
+  can intercept. The complete matrix decides whether a small replacement owner
+  is required.
+- The exact pinned Moonraker/Mainsail versions and secure network policy are not
+  yet accepted for deployment.
 
 ## Exit condition for this phase
 
-Offline exit conditions are met for `G4-ZSAFE-START-V1`: exact files, backup
-boundary, reference checksums, reviewed diff, simulation, high-clearance
-no-extrusion validation and rollback exist. The phase remains open at the human
-G4 because no printer-side result has been observed.
+P3 exits only when `K1-CONTROL-V1` possède un prototype local utilisable, un
+moteur d'état testé, un contrat Orca complet, une sélection de versions prouvée,
+la matrice Z/mesh/température/deux-CFS verte et les poses/rollbacks entièrement
+préparés. Un nouveau paquet G4 pourra alors être nommé ; sa préparation ne
+vaudra toujours pas autorisation de toucher à l'imprimante.

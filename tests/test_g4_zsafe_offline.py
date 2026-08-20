@@ -80,11 +80,21 @@ class ZSafeOfflineTests(unittest.TestCase):
         self.assertNotRegex(prefix, r"(?m)^\s*T\d+")
 
     def test_orca_start_has_no_preliminary_homing_or_tool_command(self) -> None:
-        lines = [line.strip() for line in (PACKAGE / "orca-machine-start.gcode").read_text(encoding="utf-8").splitlines() if line.strip()]
+        lines = [
+            line.strip()
+            for line in (PACKAGE / "orca-machine-start.gcode").read_text(encoding="utf-8").splitlines()
+            if line.strip() and not line.lstrip().startswith(";")
+        ]
         self.assertTrue(lines[0].startswith("START_PRINT "))
         self.assertFalse(any(re.fullmatch(r"G28(?:\s.*)?", line) for line in lines))
         self.assertFalse(any(re.fullmatch(r"T\d+", line) for line in lines))
         self.assertIn("Z_CORRECTION=0.27", lines[0])
+
+    def test_rejected_package_fails_closed_if_loaded_by_mistake(self) -> None:
+        body = macro_body(self.text, "START_PRINT")
+        self.assertIn("was rejected and must never be deployed", body)
+        self.assertEqual(self.contract["status"], "rejected_never_deploy")
+        self.assertFalse(self.contract["deployment_authorized"])
 
     def test_end_captures_candidate_before_stock_end(self) -> None:
         body = macro_body(self.text, "ZSAFE_END_PRINT")

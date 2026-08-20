@@ -1,0 +1,148 @@
+<!doctype html>
+<html lang="fr">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="color-scheme" content="dark">
+    <title>K1 Control — prototype hors imprimante</title>
+    <link rel="icon" href="data:,">
+    <link rel="stylesheet" href="styles.css">
+  </head>
+  <body data-mode="simulation">
+    <header class="topbar">
+      <div>
+        <p class="eyebrow">K1 Max · deux CFS</p>
+        <h1>K1 Control</h1>
+      </div>
+      <div class="topbar-actions">
+        <span class="simulation-badge">Simulation locale</span>
+        <button class="ghost-button" id="expert-button" type="button">Vue experte · bientôt</button>
+      </div>
+    </header>
+
+    <main class="layout" aria-live="polite">
+      <section class="hero-card" id="readiness-card">
+        <div>
+          <p class="eyebrow">État avant départ</p>
+          <div class="status-line">
+            <span class="status-dot" aria-hidden="true"></span>
+            <h2 id="readiness-title">Chargement…</h2>
+          </div>
+          <p id="readiness-detail">Lecture du faux état local.</p>
+        </div>
+        <div class="hero-actions">
+          <button class="primary-button" id="begin-calibration" type="button">Calibrer le Z</button>
+          <button class="secondary-button" id="simulate-reference" type="button">Simuler une nouvelle calibration système</button>
+        </div>
+      </section>
+
+      <section class="dashboard-grid">
+        <article class="panel calibration-panel">
+          <div class="panel-heading">
+            <div>
+              <p class="eyebrow">Calibration persistante</p>
+              <h2>Z fin</h2>
+            </div>
+            <span class="pill" id="calibration-status">—</span>
+          </div>
+
+          <div class="offset-display">
+            <span id="offset-value">—</span>
+            <small>mm</small>
+          </div>
+          <p class="muted" id="calibration-context">—</p>
+
+          <label class="seed-field" for="seed-offset">
+            Valeur provisoire de départ
+            <span>
+              <input id="seed-offset" type="number" step="0.005" inputmode="decimal">
+              mm
+            </span>
+          </label>
+
+          <div class="nudge-grid" aria-label="Réglage Z pendant la calibration">
+            <button type="button" data-adjust="-0.01">−0,010</button>
+            <button type="button" data-adjust="-0.005">−0,005</button>
+            <button type="button" data-adjust="0.005">+0,005</button>
+            <button type="button" data-adjust="0.01">+0,010</button>
+          </div>
+
+          <div class="button-row">
+            <button class="primary-button" id="save-calibration" type="button">Enregistrer</button>
+            <button class="secondary-button" id="cancel-calibration" type="button">Annuler</button>
+            <button class="ghost-button" id="restore-calibration" type="button">Restaurer avant</button>
+          </div>
+
+          <div class="simulation-tools">
+            <button class="text-button" id="simulate-restart" type="button">Simuler un redémarrage</button>
+            <button class="text-button" id="simulate-print-end" type="button">Simuler une fin d'impression</button>
+          </div>
+        </article>
+
+        <article class="panel">
+          <div class="panel-heading">
+            <div>
+              <p class="eyebrow">Plaque et température</p>
+              <h2>Mesh</h2>
+            </div>
+            <span class="pill success" id="mesh-mode">—</span>
+          </div>
+          <dl class="facts">
+            <div><dt>Plaque</dt><dd id="plate-label">—</dd></div>
+            <div><dt>Plateau</dt><dd id="bed-target">—</dd></div>
+            <div><dt>Profil de référence</dt><dd id="mesh-profile">—</dd></div>
+            <div><dt>Après le travail</dt><dd id="mesh-persistence">—</dd></div>
+          </dl>
+          <p class="callout" id="mesh-quality">—</p>
+        </article>
+
+        <article class="panel">
+          <div class="panel-heading">
+            <div>
+              <p class="eyebrow">Propriétaire vérifié</p>
+              <h2>Températures et CFS</h2>
+            </div>
+            <span class="pill success" id="temperature-owner">—</span>
+          </div>
+          <div class="temperature-pair">
+            <div><span>Demandée</span><strong id="expected-nozzle">—</strong></div>
+            <div><span>Réelle</span><strong id="actual-nozzle">—</strong></div>
+          </div>
+          <dl class="facts compact">
+            <div><dt>Outil initial</dt><dd id="initial-tool">—</dd></div>
+            <div><dt>Emplacement</dt><dd id="active-cfs">—</dd></div>
+            <div><dt>Prochain outil</dt><dd id="next-target">—</dd></div>
+          </dl>
+        </article>
+
+        <article class="panel sequence-panel">
+          <div class="panel-heading">
+            <div>
+              <p class="eyebrow">Ordre impossible à contourner</p>
+              <h2>Démarrage sûr</h2>
+            </div>
+          </div>
+          <ol class="sequence" id="sequence-list"></ol>
+          <p class="callout warning">CFS, purge et impression restent verrouillés tant que référence, mesh et Z ne sont pas vérifiés.</p>
+        </article>
+      </section>
+
+      <section class="panel event-panel">
+        <div class="panel-heading">
+          <div>
+            <p class="eyebrow">Explications simples</p>
+            <h2>Ce qui vient de se passer</h2>
+          </div>
+          <span class="connection" id="connection-label">—</span>
+        </div>
+        <ul id="event-log"></ul>
+      </section>
+    </main>
+
+    <footer>
+      Prototype hors imprimante · aucune connexion réseau · aucune commande Klipper
+    </footer>
+
+    <script src="app.js"></script>
+  </body>
+</html>

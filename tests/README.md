@@ -17,12 +17,27 @@ Fixtures must be synthetic or fully redacted. Do not use raw printer backups as 
 
 ## Contrôles disponibles
 
-Le paquet `G4-ZSAFE-START-V1` possède une simulation et des contrôles statiques :
+Le contrat actif `K1-CONTROL-V1` possède des contrôles statiques :
+
+```powershell
+python -m unittest tests.test_production_control_contract -v
+```
+
+Ils vérifient l'absence de Z fixe, la sauvegarde explicite, la persistance et
+l'invalidation, les meshes plaque/température, les gardes avant CFS/purge, la
+propriété dynamique des températures et le contrat Orca atomique.
+
+Le moteur d'état et l'interface locale ont leurs contrôles dédiés :
+
+```powershell
+python -m unittest tests.test_k1_control_prototype -v
+```
+
+L'ancien paquet rejeté `G4-ZSAFE-START-V1` conserve ses tests historiques et un
+contrôle qui prouve qu'il échoue volontairement s'il est chargé :
 
 ```powershell
 python -m unittest tests.test_g4_zsafe_offline -v
 ```
 
-Ils vérifient notamment l'ordre référence finale -> mesh -> correction -> garde,
-l'absence des chemins stock dangereux dans le nouveau départ, les gardes avant
-CFS/purge, la capture de fin et le chemin de validation haute sans extrusion.
+Ces tests ne rendent pas ce paquet déployable.

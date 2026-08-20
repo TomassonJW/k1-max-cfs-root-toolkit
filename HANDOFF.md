@@ -1,37 +1,49 @@
 # HANDOFF
 
 Date: 2026-08-20
-Phase: P3 / `G4-ZSAFE-START-V1` prepared offline, human G4 pending
-Next operator: Thomas reviews the named gate; Codex deploys only after an explicit GO for this exact package
+Phase: P3 / architecture corrected, full offline control prototype started
+Next operator: Codex continues the offline prototype; no printer-side gate is pending
 
 ## Current state
 
-The first Z-safety package is prepared under `overrides/g4-zsafe-start/`. It has
-not been copied to, parsed by or executed on the printer. Its offline tests pass;
-final repository validation is recorded at mission close.
+Thomas rejected `G4-ZSAFE-START-V1` before deployment. Son `+0,27 mm` fixe, son
+mesh `default` unique et son nettoyage manuel ne constituent pas un système
+pérenne. Ce nom ne peut plus recevoir de GO. Les artefacts restants sont marqués
+`rejected_never_deploy` et le macro échoue volontairement s'il est chargé.
 
-The package keeps the public name `START_PRINT`, so the existing Orca
-post-processor still inserts its absolute `+0.27 mm` after the macro. The new
-macro applies and verifies the same value before any CFS action or purge. Orca's
-old preliminary `G28` and `T0` are removed by the prepared start snippet.
+La cible active est un produit cohérent `K1-CONTROL-V1` :
 
-Automatic startup cleaning is deliberately not included: Thomas cleans the
-nozzle and sends `ZSAFE_CONFIRM_NOZZLE_CLEAN`, valid for one start. The package
-then performs stock rough/final reference, loads the existing `default` mesh
-without recalculation or save, applies the reviewed correction and opens a
-runtime guard. `BOX_START_PRINT`, initial `Tn`, CFS flush and line purge occur
-only after that guard.
+- interface quotidienne simple `K1 Control` ;
+- Mainsail comme vue experte candidate, sur Moonraker épinglé et sécurisé ;
+- réglage Z pendant une session de calibration, puis sauvegarde explicite ;
+- Z accepté conservé après fin/redémarrage et invalidé par une nouvelle
+  calibration de référence ;
+- meshes par plaque et plage thermique, plus mesh adaptatif par travail ;
+- ordre thermique/nettoyage/référence/mesh/Z/CFS/purge verrouillé ;
+- températures dynamiques respectées sur les deux CFS ;
+- profil Orca complet et versionné.
 
-`ZSAFE_END_PRINT` captures the final visible correction into a separate
-candidate variable before calling the unchanged stock end. It does not accept
-or reapply that candidate automatically; this preserves evidence without
-turning an accidental click into a permanent calibration.
+Le système est conçu et testé comme un tout, puis sera posé par étapes pour
+garder un rollback simple. Aucun installateur communautaire n'est accepté tel
+quel. Le post-traitement Orca actuel reste inchangé jusqu'à preuve complète de
+son remplacement.
 
-A complete-system audit now proposes a strengthened stock route: preserve
-firmware `2.3.5.34`, Creality interfaces and CFS, analyse first, then introduce
-original reversible overlays one change class at a time. BTT Eddy is a measured
-fallback, not a prerequisite. SimpleAF or an open MMU is a later research route,
-not a safe solution for next week's production need.
+Le contrat, l'architecture et la comparaison des outils sont dans les documents
+10, 11 et ADR-004. Aucun fichier n'a été écrit sur l'imprimante, aucun service
+n'a été redémarré et aucun profil Orca actif n'a été modifié.
+
+Une lecture distante bornée a relevé environ 209 Mio de RAM totale, 118 Mio
+disponibles, Python 3.8.2, 4,2 Gio libres et aucun port/processus Moonraker. La
+marge mémoire impose une pile minimale et un test de durée ; le rapport public
+anonymisé est dans `inventory/redacted/20260820-control-foundation-capacity/`.
+
+Un premier écran `K1 Control` sans dépendance et un moteur d'état Python pur sont
+présents sous `prototype/`. Ils n'utilisent que des données synthétiques. Les
+vues bureau/mobile et les actions calibration, sauvegarde, redémarrage et
+invalidation ont été vérifiées dans un navigateur local sans erreur JavaScript.
+La suite hors imprimante passe 37 tests.
+
+## Preuves historiques utiles
 
 The private intake is ready under
 `inventory/raw/user-inputs/20260820-full-system-audit/`. Its instructions request
@@ -126,21 +138,21 @@ Codex has permanent authority to complete all normal Git and GitHub operations f
 
 ## Next bounded mission
 
-Human gate only: review `docs/09-g4-zsafe-start-package.md`, then either refuse
-the candidate or issue an explicit GO naming `G4-ZSAFE-START-V1`.
+Continuer le prototype complet hors imprimante :
 
-After that GO only, Codex rechecks live hashes and drift, takes private backups,
-installs the single overlay plus include and two Orca fields, restarts Klipper
-once, and runs `VALIDATE_ONLY=1` at high clearance without CFS or extrusion. Any
-KO rolls back or stops before a first-layer test.
+1. utiliser le relevé de capacité maintenant acquis pour sélectionner les
+   versions minimales Moonraker/Mainsail ;
+2. épingler cette pile et reproduire son installation dans un paquet
+   local inspectable, sans exécuter l'installateur constructeur ;
+3. connecter le moteur et l'écran existants à un adaptateur Moonraker simulé ;
+4. produire le contrat Orca départ/fin/changement d'outil et ses fixtures ;
+5. passer la matrice de séquence et des deux CFS ;
+6. préparer seulement ensuite un nouveau G4 nommé, avec backup, checksums,
+   test haut sans extrusion, critères OK/KO et rollback.
 
-Keep temperature ownership separate. Continue its offline call-path analysis
-against `docs/07-dynamic-cfs-temperature-requirements.md`; use no material- or
-temperature-specific constant. Cleaning, pressure advance, ironing and UI work
-remain later independent packages.
-
-No new diagnostic print is required now. The next physical test is the bounded
-validation of the reviewed Z-safety package after explicit authorisation.
+La prochaine étape ne demande aucun test physique. Aucune installation
+Mainsail/Moonraker, aucun macro, aucun profil Orca et aucun paramètre CFS ne doit
+être modifié sur les systèmes actifs.
 
 ## Stop conditions
 

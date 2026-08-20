@@ -1,0 +1,262 @@
+{
+  "contract_id": "K1-CONTROL-V1",
+  "contract_version": 1,
+  "status": "offline_design",
+  "printer_mutation_authorized": false,
+  "target": {
+    "printer": "Creality K1 Max S12 structure 0",
+    "firmware": "2.3.5.34",
+    "cfs_count": 2,
+    "cfs_ui_version": "1.1.3",
+    "stock_screen_retained": true,
+    "stock_cfs_retained": true
+  },
+  "interfaces": {
+    "daily": "K1 Control",
+    "expert_candidate": "Mainsail",
+    "api_candidate": "pinned and hardened Moonraker",
+    "creality_interfaces_retained": true
+  },
+  "z_calibration": {
+    "production_source": "accepted_calibration_record",
+    "numeric_default_mm": null,
+    "live_adjustment_scope": "active_calibration_session_only",
+    "commit": {
+      "mode": "explicit_user_action",
+      "command": "K1_Z_COMMIT",
+      "stores": [
+        "offset_mm",
+        "plate_id",
+        "bed_temperature_band_c",
+        "nozzle_id",
+        "nozzle_diameter_mm",
+        "probe_reference_revision",
+        "relevant_config_hashes",
+        "accepted_at",
+        "previous_record"
+      ]
+    },
+    "survives": [
+      "print_end",
+      "printer_restart",
+      "power_cycle",
+      "creality_runtime_offset_reset"
+    ],
+    "invalidated_by": [
+      "probe_reference_calibration",
+      "system_calibration_affecting_z",
+      "probe_reference_revision_change",
+      "nozzle_identity_change",
+      "plate_without_compatible_record",
+      "relevant_config_hash_change",
+      "unverifiable_external_change"
+    ],
+    "forbidden": [
+      "universal_fixed_offset",
+      "implicit_commit_on_print_end",
+      "commit_every_set_gcode_offset",
+      "silent_fallback_to_stale_record"
+    ]
+  },
+  "mesh": {
+    "reference_profile_key": [
+      "plate_id",
+      "bed_temperature_band_c",
+      "probe_reference_revision"
+    ],
+    "reference_profile_commit": "explicit_user_action",
+    "adaptive": {
+      "bounds_source": "orca_object_bounds",
+      "runtime_parameters": ["MESH_MIN", "MESH_MAX", "PROBE_COUNT"],
+      "persist_after_job": false,
+      "reuse_for_other_job": false
+    },
+    "forbidden": [
+      "random_automatic_profile_overwrite",
+      "profile_without_plate_identity",
+      "profile_without_temperature_band"
+    ]
+  },
+  "temperature": {
+    "print_owner": "gcode_or_explicit_operator_change",
+    "initial_load": "initial_tool_gcode_target",
+    "equivalent_refill": "preserve_active_target",
+    "intentional_tool_change": "next_tool_gcode_target",
+    "verification": "compare_expected_and_actual_after_every_known_cfs_boundary",
+    "forbidden": [
+      "generic_material_database_override",
+      "fixed_material_temperature",
+      "silent_cfs_target_change"
+    ]
+  },
+  "orca_contract": {
+    "versioned": true,
+    "required_fields": [
+      "contract_version",
+      "mode",
+      "plate_id",
+      "bed_target_c",
+      "initial_tool",
+      "tool_temperature_targets_c",
+      "object_bounds",
+      "cleaning_profile",
+      "purge_profile"
+    ],
+    "changed_atomically": [
+      "machine_start_gcode",
+      "machine_end_gcode",
+      "tool_change_gcode",
+      "printer_side_contract"
+    ],
+    "legacy_z_postprocessor_removed_before_replacement_proven": false
+  },
+  "sequence": [
+    {
+      "id": "validate_job_contract",
+      "kind": "guard",
+      "sets": ["contract_valid"]
+    },
+    {
+      "id": "thermal_stabilization",
+      "kind": "thermal",
+      "requires": ["contract_valid"],
+      "sets": ["thermal_stable"]
+    },
+    {
+      "id": "rough_reference",
+      "kind": "controlled_probe_path",
+      "requires": ["thermal_stable"],
+      "sets": ["rough_reference"]
+    },
+    {
+      "id": "controlled_nozzle_clean",
+      "kind": "controlled_cleaning_path",
+      "requires": ["rough_reference", "thermal_stable"],
+      "sets": ["nozzle_clean"]
+    },
+    {
+      "id": "final_z_reference",
+      "kind": "controlled_probe_path",
+      "requires": ["nozzle_clean", "thermal_stable"],
+      "sets": ["final_reference"]
+    },
+    {
+      "id": "resolve_mesh_policy",
+      "kind": "mesh",
+      "requires": ["final_reference", "thermal_stable"],
+      "sets": ["mesh_ready"]
+    },
+    {
+      "id": "resolve_effective_z",
+      "kind": "z_state",
+      "requires": ["final_reference", "mesh_ready"],
+      "source": "accepted_record_or_explicit_calibration_session",
+      "sets": ["effective_z_ready"]
+    },
+    {
+      "id": "arm_production_low_moves",
+      "kind": "guard",
+      "requires": ["final_reference", "mesh_ready", "effective_z_ready"],
+      "sets": ["production_low_moves_armed"]
+    },
+    {
+      "id": "cfs_prepare_initial_tool",
+      "kind": "cfs",
+      "requires": ["production_low_moves_armed"],
+      "hazard": "extrusion_or_low_production_move"
+    },
+    {
+      "id": "parameterized_purge",
+      "kind": "purge",
+      "requires": ["production_low_moves_armed"],
+      "hazard": "extrusion_or_low_production_move"
+    },
+    {
+      "id": "print_model",
+      "kind": "print",
+      "requires": ["production_low_moves_armed"],
+      "hazard": "extrusion_or_low_production_move"
+    },
+    {
+      "id": "end_without_calibration_commit",
+      "kind": "end",
+      "requires": ["contract_valid"]
+    }
+  ],
+  "required_offline_scenarios": [
+    {
+      "id": "z_live_adjust_then_commit",
+      "expected": "accepted_record_created_only_after_explicit_commit"
+    },
+    {
+      "id": "z_cancel_calibration",
+      "expected": "previous_accepted_record_restored"
+    },
+    {
+      "id": "z_print_end_and_restart",
+      "expected": "accepted_record_preserved"
+    },
+    {
+      "id": "z_new_reference_calibration",
+      "expected": "accepted_record_invalidated_and_production_blocked"
+    },
+    {
+      "id": "mesh_reference_plate_temperature_match",
+      "expected": "matching_profile_loaded"
+    },
+    {
+      "id": "mesh_reference_mismatch",
+      "expected": "production_blocked_or_new_measurement_required"
+    },
+    {
+      "id": "mesh_adaptive_job",
+      "expected": "job_bounds_used_and_profile_not_persisted"
+    },
+    {
+      "id": "safe_start_sequence",
+      "expected": "no_production_hazard_before_arm"
+    },
+    {
+      "id": "cfs_initial_load",
+      "expected": "initial_tool_gcode_target_preserved"
+    },
+    {
+      "id": "cfs_equivalent_refill",
+      "expected": "active_target_preserved"
+    },
+    {
+      "id": "cfs_intentional_tool_change",
+      "expected": "next_tool_gcode_target_applied"
+    },
+    {
+      "id": "cfs_cross_unit_change",
+      "expected": "next_tool_gcode_target_applied_across_two_cfs"
+    },
+    {
+      "id": "pause_resume",
+      "expected": "active_target_and_accepted_z_preserved"
+    },
+    {
+      "id": "cancel_and_end",
+      "expected": "heaters_safe_and_accepted_calibration_unchanged"
+    },
+    {
+      "id": "explicit_operator_temperature_change",
+      "expected": "operator_target_preserved_until_next_explicit_gcode_target"
+    },
+    {
+      "id": "orca_contract_version_mismatch",
+      "expected": "job_rejected_before_machine_hazard"
+    },
+    {
+      "id": "deployment_slice_rollback",
+      "expected": "previous_known_state_restored_with_matching_hashes"
+    }
+  ],
+  "deployment": {
+    "active_g4_candidate": null,
+    "offline_prototype_required_before_g4": true,
+    "community_installer_allowed_as_is": false,
+    "rollback_required_per_slice": true
+  }
+}

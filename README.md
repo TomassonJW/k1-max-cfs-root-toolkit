@@ -2,7 +2,7 @@
 
 Unofficial, evidence-driven tooling and documentation for taking controlled ownership of a rooted Creality K1 Max equipped with the classic K1 CFS upgrade and multiple CFS units.
 
-> **Status:** P3 / Gate G3 passed for offline preparation. The first named Z-safety package is prepared and simulated locally; it is not authorised or deployed.
+> **Status:** P3 / Gate G3 passed for offline design. The fixed Z package was rejected and never deployed. A complete, parameterised control system is now being prototyped locally; no behaviour G4 is active.
 
 ## Target configuration
 
@@ -48,9 +48,13 @@ A predictable printer that can reboot and run repeated jobs with:
 3. Run a strictly read-only inventory and acquisition pass.
 4. Analyse configuration, services, macros, logs and real execution order.
 5. Test explicit hypotheses with reproducible protocols.
-6. Introduce the smallest possible override layer.
-7. Deploy only through backed-up, validated and reversible procedures.
-8. Replace larger parts of the stack only if evidence shows that targeted overrides cannot solve the problem.
+6. Design one coherent control product before installing isolated fixes.
+7. Prove its Z state, mesh, start sequence, CFS temperatures, Orca contract and
+   interfaces against an offline simulator.
+8. Install it in small reversible slices only after the complete product is
+   ready and each named mutation has its own explicit gate.
+9. Replace larger parts of the stack only if evidence shows that targeted
+   ownership layers cannot solve the problem.
 
 This is deliberately **not** an “install every helper script” project.
 
@@ -68,7 +72,10 @@ Until the repository gate explicitly changes:
 - no destructive shell command;
 - no publication of raw backups, credentials, network details, serial identifiers or proprietary firmware files.
 
-Read [`AGENTS.md`](AGENTS.md), [`GATES.md`](GATES.md) and the protocol applicable to the mission before any SSH session. The next human gate and its exact package are defined in [`docs/09-g4-zsafe-start-package.md`](docs/09-g4-zsafe-start-package.md).
+Read [`AGENTS.md`](AGENTS.md), [`GATES.md`](GATES.md) and the protocol applicable
+to the mission before any SSH session. The active product contract is defined in
+[`docs/10-systeme-pilotage-perenne.md`](docs/10-systeme-pilotage-perenne.md).
+There is currently no printer-side behaviour package to approve.
 
 ## Repository map
 
@@ -79,6 +86,8 @@ Read [`AGENTS.md`](AGENTS.md), [`GATES.md`](GATES.md) and the protocol applicabl
 - `DECISIONS.md` — durable project decisions and rationale;
 - `HANDOFF.md` — current operational handoff;
 - `docs/` — acquisition, redaction, diagnostics and recovery procedures;
+- `design/` — machine-readable offline product and safety contracts;
+- `prototype/` — dependency-free local UI and state model using synthetic data only;
 - `experiments/g3/` — public templates for private comparable trace sessions;
 - `prompts/` — bounded prompts for Codex missions;
 - `machine/` — publishable machine manifests and schemas;

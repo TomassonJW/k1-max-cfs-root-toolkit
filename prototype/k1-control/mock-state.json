@@ -1,0 +1,50 @@
+{
+  "simulation": true,
+  "connection": "Faux Klipper local",
+  "ready": true,
+  "blockReason": null,
+  "plate": {
+    "id": "PEI-TEXTUREE-A",
+    "label": "PEI texturée A",
+    "bedTargetC": 60,
+    "temperatureBandC": "55-65"
+  },
+  "calibration": {
+    "status": "accepted",
+    "offsetMm": 0.31,
+    "acceptedAt": "2026-08-20T18:30:00+02:00",
+    "probeReference": "demo-reference-7",
+    "nozzle": "Unicorn 0,4 mm",
+    "provisionalSeedMm": 0.31,
+    "session": null
+  },
+  "mesh": {
+    "mode": "adaptive",
+    "referenceProfile": "PEI-TEXTUREE-A__55-65__demo-reference-7",
+    "quality": "Référence acceptée · adaptation prévue autour des objets",
+    "persistAfterJob": false
+  },
+  "temperature": {
+    "owner": "G-code",
+    "expectedNozzleC": 205,
+    "actualNozzleC": 205,
+    "bedC": 60,
+    "initialTool": "T0",
+    "activeCfs": "CFS 1 · emplacement 2",
+    "nextToolTargetC": 220
+  },
+  "sequence": [
+    {"id": "contract", "label": "Contrat du travail", "status": "ready"},
+    {"id": "thermal", "label": "Stabilisation thermique", "status": "ready"},
+    {"id": "clean", "label": "Nettoyage contrôlé", "status": "ready"},
+    {"id": "reference", "label": "Référence Z finale", "status": "ready"},
+    {"id": "mesh", "label": "Mesh plaque / température", "status": "ready"},
+    {"id": "z", "label": "Correction Z acceptée", "status": "ready"},
+    {"id": "cfs", "label": "CFS et purge", "status": "locked"},
+    {"id": "print", "label": "Impression", "status": "locked"}
+  ],
+  "events": [
+    "Mode démonstration : aucune imprimante connectée.",
+    "Calibration Z d'exemple chargée depuis un état synthétique."
+  ]
+}
