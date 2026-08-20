@@ -3,8 +3,8 @@
 Les correctifs de ce dossier sont des candidats originaux et réversibles. Leur
 présence dans Git ne signifie pas qu'ils sont installés sur l'imprimante.
 
-- `cfs-temperature-contract/` : premier candidat local pour empêcher le CFS de
-  réappliquer silencieusement `220 °C` avec le Geeetech PLA `190/195`.
+Le candidat statique Geeetech PLA `190/195` a été rejeté avant déploiement et
+retiré. Aucun correctif CFS de température n'est actuellement déployable.
 
 This directory will contain original, reviewable configuration overlays and wrapper macros after diagnosis.
 

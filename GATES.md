@@ -77,11 +77,11 @@ Passing G3 authorises preparation of a patch and rollback plan, not deployment.
 
 Next evidence should be captured passively around the next genuinely different or multi-object production job. It must not become a broad sacrificial print campaign. The CFS temperature issue is sufficiently grounded for preparation of a narrow patch and rollback plan, but not deployment; G3 as a whole remains open for the Z diagnosis.
 
-Local preparation completed on 2026-08-20 for candidate
-`G4-CFS-TEMP-PLA`. Exact source hashes, a fail-closed Geeetech PLA `190/195`
-contract, a minimal patch, static tests, validation and rollback are now in Git.
-This closes patch preparation for the confirmed CFS temperature mechanism only.
-It does not pass G3 for Z and does not authorise deployment.
+The static Geeetech PLA `190/195` candidate prepared on 2026-08-20 was rejected
+by Thomas before deployment because it was not material- or temperature-agnostic.
+Its deployable files were removed. G3 temperature work now requires proof of a
+dynamic owner that follows G-code targets through startup, both CFS units,
+equivalent refill and intentional material changes.
 
 ## G4 — One mutation ready for deployment
 
@@ -100,9 +100,9 @@ deleted. Private evidence and backup checksums remain outside Git.
 This pass does not authorise any other printer mutation. Every future named
 change must satisfy G4 independently.
 
-Candidate `G4-CFS-TEMP-PLA`: **not passed and not deployed**. The local package
-is ready for review, but still requires Thomas's explicit approval naming this
-exact deployment while the printer is idle.
+Candidate `G4-CFS-TEMP-PLA`: **rejected and never deployed**. It must not be
+reopened. A future G4 requires a new name and a dynamic, material-independent
+design backed by the full transition matrix.
 
 Required for each named change:
 

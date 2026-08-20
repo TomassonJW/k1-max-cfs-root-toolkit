@@ -18,7 +18,7 @@ Date : 2026-08-20
 - commandes de température utiles et ordre des événements, sans nom privé de
   travail ni adresse de machine ;
 - conclusions techniques résumées ;
-- correctif original, patch minimal et procédures de validation/retour arrière.
+- ADR historique marqué rejeté et exigences de la future solution dynamique.
 
 ## Contrôles
 

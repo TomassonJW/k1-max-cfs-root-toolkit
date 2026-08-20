@@ -41,17 +41,15 @@ uniquement de fixtures de test ignorées par Git.
 ## Conclusion
 
 Le saut à `220 °C` vient de la propriété de température du CFS, pas d'une
-commande du fichier OrcaSlicer. Le premier correctif raisonnable est un contrat
-PLA très étroit autour du pilote d'origine, pas un remplacement complet du
-pilote ni une campagne de milliers d'impressions.
+commande du fichier OrcaSlicer. Cette preuve reste valable.
 
-Le candidat local `G4-CFS-TEMP-PLA` :
+Le premier candidat local limitait le fonctionnement au Geeetech PLA
+`190/195 °C`. Thomas l'a rejeté avant déploiement parce qu'il n'était ni
+polyvalent ni piloté dynamiquement par le G-code. Ses fichiers déployables ont
+été retirés.
 
-- remplace la température fixe CFS `220` par `195 °C` ;
-- exige `GEEETECH_PLA`, première couche `190 °C`, impression `195 °C` ;
-- mémorise la cible lors d'un épuisement avec remplacement automatique ;
-- remet une éventuelle cible manuelle `190 °C` juste après la relecture cachée
-  du nouvel outil ;
-- refuse les autres matériaux et températures avant le premier appel au CFS.
-
-Il est préparé et testé localement, mais pas déployé.
+La cible corrigée est indépendante du matériau : pendant une impression, la
+dernière température explicite du G-code ou de Thomas doit toujours gagner. Un
+remplacement équivalent conserve cette cible ; un vrai changement reçoit la
+température du prochain outil. Les exigences sont définies dans
+`docs/07-dynamic-cfs-temperature-requirements.md`.
