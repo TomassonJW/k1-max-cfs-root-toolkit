@@ -145,17 +145,24 @@ jamais déployée, nom fermé**. La machine réelle ne possède ni `logrotate`, 
 arrêté la pose sans créer de dossier, fichier, service ou port sur la machine.
 Un autre GO V1 ne peut pas rouvrir ce paquet.
 
-Candidate `G4-K1-CONTROL-FOUNDATION-V2`: **prepared offline on 2026-08-20 and
-not authorised**. V2 garde exactement Moonraker/Mainsail en observation, retire
-la dépendance absente et envoie les erreurs nginx au `syslogd` BusyBox déjà
-actif par `/dev/log`. Son comportement observé est borné à 200 Kio et une
-sauvegarde ; Moonraker garde sa rotation interne. Aucun paquet, cron ou service
-de journal supplémentaire n'est ajouté.
+Candidate `G4-K1-CONTROL-FOUNDATION-V2`: **GO reçu, essais réels rollbackés le
+2026-08-21, nom fermé**. V2 a atteint un Mainsail fonctionnel par tunnel après
+correction des écarts Buildroot et WebSocket. Elle a ensuite prouvé que Mainsail
+`v2.18.2` ne sait pas utiliser un compte Moonraker. Le port LAN n'a pas été
+ouvert. Après rollback, les chemins et services V2 sont absents, les ports
+`7125`/`4409` fermés et la pile Creality présente. Un autre GO V2 ne peut pas
+rouvrir ce paquet.
 
-Le prototype produit reste vert à 17/17. V2 ne modifie toujours ni macros, ni Z,
-ni mesh, ni CFS, ni Orca et n'autorise aucune commande G-code. Seul un nouveau
-GO portant exactement `G4-K1-CONTROL-FOUNDATION-V2` pourra autoriser cette pose.
-Le GO V1 déjà donné ne vaut pas pour V2.
+Candidate `G4-K1-CONTROL-FOUNDATION-V3`: **prepared offline on 2026-08-21 and
+not authorised**. V3 conserve le syslog stock borné et Moonraker en boucle
+locale. nginx porte l'authentification HTTP, limite le LAN aux plages privées,
+stocke seulement un hachage SSHA salé en mode `0600` et retire les identifiants
+avant le proxy. Le binaire MIPS figé contient les deux directives requises.
+
+Le prototype produit reste vert à 17/17. V3 ne modifie ni macros, ni Z, ni mesh,
+ni CFS, ni Orca et n'autorise aucune commande G-code. Seul le texte exact
+`GO G4-K1-CONTROL-FOUNDATION-V3` pourra autoriser cette pose. Les GO V1/V2, le
+choix nginx et un GO générique ne valent pas pour V3.
 
 Required for each named change:
 

@@ -254,7 +254,7 @@
     }
   ],
   "deployment": {
-    "active_g4_candidate": "G4-K1-CONTROL-FOUNDATION-V2",
+    "active_g4_candidate": "G4-K1-CONTROL-FOUNDATION-V3",
     "offline_prototype_required_before_g4": true,
     "community_installer_allowed_as_is": false,
     "rollback_required_per_slice": true

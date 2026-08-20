@@ -1,9 +1,9 @@
 {
   "package_id": "K1-CONTROL-V1-FOUNDATION",
-  "package_version": 2,
+  "package_version": 3,
   "status": "g4_candidate_offline_not_authorized",
   "printer_mutation_authorized": false,
-  "active_g4_candidate": "G4-K1-CONTROL-FOUNDATION-V2",
+  "active_g4_candidate": "G4-K1-CONTROL-FOUNDATION-V3",
   "target": {
     "printer": "Creality K1 Max S12 structure 0",
     "firmware": "2.3.5.34",
@@ -56,9 +56,24 @@
     "daily_path": null,
     "daily_ui_exposed_in_this_slice": false,
     "expert_path": "/",
-    "force_logins": true,
-    "api_key_enabled": true,
-    "trusted_clients": [],
+    "authentication_owner": "nginx",
+    "gateway_authentication": "http_basic",
+    "password_storage": "RFC 2307 SSHA with 16-byte random salt, file mode 0600",
+    "password_minimum_characters": 16,
+    "password_maximum_characters": 128,
+    "password_character_set": "printable ASCII without spaces (0x21-0x7e)",
+    "force_logins": false,
+    "api_key_enabled": false,
+    "trusted_clients": [
+      "127.0.0.1"
+    ],
+    "gateway_private_sources": [
+      "127.0.0.1",
+      "10.0.0.0/8",
+      "172.16.0.0/12",
+      "192.168.0.0/16"
+    ],
+    "basic_auth_transport": "unencrypted HTTP on the private LAN; use the SSH tunnel on untrusted networks",
     "cors_domains": [],
     "automatic_updates": false
   },

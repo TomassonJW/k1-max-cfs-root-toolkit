@@ -13,7 +13,8 @@ CONFIG="$ROOT/config/moonraker.conf"
 PID=/var/run/k1-control-moonraker.pid
 
 start() {
-    mkdir -p "$STATE" "$LOGS" "$TMP"
+    mkdir -p "$STATE/misc" "$LOGS" "$TMP"
+    touch "$STATE/misc/usb.ids"
     export TMPDIR="$TMP"
     HOME=/root start-stop-daemon -S -q -b -m -p "$PID" \
         --exec "$PYTHON" -- "$SCRIPT" -d "$STATE" -c "$CONFIG" \
@@ -21,7 +22,8 @@ start() {
 }
 
 stop() {
-    start-stop-daemon -K -q -p "$PID"
+    start-stop-daemon -K -q -p "$PID" -o
+    rm -f "$PID"
 }
 
 case "${1:-}" in

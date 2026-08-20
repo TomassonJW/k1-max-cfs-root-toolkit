@@ -280,11 +280,14 @@ pile épinglée, faux Moonraker relié à l'interface et au moteur, 17/17 scéna
 verts, contrat Orca avec fixtures et paquet de fondation préparé.
 
 V1 a reçu son GO, puis son préflight a détecté l'absence de `logrotate` avant
-toute mutation. Son nom est fermé. `G4-K1-CONTROL-FOUNDATION-V2` est la
-prochaine gate humaine. Elle garde uniquement Moonraker et Mainsail en
-observation, sans changement de comportement ni import Orca, et réutilise le
-syslog stock borné. `K1 Control` réel, le Z, le mesh, le démarrage, la purge et
-les températures CFS restent dans les poses suivantes.
+toute mutation. V2 a reçu son GO, atteint un Mainsail fonctionnel par tunnel,
+puis a été rollbackée lorsque l'absence de flux de compte Mainsail a rendu son
+contrat d'authentification impossible. Les deux noms sont fermés.
+`G4-K1-CONTROL-FOUNDATION-V3` est la prochaine gate humaine. Elle garde
+uniquement Moonraker et Mainsail en observation, réutilise le syslog stock borné
+et place l'authentification compatible sur nginx. `K1 Control` réel, le Z, le
+mesh, le démarrage, la purge et les températures CFS restent dans les poses
+suivantes.
 
 Toute installation, écriture, chauffe, mouvement, calibration ou impression
 reste interdite jusqu'à un GO portant exactement ce nom. Le GO de fondation

@@ -1,10 +1,10 @@
 # STATE
 
-Last updated: 2026-08-20
+Last updated: 2026-08-21
 
 ## Current phase
 
-**P4 — V1 arrêtée au préflight ; V2 préparée hors imprimante et non autorisée**
+**P4 — V1 et V2 fermées ; V3 préparée hors imprimante et non autorisée**
 
 The repository baseline, stock acquisition, complete Orca/G-code intake and
 passive P1–P5/PETG trace are complete. Gate G3 is passed for offline design and
@@ -22,9 +22,10 @@ Z calibration, meshes by plate/temperature, safe configurable start/clean/purge,
 dynamic two-CFS temperature ownership and one versioned Orca contract. It is
 being prepared by reversible slices. The complete offline prototype is now
 green. V1 was authorised but stopped before mutation because the required
-`logrotate` was absent. `G4-K1-CONTROL-FOUNDATION-V2` replaces that dependency
-with the bounded stock syslog, but it is not authorised and changes no print
-behaviour.
+`logrotate` was absent. V2 reused the bounded stock syslog and reached a working
+Mainsail through an SSH tunnel, then was rolled back because Mainsail `v2.18.2`
+cannot satisfy the required Moonraker-account gate. V3 moves authentication to
+nginx, remains offline-only and changes no print behaviour.
 
 ## Confirmed facts
 
@@ -172,6 +173,19 @@ behaviour.
 - V2 uses the existing `/sbin/syslogd -n` through `/dev/log`; BusyBox reports
   its default 200 KiB limit and one rotated backup. No logging dependency is
   installed.
+- The exact V2 GO was received. Real attempts exposed Buildroot transport,
+  nginx path, permission, Moonraker provider, service-stop and WebSocket-origin
+  gaps. The corrected stack loaded the real Mainsail dashboard through a tunnel.
+- Mainsail `v2.18.2` has no Moonraker account workflow. V2 could not remove
+  loopback trust and still keep Mainsail working, so every attempt was rolled
+  back and V2 is closed.
+- Final post-rollback checks found `/usr/data/k1-control-v1` and both project
+  services absent, ports `7125`/`4409` closed, stock ports `80`/`8080`/`9999`
+  listening and all named Creality processes present.
+- Thomas selected nginx authentication. Offline inspection proved the pinned
+  MIPS binary contains `auth_basic` and `auth_basic_user_file`. V3 uses a
+  masked local prompt, one salted SSHA record, HTTP `401/200` checks, private
+  IPv4 source limits and strips credentials before proxying to Moonraker.
 
 - Complete-system audit, A/B/C comparison, safety invariant, input contract and
   time-bounded roadmap documented in
@@ -224,13 +238,14 @@ behaviour.
 ## Next safe action
 
 The next state-changing action is a new human gate: Thomas may explicitly
-approve or refuse `G4-K1-CONTROL-FOUNDATION-V2`. The V1 GO and a generic `GO`
-are insufficient. Until that exact V2 approval, do not upload, install, start
-or expose any service.
+approve or refuse `G4-K1-CONTROL-FOUNDATION-V3`. The V1/V2 GO, the nginx design
+choice and a generic `GO` are insufficient. Until that exact V3 approval, do
+not upload, install, start or expose any service.
 
 If approved, the first pose installs only Moonraker and Mainsail in observation,
-creates the initial account through an SSH tunnel, performs no G-code command,
-and stops or rolls back on any checksum, login, coexistence or resource failure.
+creates and verifies the nginx account through an SSH tunnel, performs no
+G-code command, and stops or rolls back on any checksum, login, coexistence or
+resource failure.
 
 Do not remove or disable the current Orca `+0.27 mm` post-processor. Its
 retirement remains atomic with the later proven machine/Orca replacement.
@@ -239,7 +254,8 @@ retirement remains atomic with the later proven machine/Orca replacement.
 
 - Helper Script installation.
 - `G4-K1-CONTROL-FOUNDATION-V1` forever: preflight KO, never deployed, name closed.
-- `G4-K1-CONTROL-FOUNDATION-V2` until Thomas names it in a new explicit GO.
+- `G4-K1-CONTROL-FOUNDATION-V2` forever: real attempts rolled back, name closed.
+- `G4-K1-CONTROL-FOUNDATION-V3` until Thomas names it in a new exact GO.
 - Any other Mainsail, Fluidd, Moonraker or `K1 Control` installation/change.
 - BTT Eddy preparation, installation, firmware or calibration.
 - Firmware downgrade or replacement.

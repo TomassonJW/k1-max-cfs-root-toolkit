@@ -272,7 +272,7 @@ s'appelle `G4-K1-CONTROL-FOUNDATION-V1` et requiert son propre GO exact.
 
 Date: 2026-08-20
 
-Status: accepté pour le paquet hors imprimante ; V2 non autorisée
+Status: historique ; V1 et V2 fermées
 
 Thomas a donné le GO exact V1. Le préflight réel a confirmé la bonne machine,
 l'état au repos, les chauffes à zéro, les deux CFS, les ressources et l'absence
@@ -287,3 +287,34 @@ Elle n'installe aucun paquet, cron ou troisième service.
 
 Le remplacement s'appelle `G4-K1-CONTROL-FOUNDATION-V2`. Le GO V1 ne l'autorise
 pas. V2 exige un nouveau GO exact après reconstruction et tests du paquet.
+
+Le GO V2 a ensuite été reçu. Les essais réels ont été rollbackés et le nom V2
+a été fermé par D-024.
+
+## D-024 — V2 fermée, authentification déplacée vers nginx dans V3
+
+Date: 2026-08-21
+
+Status: accepté pour préparation hors imprimante ; V3 non autorisée
+
+La pose V2 a fini par rendre Mainsail réellement fonctionnel par tunnel, sans
+modifier le comportement d'impression. Elle a aussi prouvé que Mainsail
+`v2.18.2` ne sait pas créer ni utiliser un compte Moonraker. La confiance locale
+nécessaire au proxy ne peut donc pas être retirée sans casser Mainsail, ni être
+conservée après ouverture LAN sans rendre tous les clients nginx fiables.
+
+V2 a été rollbackée et son nom est fermé. V3 garde Moonraker sur
+`127.0.0.1:7125`, fiable uniquement pour nginx local, et place le contrôle
+d'accès sur nginx. Le binaire MIPS figé contient les directives `auth_basic` et
+`auth_basic_user_file`.
+
+Le mot de passe V3 est saisi deux fois en local, jamais passé en argument, et
+seul un hachage SSHA salé est écrit en mode `0600`. Les identifiants HTTP sont
+retirés avant le proxy vers Moonraker. Le LAN reste limité aux plages IPv4
+privées et ne s'ouvre qu'après un test HTTP `401/200` par tunnel et un signal
+humain explicite.
+
+Cette décision n'ajoute pas TLS. HTTP Basic reste réservé à un LAN privé de
+confiance ; tout accès depuis un réseau non fiable doit utiliser le tunnel SSH.
+Le nouveau candidat s'appelle `G4-K1-CONTROL-FOUNDATION-V3` et requiert son GO
+exact. Les GO V1 et V2 ne l'autorisent pas.

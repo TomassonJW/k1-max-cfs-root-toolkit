@@ -25,7 +25,7 @@ class ProductionControlContractTests(unittest.TestCase):
         self.assertFalse(self.contract["printer_mutation_authorized"])
         self.assertEqual(
             self.contract["deployment"]["active_g4_candidate"],
-            "G4-K1-CONTROL-FOUNDATION-V2",
+            "G4-K1-CONTROL-FOUNDATION-V3",
         )
 
     def test_z_has_no_hidden_numeric_default(self) -> None:

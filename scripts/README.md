@@ -17,13 +17,17 @@ paths as explicit runtime parameters.
 normal production job. It writes only to an ignored local session directory and
 never sends printer-control or configuration commands.
 
-`deploy-control-foundation.ps1` prépare la pose V2 en quatre actions séparées.
+`deploy-control-foundation.ps1` prépare la pose V3 en cinq actions séparées.
 Par défaut, `Plan` ne contacte pas la machine. Toute action réelle exige à la
-fois `-Execute` et `-Gate G4-K1-CONTROL-FOUNDATION-V2`. `InstallBootstrap`
+fois `-Execute` et `-Gate G4-K1-CONTROL-FOUNDATION-V3`. `InstallBootstrap`
 répète le préflight, vérifie le bundle, sauvegarde l'état, installe seulement la
-fondation locale et rollback automatiquement sur KO. `ActivateLan` exige en
-plus `-AccountVerified`. `Validate` ne transmet aucune commande G-code et
-`Rollback` ne touche que les nouveaux chemins de cette fondation.
+fondation locale et rollback automatiquement sur KO. `SetGatewayAccount` est
+appelée par `set-control-foundation-account.ps1` : le mot de passe est saisi
+deux fois en mode masqué et n'entre jamais dans la ligne de commande. Ces deux
+scripts exigent PowerShell 7 ou plus récent.
+`ActivateLan` exige ensuite `-AccountVerified`. `Validate` ne transmet aucune
+commande G-code et `Rollback` ne touche que les nouveaux chemins de cette
+fondation.
 
 During P0/P1, scripts must default to no remote write and fail closed on ambiguity.
 
