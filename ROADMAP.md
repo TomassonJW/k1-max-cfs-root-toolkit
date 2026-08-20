@@ -26,13 +26,18 @@ Exit: Gate G2.
 
 ## P2 — Behaviour map and diagnosis
 
-Status: **in progress — comparable trace protocol ready**
+Status: **in progress — complete-system intake and analyser-first route prepared**
 
 - reconstruct configuration includes and service ownership;
 - build call graphs for startup, Z homing, levelling, tool changes, loading, cutting, flushing and resume;
 - identify every write to temperature targets, Z offsets and meshes;
 - compare two executions of identical G-code;
 - separate mechanical repeatability, thermal effects and software resets.
+- ingest the real Orca profiles, custom G-code and already-produced projects;
+- build an offline timeline showing which component owns Z, mesh, temperature,
+  pressure advance and CFS state at each step;
+- decide whether dynamic wrappers cover every CFS temperature path or whether
+  the compiled owner must be replaced.
 
 Exit: Gate G3.
 
@@ -45,6 +50,9 @@ Status: **not started**
 - record timing and temperature timelines for CFS transitions;
 - test hypotheses without combining unrelated changes;
 - choose the first minimal intervention.
+- simulate useful startup, refill, tool-change, pause, cancel and end scenarios
+  before requesting another physical run;
+- prepare a no-extrusion, high-clearance validation for the first safety change.
 
 Exit: Gate G4 for one named change.
 
@@ -54,10 +62,13 @@ Status: **not started**
 
 Candidate work, subject to evidence:
 
+- no low-Z movement or purge before the final Z reference, mesh policy and
+  effective first-layer correction are active;
 - persistent fine Z correction applied after the last resetting operation;
 - fast and reference startup wrappers;
 - plate/temperature mesh profiles or adaptive mesh integration;
 - parameterised CFS transition temperatures;
+- one public Orca start/end/tool-change contract with no hidden Z workaround;
 - deploy, validate and rollback scripts;
 - Moonraker/Fluidd/Mainsail only where they add observable value without breaking CFS behaviour.
 
