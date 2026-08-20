@@ -1,10 +1,22 @@
 # HANDOFF
 
 Date: 2026-08-20
-Phase: P2 / dynamic CFS temperature ownership under design; next-job Z comparison pending
-Next operator: Codex proves macro-wrapper coverage versus compiled-driver replacement; no temperature deployment is available
+Phase: P2 / complete-system intake and analyser-first Level A design
+Next operator: Codex inventories the private Orca/G-code intake and builds the offline ownership timeline; no printer deployment is available
 
 ## Current state
+
+A complete-system audit now proposes a strengthened stock route: preserve
+firmware `2.3.5.34`, Creality interfaces and CFS, analyse first, then introduce
+original reversible overlays one change class at a time. BTT Eddy is a measured
+fallback, not a prerequisite. SimpleAF or an open MMU is a later research route,
+not a safe solution for next week's production need.
+
+The private intake is ready under
+`inventory/raw/user-inputs/20260820-full-system-audit/`. Its instructions request
+an Orca printer-config bundle, existing 3MF projects and G-codes, exact custom
+G-code text, photos/notes and any already-held recovery artefact. Everything in
+that path is ignored by Git.
 
 The baseline acquisition, targeted source follow-up, physical session `20260819-185157-g3-aba` and separate `G4-SSH-KEY` deployment are complete. Thomas performed the prints and mechanical adjustments. Codex changed only root SSH access by adding one dedicated public key; no printer behaviour, service or configuration was changed. Raw captures remain local and ignored; only redacted inventories and conclusions are publishable.
 
@@ -54,7 +66,19 @@ Codex has permanent authority to complete all normal Git and GitHub operations f
 
 ## Next bounded Codex mission
 
-Do not repeat A1/B/A2 or the completed long production print. Open a separate passive session around the next genuinely different or multi-object production job. This is intended to test the reported post-job Z instability without consuming plastic solely for diagnosis.
+After Thomas sends `DEPOT_AUDIT_PRET`, do not connect to the printer first.
+Inventory and sanitise the private inputs locally. Parse the Orca profiles and
+G-code into one ordered timeline covering Z, mesh, homing, temperatures,
+pressure advance, CFS, purge, pause, refill, tool change and end of job.
+
+Produce the target Orca contract, a rule report and a decision on wrapper
+coverage versus targeted compiled-owner replacement. Then prepare, but do not
+deploy, the first named G4 safety packet with backup, hashes, no-extrusion
+validation and rollback.
+
+Do not repeat A1/B/A2 or the completed long production print. A separate passive
+session may accompany the next genuinely different or multi-object useful job;
+it must not consume plastic solely for diagnosis.
 
 No temperature deployment is ready. The next bounded mission is read-only and
 offline: map every temperature write through startup, `T0`–`T15`, both physical
@@ -92,5 +116,9 @@ The S11/S12 configuration-selection conflict is resolved in favour of S12 struct
 - relevant redacted logs;
 - one G-code file that reproduced the bad first layer, kept private until reviewed;
 - ideally, two logs from identical G-code executions with different Z outcomes.
+- Orca `.orca_printer` export for the actual K1 Max profile;
+- exact custom start/end/layer/tool-change and Z workaround text;
+- existing representative 3MF/G-code for multi-object, hot-bed and CFS cases;
+- already-held recovery image/procedure reference.
 
 The first six items, readable extension sources, protocol, private inputs, one non-qualified A1/B/A2 trace and one complete long-production trace now exist. Compiled CFS internals remain opaque, but its refill temperature effect and the final active pressure advance have now been measured directly.

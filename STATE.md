@@ -4,12 +4,22 @@ Last updated: 2026-08-20
 
 ## Current phase
 
-**P2 — dynamic CFS temperature ownership under design; next-job Z comparison pending**
+**P2 — complete-system intake and analyser-first Level A design**
 
 The repository baseline, stock acquisition and targeted source follow-up are complete. The A1/B/A2 physical session was executed by Thomas while Codex collected logs in read-only mode. The separate `G4-SSH-KEY` change has since added one dedicated SSH public key. Codex performed no restart, movement, heating, calibration, print, cancellation or printer-behaviour change.
 
 ## Confirmed facts
 
+- A complete audit now recommends a strengthened stock route before BTT Eddy or
+  a full firmware replacement. This is a proposed architecture, not a printer
+  deployment authorisation.
+- A private, Git-ignored intake exists under
+  `inventory/raw/user-inputs/20260820-full-system-audit/` for Orca exports,
+  existing projects, G-codes, custom scripts, photos and recovery artefacts.
+- BTT Eddy is not currently mandatory. Its closest K1 Max `2.3.5.34` + CFS
+  integration documents beta Z-offset behaviour, repeated recalibration and
+  build-plate risk; it remains a measured fallback if deterministic PR Touch
+  still fails.
 - Codex has standing authority to manage the complete Git and GitHub lifecycle of this repository, including pull-request fusion into `main`, without another `GO`; printer mutations remain controlled separately by G4.
 - Passwordless root SSH is active through the local alias `k1max-root`. The alias selects one dedicated ECDSA P-256 key, refuses password fallback and passed two independent final connections.
 - The machine runs Dropbear `2019.78`; Ed25519 public-key authentication is unavailable in this version, so the working key is ECDSA P-256.
@@ -61,6 +71,13 @@ The repository baseline, stock acquisition and targeted source follow-up are com
 
 ## Completed
 
+- Complete-system audit, A/B/C comparison, safety invariant, input contract and
+  time-bounded roadmap documented in
+  `docs/08-audit-systeme-complet-et-trajectoire.md`.
+- ADR-002 proposes an analyser-first strengthened stock route and defines the
+  later BTT Eddy decision gate.
+- Private intake folders and exact deposition instructions created and verified
+  as ignored by Git.
 - Public repository created.
 - Scope, strategy and safety boundary documented.
 - Agent rules, gates, roadmap and acquisition protocol prepared.
@@ -104,7 +121,19 @@ The repository baseline, stock acquisition and targeted source follow-up are com
 
 ## Next safe action
 
-Prepare a separate passive session for the next genuinely different or multi-object production job. Record any live Z correction with its time and value. Do not repeat the completed long print solely for diagnosis.
+Wait for `DEPOT_AUDIT_PRET`, then inventory the supplied Orca export, existing
+projects, G-codes and custom scripts locally. Produce a source-by-source timeline
+and safety-rule report without connecting to or changing the printer.
+
+The first engineering output is an offline analyser and a non-deployed G4 safety
+packet. It must prove that no low movement or purge can occur before the final Z
+reference, known mesh policy and effective correction. It must also decide
+whether every CFS temperature write can be wrapped or the compiled owner must be
+replaced.
+
+When Thomas next runs a genuinely useful different or multi-object production
+job, a separate passive session may still record any live Z correction. Do not
+repeat the completed long print solely for diagnosis.
 
 Do not deploy or recreate `G4-CFS-TEMP-PLA`. The next temperature mission is
 read-only and offline: determine whether every stock CFS temperature write can
@@ -122,6 +151,7 @@ Use `k1max-root` for future bounded SSH work; a password prompt is now a failure
 
 - Helper Script installation.
 - Mainsail, Fluidd or Moonraker changes.
+- BTT Eddy preparation, installation, firmware or calibration.
 - Firmware downgrade or replacement.
 - Any SSH write other than the completed `G4-SSH-KEY` deployment.
 - Service restart or reboot initiated by an agent.
@@ -131,6 +161,9 @@ Use `k1max-root` for future bounded SSH work; a password prompt is now a failure
 
 ## Current blockers
 
+- Real Orca profiles, the complete current Z workaround and representative
+  multi-object/material inputs have not yet been deposited in the new private
+  intake.
 - Recovery artefacts and procedure have not been matched locally to the exact revision.
 - The core `BOX_*` state machine is compiled and its readable source is not present on the machine.
 - The literal registration of `ACCURATE_HOME_Z` was not found in readable Python, although the underlying `G28` and PR Touch path is mapped.

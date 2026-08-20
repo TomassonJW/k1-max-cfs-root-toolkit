@@ -129,3 +129,27 @@ jamais écraser ces valeurs.
 
 Les fichiers déployables du candidat et son test ont été retirés de `main`. Son
 ADR reste comme historique d'une option refusée. Aucun G4 ne porte son nom.
+
+## D-016 — Niveau A renforcé avant Eddy ou remplacement complet
+
+Date: 2026-08-20
+
+Status: proposé ; aucune autorisation de déploiement
+
+La première voie recommandée conserve le firmware `2.3.5.34`, les interfaces
+Creality et les CFS. Elle commence par un analyseur local en lecture seule, puis
+utilise des fichiers originaux et réversibles pour donner un propriétaire
+explicite au démarrage, à la sécurité Z, au mesh, aux températures dynamiques et
+à la valeur finale de pression.
+
+BTT Eddy n'est pas un prérequis. Il devient la voie suivante uniquement si une
+séquence stock propre, thermiquement stable et déterministe prouve encore que PR
+Touch est dangereux ou insuffisamment répétable. SimpleAF, un Klipper moderne et
+un MMU ouvert restent un programme de recherche séparé, car la documentation
+actuelle de SimpleAF n'offre pas de prise en charge prête à l'emploi du CFS
+propriétaire.
+
+Le contournement Z Orca actuel reste en place jusqu'à ce que son remplacement
+côté machine et le profil Orca propre soient validés ensemble. Cette proposition
+est détaillée dans `docs/08-audit-systeme-complet-et-trajectoire.md` et ADR-002.
+Elle n'autorise aucune modification de l'imprimante.
