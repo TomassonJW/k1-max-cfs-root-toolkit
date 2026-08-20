@@ -107,11 +107,11 @@ stock CFS rewrite. The first P5 attempt had three pauses after a likely filament
 break and is excluded from behavioural qualification.
 
 These results satisfy G3 because the Z reset and physical repeatability
-hypotheses are separated, runtime ownership is measured, and the first proposed
-intervention is narrow: prepare a reversible Z-safety sequence that forbids low
-movement and purge before the final Z state. Passing G3 authorises design,
-simulation and rollback preparation only. It does not authorise deployment or
-another printer mutation.
+hypotheses are separated and runtime ownership is measured. Ils avaient d'abord
+conduit à un paquet Z fixe, rejeté ensuite par Thomas. G3 autorise maintenant la
+conception et le prototype hors imprimante du système cohérent décrit dans
+ADR-004 : calibration persistante, mesh, séquence, interface, Orca et
+températures CFS. Il n'autorise aucun déploiement ni autre mutation.
 
 ## G4 — One mutation ready for deployment
 
@@ -134,12 +134,15 @@ Candidate `G4-CFS-TEMP-PLA`: **rejected and never deployed**. It must not be
 reopened. A future G4 requires a new name and a dynamic, material-independent
 design backed by the full transition matrix.
 
-Candidate `G4-ZSAFE-START-V1`: **prepared offline on 2026-08-20; not passed and
-not deployed**. The original overlay, Orca start/end snippets, sequence contract,
-offline tests, backup, validation and rollback procedure exist. Offline tests do
-not prove that the old Klipper runtime will load and execute the overlay on the
-machine. Passing this G4 still requires Thomas's explicit approval for this exact
-name, followed first by the documented high-clearance no-extrusion validation.
+Candidate `G4-ZSAFE-START-V1`: **rejected by Thomas on 2026-08-20 and never
+deployed**. Son nom ne peut plus recevoir de GO. Les fichiers restants sont des
+preuves historiques marquées `rejected_never_deploy` ; le macro échoue
+volontairement s'il est chargé par erreur.
+
+Current behaviour candidate: **none**. Le travail actif est le prototype local
+`K1-CONTROL-V1`. Il ne deviendra un ou plusieurs candidats G4 nommés qu'après la
+réussite du contrat, de l'interface simulée, de la matrice Z/mesh/CFS/Orca, de
+la preuve de compatibilité et des rollbacks.
 
 Required for each named change:
 
@@ -150,6 +153,16 @@ Required for each named change:
 - rollback procedure written and plausible;
 - no unrelated changes bundled;
 - explicit approval from Thomas for this exact deployment.
+
+Pour le système de pilotage, un G4 exige aussi :
+
+- version exacte et empreinte de Moonraker/Mainsail si inclus ;
+- preuve de ressources, ports, sécurité et coexistence avec les services
+  Creality et deux CFS ;
+- aucune valeur Z ou température matière universelle cachée ;
+- prototype complet hors imprimante déjà vert ;
+- ancien post-traitement Orca conservé jusqu'à preuve atomique de son
+  remplacement.
 
 Passing G4 authorises only that named mutation.
 
@@ -164,6 +177,10 @@ Required:
 - both CFS units exercised;
 - fast and reference startup paths behave as documented;
 - configuration survives reboot;
+- a saved live Z calibration survives print end and reboot, while a new
+  reference calibration invalidates it;
+- plate/temperature mesh selection and per-job adaptive mesh behave as declared;
 - rollback has been tested or safely simulated;
 - repository state matches the deployed state;
+- normal jobs need no Codex intervention or per-print manual file edit;
 - remaining limitations are explicit.

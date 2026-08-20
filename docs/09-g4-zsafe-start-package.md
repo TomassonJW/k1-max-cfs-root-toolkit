@@ -1,12 +1,18 @@
-# 09 — Paquet G4 de sécurité Z au démarrage
+# 09 — Historique du paquet G4 de sécurité Z au démarrage
 
 Date : 2026-08-20
 
 Identifiant : `G4-ZSAFE-START-V1`
 
-Statut : **préparé et simulé hors imprimante ; G4 non passée ; aucun déploiement**
+Statut : **REJETÉ par Thomas ; jamais déployé ; ne jamais utiliser**
 
-## Résultat visé
+> La gate `G4-ZSAFE-START-V1` est annulée. Les commandes ci-dessous sont
+> conservées comme historique de revue et ne doivent jamais être exécutées.
+> Ce paquet fixe `+0,27 mm`, utilise un seul mesh `default` et ne fournit pas le
+> système de calibration, d'interface, de température et de CFS demandé. Il est
+> remplacé par `docs/10-systeme-pilotage-perenne.md` et ADR-004.
+
+## Résultat visé par l'ancien candidat refusé
 
 Le paquet rend impossible la sélection CFS, la purge et une trajectoire basse de
 production tant que les quatre conditions suivantes ne sont pas vraies :
@@ -77,12 +83,12 @@ capturée est un **candidat**, jamais une calibration acceptée automatiquement.
 15. capture du candidat Z final par `ZSAFE_END_PRINT` ;
 16. `END_PRINT` stock, puis comportement externe Creality inchangé.
 
-## Intervention unique et fichiers
+## Ancienne intervention et anciens fichiers
 
 La seule classe de comportement modifiée est la propriété du démarrage Z et de
 sa garde avant purge.
 
-| Source versionnée | Destination future | Rôle |
+| Source versionnée | Destination autrefois envisagée | Rôle |
 |---|---|---|
 | `overrides/g4-zsafe-start/zsafe_g4.cfg` | `/usr/data/printer_data/config/zsafe_g4.cfg` | overlay original |
 | une ligne d'include revue | `/usr/data/printer_data/config/printer.cfg` | charger l'overlay après `box.cfg` |
@@ -115,15 +121,14 @@ Les copies lues le 2026-08-20 donnent :
 | snippet Orca de fin | `a6609d2525a6cea7049600862acb0ffaca9583e133c81506610d8219d12e0535` |
 
 Ces valeurs sont des références historiques, pas une permission d'écraser un
-fichier différent. Avant un futur déploiement, les fichiers seront recopiés en
-lecture seule, hachés et comparés. Toute dérive impose l'arrêt et une nouvelle
-revue du diff.
+fichier différent. Cette règle de contrôle reste une leçon historique, mais
+aucun futur déploiement de ce paquet n'est autorisé.
 
-## Préflight du futur déploiement
+## Ancien préflight — historique, exécution interdite
 
 Conditions cumulatives :
 
-- GO explicite portant exactement `G4-ZSAFE-START-V1` ;
+- ancien GO envisagé pour `G4-ZSAFE-START-V1`, désormais impossible ;
 - imprimante au repos, aucun travail en attente ;
 - plaque, buse et zone de mouvement inspectées par Thomas ;
 - alias SSH `k1max-root` sans demande de mot de passe ;
@@ -133,13 +138,13 @@ Conditions cumulatives :
 - diff réel limité à l'overlay, à une ligne d'include et aux deux champs Orca ;
 - aucun fichier brut ou secret ajouté à Git.
 
-## Sauvegarde et installation futures
+## Ancienne procédure d'installation — exécution interdite
 
-Cette séquence est préparée, mais ne doit pas être exécutée avant le GO G4 :
+Cette ancienne séquence ne doit jamais être exécutée :
 
 1. créer un identifiant privé `YYYYMMDD-HHMM-g4-zsafe-start-v1` ;
 2. copier depuis l'imprimante `printer.cfg`, `gcode_macro.cfg`, `box.cfg` et le
-   futur éventuel `zsafe_g4_variables.cfg` vers ce dossier local ;
+   ancien éventuel `zsafe_g4_variables.cfg` vers ce dossier local ;
 3. exporter le profil Orca actif et copier le script de post-traitement actuel ;
 4. calculer les SHA-256 locaux et distants et les enregistrer dans le dossier
    privé ;
@@ -156,13 +161,13 @@ Cette séquence est préparée, mais ne doit pas être exécutée avant le GO G4
 13. importer les deux champs Orca seulement après ce contrôle ;
 14. ne lancer aucune impression avant le test sans extrusion ci-dessous.
 
-Chaque copie, renommage, écriture et redémarrage de cette liste est une mutation
-future couverte uniquement par le GO nommé.
+Chaque copie, renommage, écriture et redémarrage de cette ancienne liste aurait
+été une mutation. Elle est maintenant interdite pour ce nom rejeté.
 
-## Test futur à grande hauteur, sans extrusion
+## Ancien test à grande hauteur — exécution interdite
 
 Thomas nettoie la buse, garde la main sur l'arrêt physique et confirme une zone
-libre. La séquence future est :
+libre. La séquence autrefois prévue était :
 
 ```gcode
 ZSAFE_CONFIRM_NOZZLE_CLEAN
@@ -197,10 +202,10 @@ et aucun `BOX_START_PRINT_EXTRUDE_MATERIAL`.
 Un KO interdit la petite première couche. Il déclenche le rollback ou une
 analyse locale selon que l'état installé est sûr ou non.
 
-## Validation physique suivante, encore humaine
+## Ancienne validation physique — exécution interdite
 
-Après le test haut OK seulement, Thomas pourra autoriser séparément dans la même
-gate nommée une petite première couche surveillée :
+L'ancien plan prévoyait, après un test haut OK, une petite première couche
+surveillée :
 
 - nettoyage manuel puis confirmation ;
 - même plaque et même mesh `default` ;
@@ -213,9 +218,9 @@ gate nommée une petite première couche surveillée :
 Le PLA/PETG, une autre valeur Z et la persistance acceptée ne sont pas validés
 par ce premier essai.
 
-## Rollback complet
+## Ancien rollback documenté
 
-Le rollback futur est borné :
+Le rollback autrefois prévu était borné :
 
 1. ne lancer aucun nouveau travail ;
 2. remettre les champs Orca sauvegardés, dont l'ancien départ avec `G28`, `T0`
@@ -231,7 +236,7 @@ Le rollback futur est borné :
 Le fichier de variables ne modifie pas le comportement sans l'include. Il est
 conservé pour l'analyse tant que Thomas n'autorise pas sa suppression.
 
-## Manuel et automatique
+## Ancienne répartition manuel/automatique
 
 | Étape | Responsable |
 |---|---|
@@ -240,7 +245,7 @@ conservé pour l'analyse tant que Thomas n'autorise pas sa suppression.
 | sélection initiale, flush et ligne de purge après garde | stock CFS appelé par ZSAFE |
 | surveillance du premier mouvement physique | Thomas |
 | capture du candidat Z final | `ZSAFE_END_PRINT` |
-| décision d'accepter une nouvelle correction | future revue humaine + nouveau diff |
+| décision d'accepter une nouvelle correction | revue humaine alors envisagée + nouveau diff |
 | sauvegarde, hashes, diff, installation et rollback | Codex après GO G4 nommé |
 
 ## Hors périmètre
@@ -254,9 +259,10 @@ conservé pour l'analyse tant que Thomas n'autorise pas sa suppression.
 - génération ou adaptation de mesh ;
 - retrait du post-traitement Orca `+0,27 mm`.
 
-## Gate humaine suivante
+## Gate annulée
 
-La prochaine décision est binaire : autoriser ou refuser le déploiement et le
-test haut du paquet exact `G4-ZSAFE-START-V1`. Aucun autre changement imprimante
-n'est inclus. Sans cette phrase de GO explicite, le paquet reste seulement un
-artefact local testé.
+Il n'existe plus de GO valide pour `G4-ZSAFE-START-V1`. Le dossier est une
+preuve historique qui échoue volontairement s'il est chargé par erreur. Aucun
+paquet G4 de comportement n'est actuellement proposé. La mission active est le
+prototype complet hors imprimante décrit dans
+`docs/10-systeme-pilotage-perenne.md`.

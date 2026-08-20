@@ -41,53 +41,66 @@ Status: **completed on 2026-08-20 — Gate G3 passed for offline preparation**
 
 Exit: Gate G3.
 
-## P3 — Controlled experiments
+## P3 — Conception et prototype complet hors imprimante
 
-Status: **in progress — `G4-ZSAFE-START-V1` prepared offline, human G4 pending**
+Status: **in progress — architecture corrigée, prototype lancé, aucun G4 actif**
 
-- establish Z repeatability at defined thermal states;
-- characterise meshes by plate and bed temperature;
-- record timing and temperature timelines for CFS transitions;
-- test hypotheses without combining unrelated changes;
-- choose the first minimal intervention.
-- simulate useful startup, refill, tool-change, pause, cancel and end scenarios
-  before requesting another physical run;
-- prepare a no-extrusion, high-clearance validation for the first safety change.
+Le paquet fixe `G4-ZSAFE-START-V1` est rejeté et n'a jamais été déployé. La
+phase construit maintenant un seul produit cohérent avant toute demande
+d'installation.
 
-The first package now exists under `overrides/g4-zsafe-start/`. Its offline
-simulation is green. No printer-side validation or deployment has occurred.
+- verrouiller le contrat Z : réglage en session, enregistrement explicite,
+  persistance et invalidation après nouvelle référence ;
+- définir les meshes par plaque et plage thermique, plus un mesh adaptatif non
+  persistant par travail ;
+- simuler l'ordre thermique, nettoyage, référence finale, mesh, Z, CFS, purge,
+  impression et fin ;
+- construire l'interface quotidienne `K1 Control` sur un faux Klipper ;
+- sélectionner et épingler une pile Moonraker/Mainsail compatible MIPS/Buildroot
+  sans installateur général ni mise à jour automatique ;
+- produire le contrat Orca complet départ/fin/changement d'outil ;
+- couvrir démarrage, refill équivalent, changement voulu, deux CFS, pause,
+  reprise, annulation, fin et changement manuel de température ;
+- préparer les poses réversibles, sauvegardes, empreintes, tests haut et
+  rollbacks, sans les exécuter.
 
-Exit: Gate G4 for one named change.
+Exit: prototype local complet, matrice verte, versions exactes et premier paquet
+G4 nommé préparé. Cette sortie n'autorise toujours pas son déploiement.
 
-## P4 — Minimal override layer
+## P4 — Installation contrôlée du système de pilotage
 
-Status: **not started**
+Status: **not started; requires a future explicit named G4**
 
-Candidate work, subject to evidence:
+Le produit est posé par étapes techniques réversibles, mais Thomas reçoit un
+seul fonctionnement quotidien :
 
-- no low-Z movement or purge before the final Z reference, mesh policy and
-  effective first-layer correction are active;
-- persistent fine Z correction applied after the last resetting operation;
-- fast and reference startup wrappers;
-- plate/temperature mesh profiles or adaptive mesh integration;
-- parameterised CFS transition temperatures;
-- one public Orca start/end/tool-change contract with no hidden Z workaround;
-- deploy, validate and rollback scripts;
-- Moonraker/Fluidd/Mainsail only where they add observable value without breaking CFS behaviour.
+1. API et interfaces en observation ;
+2. état et interface de calibration Z ;
+3. mesh, nettoyage, démarrage et purge sûrs ;
+4. propriété dynamique des températures des deux CFS ;
+5. contrat Orca final et retrait prouvé de l'ancien post-traitement.
 
-Exit: Gate G5.
+Chaque pose a son backup, son diff, ses critères OK/KO et son rollback. Aucune
+pose suivante ne commence si l'écran, Creality Web/Print, le CFS ou Klipper
+régressent.
+
+Exit: système complet installé et prêt pour Gate G5.
 
 ## P5 — Production validation
 
 Status: **not started**
 
 - cold boot and three consecutive prints on a known plate without manual Z correction;
+- live Z calibration saved once, retained after restart, then deliberately
+  invalidated by a new reference calibration;
+- plate/temperature mesh selection and adaptive per-job mesh verified;
 - same-material CFS changes;
 - cross-CFS change between CFS 1 and CFS 2;
 - at least one cross-material transition policy;
 - OrcaSlicer upload and control path;
 - retained Creality compatibility where required;
 - measured startup-time improvement with no first-layer regression.
+- daily use through `K1 Control` without Codex or per-print file editing.
 
 Exit: stable V1 baseline and tagged release.
 

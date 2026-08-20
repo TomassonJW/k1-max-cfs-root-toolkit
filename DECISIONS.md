@@ -158,7 +158,7 @@ Elle n'autorise aucune modification de l'imprimante.
 
 Date: 2026-08-20
 
-Status: accepté pour préparation hors imprimante ; aucun déploiement autorisé
+Status: **supersédé et rejeté le 2026-08-20 ; jamais déployé**
 
 Session `20260820-154056-p123` a mesuré deux mécanismes directs : la correction
 `+0.27 mm` du post-traitement arrive seulement après `START_PRINT`, puis la
@@ -172,24 +172,78 @@ la politique de mesh et la correction effective. Elle doit également empêcher
 l'effacement silencieux d'une correction validée. Le script Orca actuel reste
 actif jusqu'à la validation complète de son remplacement.
 
-Les températures CFS dynamiques, le nettoyage, la pression d'avance, l'ironing
-et l'interface sont des paquets séparés. BTT Eddy reste conditionnel à une
-instabilité physique encore mesurée après suppression des conflits de séquence.
+Cette priorité avait conduit à un paquet fixe et trop étroit. D-019 et D-020 la
+remplacent : la sécurité Z reste une barrière obligatoire, mais elle est conçue
+dans un produit cohérent avec calibration persistante, mesh, interface, Orca et
+températures CFS. Le déploiement reste découpé pour le rollback.
 
 ## D-018 — Point d'entrée `START_PRINT` conservé, corps surchargé par include
 
 Date: 2026-08-20
 
-Status: accepté pour préparation hors imprimante ; aucun déploiement autorisé
+Status: **supersédé et rejeté le 2026-08-20 ; jamais déployé**
 
-Le premier paquet Z conserve le nom public `START_PRINT`. Un fichier original,
+L'ancien paquet Z conservait le nom public `START_PRINT`. Un fichier original,
 chargé après `gcode_macro.cfg`, remplace seulement son corps grâce au comportement
 `RawConfigParser(strict=False)` observé dans la version capturée de Klipper.
 Le fichier stock reste intact et le post-traitement Orca actuel continue donc à
 reconnaître `START_PRINT` et à réappliquer sa correction absolue `+0,27 mm`.
 
-Le paquet exige un nettoyage manuel confirmé, charge explicitement le mesh
-`default`, applique et vérifie `+0,27 mm`, puis ouvre une garde avant tout appel
-CFS ou purge. La correction finale est capturée avant la fin stock, mais reste
-un candidat non réappliqué automatiquement. ADR-003 porte la comparaison des
-options et les conséquences.
+L'ancien paquet exigeait un nettoyage manuel confirmé, chargeait explicitement
+le mesh `default`, appliquait et vérifiait `+0,27 mm`, puis ouvrait une garde
+avant tout appel CFS ou purge. La correction finale était capturée avant la fin
+stock, mais restait un candidat non réappliqué automatiquement. ADR-003 porte la
+comparaison des options et les conséquences. Cette base fixe est remplacée par
+ADR-004.
+
+## D-019 — Rejet définitif de `G4-ZSAFE-START-V1`
+
+Date: 2026-08-20
+
+Status: accepté
+
+Thomas a refusé le paquet avant tout déploiement. Il figeait `+0,27 mm`, le mesh
+`default` et un nettoyage manuel, sans résoudre la calibration persistante,
+l'interface, les meshes thermiques, le contrat Orca ni les températures CFS.
+
+Le paquet reste uniquement comme preuve historique et échoue volontairement
+s'il est chargé par erreur. Il n'existe aucun GO futur valide portant ce nom.
+Le post-traitement Orca actuel n'a pas été retiré de la machine.
+
+## D-020 — Un produit cohérent, posé par étapes réversibles
+
+Date: 2026-08-20
+
+Status: accepté pour conception et prototype hors imprimante ; déploiement non autorisé
+
+La cible est un seul système de pilotage : interface quotidienne `K1 Control`,
+interface experte candidate Mainsail, API candidate Moonraker épinglée, état Z
+et mesh séparé des fichiers constructeur, séquence sûre, températures CFS
+dynamiques et contrat Orca versionné.
+
+D-007 reste valable pour la pose : une classe de mutation à la fois afin de
+savoir ce qui a cassé et de revenir en arrière. Elle ne signifie pas que Thomas
+doit gérer une collection de correctifs isolés ou refaire des réglages à chaque
+impression. L'architecture, les profils et les tests sont préparés comme un
+tout avant le premier G4.
+
+Aucun installateur communautaire n'est exécuté tel quel. Les versions, droits,
+ports, ressources et conséquences de Moonraker/Mainsail doivent être prouvés
+sur la K1 Max `2.3.5.34` avec écran et deux CFS.
+
+## D-021 — Le Z accepté survit jusqu'à une nouvelle calibration
+
+Date: 2026-08-20
+
+Status: accepté pour conception et prototype hors imprimante ; déploiement non autorisé
+
+Le réglage Z se fait pendant une session de calibration dédiée. Les clics ne
+modifient que cette session. Une action explicite `Enregistrer` crée un état
+accepté lié à la plaque, la température, la buse, la référence capteur et les
+fichiers pertinents.
+
+Cet état survit à la fin d'impression, au redémarrage et à la remise à zéro
+interne Creality. Une nouvelle calibration ou toute modification capable de
+changer la référence l'invalide. L'ancienne valeur reste disponible comme
+historique, mais n'est jamais réutilisée en silence. Il n'existe aucune valeur
+Z universelle inscrite dans le système.

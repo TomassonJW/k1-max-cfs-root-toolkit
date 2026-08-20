@@ -2,7 +2,10 @@
 
 Date : 2026-08-20
 
-Statut : **accepté pour préparation hors imprimante ; déploiement non autorisé**
+Statut : **rejeté le 2026-08-20 ; jamais déployé ; remplacé par ADR-004**
+
+> Cette décision est conservée comme historique. Son paquet fixe ne doit jamais
+> être déployé. Voir `ADR-004-pilotage-parametrable-et-calibration-persistante.md`.
 
 ## Contexte
 
@@ -26,7 +29,7 @@ producteur externe.
   mélange plusieurs classes de changement ;
 - include original chargé après le stock : retenu.
 
-## Décision
+## Décision historique, désormais refusée
 
 La version capturée de Klipper lit les doublons avec
 `RawConfigParser(strict=False)`. Le paquet remplace donc uniquement le corps de
@@ -51,3 +54,7 @@ référence finale, mesh et correction soient prêts.
 - autre correction que `+0,27 mm` soumise à un futur diff et une future gate ;
 - la capture de fin évite la perte silencieuse, mais son acceptation reste
   volontaire et manuelle.
+
+Ces conséquences ne sont plus acceptables comme base de production : valeur Z
+fixe, mesh unique et absence d'interface/état persistant. ADR-004 remplace ce
+lot par un système paramétrable conçu et testé comme un tout.
