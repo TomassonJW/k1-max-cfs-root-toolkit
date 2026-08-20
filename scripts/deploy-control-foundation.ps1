@@ -300,7 +300,7 @@ print(json.dumps({
     $inputPayload = @{ username = $Username; password = $PlainPassword } |
         ConvertTo-Json -Compress
     $line = Invoke-RemoteWithInput `
-        "echo $scriptPayload | base64 -d | '$RemoteRelease/moonraker/moonraker-env/bin/python'" `
+        "'$RemoteRelease/moonraker/moonraker-env/bin/python' -c 'import base64;exec(base64.b64decode(`"$scriptPayload`"))'" `
         $inputPayload
     return ($line -join "`n") | ConvertFrom-Json
 }

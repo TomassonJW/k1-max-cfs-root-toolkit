@@ -153,16 +153,23 @@ ouvert. Après rollback, les chemins et services V2 sont absents, les ports
 `7125`/`4409` fermés et la pile Creality présente. Un autre GO V2 ne peut pas
 rouvrir ce paquet.
 
-Candidate `G4-K1-CONTROL-FOUNDATION-V3`: **prepared offline on 2026-08-21 and
-not authorised**. V3 conserve le syslog stock borné et Moonraker en boucle
-locale. nginx porte l'authentification HTTP, limite le LAN aux plages privées,
-stocke seulement un hachage SSHA salé en mode `0600` et retire les identifiants
-avant le proxy. Le binaire MIPS figé contient les deux directives requises.
+Candidate `G4-K1-CONTROL-FOUNDATION-V3`: **GO reçu, première tentative réelle
+rollbackée, correctif hors imprimante en attente d'un nouveau GO exact**. Le
+bootstrap et sa validation indépendante ont réussi. La vérification du compte a
+ensuite échoué : le programme Python et le JSON utilisaient tous deux stdin.
+Le rollback automatique a restauré l'absence du dossier, des deux services et
+des ports `7125`/`4409`, avec la pile Creality intacte.
+
+Le correctif passe maintenant le programme par Python `-c` et réserve stdin au
+JSON. Les 56 tests passent et un JSON factice a été lu avec succès par le Python
+constructeur à travers le transport SSH exact, sans écriture distante. Il n'a
+pas été redéployé.
 
 Le prototype produit reste vert à 17/17. V3 ne modifie ni macros, ni Z, ni mesh,
 ni CFS, ni Orca et n'autorise aucune commande G-code. Seul le texte exact
-`GO G4-K1-CONTROL-FOUNDATION-V3` pourra autoriser cette pose. Les GO V1/V2, le
-choix nginx et un GO générique ne valent pas pour V3.
+`GO G4-K1-CONTROL-FOUNDATION-V3` pourra autoriser une nouvelle pose corrigée.
+Le GO consommé par la tentative rollbackée, les GO V1/V2, le choix nginx et un
+GO générique ne valent pas pour cette nouvelle tentative.
 
 Required for each named change:
 

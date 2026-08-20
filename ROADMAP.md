@@ -74,7 +74,7 @@ et Mainsail `v2.18.2` épinglés, contrat Orca complet et
 
 ## P4 — Installation contrôlée du système de pilotage
 
-Status: **V1 and V2 closed; V3 prepared offline and waiting for its exact GO**
+Status: **V1 and V2 closed; first V3 attempt rolled back, stdin fix waiting for a renewed exact GO**
 
 Le produit est posé par étapes techniques réversibles, mais Thomas reçoit un
 seul fonctionnement quotidien :

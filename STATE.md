@@ -4,7 +4,7 @@ Last updated: 2026-08-21
 
 ## Current phase
 
-**P4 — V1 et V2 fermées ; V3 préparée hors imprimante et non autorisée**
+**P4 — première pose V3 rollbackée ; transport corrigé hors imprimante et nouvelle autorisation requise**
 
 The repository baseline, stock acquisition, complete Orca/G-code intake and
 passive P1–P5/PETG trace are complete. Gate G3 is passed for offline design and
@@ -25,7 +25,12 @@ green. V1 was authorised but stopped before mutation because the required
 `logrotate` was absent. V2 reused the bounded stock syslog and reached a working
 Mainsail through an SSH tunnel, then was rolled back because Mainsail `v2.18.2`
 cannot satisfy the required Moonraker-account gate. V3 moves authentication to
-nginx, remains offline-only and changes no print behaviour.
+nginx and changes no print behaviour. Thomas a donné le GO V3 exact. Le
+bootstrap réel et sa validation indépendante ont réussi, puis la vérification
+du compte a détecté une collision entre le programme Python et son JSON sur
+l'entrée standard. Le rollback automatique a restauré l'absence complète de la
+fondation. Le transport corrigé est prouvé en lecture seule mais n'a pas été
+redéployé.
 
 ## Confirmed facts
 
@@ -186,6 +191,15 @@ nginx, remains offline-only and changes no print behaviour.
   MIPS binary contains `auth_basic` and `auth_basic_user_file`. V3 uses a
   masked local prompt, one salted SSHA record, HTTP `401/200` checks, private
   IPv4 source limits and strips credentials before proxying to Moonraker.
+- Thomas a autorisé V3. `InstallBootstrap` puis `Validate` ont réussi sur la
+  machine réelle. La création du compte a écrit le SSHA et activé nginx local,
+  mais son test JSON a échoué parce que le programme Python occupait déjà
+  stdin. Le rollback automatique a retiré le dossier et les deux services ;
+  les ports `7125`/`4409` sont fermés et la pile Creality est intacte.
+- Le correctif passe le programme Python par `-c` et réserve stdin au JSON. Un
+  test distant factice, strictement en lecture seule, retourne
+  `REMOTE_STDIN_PROOF_OK`. Une nouvelle pose exige une nouvelle autorisation
+  explicite du même nom V3.
 
 - Complete-system audit, A/B/C comparison, safety invariant, input contract and
   time-bounded roadmap documented in
@@ -238,9 +252,9 @@ nginx, remains offline-only and changes no print behaviour.
 ## Next safe action
 
 The next state-changing action is a new human gate: Thomas may explicitly
-approve or refuse `G4-K1-CONTROL-FOUNDATION-V3`. The V1/V2 GO, the nginx design
-choice and a generic `GO` are insufficient. Until that exact V3 approval, do
-not upload, install, start or expose any service.
+approve or refuse the corrected `G4-K1-CONTROL-FOUNDATION-V3`. The earlier V3
+attempt is consumed by its rollback. Until a new exact approval, do not upload,
+install, start or expose any service.
 
 If approved, the first pose installs only Moonraker and Mainsail in observation,
 creates and verifies the nginx account through an SSH tunnel, performs no
@@ -255,7 +269,7 @@ retirement remains atomic with the later proven machine/Orca replacement.
 - Helper Script installation.
 - `G4-K1-CONTROL-FOUNDATION-V1` forever: preflight KO, never deployed, name closed.
 - `G4-K1-CONTROL-FOUNDATION-V2` forever: real attempts rolled back, name closed.
-- `G4-K1-CONTROL-FOUNDATION-V3` until Thomas names it in a new exact GO.
+- corrected `G4-K1-CONTROL-FOUNDATION-V3` until Thomas repeats its exact GO.
 - Any other Mainsail, Fluidd, Moonraker or `K1 Control` installation/change.
 - BTT Eddy preparation, installation, firmware or calibration.
 - Firmware downgrade or replacement.
