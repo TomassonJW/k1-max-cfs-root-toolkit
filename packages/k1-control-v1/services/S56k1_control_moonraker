@@ -1,0 +1,32 @@
+#!/bin/sh
+# K1-CONTROL-V1 offline candidate. NEVER install before a named G4 GO.
+
+set -eu
+
+ROOT=/usr/data/k1-control-v1/current
+STATE=/usr/data/k1-control-v1/state
+LOGS=/usr/data/k1-control-v1/logs
+TMP=/usr/data/k1-control-v1/tmp
+PYTHON="$ROOT/moonraker/moonraker-env/bin/python"
+SCRIPT="$ROOT/moonraker/moonraker/moonraker/moonraker.py"
+CONFIG="$ROOT/config/moonraker.conf"
+PID=/var/run/k1-control-moonraker.pid
+
+start() {
+    mkdir -p "$STATE" "$LOGS" "$TMP"
+    export TMPDIR="$TMP"
+    HOME=/root start-stop-daemon -S -q -b -m -p "$PID" \
+        --exec "$PYTHON" -- "$SCRIPT" -d "$STATE" -c "$CONFIG" \
+        -l "$LOGS/moonraker.log"
+}
+
+stop() {
+    start-stop-daemon -K -q -p "$PID"
+}
+
+case "${1:-}" in
+    start) start ;;
+    stop) stop ;;
+    restart) stop; sleep 1; start ;;
+    *) echo "Usage: $0 {start|stop|restart}"; exit 1 ;;
+esac

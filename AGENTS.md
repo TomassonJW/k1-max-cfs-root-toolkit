@@ -8,7 +8,12 @@ The printer is production hardware. It is never treated as a disposable sandbox.
 
 ## Current authority and phase
 
-The active phase is **P2 — local diagnosis and Gate G3 preparation**.
+The active phase is **P3 complete — offline K1-CONTROL-V1 prototype validated;
+P4 is waiting for the exact named gate `G4-K1-CONTROL-FOUNDATION-V1`**.
+
+That gate is prepared but not authorised. A generic or historical `GO` does not
+authorise it. Until Thomas gives that exact gate, all printer mutation remains
+forbidden; local preparation and classified read-only checks remain allowed.
 
 Authority order:
 

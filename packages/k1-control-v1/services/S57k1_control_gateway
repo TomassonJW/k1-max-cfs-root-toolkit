@@ -1,0 +1,27 @@
+#!/bin/sh
+# K1-CONTROL-V1 offline candidate. NEVER install before a named G4 GO.
+
+set -eu
+
+ROOT=/usr/data/k1-control-v1/current
+NGINX="$ROOT/nginx/sbin/nginx"
+CONFIG=/usr/data/k1-control-v1/state/nginx-active.conf
+PID=/var/run/k1-control-nginx.pid
+
+start() {
+    mkdir -p /usr/data/k1-control-v1/logs /usr/data/k1-control-v1/state /var/tmp/k1-control-nginx
+    [ -f "$CONFIG" ] || { echo "Missing active gateway config: $CONFIG"; exit 1; }
+    start-stop-daemon -S -p "$PID" --exec "$NGINX" -- -c "$CONFIG" -p "$ROOT/nginx/nginx"
+}
+
+stop() {
+    start-stop-daemon -K -x "$NGINX" -p "$PID" -o
+}
+
+case "${1:-}" in
+    start) start ;;
+    stop) stop ;;
+    reload) "$NGINX" -c "$CONFIG" -p "$ROOT/nginx/nginx" -s reload ;;
+    restart) stop; sleep 1; start ;;
+    *) echo "Usage: $0 {start|stop|restart|reload}"; exit 1 ;;
+esac

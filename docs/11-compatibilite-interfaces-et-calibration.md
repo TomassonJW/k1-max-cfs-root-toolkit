@@ -113,7 +113,25 @@ Sources : [documentation Mainsail](https://docs.mainsail.xyz/),
 [installation Moonraker](https://moonraker.readthedocs.io/en/latest/installation/)
 et [API Moonraker](https://moonraker.readthedocs.io/en/latest/external_api/introduction/).
 
-## Points encore à prouver
+## Sélection exacte issue du prototype
+
+La fondation est maintenant figée ainsi :
+
+- paquet Moonraker MIPS du Helper Script au commit
+  `b46787a61b3ce2f04ec04d115a73a46c26814057` ;
+- Moonraker embarqué au commit
+  `fccffa96c63ed77dc3953e18615e9fe9cd3d69ea` du 2025-01-12 ;
+- Mainsail `v2.18.2`, commit
+  `009ae11fc0676a6f3b0d4697f5d28aa345c697ff` ;
+- nginx MIPS du même paquet, sur le port dédié `4409` ;
+- aucune mise à jour automatique et aucun installateur communautaire exécuté.
+
+Mainsail `v2.18.2` annonce Moonraker `v0.8.0-306` comme minimum. Le commit
+Moonraker retenu est plus récent et son paquet contient déjà les dépendances
+Python 3.8/MIPS. Les trois archives ont été récupérées ou lues localement,
+vérifiées par taille et SHA-256, puis assemblées par le préparateur local.
+
+## Points encore à prouver sur la machine
 
 Une lecture distante sans effet a confirmé le 2026-08-20 :
 
@@ -128,13 +146,12 @@ Le rapport public est dans
 `inventory/redacted/20260820-control-foundation-capacity/`.
 
 La marge mémoire impose une pile minimale, une seule interface experte et une
-mesure longue avant acceptation. Restent à prouver :
+mesure longue avant acceptation. Restent à prouver après un futur GO nommé :
 
 - consommation de chaque nouveau service et marge pendant une impression ;
-- dépendances exactes du paquet Moonraker retenu ;
 - objets Klipper exposés pour le mesh, le Z, la température et le CFS ;
 - effet mémoire pendant une observation longue sans impression de test dédiée.
 
-Ensuite, le prototype local utilisera les mêmes versions et un faux Klipper.
-Aucun outil de cette liste n'est considéré « compatible » avant la réussite de
-la matrice définie dans `docs/10-systeme-pilotage-perenne.md`.
+Le prototype local utilise maintenant un faux Moonraker et la matrice est verte.
+La compatibilité d'installation reste conditionnelle aux contrôles de
+`G4-K1-CONTROL-FOUNDATION-V1` sur la machine réelle.

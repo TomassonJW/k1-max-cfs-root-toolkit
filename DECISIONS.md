@@ -247,3 +247,23 @@ interne Creality. Une nouvelle calibration ou toute modification capable de
 changer la référence l'invalide. L'ancienne valeur reste disponible comme
 historique, mais n'est jamais réutilisée en silence. Il n'existe aucune valeur
 Z universelle inscrite dans le système.
+
+## D-022 — Fondation Mainsail/Moonraker posée avant les règles de comportement
+
+Date: 2026-08-20
+
+Status: accepté pour le paquet hors imprimante ; déploiement non autorisé
+
+La première pose de `K1-CONTROL-V1` ajoute seulement Moonraker et Mainsail en
+observation. Elle n'expose pas encore `K1 Control` réel et ne modifie ni le Z,
+ni le mesh, ni le démarrage, ni la purge, ni les températures CFS, ni Orca.
+
+Le paquet MIPS du Helper Script est réutilisé comme archive auditée, jamais par
+son installateur. Il contient Moonraker au commit
+`fccffa96c63ed77dc3953e18615e9fe9cd3d69ea`. Mainsail est figé en `v2.18.2`.
+Moonraker écoute seulement en boucle locale ; la première connexion Mainsail se
+fait par tunnel SSH et le port LAN ne s'ouvre qu'après création du compte.
+
+Cette séparation sert à mesurer mémoire, stabilité et coexistence avant de
+confier à la nouvelle pile le moindre comportement d'impression. Le candidat
+s'appelle `G4-K1-CONTROL-FOUNDATION-V1` et requiert son propre GO exact.

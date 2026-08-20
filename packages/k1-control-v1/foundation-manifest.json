@@ -1,0 +1,105 @@
+{
+  "package_id": "K1-CONTROL-V1-FOUNDATION",
+  "package_version": 1,
+  "status": "g4_candidate_offline_not_authorized",
+  "printer_mutation_authorized": false,
+  "active_g4_candidate": "G4-K1-CONTROL-FOUNDATION-V1",
+  "target": {
+    "printer": "Creality K1 Max S12 structure 0",
+    "firmware": "2.3.5.34",
+    "architecture": "mipsel",
+    "python": "3.8.2",
+    "cfs_count": 2
+  },
+  "components": [
+    {
+      "id": "moonraker-mips-bundle",
+      "role": "api",
+      "version": "fccffa96c63ed77dc3953e18615e9fe9cd3d69ea",
+      "source_repository": "https://github.com/Guilouz/Creality-Helper-Script",
+      "source_commit": "b46787a61b3ce2f04ec04d115a73a46c26814057",
+      "source_path": "files/moonraker/moonraker.tar.gz",
+      "sha256": "ca22e35a2773b3159b5023ace15e9abe305f1e5d01a01eef8fa1b6a3f9ce918a",
+      "size_bytes": 24281134,
+      "embedded_upstream_repository": "https://github.com/Arksine/moonraker",
+      "embedded_upstream_commit": "fccffa96c63ed77dc3953e18615e9fe9cd3d69ea",
+      "embedded_upstream_date": "2025-01-12",
+      "update_mode": "disabled"
+    },
+    {
+      "id": "nginx-mips-bundle",
+      "role": "static_gateway",
+      "source_repository": "https://github.com/Guilouz/Creality-Helper-Script",
+      "source_commit": "b46787a61b3ce2f04ec04d115a73a46c26814057",
+      "source_path": "files/moonraker/nginx.tar.gz",
+      "sha256": "586d69ee2b61bf0a6b65e77bcd91bbee28e2b457019a7bcac65898f6f8d7f9f1",
+      "size_bytes": 278773,
+      "update_mode": "disabled"
+    },
+    {
+      "id": "mainsail",
+      "role": "expert_static_ui",
+      "version": "v2.18.2",
+      "source_repository": "https://github.com/mainsail-crew/mainsail",
+      "source_commit": "009ae11fc0676a6f3b0d4697f5d28aa345c697ff",
+      "release_asset": "https://github.com/mainsail-crew/mainsail/releases/download/v2.18.2/mainsail.zip",
+      "sha256": "df2ba7c301f7bfc8ac9f122741a6ba08356d679ecfa1f62f898d0337802d5de5",
+      "size_bytes": 3133520,
+      "minimum_moonraker": "v0.8.0-306",
+      "update_mode": "disabled"
+    }
+  ],
+  "network": {
+    "moonraker_bind": "127.0.0.1:7125",
+    "gateway_bind": "0.0.0.0:4409",
+    "daily_path": null,
+    "daily_ui_exposed_in_this_slice": false,
+    "expert_path": "/",
+    "force_logins": true,
+    "api_key_enabled": true,
+    "trusted_clients": [],
+    "cors_domains": [],
+    "automatic_updates": false
+  },
+  "future_paths": {
+    "release_root": "/usr/data/k1-control-v1/releases/K1-CONTROL-V1.0.0",
+    "current_link": "/usr/data/k1-control-v1/current",
+    "persistent_state": "/usr/data/k1-control-v1/state",
+    "logs": "/usr/data/k1-control-v1/logs",
+    "backups": "/usr/data/k1-control-v1/backups",
+    "moonraker_service": "/etc/init.d/S56k1_control_moonraker",
+    "gateway_service": "/etc/init.d/S57k1_control_gateway",
+    "nginx_log_rotation": "/etc/logrotate.d/k1-control-v1",
+    "klippy_socket_read_only_dependency": "/tmp/klippy_uds"
+  },
+  "forbidden_future_writes": [
+    "/usr/share/klipper",
+    "/usr/share/klippy-env",
+    "/usr/data/printer_data/config/printer.cfg",
+    "/usr/data/printer_data/config/gcode_macro.cfg",
+    "/usr/data/printer_data/config/box.cfg",
+    "/etc/nginx/nginx.conf"
+  ],
+  "resource_gates": {
+    "baseline_total_ram_mib": 209,
+    "baseline_available_ram_mib": 118,
+    "maximum_moonraker_idle_rss_mib": 45,
+    "minimum_available_ram_after_start_mib": 70,
+    "maximum_swap_growth_mib": 8,
+    "maximum_release_disk_mib": 256,
+    "maximum_logs_disk_mib": 16,
+    "minimum_soak_hours": 8,
+    "soak_must_include_representative_print": true
+  },
+  "not_configured_integrations": [
+    "update_manager",
+    "timelapse",
+    "webcam_proxy",
+    "mqtt",
+    "zeroconf",
+    "notifiers",
+    "obico",
+    "spoolman",
+    "fluidd"
+  ]
+}

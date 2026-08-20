@@ -1,0 +1,66 @@
+{
+  "g4_id": "G4-K1-CONTROL-FOUNDATION-V1",
+  "status": "prepared_not_authorized",
+  "printer_mutation_authorized": false,
+  "change_class": "moonraker_api_and_mainsail_expert_ui_observation_only",
+  "does_not_change": [
+    "printer.cfg",
+    "gcode_macro.cfg",
+    "box.cfg",
+    "START_PRINT",
+    "END_PRINT",
+    "CFS macros or firmware",
+    "Z calibration or offset",
+    "bed mesh",
+    "Orca profiles or post-processing",
+    "Creality screen and web services"
+  ],
+  "new_remote_paths": [
+    "/usr/data/k1-control-v1/releases/K1-CONTROL-V1.0.0",
+    "/usr/data/k1-control-v1/state",
+    "/usr/data/k1-control-v1/logs",
+    "/usr/data/k1-control-v1/backups/<UTC_CAPTURE_ID>",
+    "/usr/data/k1-control-v1/current",
+    "/etc/init.d/S56k1_control_moonraker",
+    "/etc/init.d/S57k1_control_gateway",
+    "/etc/logrotate.d/k1-control-v1"
+  ],
+  "bootstrap": {
+    "moonraker": "127.0.0.1:7125",
+    "gateway": "127.0.0.1:4409",
+    "first_account_path": "SSH tunnel to the loopback-only Mainsail endpoint",
+    "lan_activation_after_verified_login": "0.0.0.0:4409"
+  },
+  "pre_change_backup": [
+    "read-only proof that the target logrotate binary accepts the prepared policy",
+    "process and listener snapshot",
+    "RAM, swap and /usr/data snapshot",
+    "existence and SHA-256 of every target path",
+    "existing current-link destination if present",
+    "absence markers for new paths that do not exist"
+  ],
+  "validation_without_machine_motion": [
+    "all staged and installed hashes match",
+    "Moonraker stays on loopback port 7125",
+    "first account exists before LAN port 4409 opens",
+    "Mainsail login succeeds",
+    "Creality ports 80, 8080 and 9999 remain available",
+    "screen, Klipper and both CFS processes remain present",
+    "no printer.gcode.script request is sent",
+    "no heater, movement, homing, calibration, extrusion or print is started",
+    "target logrotate accepts the prepared nginx policy and logs stay below the manifest limit",
+    "resource gates from foundation-manifest.json pass"
+  ],
+  "rollback": {
+    "trigger": "any failed checksum, login, service, coexistence or resource gate",
+    "actions": [
+      "stop only S57k1_control_gateway and S56k1_control_moonraker",
+      "restore prior service files or their recorded absence",
+      "restore the prior logrotate policy or its recorded absence",
+      "restore the prior current-link destination or its recorded absence",
+      "move the failed release under the dated backup instead of deleting evidence",
+      "verify Creality listeners and processes against the pre-change snapshot"
+    ],
+    "orca_action": "none because the active Orca profile remains untouched"
+  }
+}

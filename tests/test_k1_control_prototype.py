@@ -10,6 +10,7 @@ from prototype.control_state import (
     TemperatureController,
     ZCalibrationController,
 )
+from prototype.moonraker_simulator import MoonrakerSimulation, create_server
 
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -121,15 +122,21 @@ class TemperatureOwnershipTests(unittest.TestCase):
 
 
 class StaticInterfaceTests(unittest.TestCase):
-    def test_interface_is_explicitly_offline_and_dependency_free(self) -> None:
+    def test_interface_uses_only_the_relative_simulated_moonraker_adapter(self) -> None:
         html = (UI / "index.html").read_text(encoding="utf-8")
-        javascript = (UI / "app.js").read_text(encoding="utf-8")
+        javascript = (UI / "app-moonraker.js").read_text(encoding="utf-8")
+        adapter = (UI / "moonraker-adapter.js").read_text(encoding="utf-8")
         self.assertIn('data-mode="simulation"', html)
         self.assertIn("Simulation locale", html)
+        self.assertIn('type="module"', html)
+        self.assertIn("/server/info", adapter)
+        self.assertIn("/printer/objects/query", adapter)
+        self.assertIn("/printer/gcode/script", adapter)
         self.assertNotIn("https://", html)
         self.assertNotIn("http://", html)
         self.assertNotIn("WebSocket", javascript)
-        self.assertNotIn("moonraker", javascript.lower())
+        self.assertNotIn("http://", adapter)
+        self.assertNotIn("https://", adapter)
 
     def test_mock_state_is_synthetic_and_shows_the_product_contract(self) -> None:
         state = json.loads((UI / "mock-state.json").read_text(encoding="utf-8"))
@@ -142,6 +149,30 @@ class StaticInterfaceTests(unittest.TestCase):
             ["cfs", "print"],
         )
         self.assertTrue(all(stage["status"] == "locked" for stage in state["sequence"][-2:]))
+
+    def test_simulated_moonraker_applies_the_python_z_state_rules(self) -> None:
+        simulation = MoonrakerSimulation()
+        before = simulation.snapshot()["calibration"]["offsetMm"]
+        simulation.dispatch_script(f"K1_Z_SESSION_START SEED={before}")
+        simulation.dispatch_script("K1_Z_ADJUST DELTA=0.005")
+        provisional = simulation.snapshot()
+        self.assertEqual(provisional["calibration"]["offsetMm"], before)
+        self.assertAlmostEqual(provisional["calibration"]["session"]["currentOffsetMm"], before + 0.005)
+        simulation.dispatch_script("K1_Z_COMMIT")
+        committed = simulation.snapshot()
+        self.assertAlmostEqual(committed["calibration"]["offsetMm"], before + 0.005)
+        self.assertTrue(committed["calibration"]["canRestore"])
+        simulation.dispatch_script("K1_SIM_RESTART")
+        self.assertAlmostEqual(simulation.snapshot()["calibration"]["offsetMm"], before + 0.005)
+        simulation.dispatch_script("K1_SIM_REFERENCE_CALIBRATION")
+        self.assertFalse(simulation.snapshot()["ready"])
+
+    def test_simulator_binds_only_to_loopback(self) -> None:
+        server = create_server(0)
+        try:
+            self.assertEqual(server.server_address[0], "127.0.0.1")
+        finally:
+            server.server_close()
 
 
 if __name__ == "__main__":

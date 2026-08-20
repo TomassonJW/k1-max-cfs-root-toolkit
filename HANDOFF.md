@@ -1,8 +1,8 @@
 # HANDOFF
 
 Date: 2026-08-20
-Phase: P3 / architecture corrected, full offline control prototype started
-Next operator: Codex continues the offline prototype; no printer-side gate is pending
+Phase: P3 complete / P4 waiting for an exact named G4
+Next operator: Thomas decides `G4-K1-CONTROL-FOUNDATION-V1`; Codex must not infer approval
 
 ## Current state
 
@@ -28,6 +28,22 @@ garder un rollback simple. Aucun installateur communautaire n'est accepté tel
 quel. Le post-traitement Orca actuel reste inchangé jusqu'à preuve complète de
 son remplacement.
 
+Le prototype complet hors imprimante est maintenant vert. L'écran parle à un
+faux Moonraker sur `127.0.0.1` et ce faux service applique le moteur d'état
+Python. Les 17 scénarios obligatoires passent, dont le blocage d'une purge trop
+tôt, T0 vers T5 entre les deux CFS, l'invalidation Z et le rollback SHA-256.
+
+La pile est figée : Moonraker MIPS embarqué au commit
+`fccffa96c63ed77dc3953e18615e9fe9cd3d69ea`, nginx MIPS du même paquet et
+Mainsail `v2.18.2`. Les trois archives ont été réellement assemblées et vérifiées
+dans un bundle local temporaire. Aucun binaire communautaire n'est publié dans
+Git.
+
+Le premier candidat de pose s'appelle `G4-K1-CONTROL-FOUNDATION-V1`. Il ajoute
+uniquement Moonraker et Mainsail en observation, sans exposer encore `K1 Control`
+réel et sans modifier Z, mesh, démarrage, purge, CFS ou Orca. Il est préparé,
+mais **pas autorisé**.
+
 Le contrat, l'architecture et la comparaison des outils sont dans les documents
 10, 11 et ADR-004. Aucun fichier n'a été écrit sur l'imprimante, aucun service
 n'a été redémarré et aucun profil Orca actif n'a été modifié.
@@ -37,11 +53,11 @@ disponibles, Python 3.8.2, 4,2 Gio libres et aucun port/processus Moonraker. La
 marge mémoire impose une pile minimale et un test de durée ; le rapport public
 anonymisé est dans `inventory/redacted/20260820-control-foundation-capacity/`.
 
-Un premier écran `K1 Control` sans dépendance et un moteur d'état Python pur sont
-présents sous `prototype/`. Ils n'utilisent que des données synthétiques. Les
-vues bureau/mobile et les actions calibration, sauvegarde, redémarrage et
-invalidation ont été vérifiées dans un navigateur local sans erreur JavaScript.
-La suite hors imprimante passe 37 tests.
+Un écran `K1 Control` sans dépendance, un moteur d'état Python pur, un faux
+Moonraker, le contrat Orca et la matrice exécutable sont présents sous
+`prototype/`, `orca/` et `tests/`. Les vues bureau/mobile et les actions
+calibration, sauvegarde, redémarrage et invalidation ont été vérifiées sans
+erreur JavaScript. La suite complète passe 49/49 contrôles.
 
 ## Preuves historiques utiles
 
@@ -138,21 +154,21 @@ Codex has permanent authority to complete all normal Git and GitHub operations f
 
 ## Next bounded mission
 
-Continuer le prototype complet hors imprimante :
+La prochaine action qui pourrait toucher la machine est bloquée par une gate
+humaine. Thomas doit écrire explicitement :
 
-1. utiliser le relevé de capacité maintenant acquis pour sélectionner les
-   versions minimales Moonraker/Mainsail ;
-2. épingler cette pile et reproduire son installation dans un paquet
-   local inspectable, sans exécuter l'installateur constructeur ;
-3. connecter le moteur et l'écran existants à un adaptateur Moonraker simulé ;
-4. produire le contrat Orca départ/fin/changement d'outil et ses fixtures ;
-5. passer la matrice de séquence et des deux CFS ;
-6. préparer seulement ensuite un nouveau G4 nommé, avec backup, checksums,
-   test haut sans extrusion, critères OK/KO et rollback.
+`GO G4-K1-CONTROL-FOUNDATION-V1`
 
-La prochaine étape ne demande aucun test physique. Aucune installation
-Mainsail/Moonraker, aucun macro, aucun profil Orca et aucun paramètre CFS ne doit
-être modifié sur les systèmes actifs.
+avant toute copie, installation ou démarrage. Un `GO` générique ou ancien ne
+suffit pas.
+
+Cette gate, si elle est donnée, autorise seulement la pose Moonraker/Mainsail,
+la création du premier compte par tunnel SSH, les contrôles sans commande
+G-code et le rollback du même paquet. Elle n'autorise aucune chauffe, mouvement,
+calibration, extrusion, impression, modification Orca ou macro comportemental.
+
+Sans ce GO exact, Codex peut seulement continuer les travaux locaux sur les
+wrappers Z/mesh/start/CFS et l'adaptateur réel de `K1 Control`.
 
 ## Stop conditions
 

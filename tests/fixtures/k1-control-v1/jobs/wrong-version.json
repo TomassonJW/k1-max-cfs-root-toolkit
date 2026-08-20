@@ -1,0 +1,12 @@
+{
+  "contract_version": 2,
+  "mode": "production",
+  "plate_id": "PEI_TEXTURED_A",
+  "bed_target_c": 60,
+  "initial_tool": 0,
+  "tool_temperature_targets_c": {"0": 205},
+  "object_bounds": [25, 25, 100, 100],
+  "cleaning_profile": "STANDARD",
+  "purge_profile": "SHORT",
+  "mesh_mode": "reference"
+}

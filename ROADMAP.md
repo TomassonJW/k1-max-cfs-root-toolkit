@@ -43,7 +43,7 @@ Exit: Gate G3.
 
 ## P3 — Conception et prototype complet hors imprimante
 
-Status: **in progress — architecture corrigée, prototype lancé, aucun G4 actif**
+Status: **completed on 2026-08-20 — prototype vert, premier G4 préparé mais non autorisé**
 
 Le paquet fixe `G4-ZSAFE-START-V1` est rejeté et n'a jamais été déployé. La
 phase construit maintenant un seul produit cohérent avant toute demande
@@ -55,7 +55,8 @@ d'installation.
   persistant par travail ;
 - simuler l'ordre thermique, nettoyage, référence finale, mesh, Z, CFS, purge,
   impression et fin ;
-- construire l'interface quotidienne `K1 Control` sur un faux Klipper ;
+- construire l'interface quotidienne `K1 Control` sur un faux Moonraker relié
+  au moteur d'état ;
 - sélectionner et épingler une pile Moonraker/Mainsail compatible MIPS/Buildroot
   sans installateur général ni mise à jour automatique ;
 - produire le contrat Orca complet départ/fin/changement d'outil ;
@@ -67,14 +68,18 @@ d'installation.
 Exit: prototype local complet, matrice verte, versions exactes et premier paquet
 G4 nommé préparé. Cette sortie n'autorise toujours pas son déploiement.
 
+Sortie atteinte : 17/17 scénarios verts, bundle local vérifié, Moonraker MIPS
+et Mainsail `v2.18.2` épinglés, contrat Orca complet et
+`G4-K1-CONTROL-FOUNDATION-V1` préparé sans mutation de l'imprimante.
+
 ## P4 — Installation contrôlée du système de pilotage
 
-Status: **not started; requires a future explicit named G4**
+Status: **waiting for explicit `G4-K1-CONTROL-FOUNDATION-V1` approval**
 
 Le produit est posé par étapes techniques réversibles, mais Thomas reçoit un
 seul fonctionnement quotidien :
 
-1. API et interfaces en observation ;
+1. API et Mainsail en observation — paquet préparé, non déployé ;
 2. état et interface de calibration Z ;
 3. mesh, nettoyage, démarrage et purge sûrs ;
 4. propriété dynamique des températures des deux CFS ;

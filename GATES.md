@@ -139,10 +139,17 @@ deployed**. Son nom ne peut plus recevoir de GO. Les fichiers restants sont des
 preuves historiques marquées `rejected_never_deploy` ; le macro échoue
 volontairement s'il est chargé par erreur.
 
-Current behaviour candidate: **none**. Le travail actif est le prototype local
-`K1-CONTROL-V1`. Il ne deviendra un ou plusieurs candidats G4 nommés qu'après la
-réussite du contrat, de l'interface simulée, de la matrice Z/mesh/CFS/Orca, de
-la preuve de compatibilité et des rollbacks.
+Candidate `G4-K1-CONTROL-FOUNDATION-V1`: **prepared offline on 2026-08-20 and
+not authorised**. Cette première pose ajoute uniquement Moonraker et Mainsail en
+observation. Elle ne modifie ni macros, ni Z, ni mesh, ni CFS, ni Orca. Les
+versions, archives, empreintes, chemins, démarrage avec compte créé par tunnel,
+seuils de ressources et rollback sont fixés dans le paquet et le document 12.
+
+Le prototype produit a passé 17/17 scénarios hors imprimante. Cela permet de
+présenter la gate de fondation ; cela ne prouve pas encore la consommation ou
+la coexistence sur la machine réelle. Seul un GO portant exactement le nom
+`G4-K1-CONTROL-FOUNDATION-V1` autorisera cette pose. Il n'autorise ni commande
+G-code, ni chauffe, ni mouvement, ni changement Orca, ni pose comportementale.
 
 Required for each named change:
 
