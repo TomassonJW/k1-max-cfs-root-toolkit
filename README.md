@@ -2,7 +2,7 @@
 
 Unofficial, evidence-driven tooling and documentation for taking controlled ownership of a rooted Creality K1 Max equipped with the classic K1 CFS upgrade and multiple CFS units.
 
-> **Status:** P2 / Gate G3 preparation. Stock read-only acquisition and the comparable-trace protocol are complete; no printer configuration change has been performed or authorised.
+> **Status:** P3 / Gate G3 passed for offline preparation. The first named Z-safety package is prepared and simulated locally; it is not authorised or deployed.
 
 ## Target configuration
 
@@ -68,7 +68,7 @@ Until the repository gate explicitly changes:
 - no destructive shell command;
 - no publication of raw backups, credentials, network details, serial identifiers or proprietary firmware files.
 
-Read [`AGENTS.md`](AGENTS.md), [`GATES.md`](GATES.md) and the protocol applicable to the mission before any SSH session. The next controlled proof is defined in [`docs/03-z-offset-diagnostic-protocol.md`](docs/03-z-offset-diagnostic-protocol.md).
+Read [`AGENTS.md`](AGENTS.md), [`GATES.md`](GATES.md) and the protocol applicable to the mission before any SSH session. The next human gate and its exact package are defined in [`docs/09-g4-zsafe-start-package.md`](docs/09-g4-zsafe-start-package.md).
 
 ## Repository map
 
@@ -83,7 +83,7 @@ Read [`AGENTS.md`](AGENTS.md), [`GATES.md`](GATES.md) and the protocol applicabl
 - `prompts/` — bounded prompts for Codex missions;
 - `machine/` — publishable machine manifests and schemas;
 - `inventory/redacted/` — sanitised evidence suitable for Git;
-- `overrides/` — original override configurations, initially empty;
+- `overrides/` — original, reviewable override candidates; presence in Git never authorises deployment;
 - `scripts/` — original acquisition, validation, deployment and rollback tooling;
 - `tests/` — reproducible checks and fixtures.
 

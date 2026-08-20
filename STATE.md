@@ -4,13 +4,20 @@ Last updated: 2026-08-20
 
 ## Current phase
 
-**P3 — controlled offline design after Gate G3**
+**P3 — first offline Z-safety package prepared after Gate G3**
 
 The repository baseline, stock acquisition, complete Orca/G-code intake and
 passive P1–P5/PETG trace are complete. Gate G3 is passed for offline design and
 simulation only. The selected route remains a strengthened stock Level A; no
 printer-behaviour deployment is authorised. The separate `G4-SSH-KEY` change is
 the only deployed printer-side change.
+
+`G4-ZSAFE-START-V1` is now prepared under `overrides/g4-zsafe-start/`. Its
+overlay keeps the public `START_PRINT` name, removes Orca's preliminary `G28/T0`,
+loads the stock `default` mesh explicitly, applies `+0.27 mm` before CFS/purge,
+guards every low production path and captures the final correction candidate
+before the unchanged stock end. Offline tests are green; the package has not
+been loaded, parsed or executed on the printer.
 
 ## Confirmed facts
 
@@ -111,6 +118,16 @@ the only deployed printer-side change.
 
 ## Completed
 
+- `G4-ZSAFE-START-V1` architecture recorded in ADR-003.
+- Original `zsafe_g4.cfg`, Orca start/end snippets and a declarative sequence
+  contract prepared without copying or changing a vendor file.
+- Offline simulation proves that declared purge and print hazards cannot run
+  before final reference, explicit `default` mesh, effective `+0.27 mm` and the
+  armed gate.
+- High-clearance `VALIDATE_ONLY=1` path, exact backup/install boundaries, OK/KO
+  criteria and full rollback documented in
+  `docs/09-g4-zsafe-start-package.md`.
+
 - Complete-system audit, A/B/C comparison, safety invariant, input contract and
   time-bounded roadmap documented in
   `docs/08-audit-systeme-complet-et-trajectoire.md`.
@@ -161,11 +178,11 @@ the only deployed printer-side change.
 
 ## Next safe action
 
-Prepare offline the first named Z-safety package. It must ensure that no purge or
-low movement occurs before the final Z reference, mesh policy and effective
-correction are known. It must also stop the end sequence from silently erasing a
-validated correction. Include exact backup, checksums, reviewed diff, rollback
-and a high-clearance no-extrusion validation.
+Review the exact package `G4-ZSAFE-START-V1`. The next printer-side action is a
+human gate: Thomas either refuses it or gives an explicit GO naming this package.
+After GO, Codex must re-read and hash the live files before any write, stop on
+drift, deploy only the reviewed include/overlay and Orca fields, then run the
+high-clearance `VALIDATE_ONLY=1` path before any extrusion.
 
 Do not remove the Orca post-processor yet. Its retirement is an acceptance
 criterion of the future package, after the replacement protects both startup
@@ -176,9 +193,9 @@ offline whether every stock write can be intercepted; otherwise define the
 smallest maintainable replacement for the compiled owner. Never hard-code a
 material or temperature.
 
-No additional diagnostic print is requested now. The next physical action will
-be the explicitly authorised validation of one reviewed G4 package. Use
-`k1max-root`; a password prompt remains a failure condition.
+No additional diagnostic print is requested now. The next physical action is
+the explicitly authorised high-clearance validation of `G4-ZSAFE-START-V1`.
+Use `k1max-root`; a password prompt remains a failure condition.
 
 ## Not authorised yet
 
@@ -191,6 +208,8 @@ be the explicitly authorised validation of one reviewed G4 package. Use
 - Macro or configuration modification.
 - Z, mesh, temperature or CFS tuning.
 - Any static material-specific CFS temperature candidate.
+- `G4-ZSAFE-START-V1` deployment, restart, homing, high-clearance validation or
+  Orca profile change until the exact named GO is received.
 
 ## Current blockers
 
@@ -206,9 +225,16 @@ be the explicitly authorised validation of one reviewed G4 package. Use
   because both the second filament and the stock CFS request `220 °C`.
 - The large historical Z shifts have not been reproduced, although the late
   application and end-of-print erasure mechanisms are now directly proven.
+- The overlay has not been parsed by the exact printer runtime. The duplicate
+  section merge is proven from captured source and simulated locally, but the
+  first real config load remains a G4 validation.
+- The first package deliberately supports only the reviewed `+0.27 mm` and the
+  existing `default` mesh. PETG `+0.38 mm`, accepted persistence and mesh
+  adaptation remain later decisions.
 
 ## Exit condition for this phase
 
-One named Z-safety package has exact files and commands, backup and checksums, a
-reviewed diff, offline simulation, a high-clearance no-extrusion validation and
-a plausible rollback. Passing its own G4 will authorise only that deployment.
+Offline exit conditions are met for `G4-ZSAFE-START-V1`: exact files, backup
+boundary, reference checksums, reviewed diff, simulation, high-clearance
+no-extrusion validation and rollback exist. The phase remains open at the human
+G4 because no printer-side result has been observed.
