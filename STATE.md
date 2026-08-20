@@ -4,15 +4,39 @@ Last updated: 2026-08-20
 
 ## Current phase
 
-**P2 — complete-system intake and analyser-first Level A design**
+**P3 — controlled offline design after Gate G3**
 
-The repository baseline, stock acquisition and targeted source follow-up are complete. The A1/B/A2 physical session was executed by Thomas while Codex collected logs in read-only mode. The separate `G4-SSH-KEY` change has since added one dedicated SSH public key. Codex performed no restart, movement, heating, calibration, print, cancellation or printer-behaviour change.
+The repository baseline, stock acquisition, complete Orca/G-code intake and
+passive P1–P5/PETG trace are complete. Gate G3 is passed for offline design and
+simulation only. The selected route remains a strengthened stock Level A; no
+printer-behaviour deployment is authorised. The separate `G4-SSH-KEY` change is
+the only deployed printer-side change.
 
 ## Confirmed facts
 
-- A complete audit now recommends a strengthened stock route before BTT Eddy or
-  a full firmware replacement. This is a proposed architecture, not a printer
-  deployment authorisation.
+- Passive session `20260820-154056-p123` captured P1, P2, P3, P4, two P5
+  attempts and one P1 PETG run. All jobs finished; the trace ended with nozzle
+  and bed targets at zero.
+- P4 proved that the `+0.27 mm` post-processor correction appears only after
+  `START_PRINT`; startup purge and other earlier low operations remain
+  unprotected.
+- Live Z changes invoke `Z_OFFSET_APPLY_PROBE`, but the end-of-print path applies
+  the exact inverse and prepares `0.000` for persistence. The current workflow
+  therefore erases the correction it appeared to save.
+- P1 PETG required a final visible correction of `+0.38 mm`, `+0.11 mm` above
+  the file baseline, after briefly reaching `+0.40 mm`.
+- P2 and P3 have the same 639 recorded settings and showed no reported physical
+  difference despite separate versus assembled objects. One `+0.010 mm` live Z
+  click occurred during P3, so the pair is not entirely untouched; it provides
+  no evidence that object count alone explains the historical shifts.
+- The second corrected P5 completed without a pause and followed nozzle targets
+  `115 -> 220 -> 205 -> 220 -> 0 °C`. The first `220 °C` confirms the startup
+  override; the second equals the requested target and cannot prove ownership.
+- Every file still receives stock PA `0.044` during startup before its own PA
+  becomes active roughly three minutes later.
+
+- The accepted design route is a strengthened stock stack before BTT Eddy or a
+  full firmware replacement. This authorises offline design, not deployment.
 - A private, Git-ignored intake exists under
   `inventory/raw/user-inputs/20260820-full-system-audit/` for Orca exports,
   existing projects, G-codes, custom scripts, photos and recovery artefacts.
@@ -137,33 +161,24 @@ The repository baseline, stock acquisition and targeted source follow-up are com
 
 ## Next safe action
 
-Start one passive, read-only observer while the printer is idle, then let Thomas
-run only P1-SINGLE, P2-FIVE-OBJECTS and P3-ONE-MERGED-OBJECT in one boot session.
-Keep the same plate, PLA, CFS slot and mechanical settings; record every live Z
-correction with its time. Analyse that capture before authorising P4, the PETG
-variant or a corrected one-change P5.
+Prepare offline the first named Z-safety package. It must ensure that no purge or
+low movement occurs before the final Z reference, mesh policy and effective
+correction are known. It must also stop the end sequence from silently erasing a
+validated correction. Include exact backup, checksums, reviewed diff, rollback
+and a high-clearance no-extrusion validation.
 
-The first engineering output is an offline analyser and a non-deployed G4 safety
-packet. It must prove that no low movement or purge can occur before the final Z
-reference, known mesh policy and effective correction. It must also decide
-whether every CFS temperature write can be wrapped or the compiled owner must be
-replaced.
+Do not remove the Orca post-processor yet. Its retirement is an acceptance
+criterion of the future package, after the replacement protects both startup
+and print moves.
 
-When Thomas next runs a genuinely useful different or multi-object production
-job, a separate passive session may still record any live Z correction. Do not
-repeat the completed long print solely for diagnosis.
+Keep dynamic CFS temperature ownership in a separate later package. Determine
+offline whether every stock write can be intercepted; otherwise define the
+smallest maintainable replacement for the compiled owner. Never hard-code a
+material or temperature.
 
-Do not deploy or recreate `G4-CFS-TEMP-PLA`. The next temperature mission is
-read-only and offline: determine whether every stock CFS temperature write can
-be intercepted by macros. If not, define the smallest maintainable replacement
-for the compiled temperature owner. Compare both routes against
-`docs/07-dynamic-cfs-temperature-requirements.md` before preparing any patch.
-
-Independently, prepare a passive session for the next genuinely different or
-multi-object production job. Keep pressure ownership, ironing, cleaning and Z
-changes in separate future G4 packages.
-
-Use `k1max-root` for future bounded SSH work; a password prompt is now a failure condition, not a normal step. Keep the next printer-behaviour change separate and subject it to its own named G4.
+No additional diagnostic print is requested now. The next physical action will
+be the explicitly authorised validation of one reviewed G4 package. Use
+`k1max-root`; a password prompt remains a failure condition.
 
 ## Not authorised yet
 
@@ -183,15 +198,17 @@ Use `k1max-root` for future bounded SSH work; a password prompt is now a failure
   user profiles, current Z post-processor and representative projects/G-codes
   are nevertheless captured individually and verified.
 - The PETG G-code has no matching `P1-PETG.3mf` in the intake.
-- The present P5 alternates tools ten times and cannot qualify a single
-  intentional material-change test until it is resliced.
 - Recovery artefacts and procedure have not been matched locally to the exact revision.
 - The core `BOX_*` state machine is compiled and its readable source is not present on the machine.
 - The literal registration of `ACCURATE_HOME_Z` was not found in readable Python, although the underlying `G28` and PR Touch path is mapped.
-- The executed pair is not qualified because the bed screws changed and A1 startup capture is incomplete.
 - Parts of `ACCURATE_HOME_Z` remain non-observable, although pressure advance ownership is now measured.
-- No real multi-object problematic G-code is available locally for offline comparison.
+- The corrected P5 cannot distinguish temperature ownership after its change
+  because both the second filament and the stock CFS request `220 °C`.
+- The large historical Z shifts have not been reproduced, although the late
+  application and end-of-print erasure mechanisms are now directly proven.
 
 ## Exit condition for this phase
 
-Gate G3 has a defensible call graph, separated Z hypotheses, comparable traces and one narrow proposed intervention. This will authorise patch preparation only, not deployment.
+One named Z-safety package has exact files and commands, backup and checksums, a
+reviewed diff, offline simulation, a high-clearance no-extrusion validation and
+a plausible rollback. Passing its own G4 will authorise only that deployment.

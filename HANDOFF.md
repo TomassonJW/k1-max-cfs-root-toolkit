@@ -1,8 +1,8 @@
 # HANDOFF
 
 Date: 2026-08-20
-Phase: P2 / complete-system intake and analyser-first Level A design
-Next operator: Codex inventories the private Orca/G-code intake and builds the offline ownership timeline; no printer deployment is available
+Phase: P3 / Gate G3 passed, controlled offline design
+Next operator: Codex designs and simulates one reversible Z-safety package; no printer deployment is authorised
 
 ## Current state
 
@@ -29,10 +29,33 @@ recorded settings, estimated duration, material use and layer count; their
 useful difference is five separate objects versus one assembled object. Ironing
 is active on all three and does not invalidate the first-layer comparison.
 
-Do not run the current `P5-CFS-ONE-CHANGE`: despite its name, its G-code contains
-ten automatic changes (`T0/T1` alternating each layer). It is a possible later
-CFS endurance case, not a clean single-change proof. A replacement must announce
-one filament change and contain only the intended `T0` then `T1` transition.
+Thomas supplied a corrected `P5-CFS-ONE-CHANGE` containing one intended `T0` to
+`T1` transition. Its private copy and hashes are recorded; the first alternating
+version remains private evidence only.
+
+Passive session `20260820-154056-p123` is complete. It captured P1, P2, P3, P4,
+two P5 attempts and P1 PETG. The trace ended with all heater targets at zero;
+Codex stopped only the passive observer after Thomas confirmed completion.
+
+The decisive Z finding is runtime evidence, not an inference from the file. On
+P4, the visible Z stays at `0.00` through the stock startup and only becomes
+`+0.27 mm` when the post-processor executes afterward. The current workaround
+cannot protect the preceding purge. Live Z clicks call `Z_OFFSET_APPLY_PROBE`,
+but P3 and PETG both end by applying the exact inverse and preparing `0.000` for
+persistence. P1 PETG finished at `+0.38 mm`, `+0.11 mm` above its file baseline,
+before that value was erased.
+
+P2 and P3 share all 639 recorded settings and produced no reported visible
+difference between separate and assembled objects. One `+0.010 mm` live Z click
+occurred during P3, so this is not a fully untouched pair. It does not disprove
+the historical large shifts and gives no evidence that object count alone
+triggers them.
+
+The first P5 attempt had three pauses after a likely filament break and is
+excluded. The second completed without a pause. Its nozzle targets were
+`115 -> 220 -> 205 -> 220 -> 0 °C`: the startup override is confirmed, while
+the final `220 °C` cannot distinguish G-code from CFS ownership because both
+request the same value.
 
 The baseline acquisition, targeted source follow-up, physical session `20260819-185157-g3-aba` and separate `G4-SSH-KEY` deployment are complete. Thomas performed the prints and mechanical adjustments. Codex changed only root SSH access by adding one dedicated public key; no printer behaviour, service or configuration was changed. Raw captures remain local and ignored; only redacted inventories and conclusions are publishable.
 
@@ -82,39 +105,23 @@ Codex has permanent authority to complete all normal Git and GitHub operations f
 
 ## Next bounded Codex mission
 
-When Thomas is physically ready, verify standby read-only and start one passive
-observer before P1. Keep it connected through P1, P2 and P3, then close it after
-the return to standby. Thomas launches and supervises every print, supplies the
-start/end times and may make an emergency live Z correction if he reports its
-time and value. No bed-screw, plate, filament-slot or reboot change is allowed
-inside this first comparison.
+Design offline one named Z-safety package for the strengthened stock route. It
+must order cleaning, Z reference, mesh policy, final correction and purge so
+that no purge or low movement happens while the correction is absent. It must
+also prevent the end sequence from silently destroying a validated correction.
 
-After that capture, parse the Orca profiles and G-code into one ordered timeline
-covering Z, mesh, homing, temperatures, pressure advance, CFS, purge, pause,
-refill, tool change and end of job. Decide from the evidence whether P4, P1-PETG
-or a corrected P5 is still necessary instead of automatically printing all of
-them.
+Prepare exact source and destination paths, backup and hashes, reviewed diff,
+rollback, offline simulation and a high-clearance no-extrusion validation. Do
+not deploy it and do not remove the Orca post-processor until its own G4 is
+explicitly passed for that exact package.
 
-Produce the target Orca contract, a rule report and a decision on wrapper
-coverage versus targeted compiled-owner replacement. Then prepare, but do not
-deploy, the first named G4 safety packet with backup, hashes, no-extrusion
-validation and rollback.
+Keep temperature ownership separate. Continue its offline call-path analysis
+against `docs/07-dynamic-cfs-temperature-requirements.md`; use no material- or
+temperature-specific constant. Cleaning, pressure advance, ironing and UI work
+remain later independent packages.
 
-Do not repeat A1/B/A2 or the completed long production print. A separate passive
-session may accompany the next genuinely different or multi-object useful job;
-it must not consume plastic solely for diagnosis.
-
-No temperature deployment is ready. The next bounded mission is read-only and
-offline: map every temperature write through startup, `T0`–`T15`, both physical
-CFS units, purge, equivalent refill, intentional material change and resume.
-Then decide whether wrappers cover every path or whether the compiled owner must
-be replaced. The decision must satisfy
-`docs/07-dynamic-cfs-temperature-requirements.md` without hard-coded material or
-temperature.
-
-Keep every later printer behaviour change behind its own named G4. Do not treat the completed SSH convenience change as permission to modify Z, mesh, cleaning, CFS or services.
-
-For the first behaviour overlay, keep five independent candidates: deterministic Z reference, explicit mesh policy, end-of-print nozzle cleaning plus pre-probe fallback, final pressure-advance ownership after CFS, and read-only observability. Select only one under a future G4.
+No new diagnostic print is required now. The next physical test is the bounded
+validation of the reviewed Z-safety package after explicit authorisation.
 
 ## Stop conditions
 

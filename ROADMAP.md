@@ -26,7 +26,7 @@ Exit: Gate G2.
 
 ## P2 — Behaviour map and diagnosis
 
-Status: **in progress — complete-system intake and analyser-first route prepared**
+Status: **completed on 2026-08-20 — Gate G3 passed for offline preparation**
 
 - reconstruct configuration includes and service ownership;
 - build call graphs for startup, Z homing, levelling, tool changes, loading, cutting, flushing and resume;
@@ -43,7 +43,7 @@ Exit: Gate G3.
 
 ## P3 — Controlled experiments
 
-Status: **not started**
+Status: **in progress — first Z-safety package to be designed offline**
 
 - establish Z repeatability at defined thermal states;
 - characterise meshes by plate and bed temperature;
