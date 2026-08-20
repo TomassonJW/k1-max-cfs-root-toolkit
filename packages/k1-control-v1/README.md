@@ -26,20 +26,27 @@ paquet, repasse les tests et reçoit un nouveau GO.
 
 - Moonraker écoute seulement `127.0.0.1:7125` ;
 - le premier démarrage de la passerelle écoute seulement en boucle locale ;
-- le compte administrateur est créé à travers un tunnel SSH, sans exposer la
-  fenêtre de création du premier compte au réseau local ;
+- le compte HTTP nginx est créé par une invite PowerShell locale masquée ; seul
+  son hachage SSHA salé est transmis par SSH et stocké en mode `0600` ;
+- PowerShell 7 ou plus récent est requis pour cette saisie et ce transport ;
+- le compte est vérifié à travers un tunnel SSH, sans exposer la fenêtre de
+  connexion au réseau local ;
 - le port dédié `4409` n'est ouvert au réseau qu'après cette connexion vérifiée ;
-- Moonraker exige une connexion et ne fait confiance à aucun réseau par défaut ;
-- le compte initial et sa clé API seront créés pendant une future pose, jamais
-  stockés dans Git ;
+- le port LAN accepte seulement la boucle locale et les plages IPv4 privées ;
+- Moonraker fait confiance uniquement au nginx local, et nginx retire l'en-tête
+  HTTP `Authorization` avant chaque requête transmise ;
+- aucune clé API ou empreinte de mot de passe n'est stockée dans Git ;
 - pas de mise à jour automatique, caméra, MQTT, découverte réseau, notification
   ou service cloud dans ce premier paquet.
 
 Le préflight réel de V1 a prouvé que la machine ne possède ni `logrotate`, ni
-`/etc/logrotate.d`. V1 a donc été arrêtée avant toute copie. V2 ne rajoute
+`/etc/logrotate.d`. V1 a donc été arrêtée avant toute copie. V2 n'a ajouté
 aucune dépendance : Moonraker conserve sa rotation quotidienne interne et nginx
 envoie ses erreurs au `syslogd` BusyBox déjà actif par `/dev/log`. Sur cette
 machine, son aide confirme la rotation par défaut à 200 Kio avec une sauvegarde.
+La pose réelle V2 a ensuite prouvé que Mainsail `v2.18.2` ne sait pas créer ni
+utiliser un compte Moonraker. V2 a été rollbackée et fermée. V3 déplace donc
+l'authentification à la seule frontière réseau réellement compatible : nginx.
 
 ## Ressources et arrêt automatique
 
@@ -59,6 +66,6 @@ versionnés et de nouveaux services, sans toucher à `printer.cfg`,
 `gcode_macro.cfg`, `box.cfg`, au Klipper constructeur ni au nginx constructeur.
 
 Les fichiers `config/` et `services/` sont des originaux du projet. Ils servent
-au simulateur de pose et à la revue de `G4-K1-CONTROL-FOUNDATION-V2`. Cette gate
+au simulateur de pose et à la revue de `G4-K1-CONTROL-FOUNDATION-V3`. Cette gate
 est préparée mais **pas autorisée** : aucun fichier ne doit encore être copié
 sur l'imprimante.

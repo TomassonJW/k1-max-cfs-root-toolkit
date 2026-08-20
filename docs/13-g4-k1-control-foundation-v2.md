@@ -1,8 +1,8 @@
 # 13 — G4-K1-CONTROL-FOUNDATION-V2
 
-Date : 2026-08-20
+Date : 2026-08-20, clôture réelle le 2026-08-21
 
-Statut : **paquet de remplacement préparé hors imprimante ; non autorisé**
+Statut : **GO reçu, essais réels rollbackés, V2 fermée et non redéployable**
 
 ## Pourquoi V2 existe
 
@@ -18,12 +18,59 @@ La machine possède déjà :
   sauvegarde ;
 - la rotation quotidienne interne de Moonraker avec deux sauvegardes.
 
-nginx enverra donc ses erreurs au syslog existant. Aucun service de journal,
-cron, paquet ou fichier sous `/etc/logrotate.d` n'est ajouté.
+nginx enverra donc ses erreurs au syslog existant, avec le tag compatible
+`k1_control` accepté par son binaire MIPS. Aucun service de journal, cron,
+paquet ou fichier sous `/etc/logrotate.d` n'est ajouté.
+
+Les fichiers temporaires nginx sont explicitement isolés sous
+`/usr/data/k1-control-v1/tmp` ; ils ne dépendent pas du chemin compilé
+`/var/tmp/nginx`, absent sur la machine observée.
+
+Le binaire reçoit aussi `-g 'error_log stderr;'` au test, au démarrage et au
+rechargement. Cette option fournit un journal initial valide avant la lecture
+de la destination syslog du projet, sans créer le chemin compilé absent
+`/var/log/nginx/error.log`.
+
+La chaîne de dossiers menant au site statique reçoit seulement le droit de
+traversée nécessaire à `www-data` (`0711`), puis le sous-arbre `www` est lisible
+en `0755/0644`. Les configurations, l'état, les sauvegardes et les preuves
+restent privés à root.
+
+Le proxy transmet le nom d'hôte complet avec le port (`$http_host`) à
+Moonraker. Sa protection WebSocket peut ainsi vérifier que l'origine du
+navigateur correspond exactement à Mainsail, aussi bien dans le tunnel local
+que sur le futur port LAN, sans ouvrir une règle CORS générale.
+
+Moonraker utilise le fournisseur `none` adapté à Buildroot : les API de gestion
+de services sont désactivées et aucune validation systemd n'est tentée. Un
+fichier local `state/misc/usb.ids` est créé avant le démarrage pour empêcher le
+téléchargement automatique observé quand ce fichier manque.
 
 `K1-CONTROL-V1` reste le nom de la première génération du système complet.
 `FOUNDATION-V2` désigne la deuxième révision de son paquet d'installation,
 après le rejet sûr de V1 ; ce ne sont pas deux interfaces concurrentes.
+
+## Résultat réel et fermeture
+
+Le GO exact V2 a été reçu. Les préflights, installations locales et validations
+de ressources ont confirmé la machine attendue, Klipper au repos et les deux
+CFS intacts. Les essais ont révélé puis corrigé hors imprimante plusieurs
+écarts propres à Buildroot : SCP classique requis par Dropbear, chemins nginx
+compilés absents, droits du site statique, fournisseur de services Moonraker et
+origine WebSocket incluant le port.
+
+Après ces corrections, Mainsail a réellement chargé le tableau de bord de la
+K1 Max par tunnel. Cette preuve a aussi montré que Mainsail `v2.18.2` ne possède
+aucun écran ni mécanisme d'authentification par compte Moonraker. Retirer la
+confiance locale rend donc Mainsail inutilisable ; la conserver après ouverture
+LAN rendrait tous les clients passant par nginx implicitement fiables.
+
+Le critère de sécurité « compte vérifié avant LAN » ne peut pas être satisfait
+par V2. Chaque pose a été rollbackée, les ports `7125` et `4409` ont été fermés,
+les services et `/usr/data/k1-control-v1` ont été retirés, et les services
+Creality sont restés présents. Le nom V2 est définitivement fermé. La solution
+de remplacement est `G4-K1-CONTROL-FOUNDATION-V3`, avec authentification portée
+par nginx.
 
 ## Périmètre exact
 
@@ -80,12 +127,16 @@ Le futur script exige simultanément `-Execute` et le texte exact
 1. répète le préflight ;
 2. crée le backup daté avec marqueurs d'absence et relevés initiaux ;
 3. transfère une seule archive de transport et compare son SHA-256 local/distant ;
+   le client OpenSSH force le protocole SCP classique compatible avec le
+   Dropbear `2019.78`, qui ne fournit pas le serveur SFTP attendu par SCP récent ;
 4. vérifie `checksums.sha256` avant extraction ;
 5. extrait les trois archives dans la nouvelle version ;
 6. copie les configurations et les deux services originaux ;
 7. crée `current` seulement après les contrôles ;
 8. teste la configuration nginx avant de démarrer quoi que ce soit ;
-9. démarre Moonraker sur `127.0.0.1:7125` et attend sa disponibilité ;
+9. démarre Moonraker sur `127.0.0.1:7125` avec une confiance temporaire limitée
+   à `127.0.0.1`, uniquement pendant que Mainsail reste lui aussi local, puis
+   attend sa disponibilité ;
 10. démarre Mainsail uniquement sur `127.0.0.1:4409` ;
 11. compare les processus, ports, RAM, swap, taille disque, Klipper et CFS au
     relevé initial ;
@@ -98,9 +149,12 @@ Thomas crée lui-même le premier compte par le tunnel :
 `ssh -N -L 4409:127.0.0.1:4409 k1max-root`
 
 Après connexion vérifiée, une seconde action explicitement demandée au script
-remplace seulement `nginx-active.conf` par la configuration LAN déjà vérifiée,
-puis recharge le nouveau nginx. Le remplacement passe par un fichier suivant,
-un test nginx et un fichier précédent restauré automatiquement sur KO.
+prouve d'abord que le compte existe. Elle remplace alors la configuration
+Moonraker temporaire par la configuration finale sans client de confiance,
+redémarre seulement ce nouveau Moonraker et vérifie que l'accès anonyme est
+refusé. Ce n'est qu'après ces contrôles qu'elle remplace `nginx-active.conf`
+par la configuration LAN déjà testée puis recharge le nouveau nginx. Chaque
+remplacement conserve un fichier précédent restauré automatiquement sur KO.
 Moonraker reste en boucle locale.
 
 ## Ce qui est automatique et ce qui reste humain
@@ -154,10 +208,11 @@ Au premier KO :
 5. laisser les fichiers constructeur et Orca intacts ;
 6. comparer ports, processus, RAM, swap, Klipper, écran et CFS au relevé initial.
 
-## Nouvelle gate humaine
+## Gate fermée
 
-Aucune pose V2 n'est autorisée avant le texte exact :
+Le texte exact reçu était :
 
 `GO G4-K1-CONTROL-FOUNDATION-V2`
 
-Le GO V1 déjà donné ne vaut pas pour V2.
+Il a autorisé uniquement les essais V2 maintenant rollbackés. Il ne vaut pas
+pour V3 et ne peut pas rouvrir V2.

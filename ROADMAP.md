@@ -74,13 +74,14 @@ et Mainsail `v2.18.2` épinglés, contrat Orca complet et
 
 ## P4 — Installation contrôlée du système de pilotage
 
-Status: **V1 stopped at preflight; V2 prepared offline and waiting for its exact GO**
+Status: **V1 and V2 closed; V3 prepared offline and waiting for its exact GO**
 
 Le produit est posé par étapes techniques réversibles, mais Thomas reçoit un
 seul fonctionnement quotidien :
 
 1. API et Mainsail en observation — V1 refusée par le préflight réel ; V2
-   remplace logrotate par le syslog borné déjà présent et reste non déployée ;
+   rollbackée après preuve d'incompatibilité du compte Moonraker ; V3 conserve
+   le syslog stock et place l'authentification compatible sur nginx ;
 2. état et interface de calibration Z ;
 3. mesh, nettoyage, démarrage et purge sûrs ;
 4. propriété dynamique des températures des deux CFS ;

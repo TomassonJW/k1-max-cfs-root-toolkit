@@ -124,6 +124,8 @@ La fondation est maintenant figée ainsi :
 - Mainsail `v2.18.2`, commit
   `009ae11fc0676a6f3b0d4697f5d28aa345c697ff` ;
 - nginx MIPS du même paquet, sur le port dédié `4409` ;
+- authentification portée par nginx, car le test réel a prouvé que Mainsail
+  `v2.18.2` ne possède pas de flux de compte Moonraker ;
 - aucune mise à jour automatique et aucun installateur communautaire exécuté.
 
 Mainsail `v2.18.2` annonce Moonraker `v0.8.0-306` comme minimum. Le commit
@@ -154,6 +156,8 @@ mesure longue avant acceptation. Restent à prouver après un futur GO nommé :
 
 Le prototype local utilise maintenant un faux Moonraker et la matrice est verte.
 La compatibilité d'installation reste conditionnelle aux contrôles de
-`G4-K1-CONTROL-FOUNDATION-V2` sur la machine réelle. V1 a été arrêtée sans
-mutation lorsque son préflight a prouvé l'absence de `logrotate`. V2 retire
-cette dépendance et utilise le `syslogd` BusyBox déjà actif et borné.
+`G4-K1-CONTROL-FOUNDATION-V3` sur la machine réelle. V1 a été arrêtée sans
+mutation lorsque son préflight a prouvé l'absence de `logrotate`. V2 a utilisé
+le `syslogd` BusyBox déjà actif et borné, atteint un Mainsail fonctionnel, puis
+a été rollbackée parce que son contrat de compte Moonraker était incompatible.
+V3 conserve la pile prouvée et déplace le compte vers nginx.

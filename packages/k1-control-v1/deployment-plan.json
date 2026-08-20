@@ -1,8 +1,8 @@
 {
-  "g4_id": "G4-K1-CONTROL-FOUNDATION-V2",
+  "g4_id": "G4-K1-CONTROL-FOUNDATION-V3",
   "status": "prepared_not_authorized",
   "printer_mutation_authorized": false,
-  "change_class": "moonraker_api_and_mainsail_expert_ui_observation_only",
+  "change_class": "loopback_moonraker_and_nginx_authenticated_mainsail_observation_only",
   "does_not_change": [
     "printer.cfg",
     "gcode_macro.cfg",
@@ -18,6 +18,7 @@
   "new_remote_paths": [
     "/usr/data/k1-control-v1/releases/K1-CONTROL-V1.0.0",
     "/usr/data/k1-control-v1/state",
+    "/usr/data/k1-control-v1/state/nginx.htpasswd",
     "/usr/data/k1-control-v1/logs",
     "/usr/data/k1-control-v1/backups/<UTC_CAPTURE_ID>",
     "/usr/data/k1-control-v1/current",
@@ -27,8 +28,10 @@
   "bootstrap": {
     "moonraker": "127.0.0.1:7125",
     "gateway": "127.0.0.1:4409",
-    "first_account_path": "SSH tunnel to the loopback-only Mainsail endpoint",
-    "lan_activation_after_verified_login": "0.0.0.0:4409"
+    "moonraker_trusted_client": "127.0.0.1 only; Moonraker is never reachable outside the printer",
+    "first_account_path": "secure local PowerShell prompt writes only an SSHA hash through SSH",
+    "account_verification_path": "HTTP Basic login through the loopback-only SSH tunnel",
+    "lan_activation_after_verified_login": "switch from authenticated loopback nginx to authenticated private-LAN nginx on 0.0.0.0:4409"
   },
   "pre_change_backup": [
     "read-only proof that /dev/log is a socket and stock syslogd is active with bounded BusyBox defaults",
@@ -41,8 +44,10 @@
   "validation_without_machine_motion": [
     "all staged and installed hashes match",
     "Moonraker stays on loopback port 7125",
-    "first account exists before LAN port 4409 opens",
-    "Mainsail login succeeds",
+    "nginx account exists before LAN port 4409 opens",
+    "anonymous Mainsail access returns HTTP 401 before and after LAN activation",
+    "HTTP Basic credentials are removed before nginx proxies a request to Moonraker",
+    "Mainsail login succeeds through the SSH tunnel before LAN activation",
     "Creality ports 80, 8080 and 9999 remain available",
     "screen, Klipper and both CFS processes remain present",
     "no printer.gcode.script request is sent",
@@ -56,7 +61,8 @@
       "stop only S57k1_control_gateway and S56k1_control_moonraker",
       "restore prior service files or their recorded absence",
       "restore the prior current-link destination or its recorded absence",
-      "move the failed release under the dated backup instead of deleting evidence",
+      "remove the project root only when the same capture proves that it was absent before installation",
+      "retain the local evidence and pinned source bundle instead of relying on a failed remote release",
       "verify Creality listeners and processes against the pre-change snapshot"
     ],
     "orca_action": "none because the active Orca profile remains untouched"

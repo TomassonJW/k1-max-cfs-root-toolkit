@@ -1,28 +1,36 @@
 [CmdletBinding()]
 param(
-    [ValidateSet('Plan', 'InstallBootstrap', 'ActivateLan', 'Validate', 'Rollback')]
+    [ValidateSet('Plan', 'InstallBootstrap', 'SetGatewayAccount', 'ActivateLan', 'Validate', 'Rollback')]
     [string]$Action = 'Plan',
 
     [string]$Gate,
 
     [string]$Bundle,
 
-    [ValidatePattern('^[0-9]{8}-[0-9]{6}-g4-control-foundation-v2$')]
+    [ValidatePattern('^[0-9]{8}-[0-9]{6}-g4-control-foundation-v3$')]
     [string]$CaptureId,
 
     [string]$EvidenceDirectory,
 
-    [ValidateSet('Bootstrap', 'Lan')]
+    [ValidateSet('Bootstrap', 'BootstrapAuth', 'Lan')]
     [string]$Exposure = 'Bootstrap',
 
     [switch]$Execute,
 
-    [switch]$AccountVerified
+    [switch]$AccountVerified,
+
+    [ValidatePattern('^[A-Za-z0-9][A-Za-z0-9._-]{2,31}$')]
+    [string]$GatewayUsername,
+
+    [Security.SecureString]$GatewayPassword
 )
 
 $ErrorActionPreference = 'Stop'
+if ($PSVersionTable.PSVersion.Major -lt 7) {
+    throw 'PowerShell 7 ou plus recent est obligatoire pour ce deployeur.'
+}
 
-$RequiredGate = 'G4-K1-CONTROL-FOUNDATION-V2'
+$RequiredGate = 'G4-K1-CONTROL-FOUNDATION-V3'
 $WorkspaceRoot = (Resolve-Path (Join-Path $PSScriptRoot '..')).Path
 $ManifestPath = Join-Path $WorkspaceRoot 'packages\k1-control-v1\foundation-manifest.json'
 $Manifest = Get-Content -LiteralPath $ManifestPath -Raw | ConvertFrom-Json
@@ -32,7 +40,9 @@ $RemoteRelease = '/usr/data/k1-control-v1/releases/K1-CONTROL-V1.0.0'
 $RemoteCurrent = '/usr/data/k1-control-v1/current'
 $MoonrakerService = '/etc/init.d/S56k1_control_moonraker'
 $GatewayService = '/etc/init.d/S57k1_control_gateway'
+$GatewayPasswordFile = '/usr/data/k1-control-v1/state/nginx.htpasswd'
 $MutationStarted = $false
+$RemoteRootWasProvenAbsent = $false
 
 $SshArguments = @(
     '-o', 'BatchMode=yes',
@@ -76,6 +86,46 @@ function Invoke-RemoteTest {
 
     & ssh.exe @SshArguments $Command *> $null
     return $LASTEXITCODE -eq 0
+}
+
+function Invoke-RemoteWithInput {
+    param(
+        [Parameter(Mandatory = $true)][string]$Command,
+        [Parameter(Mandatory = $true)][string]$InputText
+    )
+
+    $startInfo = [Diagnostics.ProcessStartInfo]::new()
+    $startInfo.FileName = 'ssh.exe'
+    $startInfo.UseShellExecute = $false
+    $startInfo.RedirectStandardInput = $true
+    $startInfo.RedirectStandardOutput = $true
+    $startInfo.RedirectStandardError = $true
+    $startInfo.StandardInputEncoding = [Text.UTF8Encoding]::new($false)
+    foreach ($argument in $SshArguments) {
+        [void]$startInfo.ArgumentList.Add($argument)
+    }
+    [void]$startInfo.ArgumentList.Add($Command)
+
+    $process = [Diagnostics.Process]::new()
+    $process.StartInfo = $startInfo
+    try {
+        if (-not $process.Start()) { throw 'Demarrage SSH impossible.' }
+        $standardOutput = $process.StandardOutput.ReadToEndAsync()
+        $standardError = $process.StandardError.ReadToEndAsync()
+        $process.StandardInput.Write($InputText)
+        $process.StandardInput.Write("`n")
+        $process.StandardInput.Close()
+        $process.WaitForExit()
+        $outputText = $standardOutput.GetAwaiter().GetResult()
+        $errorText = $standardError.GetAwaiter().GetResult()
+        if ($process.ExitCode -ne 0) {
+            throw "Commande distante avec entree protegee KO ($($process.ExitCode)).`n$errorText"
+        }
+        return @($outputText -split '\r?\n' | Where-Object { $_ -ne '' })
+    }
+    finally {
+        $process.Dispose()
+    }
 }
 
 function Wait-RemoteCondition {
@@ -178,6 +228,117 @@ print(json.dumps(result, sort_keys=True))
     return ($line -join "`n") | ConvertFrom-Json
 }
 
+function Get-MoonrakerAccessInfo {
+    $python = @'
+from __future__ import print_function
+import json
+from urllib.request import urlopen
+
+response = urlopen("http://127.0.0.1:7125/access/info", timeout=5)
+print(json.dumps(json.load(response), sort_keys=True))
+'@
+    $bytes = [Text.Encoding]::UTF8.GetBytes($python.Replace("`r`n", "`n"))
+    $payload = [Convert]::ToBase64String($bytes)
+    $line = Invoke-Remote "echo $payload | base64 -d | '$RemoteRelease/moonraker/moonraker-env/bin/python'"
+    return ($line -join "`n") | ConvertFrom-Json
+}
+
+function Get-GatewayAnonymousStatus {
+    $python = @'
+from __future__ import print_function
+from urllib.error import HTTPError
+from urllib.request import urlopen
+
+try:
+    response = urlopen("http://127.0.0.1:4409/", timeout=5)
+    print(response.getcode())
+except HTTPError as exc:
+    print(exc.code)
+'@
+    $bytes = [Text.Encoding]::UTF8.GetBytes($python.Replace("`r`n", "`n"))
+    $payload = [Convert]::ToBase64String($bytes)
+    $line = Invoke-Remote "echo $payload | base64 -d | '$RemoteRelease/moonraker/moonraker-env/bin/python'"
+    return [int](($line | Select-Object -First 1).Trim())
+}
+
+function Test-GatewayCredential {
+    param(
+        [Parameter(Mandatory = $true)][string]$Username,
+        [Parameter(Mandatory = $true)][string]$PlainPassword
+    )
+
+    $python = @'
+from __future__ import print_function
+import base64
+import json
+import sys
+from urllib.error import HTTPError
+from urllib.request import Request, urlopen
+
+credentials = json.load(sys.stdin)
+
+def request_status(request):
+    try:
+        return urlopen(request, timeout=5).getcode()
+    except HTTPError as exc:
+        return exc.code
+
+anonymous = request_status(Request("http://127.0.0.1:4409/"))
+raw = (credentials["username"] + ":" + credentials["password"]).encode("utf-8")
+authenticated_request = Request("http://127.0.0.1:4409/")
+authenticated_request.add_header(
+    "Authorization", "Basic " + base64.b64encode(raw).decode("ascii")
+)
+authenticated = request_status(authenticated_request)
+print(json.dumps({
+    "anonymous_status": anonymous,
+    "authenticated_status": authenticated,
+}, sort_keys=True))
+'@
+    $bytes = [Text.Encoding]::UTF8.GetBytes($python.Replace("`r`n", "`n"))
+    $scriptPayload = [Convert]::ToBase64String($bytes)
+    $inputPayload = @{ username = $Username; password = $PlainPassword } |
+        ConvertTo-Json -Compress
+    $line = Invoke-RemoteWithInput `
+        "echo $scriptPayload | base64 -d | '$RemoteRelease/moonraker/moonraker-env/bin/python'" `
+        $inputPayload
+    return ($line -join "`n") | ConvertFrom-Json
+}
+
+function New-SshaPasswordRecord {
+    param(
+        [Parameter(Mandatory = $true)][string]$Username,
+        [Parameter(Mandatory = $true)][string]$PlainPassword
+    )
+
+    if ($PlainPassword.Length -lt [int]$Manifest.network.password_minimum_characters) {
+        throw "Le mot de passe doit contenir au moins $($Manifest.network.password_minimum_characters) caracteres."
+    }
+    if ($PlainPassword.Length -gt [int]$Manifest.network.password_maximum_characters -or
+        $PlainPassword -cnotmatch '^[\x21-\x7E]+$') {
+        throw "Le mot de passe doit utiliser 16 a $($Manifest.network.password_maximum_characters) caracteres ASCII imprimables sans espace."
+    }
+    $passwordBytes = [Text.Encoding]::UTF8.GetBytes($PlainPassword)
+    $salt = New-Object byte[] 16
+    $inputBytes = New-Object byte[] ($passwordBytes.Length + $salt.Length)
+    try {
+        [Security.Cryptography.RandomNumberGenerator]::Fill($salt)
+        [Array]::Copy($passwordBytes, 0, $inputBytes, 0, $passwordBytes.Length)
+        [Array]::Copy($salt, 0, $inputBytes, $passwordBytes.Length, $salt.Length)
+        $sha1 = [Security.Cryptography.SHA1]::Create()
+        try { $digest = $sha1.ComputeHash($inputBytes) }
+        finally { $sha1.Dispose() }
+        $stored = New-Object byte[] ($digest.Length + $salt.Length)
+        [Array]::Copy($digest, 0, $stored, 0, $digest.Length)
+        [Array]::Copy($salt, 0, $stored, $digest.Length, $salt.Length)
+        return "${Username}:{SSHA}$([Convert]::ToBase64String($stored))"
+    }
+    finally {
+        [Array]::Clear($passwordBytes, 0, $passwordBytes.Length)
+        [Array]::Clear($inputBytes, 0, $inputBytes.Length)
+    }
+}
+
 function Save-Evidence {
     param(
         [Parameter(Mandatory = $true)][string]$Name,
@@ -257,6 +418,7 @@ function Invoke-FoundationPreflight {
     foreach ($path in @($RemoteRoot, $MoonrakerService, $GatewayService)) {
         if (Invoke-RemoteTest "test -e '$path'") { throw "Cible deja presente : $path" }
     }
+    $script:RemoteRootWasProvenAbsent = $true
 
     $listeners = Invoke-Remote 'netstat -lnt'
     $listenerText = $listeners -join "`n"
@@ -304,7 +466,7 @@ function New-TransportArchive {
 
     $deployRoot = Join-Path $WorkspaceRoot ".codex-work\deploy\$CaptureId"
     New-Item -ItemType Directory -Path $deployRoot -Force | Out-Null
-    $transport = Join-Path $deployRoot 'k1-control-foundation-v2.tar.gz'
+    $transport = Join-Path $deployRoot 'k1-control-foundation-v3.tar.gz'
     if (Test-Path -LiteralPath $transport) { Remove-Item -LiteralPath $transport -Force }
     & tar.exe -czf $transport -C $ResolvedBundle .
     if ($LASTEXITCODE -ne 0) { throw 'Creation de l archive de transport KO.' }
@@ -314,13 +476,19 @@ function New-TransportArchive {
 function Invoke-FoundationRollback {
     param([switch]$BestEffort)
 
+    $rootRemovalGuard = if ($script:RemoteRootWasProvenAbsent) {
+        'true'
+    }
+    else {
+        "test `"`$(cat '$RemoteRoot/backups/$CaptureId/root.before' 2>/dev/null)`" = 'ABSENT'"
+    }
     $commands = @(
         "test ! -x '$GatewayService' || '$GatewayService' stop",
         "test ! -x '$MoonrakerService' || '$MoonrakerService' stop",
         "rm -f '$GatewayService'",
         "rm -f '$MoonrakerService'",
         "rm -f '$RemoteCurrent'",
-        "test ! -d '$RemoteRelease' || mv '$RemoteRelease' '$RemoteRoot/backups/$CaptureId/failed-release'"
+        "$rootRemovalGuard && rm -rf '$RemoteRoot'"
     )
     foreach ($command in $commands) {
         try { Invoke-Remote $command | Out-Null }
@@ -328,12 +496,19 @@ function Invoke-FoundationRollback {
             if (-not $BestEffort) { throw }
         }
     }
+    try {
+        Wait-RemoteCondition "test ! -e '$RemoteRoot' && test ! -e '$GatewayService' && test ! -e '$MoonrakerService' && test ! -e /var/run/k1-control-nginx.pid && test ! -e /var/run/k1-control-moonraker.pid && ! netstat -lnt | grep -q ':4409\|:7125'" 'restauration complete de l absence V3' 10 1
+    }
+    catch {
+        if (-not $BestEffort) { throw }
+    }
 }
 
 function Invoke-FoundationValidation {
     param(
         [hashtable]$MemoryBefore,
-        [switch]$LanExpected
+        [switch]$LanExpected,
+        [switch]$AuthExpected
     )
 
     $listeners = (Invoke-Remote 'netstat -lnt') -join "`n"
@@ -346,6 +521,17 @@ function Invoke-FoundationValidation {
     }
     if (-not $LanExpected -and $listeners -match '0.0.0.0:4409') {
         throw 'Fondation exposee au LAN avant creation du compte.'
+    }
+
+    $anonymousStatus = Get-GatewayAnonymousStatus
+    $expectedAnonymousStatus = if ($AuthExpected) { 401 } else { 200 }
+    if ($anonymousStatus -ne $expectedAnonymousStatus) {
+        throw "Protection nginx inattendue : HTTP $anonymousStatus, attendu $expectedAnonymousStatus."
+    }
+
+    $accessInfo = Get-MoonrakerAccessInfo
+    if (-not $accessInfo.result.trusted -or $accessInfo.result.login_required) {
+        throw 'La relation de confiance nginx vers Moonraker est inattendue.'
     }
 
     Assert-StockProcesses
@@ -407,7 +593,7 @@ if ($Action -eq 'Plan') {
         gate = $RequiredGate
         package_version = $Manifest.package_version
         printer_mutation_authorized = $false
-        actions = @('InstallBootstrap', 'ActivateLan', 'Validate', 'Rollback')
+        actions = @('InstallBootstrap', 'SetGatewayAccount', 'ActivateLan', 'Validate', 'Rollback')
     } | ConvertTo-Json -Depth 4
     exit 0
 }
@@ -423,27 +609,29 @@ if ($Action -eq 'InstallBootstrap') {
     $memoryBefore = Invoke-FoundationPreflight
     $transport = New-TransportArchive $resolvedBundle
     $transportHash = (Get-FileHash -LiteralPath $transport -Algorithm SHA256).Hash.ToLowerInvariant()
-    Save-Evidence 'transport.sha256.txt' "$transportHash  k1-control-foundation-v2.tar.gz"
+    Save-Evidence 'transport.sha256.txt' "$transportHash  k1-control-foundation-v3.tar.gz"
 
     $remoteBackup = "$RemoteRoot/backups/$CaptureId"
     $remoteStaging = "$RemoteRoot/staging/$CaptureId"
     try {
-        Invoke-Remote "mkdir -p '$remoteBackup' '$remoteStaging'" | Out-Null
         $MutationStarted = $true
-        foreach ($marker in @('root', 'moonraker-service', 'gateway-service', 'current-link')) {
+        Invoke-Remote "mkdir -p '$remoteBackup' '$remoteStaging' && printf 'ABSENT\n' > '$remoteBackup/root.before'" | Out-Null
+        foreach ($marker in @('moonraker-service', 'gateway-service', 'current-link')) {
             Invoke-Remote "printf 'ABSENT\n' > '$remoteBackup/$marker.before'" | Out-Null
         }
 
-        & scp.exe -q -o BatchMode=yes -o PasswordAuthentication=no -o KbdInteractiveAuthentication=no `
-            $transport "k1max-root`:$remoteStaging/k1-control-foundation-v2.tar.gz"
+        # Dropbear 2019.78 has no SFTP server. OpenSSH 9+ defaults scp to SFTP,
+        # so force the classic SCP protocol for this exact, pinned target.
+        & scp.exe -O -q -o BatchMode=yes -o PasswordAuthentication=no -o KbdInteractiveAuthentication=no `
+            $transport "k1max-root`:$remoteStaging/k1-control-foundation-v3.tar.gz"
         if ($LASTEXITCODE -ne 0) { throw 'Transfert SCP KO.' }
 
-        $remoteHashLine = Invoke-Remote "sha256sum '$remoteStaging/k1-control-foundation-v2.tar.gz'"
+        $remoteHashLine = Invoke-Remote "sha256sum '$remoteStaging/k1-control-foundation-v3.tar.gz'"
         $remoteHash = (($remoteHashLine | Select-Object -First 1) -split '\s+')[0]
         if ($remoteHash -ne $transportHash) { throw 'SHA-256 transport local/distant different.' }
 
         Invoke-Remote "mkdir -p '$remoteStaging/unpacked'" | Out-Null
-        Invoke-Remote "tar -xzf '$remoteStaging/k1-control-foundation-v2.tar.gz' -C '$remoteStaging/unpacked'" | Out-Null
+        Invoke-Remote "tar -xzf '$remoteStaging/k1-control-foundation-v3.tar.gz' -C '$remoteStaging/unpacked'" | Out-Null
         Invoke-Remote "cd '$remoteStaging/unpacked' && sha256sum -c checksums.sha256" | Out-Null
 
         Invoke-Remote "mkdir -p '$RemoteRelease' '$RemoteRelease/www/mainsail' '$RemoteRoot/state' '$RemoteRoot/logs' '$RemoteRoot/tmp'" | Out-Null
@@ -451,6 +639,9 @@ if ($Action -eq 'InstallBootstrap') {
         Invoke-Remote "tar -xzf '$remoteStaging/unpacked/artifacts/nginx-mips-bundle.tar.gz' -C '$RemoteRelease'" | Out-Null
         Invoke-Remote "unzip -q '$remoteStaging/unpacked/artifacts/mainsail.zip' -d '$RemoteRelease/www/mainsail'" | Out-Null
         Invoke-Remote "cp -R '$remoteStaging/unpacked/config' '$RemoteRelease/config'" | Out-Null
+        Invoke-Remote "chmod 0711 '$RemoteRoot' '$RemoteRoot/releases' '$RemoteRelease'" | Out-Null
+        Invoke-Remote "find '$RemoteRelease/www' -type d -exec chmod 0755 {} \;" | Out-Null
+        Invoke-Remote "find '$RemoteRelease/www' -type f -exec chmod 0644 {} \;" | Out-Null
         Invoke-Remote "cp '$RemoteRelease/config/nginx-bootstrap.conf' '$RemoteRoot/state/nginx-active.conf'" | Out-Null
         Invoke-Remote "ln -s '$RemoteRelease' '$RemoteCurrent'" | Out-Null
         Invoke-Remote "cp '$remoteStaging/unpacked/services/S56k1_control_moonraker' '$MoonrakerService'" | Out-Null
@@ -459,12 +650,13 @@ if ($Action -eq 'InstallBootstrap') {
 
         Assert-RemoteFilesEqual "$remoteStaging/unpacked/config/moonraker.conf" "$RemoteRelease/config/moonraker.conf"
         Assert-RemoteFilesEqual "$remoteStaging/unpacked/config/nginx-bootstrap.conf" "$RemoteRelease/config/nginx-bootstrap.conf"
+        Assert-RemoteFilesEqual "$remoteStaging/unpacked/config/nginx-bootstrap-auth.conf" "$RemoteRelease/config/nginx-bootstrap-auth.conf"
         Assert-RemoteFilesEqual "$remoteStaging/unpacked/config/nginx.conf" "$RemoteRelease/config/nginx.conf"
         Assert-RemoteFilesEqual "$remoteStaging/unpacked/services/S56k1_control_moonraker" $MoonrakerService
         Assert-RemoteFilesEqual "$remoteStaging/unpacked/services/S57k1_control_gateway" $GatewayService
         Invoke-Remote "test -x '$RemoteRelease/moonraker/moonraker-env/bin/python'" | Out-Null
         Invoke-Remote "test -f '$RemoteRelease/moonraker/moonraker/moonraker/moonraker.py'" | Out-Null
-        Invoke-Remote "'$RemoteRelease/nginx/sbin/nginx' -t -c '$RemoteRoot/state/nginx-active.conf' -p '$RemoteRelease/nginx/nginx'" | Out-Null
+        Invoke-Remote "'$RemoteRelease/nginx/sbin/nginx' -g 'error_log stderr;' -t -c '$RemoteRoot/state/nginx-active.conf' -p '$RemoteRelease/nginx/nginx'" | Out-Null
 
         Invoke-Remote "'$MoonrakerService' start" | Out-Null
         Wait-RemoteCondition "test -s /var/run/k1-control-moonraker.pid && kill -0 `$(cat /var/run/k1-control-moonraker.pid) && netstat -lnt | grep -q '127.0.0.1:7125'" 'demarrage Moonraker'
@@ -480,32 +672,102 @@ if ($Action -eq 'InstallBootstrap') {
     exit 0
 }
 
-if ($Action -eq 'ActivateLan') {
-    if (-not $AccountVerified) { throw 'ActivateLan exige -AccountVerified apres la connexion humaine.' }
-    $activeConfig = "$RemoteRoot/state/nginx-active.conf"
-    $previousConfig = "$RemoteRoot/state/nginx-active.conf.previous"
-    $nextConfig = "$RemoteRoot/state/nginx-active.conf.next"
+if ($Action -eq 'SetGatewayAccount') {
+    if (-not $CaptureId -or -not $EvidenceDirectory -or -not $GatewayUsername -or -not $GatewayPassword) {
+        throw 'SetGatewayAccount exige -CaptureId, -EvidenceDirectory, -GatewayUsername et un mot de passe securise.'
+    }
+    $resolvedEvidence = Assert-LocalPathInsideWorkspace $EvidenceDirectory
+    $gatewayActiveConfig = "$RemoteRoot/state/nginx-active.conf"
+    $gatewayPreviousConfig = "$RemoteRoot/state/nginx-active.conf.previous"
+    $gatewayNextConfig = "$RemoteRoot/state/nginx-active.conf.next"
+    $passwordNext = "$GatewayPasswordFile.next"
+    $secretPointer = [Runtime.InteropServices.Marshal]::SecureStringToBSTR($GatewayPassword)
+    $plainPassword = $null
     try {
-        Invoke-Remote "cp '$activeConfig' '$previousConfig'" | Out-Null
-        Invoke-Remote "cp '$RemoteRelease/config/nginx.conf' '$nextConfig'" | Out-Null
-        Invoke-Remote "'$RemoteRelease/nginx/sbin/nginx' -t -c '$nextConfig' -p '$RemoteRelease/nginx/nginx'" | Out-Null
-        Invoke-Remote "mv '$nextConfig' '$activeConfig'" | Out-Null
+        $plainPassword = [Runtime.InteropServices.Marshal]::PtrToStringBSTR($secretPointer)
+        $record = New-SshaPasswordRecord $GatewayUsername $plainPassword
+        Assert-RemoteFilesEqual "$RemoteRelease/config/nginx-bootstrap.conf" $gatewayActiveConfig
+        if (Invoke-RemoteTest "test -e '$GatewayPasswordFile'") {
+            throw 'Un compte nginx existe deja : remplacement refuse.'
+        }
+
+        $MutationStarted = $true
+        Invoke-RemoteWithInput `
+            "umask 077; cat > '$passwordNext' && chmod 0600 '$passwordNext' && mv '$passwordNext' '$GatewayPasswordFile'" `
+            $record | Out-Null
+        if (-not (Invoke-RemoteTest "test -s '$GatewayPasswordFile' && test `$(wc -l < '$GatewayPasswordFile') -eq 1 && grep -Eq '^[A-Za-z0-9][A-Za-z0-9._-]{2,31}:\{SSHA\}[A-Za-z0-9+/=]+$' '$GatewayPasswordFile'")) {
+            throw 'Fichier de compte nginx invalide.'
+        }
+
+        Invoke-Remote "cp '$gatewayActiveConfig' '$gatewayPreviousConfig'" | Out-Null
+        Invoke-Remote "cp '$RemoteRelease/config/nginx-bootstrap-auth.conf' '$gatewayNextConfig'" | Out-Null
+        Assert-RemoteFilesEqual "$RemoteRelease/config/nginx-bootstrap-auth.conf" $gatewayNextConfig
+        Invoke-Remote "'$RemoteRelease/nginx/sbin/nginx' -g 'error_log stderr;' -t -c '$gatewayNextConfig' -p '$RemoteRelease/nginx/nginx'" | Out-Null
+        Invoke-Remote "mv '$gatewayNextConfig' '$gatewayActiveConfig'" | Out-Null
         Invoke-Remote "'$GatewayService' reload" | Out-Null
-        Wait-RemoteCondition "netstat -lnt | grep -q '0.0.0.0:4409'" 'ouverture Mainsail au LAN' 5 1
-        Invoke-FoundationValidation -LanExpected
-        Invoke-Remote "rm -f '$previousConfig'" | Out-Null
+        Wait-RemoteCondition "netstat -lnt | grep -q '127.0.0.1:4409'" 'activation du compte nginx en boucle locale' 5 1
+
+        $credentialCheck = Test-GatewayCredential $GatewayUsername $plainPassword
+        if ($credentialCheck.anonymous_status -ne 401 -or $credentialCheck.authenticated_status -ne 200) {
+            throw 'Verification du compte nginx KO.'
+        }
+        Invoke-FoundationValidation -AuthExpected
+        Save-Evidence 'gateway-authentication.txt' 'scheme=SSHA; anonymous_http=401; authenticated_http=200; exposure=loopback'
+        Invoke-Remote "rm -f '$gatewayPreviousConfig'" | Out-Null
+        Write-Output "SET_GATEWAY_ACCOUNT_OK username=$GatewayUsername"
+    }
+    catch {
+        if ($MutationStarted) { Invoke-FoundationRollback -BestEffort }
+        throw
+    }
+    finally {
+        if ($secretPointer -ne [IntPtr]::Zero) {
+            [Runtime.InteropServices.Marshal]::ZeroFreeBSTR($secretPointer)
+        }
+        $plainPassword = $null
+    }
+    exit 0
+}
+
+if ($Action -eq 'ActivateLan') {
+    if (-not $CaptureId -or -not $EvidenceDirectory -or -not $AccountVerified) {
+        throw 'ActivateLan exige -CaptureId, -EvidenceDirectory et -AccountVerified apres la connexion humaine.'
+    }
+    $resolvedEvidence = Assert-LocalPathInsideWorkspace $EvidenceDirectory
+    $gatewayActiveConfig = "$RemoteRoot/state/nginx-active.conf"
+    $gatewayPreviousConfig = "$RemoteRoot/state/nginx-active.conf.previous"
+    $gatewayNextConfig = "$RemoteRoot/state/nginx-active.conf.next"
+    try {
+        if (-not (Invoke-RemoteTest "test -s '$GatewayPasswordFile' && test `$(wc -l < '$GatewayPasswordFile') -eq 1 && grep -Eq '^[A-Za-z0-9][A-Za-z0-9._-]{2,31}:\{SSHA\}[A-Za-z0-9+/=]+$' '$GatewayPasswordFile'")) {
+            throw 'Compte nginx absent ou invalide : activation LAN refusee.'
+        }
+        Assert-RemoteFilesEqual "$RemoteRelease/config/nginx-bootstrap-auth.conf" $gatewayActiveConfig
+        if ((Get-GatewayAnonymousStatus) -ne 401) {
+            throw 'La protection nginx locale ne refuse pas les connexions anonymes.'
+        }
+
+        Invoke-Remote "cp '$gatewayActiveConfig' '$gatewayPreviousConfig'" | Out-Null
+        Invoke-Remote "cp '$RemoteRelease/config/nginx.conf' '$gatewayNextConfig'" | Out-Null
+        Assert-RemoteFilesEqual "$RemoteRelease/config/nginx.conf" $gatewayNextConfig
+        Invoke-Remote "'$RemoteRelease/nginx/sbin/nginx' -g 'error_log stderr;' -t -c '$gatewayNextConfig' -p '$RemoteRelease/nginx/nginx'" | Out-Null
+        Invoke-Remote "mv '$gatewayNextConfig' '$gatewayActiveConfig'" | Out-Null
+        Invoke-Remote "'$GatewayService' reload" | Out-Null
+        Wait-RemoteCondition "netstat -lnt | grep -q '0.0.0.0:4409'" 'ouverture Mainsail authentifie au LAN' 5 1
+        Invoke-FoundationValidation -LanExpected -AuthExpected
+        Invoke-Remote "rm -f '$gatewayPreviousConfig'" | Out-Null
     }
     catch {
         $activationError = $_
         try {
-            if (Invoke-RemoteTest "test -f '$previousConfig'") {
-                Invoke-Remote "mv '$previousConfig' '$activeConfig'" | Out-Null
+            if (Invoke-RemoteTest "test -f '$gatewayPreviousConfig'") {
+                Invoke-Remote "mv '$gatewayPreviousConfig' '$gatewayActiveConfig'" | Out-Null
                 Invoke-Remote "'$GatewayService' reload" | Out-Null
             }
         }
         catch { }
-        try { Invoke-Remote "rm -f '$nextConfig'" | Out-Null }
+        try { Invoke-Remote "rm -f '$gatewayNextConfig'" | Out-Null }
         catch { }
+        Invoke-FoundationRollback -BestEffort
         throw $activationError
     }
     Write-Output 'ACTIVATE_LAN_OK'
@@ -513,7 +775,9 @@ if ($Action -eq 'ActivateLan') {
 }
 
 if ($Action -eq 'Validate') {
-    Invoke-FoundationValidation -LanExpected:($Exposure -eq 'Lan')
+    Invoke-FoundationValidation `
+        -LanExpected:($Exposure -eq 'Lan') `
+        -AuthExpected:($Exposure -ne 'Bootstrap')
     Write-Output 'VALIDATE_OK'
     exit 0
 }

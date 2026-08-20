@@ -9,19 +9,32 @@ CONFIG=/usr/data/k1-control-v1/state/nginx-active.conf
 PID=/var/run/k1-control-nginx.pid
 
 start() {
-    mkdir -p /usr/data/k1-control-v1/logs /usr/data/k1-control-v1/state /var/tmp/k1-control-nginx
+    mkdir -p /usr/data/k1-control-v1/logs /usr/data/k1-control-v1/state /usr/data/k1-control-v1/tmp
     [ -f "$CONFIG" ] || { echo "Missing active gateway config: $CONFIG"; exit 1; }
-    start-stop-daemon -S -p "$PID" --exec "$NGINX" -- -c "$CONFIG" -p "$ROOT/nginx/nginx"
+    start-stop-daemon -S -p "$PID" --exec "$NGINX" -- \
+        -g "error_log stderr;" -c "$CONFIG" -p "$ROOT/nginx/nginx"
 }
 
 stop() {
-    start-stop-daemon -K -x "$NGINX" -p "$PID" -o
+    if [ -s "$PID" ]; then
+        "$NGINX" -g "error_log stderr;" -c "$CONFIG" -p "$ROOT/nginx/nginx" -s quit || \
+            start-stop-daemon -K -p "$PID" -o
+        attempt=0
+        while [ -s "$PID" ] && [ "$attempt" -lt 10 ]; do
+            sleep 1
+            attempt=$((attempt + 1))
+        done
+        if [ -s "$PID" ]; then
+            start-stop-daemon -K -s KILL -p "$PID" -o
+        fi
+    fi
+    rm -f "$PID"
 }
 
 case "${1:-}" in
     start) start ;;
     stop) stop ;;
-    reload) "$NGINX" -c "$CONFIG" -p "$ROOT/nginx/nginx" -s reload ;;
+    reload) "$NGINX" -g "error_log stderr;" -c "$CONFIG" -p "$ROOT/nginx/nginx" -s reload ;;
     restart) stop; sleep 1; start ;;
     *) echo "Usage: $0 {start|stop|restart|reload}"; exit 1 ;;
 esac
