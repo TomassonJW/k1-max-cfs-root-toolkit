@@ -18,6 +18,22 @@ an Orca printer-config bundle, existing 3MF projects and G-codes, exact custom
 G-code text, photos/notes and any already-held recovery artefact. Everything in
 that path is ignored by Git.
 
+Thomas has now supplied the active individual Orca profiles, the Z
+post-processor, five 3MF projects and six candidate G-codes. The two private
+capture batches contain 24 and 13 files respectively; every copy passed a local
+SHA-256 comparison and no source file was changed.
+
+Offline inspection selects P1-SINGLE, P2-FIVE-OBJECTS and
+P3-ONE-MERGED-OBJECT as the first bounded session. P2 and P3 share all 639
+recorded settings, estimated duration, material use and layer count; their
+useful difference is five separate objects versus one assembled object. Ironing
+is active on all three and does not invalidate the first-layer comparison.
+
+Do not run the current `P5-CFS-ONE-CHANGE`: despite its name, its G-code contains
+ten automatic changes (`T0/T1` alternating each layer). It is a possible later
+CFS endurance case, not a clean single-change proof. A replacement must announce
+one filament change and contain only the intended `T0` then `T1` transition.
+
 The baseline acquisition, targeted source follow-up, physical session `20260819-185157-g3-aba` and separate `G4-SSH-KEY` deployment are complete. Thomas performed the prints and mechanical adjustments. Codex changed only root SSH access by adding one dedicated public key; no printer behaviour, service or configuration was changed. Raw captures remain local and ignored; only redacted inventories and conclusions are publishable.
 
 Passwordless SSH is now available through local alias `k1max-root`. It selects the dedicated ECDSA P-256 key and forbids password fallback. Two independent final connections passed. A future password prompt must be treated as a failure and diagnosed, not shown to Thomas as a normal step.
@@ -66,10 +82,18 @@ Codex has permanent authority to complete all normal Git and GitHub operations f
 
 ## Next bounded Codex mission
 
-After Thomas sends `DEPOT_AUDIT_PRET`, do not connect to the printer first.
-Inventory and sanitise the private inputs locally. Parse the Orca profiles and
-G-code into one ordered timeline covering Z, mesh, homing, temperatures,
-pressure advance, CFS, purge, pause, refill, tool change and end of job.
+When Thomas is physically ready, verify standby read-only and start one passive
+observer before P1. Keep it connected through P1, P2 and P3, then close it after
+the return to standby. Thomas launches and supervises every print, supplies the
+start/end times and may make an emergency live Z correction if he reports its
+time and value. No bed-screw, plate, filament-slot or reboot change is allowed
+inside this first comparison.
+
+After that capture, parse the Orca profiles and G-code into one ordered timeline
+covering Z, mesh, homing, temperatures, pressure advance, CFS, purge, pause,
+refill, tool change and end of job. Decide from the evidence whether P4, P1-PETG
+or a corrected P5 is still necessary instead of automatically printing all of
+them.
 
 Produce the target Orca contract, a rule report and a decision on wrapper
 coverage versus targeted compiled-owner replacement. Then prepare, but do not
