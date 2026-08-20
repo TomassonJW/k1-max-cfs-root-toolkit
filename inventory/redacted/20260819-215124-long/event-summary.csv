@@ -1,0 +1,23 @@
+timestamp,event,value,source
+2026-08-19T22:15:58,heating_started,"nozzle 100; bed 55",passive_state
+2026-08-19T22:19:25,pressure_advance_set,0.044,stock_startup
+2026-08-19T22:19:29,print_state,printing,passive_state
+2026-08-19T22:20:11,nozzle_target,220,passive_state
+2026-08-19T22:20:11,cfs_flush_fallback,"failed to read flush speed; flush temperature 220",printer_log
+2026-08-19T22:22:03,nozzle_target,190,passive_state
+2026-08-19T22:22:53,pressure_advance_set,0.03,print_file_or_called_macro
+2026-08-19T22:26:19,nozzle_target,195,passive_state
+2026-08-19T22:38:14,filament_runout,detected,printer_log
+2026-08-19T22:38:15,print_state,paused,passive_state
+2026-08-19T22:38:15,nozzle_target,140,passive_state
+2026-08-19T22:38:23,automatic_refill,"equivalent PLA slot selected",printer_log
+2026-08-19T22:38:31,nozzle_target,220,passive_state
+2026-08-19T22:41:03,nozzle_target,195,passive_state
+2026-08-19T22:41:08,print_state,printing,passive_state
+2026-08-19T22:41:09,nozzle_target,220,passive_state
+2026-08-19T23:04:00,manual_nozzle_command,190,printer_log_and_human_report
+2026-08-20T01:37:14,"nozzle_and_bed_targets",0,passive_state
+2026-08-20T01:37:24,print_state,complete,passive_state
+2026-08-20T01:43:38,print_state,standby,passive_state
+2026-08-20T01:43:42,nozzle_target,150,passive_state
+2026-08-20T01:44:23,nozzle_target,0,passive_state

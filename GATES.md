@@ -62,6 +62,8 @@ Execution status: session `20260819-185157-g3-aba` completed A1/B/A2 in one boot
 
 Observed evidence includes two Z-establishing phases around cleaning, A2 retrying through index 7 with large internal outliers, and runtime pressure advance `0.044` competing with the files' requested `0.03`. No fourth print is authorised or needed for this session.
 
+Passive production session `20260819-215124-long` then captured one complete normal job. It resolved the pressure-advance uncertainty: startup `0.044` was replaced by file-requested `0.03`, and `0.03` remained active through the automatic CFS refill and print end. It also proved that the initial CFS load/purge and an equivalent-PLA refill use the stock CFS temperature `220 °C` instead of respecting the first-layer target or preserving the prior print temperature. Visible Z origin stayed at `+0.27 mm`; this job did not reproduce the historical Z shift.
+
 Required:
 
 - startup and CFS call graphs exist;
@@ -73,7 +75,7 @@ Required:
 
 Passing G3 authorises preparation of a patch and rollback plan, not deployment.
 
-Next evidence should be captured passively around a real long production print and the next differently configured or multi-object job. It must not become a broad sacrificial print campaign.
+Next evidence should be captured passively around the next genuinely different or multi-object production job. It must not become a broad sacrificial print campaign. The CFS temperature issue is sufficiently grounded for preparation of a narrow patch and rollback plan, but not deployment; G3 as a whole remains open for the Z diagnosis.
 
 ## G4 — One mutation ready for deployment
 

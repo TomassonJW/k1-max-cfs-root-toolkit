@@ -1,8 +1,8 @@
 # HANDOFF
 
-Date: 2026-08-19  
-Phase: P2 / passive long-production capture active
-Next operator: Thomas launches and watches a normal useful print; Codex only observes
+Date: 2026-08-20
+Phase: P2 / first long-production capture closed; next-job comparison pending
+Next operator: Codex prepares the next passive observer; Thomas launches and watches the next genuinely different or multi-object production job
 
 ## Current state
 
@@ -10,7 +10,13 @@ The baseline acquisition, targeted source follow-up, physical session `20260819-
 
 Passwordless SSH is now available through local alias `k1max-root`. It selects the dedicated ECDSA P-256 key and forbids password fallback. Two independent final connections passed. A future password prompt must be treated as a failure and diagnosed, not shown to Thomas as a normal step.
 
-Read-only session `20260819-215124-long` started from standby. Initial active pressure advance is `0.03`, visible Z homing origin is `+0.27 mm`, and both heaters are untargeted near `31 °C`. The observer uses one persistent Klipper subscription and follows only new log data. It cannot send a print, movement, heating, calibration or configuration command.
+Read-only session `20260819-215124-long` started from standby, captured one complete long production job and stopped automatically after the machine returned to standby. The observer used one persistent Klipper subscription and followed only new log data. It sent no print, movement, heating, calibration or configuration command.
+
+This session closed the pressure-advance observability gap: startup applied `0.044`, then the print file restored `0.03`, which remained active through the CFS refill and to the end. The CFS did not overwrite pressure advance during this refill.
+
+The automatic equivalent-PLA refill did overwrite temperature. Runout paused the print, selected another PLA slot and resumed in about 2 minutes 54 seconds. The resumed target returned to `220 °C` and stayed there until Thomas manually restored `190 °C`. Visible Z origin remained `+0.27 mm` throughout, with no live correction reported.
+
+The same defect occurs during startup. The job supplies `190 °C` for the first layer and later uses `195 °C`, but the first CFS tool operation reports that it cannot read the purge speed and falls back to a `220 °C` purge. The file only regains control after the CFS load and purge. Thomas judged the final part broadly correct; granular ironing remains a separate OrcaSlicer-tuning hypothesis.
 
 Codex has permanent authority to complete all normal Git and GitHub operations for this repository, including push, pull-request management, fusion into `main` and cleanup, without requesting another `GO`. This authority does not replace the printer mutation gates.
 
@@ -31,7 +37,9 @@ Codex has permanent authority to complete all normal Git and GitHub operations f
 
 ## Next bounded Codex mission
 
-Do not repeat A1/B/A2 or launch a fourth sacrificial print. Let Thomas use the active session for a normal long production print. When it is complete and the machine has returned to standby, close the observer and retain the raw capture. Then open a separate passive session around the next differently configured or multi-object job.
+Do not repeat A1/B/A2 or the completed long production print. Open a separate passive session around the next genuinely different or multi-object production job. This is intended to test the reported post-job Z instability without consuming plastic solely for diagnosis.
+
+Separately prepare, without deploying, a minimal CFS temperature-ownership overlay for both startup purge and automatic refill. It should use explicit first-layer and normal-print temperatures, remember the temperature before an automatic pause, distinguish an equivalent-material refill from a real material change and restore the correct target before resuming. Its patch, validation and rollback must remain independent of pressure, ironing, Z, mesh and nozzle-cleaning changes.
 
 Keep every later printer behaviour change behind its own named G4. Do not treat the completed SSH convenience change as permission to modify Z, mesh, cleaning, CFS or services.
 
@@ -62,4 +70,4 @@ The S11/S12 configuration-selection conflict is resolved in favour of S12 struct
 - one G-code file that reproduced the bad first layer, kept private until reviewed;
 - ideally, two logs from identical G-code executions with different Z outcomes.
 
-The first six items, readable extension sources, protocol, private inputs and one non-qualified A1/B/A2 trace now exist. Compiled CFS behaviour and the final active pressure advance must still be measured rather than inferred.
+The first six items, readable extension sources, protocol, private inputs, one non-qualified A1/B/A2 trace and one complete long-production trace now exist. Compiled CFS internals remain opaque, but its refill temperature effect and the final active pressure advance have now been measured directly.
