@@ -1,8 +1,8 @@
 # HANDOFF
 
 Date: 2026-08-20
-Phase: P2 / first long-production capture closed; next-job comparison pending
-Next operator: Codex prepares the next passive observer; Thomas launches and watches the next genuinely different or multi-object production job
+Phase: P2 / CFS temperature package prepared locally; next-job Z comparison pending
+Next operator: Thomas decides whether to open named deployment `G4-CFS-TEMP-PLA`; Codex otherwise prepares the next passive observer
 
 ## Current state
 
@@ -17,6 +17,20 @@ This session closed the pressure-advance observability gap: startup applied `0.0
 The automatic equivalent-PLA refill did overwrite temperature. Runout paused the print, selected another PLA slot and resumed in about 2 minutes 54 seconds. The resumed target returned to `220 °C` and stayed there until Thomas manually restored `190 °C`. Visible Z origin remained `+0.27 mm` throughout, with no live correction reported.
 
 The same defect occurs during startup. The job supplies `190 °C` for the first layer and later uses `195 °C`, but the first CFS tool operation reports that it cannot read the purge speed and falls back to a `220 °C` purge. The file only regains control after the CFS load and purge. Thomas judged the final part broadly correct; granular ironing remains a separate OrcaSlicer-tuning hypothesis.
+
+Read-only follow-up proved that the production file contains no temperature
+command at `220 °C`. The generic PLA entry used by the CFS stores `220 °C`, while
+per-slot state stores material type and colour but not a slot-specific
+temperature or pressure advance. During refill, stock `RESUME` restores
+`195 °C`, then the file reader replays the new physical tool and the compiled
+CFS module reapplies `220 °C` afterward.
+
+Candidate `G4-CFS-TEMP-PLA` is now prepared locally and tested against exact
+copies of the three active configuration files. It lowers the fixed CFS
+operation temperature to `195 °C`, requires an explicit Geeetech PLA `190/195`
+contract and adds a bounded post-resume guard for a previously memorised
+`190 °C` target. It fails closed for every other material or temperature. It has
+not been copied to the printer and no service has been restarted.
 
 Codex has permanent authority to complete all normal Git and GitHub operations for this repository, including push, pull-request management, fusion into `main` and cleanup, without requesting another `GO`. This authority does not replace the printer mutation gates.
 
@@ -39,7 +53,11 @@ Codex has permanent authority to complete all normal Git and GitHub operations f
 
 Do not repeat A1/B/A2 or the completed long production print. Open a separate passive session around the next genuinely different or multi-object production job. This is intended to test the reported post-job Z instability without consuming plastic solely for diagnosis.
 
-Separately prepare, without deploying, a minimal CFS temperature-ownership overlay for both startup purge and automatic refill. It should use explicit first-layer and normal-print temperatures, remember the temperature before an automatic pause, distinguish an equivalent-material refill from a real material change and restore the correct target before resuming. Its patch, validation and rollback must remain independent of pressure, ironing, Z, mesh and nozzle-cleaning changes.
+The separate local CFS preparation is complete. The next printer-side action is
+a human gate decision: either Thomas explicitly says `GO G4-CFS-TEMP-PLA` while
+the machine is idle, or the candidate remains local. Deployment must follow
+`overrides/cfs-temperature-contract/DEPLOYMENT.md` exactly and stop on any source
+hash mismatch. It must not absorb pressure, ironing, Z, mesh or nozzle cleaning.
 
 Keep every later printer behaviour change behind its own named G4. Do not treat the completed SSH convenience change as permission to modify Z, mesh, cleaning, CFS or services.
 

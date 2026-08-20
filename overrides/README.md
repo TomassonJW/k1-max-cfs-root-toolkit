@@ -1,5 +1,11 @@
 # Overrides
 
+Les correctifs de ce dossier sont des candidats originaux et réversibles. Leur
+présence dans Git ne signifie pas qu'ils sont installés sur l'imprimante.
+
+- `cfs-temperature-contract/` : premier candidat local pour empêcher le CFS de
+  réappliquer silencieusement `220 °C` avec le Geeetech PLA `190/195`.
+
 This directory will contain original, reviewable configuration overlays and wrapper macros after diagnosis.
 
 It is intentionally empty during P0/P1.
