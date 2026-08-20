@@ -56,7 +56,7 @@ Follow-up evidence on 2026-08-19 resolved the runtime board selection as S12 str
 
 ## G3 — Diagnosis sufficiently grounded
 
-Status: **not passed**
+Status: **passed on 2026-08-20 for offline G4 preparation only**
 
 Execution status: session `20260819-185157-g3-aba` completed A1/B/A2 in one boot session on 2026-08-19. Q1 passed. Q2 failed because Thomas adjusted the bed screws between the prints and again around A2. Q3 failed because the Z retry path differed, Q4 remained incomplete, and Q5 is inconclusive. The session is useful evidence but is not a qualified comparable pair.
 
@@ -75,13 +75,43 @@ Required:
 
 Passing G3 authorises preparation of a patch and rollback plan, not deployment.
 
-Next evidence should be captured passively around the next genuinely different or multi-object production job. It must not become a broad sacrificial print campaign. The CFS temperature issue is sufficiently grounded for preparation of a narrow patch and rollback plan, but not deployment; G3 as a whole remains open for the Z diagnosis.
+No additional sacrificial print is required before offline G4 preparation. The
+temperature owner remains a separate, dynamic and material-independent package.
 
 The static Geeetech PLA `190/195` candidate prepared on 2026-08-20 was rejected
 by Thomas before deployment because it was not material- or temperature-agnostic.
 Its deployable files were removed. G3 temperature work now requires proof of a
 dynamic owner that follows G-code targets through startup, both CFS units,
 equivalent refill and intentional material changes.
+
+Session `20260820-154056-p123` then captured P1, P2, P3, P4, two P5 attempts and
+P1 PETG in one passive trace. It directly proved that the current `+0.27 mm`
+post-processor executes only after the stock startup sequence, so it cannot
+protect an earlier purge. It also proved that live Z adjustments invoke
+`Z_OFFSET_APPLY_PROBE`, but the end-of-print path applies the exact inverse and
+prepares `0.000` for persistence. P1 PETG finished at `+0.38 mm`, `+0.11 mm`
+above the file baseline, before that correction was erased at completion.
+
+P2 and P3 share their 639 recorded slicer settings and produced no reported
+visible difference despite separate versus assembled objects. One live
+`+0.010 mm` Z click occurred during P3, so this is not a fully untouched pair.
+It does not reproduce the historical large Z shift and provides no support for
+the simplistic claim that object count alone causes it. A bed-screw change after
+P3 prevents extending the comparison to P4.
+
+The second corrected P5 completed one intentional tool change without a pause.
+Its measured nozzle targets were `115 -> 220 -> 205 -> 220 -> 0 °C`. The first
+`220 °C` confirms the startup override. The final `220 °C` equals the requested
+second-filament target, so this test cannot distinguish G-code ownership from a
+stock CFS rewrite. The first P5 attempt had three pauses after a likely filament
+break and is excluded from behavioural qualification.
+
+These results satisfy G3 because the Z reset and physical repeatability
+hypotheses are separated, runtime ownership is measured, and the first proposed
+intervention is narrow: prepare a reversible Z-safety sequence that forbids low
+movement and purge before the final Z state. Passing G3 authorises design,
+simulation and rollback preparation only. It does not authorise deployment or
+another printer mutation.
 
 ## G4 — One mutation ready for deployment
 

@@ -134,7 +134,7 @@ ADR reste comme historique d'une option refusée. Aucun G4 ne porte son nom.
 
 Date: 2026-08-20
 
-Status: proposé ; aucune autorisation de déploiement
+Status: accepté le 2026-08-20 pour conception hors imprimante ; aucun déploiement autorisé
 
 La première voie recommandée conserve le firmware `2.3.5.34`, les interfaces
 Creality et les CFS. Elle commence par un analyseur local en lecture seule, puis
@@ -153,3 +153,25 @@ Le contournement Z Orca actuel reste en place jusqu'à ce que son remplacement
 côté machine et le profil Orca propre soient validés ensemble. Cette proposition
 est détaillée dans `docs/08-audit-systeme-complet-et-trajectoire.md` et ADR-002.
 Elle n'autorise aucune modification de l'imprimante.
+
+## D-017 — La sécurité Z précède les autres correctifs de comportement
+
+Date: 2026-08-20
+
+Status: accepté pour préparation hors imprimante ; aucun déploiement autorisé
+
+Session `20260820-154056-p123` a mesuré deux mécanismes directs : la correction
+`+0.27 mm` du post-traitement arrive seulement après `START_PRINT`, puis la
+séquence de fin annule les corrections Z faites en direct et prépare de nouveau
+`0.000` pour la persistance. P1 PETG a terminé à `+0.38 mm` avant cette remise à
+zéro.
+
+Le premier paquet de comportement à préparer est donc une séquence de sécurité
+Z réversible. Elle interdit purge et mouvement bas avant la référence Z finale,
+la politique de mesh et la correction effective. Elle doit également empêcher
+l'effacement silencieux d'une correction validée. Le script Orca actuel reste
+actif jusqu'à la validation complète de son remplacement.
+
+Les températures CFS dynamiques, le nettoyage, la pression d'avance, l'ironing
+et l'interface sont des paquets séparés. BTT Eddy reste conditionnel à une
+instabilité physique encore mesurée après suppression des conflits de séquence.
