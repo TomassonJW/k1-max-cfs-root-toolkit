@@ -1,8 +1,8 @@
 # HANDOFF
 
 Date: 2026-08-21
-Phase: P4 / V1 and V2 closed; V3 prepared offline
-Next operator: Thomas decides `G4-K1-CONTROL-FOUNDATION-V3`; prior GO texts do not carry over
+Phase: P4 / V1 and V2 closed; first V3 attempt rolled back, stdin fix prepared offline
+Next operator: Thomas decides whether to repeat exact `GO G4-K1-CONTROL-FOUNDATION-V3`
 
 ## Current state
 
@@ -57,7 +57,11 @@ Thomas a choisi `CHOIX AUTH — NGINX`. Le remplacement
 sur nginx. Le module MIPS requis est prouvé hors imprimante. Le mot de passe est
 saisi deux fois en local, seul un hachage SSHA salé est transmis, les requêtes
 anonymes doivent recevoir `401`, et les identifiants sont retirés avant le proxy
-vers Moonraker. V3 est préparée mais **pas autorisée**.
+vers Moonraker. Le premier GO V3 a installé et validé le bootstrap, puis le test
+du compte a trouvé une collision stdin entre le programme Python et le JSON. Le
+rollback automatique est complet. Le correctif hors imprimante passe le
+programme par `-c`, réserve stdin au JSON et a lu un JSON factice sur la machine
+en lecture seule. Il n'est **pas autorisé au redéploiement** sans nouveau GO.
 
 Le contrat, l'architecture et la comparaison des outils sont dans les documents
 10, 11, 13, 14 et ADR-004. Les essais V2 ont créé puis rollbacké uniquement les
@@ -176,8 +180,9 @@ gate humaine. Thomas doit écrire explicitement :
 
 `GO G4-K1-CONTROL-FOUNDATION-V3`
 
-avant toute copie, installation ou démarrage. Un `GO` générique ou ancien ne
-suffit pas.
+avant toute nouvelle copie, installation ou démarrage. Le premier GO V3 a été
+consommé par la tentative rollbackée ; un `GO` générique ou ancien ne suffit
+pas.
 
 Les GO V1/V2 et le choix nginx ne suffisent pas. Cette nouvelle gate, si elle
 est donnée, autorise seulement la pose Moonraker/Mainsail, la création du compte

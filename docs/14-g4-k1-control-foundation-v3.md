@@ -2,7 +2,7 @@
 
 Date : 2026-08-21
 
-Statut : **préparée hors imprimante ; aucune pose V3 autorisée**
+Statut : **première pose rollbackée ; correctif stdin préparé hors imprimante et non autorisé au redéploiement**
 
 ## Pourquoi V3 existe
 
@@ -102,8 +102,14 @@ n'est autorisé.
 
 ## Gate future
 
-La préparation locale et les tests n'autorisent aucune mutation V3. Une future
-pose exige le texte exact :
+La première pose réelle a validé le bootstrap, puis a rollbacké pendant le test
+du compte : le programme Python et le JSON occupaient la même entrée standard.
+Le rollback a restauré l'absence complète de la fondation. Le correctif passe le
+programme par Python `-c`, réserve stdin au JSON et a réussi un test distant
+factice strictement en lecture seule.
+
+Ce correctif n'a pas été redéployé. Une nouvelle pose exige de nouveau le texte
+exact :
 
 `GO G4-K1-CONTROL-FOUNDATION-V3`
 

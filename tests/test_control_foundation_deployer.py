@@ -77,6 +77,12 @@ class ControlFoundationDeployerTests(unittest.TestCase):
         self.assertIn("Invoke-RemoteWithInput", self.text)
         self.assertIn("StandardInputEncoding = [Text.UTF8Encoding]::new($false)", self.text)
         self.assertIn('$process.StandardInput.Write("`n")', self.text)
+        credential_function = self.text[
+            self.text.index("function Test-GatewayCredential"):
+            self.text.index("function New-SshaPasswordRecord")
+        ]
+        self.assertIn("-c 'import base64;exec(base64.b64decode", credential_function)
+        self.assertNotIn("echo $scriptPayload | base64 -d", credential_function)
         self.assertIn("anonymous_status -ne 401", self.text)
         self.assertIn("authenticated_status -ne 200", self.text)
         self.assertIn("proxy", (ROOT / "packages" / "k1-control-v1" / "config" / "nginx.conf").read_text(encoding="utf-8"))
