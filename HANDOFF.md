@@ -1,8 +1,8 @@
 # HANDOFF
 
 Date: 2026-08-20
-Phase: P3 complete / P4 waiting for an exact named G4
-Next operator: Thomas decides `G4-K1-CONTROL-FOUNDATION-V1`; Codex must not infer approval
+Phase: P4 / V1 preflight KO before mutation; V2 prepared offline
+Next operator: Thomas decides `G4-K1-CONTROL-FOUNDATION-V2`; the V1 GO does not carry over
 
 ## Current state
 
@@ -39,10 +39,17 @@ Mainsail `v2.18.2`. Les trois archives ont été réellement assemblées et vér
 dans un bundle local temporaire. Aucun binaire communautaire n'est publié dans
 Git.
 
-Le premier candidat de pose s'appelle `G4-K1-CONTROL-FOUNDATION-V1`. Il ajoute
-uniquement Moonraker et Mainsail en observation, sans exposer encore `K1 Control`
-réel et sans modifier Z, mesh, démarrage, purge, CFS ou Orca. Il est préparé,
-mais **pas autorisé**.
+Thomas a autorisé exactement `G4-K1-CONTROL-FOUNDATION-V1`. Son préflight réel
+a confirmé la bonne machine, `standby`, les chauffes à zéro, T1/T2 connectés,
+les ressources et l'absence des cibles. Il a ensuite détecté l'absence de
+`logrotate` et de `/etc/logrotate.d`, prérequis obligatoire de V1. La pose s'est
+arrêtée avant toute mutation ; V1 est définitivement fermée.
+
+Le remplacement `G4-K1-CONTROL-FOUNDATION-V2` garde seulement Moonraker et
+Mainsail en observation. nginx utilise désormais le syslog BusyBox déjà actif
+par `/dev/log`, borné par défaut à 200 Kio avec une sauvegarde. Aucun paquet,
+cron ou service supplémentaire n'est ajouté. V2 est préparée mais **pas
+autorisée**.
 
 Le contrat, l'architecture et la comparaison des outils sont dans les documents
 10, 11 et ADR-004. Aucun fichier n'a été écrit sur l'imprimante, aucun service
@@ -57,7 +64,7 @@ Un écran `K1 Control` sans dépendance, un moteur d'état Python pur, un faux
 Moonraker, le contrat Orca et la matrice exécutable sont présents sous
 `prototype/`, `orca/` et `tests/`. Les vues bureau/mobile et les actions
 calibration, sauvegarde, redémarrage et invalidation ont été vérifiées sans
-erreur JavaScript. La suite complète passe 49/49 contrôles.
+erreur JavaScript. La suite complète passe 54/54 contrôles.
 
 ## Preuves historiques utiles
 
@@ -157,12 +164,13 @@ Codex has permanent authority to complete all normal Git and GitHub operations f
 La prochaine action qui pourrait toucher la machine est bloquée par une gate
 humaine. Thomas doit écrire explicitement :
 
-`GO G4-K1-CONTROL-FOUNDATION-V1`
+`GO G4-K1-CONTROL-FOUNDATION-V2`
 
 avant toute copie, installation ou démarrage. Un `GO` générique ou ancien ne
 suffit pas.
 
-Cette gate, si elle est donnée, autorise seulement la pose Moonraker/Mainsail,
+Le GO V1 déjà reçu ne suffit pas. Cette nouvelle gate, si elle est donnée,
+autorise seulement la pose Moonraker/Mainsail,
 la création du premier compte par tunnel SSH, les contrôles sans commande
 G-code et le rollback du même paquet. Elle n'autorise aucune chauffe, mouvement,
 calibration, extrusion, impression, modification Orca ou macro comportemental.

@@ -17,6 +17,14 @@ paths as explicit runtime parameters.
 normal production job. It writes only to an ignored local session directory and
 never sends printer-control or configuration commands.
 
+`deploy-control-foundation.ps1` prépare la pose V2 en quatre actions séparées.
+Par défaut, `Plan` ne contacte pas la machine. Toute action réelle exige à la
+fois `-Execute` et `-Gate G4-K1-CONTROL-FOUNDATION-V2`. `InstallBootstrap`
+répète le préflight, vérifie le bundle, sauvegarde l'état, installe seulement la
+fondation locale et rollback automatiquement sur KO. `ActivateLan` exige en
+plus `-AccountVerified`. `Validate` ne transmet aucune commande G-code et
+`Rollback` ne touche que les nouveaux chemins de cette fondation.
+
 During P0/P1, scripts must default to no remote write and fail closed on ambiguity.
 
 A future remote-mutating script must:

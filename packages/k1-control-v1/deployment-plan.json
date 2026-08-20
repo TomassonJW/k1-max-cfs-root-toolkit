@@ -1,5 +1,5 @@
 {
-  "g4_id": "G4-K1-CONTROL-FOUNDATION-V1",
+  "g4_id": "G4-K1-CONTROL-FOUNDATION-V2",
   "status": "prepared_not_authorized",
   "printer_mutation_authorized": false,
   "change_class": "moonraker_api_and_mainsail_expert_ui_observation_only",
@@ -22,8 +22,7 @@
     "/usr/data/k1-control-v1/backups/<UTC_CAPTURE_ID>",
     "/usr/data/k1-control-v1/current",
     "/etc/init.d/S56k1_control_moonraker",
-    "/etc/init.d/S57k1_control_gateway",
-    "/etc/logrotate.d/k1-control-v1"
+    "/etc/init.d/S57k1_control_gateway"
   ],
   "bootstrap": {
     "moonraker": "127.0.0.1:7125",
@@ -32,7 +31,7 @@
     "lan_activation_after_verified_login": "0.0.0.0:4409"
   },
   "pre_change_backup": [
-    "read-only proof that the target logrotate binary accepts the prepared policy",
+    "read-only proof that /dev/log is a socket and stock syslogd is active with bounded BusyBox defaults",
     "process and listener snapshot",
     "RAM, swap and /usr/data snapshot",
     "existence and SHA-256 of every target path",
@@ -48,7 +47,7 @@
     "screen, Klipper and both CFS processes remain present",
     "no printer.gcode.script request is sent",
     "no heater, movement, homing, calibration, extrusion or print is started",
-    "target logrotate accepts the prepared nginx policy and logs stay below the manifest limit",
+    "nginx uses the existing bounded syslog path and Moonraker logs stay below the manifest limit",
     "resource gates from foundation-manifest.json pass"
   ],
   "rollback": {
@@ -56,7 +55,6 @@
     "actions": [
       "stop only S57k1_control_gateway and S56k1_control_moonraker",
       "restore prior service files or their recorded absence",
-      "restore the prior logrotate policy or its recorded absence",
       "restore the prior current-link destination or its recorded absence",
       "move the failed release under the dated backup instead of deleting evidence",
       "verify Creality listeners and processes against the pre-change snapshot"

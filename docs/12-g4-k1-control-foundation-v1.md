@@ -2,7 +2,22 @@
 
 Date : 2026-08-20
 
-Statut : **paquet préparé hors imprimante ; déploiement non autorisé**
+Statut : **préflight réel KO ; jamais déployé ; nom définitivement fermé**
+
+## Arrêt définitif de V1
+
+Thomas a autorisé exactement V1 le 2026-08-20. Le préflight réel a confirmé la
+bonne machine, l'état `standby`, les chauffes à zéro, les deux CFS connectés,
+les ressources attendues et l'absence de toutes les cibles. Il a aussi prouvé
+que la machine ne possède ni `logrotate`, ni `/etc/logrotate.d`.
+
+V1 exigeait explicitement ce programme avant toute copie. La pose a donc été
+arrêtée à temps : aucun dossier, fichier, service, port ou profil n'a été créé
+ou modifié sur l'imprimante. Ce nom ne peut plus recevoir de GO.
+
+Le texte restant ci-dessous conserve le plan refusé comme preuve historique.
+Son remplacement sans dépendance ajoutée est décrit dans le document 13 et
+s'appelle `G4-K1-CONTROL-FOUNDATION-V2`.
 
 ## Ce que cette première pose apportera
 
@@ -150,8 +165,8 @@ Manuel : donner le GO exact, vérifier que la machine est au repos, choisir le
 mot de passe initial dans le tunnel, lancer l'impression normale d'observation
 et confirmer le résultat physique.
 
-## Gate humaine suivante
+## Gate fermée
 
-Le prochain choix est binaire : autoriser ou non
-`G4-K1-CONTROL-FOUNDATION-V1`. Un simple « GO » non nommé ne suffit pas. Jusqu'à
-ce GO exact, le paquet reste uniquement dans Git et dans les simulations locales.
+`G4-K1-CONTROL-FOUNDATION-V1` est définitivement non déployable. La seule
+succession possible est le nouveau paquet V2, après sa propre validation et un
+nouveau GO portant son nom exact.

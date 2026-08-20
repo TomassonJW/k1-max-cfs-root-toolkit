@@ -154,4 +154,6 @@ mesure longue avant acceptation. Restent à prouver après un futur GO nommé :
 
 Le prototype local utilise maintenant un faux Moonraker et la matrice est verte.
 La compatibilité d'installation reste conditionnelle aux contrôles de
-`G4-K1-CONTROL-FOUNDATION-V1` sur la machine réelle.
+`G4-K1-CONTROL-FOUNDATION-V2` sur la machine réelle. V1 a été arrêtée sans
+mutation lorsque son préflight a prouvé l'absence de `logrotate`. V2 retire
+cette dépendance et utilise le `syslogd` BusyBox déjà actif et borné.

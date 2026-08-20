@@ -1,9 +1,9 @@
 {
   "package_id": "K1-CONTROL-V1-FOUNDATION",
-  "package_version": 1,
+  "package_version": 2,
   "status": "g4_candidate_offline_not_authorized",
   "printer_mutation_authorized": false,
-  "active_g4_candidate": "G4-K1-CONTROL-FOUNDATION-V1",
+  "active_g4_candidate": "G4-K1-CONTROL-FOUNDATION-V2",
   "target": {
     "printer": "Creality K1 Max S12 structure 0",
     "firmware": "2.3.5.34",
@@ -29,6 +29,7 @@
     {
       "id": "nginx-mips-bundle",
       "role": "static_gateway",
+      "version": "1.17.7",
       "source_repository": "https://github.com/Guilouz/Creality-Helper-Script",
       "source_commit": "b46787a61b3ce2f04ec04d115a73a46c26814057",
       "source_path": "files/moonraker/nginx.tar.gz",
@@ -61,6 +62,14 @@
     "cors_domains": [],
     "automatic_updates": false
   },
+  "logging": {
+    "moonraker": "built-in midnight rotation with two backups",
+    "nginx": "stock BusyBox syslog through unix:/dev/log",
+    "required_syslog_process": "/sbin/syslogd -n",
+    "observed_syslog_default_max_kib": 200,
+    "observed_syslog_default_rotations": 1,
+    "extra_logging_package_required": false
+  },
   "future_paths": {
     "release_root": "/usr/data/k1-control-v1/releases/K1-CONTROL-V1.0.0",
     "current_link": "/usr/data/k1-control-v1/current",
@@ -69,7 +78,6 @@
     "backups": "/usr/data/k1-control-v1/backups",
     "moonraker_service": "/etc/init.d/S56k1_control_moonraker",
     "gateway_service": "/etc/init.d/S57k1_control_gateway",
-    "nginx_log_rotation": "/etc/logrotate.d/k1-control-v1",
     "klippy_socket_read_only_dependency": "/tmp/klippy_uds"
   },
   "forbidden_future_writes": [
@@ -87,6 +95,7 @@
     "minimum_available_ram_after_start_mib": 70,
     "maximum_swap_growth_mib": 8,
     "maximum_release_disk_mib": 256,
+    "minimum_usr_data_free_before_install_mib": 512,
     "maximum_logs_disk_mib": 16,
     "minimum_soak_hours": 8,
     "soak_must_include_representative_print": true

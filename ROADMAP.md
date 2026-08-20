@@ -74,12 +74,13 @@ et Mainsail `v2.18.2` épinglés, contrat Orca complet et
 
 ## P4 — Installation contrôlée du système de pilotage
 
-Status: **waiting for explicit `G4-K1-CONTROL-FOUNDATION-V1` approval**
+Status: **V1 stopped at preflight; V2 prepared offline and waiting for its exact GO**
 
 Le produit est posé par étapes techniques réversibles, mais Thomas reçoit un
 seul fonctionnement quotidien :
 
-1. API et Mainsail en observation — paquet préparé, non déployé ;
+1. API et Mainsail en observation — V1 refusée par le préflight réel ; V2
+   remplace logrotate par le syslog borné déjà présent et reste non déployée ;
 2. état et interface de calibration Z ;
 3. mesh, nettoyage, démarrage et purge sûrs ;
 4. propriété dynamique des températures des deux CFS ;

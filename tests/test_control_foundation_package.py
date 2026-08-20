@@ -18,7 +18,8 @@ class ControlFoundationPackageTests(unittest.TestCase):
     def test_manifest_is_pinned_fail_closed_and_does_not_touch_vendor_configs(self) -> None:
         manifest = json.loads((PACKAGE / "foundation-manifest.json").read_text(encoding="utf-8"))
         self.assertFalse(manifest["printer_mutation_authorized"])
-        self.assertEqual(manifest["active_g4_candidate"], "G4-K1-CONTROL-FOUNDATION-V1")
+        self.assertEqual(manifest["package_version"], 2)
+        self.assertEqual(manifest["active_g4_candidate"], "G4-K1-CONTROL-FOUNDATION-V2")
         self.assertFalse(manifest["network"]["daily_ui_exposed_in_this_slice"])
         self.assertEqual(manifest["network"]["moonraker_bind"], "127.0.0.1:7125")
         self.assertTrue(manifest["network"]["force_logins"])
@@ -47,14 +48,17 @@ class ControlFoundationPackageTests(unittest.TestCase):
             encoding="utf-8"
         )
         self.assertIn('-l "$LOGS/moonraker.log"', moonraker_service)
-        logrotate = (PACKAGE / "config" / "logrotate-k1-control").read_text(encoding="utf-8")
-        self.assertIn("size 1M", logrotate)
-        self.assertIn("rotate 5", logrotate)
-        self.assertIn("/var/run/k1-control-nginx.pid", logrotate)
+        self.assertFalse((PACKAGE / "config" / "logrotate-k1-control").exists())
+        self.assertIn("error_log syslog:server=unix:/dev/log", nginx)
+        self.assertIn("error_log syslog:server=unix:/dev/log", bootstrap)
+        manifest = json.loads((PACKAGE / "foundation-manifest.json").read_text(encoding="utf-8"))
+        self.assertFalse(manifest["logging"]["extra_logging_package_required"])
+        self.assertEqual(manifest["logging"]["observed_syslog_default_max_kib"], 200)
+        self.assertEqual(manifest["resource_gates"]["minimum_usr_data_free_before_install_mib"], 512)
 
     def test_deployment_plan_is_observation_only_and_not_authorized(self) -> None:
         plan = json.loads((PACKAGE / "deployment-plan.json").read_text(encoding="utf-8"))
-        self.assertEqual(plan["g4_id"], "G4-K1-CONTROL-FOUNDATION-V1")
+        self.assertEqual(plan["g4_id"], "G4-K1-CONTROL-FOUNDATION-V2")
         self.assertEqual(plan["status"], "prepared_not_authorized")
         self.assertFalse(plan["printer_mutation_authorized"])
         unchanged = set(plan["does_not_change"])
@@ -64,7 +68,8 @@ class ControlFoundationPackageTests(unittest.TestCase):
         validation = set(plan["validation_without_machine_motion"])
         self.assertIn("no printer.gcode.script request is sent", validation)
         self.assertIn("resource gates from foundation-manifest.json pass", validation)
-        self.assertIn("/etc/logrotate.d/k1-control-v1", plan["new_remote_paths"])
+        self.assertNotIn("/etc/logrotate.d/k1-control-v1", plan["new_remote_paths"])
+        self.assertTrue(any("/dev/log" in item for item in plan["pre_change_backup"]))
 
     def test_preparer_verifies_size_and_hash_and_rejects_workspace_root(self) -> None:
         artifact = ROOT / "tests" / "fixtures" / "k1-control-v1" / "orca-end-expanded.gcode"

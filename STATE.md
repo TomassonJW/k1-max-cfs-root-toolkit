@@ -4,7 +4,7 @@ Last updated: 2026-08-20
 
 ## Current phase
 
-**P3 terminé — prototype hors imprimante vert ; P4 attend une gate humaine**
+**P4 — V1 arrêtée au préflight ; V2 préparée hors imprimante et non autorisée**
 
 The repository baseline, stock acquisition, complete Orca/G-code intake and
 passive P1–P5/PETG trace are complete. Gate G3 is passed for offline design and
@@ -21,8 +21,10 @@ a simple daily interface, a Mainsail expert view candidate, persistent accepted
 Z calibration, meshes by plate/temperature, safe configurable start/clean/purge,
 dynamic two-CFS temperature ownership and one versioned Orca contract. It is
 being prepared by reversible slices. The complete offline prototype is now
-green. `G4-K1-CONTROL-FOUNDATION-V1` is prepared for Moonraker/Mainsail
-observation only, but it is not authorised and changes no print behaviour.
+green. V1 was authorised but stopped before mutation because the required
+`logrotate` was absent. `G4-K1-CONTROL-FOUNDATION-V2` replaces that dependency
+with the bounded stock syslog, but it is not authorised and changes no print
+behaviour.
 
 ## Confirmed facts
 
@@ -159,8 +161,17 @@ observation only, but it is not authorised and changes no print behaviour.
   the active Orca profile and legacy `+0.27 mm` post-processor are unchanged.
 - A local bundle containing the three pinned Moonraker/nginx/Mainsail archives
   was built and verified. Binary payloads remain temporary and outside Git.
-- `G4-K1-CONTROL-FOUNDATION-V1` now has exact paths, first-login tunnel,
-  backup, checksums, no-motion validation, resource gates and rollback.
+- V1 had exact paths, first-login tunnel, backup, checksums, no-motion
+  validation, resource gates and rollback, but its missing target dependency
+  invalidated the package before deployment. V2 preserves these controls.
+- The real V1 preflight confirmed standby, zero heater targets, S12 structure
+  0, firmware `2.3.5.34`, about 117 MiB available RAM, 340 KiB swap in use,
+  stock ports, T1/T2 connected on `1.1.3`, and all V1 targets absent.
+- The same preflight proved that neither `logrotate` nor `/etc/logrotate.d`
+  exists. V1 performed no mutation and is closed.
+- V2 uses the existing `/sbin/syslogd -n` through `/dev/log`; BusyBox reports
+  its default 200 KiB limit and one rotated backup. No logging dependency is
+  installed.
 
 - Complete-system audit, A/B/C comparison, safety invariant, input contract and
   time-bounded roadmap documented in
@@ -212,9 +223,10 @@ observation only, but it is not authorised and changes no print behaviour.
 
 ## Next safe action
 
-The next state-changing action is a human gate: Thomas may explicitly approve
-or refuse `G4-K1-CONTROL-FOUNDATION-V1`. A generic `GO` is insufficient. Until
-that exact approval, do not upload, install, start or expose any service.
+The next state-changing action is a new human gate: Thomas may explicitly
+approve or refuse `G4-K1-CONTROL-FOUNDATION-V2`. The V1 GO and a generic `GO`
+are insufficient. Until that exact V2 approval, do not upload, install, start
+or expose any service.
 
 If approved, the first pose installs only Moonraker and Mainsail in observation,
 creates the initial account through an SSH tunnel, performs no G-code command,
@@ -226,7 +238,8 @@ retirement remains atomic with the later proven machine/Orca replacement.
 ## Not authorised yet
 
 - Helper Script installation.
-- `G4-K1-CONTROL-FOUNDATION-V1` until Thomas names it in an explicit GO.
+- `G4-K1-CONTROL-FOUNDATION-V1` forever: preflight KO, never deployed, name closed.
+- `G4-K1-CONTROL-FOUNDATION-V2` until Thomas names it in a new explicit GO.
 - Any other Mainsail, Fluidd, Moonraker or `K1 Control` installation/change.
 - BTT Eddy preparation, installation, firmware or calibration.
 - Firmware downgrade or replacement.
