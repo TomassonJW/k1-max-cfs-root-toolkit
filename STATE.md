@@ -16,6 +16,22 @@ The repository baseline, stock acquisition and targeted source follow-up are com
 - A private, Git-ignored intake exists under
   `inventory/raw/user-inputs/20260820-full-system-audit/` for Orca exports,
   existing projects, G-codes, custom scripts, photos and recovery artefacts.
+- The first private Orca and test-suite intake is complete: 24 baseline files
+  and 13 test-suite files were copied locally and verified by SHA-256 without
+  changing their sources. Raw files and manifests remain ignored by Git.
+- Six candidate G-codes are now available offline. P2 and P3 have the same 639
+  recorded settings, duration, material estimate and two-layer geometry, while
+  differing as five separate objects versus one assembled object. They form the
+  cleanest current object-structure comparison.
+- Ironing is enabled on P1, P2 and P3. Because it is shared and occurs at the
+  top surface, it does not invalidate their first-layer comparison; top-surface
+  defects must nevertheless remain separate from Z observations.
+- The supplied `P5-CFS-ONE-CHANGE` is not a one-change file: it contains eleven
+  tool commands and ten automatic changes between PLA targets of 205 and 220
+  degrees. It is deferred until a replacement G-code proves exactly one change.
+- Every supplied G-code still inserts the temporary `+0.27 mm` correction after
+  `START_PRINT`, so none protects a purge or low move executed inside that
+  stock macro.
 - BTT Eddy is not currently mandatory. Its closest K1 Max `2.3.5.34` + CFS
   integration documents beta Z-offset behaviour, repeated recalibration and
   build-plate risk; it remains a measured fallback if deterministic PR Touch
@@ -121,9 +137,11 @@ The repository baseline, stock acquisition and targeted source follow-up are com
 
 ## Next safe action
 
-Wait for `DEPOT_AUDIT_PRET`, then inventory the supplied Orca export, existing
-projects, G-codes and custom scripts locally. Produce a source-by-source timeline
-and safety-rule report without connecting to or changing the printer.
+Start one passive, read-only observer while the printer is idle, then let Thomas
+run only P1-SINGLE, P2-FIVE-OBJECTS and P3-ONE-MERGED-OBJECT in one boot session.
+Keep the same plate, PLA, CFS slot and mechanical settings; record every live Z
+correction with its time. Analyse that capture before authorising P4, the PETG
+variant or a corrected one-change P5.
 
 The first engineering output is an offline analyser and a non-deployed G4 safety
 packet. It must prove that no low movement or purge can occur before the final Z
@@ -161,9 +179,12 @@ Use `k1max-root` for future bounded SSH work; a password prompt is now a failure
 
 ## Current blockers
 
-- Real Orca profiles, the complete current Z workaround and representative
-  multi-object/material inputs have not yet been deposited in the new private
-  intake.
+- A complete Orca printer-config bundle has not yet been exported; the exact
+  user profiles, current Z post-processor and representative projects/G-codes
+  are nevertheless captured individually and verified.
+- The PETG G-code has no matching `P1-PETG.3mf` in the intake.
+- The present P5 alternates tools ten times and cannot qualify a single
+  intentional material-change test until it is resliced.
 - Recovery artefacts and procedure have not been matched locally to the exact revision.
 - The core `BOX_*` state machine is compiled and its readable source is not present on the machine.
 - The literal registration of `ACCURATE_HOME_Z` was not found in readable Python, although the underlying `G28` and PR Touch path is mapped.
