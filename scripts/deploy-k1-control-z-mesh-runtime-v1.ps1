@@ -26,7 +26,7 @@ $LocalModule = Join-Path $PackageRoot 'k1_control_store.py'
 
 $ExpectedPrinterHash = '272640237e20659cf01f3268ed4cb0282b098c3d613e94bf84a3b80caac3c3b0'
 $ExpectedNextPrinterHash = 'fa8c25b0bc79f94bcdf1c1bca2c48c3d892ca42854cf277962580680d5767f05'
-$ExpectedConfigHash = '1f202e94aaf3a28363a6a66727e27bf1a461b82436ccad0d8e00bb9b9e988fd9'
+$ExpectedConfigHash = '3b0e5215d9bd58a343c57a681668ef1e466465980cceac3b1fd5944fec806f96'
 $ExpectedModuleHash = '385fc888b5fae7633de91a3c106b8e46656bd79936d40b4555e2a7da6dee9b93'
 
 $PrinterConfig = '/usr/data/printer_data/config/printer.cfg'
@@ -276,6 +276,29 @@ function Assert-IdleSnapshot {
     }
 }
 
+function Wait-IdleSnapshot {
+    param(
+        [int]$Attempts = 60,
+        [int]$DelaySeconds = 1,
+        [switch]$IncludeRuntime,
+        [switch]$RequireUnhomed
+    )
+
+    $lastError = 'etat non encore observe'
+    for ($attempt = 1; $attempt -le $Attempts; $attempt++) {
+        try {
+            $snapshot = Get-KlipperSnapshot -IncludeRuntime:$IncludeRuntime
+            Assert-IdleSnapshot $snapshot -RequireUnhomed:$RequireUnhomed
+            return $snapshot
+        }
+        catch {
+            $lastError = $_.Exception.Message
+        }
+        if ($attempt -lt $Attempts) { Start-Sleep -Seconds $DelaySeconds }
+    }
+    throw "Etat imprimante/CFS non stabilise apres $Attempts tentatives : $lastError"
+}
+
 function Assert-Foundation {
     $listeners = (Invoke-Remote 'netstat -lnt') -join "`n"
     foreach ($required in @('127.0.0.1:7125', '0.0.0.0:4409', '0.0.0.0:80', '0.0.0.0:8080', '0.0.0.0:9999')) {
@@ -355,13 +378,18 @@ function Assert-RuntimeInstalled {
     $includeCount = [int]((Invoke-Remote "grep -c '^\[include k1-control-z-mesh.cfg\]$' '$PrinterConfig'" | Select-Object -First 1).Trim())
     if ($includeCount -ne 1) { throw "Nombre d inclusions runtime inattendu : $includeCount" }
     $snapshot = $null
+    $runtimeReady = $false
     for ($attempt = 1; $attempt -le 12; $attempt++) {
         $snapshot = Wait-KlipperReady -IncludeRuntime
         $runtime = $snapshot.'gcode_macro K1_CONTROL_STATE'
-        if ($runtime -and [int]$runtime.ready -eq 1) { break }
+        if ($runtime -and [int]$runtime.ready -eq 1) {
+            $runtimeReady = $true
+            break
+        }
         if ($attempt -lt 12) { Start-Sleep -Seconds 1 }
     }
-    Assert-IdleSnapshot $snapshot -RequireUnhomed
+    if (-not $runtimeReady) { throw 'Runtime K1 Control non pret apres le delai.' }
+    $snapshot = Wait-IdleSnapshot -IncludeRuntime -RequireUnhomed -Attempts 60
     $runtime = $snapshot.'gcode_macro K1_CONTROL_STATE'
     $store = $snapshot.k1_control_store
     if (-not $runtime -or [int]$runtime.ready -ne 1 -or [int]$runtime.accepted_z_valid -ne 0 -or [int]$runtime.low_moves_armed -ne 0) {
@@ -416,7 +444,7 @@ function Invoke-RuntimeRollback {
         "cp '$remoteBackup/printer.cfg.before' '$PrinterConfig.rollback-next'",
         "test `"`$(sha256sum '$PrinterConfig.rollback-next' | cut -d ' ' -f 1)`" = '$ExpectedPrinterHash'",
         "mv '$PrinterConfig.rollback-next' '$PrinterConfig'",
-        "rm -f '$RuntimeConfig' '$RuntimeConfig.next' '$RuntimeModule' '$RuntimeModule.next' '$RuntimeState' '$RuntimeState.previous' '$RuntimeState.tmp' '$PrinterConfig.next' '$PrinterConfig.rollback-next'",
+        "rm -f '$RuntimeConfig' '$RuntimeConfig.next' '$RuntimeModule' '$RuntimeModule.next' '$RuntimeState' '$RuntimeState.previous' '$RuntimeState.tmp' '$PrinterConfig.next' '$PrinterConfig.rollback-next' '$PrinterConfig.rollback-final'",
         'sync'
     )
     foreach ($command in $commands) {
@@ -431,21 +459,32 @@ function Invoke-RuntimeRollback {
             Invoke-Remote "'$KlipperService' restart" | Out-Null
         }
         $snapshot = $null
-        for ($attempt = 1; $attempt -le 20; $attempt++) {
+        $runtimeUnloaded = $false
+        for ($attempt = 1; $attempt -le 60; $attempt++) {
             $snapshot = Wait-KlipperReady
             $objects = Get-KlipperObjectNames
-            if ($objects -notcontains 'gcode_macro K1_CONTROL_STATE' -and $objects -notcontains 'k1_control_store') { break }
-            if ($attempt -lt 20) { Start-Sleep -Seconds 1 }
+            if ($objects -notcontains 'gcode_macro K1_CONTROL_STATE' -and $objects -notcontains 'k1_control_store') {
+                $runtimeUnloaded = $true
+                break
+            }
+            if ($attempt -lt 60) { Start-Sleep -Seconds 1 }
         }
-        if ($objects -contains 'gcode_macro K1_CONTROL_STATE' -or $objects -contains 'k1_control_store') {
+        if (-not $runtimeUnloaded) {
             throw 'Rollback charge encore le runtime K1 Control.'
         }
-        Assert-IdleSnapshot $snapshot -RequireUnhomed
+
+        Invoke-Remote "cp '$remoteBackup/printer.cfg.before' '$PrinterConfig.rollback-final'" | Out-Null
+        $finalCopyHash = ((Invoke-Remote "sha256sum '$PrinterConfig.rollback-final'" | Select-Object -First 1) -split '\s+')[0]
+        if ($finalCopyHash -ne $ExpectedPrinterHash) { throw 'Copie finale du backup rollback differente.' }
+        Invoke-Remote "mv '$PrinterConfig.rollback-final' '$PrinterConfig'" | Out-Null
+        Invoke-Remote 'sync' | Out-Null
+
         $restoredHash = ((Invoke-Remote "sha256sum '$PrinterConfig'" | Select-Object -First 1) -split '\s+')[0]
         if ($restoredHash -ne $ExpectedPrinterHash) { throw 'Rollback printer.cfg incomplet.' }
-        foreach ($path in @($RuntimeConfig, "$RuntimeConfig.next", $RuntimeModule, "$RuntimeModule.next", $RuntimeState, "$RuntimeState.previous", "$RuntimeState.tmp")) {
+        foreach ($path in @($RuntimeConfig, "$RuntimeConfig.next", $RuntimeModule, "$RuntimeModule.next", $RuntimeState, "$RuntimeState.previous", "$RuntimeState.tmp", "$PrinterConfig.rollback-final")) {
             if (Invoke-RemoteTest "test -e '$path'") { throw "Rollback incomplet : $path" }
         }
+        $snapshot = Wait-IdleSnapshot -RequireUnhomed -Attempts 60
         Assert-Foundation | Out-Null
     }
     catch { if (-not $BestEffort) { throw } }

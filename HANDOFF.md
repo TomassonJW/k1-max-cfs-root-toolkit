@@ -1,8 +1,8 @@
 # HANDOFF
 
 Date: 2026-08-21
-Phase: P4 / retained foundation observed; corrected Z/mesh preflight green
-Next operator: review the stdin correction, then wait for the renewed exact GO
+Phase: P4 / retained foundation observed; Z/mesh attempt fully rolled back
+Next operator: review empty-store/stabilization corrections, then wait for GO
 
 ## Current state
 
@@ -68,6 +68,28 @@ transitoire actif, états admis avant le redémarrage hôte de la future pose.
 Aucun fichier distant, backup, G-code, commande Klipper ou service n'a été
 modifié. La commande revue ayant changé après le GO, le déploiement attend un GO
 exact renouvelé.
+
+Thomas a renouvelé ce GO. La capture
+`20260821-213732-g4-k1-control-z-mesh-runtime-v1` a passé son préflight et
+vérifié le backup, puis posé le runtime et redémarré l'hôte Klipper. La
+validation a refusé l'état neuf : `integrity=empty` suivait la branche invalide
+et laissait `ready=0`. La garde `K1_PRODUCTION_ASSERT_ARMED` n'a pas été appelée.
+
+Le rollback automatique a retiré le runtime, mais son contrôle immédiat a vu T1
+encore déconnecté. Le restart avait aussi normalisé seulement les espaces des
+blocs générés `bed_mesh default` et `auto_addr`. Une complétion bornée a restauré
+le backup exact sans autre restart. Le préflight final a confirmé le runtime
+absent, le hash initial, Klipper `standby`, les axes non homés, les chauffes à
+zéro, T1/T2 `1.1.3` et la fondation intacte. Aucun mouvement, chauffe, extrusion,
+ordre CFS, calibration, impression, firmware restart ou reboot n'a eu lieu. Le
+mesh transitoire `Base` a été perdu au restart ; `default` est de nouveau actif.
+
+Le candidat offline possède désormais une branche `empty` prête pour calibrer
+mais fermée à la production, une attente de stabilisation CFS de 60 secondes et
+une seconde restauration du backup exact après le restart de rollback. Son hash
+config est `3b0e5215d9bd58a343c57a681668ef1e466465980cceac3b1fd5944fec806f96`.
+La suite exécute 96 tests : 95 passent localement et les 17 templates, dont le
+rendu `empty`, passent sur le Python/Jinja exact de la K1.
 
 La pile est figée : Moonraker MIPS embarqué au commit
 `fccffa96c63ed77dc3953e18615e9fe9cd3d69ea`, nginx MIPS du même paquet et
@@ -148,7 +170,7 @@ Un écran `K1 Control` sans dépendance, un moteur d'état Python pur, un faux
 Moonraker, le contrat Orca et la matrice exécutable sont présents sous
 `prototype/`, `orca/` et `tests/`. Les vues bureau/mobile et les actions
 calibration, sauvegarde, redémarrage et invalidation ont été vérifiées sans
-erreur JavaScript. La suite courante exécute 94 tests : 93 passent localement ;
+erreur JavaScript. La suite courante exécute 96 tests : 95 passent localement ;
 le seul contrôle ignoré manque de Jinja dans Python Windows et sa vérification
 équivalente passe `17/17` avec l'environnement exact de la K1, en mémoire.
 
@@ -247,11 +269,11 @@ Codex has permanent authority to complete all normal Git and GitHub operations f
 
 ## Next bounded mission
 
-Relire le diff limité aux deux marqueurs stdin, le test ajouté et le rapport de
-préflight. La pose ajoute seulement le stockage/calibration Z/mesh et garde le
-chemin d'impression actuel intact. Attendre exactement le GO renouvelé
-`GO G4-K1-CONTROL-Z-MESH-RUNTIME-V1` avant toute écriture. Le déployeur devra
-refaire son préflight immédiatement avant la mutation.
+Relire le rapport d'essai, la branche `empty`, les attentes de stabilisation et
+la restauration post-restart. La pose ajoute seulement le stockage/calibration
+Z/mesh et garde le chemin d'impression actuel intact. Attendre exactement le GO
+renouvelé `GO G4-K1-CONTROL-Z-MESH-RUNTIME-V1` avant toute écriture. Le
+déployeur devra refaire son préflight immédiatement avant la mutation.
 
 La bascule Orca reste une gate ultérieure unique : wrappers de travail côté
 machine, trois champs Orca et retrait du post-traitement doivent changer

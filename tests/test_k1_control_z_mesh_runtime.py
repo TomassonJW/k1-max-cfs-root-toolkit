@@ -52,6 +52,17 @@ class K1ControlZMeshRuntimeTests(unittest.TestCase):
         self.assertLess(commit.index("K1_STATE_SAVE"), commit.index("K1_CONTROL_LOAD_STATE"))
         self.assertIn("old|length != 17", commit)
 
+    def test_empty_store_is_ready_for_calibration_but_remains_fail_closed(self):
+        load = macro_body(self.text, "K1_CONTROL_LOAD_STATE")
+        empty = load.index('store.integrity|string == "empty"')
+        invalid = load.index('store.integrity|string == "invalid"')
+        self.assertLess(empty, invalid)
+        empty_branch = load[empty:invalid]
+        self.assertIn("VARIABLE=ready VALUE=1", empty_branch)
+        self.assertIn("VARIABLE=block_reason VALUE='no_accepted_z'", empty_branch)
+        self.assertIn("VARIABLE=accepted_z_valid VALUE=0", empty_branch)
+        self.assertIn("VARIABLE=low_moves_armed VALUE=0", empty_branch)
+
     def test_z_commit_cancel_restore_and_invalidate_are_explicit(self):
         for name in (
             "K1_Z_SESSION_START",

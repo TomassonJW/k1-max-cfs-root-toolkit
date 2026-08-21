@@ -72,6 +72,19 @@ class K1ControlZMeshDeployerTests(unittest.TestCase):
         self.assertLess(archive, remove)
         self.assertIn("printer.cfg.before", rollback)
         self.assertIn("sha256sum -c checksums.sha256", rollback)
+        self.assertIn("Wait-IdleSnapshot -RequireUnhomed -Attempts 60", rollback)
+        self.assertIn("$PrinterConfig.rollback-final", rollback)
+        self.assertLess(
+            rollback.index("$runtimeUnloaded = $true"),
+            rollback.index("cp '$remoteBackup/printer.cfg.before' '$PrinterConfig.rollback-final'"),
+        )
+
+    def test_deploy_waits_for_runtime_and_both_cfs_to_stabilize(self):
+        installed = self.script[
+            self.script.index("function Assert-RuntimeInstalled") : self.script.index("function Assert-FailClosedWithoutMotion")
+        ]
+        self.assertIn("$runtimeReady = $true", installed)
+        self.assertIn("Wait-IdleSnapshot -IncludeRuntime -RequireUnhomed -Attempts 60", installed)
 
 
 if __name__ == "__main__":

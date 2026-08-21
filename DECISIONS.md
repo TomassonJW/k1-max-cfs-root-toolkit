@@ -370,3 +370,26 @@ Le préflight corrigé est vert et reste une observation en lecture seule. Malgr
 son faible volume, la correction change une commande revue après le GO. Le
 principe G4 d'approbation des commandes exactes s'applique : aucune pose n'est
 permise avant le renouvellement du même GO exact.
+
+## D-028 — L'état vide est calibrable, jamais prêt pour la production
+
+Date: 2026-08-21
+
+Status: accepté hors imprimante après rollback réel
+
+La pose Z/mesh a prouvé qu'un stockage neuf `integrity=empty` était confondu avec
+un enregistrement corrompu. Garder `ready=0` ferme correctement la production,
+mais bloque aussi toute création de la première calibration Z.
+
+L'état vide devient donc prêt uniquement pour les opérations de calibration :
+`ready=1`, `block_reason=no_accepted_z`, `accepted_z_valid=0` et
+`low_moves_armed=0`. Un état réellement invalide reste à `ready=0`. La garde de
+production continue d'exiger séparément un Z accepté, un mesh qualifié et la
+relecture de leurs valeurs effectives.
+
+Le même essai a montré que Klipper peut être prêt avant les deux CFS et qu'un
+restart peut normaliser les espaces des blocs `SAVE_CONFIG`. Les validations de
+pose et rollback attendent désormais la stabilisation complète. Après restart
+de rollback, le backup exact est restauré une seconde fois sans autre restart,
+afin que l'état chargé reste sémantiquement identique et que l'empreinte disque
+revienne exactement à la baseline revue.

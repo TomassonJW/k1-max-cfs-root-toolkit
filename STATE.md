@@ -4,8 +4,8 @@ Last updated: 2026-08-21
 
 ## Current phase
 
-**P4 — fondation V3 et correction des chemins retenues ; préflight Z/mesh vert,
-pose en attente d'un GO exact renouvelé après correction du déployeur**
+**P4 — fondation V3 + PATHS-V1 retenue ; essai Z/mesh rollbacké et baseline
+exacte restaurée ; candidat corrigé hors imprimante en attente d'un nouveau GO**
 
 The repository baseline, stock acquisition, complete Orca/G-code intake and
 passive P1–P5/PETG trace are complete. Gate G3 is passed for offline design and
@@ -250,6 +250,23 @@ commencent sur cet état final retenu.
   zéro, fondation intacte, empreinte initiale conforme, cibles runtime absentes
   et deux CFS `1.1.3` connectés. Aucune copie, sauvegarde distante, inclusion,
   commande Klipper ou relance de service n'a été exécutée.
+- Le GO exact renouvelé a ouvert la capture
+  `20260821-213732-g4-k1-control-z-mesh-runtime-v1`. Le préflight et le backup
+  étaient verts, puis l'état neuf a échoué car `integrity=empty` laissait
+  `ready=0`. La garde sans mouvement n'a pas été appelée.
+- Le rollback a retiré le runtime mais sa première validation a rencontré T1 en
+  reconnexion et une normalisation d'espaces des blocs générés de `printer.cfg`.
+  Une complétion bornée a restauré le backup exact sans nouveau restart. Le
+  préflight final est vert : runtime absent, hash initial restauré, `standby`,
+  axes non homés, chauffes à zéro, T1/T2 `1.1.3` et fondation intacte.
+- Le restart a effacé le mesh transitoire `Base`; le profil persistant `default`
+  est redevenu actif. Aucun mouvement, chauffe, extrusion, ordre CFS,
+  calibration, impression, firmware restart ou reboot n'a été exécuté.
+- Le candidat hors imprimante traite maintenant `empty` comme prêt pour une
+  calibration mais fermé à la production, attend jusqu'à 60 secondes la
+  stabilisation des deux CFS et restaure le backup exact après le restart de
+  rollback. Son nouveau hash config est
+  `3b0e5215d9bd58a343c57a681668ef1e466465980cceac3b1fd5944fec806f96`.
 
 - Complete-system audit, A/B/C comparison, safety invariant, input contract and
   time-bounded roadmap documented in
@@ -301,11 +318,10 @@ commencent sur cet état final retenu.
 
 ## Next safe action
 
-Review the two-token transport correction and its regression test. Because the
-reviewed deployer command changed after the first GO, deployment requires Thomas
-to renew the exact text `GO G4-K1-CONTROL-Z-MESH-RUNTIME-V1`. The next execution
-must reuse the green preflight facts but rerun the deployer's own preflight before
-any write.
+Review the empty-store, CFS stabilization and post-restart rollback corrections,
+their 96-test suite and the exact-machine Jinja proof. Because both the runtime
+payload and deployer changed after the consumed GO, another deployment requires
+Thomas to renew `GO G4-K1-CONTROL-Z-MESH-RUNTIME-V1` after this review.
 
 The Orca cutover remains a later atomic gate. This runtime slice intentionally
 keeps the active Orca profile, `START_PRINT` and the legacy `+0.27 mm`
@@ -327,8 +343,8 @@ retirement remains atomic with the later proven machine/Orca replacement.
 - Any reinstall, correction or extension of the completed
   `G4-K1-CONTROL-FOUNDATION-V3-PATHS-V1` package.
 - Any other Mainsail, Fluidd, Moonraker or `K1 Control` installation/change.
-- `G4-K1-CONTROL-Z-MESH-RUNTIME-V1` deployment until the corrected command has
-  received a renewed exact GO.
+- `G4-K1-CONTROL-Z-MESH-RUNTIME-V1` deployment until the corrected runtime and
+  deployer have received a renewed exact GO.
 - BTT Eddy preparation, installation, firmware or calibration.
 - Firmware downgrade or replacement.
 - Any SSH write other than the completed `G4-SSH-KEY` deployment.
@@ -383,6 +399,6 @@ retirement remains atomic with the later proven machine/Orca replacement.
 ## Exit condition for this phase
 
 P3 has reached its exit condition. The P4 foundation slice is installed,
-observed and retained. The Z/mesh runtime has a green real preflight but remains
-absent from the printer; the corrected deployer must receive a renewed exact GO
-before the printer-side P4 extension is opened.
+observed and retained. The failed Z/mesh attempt is completely rolled back and
+the exact baseline is healthy. The corrected runtime remains offline until its
+new exact review and renewed GO.

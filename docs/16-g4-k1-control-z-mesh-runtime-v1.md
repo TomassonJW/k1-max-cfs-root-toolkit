@@ -2,7 +2,7 @@
 
 Date : 2026-08-21
 
-Statut : **préflight réel vert après correction locale ; aucun déploiement effectué ni autorisé sans GO renouvelé**
+Statut : **essai réel rollbacké, baseline exacte restaurée ; candidat renforcé hors imprimante, nouveau GO requis**
 
 ## État d'exécution du 2026-08-21
 
@@ -22,6 +22,33 @@ hôte prévu par la pose.
 Aucune sauvegarde distante, copie, inclusion, donnée runtime, commande Klipper
 ou relance de service n'a été exécutée. La correction modifie une commande revue
 après le premier GO : le déploiement attend donc un nouveau GO exact.
+
+## Essai et rollback de la capture `20260821-213732`
+
+Le GO renouvelé a ouvert une pose réelle. Le préflight et le backup étaient
+verts. Après l'installation et le restart hôte, la validation a refusé l'état
+initial : un stockage neuf `integrity=empty` suivait la branche invalide et
+laissait `ready=0`. La garde sans mouvement n'a pas été appelée.
+
+Le rollback a retiré les cibles puis redémarré Klipper. Son contrôle immédiat a
+rencontré T1 encore en reconnexion. Le restart a aussi normalisé les espaces des
+blocs générés `bed_mesh default` et `auto_addr`, sans changer leurs valeurs. Une
+complétion bornée a restauré une dernière fois le backup exact sans autre
+restart. Le préflight final confirme le hash initial, le runtime absent,
+`standby`, axes non homés, chauffes à zéro, T1/T2 `1.1.3` et fondation intacte.
+
+Le mesh actif `Base` était transitoire et a été perdu au restart ; le profil
+persistant `default` est redevenu actif. Aucun mouvement, homing, chauffe,
+extrusion, ordre CFS, calibration, impression, firmware restart ou reboot n'a
+été exécuté.
+
+La correction distingue maintenant l'état `empty` : le stockage devient prêt
+pour commencer une calibration, tout en gardant `accepted_z_valid=0`,
+`low_moves_armed=0` et `block_reason=no_accepted_z`. Le déployeur attend la
+stabilisation complète de Klipper et des CFS, puis restaure une seconde fois le
+backup exact après le restart du rollback. Les 96 tests sont verts à 95 + un
+skip local ; les 17 templates et le rendu `empty` passent sur le Python/Jinja
+exact de la K1.
 
 ## Décision opérateur
 
@@ -131,7 +158,7 @@ réactivée silencieusement.
 
 ## Pose candidate exacte
 
-La pose corrigée n'est pas encore autorisée. Son plan est figé par
+La nouvelle pose corrigée n'est pas encore autorisée. Son plan est figé par
 `deployment-manifest.json` et
 `scripts/deploy-k1-control-z-mesh-runtime-v1.ps1`.
 
@@ -155,6 +182,8 @@ La pose corrigée n'est pas encore autorisée. Son plan est figé par
 
 Le `printer.cfg` attendu après insertion a pour SHA-256
 `fa8c25b0bc79f94bcdf1c1bca2c48c3d892ca42854cf277962580680d5767f05`.
+Le fichier runtime corrigé a pour SHA-256
+`3b0e5215d9bd58a343c57a681668ef1e466465980cceac3b1fd5944fec806f96`.
 Le profil Orca, son post-traitement `+0,27 mm`, `START_PRINT`, les fichiers
 constructeur, le CFS et la fondation ne sont pas modifiés par ce gate.
 

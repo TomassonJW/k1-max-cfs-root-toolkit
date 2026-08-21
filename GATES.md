@@ -201,8 +201,8 @@ Thomas, le trou du premier observateur par le journal persistant, la seconde
 capture arrivée à sa durée et une validation finale
 `VALIDATE_PATHS_V1_OK`. Aucun événement critique Klipper/MCU n'a été détecté.
 
-Candidate `G4-K1-CONTROL-Z-MESH-RUNTIME-V1`: **premier GO exact reçu ; aucun
-déploiement effectué ; préflight corrigé vert, GO renouvelé requis**. Le paquet
+Candidate `G4-K1-CONTROL-Z-MESH-RUNTIME-V1`: **GO renouvelé consommé par un
+essai rollbacké ; baseline exacte restaurée ; nouveau GO requis**. Le paquet
 ajoute deux fichiers originaux et une
 seule inclusion, puis recharge uniquement l'hôte Klipper. Il ne modifie ni
 `START_PRINT`, ni Orca, ni le post-traitement `+0,27 mm`, ni le CFS. Son état Z
@@ -211,7 +211,7 @@ La validation appelle seulement une garde qui doit refuser et prouve qu'aucune
 position, origine ou cible de chauffe n'a changé. Le rollback sauvegarde aussi
 les données Z avant retrait.
 
-La suite courante exécute 94 tests : 93 OK localement, un contrôle Jinja ignoré
+La suite courante exécute 96 tests : 95 OK localement, un contrôle Jinja ignoré
 faute de dépendance Windows mais remplacé par une validation en mémoire des 17
 templates avec le Python/Jinja exact de la K1. Le module atomique compile et
 s'exécute aussi en mémoire sur ce Python exact.
@@ -225,9 +225,30 @@ la capture `20260821-212431-g4-k1-control-z-mesh-runtime-v1`. Il confirme
 cibles absentes et deux CFS connectés. Aucun fichier, backup distant, service
 ou état Klipper n'a été modifié.
 
-Comme la commande revue a changé après le premier GO, celui-ci n'autorise pas
-la pose corrigée. Après revue du document 16, du diff et des tests, le seul texte
-renouvelé valide reste `GO G4-K1-CONTROL-Z-MESH-RUNTIME-V1`.
+Le GO exact renouvelé a ensuite ouvert la capture
+`20260821-213732-g4-k1-control-z-mesh-runtime-v1`. Préflight et backup étaient
+verts. Après pose et restart hôte, la validation a prouvé qu'un stockage neuf
+`integrity=empty` restait par erreur à `ready=0`. La garde sans mouvement n'a
+pas été appelée. Le rollback a retiré les cibles, mais son premier contrôle a
+rencontré T1 encore déconnecté et une normalisation textuelle des blocs générés
+de `printer.cfg`.
+
+La complétion bornée du rollback a restauré une dernière fois le backup exact
+sans restart supplémentaire. Le préflight final est vert : runtime absent,
+hash initial, `standby`, axes non homés, chauffes à zéro, deux CFS `1.1.3` et
+fondation intacte. Le restart a seulement perdu le mesh transitoire `Base`; le
+profil persistant `default` est actif. Aucun mouvement, chauffe, extrusion,
+ordre CFS, calibration, impression, firmware restart ou reboot n'a eu lieu.
+
+Le candidat offline distingue maintenant `empty` d'un état invalide, conserve
+le Z non accepté et les mouvements bas fermés, attend la stabilisation complète
+des CFS et restaure l'empreinte exacte après restart de rollback. Son hash config
+est `3b0e5215d9bd58a343c57a681668ef1e466465980cceac3b1fd5944fec806f96`.
+Les 17 templates et le rendu `empty` passent sur le Python/Jinja exact de la K1.
+
+Le payload et les commandes ayant changé après le GO consommé, la pose corrigée
+n'est pas autorisée. Après revue, le seul texte renouvelé valide reste
+`GO G4-K1-CONTROL-Z-MESH-RUNTIME-V1`.
 
 Required for each named change:
 

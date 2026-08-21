@@ -14,7 +14,7 @@
     {
       "source": "k1-control-z-mesh.cfg",
       "destination": "/usr/data/printer_data/config/k1-control-z-mesh.cfg",
-      "sha256": "1f202e94aaf3a28363a6a66727e27bf1a461b82436ccad0d8e00bb9b9e988fd9",
+      "sha256": "3b0e5215d9bd58a343c57a681668ef1e466465980cceac3b1fd5944fec806f96",
       "before": "absent"
     },
     {
@@ -42,13 +42,13 @@
     "heater targets remain zero",
     "axes unhomed after host restart",
     "two CFS connected on 1.1.3",
-    "atomic state empty and production gate closed",
+    "atomic state empty, calibration state ready and production gate closed",
     "K1_PRODUCTION_ASSERT_ARMED refuses without position, target or origin change",
     "foundation listeners and Creality processes preserved"
   ],
   "rollback": {
     "backup": "printer.cfg checksum verified before first mutation",
     "state": "archive any current, previous or temporary state file before removal",
-    "restore": "restore exact printer.cfg, remove the two added files and state, restart Klipper"
+    "restore": "restore exact printer.cfg, remove the two added files and state, restart Klipper, wait for both CFS, then restore the exact backup again without another restart"
   }
 }
