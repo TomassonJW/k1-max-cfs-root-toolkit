@@ -117,13 +117,11 @@ distinctes des chemins Creality actifs sous `printer_data`. Cela produit deux
 avertissements de gestion de fichiers sans casser la connexion à Klipper.
 
 La suggestion générique de changer `[virtual_sdcard]` est refusée. La correction
-est préparée comme un lot séparé
-`G4-K1-CONTROL-FOUNDATION-V3-PATHS-V1` dans le document 15. Elle conserve les
+séparée `G4-K1-CONTROL-FOUNDATION-V3-PATHS-V1`, documentée dans le document 15,
+a reçu son GO exact renouvelé puis a été installée et validée. Elle conserve les
 chemins Creality, utilise les liens symboliques supportés par Moonraker, rend
 `config` non modifiable par l'API et documente le pouvoir d'écriture de la racine
-`gcodes`. Son premier GO exact est arrivé avant la préparation du paquet et n'a
-pas été consommé ; elle attend un renouvellement après revue et ne peut réutiliser
-aucun GO V3 antérieur.
+`gcodes`. Aucun GO V3 antérieur ne l'avait autorisée.
 
 L'acceptation durable exige ensuite huit heures d'observation sur l'état final
 retenu, comprenant une impression normale choisie et lancée manuellement par

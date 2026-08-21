@@ -4,8 +4,8 @@ Last updated: 2026-08-21
 
 ## Current phase
 
-**P4 — fondation V3 installée ; correction des chemins Moonraker préparée hors
-imprimante et en attente d'un GO renouvelé avant déploiement**
+**P4 — fondation V3 et correction des chemins Moonraker installées et validées ;
+observation finale de huit heures à réaliser**
 
 The repository baseline, stock acquisition, complete Orca/G-code intake and
 passive P1–P5/PETG trace are complete. Gate G3 is passed for offline design and
@@ -39,13 +39,14 @@ prouvé que les racines `config` et `gcodes` dérivées du data path Moonraker s
 distinctes des chemins Creality actifs. La connexion fonctionne, mais
 l'intégration du gestionnaire de fichiers reste incomplète. Une inspection
 distante bornée et sans mutation a confirmé les deux dossiers Moonraker vides.
-Le candidat séparé `G4-K1-CONTROL-FOUNDATION-V3-PATHS-V1` est maintenant préparé
-hors imprimante avec backup, validation sans G-code et rollback. Le premier GO
-exact a été reçu avant que ce paquet concret existe et n'est donc pas consommé :
-les prérequis G4 imposent un renouvellement après revue. L'acceptation durable
-et ses huit heures d'observation commenceront seulement sur l'état final retenu.
-Le préflight réel en lecture seule du paquet préparé est vert et confirme que la
-baseline attendue est encore intacte ; aucune mutation distante n'a été faite.
+Le candidat séparé `G4-K1-CONTROL-FOUNDATION-V3-PATHS-V1` a reçu son GO exact
+renouvelé après revue et a été déployé sous la capture
+`20260821-111001-g4-control-foundation-v3-paths-v1`. Les deux racines Moonraker
+pointent maintenant vers les chemins Creality actifs, `config` est en lecture
+seule via l'API et `gcodes` reste en lecture/écriture. Une validation indépendante
+a confirmé l'absence d'avertissement, toute la pile verte et aucun changement du
+comportement d'impression. L'acceptation durable et ses huit heures d'observation
+commencent sur cet état final retenu.
 
 ## Confirmed facts
 
@@ -216,6 +217,11 @@ baseline attendue est encore intacte ; aucune mutation distante n'a été faite.
 - Après pose, environ 103 Mio de RAM restent disponibles et la croissance swap
   mesurée est de 36 Kio. Klipper est `standby`, les chauffes sont à zéro, les
   axes ne sont pas homés et les deux CFS `1.1.3` sont connectés.
+- La capture `20260821-111001-g4-control-foundation-v3-paths-v1` a aligné les
+  racines Moonraker sur les chemins Creality par deux liens, rendu `config`
+  accessible seulement en lecture via l'API, conservé `gcodes=rw` et obtenu
+  `VALIDATE_PATHS_V1_OK` sans transmettre de G-code. Les avertissements ont
+  disparu et seule l'instance Moonraker dédiée a été redémarrée.
 
 - Complete-system audit, A/B/C comparison, safety invariant, input contract and
   time-bounded roadmap documented in
@@ -267,14 +273,10 @@ baseline attendue est encore intacte ; aucune mutation distante n'a été faite.
 
 ## Next safe action
 
-Review the prepared `G4-K1-CONTROL-FOUNDATION-V3-PATHS-V1` package and wait for
-a renewed exact text `GO G4-K1-CONTROL-FOUNDATION-V3-PATHS-V1`. The first exact
-GO arrived before the package had identified files, commands, backups, tests and
-rollback, so it was not consumed. An earlier V3 GO does not apply.
-
-After this correction or an explicit decision not to deploy it, perform the
-eight-hour observation on the final retained state, including one normal print
-chosen and started manually by Thomas through the existing trusted workflow.
+Perform the eight-hour observation on the final retained V3 + PATHS-V1 state,
+including one normal print chosen and started manually by Thomas through the
+existing trusted workflow. Codex may observe read-only but must not transmit
+G-code or initiate the print.
 
 Do not remove or disable the current Orca `+0.27 mm` post-processor. Its
 retirement remains atomic with the later proven machine/Orca replacement.
@@ -284,8 +286,8 @@ retirement remains atomic with the later proven machine/Orca replacement.
 - Helper Script installation.
 - `G4-K1-CONTROL-FOUNDATION-V1` forever: preflight KO, never deployed, name closed.
 - `G4-K1-CONTROL-FOUNDATION-V2` forever: real attempts rolled back, name closed.
-- `G4-K1-CONTROL-FOUNDATION-V3-PATHS-V1` remote execution until its exact GO is
-  renewed after review of the prepared package.
+- Any reinstall, correction or extension of the completed
+  `G4-K1-CONTROL-FOUNDATION-V3-PATHS-V1` package.
 - Any other Mainsail, Fluidd, Moonraker or `K1 Control` installation/change.
 - BTT Eddy preparation, installation, firmware or calibration.
 - Firmware downgrade or replacement.
@@ -324,9 +326,9 @@ retirement remains atomic with the later proven machine/Orca replacement.
 - The compiled `BOX_*` owner may contain a late temperature write that no macro
   can intercept. The complete matrix decides whether a small replacement owner
   is required.
-- The pinned Moonraker/Mainsail package is installed and initially green, but
-  its file-manager roots are not aligned and its eight-hour RAM, stability and
-  coexistence observation has not yet been completed.
+- The pinned Moonraker/Mainsail package and its file-manager roots are installed
+  and initially green, but the eight-hour RAM, stability and coexistence
+  observation has not yet been completed.
 - The real `K1 Control` adapter and the printer-side Z/mesh/start/CFS wrappers
   are intentionally deferred until the observation foundation is accepted.
 

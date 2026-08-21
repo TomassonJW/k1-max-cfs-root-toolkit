@@ -180,20 +180,23 @@ confirmé deux avertissements de chemins : Moonraker dérive ses racines vides
 Klipper fonctionne ; le gestionnaire de fichiers n'est pas encore aligné. Il est
 interdit de modifier `[virtual_sdcard]` ou `printer.cfg` pour masquer cet écart.
 
-Candidate `G4-K1-CONTROL-FOUNDATION-V3-PATHS-V1`: **préparé hors imprimante ;
-premier GO exact reçu avant que le paquet existe, non consommé**. Le paquet revu
-conserve les chemins Creality comme référence, utilise deux liens symboliques,
-verrouille l'écriture API de `config`, documente l'accès en écriture restant sur
-`gcodes`, ne redémarre que Moonraker et rollbacke au premier KO. Le GO reçu le
-2026-08-21 précédait l'identification des fichiers, commandes, backups et tests
-exigés par G4 ; un renouvellement du même texte exact après revue du paquet est
-donc requis. Un ancien GO V3 ou un GO générique ne l'autorise pas. L'observation
-de huit heures doit porter sur l'état final après cette décision.
+Candidate `G4-K1-CONTROL-FOUNDATION-V3-PATHS-V1`: **GO exact renouvelé, déployé
+et validé le 2026-08-21**. Le paquet revu conserve les chemins Creality comme
+référence, utilise deux liens symboliques, verrouille l'écriture API de `config`
+et documente l'accès en écriture restant sur `gcodes`. Le premier GO avait été
+reçu avant que le paquet existe et n'avait pas été consommé ; Thomas a renouvelé
+le même texte exact après la revue.
 
-Le préflight réel en lecture seule du paquet préparé est vert : baseline V3 et
-hash exacts, deux racines encore vides, avertissements initiaux présents une fois
-chacun, Klipper en `standby`, chauffes à zéro, axes non homés, deux CFS `1.1.3`,
-ports/processus et ressources conformes. Aucune mutation distante n'a été faite.
+La capture `20260821-111001-g4-control-foundation-v3-paths-v1` a sauvegardé et
+vérifié la configuration et les deux dossiers vides avant mutation. Elle a posé
+les liens `state/config -> printer_data/config` et
+`state/gcodes -> printer_data/gcodes`, installé le hash revu
+`fef837a1acaa59af400ac63c244df78dec6e70a71e1707d61f242f56cb1c7fba`, puis
+redémarré uniquement Moonraker. La validation indépendante a obtenu
+`VALIDATE_PATHS_V1_OK` : `config=r`, `gcodes=rw`, aucun avertissement, Klipper
+prêt et au repos, chauffes à zéro, axes non homés, deux CFS `1.1.3`, nginx,
+ports/processus et ressources conformes. Aucun G-code ni rollback n'a été lancé.
+L'observation de huit heures doit maintenant porter sur cet état final.
 
 Required for each named change:
 

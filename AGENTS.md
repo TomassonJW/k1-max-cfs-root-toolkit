@@ -8,9 +8,9 @@ The printer is production hardware. It is never treated as a disposable sandbox.
 
 ## Current authority and phase
 
-The active phase is **P4 — V1 and V2 are closed; V3 is installed and validated;
-`G4-K1-CONTROL-FOUNDATION-V3-PATHS-V1` is prepared offline and awaits a renewed
-exact GO after package review**.
+The active phase is **P4 — V1 and V2 are closed; V3 and its separate
+`G4-K1-CONTROL-FOUNDATION-V3-PATHS-V1` correction are installed and validated;
+the eight-hour observation of the final retained foundation is next**.
 
 Thomas authorised V1, but the mandatory preflight proved that `logrotate` was
 absent. V1 is closed and must never be deployed. Thomas later authorised V2;
@@ -20,9 +20,10 @@ rolled back and V2 is closed. V3 keeps the bounded BusyBox syslog, moves the
 account boundary to nginx, and is installed. The separate PATHS-V1 package was
 created only after its first exact GO arrived, so that GO was not consumed: G4
 requires exact reviewed files, commands, backups and rollback before approval.
-Until Thomas renews the exact PATHS-V1 gate after review, all printer mutation
-remains forbidden; local preparation and classified read-only checks remain
-allowed.
+Thomas then renewed the exact GO after review. PATHS-V1 was deployed under
+capture `20260821-111001-g4-control-foundation-v3-paths-v1` and independently
+validated. No further printer mutation is authorised; classified read-only
+observation remains allowed.
 
 Authority order:
 

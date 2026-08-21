@@ -1,8 +1,8 @@
 # HANDOFF
 
 Date: 2026-08-21
-Phase: P4 / V1 and V2 closed; V3 foundation installed and validated
-Next operator: review the prepared Moonraker path-alignment candidate, then wait for its renewed exact GO
+Phase: P4 / V1 and V2 closed; V3 foundation and PATHS-V1 installed and validated
+Next operator: run the eight-hour observation on the final retained foundation
 
 ## Current state
 
@@ -76,11 +76,26 @@ mêmes dossiers. La connexion Mainsail → Moonraker → Klipper fonctionne ; se
 l'intégration du gestionnaire de fichiers est incomplète.
 
 Il ne faut pas appliquer la suggestion générique de modifier
-`[virtual_sdcard]`. La correction candidate doit garder les chemins Creality,
+`[virtual_sdcard]`. La correction retenue devait garder les chemins Creality,
 relier les racines Moonraker selon la méthode officielle, rendre `config` non
 modifiable par l'API et traiter explicitement le pouvoir d'écriture restant sur
 `gcodes`. Le rapport public est dans
 `experiments/p4/20260821-moonraker-path-warnings-read-only-report.md`.
+
+Après revue du document 15, du déployeur et des tests, Thomas a renouvelé
+exactement `GO G4-K1-CONTROL-FOUNDATION-V3-PATHS-V1`. La capture
+`20260821-111001-g4-control-foundation-v3-paths-v1` a obtenu un préflight vert,
+sauvegardé l'état initial, posé les deux liens attendus et redémarré uniquement
+Moonraker. Le dernier message du wrapper local a été perdu après deux heartbeats ;
+Codex n'a pas relancé la mutation. Les preuves finales étaient présentes et une
+commande séparée en lecture seule a obtenu `VALIDATE_PATHS_V1_OK`.
+
+L'API expose maintenant `config=r` vers `/usr/data/printer_data/config` et
+`gcodes=rw` vers `/usr/data/printer_data/gcodes`. Moonraker ne rapporte aucun
+avertissement, Klipper est prêt et `standby`, les chauffes sont à zéro, les axes
+ne sont pas homés, les deux CFS `1.1.3` sont connectés, nginx et les interfaces
+Creality sont intacts. Aucun G-code, mouvement, chauffe, calibration, impression,
+redémarrage imprimante ou rollback n'a été exécuté.
 
 Le contrat, l'architecture et la comparaison des outils sont dans les documents
 10, 11, 13, 14 et ADR-004. Les essais V2 et les tentatives V3 en KO ont
@@ -194,32 +209,13 @@ Codex has permanent authority to complete all normal Git and GitHub operations f
 
 ## Next bounded mission
 
-La fondation V3 validée ne doit plus être réinstallée ni recevoir une correction
-improvisée. `G4-K1-CONTROL-FOUNDATION-V3-PATHS-V1` est maintenant préparé hors
-imprimante dans le document 15, un déployeur dédié et ses tests. Le premier texte
-exact a été reçu avant que ces fichiers, commandes, backups et critères existent ;
-il n'est pas consommé. La prochaine action est la revue, puis un renouvellement
-exact de `GO G4-K1-CONTROL-FOUNDATION-V3-PATHS-V1` avant toute mutation.
+Observer pendant huit heures l'état final V3 + PATHS-V1. Cette fenêtre comprend
+une impression normale choisie et lancée manuellement par Thomas avec le flux
+Creality/Orca déjà approuvé. Codex peut observer passivement, mais ne transmet
+aucun G-code et ne lance ni impression, ni chauffe, ni mouvement, ni calibration.
 
-Le préflight réel en lecture seule du paquet préparé a obtenu `PREFLIGHT_OK` :
-hash V3, dossiers vides, deux avertissements initiaux, sécurité, état Klipper,
-ressources et deux CFS sont conformes. Le rapport hors imprimante est
-`experiments/p4/20260821-g4-control-foundation-v3-paths-v1-offline-report.md`.
-
-Le futur lot doit sauvegarder et comparer l'état, remplacer seulement les deux
-dossiers Moonraker confirmés vides par des liens réversibles vers les chemins
-Creality, verrouiller l'écriture de `config`, ne redémarrer que le Moonraker
-dédié, confirmer la disparition des avertissements et revérifier nginx,
-Klipper, les interfaces Creality, les ressources et les deux CFS. Il ne doit
-transmettre, supprimer ou démarrer aucun G-code, ni modifier `printer.cfg`,
-`[virtual_sdcard]`, Orca, Z, mesh, macros, températures CFS ou firmware. Rollback
-immédiat au premier KO ; aucun redémarrage imprimante.
-
-Après cette correction ou une décision explicite de ne pas la poser,
-l'observation de huit heures doit porter sur l'état final retenu. Elle comprend
-une impression normale choisie et lancée manuellement par Thomas avec l'ancien
-flux de confiance. Le post-traitement PHP/Orca `+0,27 mm`, le Start G-code et le
-G-code de changement de filament restent strictement inchangés.
+Le post-traitement PHP/Orca `+0,27 mm`, le Start G-code et le G-code de changement
+de filament restent strictement inchangés.
 
 Après cette observation, une nouvelle gate nommée sera nécessaire avant la
 première tranche qui modifiera Z, mesh, nettoyage, purge, CFS, macros ou Orca.
