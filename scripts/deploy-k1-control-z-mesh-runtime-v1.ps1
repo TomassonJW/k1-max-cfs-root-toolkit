@@ -26,6 +26,7 @@ $LocalModule = Join-Path $PackageRoot 'k1_control_store.py'
 
 $ExpectedPrinterHash = '272640237e20659cf01f3268ed4cb0282b098c3d613e94bf84a3b80caac3c3b0'
 $ExpectedNextPrinterHash = 'fa8c25b0bc79f94bcdf1c1bca2c48c3d892ca42854cf277962580680d5767f05'
+$ExpectedNormalizedPrinterHash = 'a484e8d802d0ba1a1331ea2060ecc339bd2d1a607e3a0f9bbcca976c66709c6a'
 $ExpectedConfigHash = 'dd7fa02a8b7b9bd46850c90cf2a85afa71ce27cfa263c120ef4e9cca6b48c113'
 $ExpectedModuleHash = '696eabec936bd81300acb4e6882d141c1a9ce2494df3bd1f686ff4ee8cbb8ede'
 
@@ -372,7 +373,10 @@ function Assert-RuntimeInstalled {
     $printerHash = ((Invoke-Remote "sha256sum '$PrinterConfig'" | Select-Object -First 1) -split '\s+')[0]
     $configHash = ((Invoke-Remote "sha256sum '$RuntimeConfig'" | Select-Object -First 1) -split '\s+')[0]
     $moduleHash = ((Invoke-Remote "sha256sum '$RuntimeModule'" | Select-Object -First 1) -split '\s+')[0]
-    if ($printerHash -ne $ExpectedNextPrinterHash -or $configHash -ne $ExpectedConfigHash -or $moduleHash -ne $ExpectedModuleHash) {
+    # Creality may run CXSAVE_CONFIG after Klipper first reports ready. On this
+    # exact machine it changes only indentation in generated blocks and yields
+    # one separately reviewed, pinned hash while keeping the runtime include.
+    if ($printerHash -notin @($ExpectedNextPrinterHash, $ExpectedNormalizedPrinterHash) -or $configHash -ne $ExpectedConfigHash -or $moduleHash -ne $ExpectedModuleHash) {
         throw 'Empreinte runtime installee inattendue.'
     }
     $includeCount = [int]((Invoke-Remote "grep -c '^\[include k1-control-z-mesh.cfg\]$' '$PrinterConfig'" | Select-Object -First 1).Trim())
@@ -508,6 +512,7 @@ if ($Action -eq 'Plan') {
         printer_mutation_authorized = $false
         current_printer_sha256 = $ExpectedPrinterHash
         next_printer_sha256 = $ExpectedNextPrinterHash
+        normalized_printer_sha256 = $ExpectedNormalizedPrinterHash
         config_sha256 = $ExpectedConfigHash
         module_sha256 = $ExpectedModuleHash
         remote_files_added = @($RuntimeConfig, $RuntimeModule)

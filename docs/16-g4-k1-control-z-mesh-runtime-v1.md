@@ -2,7 +2,7 @@
 
 Date : 2026-08-22
 
-Statut : **troisième essai réel rollbacké, baseline exacte restaurée ; littéraux texte corrigés hors imprimante, nouveau GO requis**
+Statut : **runtime installé et validé sous la capture `20260822-011022` ; état vide fermé à la production**
 
 ## État d'exécution du 2026-08-21
 
@@ -118,6 +118,35 @@ La suite exécute 99 tests, 98 passent et le contrôle exact en mémoire retourn
 Ce troisième GO est consommé. La configuration et le déployeur ont changé :
 aucune nouvelle pose n'est autorisée avant revue puis nouveau GO exact.
 
+## Installation finale de la capture `20260822-011022`
+
+Thomas a renouvelé le GO exact pour le commit
+`7be8dc6eb5eff7a0145d0c59bd1e17e817d523cd`. Le préflight frais, le backup et
+la pose ont réussi. Le déployeur a rendu
+`DEPLOY_Z_MESH_RUNTIME_V1_OK`, avec `ready=1`, `integrity=empty` et la garde de
+production refusée sans changement de position, origine ou cible de chauffe.
+
+La première validation indépendante a détecté l'écriture différée
+`CXSAVE_CONFIG` de Creality. Le diff des trois copies privées montre uniquement
+une indentation différente dans les blocs générés `bed_mesh default` et
+`auto_addr`; aucune valeur, section ou inclusion n'a changé. La comparaison
+normalisée retourne `PRINTER_CFG_NORMALIZED_EQUIVALENCE_OK`.
+
+Le validateur épingle donc l'empreinte immédiatement posée
+`fa8c25b0bc79f94bcdf1c1bca2c48c3d892ca42854cf277962580680d5767f05` et
+l'empreinte stabilisée
+`a484e8d802d0ba1a1331ea2060ecc339bd2d1a607e3a0f9bbcca976c66709c6a`, tout en
+exigeant toujours une seule inclusion et les hashes exacts des deux fichiers
+runtime. Aucun fichier distant n'a été réécrit pour forcer une forme d'espaces.
+
+La validation finale a obtenu `VALIDATE_Z_MESH_RUNTIME_V1_OK`. Le runtime est
+retenu avec `standby`, axes non homés, chauffes à zéro, `default`, deux CFS
+`1.1.3`, `ready=1`, `integrity=empty`, `accepted_z_valid=0`,
+`block_reason=no_accepted_z` et `low_moves_armed=0`. Aucune calibration,
+chauffe, homing, extrusion, commande CFS, impression, firmware restart, reboot
+ou rollback n'a eu lieu. La suite finale exécute 100 tests : 99 passent et le
+contrôle Jinja local ignoré reste couvert sur l'environnement exact de la K1.
+
 ## Décision opérateur
 
 Une impression utile réussie ne suffit pas à exclure les défauts aléatoires
@@ -225,9 +254,9 @@ original ciblé qui valide les 17 champs, ajoute une somme SHA-256, écrit en
 L'intégrité douteuse bloque la production ; la copie précédente n'est jamais
 réactivée silencieusement.
 
-## Pose candidate exacte
+## Pose exacte installée
 
-La nouvelle pose corrigée n'est pas encore autorisée. Son plan est figé par
+La pose installée était figée par
 `deployment-manifest.json` et
 `scripts/deploy-k1-control-z-mesh-runtime-v1.ps1`.
 
@@ -251,6 +280,8 @@ La nouvelle pose corrigée n'est pas encore autorisée. Son plan est figé par
 
 Le `printer.cfg` attendu après insertion a pour SHA-256
 `fa8c25b0bc79f94bcdf1c1bca2c48c3d892ca42854cf277962580680d5767f05`.
+Après la normalisation d'espaces Creality observée, son SHA-256 stabilisé est
+`a484e8d802d0ba1a1331ea2060ecc339bd2d1a607e3a0f9bbcca976c66709c6a`.
 Le fichier runtime corrigé a pour SHA-256
 `dd7fa02a8b7b9bd46850c90cf2a85afa71ce27cfa263c120ef4e9cca6b48c113`.
 Le module de stockage corrigé a pour SHA-256
@@ -278,6 +309,5 @@ runtime, les services/ports de fondation et les deux CFS conformes. Le rollback
 attend aussi la fin des écritures de démarrage Creality avant la dernière
 restauration et revérifie ensuite que l'empreinte reste exacte.
 
-Le seul texte d'approbation renouvelé valable après revue de la correction est :
-
-`GO G4-K1-CONTROL-Z-MESH-RUNTIME-V1`
+La gate de pose est terminée. Elle n'autorise aucune calibration ni nouvelle
+modification du runtime installé.

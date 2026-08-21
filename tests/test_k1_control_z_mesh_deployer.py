@@ -28,6 +28,18 @@ class K1ControlZMeshDeployerTests(unittest.TestCase):
             self.assertEqual(records[filename]["sha256"], digest)
             self.assertIn(digest, self.script)
 
+    def test_installed_validation_accepts_only_the_two_reviewed_printer_cfg_hashes(self):
+        installed = self.script[
+            self.script.index("function Assert-RuntimeInstalled") : self.script.index("function Assert-FailClosedWithoutMotion")
+        ]
+        initial = self.manifest["printer_cfg"]["after_sha256"]
+        normalized = self.manifest["printer_cfg"]["after_creality_normalization_sha256"]
+        self.assertNotEqual(initial, normalized)
+        self.assertIn(initial, self.script)
+        self.assertIn(normalized, self.script)
+        self.assertIn("@($ExpectedNextPrinterHash, $ExpectedNormalizedPrinterHash)", installed)
+        self.assertIn("grep -c '^\\[include k1-control-z-mesh.cfg\\]$'", installed)
+
     def test_backup_is_verified_before_the_first_runtime_mutation(self):
         deploy = self.script[self.script.index("if ($Action -eq 'Deploy')") :]
         backup = deploy.index("sha256sum -c checksums.sha256")

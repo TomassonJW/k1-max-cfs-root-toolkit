@@ -1,15 +1,17 @@
 # K1 Control Z/mesh runtime V1
 
-Statut : **candidat hors imprimante, déploiement interdit**.
+Statut : **installé et validé le 2026-08-22 ; aucune nouvelle mutation autorisée**.
 
-Ce dossier est le candidat exact du futur gate
+Ce dossier est la source exacte du gate terminé
 `G4-K1-CONTROL-Z-MESH-RUNTIME-V1`. Trois essais réels précédents ont été
-rollbackés. La version courante utilise uniquement des commandes `KCTRL_*`,
+rollbackés ; la capture finale `20260822-011022-g4-k1-control-z-mesh-runtime-v1`
+est installée et validée. La version courante utilise uniquement des commandes `KCTRL_*`,
 compatibles avec le parseur G-code exact de cette K1, et attend la fin des
 écritures de démarrage Creality avant la restauration finale d'un rollback.
 Ses valeurs texte conservent aussi un littéral Python valide après le passage
 dans `shlex` puis `ast.literal_eval` du firmware exact.
-Elle ne redevient déployable qu'après revue complète et nouveau GO exact.
+La calibration, le raccordement Orca et toute nouvelle pose restent interdits
+sans leur propre revue et leur GO exact.
 
 Le fichier `k1-control-z-mesh.cfg` ajoute une couche originale sans modifier le
 corps des macros constructeur et sans remplacer `START_PRINT` :

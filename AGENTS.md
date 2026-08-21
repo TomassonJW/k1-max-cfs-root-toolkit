@@ -8,12 +8,10 @@ The printer is production hardware. It is never treated as a disposable sandbox.
 
 ## Current authority and phase
 
-The active phase is **P4 — V1 and V2 are closed; V3 and its separate
-`G4-K1-CONTROL-FOUNDATION-V3-PATHS-V1` correction are installed, validated and
-retained after the completed observation; three renewed
-`G4-K1-CONTROL-Z-MESH-RUNTIME-V1` deployments reached runtime validation and
-rolled back completely; the text-literal correction is now offline and requires
-another exact review and GO**.
+The active phase is **P4 — V1 and V2 are closed; V3, PATHS-V1 and
+`G4-K1-CONTROL-Z-MESH-RUNTIME-V1` are installed and validated; the Z/mesh
+runtime is empty and calibration-ready but remains closed to production until a
+separate authorised calibration accepts Z**.
 
 Thomas authorised V1, but the mandatory preflight proved that `logrotate` was
 absent. V1 is closed and must never be deployed. Thomas later authorised V2;
@@ -48,6 +46,15 @@ rollback completed automatically and the exact baseline and full health were
 confirmed again. All runtime text assignments now keep an inner quoted Python
 literal, and the deployer preserves a not-ready snapshot. No further printer
 mutation is authorised until this changed package receives a new exact GO.
+Thomas then renewed the exact GO. Capture
+`20260822-011022-g4-k1-control-z-mesh-runtime-v1` obtained the fresh preflight,
+`DEPLOY_Z_MESH_RUNTIME_V1_OK` and `VALIDATE_Z_MESH_RUNTIME_V1_OK`. A delayed
+Creality `CXSAVE_CONFIG` changed only indentation in generated `bed_mesh` and
+`auto_addr` blocks; the exact diff and normalized comparison proved no value or
+include change, so the validator pins both reviewed hashes instead of rewriting
+the printer. The runtime is retained with `ready=1`, `integrity=empty`,
+`accepted_z_valid=0` and `low_moves_armed=0`. No further printer mutation,
+including calibration, is authorised by the completed runtime gate.
 
 Authority order:
 

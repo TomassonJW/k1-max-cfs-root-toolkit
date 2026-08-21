@@ -201,8 +201,8 @@ Thomas, le trou du premier observateur par le journal persistant, la seconde
 capture arrivée à sa durée et une validation finale
 `VALIDATE_PATHS_V1_OK`. Aucun événement critique Klipper/MCU n'a été détecté.
 
-Candidate `G4-K1-CONTROL-Z-MESH-RUNTIME-V1`: **trois GO renouvelés consommés par
-des essais rollbackés ; baseline exacte restaurée ; nouveau GO requis**. Le paquet
+Candidate `G4-K1-CONTROL-Z-MESH-RUNTIME-V1`: **GO renouvelé, installé et validé
+le 2026-08-22**. Le paquet
 ajoute deux fichiers originaux et une
 seule inclusion, puis recharge uniquement l'hôte Klipper. Il ne modifie ni
 `START_PRINT`, ni Orca, ni le post-traitement `+0,27 mm`, ni le CFS. Son état Z
@@ -288,6 +288,32 @@ pour le module. La suite exécute 99 tests : 98 passent, un contrôle Jinja loca
 est remplacé par la validation en mémoire sur la K1
 `K1_EXACT_RUNTIME_OK templates=17 commands=18 string_values=24`. Ces changements
 exigent une nouvelle revue puis un nouveau GO exact.
+
+Thomas a renouvelé le GO exact. La capture
+`20260822-011022-g4-k1-control-z-mesh-runtime-v1` a obtenu
+`PREFLIGHT_Z_MESH_RUNTIME_V1_OK`, vérifié le backup, puis terminé par
+`DEPLOY_Z_MESH_RUNTIME_V1_OK`. Le runtime a chargé son état vide avec `ready=1`
+et la garde de production a refusé sans modifier position, origine ou cible de
+chauffe.
+
+La première validation indépendante a observé le `CXSAVE_CONFIG` différé de
+Creality : seuls les espaces des blocs générés `bed_mesh default` et `auto_addr`
+différaient. Les trois versions ont été copiées en lecture seule, le diff complet
+n'a montré aucun changement de valeur ou d'inclusion et la comparaison
+normalisée a obtenu `PRINTER_CFG_NORMALIZED_EQUIVALENCE_OK`. Le validateur
+épingle désormais l'empreinte immédiatement posée et l'unique empreinte
+normalisée, sans réécrire la machine.
+
+La validation indépendante finale a obtenu
+`VALIDATE_Z_MESH_RUNTIME_V1_OK`. Le runtime est retenu avec les hashes exacts de
+ses deux fichiers, une seule inclusion, `standby`, axes non homés, chauffes à
+zéro, `default`, deux CFS `1.1.3`, `ready=1`, `integrity=empty`,
+`accepted_z_valid=0`, `block_reason=no_accepted_z` et `low_moves_armed=0`.
+Aucun mouvement, homing, chauffe, extrusion, ordre CFS, calibration, impression,
+firmware restart, reboot ou rollback n'a eu lieu. Cette gate est terminée et
+n'autorise aucune calibration ni nouvelle mutation. La suite finale exécute
+100 tests : 99 passent et le contrôle Jinja local ignoré reste couvert sur
+l'environnement exact de la K1.
 
 Required for each named change:
 

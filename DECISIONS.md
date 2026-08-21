@@ -435,3 +435,23 @@ Le déployeur conserve aussi son dernier snapshot si le runtime n'atteint pas
 Le rollback automatique a restauré l'empreinte exacte et l'état sain. Comme le
 payload et le déployeur ont changé après le GO consommé, une nouvelle pose exige
 une revue puis un nouveau GO exact.
+
+## D-031 — La validation épingle aussi l'empreinte normalisée par Creality
+
+Date: 2026-08-22
+
+Status: accepté après installation réelle verte
+
+La pose finale a obtenu `DEPLOY_Z_MESH_RUNTIME_V1_OK`, puis le
+`CXSAVE_CONFIG` différé de Creality a modifié uniquement l'indentation des blocs
+générés `bed_mesh default` et `auto_addr`. Le diff complet et une comparaison
+normalisée prouvent qu'aucune valeur, section ou inclusion n'a changé. Les deux
+fichiers runtime ont conservé leurs hashes exacts.
+
+Réécrire `printer.cfg` après chaque démarrage pour lutter contre cette
+normalisation constructeur ajouterait une mutation inutile et fragile. La
+validation accepte donc seulement deux empreintes épinglées : celle juste après
+l'insertion revue et celle obtenue après la normalisation exacte observée. Elle
+exige toujours une seule inclusion et les hashes exacts des deux fichiers
+runtime. La validation indépendante a ensuite obtenu
+`VALIDATE_Z_MESH_RUNTIME_V1_OK` sans nouvelle mutation.

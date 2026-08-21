@@ -4,9 +4,8 @@ Last updated: 2026-08-22
 
 ## Current phase
 
-**P4 — fondation V3 + PATHS-V1 retenue ; trois essais Z/mesh rollbackés et
-baseline exacte restaurée ; candidat corrigé hors imprimante en attente d'un
-nouveau GO**
+**P4 — fondation V3 + PATHS-V1 retenue ; runtime Z/mesh installé et validé ;
+état vide prêt pour calibration mais production volontairement bloquée**
 
 The repository baseline, stock acquisition, complete Orca/G-code intake and
 passive P1–P5/PETG trace are complete. Gate G3 is passed for offline design and
@@ -310,6 +309,26 @@ commencent sur cet état final retenu.
   La suite exécute 99 tests : 98 passent et le contrôle Jinja local ignoré est
   couvert par `K1_EXACT_RUNTIME_OK templates=17 commands=18 string_values=24`
   sur l'environnement exact de la K1.
+- Thomas a renouvelé le GO exact pour la capture
+  `20260822-011022-g4-k1-control-z-mesh-runtime-v1`. Le préflight frais, le
+  backup et la pose sont verts : `DEPLOY_Z_MESH_RUNTIME_V1_OK`.
+- La garde `KCTRL_PRODUCTION_ASSERT_ARMED` a refusé l'état vide comme prévu et
+  la comparaison avant/après confirme qu'aucune position, origine Z ou cible de
+  chauffe n'a changé.
+- Un `CXSAVE_CONFIG` différé a ensuite normalisé uniquement l'indentation des
+  blocs générés `bed_mesh default` et `auto_addr`. Le diff complet ne contient
+  aucun changement de valeur, section ou inclusion, et la comparaison
+  normalisée obtient `PRINTER_CFG_NORMALIZED_EQUIVALENCE_OK`.
+- Le validateur épingle l'empreinte immédiatement posée et l'unique empreinte
+  normalisée observée, tout en exigeant toujours une inclusion et les hashes
+  exacts des deux fichiers runtime. La validation indépendante obtient
+  `VALIDATE_Z_MESH_RUNTIME_V1_OK`.
+- État final retenu : `standby`, axes non homés, chauffes à zéro, `default`,
+  deux CFS `1.1.3`, fondation intacte, `ready=1`, `integrity=empty`,
+  `accepted_z_valid=0`, `block_reason=no_accepted_z` et `low_moves_armed=0`.
+  Le runtime est installé mais ne peut pas encore armer un travail de production.
+- La suite finale exécute 100 tests : 99 passent et le seul contrôle Jinja
+  local ignoré reste couvert sur le Python/Jinja exact de la K1.
 
 - Complete-system audit, A/B/C comparison, safety invariant, input contract and
   time-bounded roadmap documented in
@@ -361,11 +380,11 @@ commencent sur cet état final retenu.
 
 ## Next safe action
 
-Review the 24 protected text literals, their exact `shlex`/`ast.literal_eval`
-regression test and the added not-ready evidence snapshot, together with the
-99-test suite and the exact K1 in-memory result. Because the runtime payload and
-deployer changed after the consumed GO, another deployment requires Thomas to renew
-`GO G4-K1-CONTROL-Z-MESH-RUNTIME-V1` after this review.
+Préparer la gate séparée de première calibration : paramètres explicites de
+plaque, température, matrice et interpolation, séquence chauffe/nettoyage/homing,
+acceptation Z volontaire et critères de rollback. La calibration impliquera des
+mouvements, de la chauffe et une écriture d'état ; elle exige donc une nouvelle
+revue et un nouveau GO nommé. Le runtime déjà installé ne doit pas être reposé.
 
 The Orca cutover remains a later atomic gate. This runtime slice intentionally
 keeps the active Orca profile, `START_PRINT` and the legacy `+0.27 mm`
@@ -387,8 +406,10 @@ retirement remains atomic with the later proven machine/Orca replacement.
 - Any reinstall, correction or extension of the completed
   `G4-K1-CONTROL-FOUNDATION-V3-PATHS-V1` package.
 - Any other Mainsail, Fluidd, Moonraker or `K1 Control` installation/change.
-- `G4-K1-CONTROL-Z-MESH-RUNTIME-V1` deployment until the corrected runtime and
-  deployer have received a renewed exact GO.
+- Toute nouvelle pose, correction ou suppression du runtime
+  `G4-K1-CONTROL-Z-MESH-RUNTIME-V1` désormais installé.
+- Toute commande de calibration Z/mesh, chauffe ou homing du runtime avant une
+  gate séparée explicitement approuvée.
 - BTT Eddy preparation, installation, firmware or calibration.
 - Firmware downgrade or replacement.
 - Any SSH write other than the completed `G4-SSH-KEY` deployment.
@@ -443,6 +464,6 @@ retirement remains atomic with the later proven machine/Orca replacement.
 ## Exit condition for this phase
 
 P3 has reached its exit condition. The P4 foundation slice is installed,
-observed and retained. Both failed Z/mesh attempts are completely rolled back
-and the exact baseline is healthy. The renamed runtime and strengthened rollback
-remain offline until their new exact review and renewed GO.
+observed and retained. The three failed Z/mesh attempts are completely rolled
+back. The corrected runtime is now installed and independently validated; its
+empty state remains fail-closed until a separately authorised calibration.

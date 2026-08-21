@@ -1,6 +1,6 @@
 {
   "package": "G4-K1-CONTROL-Z-MESH-RUNTIME-V1",
-  "status": "offline_review_candidate",
+  "status": "installed_validated",
   "printer_mutation_authorized": false,
   "target": {
     "board": "CR4CU220812S12",
@@ -26,7 +26,8 @@
   ],
   "printer_cfg": {
     "change": "insert one [include k1-control-z-mesh.cfg] after [include box.cfg]",
-    "after_sha256": "fa8c25b0bc79f94bcdf1c1bca2c48c3d892ca42854cf277962580680d5767f05"
+    "after_sha256": "fa8c25b0bc79f94bcdf1c1bca2c48c3d892ca42854cf277962580680d5767f05",
+    "after_creality_normalization_sha256": "a484e8d802d0ba1a1331ea2060ecc339bd2d1a607e3a0f9bbcca976c66709c6a"
   },
   "runtime_effect": {
     "restart": "Klipper host RESTART only",

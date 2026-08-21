@@ -1,8 +1,8 @@
 # HANDOFF
 
 Date: 2026-08-22
-Phase: P4 / retained foundation observed; three Z/mesh attempts fully rolled back
-Next operator: review protected text literals and not-ready evidence correction, then wait for GO
+Phase: P4 / retained foundation observed; Z/mesh runtime installed and validated
+Next operator: prepare the separately gated first calibration, without sending it yet
 
 ## Current state
 
@@ -46,12 +46,13 @@ seules commandes structurées du candidat Z/mesh. Les sources Klipper exactes
 `save_variables.py`, `gcode_macro.py`, `delayed_gcode.py` et `bed_mesh.py` ont
 été copiées en lecture seule et vérifiées dans une capture privée ignorée.
 
-Le candidat public `packages/k1-control-v1/z-mesh-runtime-v1/` ajoute une seule
+Le runtime public `packages/k1-control-v1/z-mesh-runtime-v1/` ajoute une seule
 structure persistante Z avec valeur précédente et contexte, les sessions
 provisoires, l'invalidation, le préchauffage plateau/buse, le homing explicite,
 les matrices 3–25 avec interpolation compatible, le commit mesh séparé et la
-garde de mouvements bas. Il ne remplace pas `START_PRINT`, n'appelle aucun CFS,
-n'extrude pas et n'est pas installé. Le `save_variables.py` exact a été écarté ;
+garde de mouvements bas. Il ne remplace pas `START_PRINT`, n'appelle aucun CFS
+et n'extrude pas. Il est installé depuis la capture finale du 2026-08-22. Le
+`save_variables.py` exact a été écarté ;
 le stockage original contrôle le schéma et la somme, écrit en `0600`, synchronise,
 remplace atomiquement et conserve une copie précédente sans restauration
 silencieuse.
@@ -139,6 +140,29 @@ module reste à
 La suite exécute 99 tests : 98 passent, et le contrôle exact en mémoire retourne
 `K1_EXACT_RUNTIME_OK templates=17 commands=18 string_values=24`.
 
+Thomas a renouvelé le GO exact. La capture
+`20260822-011022-g4-k1-control-z-mesh-runtime-v1` a passé son préflight, vérifié
+le backup et terminé par `DEPLOY_Z_MESH_RUNTIME_V1_OK`. Le runtime a chargé
+l'état vide avec `ready=1`, puis `KCTRL_PRODUCTION_ASSERT_ARMED` a refusé comme
+prévu sans changement de position, origine Z ou cible de chauffe.
+
+La validation indépendante a d'abord vu une empreinte `printer.cfg` normalisée
+par le `CXSAVE_CONFIG` différé de Creality. Le diff complet des copies privées
+montre uniquement l'indentation des blocs générés `bed_mesh default` et
+`auto_addr`, sans changement de valeur, section ou inclusion. La comparaison
+normalisée obtient `PRINTER_CFG_NORMALIZED_EQUIVALENCE_OK`; le validateur épingle
+les deux empreintes exactes et ne réécrit pas la machine.
+
+La validation indépendante finale retourne
+`VALIDATE_Z_MESH_RUNTIME_V1_OK`. État retenu : runtime installé, une inclusion,
+`standby`, axes non homés, chauffes à zéro, `default`, T1/T2 `1.1.3`,
+`ready=1`, `integrity=empty`, `accepted_z_valid=0`,
+`block_reason=no_accepted_z`, `low_moves_armed=0` et fondation intacte. Aucun
+mouvement, homing, chauffe, extrusion, ordre CFS, calibration, impression,
+firmware restart, reboot ou rollback n'a eu lieu.
+La suite finale exécute 100 tests : 99 passent et le contrôle Jinja local
+ignoré reste couvert sur l'environnement exact de la K1.
+
 La pile est figée : Moonraker MIPS embarqué au commit
 `fccffa96c63ed77dc3953e18615e9fe9cd3d69ea`, nginx MIPS du même paquet et
 Mainsail `v2.18.2`. Les trois archives ont été réellement assemblées et vérifiées
@@ -218,7 +242,7 @@ Un écran `K1 Control` sans dépendance, un moteur d'état Python pur, un faux
 Moonraker, le contrat Orca et la matrice exécutable sont présents sous
 `prototype/`, `orca/` et `tests/`. Les vues bureau/mobile et les actions
 calibration, sauvegarde, redémarrage et invalidation ont été vérifiées sans
-erreur JavaScript. La suite courante exécute 99 tests, dont 98 passent localement
+erreur JavaScript. La suite courante exécute 100 tests, dont 99 passent localement
 et un contrôle Jinja est couvert sur l'environnement exact de la K1, avec le
 contrôle des 17 templates Jinja et la compatibilité de tous les noms de commandes
 avec le parseur exact de la K1.
@@ -318,13 +342,11 @@ Codex has permanent authority to complete all normal Git and GitHub operations f
 
 ## Next bounded mission
 
-Relire le troisième rapport d'essai, les 24 littéraux texte protégés, leur test
-exact `shlex`/`ast.literal_eval` et le snapshot de preuve ajouté au déployeur.
-La pose ajoute seulement le
-stockage/calibration Z/mesh et garde le chemin d'impression actuel intact.
-Attendre exactement le GO renouvelé
-`GO G4-K1-CONTROL-Z-MESH-RUNTIME-V1` avant toute écriture. Le déployeur devra
-refaire son préflight immédiatement avant la mutation.
+Préparer hors imprimante le contrat de première calibration sur le runtime
+installé : plaque, température, matrice, interpolation, chauffe, nettoyage,
+homing, mesure, réglage Z, acceptation et rollback. Ne transmettre encore aucune
+commande : chauffe, mouvement et écriture d'état exigent une gate séparée et un
+nouveau GO nommé.
 
 La bascule Orca reste une gate ultérieure unique : wrappers de travail côté
 machine, trois champs Orca et retrait du post-traitement doivent changer
