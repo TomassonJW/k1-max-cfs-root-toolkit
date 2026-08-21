@@ -19,7 +19,7 @@ export class SimulatedMoonrakerAdapter {
     if (!state?.simulation) {
       throw new Error("Le faux état K1 Control est absent.");
     }
-    return state;
+    return {...state, commandsAvailable: true};
   }
 
   async command(script) {

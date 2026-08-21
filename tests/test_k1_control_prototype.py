@@ -126,6 +126,7 @@ class StaticInterfaceTests(unittest.TestCase):
         html = (UI / "index.html").read_text(encoding="utf-8")
         javascript = (UI / "app-moonraker.js").read_text(encoding="utf-8")
         adapter = (UI / "moonraker-adapter.js").read_text(encoding="utf-8")
+        controller = (UI / "ui-controller.js").read_text(encoding="utf-8")
         self.assertIn('data-mode="simulation"', html)
         self.assertIn("Simulation locale", html)
         self.assertIn('type="module"', html)
@@ -137,6 +138,21 @@ class StaticInterfaceTests(unittest.TestCase):
         self.assertNotIn("WebSocket", javascript)
         self.assertNotIn("http://", adapter)
         self.assertNotIn("https://", adapter)
+        self.assertIn("commandsAvailable", controller)
+
+    def test_real_adapter_is_fail_closed_and_has_no_arbitrary_gcode_path(self) -> None:
+        adapter = (UI / "real-moonraker-adapter.js").read_text(encoding="utf-8")
+        application = (UI / "app-real.js").read_text(encoding="utf-8")
+        self.assertIn('const RUNTIME_OBJECT = "gcode_macro K1_CONTROL_STATE"', adapter)
+        self.assertIn("Runtime K1 Control non installé", adapter)
+        self.assertIn("EXACT_COMMANDS", adapter)
+        self.assertIn("liste blanche K1 Control", adapter)
+        self.assertIn("/printer/objects/list", adapter)
+        self.assertIn("/printer/objects/query", adapter)
+        self.assertIn("/printer/gcode/script", adapter)
+        self.assertNotIn("http://", adapter)
+        self.assertNotIn("https://", adapter)
+        self.assertIn("RealMoonrakerAdapter", application)
 
     def test_mock_state_is_synthetic_and_shows_the_product_contract(self) -> None:
         state = json.loads((UI / "mock-state.json").read_text(encoding="utf-8"))
