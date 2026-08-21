@@ -59,6 +59,10 @@ class K1ControlZMeshDeployerTests(unittest.TestCase):
         for token in (" G28", " G1 ", "M104", "M109", "M140", "M190", "BOX_START_PRINT"):
             self.assertNotIn(token, deploy)
 
+    def test_remote_python_reads_stdin_before_receiving_arguments(self):
+        self.assertIn("/usr/share/klippy-env/bin/python - '$include'", self.script)
+        self.assertIn("/usr/share/klippy-env/bin/python - '$Script' '$wait'", self.script)
+
     def test_rollback_archives_state_before_removing_it(self):
         rollback = self.script[
             self.script.index("function Invoke-RuntimeRollback") : self.script.index("if ($Action -eq 'Plan')")

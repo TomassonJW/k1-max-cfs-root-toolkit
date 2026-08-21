@@ -10,9 +10,10 @@ The printer is production hardware. It is never treated as a disposable sandbox.
 
 The active phase is **P4 — V1 and V2 are closed; V3 and its separate
 `G4-K1-CONTROL-FOUNDATION-V3-PATHS-V1` correction are installed, validated and
-retained after the completed observation; the offline
-`G4-K1-CONTROL-Z-MESH-RUNTIME-V1` candidate, installer, no-motion validation
-and rollback are ready for review before its own exact deployment gate**.
+retained after the completed observation; the first exact
+`G4-K1-CONTROL-Z-MESH-RUNTIME-V1` GO reached a no-mutation preflight transport
+failure, the corrected read-only preflight is green, and deployment now waits
+for renewed approval of the corrected command**.
 
 Thomas authorised V1, but the mandatory preflight proved that `logrotate` was
 absent. V1 is closed and must never be deployed. Thomas later authorised V2;
@@ -27,7 +28,10 @@ capture `20260821-111001-g4-control-foundation-v3-paths-v1` and independently
 validated. No further printer mutation is authorised; classified read-only
 observation remains allowed. The retained observation covered the manual normal
 print and its local-monitor gap through the persistent Klipper log, then ended
-with `VALIDATE_PATHS_V1_OK`.
+with `VALIDATE_PATHS_V1_OK`. The runtime preflight correction adds the required
+Python stdin marker to two remote commands; it changes no runtime payload, but
+G4 still requires a renewed exact GO before deployment because the reviewed
+command changed after the first approval.
 
 Authority order:
 

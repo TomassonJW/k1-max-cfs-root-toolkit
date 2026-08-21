@@ -201,8 +201,9 @@ Thomas, le trou du premier observateur par le journal persistant, la seconde
 capture arrivée à sa durée et une validation finale
 `VALIDATE_PATHS_V1_OK`. Aucun événement critique Klipper/MCU n'a été détecté.
 
-Candidate `G4-K1-CONTROL-Z-MESH-RUNTIME-V1`: **paquet hors imprimante prêt pour
-revue ; aucun GO exact reçu**. Le paquet ajoute deux fichiers originaux et une
+Candidate `G4-K1-CONTROL-Z-MESH-RUNTIME-V1`: **premier GO exact reçu ; aucun
+déploiement effectué ; préflight corrigé vert, GO renouvelé requis**. Le paquet
+ajoute deux fichiers originaux et une
 seule inclusion, puis recharge uniquement l'hôte Klipper. Il ne modifie ni
 `START_PRINT`, ni Orca, ni le post-traitement `+0,27 mm`, ni le CFS. Son état Z
 utilise validation, SHA-256, `fsync`, remplacement atomique et copie précédente.
@@ -210,14 +211,23 @@ La validation appelle seulement une garde qui doit refuser et prouve qu'aucune
 position, origine ou cible de chauffe n'a changé. Le rollback sauvegarde aussi
 les données Z avant retrait.
 
-La suite courante exécute 93 tests : 92 OK localement, un contrôle Jinja ignoré
+La suite courante exécute 94 tests : 93 OK localement, un contrôle Jinja ignoré
 faute de dépendance Windows mais remplacé par une validation en mémoire des 17
 templates avec le Python/Jinja exact de la K1. Le module atomique compile et
 s'exécute aussi en mémoire sur ce Python exact.
 
-Le GO générique reçu pour poursuivre le travail n'autorise pas cette mutation.
-Après revue du document 16, du manifeste, du déployeur et des tests, le seul
-texte valide sera `GO G4-K1-CONTROL-Z-MESH-RUNTIME-V1`.
+Le premier préflight réel s'est arrêté avant mutation : le programme Python
+transmis sur stdin était lancé avec `0` comme chemin de script. Les deux appels
+avec arguments utilisent maintenant `python -`; un test dédié couvre la forme
+snapshot et la forme G-code. Le second préflight en lecture seule est vert sous
+la capture `20260821-212431-g4-k1-control-z-mesh-runtime-v1`. Il confirme
+`standby`, chauffes à zéro, fondation intacte, empreinte initiale conforme,
+cibles absentes et deux CFS connectés. Aucun fichier, backup distant, service
+ou état Klipper n'a été modifié.
+
+Comme la commande revue a changé après le premier GO, celui-ci n'autorise pas
+la pose corrigée. Après revue du document 16, du diff et des tests, le seul texte
+renouvelé valide reste `GO G4-K1-CONTROL-Z-MESH-RUNTIME-V1`.
 
 Required for each named change:
 

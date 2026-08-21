@@ -354,3 +354,19 @@ son fichier directement. Ce risque est refusé. Le candidat utilise un petit
 module original à schéma borné, somme SHA-256, permissions `0600`, `fsync`,
 remplacement atomique et copie précédente. Une intégrité douteuse bloque la
 production ; une récupération antérieure n'est jamais chargée silencieusement.
+
+## D-027 — Une correction du déployeur après GO exige un GO renouvelé
+
+Date: 2026-08-21
+
+Status: accepté
+
+Le premier préflight réel Z/mesh a échoué avant mutation : deux programmes
+Python transmis sur stdin recevaient leurs arguments sans le marqueur de script
+`-`. La correction ajoute ce marqueur aux formes snapshot et G-code ; les deux
+fichiers runtime, leurs empreintes et les effets distants prévus ne changent pas.
+
+Le préflight corrigé est vert et reste une observation en lecture seule. Malgré
+son faible volume, la correction change une commande revue après le GO. Le
+principe G4 d'approbation des commandes exactes s'applique : aucune pose n'est
+permise avant le renouvellement du même GO exact.

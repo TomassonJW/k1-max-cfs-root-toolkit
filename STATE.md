@@ -4,8 +4,8 @@ Last updated: 2026-08-21
 
 ## Current phase
 
-**P4 — fondation V3 et correction des chemins Moonraker installées et validées ;
-observation finale de huit heures à réaliser**
+**P4 — fondation V3 et correction des chemins retenues ; préflight Z/mesh vert,
+pose en attente d'un GO exact renouvelé après correction du déployeur**
 
 The repository baseline, stock acquisition, complete Orca/G-code intake and
 passive P1–P5/PETG trace are complete. Gate G3 is passed for offline design and
@@ -241,6 +241,15 @@ commencent sur cet état final retenu.
   Son stockage original utilise validation, SHA-256, `fsync`, remplacement
   atomique et copie précédente. Il ne remplace pas `START_PRINT`, ne contient
   ni CFS, ni extrusion, ni mouvement bas et n'est pas installé.
+- Thomas a envoyé le GO exact `G4-K1-CONTROL-Z-MESH-RUNTIME-V1`. Le premier
+  préflight a échoué sans mutation parce que deux appels Python avec arguments
+  n'indiquaient pas la lecture sur stdin. Le déployeur ajoute maintenant `-`
+  avant ces arguments et un test dédié verrouille ce transport.
+- Le second préflight en lecture seule est vert sous la capture privée
+  `20260821-212431-g4-k1-control-z-mesh-runtime-v1` : `standby`, chauffes à
+  zéro, fondation intacte, empreinte initiale conforme, cibles runtime absentes
+  et deux CFS `1.1.3` connectés. Aucune copie, sauvegarde distante, inclusion,
+  commande Klipper ou relance de service n'a été exécutée.
 
 - Complete-system audit, A/B/C comparison, safety invariant, input contract and
   time-bounded roadmap documented in
@@ -292,11 +301,11 @@ commencent sur cet état final retenu.
 
 ## Next safe action
 
-Review the exact offline package `G4-K1-CONTROL-Z-MESH-RUNTIME-V1`: real
-Moonraker adapter, selectable mesh planner, atomic persistent Z/mesh state,
-safe-start guards, exact backups, installer, no-extrusion validation and
-rollback. If Thomas accepts this bounded non-print-path slice, the next action
-requires the exact text `GO G4-K1-CONTROL-Z-MESH-RUNTIME-V1`.
+Review the two-token transport correction and its regression test. Because the
+reviewed deployer command changed after the first GO, deployment requires Thomas
+to renew the exact text `GO G4-K1-CONTROL-Z-MESH-RUNTIME-V1`. The next execution
+must reuse the green preflight facts but rerun the deployer's own preflight before
+any write.
 
 The Orca cutover remains a later atomic gate. This runtime slice intentionally
 keeps the active Orca profile, `START_PRINT` and the legacy `+0.27 mm`
@@ -318,6 +327,8 @@ retirement remains atomic with the later proven machine/Orca replacement.
 - Any reinstall, correction or extension of the completed
   `G4-K1-CONTROL-FOUNDATION-V3-PATHS-V1` package.
 - Any other Mainsail, Fluidd, Moonraker or `K1 Control` installation/change.
+- `G4-K1-CONTROL-Z-MESH-RUNTIME-V1` deployment until the corrected command has
+  received a renewed exact GO.
 - BTT Eddy preparation, installation, firmware or calibration.
 - Firmware downgrade or replacement.
 - Any SSH write other than the completed `G4-SSH-KEY` deployment.
@@ -372,6 +383,6 @@ retirement remains atomic with the later proven machine/Orca replacement.
 ## Exit condition for this phase
 
 P3 has reached its exit condition. The P4 foundation slice is installed,
-observed and retained. The Z/mesh runtime remains an offline candidate: no
-printer-side P4 extension is open until the complete exact package is reviewed
-and receives `G4-K1-CONTROL-Z-MESH-RUNTIME-V1`.
+observed and retained. The Z/mesh runtime has a green real preflight but remains
+absent from the printer; the corrected deployer must receive a renewed exact GO
+before the printer-side P4 extension is opened.

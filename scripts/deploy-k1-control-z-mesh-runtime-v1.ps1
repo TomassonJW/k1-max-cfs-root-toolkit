@@ -154,7 +154,7 @@ print(json.dumps(message.get("result", {}).get("status", {}), sort_keys=True))
 '@
     $payload = [Convert]::ToBase64String([Text.Encoding]::UTF8.GetBytes($python.Replace("`r`n", "`n")))
     $include = if ($IncludeRuntime) { '1' } else { '0' }
-    $line = Invoke-Remote "echo '$payload' | base64 -d | /usr/share/klippy-env/bin/python '$include'"
+    $line = Invoke-Remote "echo '$payload' | base64 -d | /usr/share/klippy-env/bin/python - '$include'"
     return (($line -join "`n") | ConvertFrom-Json)
 }
 
@@ -200,7 +200,7 @@ else:
 '@
     $payload = [Convert]::ToBase64String([Text.Encoding]::UTF8.GetBytes($python.Replace("`r`n", "`n")))
     $wait = if ($NoResponse) { '0' } else { '1' }
-    $line = Invoke-Remote "echo '$payload' | base64 -d | /usr/share/klippy-env/bin/python '$Script' '$wait'"
+    $line = Invoke-Remote "echo '$payload' | base64 -d | /usr/share/klippy-env/bin/python - '$Script' '$wait'"
     return (($line -join "`n") | ConvertFrom-Json)
 }
 

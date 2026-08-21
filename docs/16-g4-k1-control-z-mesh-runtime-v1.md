@@ -2,7 +2,26 @@
 
 Date : 2026-08-21
 
-Statut : **candidat runtime écrit et testé hors imprimante ; aucun déploiement autorisé**
+Statut : **préflight réel vert après correction locale ; aucun déploiement effectué ni autorisé sans GO renouvelé**
+
+## État d'exécution du 2026-08-21
+
+Thomas a envoyé le GO exact. Le premier préflight s'est arrêté sans mutation :
+le Python distant recevait `0` comme nom de fichier au lieu de lire le programme
+fourni sur stdin. Les deux appels concernés utilisent maintenant explicitement
+`python -` avant leurs arguments. Un test de non-régression couvre ces deux
+formes.
+
+Le second préflight, toujours en lecture seule, est vert sous la capture privée
+`20260821-212431-g4-k1-control-z-mesh-runtime-v1` : machine `standby`, chauffes
+demandées à zéro, fondation intacte, empreinte `printer.cfg` conforme, cibles
+runtime absentes et deux CFS `1.1.3` connectés. Les axes étaient référencés et le
+mesh transitoire `Base` actif ; ce sont des états acceptés avant le redémarrage
+hôte prévu par la pose.
+
+Aucune sauvegarde distante, copie, inclusion, donnée runtime, commande Klipper
+ou relance de service n'a été exécutée. La correction modifie une commande revue
+après le premier GO : le déploiement attend donc un nouveau GO exact.
 
 ## Décision opérateur
 
@@ -112,7 +131,7 @@ réactivée silencieusement.
 
 ## Pose candidate exacte
 
-La pose n'est pas encore autorisée. Son plan hors imprimante est figé par
+La pose corrigée n'est pas encore autorisée. Son plan est figé par
 `deployment-manifest.json` et
 `scripts/deploy-k1-control-z-mesh-runtime-v1.ps1`.
 
@@ -157,6 +176,6 @@ socket Klipper est indisponible, le seul secours est le restart du service exact
 `S55klipper_service`. L'état final exige les empreintes initiales, l'absence du
 runtime, les services/ports de fondation et les deux CFS conformes.
 
-Le seul texte d'approbation valable après revue est :
+Le seul texte d'approbation renouvelé valable après revue de la correction est :
 
 `GO G4-K1-CONTROL-Z-MESH-RUNTIME-V1`
