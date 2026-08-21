@@ -44,7 +44,8 @@ class ControlFoundationDeployerTests(unittest.TestCase):
         self.assertIn("foreach ($name in @('T1', 'T2'))", self.text)
         self.assertIn("test -S /dev/log", self.text)
         self.assertIn("default 200KB", self.text)
-        self.assertIn("@('base64', 'tar', 'unzip', 'sha256sum', 'du', 'df', 'netstat')", self.text)
+        self.assertIn("'netstat', 'chown', 'stat', 'su'", self.text)
+        self.assertIn("id -u www-data", self.text)
         self.assertIn("minimum_usr_data_free_before_install_mib", self.text)
         self.assertNotIn("logrotate", self.text)
 
@@ -63,6 +64,7 @@ class ControlFoundationDeployerTests(unittest.TestCase):
         self.assertIn("Compte nginx absent ou invalide", self.text)
         self.assertIn("Get-GatewayAnonymousStatus", self.text)
         self.assertIn("mv '$gatewayPreviousConfig' '$gatewayActiveConfig'", self.text)
+        self.assertIn("'$GatewayService' restart", self.text)
         self.assertLess(
             self.text.index("La protection nginx locale ne refuse pas"),
             self.text.index("ouverture Mainsail authentifie au LAN"),
@@ -74,6 +76,13 @@ class ControlFoundationDeployerTests(unittest.TestCase):
         self.assertIn("function New-SshaPasswordRecord", self.text)
         self.assertIn("RandomNumberGenerator]::Fill", self.text)
         self.assertIn("{SSHA}", self.text)
+        self.assertIn("chown root:www-data '$passwordNext'", self.text)
+        self.assertIn("chmod 0640 '$passwordNext'", self.text)
+        self.assertIn("chmod 0710 '$RemoteRoot/state'", self.text)
+        self.assertIn(".nginx-read-probe", self.text)
+        self.assertIn("su -s /bin/sh www-data", self.text)
+        self.assertIn("gateway-authentication-failure.txt", self.text)
+        self.assertIn("stat -c '%u:%g:%a'", self.text)
         self.assertIn("Invoke-RemoteWithInput", self.text)
         self.assertIn("StandardInputEncoding = [Text.UTF8Encoding]::new($false)", self.text)
         self.assertIn('$process.StandardInput.Write("`n")', self.text)

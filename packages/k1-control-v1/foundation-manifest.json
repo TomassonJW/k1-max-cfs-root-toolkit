@@ -58,7 +58,7 @@
     "expert_path": "/",
     "authentication_owner": "nginx",
     "gateway_authentication": "http_basic",
-    "password_storage": "RFC 2307 SSHA with 16-byte random salt, file mode 0600",
+    "password_storage": "RFC 2307 SSHA with 16-byte random salt, owner root:www-data, file mode 0640 in root:www-data state directory mode 0710",
     "password_minimum_characters": 16,
     "password_maximum_characters": 128,
     "password_character_set": "printable ASCII without spaces (0x21-0x7e)",

@@ -4,7 +4,7 @@ Last updated: 2026-08-21
 
 ## Current phase
 
-**P4 — première pose V3 rollbackée ; transport corrigé hors imprimante et nouvelle autorisation requise**
+**P4 — fondation V3 installée et validée ; observation de huit heures à faire**
 
 The repository baseline, stock acquisition, complete Orca/G-code intake and
 passive P1–P5/PETG trace are complete. Gate G3 is passed for offline design and
@@ -25,12 +25,15 @@ green. V1 was authorised but stopped before mutation because the required
 `logrotate` was absent. V2 reused the bounded stock syslog and reached a working
 Mainsail through an SSH tunnel, then was rolled back because Mainsail `v2.18.2`
 cannot satisfy the required Moonraker-account gate. V3 moves authentication to
-nginx and changes no print behaviour. Thomas a donné le GO V3 exact. Le
-bootstrap réel et sa validation indépendante ont réussi, puis la vérification
-du compte a détecté une collision entre le programme Python et son JSON sur
-l'entrée standard. Le rollback automatique a restauré l'absence complète de la
-fondation. Le transport corrigé est prouvé en lecture seule mais n'a pas été
-redéployé.
+nginx and changes no print behaviour. Les GO V3 exacts renouvelés ont permis de
+corriger, avec rollback complet entre les KO, le transport stdin, les droits du
+fichier et du dossier parent, puis la transition nginx de la boucle locale vers
+le LAN. La capture finale `20260821-015722-g4-control-foundation-v3` est verte :
+Moonraker reste sur `127.0.0.1:7125`, Mainsail authentifié écoute sur
+`0.0.0.0:4409`, le compte a été vérifié par Thomas, les services Creality sont
+intacts, Klipper est `standby`, les chauffes sont à zéro et les deux CFS `1.1.3`
+sont connectés. L'acceptation durable exige encore huit heures d'observation
+avec une impression normale lancée manuellement par Thomas.
 
 ## Confirmed facts
 
@@ -191,15 +194,16 @@ redéployé.
   MIPS binary contains `auth_basic` and `auth_basic_user_file`. V3 uses a
   masked local prompt, one salted SSHA record, HTTP `401/200` checks, private
   IPv4 source limits and strips credentials before proxying to Moonraker.
-- Thomas a autorisé V3. `InstallBootstrap` puis `Validate` ont réussi sur la
-  machine réelle. La création du compte a écrit le SSHA et activé nginx local,
-  mais son test JSON a échoué parce que le programme Python occupait déjà
-  stdin. Le rollback automatique a retiré le dossier et les deux services ;
-  les ports `7125`/`4409` sont fermés et la pile Creality est intacte.
-- Le correctif passe le programme Python par `-c` et réserve stdin au JSON. Un
-  test distant factice, strictement en lecture seule, retourne
-  `REMOTE_STDIN_PROOF_OK`. Une nouvelle pose exige une nouvelle autorisation
-  explicite du même nom V3.
+- Les GO V3 exacts ont autorisé les reprises après rollback. Les écarts stdin,
+  droits du fichier, traversée du dossier parent et transition nginx vers le
+  LAN ont été corrigés avec tests de non-régression.
+- La capture finale `20260821-015722-g4-control-foundation-v3` a installé la
+  fondation, créé et vérifié le compte, ouvert le LAN et obtenu `VALIDATE_OK`.
+  Moonraker reste en boucle locale, Mainsail authentifié écoute sur `4409`, les
+  ports Creality sont présents et le vrai tableau de bord est fonctionnel.
+- Après pose, environ 103 Mio de RAM restent disponibles et la croissance swap
+  mesurée est de 36 Kio. Klipper est `standby`, les chauffes sont à zéro, les
+  axes ne sont pas homés et les deux CFS `1.1.3` sont connectés.
 
 - Complete-system audit, A/B/C comparison, safety invariant, input contract and
   time-bounded roadmap documented in
