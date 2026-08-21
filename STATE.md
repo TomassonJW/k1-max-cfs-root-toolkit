@@ -4,12 +4,14 @@ Last updated: 2026-08-21
 
 ## Current phase
 
-**P4 — fondation V3 installée et validée ; observation de huit heures à faire**
+**P4 — fondation V3 installée ; correction des chemins Moonraker à préparer
+avant l'observation de huit heures**
 
 The repository baseline, stock acquisition, complete Orca/G-code intake and
 passive P1–P5/PETG trace are complete. Gate G3 is passed for offline design and
 simulation only. No printer-behaviour deployment is authorised. The separate
-`G4-SSH-KEY` access change remains the only deployed printer-side change.
+`G4-SSH-KEY` access change and the observation-only V3 control foundation are
+the deployed printer-side changes; neither changed print behaviour.
 
 Thomas rejected `G4-ZSAFE-START-V1` before deployment. Its fixed `+0.27 mm`,
 single `default` mesh and manual clean flow are not a production solution. The
@@ -32,8 +34,14 @@ le LAN. La capture finale `20260821-015722-g4-control-foundation-v3` est verte :
 Moonraker reste sur `127.0.0.1:7125`, Mainsail authentifié écoute sur
 `0.0.0.0:4409`, le compte a été vérifié par Thomas, les services Creality sont
 intacts, Klipper est `standby`, les chauffes sont à zéro et les deux CFS `1.1.3`
-sont connectés. L'acceptation durable exige encore huit heures d'observation
-avec une impression normale lancée manuellement par Thomas.
+sont connectés. Après ouverture du vrai tableau de bord, deux avertissements ont
+prouvé que les racines `config` et `gcodes` dérivées du data path Moonraker sont
+distinctes des chemins Creality actifs. La connexion fonctionne, mais
+l'intégration du gestionnaire de fichiers reste incomplète. Une inspection
+distante bornée et sans mutation a confirmé les deux dossiers Moonraker vides.
+Le candidat séparé `G4-K1-CONTROL-FOUNDATION-V3-PATHS-V1` doit être préparé hors
+imprimante puis attendre son GO exact. L'acceptation durable et ses huit heures
+d'observation commenceront seulement sur l'état final retenu.
 
 ## Confirmed facts
 
@@ -255,15 +263,16 @@ avec une impression normale lancée manuellement par Thomas.
 
 ## Next safe action
 
-The next state-changing action is a new human gate: Thomas may explicitly
-approve or refuse the corrected `G4-K1-CONTROL-FOUNDATION-V3`. The earlier V3
-attempt is consumed by its rollback. Until a new exact approval, do not upload,
-install, start or expose any service.
+Prepare `G4-K1-CONTROL-FOUNDATION-V3-PATHS-V1` offline. It must preserve the
+active Creality config and G-code paths, align Moonraker through reversible
+links, disable config writes through the API, document the remaining G-code
+file permissions, validate without transmitting G-code and rollback at the
+first mismatch. Printer mutation waits for the exact text
+`GO G4-K1-CONTROL-FOUNDATION-V3-PATHS-V1`; an earlier V3 GO does not apply.
 
-If approved, the first pose installs only Moonraker and Mainsail in observation,
-creates and verifies the nginx account through an SSH tunnel, performs no
-G-code command, and stops or rolls back on any checksum, login, coexistence or
-resource failure.
+After this correction or an explicit decision not to deploy it, perform the
+eight-hour observation on the final retained state, including one normal print
+chosen and started manually by Thomas through the existing trusted workflow.
 
 Do not remove or disable the current Orca `+0.27 mm` post-processor. Its
 retirement remains atomic with the later proven machine/Orca replacement.
@@ -273,7 +282,7 @@ retirement remains atomic with the later proven machine/Orca replacement.
 - Helper Script installation.
 - `G4-K1-CONTROL-FOUNDATION-V1` forever: preflight KO, never deployed, name closed.
 - `G4-K1-CONTROL-FOUNDATION-V2` forever: real attempts rolled back, name closed.
-- corrected `G4-K1-CONTROL-FOUNDATION-V3` until Thomas repeats its exact GO.
+- `G4-K1-CONTROL-FOUNDATION-V3-PATHS-V1` remote execution until its exact GO.
 - Any other Mainsail, Fluidd, Moonraker or `K1 Control` installation/change.
 - BTT Eddy preparation, installation, firmware or calibration.
 - Firmware downgrade or replacement.
@@ -312,8 +321,9 @@ retirement remains atomic with the later proven machine/Orca replacement.
 - The compiled `BOX_*` owner may contain a late temperature write that no macro
   can intercept. The complete matrix decides whether a small replacement owner
   is required.
-- The pinned Moonraker/Mainsail package has not yet run on the real machine, so
-  its RAM, stability and coexistence are not proven.
+- The pinned Moonraker/Mainsail package is installed and initially green, but
+  its file-manager roots are not aligned and its eight-hour RAM, stability and
+  coexistence observation has not yet been completed.
 - The real `K1 Control` adapter and the printer-side Z/mesh/start/CFS wrappers
   are intentionally deferred until the observation foundation is accepted.
 

@@ -2,7 +2,7 @@
 
 Date: 2026-08-21
 Phase: P4 / V1 and V2 closed; V3 foundation installed and validated
-Next operator: Thomas performs the eight-hour observation including one normal manual print
+Next operator: prepare the Moonraker path-alignment candidate offline, then wait for its exact GO
 
 ## Current state
 
@@ -65,6 +65,22 @@ créé puis vérifié son compte dans le vrai tableau de bord Mainsail. Moonrake
 reste sur `127.0.0.1:7125` et Mainsail authentifié écoute sur `0.0.0.0:4409`.
 Le raccourci `Ouvrir Mainsail K1 Max` sur le Bureau crée automatiquement le
 tunnel SSH sécurisé et ouvre Mainsail sans commande manuelle.
+
+Après connexion, Moonraker a affiché deux avertissements : son data path crée
+`/usr/data/k1-control-v1/state/config` et `state/gcodes`, alors que la pile
+Creality active utilise `/usr/data/printer_data/config` et
+`/usr/data/printer_data/gcodes`. Une inspection distante bornée et sans mutation
+a confirmé que les deux dossiers Moonraker sont présents et vides. Le code exact
+installé produit ces avertissements lorsque les chemins ne désignent pas les
+mêmes dossiers. La connexion Mainsail → Moonraker → Klipper fonctionne ; seule
+l'intégration du gestionnaire de fichiers est incomplète.
+
+Il ne faut pas appliquer la suggestion générique de modifier
+`[virtual_sdcard]`. La correction candidate doit garder les chemins Creality,
+relier les racines Moonraker selon la méthode officielle, rendre `config` non
+modifiable par l'API et traiter explicitement le pouvoir d'écriture restant sur
+`gcodes`. Le rapport public est dans
+`experiments/p4/20260821-moonraker-path-warnings-read-only-report.md`.
 
 Le contrat, l'architecture et la comparaison des outils sont dans les documents
 10, 11, 13, 14 et ADR-004. Les essais V2 et les tentatives V3 en KO ont
@@ -178,11 +194,25 @@ Codex has permanent authority to complete all normal Git and GitHub operations f
 
 ## Next bounded mission
 
-La fondation V3 ne doit plus être réinstallée ni modifiée. La prochaine étape
-est l'observation de huit heures prévue par le manifeste. Elle doit inclure une
-impression normale choisie et lancée manuellement par Thomas ; Codex observe
-seulement les ressources, les ports, Klipper, les interfaces Creality et les
-deux CFS. Aucun G-code, redémarrage ou changement de comportement n'est inclus.
+La fondation V3 validée ne doit plus être réinstallée ni recevoir une correction
+improvisée. La prochaine mission unique est de préparer hors imprimante
+`G4-K1-CONTROL-FOUNDATION-V3-PATHS-V1`, puis d'attendre le texte exact
+`GO G4-K1-CONTROL-FOUNDATION-V3-PATHS-V1` avant toute mutation.
+
+Le futur lot doit sauvegarder et comparer l'état, remplacer seulement les deux
+dossiers Moonraker confirmés vides par des liens réversibles vers les chemins
+Creality, verrouiller l'écriture de `config`, ne redémarrer que le Moonraker
+dédié, confirmer la disparition des avertissements et revérifier nginx,
+Klipper, les interfaces Creality, les ressources et les deux CFS. Il ne doit
+transmettre, supprimer ou démarrer aucun G-code, ni modifier `printer.cfg`,
+`[virtual_sdcard]`, Orca, Z, mesh, macros, températures CFS ou firmware. Rollback
+immédiat au premier KO ; aucun redémarrage imprimante.
+
+Après cette correction ou une décision explicite de ne pas la poser,
+l'observation de huit heures doit porter sur l'état final retenu. Elle comprend
+une impression normale choisie et lancée manuellement par Thomas avec l'ancien
+flux de confiance. Le post-traitement PHP/Orca `+0,27 mm`, le Start G-code et le
+G-code de changement de filament restent strictement inchangés.
 
 Après cette observation, une nouvelle gate nommée sera nécessaire avant la
 première tranche qui modifiera Z, mesh, nettoyage, purge, CFS, macros ou Orca.
