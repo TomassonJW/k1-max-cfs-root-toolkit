@@ -2,7 +2,7 @@
 
 Date: 2026-08-21
 Phase: P4 / V1 and V2 closed; V3 foundation and PATHS-V1 installed and validated
-Next operator: run the eight-hour observation on the final retained foundation
+Next operator: build the offline `G4-K1-CONTROL-Z-MESH-RUNTIME-V1` package
 
 ## Current state
 

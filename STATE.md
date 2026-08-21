@@ -273,10 +273,15 @@ commencent sur cet état final retenu.
 
 ## Next safe action
 
-Perform the eight-hour observation on the final retained V3 + PATHS-V1 state,
-including one normal print chosen and started manually by Thomas through the
-existing trusted workflow. Codex may observe read-only but must not transmit
-G-code or initiate the print.
+Build the exact offline package `G4-K1-CONTROL-Z-MESH-RUNTIME-V1`. It must
+provide the real Moonraker adapter, persistent Z/mesh ownership, selectable and
+qualified mesh matrices, the safe-start guards, the atomic Orca contract, exact
+backups and rollback before any deployment GO can be requested.
+
+Thomas explicitly rejected further sacrificial print campaigns on 2026-08-21.
+The V3 + PATHS-V1 observation remains useful coexistence evidence but no longer
+blocks offline product construction. Codex still must not transmit G-code or
+mutate the printer without the later exact named G4 approval.
 
 Do not remove or disable the current Orca `+0.27 mm` post-processor. Its
 retirement remains atomic with the later proven machine/Orca replacement.
@@ -329,6 +334,9 @@ retirement remains atomic with the later proven machine/Orca replacement.
 - The pinned Moonraker/Mainsail package and its file-manager roots are installed
   and initially green, but the eight-hour RAM, stability and coexistence
   observation has not yet been completed.
+- A manual Mainsail calibration created an active `Base` mesh with the captured
+  `6 x 6` Lagrange configuration over `5–295 mm`. It was not written to
+  `printer.cfg` and is therefore transient; only `default` remains persistent.
 - The real `K1 Control` adapter and the printer-side Z/mesh/start/CFS wrappers
   are intentionally deferred until the observation foundation is accepted.
 

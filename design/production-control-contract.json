@@ -71,6 +71,27 @@
       "persist_after_job": false,
       "reuse_for_other_job": false
     },
+    "calibration": {
+      "current_captured_probe_count": [6, 6],
+      "default_precision_preset": "precise",
+      "presets": {
+        "quick": [6, 6],
+        "standard": [9, 9],
+        "precise": [11, 11],
+        "expert": [15, 15]
+      },
+      "custom_probe_count_range_per_axis": [3, 25],
+      "lagrange_max_probe_count_per_axis": 6,
+      "larger_matrices_algorithm": "bicubic",
+      "reference_requires_repeatability_check": true,
+      "default_repeatability_tolerance_mm": 0.025,
+      "profile_identity": [
+        "plate_id",
+        "bed_temperature_band_c",
+        "probe_reference_revision",
+        "probe_count"
+      ]
+    },
     "forbidden": [
       "random_automatic_profile_overwrite",
       "profile_without_plate_identity",
