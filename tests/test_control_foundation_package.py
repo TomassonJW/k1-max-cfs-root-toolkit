@@ -131,6 +131,21 @@ class ControlFoundationPackageTests(unittest.TestCase):
         self.assertIn("$PSVersionTable.PSVersion.Major -lt 7", wrapper)
         self.assertNotIn("[string]$Password", wrapper)
 
+    def test_double_click_launcher_uses_the_secure_tunnel_without_secrets(self) -> None:
+        launcher = (ROOT / "Ouvrir-Mainsail-K1-Max.cmd").read_text(encoding="utf-8")
+        helper = (ROOT / "scripts" / "launch-control-dashboard.ps1").read_text(
+            encoding="utf-8"
+        )
+        self.assertIn("launch-control-dashboard.ps1", launcher)
+        self.assertIn("-WindowStyle Hidden", launcher)
+        self.assertIn("127.0.0.1:4409:127.0.0.1:4409", helper)
+        self.assertIn("ExitOnForwardFailure=yes", helper)
+        self.assertIn("ServerAliveInterval=30", helper)
+        self.assertIn("BatchMode=yes", helper)
+        self.assertIn("$status -ne 401", helper)
+        self.assertIn("Start-Process $DashboardUrl", helper)
+        self.assertNotRegex(helper, r"192\.168\.|10\.\d+\.\d+\.\d+")
+
     def test_preparer_verifies_size_and_hash_and_rejects_workspace_root(self) -> None:
         artifact = ROOT / "tests" / "fixtures" / "k1-control-v1" / "orca-end-expanded.gcode"
         component = {

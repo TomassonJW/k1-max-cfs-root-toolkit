@@ -153,23 +153,25 @@ ouvert. Après rollback, les chemins et services V2 sont absents, les ports
 `7125`/`4409` fermés et la pile Creality présente. Un autre GO V2 ne peut pas
 rouvrir ce paquet.
 
-Candidate `G4-K1-CONTROL-FOUNDATION-V3`: **GO reçu, première tentative réelle
-rollbackée, correctif hors imprimante en attente d'un nouveau GO exact**. Le
-bootstrap et sa validation indépendante ont réussi. La vérification du compte a
-ensuite échoué : le programme Python et le JSON utilisaient tous deux stdin.
-Le rollback automatique a restauré l'absence du dossier, des deux services et
-des ports `7125`/`4409`, avec la pile Creality intacte.
+Candidate `G4-K1-CONTROL-FOUNDATION-V3`: **GO reçu, installation réelle verte
+le 2026-08-21**. Les tentatives intermédiaires ont rollbacké complètement après
+avoir révélé le partage de stdin, les droits du fichier et du dossier parent,
+puis l'impossibilité pour nginx d'élargir son écoute par simple reload. La pose
+finale utilise `root:www-data` avec `0710/0640`, prouve la lecture sous
+`www-data` avant la saisie et redémarre uniquement la passerelle nginx lors du
+passage LAN.
 
-Le correctif passe maintenant le programme par Python `-c` et réserve stdin au
-JSON. Les 56 tests passent et un JSON factice a été lu avec succès par le Python
-constructeur à travers le transport SSH exact, sans écriture distante. Il n'a
-pas été redéployé.
+La capture `20260821-015722-g4-control-foundation-v3` a obtenu
+`INSTALL_BOOTSTRAP_OK`, `SET_GATEWAY_ACCOUNT_OK`, `ACTIVATE_LAN_OK` et
+`VALIDATE_OK`. Thomas a vérifié le compte dans le vrai tableau de bord Mainsail.
+Moonraker reste en boucle locale sur `7125`; Mainsail authentifié écoute sur le
+LAN privé en `4409`; les ports Creality, Klipper et les deux CFS sont intacts.
+Aucun G-code, mouvement, chauffe, calibration, extrusion, impression ou
+redémarrage imprimante n'a été exécuté.
 
-Le prototype produit reste vert à 17/17. V3 ne modifie ni macros, ni Z, ni mesh,
-ni CFS, ni Orca et n'autorise aucune commande G-code. Seul le texte exact
-`GO G4-K1-CONTROL-FOUNDATION-V3` pourra autoriser une nouvelle pose corrigée.
-Le GO consommé par la tentative rollbackée, les GO V1/V2, le choix nginx et un
-GO générique ne valent pas pour cette nouvelle tentative.
+Le prototype reste vert à 17/17 et la suite passe 57/57. G4 est passée pour
+cette fondation uniquement. L'acceptation durable reste soumise aux huit heures
+d'observation prévues, avec une impression normale lancée par Thomas.
 
 Required for each named change:
 

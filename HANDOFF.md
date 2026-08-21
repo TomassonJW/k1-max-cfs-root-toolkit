@@ -1,8 +1,8 @@
 # HANDOFF
 
 Date: 2026-08-21
-Phase: P4 / V1 and V2 closed; first V3 attempt rolled back, stdin fix prepared offline
-Next operator: Thomas decides whether to repeat exact `GO G4-K1-CONTROL-FOUNDATION-V3`
+Phase: P4 / V1 and V2 closed; V3 foundation installed and validated
+Next operator: Thomas performs the eight-hour observation including one normal manual print
 
 ## Current state
 
@@ -57,17 +57,20 @@ Thomas a choisi `CHOIX AUTH — NGINX`. Le remplacement
 sur nginx. Le module MIPS requis est prouvé hors imprimante. Le mot de passe est
 saisi deux fois en local, seul un hachage SSHA salé est transmis, les requêtes
 anonymes doivent recevoir `401`, et les identifiants sont retirés avant le proxy
-vers Moonraker. Le premier GO V3 a installé et validé le bootstrap, puis le test
-du compte a trouvé une collision stdin entre le programme Python et le JSON. Le
-rollback automatique est complet. Le correctif hors imprimante passe le
-programme par `-c`, réserve stdin au JSON et a lu un JSON factice sur la machine
-en lecture seule. Il n'est **pas autorisé au redéploiement** sans nouveau GO.
+vers Moonraker. Les GO V3 renouvelés ont permis de corriger, avec rollback entre
+chaque KO, le transport stdin, les droits `root:www-data` du fichier et du
+dossier parent, puis la transition nginx vers l'écoute LAN. La capture finale
+`20260821-015722-g4-control-foundation-v3` est installée et validée. Thomas a
+créé puis vérifié son compte dans le vrai tableau de bord Mainsail. Moonraker
+reste sur `127.0.0.1:7125` et Mainsail authentifié écoute sur `0.0.0.0:4409`.
+Le raccourci `Ouvrir Mainsail K1 Max` sur le Bureau crée automatiquement le
+tunnel SSH sécurisé et ouvre Mainsail sans commande manuelle.
 
 Le contrat, l'architecture et la comparaison des outils sont dans les documents
-10, 11, 13, 14 et ADR-004. Les essais V2 ont créé puis rollbacké uniquement les
-nouveaux chemins de fondation. L'état final vérifié ne conserve aucun service,
-port ou dossier V2. Aucun profil Orca actif ni comportement d'impression n'a été
-modifié.
+10, 11, 13, 14 et ADR-004. Les essais V2 et les tentatives V3 en KO ont
+rollbacké uniquement les nouveaux chemins de fondation. La pose V3 finale
+conserve les deux services dédiés et les ports prévus. Aucun profil Orca actif
+ni comportement d'impression n'a été modifié.
 
 Une lecture distante bornée a relevé environ 209 Mio de RAM totale, 118 Mio
 disponibles, Python 3.8.2, 4,2 Gio libres et aucun port/processus Moonraker. La
@@ -78,7 +81,7 @@ Un écran `K1 Control` sans dépendance, un moteur d'état Python pur, un faux
 Moonraker, le contrat Orca et la matrice exécutable sont présents sous
 `prototype/`, `orca/` et `tests/`. Les vues bureau/mobile et les actions
 calibration, sauvegarde, redémarrage et invalidation ont été vérifiées sans
-erreur JavaScript. La suite complète passe 56/56 contrôles.
+erreur JavaScript. La suite complète passe 57/57 contrôles.
 
 ## Preuves historiques utiles
 
@@ -175,24 +178,14 @@ Codex has permanent authority to complete all normal Git and GitHub operations f
 
 ## Next bounded mission
 
-La prochaine action qui pourrait toucher la machine est bloquée par une nouvelle
-gate humaine. Thomas doit écrire explicitement :
+La fondation V3 ne doit plus être réinstallée ni modifiée. La prochaine étape
+est l'observation de huit heures prévue par le manifeste. Elle doit inclure une
+impression normale choisie et lancée manuellement par Thomas ; Codex observe
+seulement les ressources, les ports, Klipper, les interfaces Creality et les
+deux CFS. Aucun G-code, redémarrage ou changement de comportement n'est inclus.
 
-`GO G4-K1-CONTROL-FOUNDATION-V3`
-
-avant toute nouvelle copie, installation ou démarrage. Le premier GO V3 a été
-consommé par la tentative rollbackée ; un `GO` générique ou ancien ne suffit
-pas.
-
-Les GO V1/V2 et le choix nginx ne suffisent pas. Cette nouvelle gate, si elle
-est donnée, autorise seulement la pose Moonraker/Mainsail, la création du compte
-nginx par invite locale masquée, sa vérification par tunnel SSH, les contrôles
-sans commande G-code et le rollback du même paquet. Elle n'autorise aucune
-chauffe, mouvement, calibration, extrusion, impression, modification Orca ou
-macro comportemental.
-
-Sans ce GO exact, Codex peut seulement continuer les travaux locaux sur les
-wrappers Z/mesh/start/CFS et l'adaptateur réel de `K1 Control`.
+Après cette observation, une nouvelle gate nommée sera nécessaire avant la
+première tranche qui modifiera Z, mesh, nettoyage, purge, CFS, macros ou Orca.
 
 ## Stop conditions
 

@@ -385,10 +385,13 @@ function Invoke-FoundationPreflight {
     if (-not (Invoke-RemoteTest "test -x /sbin/start-stop-daemon")) {
         throw 'start-stop-daemon absent.'
     }
-    foreach ($tool in @('base64', 'tar', 'unzip', 'sha256sum', 'du', 'df', 'netstat')) {
+    foreach ($tool in @('base64', 'tar', 'unzip', 'sha256sum', 'du', 'df', 'netstat', 'chown', 'stat', 'su')) {
         if (-not (Invoke-RemoteTest "command -v '$tool'")) {
             throw "Outil systeme absent : $tool"
         }
+    }
+    if (-not (Invoke-RemoteTest "test `$(id -u www-data) -eq 33 && test `$(id -g www-data) -eq 33")) {
+        throw 'Identite nginx www-data inattendue.'
     }
 
     $klipper = Get-KlipperPreflight
@@ -635,11 +638,16 @@ if ($Action -eq 'InstallBootstrap') {
         Invoke-Remote "cd '$remoteStaging/unpacked' && sha256sum -c checksums.sha256" | Out-Null
 
         Invoke-Remote "mkdir -p '$RemoteRelease' '$RemoteRelease/www/mainsail' '$RemoteRoot/state' '$RemoteRoot/logs' '$RemoteRoot/tmp'" | Out-Null
+        Invoke-Remote "chmod 0711 '$RemoteRoot' '$RemoteRoot/releases' '$RemoteRelease'" | Out-Null
+        Invoke-Remote "chown root:www-data '$RemoteRoot/state' && chmod 0710 '$RemoteRoot/state'" | Out-Null
+        $nginxReadProbe = "$RemoteRoot/state/.nginx-read-probe"
+        Invoke-Remote "printf 'probe\n' > '$nginxReadProbe' && chown root:www-data '$nginxReadProbe' && chmod 0640 '$nginxReadProbe'" | Out-Null
+        Invoke-Remote "su -s /bin/sh www-data -c 'test -r $nginxReadProbe'" | Out-Null
+        Invoke-Remote "rm -f '$nginxReadProbe'" | Out-Null
         Invoke-Remote "tar -xzf '$remoteStaging/unpacked/artifacts/moonraker-mips-bundle.tar.gz' -C '$RemoteRelease'" | Out-Null
         Invoke-Remote "tar -xzf '$remoteStaging/unpacked/artifacts/nginx-mips-bundle.tar.gz' -C '$RemoteRelease'" | Out-Null
         Invoke-Remote "unzip -q '$remoteStaging/unpacked/artifacts/mainsail.zip' -d '$RemoteRelease/www/mainsail'" | Out-Null
         Invoke-Remote "cp -R '$remoteStaging/unpacked/config' '$RemoteRelease/config'" | Out-Null
-        Invoke-Remote "chmod 0711 '$RemoteRoot' '$RemoteRoot/releases' '$RemoteRelease'" | Out-Null
         Invoke-Remote "find '$RemoteRelease/www' -type d -exec chmod 0755 {} \;" | Out-Null
         Invoke-Remote "find '$RemoteRelease/www' -type f -exec chmod 0644 {} \;" | Out-Null
         Invoke-Remote "cp '$RemoteRelease/config/nginx-bootstrap.conf' '$RemoteRoot/state/nginx-active.conf'" | Out-Null
@@ -693,9 +701,9 @@ if ($Action -eq 'SetGatewayAccount') {
 
         $MutationStarted = $true
         Invoke-RemoteWithInput `
-            "umask 077; cat > '$passwordNext' && chmod 0600 '$passwordNext' && mv '$passwordNext' '$GatewayPasswordFile'" `
+            "umask 077; cat > '$passwordNext' && chown root:www-data '$passwordNext' && chmod 0640 '$passwordNext' && mv '$passwordNext' '$GatewayPasswordFile'" `
             $record | Out-Null
-        if (-not (Invoke-RemoteTest "test -s '$GatewayPasswordFile' && test `$(wc -l < '$GatewayPasswordFile') -eq 1 && grep -Eq '^[A-Za-z0-9][A-Za-z0-9._-]{2,31}:\{SSHA\}[A-Za-z0-9+/=]+$' '$GatewayPasswordFile'")) {
+        if (-not (Invoke-RemoteTest "test `"`$(stat -c '%u:%g:%a' '$RemoteRoot/state')`" = '0:33:710' && test -s '$GatewayPasswordFile' && test `$(wc -l < '$GatewayPasswordFile') -eq 1 && test `"`$(stat -c '%u:%g:%a' '$GatewayPasswordFile')`" = '0:33:640' && su -s /bin/sh www-data -c 'test -r $GatewayPasswordFile' && grep -Eq '^[A-Za-z0-9][A-Za-z0-9._-]{2,31}:\{SSHA\}[A-Za-z0-9+/=]+$' '$GatewayPasswordFile'")) {
             throw 'Fichier de compte nginx invalide.'
         }
 
@@ -709,7 +717,8 @@ if ($Action -eq 'SetGatewayAccount') {
 
         $credentialCheck = Test-GatewayCredential $GatewayUsername $plainPassword
         if ($credentialCheck.anonymous_status -ne 401 -or $credentialCheck.authenticated_status -ne 200) {
-            throw 'Verification du compte nginx KO.'
+            Save-Evidence 'gateway-authentication-failure.txt' "anonymous_http=$($credentialCheck.anonymous_status); authenticated_http=$($credentialCheck.authenticated_status); exposure=loopback"
+            throw "Verification du compte nginx KO : anonyme=$($credentialCheck.anonymous_status), authentifie=$($credentialCheck.authenticated_status)."
         }
         Invoke-FoundationValidation -AuthExpected
         Save-Evidence 'gateway-authentication.txt' 'scheme=SSHA; anonymous_http=401; authenticated_http=200; exposure=loopback'
@@ -738,7 +747,7 @@ if ($Action -eq 'ActivateLan') {
     $gatewayPreviousConfig = "$RemoteRoot/state/nginx-active.conf.previous"
     $gatewayNextConfig = "$RemoteRoot/state/nginx-active.conf.next"
     try {
-        if (-not (Invoke-RemoteTest "test -s '$GatewayPasswordFile' && test `$(wc -l < '$GatewayPasswordFile') -eq 1 && grep -Eq '^[A-Za-z0-9][A-Za-z0-9._-]{2,31}:\{SSHA\}[A-Za-z0-9+/=]+$' '$GatewayPasswordFile'")) {
+        if (-not (Invoke-RemoteTest "test `"`$(stat -c '%u:%g:%a' '$RemoteRoot/state')`" = '0:33:710' && test -s '$GatewayPasswordFile' && test `$(wc -l < '$GatewayPasswordFile') -eq 1 && test `"`$(stat -c '%u:%g:%a' '$GatewayPasswordFile')`" = '0:33:640' && su -s /bin/sh www-data -c 'test -r $GatewayPasswordFile' && grep -Eq '^[A-Za-z0-9][A-Za-z0-9._-]{2,31}:\{SSHA\}[A-Za-z0-9+/=]+$' '$GatewayPasswordFile'")) {
             throw 'Compte nginx absent ou invalide : activation LAN refusee.'
         }
         Assert-RemoteFilesEqual "$RemoteRelease/config/nginx-bootstrap-auth.conf" $gatewayActiveConfig
@@ -751,7 +760,9 @@ if ($Action -eq 'ActivateLan') {
         Assert-RemoteFilesEqual "$RemoteRelease/config/nginx.conf" $gatewayNextConfig
         Invoke-Remote "'$RemoteRelease/nginx/sbin/nginx' -g 'error_log stderr;' -t -c '$gatewayNextConfig' -p '$RemoteRelease/nginx/nginx'" | Out-Null
         Invoke-Remote "mv '$gatewayNextConfig' '$gatewayActiveConfig'" | Out-Null
-        Invoke-Remote "'$GatewayService' reload" | Out-Null
+        # A reload cannot expand 127.0.0.1:4409 to 0.0.0.0:4409 while the old
+        # worker still owns the socket. Restart only this project gateway.
+        Invoke-Remote "'$GatewayService' restart" | Out-Null
         Wait-RemoteCondition "netstat -lnt | grep -q '0.0.0.0:4409'" 'ouverture Mainsail authentifie au LAN' 5 1
         Invoke-FoundationValidation -LanExpected -AuthExpected
         Invoke-Remote "rm -f '$gatewayPreviousConfig'" | Out-Null
@@ -761,7 +772,7 @@ if ($Action -eq 'ActivateLan') {
         try {
             if (Invoke-RemoteTest "test -f '$gatewayPreviousConfig'") {
                 Invoke-Remote "mv '$gatewayPreviousConfig' '$gatewayActiveConfig'" | Out-Null
-                Invoke-Remote "'$GatewayService' reload" | Out-Null
+                Invoke-Remote "'$GatewayService' restart" | Out-Null
             }
         }
         catch { }

@@ -29,6 +29,11 @@ scripts exigent PowerShell 7 ou plus récent.
 commande G-code et `Rollback` ne touche que les nouveaux chemins de cette
 fondation.
 
+`Ouvrir-Mainsail-K1-Max.cmd`, à la racine du dépôt, se lance par double-clic.
+Il appelle `launch-control-dashboard.ps1`, réutilise le tunnel local s'il répond
+correctement ou en démarre un nouveau en arrière-plan, exige HTTP `401` avant
+d'ouvrir Mainsail et ne contient aucune adresse privée ni aucun secret.
+
 During P0/P1, scripts must default to no remote write and fail closed on ambiguity.
 
 A future remote-mutating script must:

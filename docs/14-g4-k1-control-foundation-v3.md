@@ -2,7 +2,7 @@
 
 Date : 2026-08-21
 
-Statut : **première pose rollbackée ; correctif stdin préparé hors imprimante et non autorisé au redéploiement**
+Statut : **installée et validée le 2026-08-21 ; observation de huit heures requise**
 
 ## Pourquoi V3 existe
 
@@ -27,7 +27,9 @@ désactivé.
 - le mot de passe n'est jamais un argument de commande, un fichier local ou une
   preuve ;
 - seul un hachage RFC 2307 SSHA avec sel aléatoire de 16 octets est transmis par
-  SSH et stocké en mode `0600` ;
+  SSH et stocké en `root:www-data`, mode `0640`, afin que seul root et le worker
+  nginx puissent le lire ; le dossier parent est `root:www-data`, mode `0710`,
+  et une lecture sous `www-data` est exigée avant la saisie humaine ;
 - un seul compte initial est accepté par la pose ;
 - le port LAN refuse les sources hors boucle locale et plages IPv4 privées ;
 - une requête anonyme doit recevoir HTTP `401` avant et après l'ouverture LAN ;
@@ -83,7 +85,8 @@ Après le signal humain exact de compte vérifié, `ActivateLan` :
 2. confirme HTTP `401` sans identifiants ;
 3. teste la configuration LAN suivante ;
 4. remplace atomiquement `nginx-active.conf` ;
-5. recharge seulement le nouveau nginx ;
+5. redémarre seulement le nouveau nginx, car un reload ne peut pas élargir la
+   socket existante de `127.0.0.1` vers `0.0.0.0` sur le même port ;
 6. confirme `0.0.0.0:4409`, HTTP `401`, les ressources, Klipper et les deux CFS ;
 7. restaure la configuration précédente puis rollback la fondation au premier
    KO.
@@ -100,18 +103,14 @@ Z, ni le mesh, ni les CFS, ni le firmware, ni les interfaces Creality, ni Orca.
 Le post-traitement `+0,27 mm` reste actif. Aucun redémarrage de l'imprimante
 n'est autorisé.
 
-## Gate future
+## État réel et suite
 
-La première pose réelle a validé le bootstrap, puis a rollbacké pendant le test
-du compte : le programme Python et le JSON occupaient la même entrée standard.
-Le rollback a restauré l'absence complète de la fondation. Le correctif passe le
-programme par Python `-c`, réserve stdin au JSON et a réussi un test distant
-factice strictement en lecture seule.
+La capture finale `20260821-015722-g4-control-foundation-v3` a validé les trois
+états. Thomas a vérifié son compte dans le vrai tableau de bord Mainsail ;
+Moonraker reste en boucle locale et Mainsail authentifié est ouvert au LAN privé.
+Les ressources, Klipper, les interfaces Creality et les deux CFS sont verts.
 
-Ce correctif n'a pas été redéployé. Une nouvelle pose exige de nouveau le texte
-exact :
-
-`GO G4-K1-CONTROL-FOUNDATION-V3`
-
-Les GO V1 et V2, un choix d'architecture ou un `GO` générique ne valent pas pour
-V3.
+La fondation ne doit plus être réinstallée ou modifiée. L'acceptation durable
+exige maintenant huit heures d'observation, comprenant une impression normale
+choisie et lancée manuellement par Thomas. Cette observation n'autorise aucun
+G-code ou changement automatique de comportement.

@@ -1,6 +1,6 @@
 # Fondation K1-CONTROL-V1
 
-Statut : **candidat hors imprimante, non déployable sans un futur GO G4 nommé**.
+Statut : **V3 installée et validée le 2026-08-21 ; huit heures d'observation requises**.
 
 Cette première pose candidate ajoute une seule API Moonraker, une petite
 passerelle web dédiée au port `4409` et Mainsail comme interface experte. Elle
@@ -27,7 +27,9 @@ paquet, repasse les tests et reçoit un nouveau GO.
 - Moonraker écoute seulement `127.0.0.1:7125` ;
 - le premier démarrage de la passerelle écoute seulement en boucle locale ;
 - le compte HTTP nginx est créé par une invite PowerShell locale masquée ; seul
-  son hachage SSHA salé est transmis par SSH et stocké en mode `0600` ;
+  son hachage SSHA salé est transmis par SSH et stocké avec le propriétaire
+  `root:www-data` et le mode `0640`, dans un dossier `root:www-data` en `0710` ;
+  une lecture sous l'identité réelle `www-data` est prouvée avant la saisie ;
 - PowerShell 7 ou plus récent est requis pour cette saisie et ce transport ;
 - le compte est vérifié à travers un tunnel SSH, sans exposer la fenêtre de
   connexion au réseau local ;
