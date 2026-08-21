@@ -1,11 +1,12 @@
 # STATE
 
-Last updated: 2026-08-21
+Last updated: 2026-08-22
 
 ## Current phase
 
-**P4 — fondation V3 + PATHS-V1 retenue ; essai Z/mesh rollbacké et baseline
-exacte restaurée ; candidat corrigé hors imprimante en attente d'un nouveau GO**
+**P4 — fondation V3 + PATHS-V1 retenue ; trois essais Z/mesh rollbackés et
+baseline exacte restaurée ; candidat corrigé hors imprimante en attente d'un
+nouveau GO**
 
 The repository baseline, stock acquisition, complete Orca/G-code intake and
 passive P1–P5/PETG trace are complete. Gate G3 is passed for offline design and
@@ -289,6 +290,26 @@ commencent sur cet état final retenu.
   pour le module. La suite locale passe `98/98`; la validation en mémoire sur
   le Python/Jinja exact de la K1 obtient
   `K1_EXACT_RUNTIME_OK templates=17 commands=18`.
+- Thomas a renouvelé une troisième fois le GO exact. La capture
+  `20260822-004338-g4-k1-control-z-mesh-runtime-v1` a confirmé le préflight et
+  le backup, puis chargé les objets `KCTRL_*`. `KCTRL_LOAD_STATE` s'est bien
+  exécuté, mais la première affectation texte a échoué : le `shlex` Creality
+  transforme `VALUE='empty'` en nom nu `empty`, refusé par `ast.literal_eval`.
+- Le rollback automatique renforcé a retiré le runtime, attendu les deux CFS et
+  la fenêtre silencieuse, restauré le backup exact et revérifié son empreinte.
+  Le préflight final confirme runtime absent, `default`, `standby`, axes non
+  homés, chauffes à zéro, deux CFS `1.1.3` et fondation intacte. Aucun mouvement,
+  homing, chauffe, extrusion, ordre CFS, calibration, impression, firmware
+  restart ou reboot n'a eu lieu.
+- Les 24 affectations texte utilisent désormais un littéral protégé comme
+  `VALUE='"empty"'`. Le déployeur conserve aussi un snapshot avant rollback si
+  `ready` reste à zéro. Le hash courant de la configuration est
+  `dd7fa02a8b7b9bd46850c90cf2a85afa71ce27cfa263c120ef4e9cca6b48c113` ; celui
+  du module reste
+  `696eabec936bd81300acb4e6882d141c1a9ce2494df3bd1f686ff4ee8cbb8ede`.
+  La suite exécute 99 tests : 98 passent et le contrôle Jinja local ignoré est
+  couvert par `K1_EXACT_RUNTIME_OK templates=17 commands=18 string_values=24`
+  sur l'environnement exact de la K1.
 
 - Complete-system audit, A/B/C comparison, safety invariant, input contract and
   time-bounded roadmap documented in
@@ -340,10 +361,10 @@ commencent sur cet état final retenu.
 
 ## Next safe action
 
-Review the `KCTRL_*` command family, the exact-parser regression test and the
-post-`CXSAVE_CONFIG` rollback quiet window, together with the 98-test suite.
-Because the runtime payload, public command contract and deployer changed after
-the consumed GO, another deployment requires Thomas to renew
+Review the 24 protected text literals, their exact `shlex`/`ast.literal_eval`
+regression test and the added not-ready evidence snapshot, together with the
+99-test suite and the exact K1 in-memory result. Because the runtime payload and
+deployer changed after the consumed GO, another deployment requires Thomas to renew
 `GO G4-K1-CONTROL-Z-MESH-RUNTIME-V1` after this review.
 
 The Orca cutover remains a later atomic gate. This runtime slice intentionally

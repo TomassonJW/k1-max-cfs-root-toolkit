@@ -201,7 +201,7 @@ Thomas, le trou du premier observateur par le journal persistant, la seconde
 capture arrivée à sa durée et une validation finale
 `VALIDATE_PATHS_V1_OK`. Aucun événement critique Klipper/MCU n'a été détecté.
 
-Candidate `G4-K1-CONTROL-Z-MESH-RUNTIME-V1`: **deux GO renouvelés consommés par
+Candidate `G4-K1-CONTROL-Z-MESH-RUNTIME-V1`: **trois GO renouvelés consommés par
 des essais rollbackés ; baseline exacte restaurée ; nouveau GO requis**. Le paquet
 ajoute deux fichiers originaux et une
 seule inclusion, puis recharge uniquement l'hôte Klipper. Il ne modifie ni
@@ -266,12 +266,27 @@ ordre CFS, calibration, impression, firmware restart ou reboot n'a eu lieu.
 
 Le candidat offline renomme tous les points d'entrée exécutables en `KCTRL_*`,
 y compris le stockage et les futurs contrats Orca. Le rollback attend aussi la
-fin des écritures de démarrage avant sa restauration finale. Les hashes sont
-`1590b918dcdfe70e801c0be40fee4f19ab6b1e2dfa93936975b88aed5d4b1c79`
+fin des écritures de démarrage avant sa restauration finale.
+
+Thomas a renouvelé une troisième fois le même GO exact. La capture
+`20260822-004338-g4-k1-control-z-mesh-runtime-v1` a passé le préflight et le
+backup, puis chargé les objets `KCTRL_*`. Le démarrage différé s'est bien lancé,
+mais `SET_GCODE_VARIABLE ... VALUE='empty'` a échoué : le `shlex` Creality
+retire ces guillemets avant `ast.literal_eval`, qui refuse alors le nom nu
+`empty`. La garde sans mouvement n'a pas été appelée.
+
+Le rollback automatique renforcé a restauré l'empreinte exacte et l'état sain ;
+le préflight final confirme runtime absent, `default`, `standby`, axes non
+homés, chauffes à zéro, deux CFS `1.1.3` et fondation intacte. Les 24 valeurs
+texte utilisent maintenant un littéral protégé comme `VALUE='"empty"'`, et le
+déployeur conserve son dernier snapshot si `ready` reste à zéro. Les hashes
+courants sont
+`dd7fa02a8b7b9bd46850c90cf2a85afa71ce27cfa263c120ef4e9cca6b48c113`
 pour la configuration et
 `696eabec936bd81300acb4e6882d141c1a9ce2494df3bd1f686ff4ee8cbb8ede`
-pour le module ; la suite locale passe `98/98` et la validation en mémoire sur
-la K1 obtient `K1_EXACT_RUNTIME_OK templates=17 commands=18`. Ces changements
+pour le module. La suite exécute 99 tests : 98 passent, un contrôle Jinja local
+est remplacé par la validation en mémoire sur la K1
+`K1_EXACT_RUNTIME_OK templates=17 commands=18 string_values=24`. Ces changements
 exigent une nouvelle revue puis un nouveau GO exact.
 
 Required for each named change:

@@ -1,8 +1,8 @@
 # HANDOFF
 
-Date: 2026-08-21
-Phase: P4 / retained foundation observed; two Z/mesh attempts fully rolled back
-Next operator: review KCTRL/parser and rollback-quiescence corrections, then wait for GO
+Date: 2026-08-22
+Phase: P4 / retained foundation observed; three Z/mesh attempts fully rolled back
+Next operator: review protected text literals and not-ready evidence correction, then wait for GO
 
 ## Current state
 
@@ -115,6 +115,30 @@ et `696eabec936bd81300acb4e6882d141c1a9ce2494df3bd1f686ff4ee8cbb8ede` ;
 la suite locale passe `98/98` et l'environnement exact de la K1 retourne
 `K1_EXACT_RUNTIME_OK templates=17 commands=18` en mémoire.
 
+Thomas a renouvelé une troisième fois le GO exact. La capture
+`20260822-004338-g4-k1-control-z-mesh-runtime-v1` a passé le préflight, vérifié
+le backup et chargé les objets `KCTRL_*`. Le démarrage différé a bien exécuté
+`KCTRL_LOAD_STATE`, puis la première affectation texte a échoué avec
+`Unable to parse 'empty' as a literal`. Le parseur Creality applique
+`shlex.split` avant `ast.literal_eval` : `VALUE='empty'` perd ses guillemets et
+arrive comme nom Python nu.
+
+Le rollback automatique renforcé a retiré le runtime, attendu les deux CFS et
+la fenêtre silencieuse, puis restauré et revérifié le backup exact. Le préflight
+final confirme runtime absent, hash initial, `default`, `standby`, axes non
+homés, chauffes à zéro, T1/T2 `1.1.3` et fondation intacte. Aucun mouvement,
+homing, chauffe, extrusion, ordre CFS, calibration, impression, firmware
+restart ou reboot n'a eu lieu.
+
+Les 24 affectations texte utilisent désormais des littéraux protégés comme
+`VALUE='"empty"'`. Le déployeur sauvegarde aussi son dernier snapshot avant
+rollback si `ready` reste à zéro. Le hash config courant est
+`dd7fa02a8b7b9bd46850c90cf2a85afa71ce27cfa263c120ef4e9cca6b48c113` ; le
+module reste à
+`696eabec936bd81300acb4e6882d141c1a9ce2494df3bd1f686ff4ee8cbb8ede`.
+La suite exécute 99 tests : 98 passent, et le contrôle exact en mémoire retourne
+`K1_EXACT_RUNTIME_OK templates=17 commands=18 string_values=24`.
+
 La pile est figée : Moonraker MIPS embarqué au commit
 `fccffa96c63ed77dc3953e18615e9fe9cd3d69ea`, nginx MIPS du même paquet et
 Mainsail `v2.18.2`. Les trois archives ont été réellement assemblées et vérifiées
@@ -194,7 +218,8 @@ Un écran `K1 Control` sans dépendance, un moteur d'état Python pur, un faux
 Moonraker, le contrat Orca et la matrice exécutable sont présents sous
 `prototype/`, `orca/` et `tests/`. Les vues bureau/mobile et les actions
 calibration, sauvegarde, redémarrage et invalidation ont été vérifiées sans
-erreur JavaScript. La suite courante exécute `98/98` tests locaux, dont le
+erreur JavaScript. La suite courante exécute 99 tests, dont 98 passent localement
+et un contrôle Jinja est couvert sur l'environnement exact de la K1, avec le
 contrôle des 17 templates Jinja et la compatibilité de tous les noms de commandes
 avec le parseur exact de la K1.
 
@@ -293,8 +318,9 @@ Codex has permanent authority to complete all normal Git and GitHub operations f
 
 ## Next bounded mission
 
-Relire le deuxième rapport d'essai, la famille `KCTRL_*`, le test du parseur
-exact et la fenêtre silencieuse du rollback. La pose ajoute seulement le
+Relire le troisième rapport d'essai, les 24 littéraux texte protégés, leur test
+exact `shlex`/`ast.literal_eval` et le snapshot de preuve ajouté au déployeur.
+La pose ajoute seulement le
 stockage/calibration Z/mesh et garde le chemin d'impression actuel intact.
 Attendre exactement le GO renouvelé
 `GO G4-K1-CONTROL-Z-MESH-RUNTIME-V1` avant toute écriture. Le déployeur devra

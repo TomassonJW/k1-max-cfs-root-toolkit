@@ -92,6 +92,11 @@ class K1ControlZMeshDeployerTests(unittest.TestCase):
             self.script.index("function Assert-RuntimeInstalled") : self.script.index("function Assert-FailClosedWithoutMotion")
         ]
         self.assertIn("$runtimeReady = $true", installed)
+        self.assertIn("validation-runtime-not-ready.json", installed)
+        self.assertLess(
+            installed.index("validation-runtime-not-ready.json"),
+            installed.index("Runtime K1 Control non pret apres le delai."),
+        )
         self.assertIn("Wait-IdleSnapshot -IncludeRuntime -RequireUnhomed -Attempts 60", installed)
 
 

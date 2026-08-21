@@ -1,8 +1,8 @@
 # 16 — Préparation de `G4-K1-CONTROL-Z-MESH-RUNTIME-V1`
 
-Date : 2026-08-21
+Date : 2026-08-22
 
-Statut : **deuxième essai réel rollbacké, baseline exacte restaurée ; candidat renommé et rollback renforcé hors imprimante, nouveau GO requis**
+Statut : **troisième essai réel rollbacké, baseline exacte restaurée ; littéraux texte corrigés hors imprimante, nouveau GO requis**
 
 ## État d'exécution du 2026-08-21
 
@@ -83,6 +83,40 @@ avec le Python/Jinja exact de la K1 compile le module, parse les 17 templates et
 valide 18 noms de commandes : `K1_EXACT_RUNTIME_OK templates=17 commands=18`.
 Les commandes et les deux empreintes ayant changé, ce candidat reste strictement
 hors imprimante jusqu'à une nouvelle revue.
+
+## Essai et rollback de la capture `20260822-004338`
+
+Thomas a renouvelé le GO exact pour le candidat `KCTRL_*` revu au commit
+`d9df447b393d2bc10998f032cb582f85c654a240`. Le préflight frais a confirmé
+`standby`, axes non référencés, chauffes à zéro, profil `default`, empreinte
+initiale, fondation et deux CFS `1.1.3`. Le backup a été vérifié avant la pose.
+
+Après les deux copies, l'inclusion et le restart hôte, les objets runtime ont
+été chargés mais `ready` est resté à zéro. Le journal prouve que
+`KCTRL_LOAD_STATE` s'est bien lancé puis a échoué sur la première valeur texte :
+`Unable to parse 'empty' as a literal`. Le parseur Creality applique
+`shlex.split` avant `ast.literal_eval` ; `VALUE='empty'` devient donc le nom nu
+`empty`. Les 24 affectations texte partageaient ce défaut. La garde sans
+mouvement n'a pas été appelée.
+
+Le rollback automatique renforcé a restauré l'empreinte exacte, retiré le
+runtime, attendu les deux CFS et la fenêtre silencieuse, puis revérifié la
+dernière copie. Le préflight séparé final est vert : runtime absent, `default`,
+`standby`, axes non référencés, chauffes à zéro, deux CFS `1.1.3` et fondation
+intacte. Aucun mouvement, homing, chauffe, extrusion, ordre CFS, calibration,
+impression, firmware restart ou reboot n'a eu lieu.
+
+Le candidat hors imprimante utilise maintenant des littéraux protégés comme
+`VALUE='"empty"'`. Le déployeur sauvegarde aussi le dernier snapshot si
+`ready=1` n'arrive pas. Le hash config devient
+`dd7fa02a8b7b9bd46850c90cf2a85afa71ce27cfa263c120ef4e9cca6b48c113` ; le
+module reste à
+`696eabec936bd81300acb4e6882d141c1a9ce2494df3bd1f686ff4ee8cbb8ede`.
+La suite exécute 99 tests, 98 passent et le contrôle exact en mémoire retourne
+`K1_EXACT_RUNTIME_OK templates=17 commands=18 string_values=24`.
+
+Ce troisième GO est consommé. La configuration et le déployeur ont changé :
+aucune nouvelle pose n'est autorisée avant revue puis nouveau GO exact.
 
 ## Décision opérateur
 
@@ -218,7 +252,7 @@ La nouvelle pose corrigée n'est pas encore autorisée. Son plan est figé par
 Le `printer.cfg` attendu après insertion a pour SHA-256
 `fa8c25b0bc79f94bcdf1c1bca2c48c3d892ca42854cf277962580680d5767f05`.
 Le fichier runtime corrigé a pour SHA-256
-`1590b918dcdfe70e801c0be40fee4f19ab6b1e2dfa93936975b88aed5d4b1c79`.
+`dd7fa02a8b7b9bd46850c90cf2a85afa71ce27cfa263c120ef4e9cca6b48c113`.
 Le module de stockage corrigé a pour SHA-256
 `696eabec936bd81300acb4e6882d141c1a9ce2494df3bd1f686ff4ee8cbb8ede`.
 Le profil Orca, son post-traitement `+0,27 mm`, `START_PRINT`, les fichiers

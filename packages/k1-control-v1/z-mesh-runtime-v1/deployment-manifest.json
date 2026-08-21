@@ -14,7 +14,7 @@
     {
       "source": "k1-control-z-mesh.cfg",
       "destination": "/usr/data/printer_data/config/k1-control-z-mesh.cfg",
-      "sha256": "1590b918dcdfe70e801c0be40fee4f19ab6b1e2dfa93936975b88aed5d4b1c79",
+      "sha256": "dd7fa02a8b7b9bd46850c90cf2a85afa71ce27cfa263c120ef4e9cca6b48c113",
       "before": "absent"
     },
     {

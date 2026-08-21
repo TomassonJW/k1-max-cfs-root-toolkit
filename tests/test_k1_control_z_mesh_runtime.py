@@ -1,5 +1,7 @@
+import ast
 import pathlib
 import re
+import shlex
 import unittest
 
 try:
@@ -53,6 +55,26 @@ class K1ControlZMeshRuntimeTests(unittest.TestCase):
             parsed = parts[1] + parts[2].strip() if len(parts) >= 3 else ""
             self.assertEqual(parsed, name, f"Creality parser truncates {name} to {parsed}")
 
+    def test_every_text_variable_survives_creality_shlex_and_literal_eval(self):
+        text_variables = {
+            "armed_mesh_profile",
+            "block_reason",
+            "mesh_mode",
+            "store_integrity",
+            "temperature_owner",
+        }
+        assignments = re.findall(r"^  +SET_GCODE_VARIABLE (?P<args>.+)$", self.text, re.MULTILINE)
+        checked = 0
+        for args in assignments:
+            rendered = args.replace("{store.integrity}", "empty").replace("{profile}", "reference_plate")
+            params = dict(token.split("=", 1) for token in shlex.split(rendered))
+            if params.get("VARIABLE") not in text_variables:
+                continue
+            value = ast.literal_eval(params["VALUE"])
+            self.assertIsInstance(value, str, rendered)
+            checked += 1
+        self.assertEqual(24, checked)
+
     def test_persistence_uses_one_atomic_composite_record(self):
         self.assertEqual(self.text.count("KCTRL_STATE_SAVE RECORD="), 3)
         self.assertIn("[k1_control_store]", self.text)
@@ -69,7 +91,7 @@ class K1ControlZMeshRuntimeTests(unittest.TestCase):
         self.assertLess(empty, invalid)
         empty_branch = load[empty:invalid]
         self.assertIn("VARIABLE=ready VALUE=1", empty_branch)
-        self.assertIn("VARIABLE=block_reason VALUE='no_accepted_z'", empty_branch)
+        self.assertIn("VARIABLE=block_reason VALUE='\"no_accepted_z\"'", empty_branch)
         self.assertIn("VARIABLE=accepted_z_valid VALUE=0", empty_branch)
         self.assertIn("VARIABLE=low_moves_armed VALUE=0", empty_branch)
 

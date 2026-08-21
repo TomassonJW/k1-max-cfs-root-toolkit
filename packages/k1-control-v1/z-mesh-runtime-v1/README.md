@@ -3,10 +3,12 @@
 Statut : **candidat hors imprimante, déploiement interdit**.
 
 Ce dossier est le candidat exact du futur gate
-`G4-K1-CONTROL-Z-MESH-RUNTIME-V1`. Deux essais réels précédents ont été
+`G4-K1-CONTROL-Z-MESH-RUNTIME-V1`. Trois essais réels précédents ont été
 rollbackés. La version courante utilise uniquement des commandes `KCTRL_*`,
 compatibles avec le parseur G-code exact de cette K1, et attend la fin des
 écritures de démarrage Creality avant la restauration finale d'un rollback.
+Ses valeurs texte conservent aussi un littéral Python valide après le passage
+dans `shlex` puis `ast.literal_eval` du firmware exact.
 Elle ne redevient déployable qu'après revue complète et nouveau GO exact.
 
 Le fichier `k1-control-z-mesh.cfg` ajoute une couche originale sans modifier le

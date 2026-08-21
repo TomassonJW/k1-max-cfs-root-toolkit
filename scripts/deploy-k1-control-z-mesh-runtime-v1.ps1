@@ -26,7 +26,7 @@ $LocalModule = Join-Path $PackageRoot 'k1_control_store.py'
 
 $ExpectedPrinterHash = '272640237e20659cf01f3268ed4cb0282b098c3d613e94bf84a3b80caac3c3b0'
 $ExpectedNextPrinterHash = 'fa8c25b0bc79f94bcdf1c1bca2c48c3d892ca42854cf277962580680d5767f05'
-$ExpectedConfigHash = '1590b918dcdfe70e801c0be40fee4f19ab6b1e2dfa93936975b88aed5d4b1c79'
+$ExpectedConfigHash = 'dd7fa02a8b7b9bd46850c90cf2a85afa71ce27cfa263c120ef4e9cca6b48c113'
 $ExpectedModuleHash = '696eabec936bd81300acb4e6882d141c1a9ce2494df3bd1f686ff4ee8cbb8ede'
 
 $PrinterConfig = '/usr/data/printer_data/config/printer.cfg'
@@ -388,7 +388,10 @@ function Assert-RuntimeInstalled {
         }
         if ($attempt -lt 12) { Start-Sleep -Seconds 1 }
     }
-    if (-not $runtimeReady) { throw 'Runtime K1 Control non pret apres le delai.' }
+    if (-not $runtimeReady) {
+        Save-Evidence 'validation-runtime-not-ready.json' $snapshot
+        throw 'Runtime K1 Control non pret apres le delai.'
+    }
     $snapshot = Wait-IdleSnapshot -IncludeRuntime -RequireUnhomed -Attempts 60
     $runtime = $snapshot.'gcode_macro KCTRL_STATE'
     $store = $snapshot.k1_control_store
@@ -511,7 +514,7 @@ if ($Action -eq 'Plan') {
         printer_cfg_change = '[include k1-control-z-mesh.cfg] after [include box.cfg]'
         restart = 'Klipper host RESTART only'
         validation = 'empty atomic state plus fail-closed no-motion guard'
-        rollback = 'restore printer.cfg, archive state, remove two files, restart Klipper'
+        rollback = 'archive state, restore printer.cfg, remove two files, restart Klipper, wait CFS and quiet window, restore exact backup again'
         orca_profile_changed = $false
     } | ConvertTo-Json -Depth 5
     exit 0

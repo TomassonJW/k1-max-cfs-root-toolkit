@@ -10,10 +10,10 @@ The printer is production hardware. It is never treated as a disposable sandbox.
 
 The active phase is **P4 — V1 and V2 are closed; V3 and its separate
 `G4-K1-CONTROL-FOUNDATION-V3-PATHS-V1` correction are installed, validated and
-retained after the completed observation; two renewed
+retained after the completed observation; three renewed
 `G4-K1-CONTROL-Z-MESH-RUNTIME-V1` deployments reached runtime validation and
-rolled back completely; the command-parser and rollback-quiescence correction
-is now offline and requires another exact review and GO**.
+rolled back completely; the text-literal correction is now offline and requires
+another exact review and GO**.
 
 Thomas authorised V1, but the mandatory preflight proved that `logrotate` was
 absent. V1 is closed and must never be deployed. Thomas later authorised V2;
@@ -40,8 +40,14 @@ proved that embedded digits truncate every intended `K1_*` command to `K1`, so
 the delayed state load never ran. The rollback then raced Creality's delayed
 `CXSAVE_CONFIG`; a bounded exact-backup restoration completed it without another
 restart. The runtime is absent again, the exact baseline hash and full health
-are restored, and no further printer mutation is authorised until the renamed
-`KCTRL_*` package and strengthened rollback receive a new exact GO.
+are restored. A third renewed GO was consumed by capture
+`20260822-004338-g4-k1-control-z-mesh-runtime-v1`. The `KCTRL_*` boot command
+ran, but Creality's `shlex` layer stripped the single quotes from
+`VALUE='empty'`; `ast.literal_eval` then rejected the bare name. The strengthened
+rollback completed automatically and the exact baseline and full health were
+confirmed again. All runtime text assignments now keep an inner quoted Python
+literal, and the deployer preserves a not-ready snapshot. No further printer
+mutation is authorised until this changed package receives a new exact GO.
 
 Authority order:
 

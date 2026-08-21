@@ -413,3 +413,25 @@ Creality termine ensuite un `CXSAVE_CONFIG`. Le rollback attend désormais le
 runtime déchargé, les deux CFS reconnectés et une fenêtre silencieuse avant sa
 restauration finale, puis revérifie l'empreinte après un délai supplémentaire.
 La pose corrigée est un nouveau payload et exige un nouveau GO exact.
+
+## D-030 — Les valeurs texte conservent un littéral Python à travers le parseur Creality
+
+Date: 2026-08-22
+
+Status: accepté hors imprimante après troisième rollback réel
+
+La troisième pose a chargé les objets `KCTRL_*`, puis le chargement différé a
+échoué sur `SET_GCODE_VARIABLE ... VALUE='empty'`. La source exacte et la trace
+montrent que le parseur Creality applique `shlex.split` avant
+`ast.literal_eval` : les guillemets simples sont consommés et `empty` arrive
+comme nom Python nu.
+
+Toutes les affectations texte utilisent désormais un littéral protégé par deux
+niveaux, par exemple `VALUE='"empty"'`. Le test de non-régression rejoue
+exactement `shlex.split` puis `ast.literal_eval` sur les 24 affectations texte.
+Le déployeur conserve aussi son dernier snapshot si le runtime n'atteint pas
+`ready=1`, afin qu'un futur échec reste directement observable avant rollback.
+
+Le rollback automatique a restauré l'empreinte exacte et l'état sain. Comme le
+payload et le déployeur ont changé après le GO consommé, une nouvelle pose exige
+une revue puis un nouveau GO exact.
