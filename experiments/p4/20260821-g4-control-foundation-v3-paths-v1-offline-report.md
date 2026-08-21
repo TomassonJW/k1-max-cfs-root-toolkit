@@ -59,9 +59,8 @@ directory and are not committed.
 - complete repository suite after integration: 64/64 green;
 - printer mutation: not attempted.
 
-## Remaining gate
+## Gate closure
 
-A renewed exact `GO G4-K1-CONTROL-FOUNDATION-V3-PATHS-V1` is required after
-review of the concrete package. The deployer will repeat the full preflight
-immediately before any backup or mutation and will rollback on the first
-mismatch.
+Thomas later renewed the exact `GO G4-K1-CONTROL-FOUNDATION-V3-PATHS-V1` after
+review. The real deployment and independent validation are recorded in
+`experiments/p4/20260821-g4-control-foundation-v3-paths-v1-runtime-report.md`.

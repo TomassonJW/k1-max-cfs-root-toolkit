@@ -2,7 +2,7 @@
 
 Date : 2026-08-21
 
-Statut : **préparé hors imprimante ; GO initial reçu avant la revue du paquet et non consommé**
+Statut : **GO renouvelé ; installé et validé le 2026-08-21**
 
 ## But exact
 
@@ -142,5 +142,31 @@ pwsh -File .\scripts\deploy-control-foundation-paths-v1.ps1 `
 Le texte exact a été reçu alors que le dépôt réel ne contenait encore aucun
 fichier, aucune commande, aucun test, aucun backup ni rollback PATHS-V1. Les
 conditions G4 exigeaient ces éléments avant l'autorisation. La préparation
-locale est donc réalisée sans mutation distante ; un nouveau texte exact après
-revue est requis pour déployer ce paquet concret.
+locale a donc été réalisée sans mutation distante. Thomas a ensuite renouvelé le
+texte exact après revue, ce qui a autorisé la capture réelle
+`20260821-111001-g4-control-foundation-v3-paths-v1`.
+
+## Résultat réel
+
+Le déploiement a vérifié les backups suivants avant l'arrêt de Moonraker :
+
+- `moonraker.conf.before` :
+  `7e9cc023da9addc62f492f6cddf6ab901dbc9e97821e8306b05cfbd1b6e576f7` ;
+- `empty-roots.before.tar` :
+  `7bd189adecdd54f40013a9ee1b247825fd75c76e9fc48b5195757f12f40a4e83`.
+
+L'état final vérifié est :
+
+- `state/config -> /usr/data/printer_data/config` ;
+- `state/gcodes -> /usr/data/printer_data/gcodes` ;
+- `moonraker.conf` :
+  `fef837a1acaa59af400ac63c244df78dec6e70a71e1707d61f242f56cb1c7fba` ;
+- API Moonraker : `config=r`, `gcodes=rw`, `warnings=[]` ;
+- Klipper prêt et `standby`, chauffes à zéro, axes non homés ;
+- deux CFS `1.1.3` connectés avec quatre emplacements chacun ;
+- environ 108 Mio de RAM disponibles et 40 Kio de swap utilisés.
+
+Le wrapper local a perdu son dernier message après deux heartbeats. La mutation
+n'a pas été relancée : ses preuves finales étaient complètes, puis une validation
+distante séparée en lecture seule a obtenu `VALIDATE_PATHS_V1_OK`. Aucun rollback
+n'a été nécessaire.
