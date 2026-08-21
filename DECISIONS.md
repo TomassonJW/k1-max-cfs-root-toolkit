@@ -318,3 +318,39 @@ Cette décision n'ajoute pas TLS. HTTP Basic reste réservé à un LAN privé de
 confiance ; tout accès depuis un réseau non fiable doit utiliser le tunnel SSH.
 Le nouveau candidat s'appelle `G4-K1-CONTROL-FOUNDATION-V3` et requiert son GO
 exact. Les GO V1 et V2 ne l'autorisent pas.
+
+## D-025 — Fondation V3 + PATHS-V1 retenue après observation
+
+Date: 2026-08-21
+
+Status: accepté et installé
+
+V3 et sa correction PATHS-V1 ont été installées sous leurs GO exacts, avec
+sauvegardes, validations et rollback prêts. L'observation finale comprend une
+impression normale lancée manuellement, le journal persistant couvrant le trou
+du premier observateur et une seconde observation passive arrivée à son terme.
+
+Thomas a confirmé une pièce correcte, un seul PLA et aucune intervention. Les
+journaux ne montrent aucun arrêt Klipper/MCU, perte de communication, trace
+Python ou erreur interne sur le créneau reconstruit. La validation finale a
+obtenu `VALIDATE_PATHS_V1_OK`. Cette preuve accepte la fondation comme base ;
+elle ne prétend pas corriger les défauts aléatoires Z/CFS.
+
+## D-026 — Le runtime Z/mesh précède et ne remplace pas encore START_PRINT
+
+Date: 2026-08-21
+
+Status: accepté pour candidat hors imprimante ; déploiement non autorisé
+
+Le premier runtime ajoute l'état Z courant/précédent, les sessions provisoires,
+l'invalidation, les températures de calibration, le homing explicite, le choix
+de matrice/interpolation, les profils mesh qualifiés et une garde fermée avant
+les mouvements bas. Il ne contient ni CFS, ni extrusion, ni remplacement de
+`START_PRINT` : la bascule machine/Orca doit rester atomique dans l'étape
+suivante.
+
+Le `save_variables.py` exact permet une seule structure composite, mais écrit
+son fichier directement. Ce risque est refusé. Le candidat utilise un petit
+module original à schéma borné, somme SHA-256, permissions `0600`, `fsync`,
+remplacement atomique et copie précédente. Une intégrité douteuse bloque la
+production ; une récupération antérieure n'est jamais chargée silencieusement.

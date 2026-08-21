@@ -222,6 +222,25 @@ commencent sur cet état final retenu.
   accessible seulement en lecture via l'API, conservé `gcodes=rw` et obtenu
   `VALIDATE_PATHS_V1_OK` sans transmettre de G-code. Les avertissements ont
   disparu et seule l'instance Moonraker dédiée a été redémarrée.
+- L'observation finale a couvert l'impression normale lancée manuellement à
+  12:48. Thomas a confirmé qualité correcte, un seul PLA et aucune intervention.
+  Le trou du premier observateur local, de 15:07 à 18:43, a été couvert
+  séparément par le journal Klipper persistant : aucun arrêt Klipper/MCU, aucune
+  perte de communication, aucune trace Python et aucune erreur interne.
+- Le second observateur a atteint sa durée à 20:31:56 et fermé avec `exit_code=0`.
+  La validation finale en lecture seule a obtenu `VALIDATE_PATHS_V1_OK` avec les
+  axes encore référencés après la calibration manuelle. Le validateur distingue
+  désormais correctement une simple vérification de santé d'un préflight de pose.
+- Les sources exactes `save_variables.py`, `gcode_macro.py`, `delayed_gcode.py`
+  et `bed_mesh.py` ont été copiées en lecture seule dans une capture privée et
+  vérifiées par SHA-256.
+- Le candidat hors imprimante Z/mesh existe maintenant sous
+  `packages/k1-control-v1/z-mesh-runtime-v1/`. Il fournit état Z courant/précédent,
+  session provisoire, invalidation, préchauffe, homing guidé, matrices 3–25,
+  choix Lagrange/bicubique, commit mesh explicite et garde de mouvements bas.
+  Son stockage original utilise validation, SHA-256, `fsync`, remplacement
+  atomique et copie précédente. Il ne remplace pas `START_PRINT`, ne contient
+  ni CFS, ni extrusion, ni mouvement bas et n'est pas installé.
 
 - Complete-system audit, A/B/C comparison, safety invariant, input contract and
   time-bounded roadmap documented in
@@ -273,10 +292,15 @@ commencent sur cet état final retenu.
 
 ## Next safe action
 
-Build the exact offline package `G4-K1-CONTROL-Z-MESH-RUNTIME-V1`. It must
-provide the real Moonraker adapter, persistent Z/mesh ownership, selectable and
-qualified mesh matrices, the safe-start guards, the atomic Orca contract, exact
-backups and rollback before any deployment GO can be requested.
+Review the exact offline package `G4-K1-CONTROL-Z-MESH-RUNTIME-V1`: real
+Moonraker adapter, selectable mesh planner, atomic persistent Z/mesh state,
+safe-start guards, exact backups, installer, no-extrusion validation and
+rollback. If Thomas accepts this bounded non-print-path slice, the next action
+requires the exact text `GO G4-K1-CONTROL-Z-MESH-RUNTIME-V1`.
+
+The Orca cutover remains a later atomic gate. This runtime slice intentionally
+keeps the active Orca profile, `START_PRINT` and the legacy `+0.27 mm`
+post-processor unchanged.
 
 Thomas explicitly rejected further sacrificial print campaigns on 2026-08-21.
 The V3 + PATHS-V1 observation remains useful coexistence evidence but no longer
@@ -322,26 +346,32 @@ retirement remains atomic with the later proven machine/Orca replacement.
   application and end-of-print erasure mechanisms are now directly proven.
 - Long-run memory headroom and per-service use still need proof; the one-shot
   read-only capture confirms only the baseline.
-- The exact Creality Klipper commit is unknown; the captured `bed_mesh.py` must
-  remain the implementation authority for the mesh adapter.
-- Persistence of named mesh data outside the manufacturer file must be proven
-  against the captured parser and restart behaviour.
+- The exact Creality Klipper commit is unknown; the newly captured exact
+  `bed_mesh.py` remains the implementation authority for the mesh adapter.
+- The captured `save_variables.py` was rejected for final persistence because it
+  rewrites directly. The original atomic store has deployer integration and
+  exact-target in-memory import proof; its first real write and rollback remain
+  gated.
+- Persistent named mesh commit is now mapped exactly: save the deterministic
+  profile, remove `K1_TRANSIENT`, then `SAVE_CONFIG`, which restarts Klipper.
+  The installer and rollback still need offline proof.
 - Every reference-changing Creality calibration path must be detected or
   wrapped so that an old accepted Z cannot survive a real recalibration.
 - The compiled `BOX_*` owner may contain a late temperature write that no macro
   can intercept. The complete matrix decides whether a small replacement owner
   is required.
-- The pinned Moonraker/Mainsail package and its file-manager roots are installed
-  and initially green, but the eight-hour RAM, stability and coexistence
-  observation has not yet been completed.
+- The pinned Moonraker/Mainsail package and its file-manager roots completed the
+  retained coexistence observation and the final read-only validation.
 - A manual Mainsail calibration created an active `Base` mesh with the captured
   `6 x 6` Lagrange configuration over `5–295 mm`. It was not written to
   `printer.cfg` and is therefore transient; only `default` remains persistent.
-- The real `K1 Control` adapter and the printer-side Z/mesh/start/CFS wrappers
-  are intentionally deferred until the observation foundation is accepted.
+- The real `K1 Control` adapter and offline Z/mesh guards exist. START_PRINT,
+  Orca and CFS integration remain intentionally absent until their atomic
+  contracts and rollback are complete.
 
 ## Exit condition for this phase
 
-P3 has reached its exit condition: usable local prototype, tested state engine,
-complete Orca contract, pinned versions, green 17-scenario matrix and prepared
-foundation rollback. P4 remains closed until the exact named G4 is approved.
+P3 has reached its exit condition. The P4 foundation slice is installed,
+observed and retained. The Z/mesh runtime remains an offline candidate: no
+printer-side P4 extension is open until the complete exact package is reviewed
+and receives `G4-K1-CONTROL-Z-MESH-RUNTIME-V1`.

@@ -237,6 +237,8 @@ function Assert-StockProcesses {
 }
 
 function Assert-PrinterIdle {
+    param([switch]$AllowHomedAxes)
+
     $klipper = Get-KlipperSnapshot
     if ($klipper.print_state -ne 'standby' -or -not $klipper.filename_empty) {
         throw "Imprimante non disponible : etat=$($klipper.print_state)"
@@ -244,7 +246,9 @@ function Assert-PrinterIdle {
     if ([double]$klipper.extruder_target -ne 0 -or [double]$klipper.bed_target -ne 0) {
         throw 'Une chauffe est demandee.'
     }
-    if ($klipper.homed_axes) { throw "Axes encore homes : $($klipper.homed_axes)" }
+    if ($klipper.homed_axes -and -not $AllowHomedAxes) {
+        throw "Axes encore homes : $($klipper.homed_axes)"
+    }
     foreach ($name in @('T1', 'T2')) {
         $unit = $klipper.cfs.$name
         if (-not $unit.connected -or $unit.version -ne '1.1.3' -or $unit.slots -ne 4) {
@@ -356,7 +360,10 @@ function Invoke-PathsPreflight {
 }
 
 function Assert-PathCorrection {
-    param([string]$ExpectedGatewayPid)
+    param(
+        [string]$ExpectedGatewayPid,
+        [switch]$AllowHomedAxes
+    )
 
     if (-not (Invoke-RemoteTest "test -L '$MoonrakerConfigRoot' && test `"`$(readlink '$MoonrakerConfigRoot')`" = '$CrealityConfigRoot'")) {
         throw 'Lien config absent ou inattendu.'
@@ -395,7 +402,7 @@ function Assert-PathCorrection {
         throw 'Les avertissements de chemins Moonraker sont encore presents.'
     }
 
-    $klipper = Assert-PrinterIdle
+    $klipper = Assert-PrinterIdle -AllowHomedAxes:$AllowHomedAxes
     $listeners = Assert-FoundationListeners
     if ($ExpectedGatewayPid) {
         $gatewayPid = (Invoke-Remote "cat '$GatewayPidFile'" | Select-Object -First 1).Trim()
@@ -548,7 +555,7 @@ if ($Action -eq 'Deploy') {
 }
 
 if ($Action -eq 'Validate') {
-    Assert-PathCorrection
+    Assert-PathCorrection -AllowHomedAxes
     Write-Output 'VALIDATE_PATHS_V1_OK'
     exit 0
 }

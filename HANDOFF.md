@@ -1,8 +1,8 @@
 # HANDOFF
 
 Date: 2026-08-21
-Phase: P4 / V1 and V2 closed; V3 foundation and PATHS-V1 installed and validated
-Next operator: build the offline `G4-K1-CONTROL-Z-MESH-RUNTIME-V1` package
+Phase: P4 / retained foundation observed; Z/mesh runtime candidate offline
+Next operator: review `G4-K1-CONTROL-Z-MESH-RUNTIME-V1`, then wait for its exact GO
 
 ## Current state
 
@@ -32,6 +32,29 @@ Le prototype complet hors imprimante est maintenant vert. L'écran parle à un
 faux Moonraker sur `127.0.0.1` et ce faux service applique le moteur d'état
 Python. Les 17 scénarios obligatoires passent, dont le blocage d'une purge trop
 tôt, T0 vers T5 entre les deux CFS, l'invalidation Z et le rollback SHA-256.
+
+La fondation V3 + PATHS-V1 a maintenant terminé son observation retenue. Thomas
+a lancé manuellement l'impression normale à 12:48 et confirmé à la fin : qualité
+correcte, un seul PLA, aucune intervention. Le premier observateur local a été
+interrompu à 15:07 ; le journal persistant couvre le trou jusqu'à 18:43 sans
+arrêt Klipper/MCU, perte de communication, trace Python ou erreur interne. Le
+second observateur s'est fermé à 20:31:56 avec `exit_code=0`, puis la validation
+en lecture seule a rendu `VALIDATE_PATHS_V1_OK`.
+
+Le vrai adaptateur Moonraker reste fermé par défaut et reconnaît maintenant les
+seules commandes structurées du candidat Z/mesh. Les sources Klipper exactes
+`save_variables.py`, `gcode_macro.py`, `delayed_gcode.py` et `bed_mesh.py` ont
+été copiées en lecture seule et vérifiées dans une capture privée ignorée.
+
+Le candidat public `packages/k1-control-v1/z-mesh-runtime-v1/` ajoute une seule
+structure persistante Z avec valeur précédente et contexte, les sessions
+provisoires, l'invalidation, le préchauffage plateau/buse, le homing explicite,
+les matrices 3–25 avec interpolation compatible, le commit mesh séparé et la
+garde de mouvements bas. Il ne remplace pas `START_PRINT`, n'appelle aucun CFS,
+n'extrude pas et n'est pas installé. Le `save_variables.py` exact a été écarté ;
+le stockage original contrôle le schéma et la somme, écrit en `0600`, synchronise,
+remplace atomiquement et conserve une copie précédente sans restauration
+silencieuse.
 
 La pile est figée : Moonraker MIPS embarqué au commit
 `fccffa96c63ed77dc3953e18615e9fe9cd3d69ea`, nginx MIPS du même paquet et
@@ -112,7 +135,9 @@ Un écran `K1 Control` sans dépendance, un moteur d'état Python pur, un faux
 Moonraker, le contrat Orca et la matrice exécutable sont présents sous
 `prototype/`, `orca/` et `tests/`. Les vues bureau/mobile et les actions
 calibration, sauvegarde, redémarrage et invalidation ont été vérifiées sans
-erreur JavaScript. La suite complète passe 57/57 contrôles.
+erreur JavaScript. La suite courante exécute 93 tests : 92 passent localement ;
+le seul contrôle ignoré manque de Jinja dans Python Windows et sa vérification
+équivalente passe `17/17` avec l'environnement exact de la K1, en mémoire.
 
 ## Preuves historiques utiles
 
@@ -209,16 +234,20 @@ Codex has permanent authority to complete all normal Git and GitHub operations f
 
 ## Next bounded mission
 
-Observer pendant huit heures l'état final V3 + PATHS-V1. Cette fenêtre comprend
-une impression normale choisie et lancée manuellement par Thomas avec le flux
-Creality/Orca déjà approuvé. Codex peut observer passivement, mais ne transmet
-aucun G-code et ne lance ni impression, ni chauffe, ni mouvement, ni calibration.
+Relire le document 16, le manifeste et le déployeur du paquet désormais prêt.
+La pose ajoute seulement le stockage/calibration Z/mesh et garde le chemin
+d'impression actuel intact. Si Thomas accepte ce périmètre, attendre exactement
+`GO G4-K1-CONTROL-Z-MESH-RUNTIME-V1` avant tout préflight piloté par ce
+déployeur ou toute écriture.
+
+La bascule Orca reste une gate ultérieure unique : wrappers de travail côté
+machine, trois champs Orca et retrait du post-traitement doivent changer
+ensemble, après validation de ce runtime.
 
 Le post-traitement PHP/Orca `+0,27 mm`, le Start G-code et le G-code de changement
-de filament restent strictement inchangés.
-
-Après cette observation, une nouvelle gate nommée sera nécessaire avant la
-première tranche qui modifiera Z, mesh, nettoyage, purge, CFS, macros ou Orca.
+de filament restent strictement inchangés. Aucune commande Z, mesh, chauffe,
+homing ou calibration du candidat ne peut être envoyée avant la revue complète
+et le GO exact `G4-K1-CONTROL-Z-MESH-RUNTIME-V1`.
 
 ## Stop conditions
 

@@ -110,9 +110,31 @@ export function createK1ControlUi(adapter) {
         byId("readiness-detail").textContent = "Calibration refusée : la valeur provisoire doit être explicite.";
         return;
       }
-      void send(`K1_Z_SESSION_START SEED=${seed}`);
+      if (state.simulation) {
+        void send(`K1_Z_SESSION_START SEED=${seed}`);
+        return;
+      }
+      const context = [
+        state.plate.id,
+        state.calibration.probeRevision,
+        state.calibration.nozzleId,
+        state.calibration.configId,
+      ];
+      if (context.some((value) => !Number.isInteger(value) || value < 1)) {
+        byId("readiness-detail").textContent = "Calibration refusée : sélectionne d'abord une plaque, une buse et un contexte qualifié.";
+        return;
+      }
+      void send(
+        `K1_Z_SESSION_START SEED=${seed} PLATE=${state.plate.id} TEMP_BAND=${state.plate.temperatureBandC} ` +
+        `PROBE_REV=${state.calibration.probeRevision} NOZZLE_ID=${state.calibration.nozzleId} CONFIG_ID=${state.calibration.configId}`,
+      );
     });
-    byId("save-calibration").addEventListener("click", () => void send("K1_Z_COMMIT"));
+    byId("save-calibration").addEventListener("click", () => {
+      const command = state.simulation
+        ? "K1_Z_COMMIT"
+        : `K1_Z_COMMIT ACCEPTED_AT=${Math.floor(Date.now() / 1000)}`;
+      void send(command);
+    });
     byId("cancel-calibration").addEventListener("click", () => void send("K1_Z_CANCEL"));
     byId("restore-calibration").addEventListener("click", () => void send("K1_Z_RESTORE_PREVIOUS"));
     byId("simulate-reference").addEventListener("click", () => void send("K1_SIM_REFERENCE_CALIBRATION"));

@@ -1,7 +1,7 @@
 {
   "contract_id": "K1-CONTROL-V1",
   "contract_version": 1,
-  "status": "offline_design",
+  "status": "offline_runtime_candidate",
   "printer_mutation_authorized": false,
   "target": {
     "printer": "Creality K1 Max S12 structure 0",
@@ -24,6 +24,8 @@
     "commit": {
       "mode": "explicit_user_action",
       "command": "K1_Z_COMMIT",
+      "candidate_record_schema": 1,
+      "candidate_write_count": 1,
       "stores": [
         "offset_mm",
         "plate_id",
@@ -35,6 +37,13 @@
         "accepted_at",
         "previous_record"
       ]
+    },
+    "candidate_persistence": {
+      "provider": "original k1_control_store.py Klipper extension",
+      "shape": "one versioned composite record containing current and previous context",
+      "integrity": "SHA-256 envelope plus strict 17-field validation",
+      "write": "0600 temporary file, file fsync, atomic replace, directory fsync",
+      "recovery": "validated file-level previous copy reported but never loaded silently"
     },
     "survives": [
       "print_end",
@@ -90,6 +99,12 @@
         "bed_temperature_band_c",
         "probe_reference_revision",
         "probe_count"
+      ],
+      "candidate_commit_sequence": [
+        "save deterministic qualified profile",
+        "remove transient K1_TRANSIENT profile",
+        "SAVE_CONFIG",
+        "Klipper restart"
       ]
     },
     "forbidden": [
@@ -275,7 +290,8 @@
     }
   ],
   "deployment": {
-    "active_g4_candidate": "G4-K1-CONTROL-FOUNDATION-V3",
+    "active_g4_candidate": "G4-K1-CONTROL-Z-MESH-RUNTIME-V1",
+    "foundation": "V3 plus PATHS-V1 installed, observed and retained",
     "offline_prototype_required_before_g4": true,
     "community_installer_allowed_as_is": false,
     "rollback_required_per_slice": true

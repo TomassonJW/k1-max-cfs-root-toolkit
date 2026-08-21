@@ -196,7 +196,28 @@ redémarré uniquement Moonraker. La validation indépendante a obtenu
 `VALIDATE_PATHS_V1_OK` : `config=r`, `gcodes=rw`, aucun avertissement, Klipper
 prêt et au repos, chauffes à zéro, axes non homés, deux CFS `1.1.3`, nginx,
 ports/processus et ressources conformes. Aucun G-code ni rollback n'a été lancé.
-L'observation de huit heures doit maintenant porter sur cet état final.
+L'observation retenue est terminée. Elle couvre l'impression normale lancée par
+Thomas, le trou du premier observateur par le journal persistant, la seconde
+capture arrivée à sa durée et une validation finale
+`VALIDATE_PATHS_V1_OK`. Aucun événement critique Klipper/MCU n'a été détecté.
+
+Candidate `G4-K1-CONTROL-Z-MESH-RUNTIME-V1`: **paquet hors imprimante prêt pour
+revue ; aucun GO exact reçu**. Le paquet ajoute deux fichiers originaux et une
+seule inclusion, puis recharge uniquement l'hôte Klipper. Il ne modifie ni
+`START_PRINT`, ni Orca, ni le post-traitement `+0,27 mm`, ni le CFS. Son état Z
+utilise validation, SHA-256, `fsync`, remplacement atomique et copie précédente.
+La validation appelle seulement une garde qui doit refuser et prouve qu'aucune
+position, origine ou cible de chauffe n'a changé. Le rollback sauvegarde aussi
+les données Z avant retrait.
+
+La suite courante exécute 93 tests : 92 OK localement, un contrôle Jinja ignoré
+faute de dépendance Windows mais remplacé par une validation en mémoire des 17
+templates avec le Python/Jinja exact de la K1. Le module atomique compile et
+s'exécute aussi en mémoire sur ce Python exact.
+
+Le GO générique reçu pour poursuivre le travail n'autorise pas cette mutation.
+Après revue du document 16, du manifeste, du déployeur et des tests, le seul
+texte valide sera `GO G4-K1-CONTROL-Z-MESH-RUNTIME-V1`.
 
 Required for each named change:
 

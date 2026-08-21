@@ -2,9 +2,24 @@
 
 const BASE_OBJECTS = ["bed_mesh", "extruder", "gcode_move", "heater_bed", "print_stats", "toolhead"];
 const RUNTIME_OBJECT = "gcode_macro K1_CONTROL_STATE";
-const EXACT_COMMANDS = new Set(["K1_Z_COMMIT", "K1_Z_CANCEL", "K1_Z_RESTORE_PREVIOUS"]);
-const SESSION_START = /^K1_Z_SESSION_START SEED=-?(?:\d+(?:\.\d+)?|\.\d+)$/;
-const Z_ADJUST = /^K1_Z_ADJUST DELTA=(?:-0\.01|-0\.005|0\.005|0\.01)$/;
+const NUMBER = "-?(?:\\d+(?:\\.\\d+)?|\\.\\d+)";
+const POSITIVE_INTEGER = "[1-9]\\d*";
+const NON_NEGATIVE_INTEGER = "(?:0|[1-9]\\d*)";
+const EXACT_COMMANDS = new Set([
+  "K1_Z_CANCEL",
+  "K1_Z_RESTORE_PREVIOUS",
+  "K1_Z_INVALIDATE",
+  "K1_CALIBRATION_HOME",
+  "K1_MESH_CLEAR_ACTIVE",
+]);
+const COMMAND_PATTERNS = [
+  new RegExp(`^K1_Z_SESSION_START SEED=${NUMBER} PLATE=${POSITIVE_INTEGER} TEMP_BAND=${NON_NEGATIVE_INTEGER} PROBE_REV=${POSITIVE_INTEGER} NOZZLE_ID=${POSITIVE_INTEGER} CONFIG_ID=${POSITIVE_INTEGER}$`),
+  new RegExp(`^K1_Z_COMMIT ACCEPTED_AT=${POSITIVE_INTEGER}$`),
+  /^K1_Z_ADJUST DELTA=(?:-0\.1|-0\.05|-0\.01|-0\.005|0\.005|0\.01|0\.05|0\.1)$/,
+  new RegExp(`^K1_CALIBRATION_PREHEAT BED_TEMP=${NUMBER} NOZZLE_TEMP=${NUMBER} SOAK_SECONDS=${NON_NEGATIVE_INTEGER}$`),
+  new RegExp(`^K1_MESH_CALIBRATE X_COUNT=${POSITIVE_INTEGER} Y_COUNT=${POSITIVE_INTEGER} ALGORITHM=(?:lagrange|bicubic)$`),
+  new RegExp(`^K1_MESH_COMMIT PLATE=${POSITIVE_INTEGER} TEMP_BAND=${NON_NEGATIVE_INTEGER} PROBE_REV=${POSITIVE_INTEGER} X_COUNT=${POSITIVE_INTEGER} Y_COUNT=${POSITIVE_INTEGER}$`),
+];
 
 function finiteNumber(value, fallback = 0) {
   const number = Number(value);
@@ -81,21 +96,27 @@ export class RealMoonrakerAdapter {
     return {
       simulation: false,
       commandsAvailable: this.runtimeAvailable,
-      ready: this.runtimeAvailable && finiteNumber(runtime.ready) === 1,
+      ready: this.runtimeAvailable && finiteNumber(runtime.ready) === 1 && accepted && armed,
       blockReason: this.runtimeAvailable
         ? runtime.block_reason || "Le runtime K1 Control refuse ce contexte."
         : "Runtime K1 Control non installé : observation seulement, commandes bloquées.",
       connection: "Moonraker réel · lecture seule par défaut",
       plate: {
+        id: finiteNumber(runtime.plate_id),
         label: runtime.plate_id || "Plaque non sélectionnée",
-        temperatureBandC: runtime.temperature_band_c || "non qualifiée",
+        temperatureBandC: finiteNumber(runtime.temperature_band_c),
         bedTargetC: finiteNumber(status.heater_bed?.target),
       },
       calibration: {
         offsetMm: accepted ? finiteNumber(runtime.accepted_z_offset) : finiteNumber(origin[2]),
         provisionalSeedMm: accepted ? finiteNumber(runtime.accepted_z_offset) : finiteNumber(origin[2]),
         status: accepted ? "accepted" : "invalid",
+        nozzleId: finiteNumber(runtime.nozzle_id),
         nozzle: runtime.nozzle_id || "Buse non qualifiée",
+        probeRevision: finiteNumber(runtime.probe_revision),
+        configId: finiteNumber(runtime.config_id),
+        storeIntegrity: runtime.store_integrity || "unknown",
+        recoveryAvailable: finiteNumber(runtime.recovery_available) === 1,
         canRestore: finiteNumber(runtime.previous_z_valid) === 1,
         session: sessionActive
           ? {currentOffsetMm: finiteNumber(runtime.session_z_offset)}
@@ -130,7 +151,7 @@ export class RealMoonrakerAdapter {
     if (!this.runtimeAvailable) {
       throw new Error("Commande refusée : le runtime K1 Control sécurisé n'est pas installé.");
     }
-    if (!EXACT_COMMANDS.has(script) && !SESSION_START.test(script) && !Z_ADJUST.test(script)) {
+    if (!EXACT_COMMANDS.has(script) && !COMMAND_PATTERNS.some((pattern) => pattern.test(script))) {
       throw new Error("Commande refusée par la liste blanche K1 Control.");
     }
     await this.#request("/printer/gcode/script", {

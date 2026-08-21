@@ -30,6 +30,10 @@ pas masquée.
 
 ## Bascule future obligatoire
 
+Le gate `G4-K1-CONTROL-Z-MESH-RUNTIME-V1` n'est pas cette bascule : il ajoute
+seulement l'état/calibration et garde le flux d'impression actuel inchangé. Il
+ne faut donc importer aucun de ces trois champs Orca pendant cette pose.
+
 La pose sera atomique : macros côté machine, trois champs Orca, contrôle de
 version et retrait de l'ancien post-traitement au même moment. Avant cette
 bascule, les fichiers sont des fixtures de conception. Après rollback, les

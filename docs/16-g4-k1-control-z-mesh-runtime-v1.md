@@ -2,7 +2,7 @@
 
 Date : 2026-08-21
 
-Statut : **construction hors imprimante ; aucun déploiement autorisé**
+Statut : **candidat runtime écrit et testé hors imprimante ; aucun déploiement autorisé**
 
 ## Décision opérateur
 
@@ -66,13 +66,97 @@ non finie, hors zone ou trop dense est refusée.
 
 ## Suite de construction
 
-1. raccorder le planificateur au vrai adaptateur Moonraker en lecture seule ;
-2. ajouter l'état persistant Z/mesh indépendant des fichiers constructeur ;
-3. produire les macros originales de garde et le contrat Orca atomique ;
-4. préparer sauvegardes, empreintes, installation, contrôle sans extrusion et
-   rollback ;
-5. seulement alors présenter tous les fichiers et commandes pour un GO exact
+1. ~~raccorder le planificateur au vrai adaptateur Moonraker en lecture seule~~ ;
+2. ~~ajouter l'état persistant Z/mesh et les macros originales de garde~~ ;
+3. ~~comparer le stockage `save_variables` minimal au coût d'une écriture
+   atomique originale, puis figer le choix~~ ;
+4. produire le contrat Orca atomique et son contrôle sans extrusion ;
+5. préparer sauvegardes, empreintes, installation et rollback ;
+6. seulement alors présenter tous les fichiers et commandes pour un GO exact
    `G4-K1-CONTROL-Z-MESH-RUNTIME-V1`.
 
 Le lot suivant, séparé pour le rollback, portera la propriété dynamique des
 températures pendant les opérations des deux CFS.
+
+## Sources exactes et candidat runtime
+
+Les modules réellement présents sur le firmware ont été copiés en lecture
+seule dans une capture privée ignorée et vérifiés par SHA-256 :
+`save_variables.py`, `gcode_macro.py`, `delayed_gcode.py` et `bed_mesh.py`.
+Ils confirment le chargement différé de l'état, les littéraux Python des
+variables, les paramètres dynamiques du mesh et le redémarrage imposé par
+`SAVE_CONFIG`.
+
+Le candidat public est sous
+`packages/k1-control-v1/z-mesh-runtime-v1/`. Il ne remplace pas `START_PRINT`,
+ne contient aucun appel CFS, aucune extrusion et aucun mouvement bas. Il ajoute :
+
+- un enregistrement Z composite versionné, avec contexte et précédent complet ;
+- les actions explicites démarrer, ajuster, accepter, annuler, restaurer et
+  invalider ;
+- le préchauffage plateau/buse et la stabilisation bornés ;
+- un homing explicite avant mesh, ce qui évite l'erreur « Must home axis first » ;
+- une matrice 3–25 points par axe avec Lagrange limité à 6 et bicubique au-delà ;
+- une mesure transitoire, un nom de profil déterministe et une acceptation mesh
+  séparée qui retire le profil transitoire avant `SAVE_CONFIG` ;
+- une garde qui reste fermée tant que le profil et le Z effectifs n'ont pas été
+  relus et comparés.
+
+Le `save_variables.py` constructeur a été écarté : une coupure au mauvais moment
+pourrait laisser un fichier tronqué et empêcher Klipper de charger la
+configuration. Le candidat utilise maintenant `k1_control_store.py`, un module
+original ciblé qui valide les 17 champs, ajoute une somme SHA-256, écrit en
+`0600`, synchronise, remplace atomiquement et garde une copie précédente.
+L'intégrité douteuse bloque la production ; la copie précédente n'est jamais
+réactivée silencieusement.
+
+## Pose candidate exacte
+
+La pose n'est pas encore autorisée. Son plan hors imprimante est figé par
+`deployment-manifest.json` et
+`scripts/deploy-k1-control-z-mesh-runtime-v1.ps1`.
+
+État initial obligatoire :
+
+- carte S12, structure `0`, firmware `2.3.5.34` ;
+- Klipper `standby`, fichier vide, chauffes demandées à zéro, deux CFS `1.1.3` ;
+- fondation V3 + PATHS-V1 intacte ;
+- `printer.cfg` SHA-256
+  `272640237e20659cf01f3268ed4cb0282b098c3d613e94bf84a3b80caac3c3b0` ;
+- aucune cible, inclusion ou donnée runtime déjà présente.
+
+Écritures prévues :
+
+1. sauvegarder `printer.cfg` et vérifier son empreinte ;
+2. ajouter `/usr/share/klipper/klippy/extras/k1_control_store.py` ;
+3. ajouter `/usr/data/printer_data/config/k1-control-z-mesh.cfg` ;
+4. insérer exactement `[include k1-control-z-mesh.cfg]` après
+   `[include box.cfg]` ;
+5. exécuter le `RESTART` hôte Klipper exact, sans firmware restart.
+
+Le `printer.cfg` attendu après insertion a pour SHA-256
+`fa8c25b0bc79f94bcdf1c1bca2c48c3d892ca42854cf277962580680d5767f05`.
+Le profil Orca, son post-traitement `+0,27 mm`, `START_PRINT`, les fichiers
+constructeur, le CFS et la fondation ne sont pas modifiés par ce gate.
+
+## Validation sans extrusion
+
+Après le redémarrage hôte : Klipper doit être prêt, au repos, chauffes à zéro,
+axes non référencés, deux CFS connectés, état atomique `empty`, aucun Z accepté
+et garde basse fermée. Le déployeur appelle ensuite uniquement
+`K1_PRODUCTION_ASSERT_ARMED`. Le refus est obligatoire et les températures,
+la position et l'origine G-code sont comparées avant/après. Aucune chauffe,
+homing, calibration, extrusion, sélection CFS ou impression n'est exécutée.
+
+## Rollback exact
+
+Le rollback vérifie d'abord le backup, archive avec empreintes toute donnée Z
+`current`, `previous` ou temporaire, restaure le `printer.cfg` original, retire
+les deux fichiers ajoutés et les données runtime, puis recharge Klipper. Si la
+socket Klipper est indisponible, le seul secours est le restart du service exact
+`S55klipper_service`. L'état final exige les empreintes initiales, l'absence du
+runtime, les services/ports de fondation et les deux CFS conformes.
+
+Le seul texte d'approbation valable après revue est :
+
+`GO G4-K1-CONTROL-Z-MESH-RUNTIME-V1`

@@ -9,8 +9,10 @@ The printer is production hardware. It is never treated as a disposable sandbox.
 ## Current authority and phase
 
 The active phase is **P4 — V1 and V2 are closed; V3 and its separate
-`G4-K1-CONTROL-FOUNDATION-V3-PATHS-V1` correction are installed and validated;
-the eight-hour observation of the final retained foundation is next**.
+`G4-K1-CONTROL-FOUNDATION-V3-PATHS-V1` correction are installed, validated and
+retained after the completed observation; the offline
+`G4-K1-CONTROL-Z-MESH-RUNTIME-V1` candidate, installer, no-motion validation
+and rollback are ready for review before its own exact deployment gate**.
 
 Thomas authorised V1, but the mandatory preflight proved that `logrotate` was
 absent. V1 is closed and must never be deployed. Thomas later authorised V2;
@@ -23,7 +25,9 @@ requires exact reviewed files, commands, backups and rollback before approval.
 Thomas then renewed the exact GO after review. PATHS-V1 was deployed under
 capture `20260821-111001-g4-control-foundation-v3-paths-v1` and independently
 validated. No further printer mutation is authorised; classified read-only
-observation remains allowed.
+observation remains allowed. The retained observation covered the manual normal
+print and its local-monitor gap through the persistent Klipper log, then ended
+with `VALIDATE_PATHS_V1_OK`.
 
 Authority order:
 
