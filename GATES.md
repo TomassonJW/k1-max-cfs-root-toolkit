@@ -173,6 +173,21 @@ Le prototype reste vert à 17/17 et la suite passe 57/57. G4 est passée pour
 cette fondation uniquement. L'acceptation durable reste soumise aux huit heures
 d'observation prévues, avec une impression normale lancée par Thomas.
 
+Le diagnostic post-installation en lecture seule du 2026-08-21 a ensuite
+confirmé deux avertissements de chemins : Moonraker dérive ses racines vides
+`state/config` et `state/gcodes`, tandis que Klipper et Creality utilisent
+`printer_data/config` et `printer_data/gcodes`. La chaîne Mainsail → Moonraker →
+Klipper fonctionne ; le gestionnaire de fichiers n'est pas encore aligné. Il est
+interdit de modifier `[virtual_sdcard]` ou `printer.cfg` pour masquer cet écart.
+
+Candidate `G4-K1-CONTROL-FOUNDATION-V3-PATHS-V1`: **préparation locale autorisée,
+mutation non autorisée, GO exact absent**. Le candidat doit conserver les chemins
+Creality comme référence, utiliser les liens symboliques supportés par Moonraker,
+verrouiller l'écriture de `config`, documenter l'accès en écriture restant sur
+`gcodes`, ne redémarrer que Moonraker et rollbacker au premier KO. Un ancien GO
+V3 ou un GO générique ne l'autorise pas. L'observation de huit heures doit porter
+sur l'état final après cette décision.
+
 Required for each named change:
 
 - exact files and commands identified;

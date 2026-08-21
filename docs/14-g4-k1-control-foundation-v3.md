@@ -110,7 +110,21 @@ La capture finale `20260821-015722-g4-control-foundation-v3` a validé les trois
 Moonraker reste en boucle locale et Mainsail authentifié est ouvert au LAN privé.
 Les ressources, Klipper, les interfaces Creality et les deux CFS sont verts.
 
-La fondation ne doit plus être réinstallée ou modifiée. L'acceptation durable
-exige maintenant huit heures d'observation, comprenant une impression normale
-choisie et lancée manuellement par Thomas. Cette observation n'autorise aucun
-G-code ou changement automatique de comportement.
+La fondation ne doit plus être réinstallée ou modifiée sous le nom V3. Après
+ouverture du tableau de bord, une inspection bornée et sans mutation a confirmé
+que Moonraker dérive deux racines vides `state/config` et `state/gcodes`,
+distinctes des chemins Creality actifs sous `printer_data`. Cela produit deux
+avertissements de gestion de fichiers sans casser la connexion à Klipper.
+
+La suggestion générique de changer `[virtual_sdcard]` est refusée. La correction
+doit être préparée comme un lot séparé
+`G4-K1-CONTROL-FOUNDATION-V3-PATHS-V1`, conserver les chemins Creality, utiliser
+les liens symboliques supportés par Moonraker, rendre `config` non modifiable par
+l'API et documenter le pouvoir d'écriture de la racine `gcodes`. Elle attend son
+GO exact et ne peut réutiliser aucun GO V3 antérieur.
+
+L'acceptation durable exige ensuite huit heures d'observation sur l'état final
+retenu, comprenant une impression normale choisie et lancée manuellement par
+Thomas. Cette observation n'autorise aucun G-code ou changement automatique de
+comportement. Le post-traitement `+0,27 mm`, le Start G-code et le G-code de
+changement de filament restent inchangés.
