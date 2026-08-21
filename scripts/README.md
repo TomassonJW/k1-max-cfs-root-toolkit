@@ -29,6 +29,13 @@ scripts exigent PowerShell 7 ou plus récent.
 commande G-code et `Rollback` ne touche que les nouveaux chemins de cette
 fondation.
 
+`deploy-control-foundation-paths-v1.ps1` est séparé du déployeur V3 initial. Il
+ne sait modifier que les deux racines vides `state/config`, `state/gcodes` et le
+`moonraker.conf` épinglé. Il sauvegarde et vérifie l'état, ne redémarre que le
+Moonraker dédié, valide les permissions API sans écriture et rollbacke au premier
+KO. Toute action distante exige `-Execute` et le gate exact
+`G4-K1-CONTROL-FOUNDATION-V3-PATHS-V1`.
+
 `Ouvrir-Mainsail-K1-Max.cmd`, à la racine du dépôt, se lance par double-clic.
 Il appelle `launch-control-dashboard.ps1`, réutilise le tunnel local s'il répond
 correctement ou en démarre un nouveau en arrière-plan, exige HTTP `401` avant

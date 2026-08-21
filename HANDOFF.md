@@ -2,7 +2,7 @@
 
 Date: 2026-08-21
 Phase: P4 / V1 and V2 closed; V3 foundation installed and validated
-Next operator: prepare the Moonraker path-alignment candidate offline, then wait for its exact GO
+Next operator: review the prepared Moonraker path-alignment candidate, then wait for its renewed exact GO
 
 ## Current state
 
@@ -195,9 +195,16 @@ Codex has permanent authority to complete all normal Git and GitHub operations f
 ## Next bounded mission
 
 La fondation V3 validée ne doit plus être réinstallée ni recevoir une correction
-improvisée. La prochaine mission unique est de préparer hors imprimante
-`G4-K1-CONTROL-FOUNDATION-V3-PATHS-V1`, puis d'attendre le texte exact
-`GO G4-K1-CONTROL-FOUNDATION-V3-PATHS-V1` avant toute mutation.
+improvisée. `G4-K1-CONTROL-FOUNDATION-V3-PATHS-V1` est maintenant préparé hors
+imprimante dans le document 15, un déployeur dédié et ses tests. Le premier texte
+exact a été reçu avant que ces fichiers, commandes, backups et critères existent ;
+il n'est pas consommé. La prochaine action est la revue, puis un renouvellement
+exact de `GO G4-K1-CONTROL-FOUNDATION-V3-PATHS-V1` avant toute mutation.
+
+Le préflight réel en lecture seule du paquet préparé a obtenu `PREFLIGHT_OK` :
+hash V3, dossiers vides, deux avertissements initiaux, sécurité, état Klipper,
+ressources et deux CFS sont conformes. Le rapport hors imprimante est
+`experiments/p4/20260821-g4-control-foundation-v3-paths-v1-offline-report.md`.
 
 Le futur lot doit sauvegarder et comparer l'état, remplacer seulement les deux
 dossiers Moonraker confirmés vides par des liens réversibles vers les chemins

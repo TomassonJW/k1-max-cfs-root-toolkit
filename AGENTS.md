@@ -8,17 +8,21 @@ The printer is production hardware. It is never treated as a disposable sandbox.
 
 ## Current authority and phase
 
-The active phase is **P4 — V1 and V2 are closed; replacement
-`G4-K1-CONTROL-FOUNDATION-V3` is prepared offline and awaits its own exact GO**.
+The active phase is **P4 — V1 and V2 are closed; V3 is installed and validated;
+`G4-K1-CONTROL-FOUNDATION-V3-PATHS-V1` is prepared offline and awaits a renewed
+exact GO after package review**.
 
 Thomas authorised V1, but the mandatory preflight proved that `logrotate` was
 absent. V1 is closed and must never be deployed. Thomas later authorised V2;
 real attempts reached a working tunnel-only Mainsail, then proved that Mainsail
 `v2.18.2` cannot satisfy the Moonraker-account gate. Every V2 attempt was
-rolled back and V2 is closed. V3 keeps the bounded BusyBox syslog and moves the
-account boundary to nginx. A prior or generic GO does not authorise V3. Until
-Thomas gives the exact V3 gate, all printer mutation remains forbidden; local
-preparation and classified read-only checks remain allowed.
+rolled back and V2 is closed. V3 keeps the bounded BusyBox syslog, moves the
+account boundary to nginx, and is installed. The separate PATHS-V1 package was
+created only after its first exact GO arrived, so that GO was not consumed: G4
+requires exact reviewed files, commands, backups and rollback before approval.
+Until Thomas renews the exact PATHS-V1 gate after review, all printer mutation
+remains forbidden; local preparation and classified read-only checks remain
+allowed.
 
 Authority order:
 
