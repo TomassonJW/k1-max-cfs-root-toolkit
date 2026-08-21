@@ -267,6 +267,28 @@ commencent sur cet état final retenu.
   stabilisation des deux CFS et restaure le backup exact après le restart de
   rollback. Son nouveau hash config est
   `3b0e5215d9bd58a343c57a681668ef1e466465980cceac3b1fd5944fec806f96`.
+- Un nouveau GO exact a ouvert la capture
+  `20260821-224828-g4-k1-control-z-mesh-runtime-v1`. Préflight et backup étaient
+  verts. Après pose, le runtime restait à `ready=0` parce que le parseur exact de
+  Creality tronque `K1_CONTROL_LOAD_STATE` en commande `K1` inconnue.
+- La source `gcode.py` capturée confirme le découpage
+  `([A-Z_]+|[A-Z*/])` : tous les points d'entrée avec un chiffre au milieu sont
+  incompatibles. Le candidat emploie désormais `KCTRL_*` pour le runtime, le
+  stockage, l'adaptateur et les contrats Orca. Un test rejoue ce parseur exact.
+- Le rollback a retiré le runtime, mais un `CXSAVE_CONFIG` Creality tardif a de
+  nouveau normalisé seulement les espaces de `bed_mesh default` et `auto_addr`.
+  Une complétion bornée a restauré le backup exact sans restart. Le préflight
+  final est vert : runtime absent, hash initial, `default`, `standby`, axes non
+  homés, chauffes à zéro, deux CFS `1.1.3` et fondation intacte.
+- Le rollback offline attend maintenant la reconnexion CFS et une fenêtre
+  silencieuse avant sa dernière restauration, puis revérifie l'empreinte après
+  trois secondes. Les nouveaux hashes sont
+  `1590b918dcdfe70e801c0be40fee4f19ab6b1e2dfa93936975b88aed5d4b1c79`
+  pour la configuration et
+  `696eabec936bd81300acb4e6882d141c1a9ce2494df3bd1f686ff4ee8cbb8ede`
+  pour le module. La suite locale passe `98/98`; la validation en mémoire sur
+  le Python/Jinja exact de la K1 obtient
+  `K1_EXACT_RUNTIME_OK templates=17 commands=18`.
 
 - Complete-system audit, A/B/C comparison, safety invariant, input contract and
   time-bounded roadmap documented in
@@ -318,10 +340,11 @@ commencent sur cet état final retenu.
 
 ## Next safe action
 
-Review the empty-store, CFS stabilization and post-restart rollback corrections,
-their 96-test suite and the exact-machine Jinja proof. Because both the runtime
-payload and deployer changed after the consumed GO, another deployment requires
-Thomas to renew `GO G4-K1-CONTROL-Z-MESH-RUNTIME-V1` after this review.
+Review the `KCTRL_*` command family, the exact-parser regression test and the
+post-`CXSAVE_CONFIG` rollback quiet window, together with the 98-test suite.
+Because the runtime payload, public command contract and deployer changed after
+the consumed GO, another deployment requires Thomas to renew
+`GO G4-K1-CONTROL-Z-MESH-RUNTIME-V1` after this review.
 
 The Orca cutover remains a later atomic gate. This runtime slice intentionally
 keeps the active Orca profile, `START_PRINT` and the legacy `+0.27 mm`
@@ -399,6 +422,6 @@ retirement remains atomic with the later proven machine/Orca replacement.
 ## Exit condition for this phase
 
 P3 has reached its exit condition. The P4 foundation slice is installed,
-observed and retained. The failed Z/mesh attempt is completely rolled back and
-the exact baseline is healthy. The corrected runtime remains offline until its
-new exact review and renewed GO.
+observed and retained. Both failed Z/mesh attempts are completely rolled back
+and the exact baseline is healthy. The renamed runtime and strengthened rollback
+remain offline until their new exact review and renewed GO.

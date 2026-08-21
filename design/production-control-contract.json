@@ -23,7 +23,7 @@
     "live_adjustment_scope": "active_calibration_session_only",
     "commit": {
       "mode": "explicit_user_action",
-      "command": "K1_Z_COMMIT",
+      "command": "KCTRL_Z_COMMIT",
       "candidate_record_schema": 1,
       "candidate_write_count": 1,
       "stores": [

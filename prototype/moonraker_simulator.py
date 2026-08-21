@@ -74,23 +74,23 @@ class MoonrakerSimulation:
             key, value = token.split("=", 1)
             params[key.upper()] = value
 
-        if command == "K1_Z_SESSION_START":
+        if command == "KCTRL_Z_SESSION_START":
             seed = float(params["SEED"])
             self.z.start_session(self.context, seed_offset_mm=seed)
             self._event(f"Session Z ouverte à {self._format_offset(seed)} mm. Rien n'est enregistré.")
-        elif command == "K1_Z_ADJUST":
+        elif command == "KCTRL_Z_ADJUST":
             value = self.z.adjust(float(params["DELTA"]))
             self._event(f"Réglage provisoire : {self._format_offset(value)} mm.")
-        elif command == "K1_Z_COMMIT":
+        elif command == "KCTRL_Z_COMMIT":
             record = self.z.commit(accepted_at=datetime.now(timezone.utc).isoformat())
             self.state["calibration"]["provisionalSeedMm"] = record.offset_mm
             self._event(
                 f"Calibration Z enregistrée explicitement à {self._format_offset(record.offset_mm)} mm."
             )
-        elif command == "K1_Z_CANCEL":
+        elif command == "KCTRL_Z_CANCEL":
             self.z.cancel()
             self._event("Session annulée : la calibration acceptée précédente n'a pas changé.")
-        elif command == "K1_Z_RESTORE_PREVIOUS":
+        elif command == "KCTRL_Z_RESTORE_PREVIOUS":
             record = self.z.restore_previous()
             self.state["calibration"]["provisionalSeedMm"] = record.offset_mm
             self._event(f"Calibration précédente restaurée à {self._format_offset(record.offset_mm)} mm.")

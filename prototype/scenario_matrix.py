@@ -79,7 +79,7 @@ def _z_live_adjust_then_commit() -> str:
     assert controller.accepted == before
     committed = controller.commit(accepted_at="2026-08-20T19:00:00+00:00")
     assert committed.offset_mm == 0.315
-    return "live value stayed provisional until K1_Z_COMMIT"
+    return "live value stayed provisional until KCTRL_Z_COMMIT"
 
 
 def _z_cancel_calibration() -> str:

@@ -111,7 +111,7 @@ export function createK1ControlUi(adapter) {
         return;
       }
       if (state.simulation) {
-        void send(`K1_Z_SESSION_START SEED=${seed}`);
+        void send(`KCTRL_Z_SESSION_START SEED=${seed}`);
         return;
       }
       const context = [
@@ -125,24 +125,24 @@ export function createK1ControlUi(adapter) {
         return;
       }
       void send(
-        `K1_Z_SESSION_START SEED=${seed} PLATE=${state.plate.id} TEMP_BAND=${state.plate.temperatureBandC} ` +
+        `KCTRL_Z_SESSION_START SEED=${seed} PLATE=${state.plate.id} TEMP_BAND=${state.plate.temperatureBandC} ` +
         `PROBE_REV=${state.calibration.probeRevision} NOZZLE_ID=${state.calibration.nozzleId} CONFIG_ID=${state.calibration.configId}`,
       );
     });
     byId("save-calibration").addEventListener("click", () => {
       const command = state.simulation
-        ? "K1_Z_COMMIT"
-        : `K1_Z_COMMIT ACCEPTED_AT=${Math.floor(Date.now() / 1000)}`;
+        ? "KCTRL_Z_COMMIT"
+        : `KCTRL_Z_COMMIT ACCEPTED_AT=${Math.floor(Date.now() / 1000)}`;
       void send(command);
     });
-    byId("cancel-calibration").addEventListener("click", () => void send("K1_Z_CANCEL"));
-    byId("restore-calibration").addEventListener("click", () => void send("K1_Z_RESTORE_PREVIOUS"));
+    byId("cancel-calibration").addEventListener("click", () => void send("KCTRL_Z_CANCEL"));
+    byId("restore-calibration").addEventListener("click", () => void send("KCTRL_Z_RESTORE_PREVIOUS"));
     byId("simulate-reference").addEventListener("click", () => void send("K1_SIM_REFERENCE_CALIBRATION"));
     byId("simulate-restart").addEventListener("click", () => void send("K1_SIM_RESTART"));
     byId("simulate-print-end").addEventListener("click", () => void send("K1_SIM_PRINT_END"));
     byId("expert-button").addEventListener("click", () => void send("K1_SIM_EXPERT_NOTICE"));
     document.querySelectorAll("[data-adjust]").forEach((button) => {
-      button.addEventListener("click", () => void send(`K1_Z_ADJUST DELTA=${button.dataset.adjust}`));
+      button.addEventListener("click", () => void send(`KCTRL_Z_ADJUST DELTA=${button.dataset.adjust}`));
     });
   }
 

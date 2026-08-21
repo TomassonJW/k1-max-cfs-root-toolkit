@@ -2,7 +2,7 @@
 
 Date : 2026-08-21
 
-Statut : **essai réel rollbacké, baseline exacte restaurée ; candidat renforcé hors imprimante, nouveau GO requis**
+Statut : **deuxième essai réel rollbacké, baseline exacte restaurée ; candidat renommé et rollback renforcé hors imprimante, nouveau GO requis**
 
 ## État d'exécution du 2026-08-21
 
@@ -49,6 +49,40 @@ stabilisation complète de Klipper et des CFS, puis restaure une seconde fois le
 backup exact après le restart du rollback. Les 96 tests sont verts à 95 + un
 skip local ; les 17 templates et le rendu `empty` passent sur le Python/Jinja
 exact de la K1.
+
+## Essai et rollback de la capture `20260821-224828`
+
+Un nouveau GO exact a ouvert la pose renforcée. Le préflight et le backup
+étaient verts. Après pose et restart hôte, les objets runtime existaient mais
+`ready` restait à zéro pendant tout le délai. Le journal Klipper a donné la
+cause exacte : `K1_CONTROL_LOAD_STATE` était reçu comme commande inconnue `K1`.
+
+La source `gcode.py` de cette machine utilise le découpage
+`([A-Z_]+|[A-Z*/])`. Un chiffre au milieu d'une commande étendue termine donc le
+nom : toutes les commandes prévues `K1_*`, y compris la commande Python de
+sauvegarde, étaient incompatibles. Elles portent désormais le préfixe sans
+chiffre `KCTRL_*`. Un test rejoue le découpage exact de Creality sur chaque nom
+du runtime et sur `KCTRL_STATE_SAVE`.
+
+Le rollback automatique a bien retiré le runtime et son inclusion, mais a
+restauré le backup exact avant la fin d'un `CXSAVE_CONFIG` différé du démarrage
+Creality. Seuls les espaces des blocs générés `bed_mesh default` et `auto_addr`
+ont de nouveau changé. Après vérification de la copie temporaire et du backup,
+une complétion bornée a restauré l'empreinte exacte sans restart. Le préflight
+final est vert : runtime absent, profil `default`, `standby`, axes non homés,
+chauffes à zéro, deux CFS `1.1.3` et fondation intacte.
+
+Le rollback attend maintenant le déchargement du runtime, la reconnexion des
+deux CFS et une fenêtre silencieuse bornée avant la restauration finale. Il
+attend encore trois secondes puis revérifie l'empreinte exacte pour détecter une
+écriture tardive. Aucun mouvement, homing, chauffe, extrusion, ordre CFS,
+calibration, impression, firmware restart ou reboot n'a été exécuté.
+
+La suite locale passe désormais `98/98`. Une validation uniquement en mémoire
+avec le Python/Jinja exact de la K1 compile le module, parse les 17 templates et
+valide 18 noms de commandes : `K1_EXACT_RUNTIME_OK templates=17 commands=18`.
+Les commandes et les deux empreintes ayant changé, ce candidat reste strictement
+hors imprimante jusqu'à une nouvelle revue.
 
 ## Décision opérateur
 
@@ -128,7 +162,8 @@ températures pendant les opérations des deux CFS.
 
 Les modules réellement présents sur le firmware ont été copiés en lecture
 seule dans une capture privée ignorée et vérifiés par SHA-256 :
-`save_variables.py`, `gcode_macro.py`, `delayed_gcode.py` et `bed_mesh.py`.
+`save_variables.py`, `gcode_macro.py`, `delayed_gcode.py`, `gcode.py` et
+`bed_mesh.py`.
 Ils confirment le chargement différé de l'état, les littéraux Python des
 variables, les paramètres dynamiques du mesh et le redémarrage imposé par
 `SAVE_CONFIG`.
@@ -183,7 +218,9 @@ La nouvelle pose corrigée n'est pas encore autorisée. Son plan est figé par
 Le `printer.cfg` attendu après insertion a pour SHA-256
 `fa8c25b0bc79f94bcdf1c1bca2c48c3d892ca42854cf277962580680d5767f05`.
 Le fichier runtime corrigé a pour SHA-256
-`3b0e5215d9bd58a343c57a681668ef1e466465980cceac3b1fd5944fec806f96`.
+`1590b918dcdfe70e801c0be40fee4f19ab6b1e2dfa93936975b88aed5d4b1c79`.
+Le module de stockage corrigé a pour SHA-256
+`696eabec936bd81300acb4e6882d141c1a9ce2494df3bd1f686ff4ee8cbb8ede`.
 Le profil Orca, son post-traitement `+0,27 mm`, `START_PRINT`, les fichiers
 constructeur, le CFS et la fondation ne sont pas modifiés par ce gate.
 
@@ -192,7 +229,7 @@ constructeur, le CFS et la fondation ne sont pas modifiés par ce gate.
 Après le redémarrage hôte : Klipper doit être prêt, au repos, chauffes à zéro,
 axes non référencés, deux CFS connectés, état atomique `empty`, aucun Z accepté
 et garde basse fermée. Le déployeur appelle ensuite uniquement
-`K1_PRODUCTION_ASSERT_ARMED`. Le refus est obligatoire et les températures,
+`KCTRL_PRODUCTION_ASSERT_ARMED`. Le refus est obligatoire et les températures,
 la position et l'origine G-code sont comparées avant/après. Aucune chauffe,
 homing, calibration, extrusion, sélection CFS ou impression n'est exécutée.
 
@@ -203,7 +240,9 @@ Le rollback vérifie d'abord le backup, archive avec empreintes toute donnée Z
 les deux fichiers ajoutés et les données runtime, puis recharge Klipper. Si la
 socket Klipper est indisponible, le seul secours est le restart du service exact
 `S55klipper_service`. L'état final exige les empreintes initiales, l'absence du
-runtime, les services/ports de fondation et les deux CFS conformes.
+runtime, les services/ports de fondation et les deux CFS conformes. Le rollback
+attend aussi la fin des écritures de démarrage Creality avant la dernière
+restauration et revérifie ensuite que l'empreinte reste exacte.
 
 Le seul texte d'approbation renouvelé valable après revue de la correction est :
 

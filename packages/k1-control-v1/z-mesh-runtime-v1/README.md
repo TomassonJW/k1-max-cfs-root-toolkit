@@ -3,9 +3,11 @@
 Statut : **candidat hors imprimante, déploiement interdit**.
 
 Ce dossier est le candidat exact du futur gate
-`G4-K1-CONTROL-Z-MESH-RUNTIME-V1`. Il ne devient déployable qu'après ajout et
-revue de l'installateur, des sauvegardes, du contrôle sans extrusion et du
-rollback.
+`G4-K1-CONTROL-Z-MESH-RUNTIME-V1`. Deux essais réels précédents ont été
+rollbackés. La version courante utilise uniquement des commandes `KCTRL_*`,
+compatibles avec le parseur G-code exact de cette K1, et attend la fin des
+écritures de démarrage Creality avant la restauration finale d'un rollback.
+Elle ne redevient déployable qu'après revue complète et nouveau GO exact.
 
 Le fichier `k1-control-z-mesh.cfg` ajoute une couche originale sans modifier le
 corps des macros constructeur et sans remplacer `START_PRINT` :
@@ -20,7 +22,7 @@ corps des macros constructeur et sans remplacer `START_PRINT` :
 - garde fermée avant tout futur mouvement bas, purge ou changement CFS.
 
 La persistance mesh de ce Klipper exact passe par `SAVE_CONFIG`, donc redémarre
-Klipper. `K1_MESH_COMMIT` est volontairement séparée de la mesure et ne doit
+Klipper. `KCTRL_MESH_COMMIT` est volontairement séparée de la mesure et ne doit
 être proposée qu'après qualification de deux matrices par K1 Control.
 
 Le `save_variables.py` constructeur a été écarté parce qu'il réécrit son fichier

@@ -26,8 +26,8 @@ $LocalModule = Join-Path $PackageRoot 'k1_control_store.py'
 
 $ExpectedPrinterHash = '272640237e20659cf01f3268ed4cb0282b098c3d613e94bf84a3b80caac3c3b0'
 $ExpectedNextPrinterHash = 'fa8c25b0bc79f94bcdf1c1bca2c48c3d892ca42854cf277962580680d5767f05'
-$ExpectedConfigHash = '3b0e5215d9bd58a343c57a681668ef1e466465980cceac3b1fd5944fec806f96'
-$ExpectedModuleHash = '385fc888b5fae7633de91a3c106b8e46656bd79936d40b4555e2a7da6dee9b93'
+$ExpectedConfigHash = '1590b918dcdfe70e801c0be40fee4f19ab6b1e2dfa93936975b88aed5d4b1c79'
+$ExpectedModuleHash = '696eabec936bd81300acb4e6882d141c1a9ce2494df3bd1f686ff4ee8cbb8ede'
 
 $PrinterConfig = '/usr/data/printer_data/config/printer.cfg'
 $RuntimeConfig = '/usr/data/printer_data/config/k1-control-z-mesh.cfg'
@@ -129,7 +129,7 @@ objects = {
     "box": None,
 }
 if sys.argv[1] == "1":
-    objects["gcode_macro K1_CONTROL_STATE"] = None
+    objects["gcode_macro KCTRL_STATE"] = None
     objects["k1_control_store"] = None
 request = {
     "id": 5101,
@@ -164,7 +164,7 @@ function Invoke-KlipperScript {
         [switch]$NoResponse
     )
 
-    if ($Script -notin @('RESTART', 'K1_PRODUCTION_ASSERT_ARMED')) {
+    if ($Script -notin @('RESTART', 'KCTRL_PRODUCTION_ASSERT_ARMED')) {
         throw "Script Klipper hors liste revue : $Script"
     }
     $python = @'
@@ -357,7 +357,7 @@ function Invoke-RuntimePreflight {
     }
     $snapshot = Get-KlipperSnapshot
     $objects = Get-KlipperObjectNames
-    if ($objects -contains 'gcode_macro K1_CONTROL_STATE' -or $objects -contains 'k1_control_store') {
+    if ($objects -contains 'gcode_macro KCTRL_STATE' -or $objects -contains 'k1_control_store') {
         throw 'Runtime K1 Control deja charge avant la pose.'
     }
     Assert-IdleSnapshot $snapshot
@@ -381,7 +381,7 @@ function Assert-RuntimeInstalled {
     $runtimeReady = $false
     for ($attempt = 1; $attempt -le 12; $attempt++) {
         $snapshot = Wait-KlipperReady -IncludeRuntime
-        $runtime = $snapshot.'gcode_macro K1_CONTROL_STATE'
+        $runtime = $snapshot.'gcode_macro KCTRL_STATE'
         if ($runtime -and [int]$runtime.ready -eq 1) {
             $runtimeReady = $true
             break
@@ -390,7 +390,7 @@ function Assert-RuntimeInstalled {
     }
     if (-not $runtimeReady) { throw 'Runtime K1 Control non pret apres le delai.' }
     $snapshot = Wait-IdleSnapshot -IncludeRuntime -RequireUnhomed -Attempts 60
-    $runtime = $snapshot.'gcode_macro K1_CONTROL_STATE'
+    $runtime = $snapshot.'gcode_macro KCTRL_STATE'
     $store = $snapshot.k1_control_store
     if (-not $runtime -or [int]$runtime.ready -ne 1 -or [int]$runtime.accepted_z_valid -ne 0 -or [int]$runtime.low_moves_armed -ne 0) {
         throw 'Etat initial K1 Control non ferme.'
@@ -407,7 +407,7 @@ function Assert-RuntimeInstalled {
 
 function Assert-FailClosedWithoutMotion {
     $before = Get-KlipperSnapshot -IncludeRuntime
-    $response = Invoke-KlipperScript 'K1_PRODUCTION_ASSERT_ARMED'
+    $response = Invoke-KlipperScript 'KCTRL_PRODUCTION_ASSERT_ARMED'
     if (-not $response.error) {
         throw 'La garde de production n a pas refuse le contexte vide.'
     }
@@ -463,7 +463,7 @@ function Invoke-RuntimeRollback {
         for ($attempt = 1; $attempt -le 60; $attempt++) {
             $snapshot = Wait-KlipperReady
             $objects = Get-KlipperObjectNames
-            if ($objects -notcontains 'gcode_macro K1_CONTROL_STATE' -and $objects -notcontains 'k1_control_store') {
+            if ($objects -notcontains 'gcode_macro KCTRL_STATE' -and $objects -notcontains 'k1_control_store') {
                 $runtimeUnloaded = $true
                 break
             }
@@ -473,19 +473,26 @@ function Invoke-RuntimeRollback {
             throw 'Rollback charge encore le runtime K1 Control.'
         }
 
+        # Creality's auto_addr startup path may call CXSAVE_CONFIG shortly after
+        # Klipper reports ready. Wait for both CFS units, then leave a bounded
+        # quiet window before restoring the byte-exact backup one last time.
+        $snapshot = Wait-IdleSnapshot -RequireUnhomed -Attempts 60
+        Assert-Foundation | Out-Null
+        Start-Sleep -Seconds 5
+        $snapshot = Wait-IdleSnapshot -RequireUnhomed -Attempts 10
+
         Invoke-Remote "cp '$remoteBackup/printer.cfg.before' '$PrinterConfig.rollback-final'" | Out-Null
         $finalCopyHash = ((Invoke-Remote "sha256sum '$PrinterConfig.rollback-final'" | Select-Object -First 1) -split '\s+')[0]
         if ($finalCopyHash -ne $ExpectedPrinterHash) { throw 'Copie finale du backup rollback differente.' }
         Invoke-Remote "mv '$PrinterConfig.rollback-final' '$PrinterConfig'" | Out-Null
         Invoke-Remote 'sync' | Out-Null
+        Start-Sleep -Seconds 3
 
         $restoredHash = ((Invoke-Remote "sha256sum '$PrinterConfig'" | Select-Object -First 1) -split '\s+')[0]
         if ($restoredHash -ne $ExpectedPrinterHash) { throw 'Rollback printer.cfg incomplet.' }
         foreach ($path in @($RuntimeConfig, "$RuntimeConfig.next", $RuntimeModule, "$RuntimeModule.next", $RuntimeState, "$RuntimeState.previous", "$RuntimeState.tmp", "$PrinterConfig.rollback-final")) {
             if (Invoke-RemoteTest "test -e '$path'") { throw "Rollback incomplet : $path" }
         }
-        $snapshot = Wait-IdleSnapshot -RequireUnhomed -Attempts 60
-        Assert-Foundation | Out-Null
     }
     catch { if (-not $BestEffort) { throw } }
 }

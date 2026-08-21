@@ -37,7 +37,7 @@ class ProductionControlContractTests(unittest.TestCase):
     def test_z_commit_is_explicit_and_not_print_end(self) -> None:
         z = self.contract["z_calibration"]
         self.assertEqual(z["commit"]["mode"], "explicit_user_action")
-        self.assertEqual(z["commit"]["command"], "K1_Z_COMMIT")
+        self.assertEqual(z["commit"]["command"], "KCTRL_Z_COMMIT")
         self.assertIn("implicit_commit_on_print_end", z["forbidden"])
         self.assertEqual(self.sequence[-1]["id"], "end_without_calibration_commit")
 

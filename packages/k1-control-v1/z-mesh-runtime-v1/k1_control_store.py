@@ -176,12 +176,12 @@ class K1ControlStore(object):
         self.record, self.integrity, self.recovery_available = load_state(self.filename)
         gcode = self.printer.lookup_object("gcode")
         gcode.register_command(
-            "K1_STATE_SAVE",
-            self.cmd_K1_STATE_SAVE,
+            "KCTRL_STATE_SAVE",
+            self.cmd_KCTRL_STATE_SAVE,
             desc="Atomically save a validated K1 Control state record",
         )
 
-    def cmd_K1_STATE_SAVE(self, gcmd):
+    def cmd_KCTRL_STATE_SAVE(self, gcmd):
         value = gcmd.get("RECORD")
         try:
             record = ast.literal_eval(value)

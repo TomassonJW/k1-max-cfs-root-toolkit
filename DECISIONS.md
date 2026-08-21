@@ -393,3 +393,23 @@ pose et rollback attendent désormais la stabilisation complète. Après restart
 de rollback, le backup exact est restauré une seconde fois sans autre restart,
 afin que l'état chargé reste sémantiquement identique et que l'empreinte disque
 revienne exactement à la baseline revue.
+
+## D-029 — Les commandes étendues utilisent `KCTRL_*` et le rollback attend les écritures Creality
+
+Date: 2026-08-21
+
+Status: accepté hors imprimante après deuxième rollback réel
+
+La deuxième pose a chargé les objets runtime, mais la commande différée
+`K1_CONTROL_LOAD_STATE` a été interprétée comme `K1` et refusée. La source
+`gcode.py` exacte de cette K1 découpe les commandes avec
+`([A-Z_]+|[A-Z*/])` : un chiffre au milieu d'un nom étendu le tronque. Toute la
+famille exécutable du produit devient donc `KCTRL_*`, y compris le stockage et
+les futurs contrats Orca. Un test reproduit ce parseur pour empêcher toute
+régression.
+
+Le même essai a montré que la première stabilisation CFS ne suffit pas si
+Creality termine ensuite un `CXSAVE_CONFIG`. Le rollback attend désormais le
+runtime déchargé, les deux CFS reconnectés et une fenêtre silencieuse avant sa
+restauration finale, puis revérifie l'empreinte après un délai supplémentaire.
+La pose corrigée est un nouveau payload et exige un nouveau GO exact.

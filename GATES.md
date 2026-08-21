@@ -201,8 +201,8 @@ Thomas, le trou du premier observateur par le journal persistant, la seconde
 capture arrivée à sa durée et une validation finale
 `VALIDATE_PATHS_V1_OK`. Aucun événement critique Klipper/MCU n'a été détecté.
 
-Candidate `G4-K1-CONTROL-Z-MESH-RUNTIME-V1`: **GO renouvelé consommé par un
-essai rollbacké ; baseline exacte restaurée ; nouveau GO requis**. Le paquet
+Candidate `G4-K1-CONTROL-Z-MESH-RUNTIME-V1`: **deux GO renouvelés consommés par
+des essais rollbackés ; baseline exacte restaurée ; nouveau GO requis**. Le paquet
 ajoute deux fichiers originaux et une
 seule inclusion, puis recharge uniquement l'hôte Klipper. Il ne modifie ni
 `START_PRINT`, ni Orca, ni le post-traitement `+0,27 mm`, ni le CFS. Son état Z
@@ -246,9 +246,33 @@ des CFS et restaure l'empreinte exacte après restart de rollback. Son hash conf
 est `3b0e5215d9bd58a343c57a681668ef1e466465980cceac3b1fd5944fec806f96`.
 Les 17 templates et le rendu `empty` passent sur le Python/Jinja exact de la K1.
 
-Le payload et les commandes ayant changé après le GO consommé, la pose corrigée
-n'est pas autorisée. Après revue, le seul texte renouvelé valide reste
-`GO G4-K1-CONTROL-Z-MESH-RUNTIME-V1`.
+Le payload et les commandes ayant changé après le GO consommé, cette correction
+n'était pas autorisée avant un nouveau GO. Thomas l'a ensuite renouvelé avec le
+même texte exact `GO G4-K1-CONTROL-Z-MESH-RUNTIME-V1`.
+
+Le GO suivant a ouvert la capture
+`20260821-224828-g4-k1-control-z-mesh-runtime-v1`. Préflight et backup étaient
+verts, mais le runtime n'a jamais atteint `ready=1`. Le journal et la source
+`gcode.py` exacte prouvent que le parseur Creality tronque une commande dès le
+chiffre placé au milieu : `K1_CONTROL_LOAD_STATE` devient `K1`, inconnue. La
+garde sans mouvement n'a pas été appelée.
+
+Le rollback a retiré le runtime et l'inclusion, puis un `CXSAVE_CONFIG` tardif a
+normalisé les espaces des blocs générés. Une complétion bornée a restauré
+l'empreinte exacte sans restart. Le préflight final confirme runtime absent,
+hash initial, `default`, `standby`, axes non homés, chauffes à zéro, deux CFS
+`1.1.3` et fondation intacte. Aucun mouvement, chauffe, homing, extrusion,
+ordre CFS, calibration, impression, firmware restart ou reboot n'a eu lieu.
+
+Le candidat offline renomme tous les points d'entrée exécutables en `KCTRL_*`,
+y compris le stockage et les futurs contrats Orca. Le rollback attend aussi la
+fin des écritures de démarrage avant sa restauration finale. Les hashes sont
+`1590b918dcdfe70e801c0be40fee4f19ab6b1e2dfa93936975b88aed5d4b1c79`
+pour la configuration et
+`696eabec936bd81300acb4e6882d141c1a9ce2494df3bd1f686ff4ee8cbb8ede`
+pour le module ; la suite locale passe `98/98` et la validation en mémoire sur
+la K1 obtient `K1_EXACT_RUNTIME_OK templates=17 commands=18`. Ces changements
+exigent une nouvelle revue puis un nouveau GO exact.
 
 Required for each named change:
 

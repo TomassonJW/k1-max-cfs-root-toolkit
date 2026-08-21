@@ -10,10 +10,10 @@ The printer is production hardware. It is never treated as a disposable sandbox.
 
 The active phase is **P4 — V1 and V2 are closed; V3 and its separate
 `G4-K1-CONTROL-FOUNDATION-V3-PATHS-V1` correction are installed, validated and
-retained after the completed observation; a renewed
-`G4-K1-CONTROL-Z-MESH-RUNTIME-V1` GO reached runtime validation, then rolled
-back completely; the corrected empty-store and stabilization package is now
-offline and requires another exact review and GO**.
+retained after the completed observation; two renewed
+`G4-K1-CONTROL-Z-MESH-RUNTIME-V1` deployments reached runtime validation and
+rolled back completely; the command-parser and rollback-quiescence correction
+is now offline and requires another exact review and GO**.
 
 Thomas authorised V1, but the mandatory preflight proved that `logrotate` was
 absent. V1 is closed and must never be deployed. Thomas later authorised V2;
@@ -34,9 +34,14 @@ G4 still requires a renewed exact GO before deployment because the reviewed
 command changed after the first approval. The later renewed GO was consumed by
 capture `20260821-213732-g4-k1-control-z-mesh-runtime-v1`. The runtime rejected
 its empty store, and the first rollback check raced CFS reconnection. The runtime
-is absent again, the exact baseline hash and full health are restored, and no
-further printer mutation is authorised until the corrected package receives a
-new exact GO.
+was corrected offline, then a further renewed GO was consumed by capture
+`20260821-224828-g4-k1-control-z-mesh-runtime-v1`. The exact Creality parser
+proved that embedded digits truncate every intended `K1_*` command to `K1`, so
+the delayed state load never ran. The rollback then raced Creality's delayed
+`CXSAVE_CONFIG`; a bounded exact-backup restoration completed it without another
+restart. The runtime is absent again, the exact baseline hash and full health
+are restored, and no further printer mutation is authorised until the renamed
+`KCTRL_*` package and strengthened rollback receive a new exact GO.
 
 Authority order:
 

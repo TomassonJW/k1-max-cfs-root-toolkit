@@ -55,7 +55,7 @@ class K1ControlZMeshDeployerTests(unittest.TestCase):
         self.assertIn("Invoke-KlipperScript 'RESTART' -NoResponse", deploy)
         self.assertNotIn("FIRMWARE_RESTART", deploy)
         self.assertIn("Assert-FailClosedWithoutMotion", deploy)
-        self.assertIn("K1_PRODUCTION_ASSERT_ARMED", self.script)
+        self.assertIn("KCTRL_PRODUCTION_ASSERT_ARMED", self.script)
         for token in (" G28", " G1 ", "M104", "M109", "M140", "M190", "BOX_START_PRINT"):
             self.assertNotIn(token, deploy)
 
@@ -76,7 +76,15 @@ class K1ControlZMeshDeployerTests(unittest.TestCase):
         self.assertIn("$PrinterConfig.rollback-final", rollback)
         self.assertLess(
             rollback.index("$runtimeUnloaded = $true"),
+            rollback.index("Wait-IdleSnapshot -RequireUnhomed -Attempts 60"),
+        )
+        self.assertLess(
+            rollback.index("Wait-IdleSnapshot -RequireUnhomed -Attempts 60"),
             rollback.index("cp '$remoteBackup/printer.cfg.before' '$PrinterConfig.rollback-final'"),
+        )
+        self.assertLess(
+            rollback.index("Start-Sleep -Seconds 3"),
+            rollback.index("$restoredHash"),
         )
 
     def test_deploy_waits_for_runtime_and_both_cfs_to_stabilize(self):

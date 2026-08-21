@@ -1,8 +1,8 @@
 # HANDOFF
 
 Date: 2026-08-21
-Phase: P4 / retained foundation observed; Z/mesh attempt fully rolled back
-Next operator: review empty-store/stabilization corrections, then wait for GO
+Phase: P4 / retained foundation observed; two Z/mesh attempts fully rolled back
+Next operator: review KCTRL/parser and rollback-quiescence corrections, then wait for GO
 
 ## Current state
 
@@ -91,6 +91,30 @@ config est `3b0e5215d9bd58a343c57a681668ef1e466465980cceac3b1fd5944fec806f96`.
 La suite exécute 96 tests : 95 passent localement et les 17 templates, dont le
 rendu `empty`, passent sur le Python/Jinja exact de la K1.
 
+Thomas a renouvelé une nouvelle fois le GO exact. La capture
+`20260821-224828-g4-k1-control-z-mesh-runtime-v1` a passé son préflight et
+vérifié le backup. Le runtime a été chargé, mais son état `ready` est resté à
+zéro. Le journal a prouvé que le parseur G-code de cette K1 tronque
+`K1_CONTROL_LOAD_STATE` en `K1`, commande inconnue : un chiffre placé au milieu
+d'un nom étendu n'est pas accepté.
+
+Le rollback a retiré le runtime et l'inclusion. Un `CXSAVE_CONFIG` Creality
+tardif a ensuite normalisé les espaces des blocs générés. La comparaison locale
+n'a trouvé aucun changement de valeur. Une complétion bornée a restauré le
+backup exact sans restart, puis le préflight final a confirmé le runtime absent,
+le hash initial, `default`, `standby`, axes non homés, chauffes à zéro, T1/T2
+`1.1.3` et la fondation intacte. Aucun mouvement, homing, chauffe, extrusion,
+ordre CFS, calibration, impression, firmware restart ou reboot n'a eu lieu.
+
+Le candidat offline emploie désormais `KCTRL_*` dans le runtime, le stockage,
+l'adaptateur et les futurs contrats Orca. Un test rejoue le parseur exact. Le
+rollback attend la reconnexion CFS et une fenêtre silencieuse avant sa dernière
+restauration, puis revérifie le hash après trois secondes. Les hashes courants
+sont `1590b918dcdfe70e801c0be40fee4f19ab6b1e2dfa93936975b88aed5d4b1c79`
+et `696eabec936bd81300acb4e6882d141c1a9ce2494df3bd1f686ff4ee8cbb8ede` ;
+la suite locale passe `98/98` et l'environnement exact de la K1 retourne
+`K1_EXACT_RUNTIME_OK templates=17 commands=18` en mémoire.
+
 La pile est figée : Moonraker MIPS embarqué au commit
 `fccffa96c63ed77dc3953e18615e9fe9cd3d69ea`, nginx MIPS du même paquet et
 Mainsail `v2.18.2`. Les trois archives ont été réellement assemblées et vérifiées
@@ -170,9 +194,9 @@ Un écran `K1 Control` sans dépendance, un moteur d'état Python pur, un faux
 Moonraker, le contrat Orca et la matrice exécutable sont présents sous
 `prototype/`, `orca/` et `tests/`. Les vues bureau/mobile et les actions
 calibration, sauvegarde, redémarrage et invalidation ont été vérifiées sans
-erreur JavaScript. La suite courante exécute 96 tests : 95 passent localement ;
-le seul contrôle ignoré manque de Jinja dans Python Windows et sa vérification
-équivalente passe `17/17` avec l'environnement exact de la K1, en mémoire.
+erreur JavaScript. La suite courante exécute `98/98` tests locaux, dont le
+contrôle des 17 templates Jinja et la compatibilité de tous les noms de commandes
+avec le parseur exact de la K1.
 
 ## Preuves historiques utiles
 
@@ -269,11 +293,12 @@ Codex has permanent authority to complete all normal Git and GitHub operations f
 
 ## Next bounded mission
 
-Relire le rapport d'essai, la branche `empty`, les attentes de stabilisation et
-la restauration post-restart. La pose ajoute seulement le stockage/calibration
-Z/mesh et garde le chemin d'impression actuel intact. Attendre exactement le GO
-renouvelé `GO G4-K1-CONTROL-Z-MESH-RUNTIME-V1` avant toute écriture. Le
-déployeur devra refaire son préflight immédiatement avant la mutation.
+Relire le deuxième rapport d'essai, la famille `KCTRL_*`, le test du parseur
+exact et la fenêtre silencieuse du rollback. La pose ajoute seulement le
+stockage/calibration Z/mesh et garde le chemin d'impression actuel intact.
+Attendre exactement le GO renouvelé
+`GO G4-K1-CONTROL-Z-MESH-RUNTIME-V1` avant toute écriture. Le déployeur devra
+refaire son préflight immédiatement avant la mutation.
 
 La bascule Orca reste une gate ultérieure unique : wrappers de travail côté
 machine, trois champs Orca et retrait du post-traitement doivent changer
