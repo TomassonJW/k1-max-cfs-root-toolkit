@@ -4,8 +4,8 @@ Last updated: 2026-08-21
 
 ## Current phase
 
-**P4 — fondation V3 installée ; correction des chemins Moonraker à préparer
-avant l'observation de huit heures**
+**P4 — fondation V3 installée ; correction des chemins Moonraker préparée hors
+imprimante et en attente d'un GO renouvelé avant déploiement**
 
 The repository baseline, stock acquisition, complete Orca/G-code intake and
 passive P1–P5/PETG trace are complete. Gate G3 is passed for offline design and
@@ -39,9 +39,13 @@ prouvé que les racines `config` et `gcodes` dérivées du data path Moonraker s
 distinctes des chemins Creality actifs. La connexion fonctionne, mais
 l'intégration du gestionnaire de fichiers reste incomplète. Une inspection
 distante bornée et sans mutation a confirmé les deux dossiers Moonraker vides.
-Le candidat séparé `G4-K1-CONTROL-FOUNDATION-V3-PATHS-V1` doit être préparé hors
-imprimante puis attendre son GO exact. L'acceptation durable et ses huit heures
-d'observation commenceront seulement sur l'état final retenu.
+Le candidat séparé `G4-K1-CONTROL-FOUNDATION-V3-PATHS-V1` est maintenant préparé
+hors imprimante avec backup, validation sans G-code et rollback. Le premier GO
+exact a été reçu avant que ce paquet concret existe et n'est donc pas consommé :
+les prérequis G4 imposent un renouvellement après revue. L'acceptation durable
+et ses huit heures d'observation commenceront seulement sur l'état final retenu.
+Le préflight réel en lecture seule du paquet préparé est vert et confirme que la
+baseline attendue est encore intacte ; aucune mutation distante n'a été faite.
 
 ## Confirmed facts
 
@@ -263,12 +267,10 @@ d'observation commenceront seulement sur l'état final retenu.
 
 ## Next safe action
 
-Prepare `G4-K1-CONTROL-FOUNDATION-V3-PATHS-V1` offline. It must preserve the
-active Creality config and G-code paths, align Moonraker through reversible
-links, disable config writes through the API, document the remaining G-code
-file permissions, validate without transmitting G-code and rollback at the
-first mismatch. Printer mutation waits for the exact text
-`GO G4-K1-CONTROL-FOUNDATION-V3-PATHS-V1`; an earlier V3 GO does not apply.
+Review the prepared `G4-K1-CONTROL-FOUNDATION-V3-PATHS-V1` package and wait for
+a renewed exact text `GO G4-K1-CONTROL-FOUNDATION-V3-PATHS-V1`. The first exact
+GO arrived before the package had identified files, commands, backups, tests and
+rollback, so it was not consumed. An earlier V3 GO does not apply.
 
 After this correction or an explicit decision not to deploy it, perform the
 eight-hour observation on the final retained state, including one normal print
@@ -282,7 +284,8 @@ retirement remains atomic with the later proven machine/Orca replacement.
 - Helper Script installation.
 - `G4-K1-CONTROL-FOUNDATION-V1` forever: preflight KO, never deployed, name closed.
 - `G4-K1-CONTROL-FOUNDATION-V2` forever: real attempts rolled back, name closed.
-- `G4-K1-CONTROL-FOUNDATION-V3-PATHS-V1` remote execution until its exact GO.
+- `G4-K1-CONTROL-FOUNDATION-V3-PATHS-V1` remote execution until its exact GO is
+  renewed after review of the prepared package.
 - Any other Mainsail, Fluidd, Moonraker or `K1 Control` installation/change.
 - BTT Eddy preparation, installation, firmware or calibration.
 - Firmware downgrade or replacement.

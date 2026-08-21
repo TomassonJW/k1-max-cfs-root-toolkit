@@ -38,6 +38,7 @@ contrôlent ainsi :
 
 ```powershell
 python -m unittest tests.test_control_foundation_package -v
+python -m unittest tests.test_control_foundation_paths_deployer -v
 python -m unittest tests.test_orca_control_contract -v
 python -m prototype.scenario_matrix
 ```
