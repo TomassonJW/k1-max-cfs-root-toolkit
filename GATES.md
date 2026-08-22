@@ -579,9 +579,9 @@ seed `−0,04 mm`. Un rechargement complet a restauré ces valeurs depuis le
 serveur tout en laissant les confirmations physiques décochées. La gate est
 close.
 
-### Gate préparée — `G4-K1-CONTROL-CALIBRATION-UI-MATRIX-V1`
+### Gate exécutée — `G4-K1-CONTROL-CALIBRATION-UI-MATRIX-V1`
 
-Status: **candidat hors imprimante ; non autorisé**
+Status: **passed and closed**
 
 Cette gate corrige l'écart entre le contrat produit et l'interface installée :
 les niveaux rapide `6 × 6`, standard `9 × 9`, précis `11 × 11` et expert
@@ -595,9 +595,23 @@ La pose remplace seulement le core de calibration Moonraker, `index.html` et
 ne home, ne bouge, ne mesure et n'écrit aucun Z. Les quatre niveaux passent les
 tests hors imprimante, y compris l'agrégation de six matrices `15 × 15`.
 
+Le GO exact a été consommé par la capture
+`20260822-222005-g4-k1-control-calibration-ui-matrix-v1`, qui a obtenu
+`PREFLIGHT_CALIBRATION_UI_MATRIX_V1_OK`,
+`DEPLOY_CALIBRATION_UI_MATRIX_V1_OK` et deux
+`VALIDATE_CALIBRATION_UI_MATRIX_V1_OK` indépendants. Le backup exact précède le
+remplacement des trois seuls fichiers prévus et le restart du Moonraker dédié.
+Aucune calibration, chauffe, référence, mesure, extrusion, commande CFS,
+impression ou écriture Z n'a eu lieu.
+
+Le vrai rendu Chrome authentifié a confirmé les quatre niveaux. Les sélections
+`9/11/15` forcent le bicubique et désactivent Lagrange. Un rechargement complet
+a restauré `6 × 6` Lagrange, le seed `−0,04 mm` et les confirmations physiques
+décochées. La gate est close ; son GO ne couvre aucun rerun ni la campagne.
+
 ### Gate préparée — `G4-K1-CONTROL-CALIBRATION-UI-CAMPAIGN-V1`
 
-Status: **protocole mis à jour ; suspendu derrière UI-MATRIX-V1 ; non autorisé**
+Status: **prête et préflight réel vert ; non autorisée**
 
 Cette gate ne pose aucun fichier. Elle qualifie physiquement les quatre niveaux
 depuis l'écran avec `PEI_TEXTURED_A`, `55/140 °C` et `200 s` : `9 × 9`,
@@ -617,6 +631,15 @@ avec les quatre niveaux. Son
 contrat, son manifeste d'exécution et son validateur strictement en lecture
 seule sont épinglés ; le plan local a obtenu
 `PLAN_CALIBRATION_UI_CAMPAIGN_V1_OK`.
+
+Les préconditions de cette gate sont désormais satisfaites. Le préflight réel
+strictement en lecture seule a obtenu
+`PREFLIGHT_CALIBRATION_UI_CAMPAIGN_V1_OK` sous la capture
+`20260822-222450-g4-k1-control-calibration-ui-campaign-v1` : UI inactive, K1 au
+repos, cibles à zéro, Z accepté et profil rapide présents, profils `9/11/15`
+absents comme attendu. Le GO envoyé avant la correction de matrice n'est pas
+consommé, car le protocole a changé depuis. Un nouveau GO exact est nécessaire
+avant la première chauffe ou mesure de cette campagne.
 
 ## G5 — V1 production baseline
 

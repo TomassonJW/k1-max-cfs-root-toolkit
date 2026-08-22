@@ -232,15 +232,25 @@ serveur tout en laissant les confirmations physiques décochées. Cette gate est
 close. Son GO est consommé et ne couvre pas la campagne physique séparée.
 
 Thomas a ensuite relevé que l'interface installée s'arrêtait à `6 × 6`, alors
-que le contrat produit prévoyait aussi `9 × 9`, `11 × 11` et `15 × 15`. Le
-candidat séparé `G4-K1-CONTROL-CALIBRATION-UI-MATRIX-V1` corrige uniquement le
-core Moonraker et deux fichiers statiques. Il garde Lagrange jusqu'à `6 × 6`,
-force le bicubique au-delà et borne l'interface à `15 × 15`; le runtime Klipper
-installé accepte déjà ces dimensions. Sa pose future sauvegarde les trois
-fichiers, redémarre seulement Moonraker et ne lance aucune calibration. Le GO
-de campagne envoyé avec la demande de correction n'est pas consommé : la
-campagne dépend désormais de ce delta figé, posé, validé et rendu. La prochaine
-gate unique est donc `G4-K1-CONTROL-CALIBRATION-UI-MATRIX-V1`.
+que le contrat produit prévoyait aussi `9 × 9`, `11 × 11` et `15 × 15`. Après
+son GO exact, le delta séparé `G4-K1-CONTROL-CALIBRATION-UI-MATRIX-V1` a été
+posé sous la capture `20260822-222005-g4-k1-control-calibration-ui-matrix-v1`.
+Le préflight, le déploiement et deux validations indépendantes ont obtenu leurs
+marqueurs OK. Seuls le core Moonraker et deux fichiers statiques ont été
+remplacés après backup exact, puis le Moonraker dédié a été redémarré. Aucune
+chauffe, référence, mesure, extrusion, commande CFS, impression ou écriture Z
+n'a eu lieu. Le vrai rendu Chrome authentifié a confirmé `6/9/11/15`, la
+bascule automatique vers le bicubique et le blocage de Lagrange pour `9/11/15`.
+Un rechargement complet a restauré `6 × 6` Lagrange et les confirmations
+physiques décochées. Cette gate est close et son GO est consommé.
+
+Le préflight strictement en lecture seule de la campagne suivante est vert sous
+la capture `20260822-222450-g4-k1-control-calibration-ui-campaign-v1`. Il
+confirme l'UI inactive, la K1 au repos, les cibles à zéro, le Z accepté et le
+profil rapide présents, ainsi que l'absence attendue des profils `9/11/15`. Le
+GO de campagne envoyé avant la correction de matrice n'est pas consommé : le
+protocole a changé depuis. La prochaine gate unique est donc
+`G4-K1-CONTROL-CALIBRATION-UI-CAMPAIGN-V1`.
 
 Thomas demande que chaque prochaine reprise commence par un état explicite de
 l'autonomie, sans confondre le runtime installé avec une interface terminée :

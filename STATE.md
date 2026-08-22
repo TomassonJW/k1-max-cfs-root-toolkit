@@ -527,14 +527,28 @@ Toute intervention console/Codex, septième passage sur un niveau ou relance
 automatique invalide l'autonomie. Le validateur capture chaque niveau et exige
 les quatre profils au contrôle final ; son plan local est vert.
 
-Thomas a ensuite signalé l'écart de matrice : l'interface installée est limitée
-à `6 × 6` alors que le contrat produit va jusqu'à `15 × 15`. Le delta séparé
-`CALIBRATION-UI-MATRIX-V1` est préparé hors imprimante. Il expose `6 × 6`
-Lagrange, puis `9 × 9`, `11 × 11` et `15 × 15` bicubiques, avec choix automatique
-et double garde navigateur/serveur. Il ne change ni Klipper, ni mesh, ni Z et
-ne redémarrerait que Moonraker après backup exact. Le GO de campagne associé à
-la demande n'est pas consommé, car la campagne revue dépend maintenant de ce
-delta posé et validé.
+Thomas a ensuite signalé l'écart de matrice : l'interface installée était
+limitée à `6 × 6` alors que le contrat produit va jusqu'à `15 × 15`. Le GO exact
+du delta `CALIBRATION-UI-MATRIX-V1` a été consommé par la capture
+`20260822-222005-g4-k1-control-calibration-ui-matrix-v1`. Le préflight, le
+déploiement et deux validations indépendantes sont verts. Seuls le core
+Moonraker et deux fichiers statiques ont été remplacés après backup exact ; seul
+le Moonraker dédié a été redémarré. Aucune calibration, chauffe, référence,
+mesure, extrusion, commande CFS, impression ou écriture Z n'a eu lieu.
+
+Le vrai rendu Chrome authentifié expose maintenant `6 × 6` Lagrange, puis
+`9 × 9`, `11 × 11` et `15 × 15` bicubiques. Les trois tailles supérieures
+forcent le bicubique et désactivent Lagrange. Un rechargement complet restaure
+le défaut `6 × 6` Lagrange, le seed `−0,04 mm` et les confirmations physiques
+décochées. `CALIBRATION-UI-MATRIX-V1` est close.
+
+Le préflight réel, strictement en lecture seule, de
+`CALIBRATION-UI-CAMPAIGN-V1` est vert sous la capture
+`20260822-222450-g4-k1-control-calibration-ui-campaign-v1`. Il confirme l'UI
+inactive, la K1 au repos, les cibles à zéro, le Z accepté et le profil rapide
+présents, ainsi que l'absence attendue des profils `9/11/15`. Le GO de campagne
+envoyé avant la correction de matrice n'est pas consommé, car le protocole a
+changé depuis. La campagne physique n'est pas autorisée.
 
 The Orca cutover remains a later atomic gate. This runtime slice intentionally
 keeps the active Orca profile, `START_PRINT` and the legacy `+0.27 mm`
@@ -569,6 +583,10 @@ retirement remains atomic with the later proven machine/Orca replacement.
   consommée et close.
 - Toute correction, repose ou suppression de l'interface
   `G4-K1-CONTROL-CALIBRATION-UI-V1` désormais installée.
+- Toute correction, repose ou suppression du delta
+  `G4-K1-CONTROL-CALIBRATION-UI-MATRIX-V1` désormais installé.
+- Toute exécution physique de
+  `G4-K1-CONTROL-CALIBRATION-UI-CAMPAIGN-V1` avant son nouveau GO exact.
 - BTT Eddy preparation, installation, firmware or calibration.
 - Firmware downgrade or replacement.
 - Any SSH write other than the completed `G4-SSH-KEY` deployment.
