@@ -599,16 +599,18 @@ tests hors imprimante, y compris l'agrégation de six matrices `15 × 15`.
 
 Status: **protocole mis à jour ; suspendu derrière UI-MATRIX-V1 ; non autorisé**
 
-Cette gate ne pose aucun fichier. Elle qualifie l'autonomie calibration par une
-campagne réellement opérée depuis l'écran : paramètres `PEI_TEXTURED_A`,
-`55/140 °C`, `200 s`, `6 × 6` Lagrange, seed repris du Z accepté, remplacement
-explicite après backup, exactement six meshes, puis descente Z bornée et
-acceptation humaine du jeu. Codex n'envoie aucune commande de calibration et ne
-clique pas à la place de Thomas ; ses contrôles restent en lecture seule.
+Cette gate ne pose aucun fichier. Elle qualifie physiquement les quatre niveaux
+depuis l'écran avec `PEI_TEXTURED_A`, `55/140 °C` et `200 s` : `9 × 9`,
+`11 × 11` et `15 × 15` bicubiques, puis `6 × 6` Lagrange. Chaque niveau exécute
+exactement six meshes, soit vingt-quatre mesures. Les trois niveaux supérieurs
+sont annulés proprement après capture de leur qualification ; le niveau rapide
+termine seul la descente Z bornée et l'acceptation humaine du jeu. Codex n'envoie
+aucune commande de calibration et ne clique pas à la place de Thomas ; ses
+contrôles restent en lecture seule.
 
 Tout rejet du mesh, septième passage, rerun automatique, intervention console,
 perte de l'API, mouvement inattendu ou impossibilité d'observer un jeu sûr est
-un KO. L'opérateur annule et restaure depuis l'interface. La gate ne peut être
+un KO. L'opérateur annule le niveau courant et s'arrête sans rerun. La gate ne peut être
 ouverte qu'après `DEPLOY_CALIBRATION_UI_MATRIX_V1_OK`,
 `VALIDATE_CALIBRATION_UI_MATRIX_V1_OK` et la preuve du vrai rendu navigateur
 avec les quatre niveaux. Son

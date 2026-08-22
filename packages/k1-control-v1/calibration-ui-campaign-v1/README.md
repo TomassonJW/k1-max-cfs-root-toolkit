@@ -17,11 +17,12 @@ n'envoie aucune action de calibration à sa place.
 
 L'interface corrigée expose quatre niveaux : `6 × 6` rapide en Lagrange, puis
 `9 × 9` standard, `11 × 11` précis et `15 × 15` expert en bicubique. Les quatre
-combinaisons doivent passer les contrôles du navigateur, du serveur et de
-l'agrégation de six matrices. La campagne physique ci-dessous reste volontairement
-sur le niveau rapide `6 × 6` : elle prouve une fois le parcours matériel complet
-sans prétendre avoir répété quatre campagnes longues. Les niveaux supérieurs ne
-sont donc pas qualifiés physiquement par cette seule gate.
+combinaisons passent déjà les contrôles du navigateur, du serveur et de
+l'agrégation de six matrices. La campagne physique qualifie maintenant chaque
+niveau avec exactement six meshes réels. Les niveaux standard, précis et expert
+s'arrêtent après la preuve du mesh et une annulation sûre depuis l'écran. Le
+niveau rapide termine ensuite le parcours Z complet : vingt-quatre meshes au
+total, jamais un septième passage sur un niveau.
 
 ## Préconditions
 
@@ -36,40 +37,54 @@ sont donc pas qualifiés physiquement par cette seule gate.
 
 ## Parcours entièrement écran
 
-1. Vérifier `API connectée` et les valeurs `55 °C`, `140 °C`, `200 s`, `6 × 6`,
-   `Lagrange` et le seed automatiquement repris à `−0,04 mm`.
-2. Cocher le remplacement de la référence existante et confirmer la plaque
-   libre, puis lancer le mesh.
-3. Attendre exactement six mesures. Aucun septième passage et aucun rerun ne
-   sont permis. Le résultat doit être `Qualifié` avec les trois métriques sous
-   leurs limites.
-4. Même après fermeture/réouverture éventuelle de la page, retrouver les
-   paramètres de campagne. Reconfirmer le plateau libre et la buse propre.
-5. Commencer le Z à `5 mm`, puis franchir un par un les paliers `2`, `1`, `0,5`,
+1. Vérifier `API connectée`, `PEI_TEXTURED_A`, `55 °C`, `140 °C`, `200 s` et le
+   seed automatiquement repris à `−0,04 mm`.
+2. Sélectionner `9 × 9 — Standard`. Le bicubique doit être automatique et
+   Lagrange inaccessible. Ne pas cocher le remplacement, confirmer le plateau
+   libre et lancer exactement six mesures.
+3. À `Qualifié`, cliquer `Annuler la calibration`, vérifier les chauffes coupées,
+   puis laisser Codex capturer l'état qualifié et fermé en lecture seule. Refaire
+   exactement ce parcours en `11 × 11 — Précis`, puis en `15 × 15 — Expert`.
+4. Sélectionner enfin `6 × 6 — Rapide` et `Lagrange`, cocher le remplacement de
+   la référence existante, confirmer le plateau libre et lancer six mesures.
+   Aucun septième passage ni rerun automatique n'est permis à aucun niveau.
+5. Après qualification du `6 × 6`, même après fermeture/réouverture éventuelle
+   de la page, retrouver les paramètres. Reconfirmer plateau libre et buse propre.
+6. Commencer le Z à `5 mm`, puis franchir un par un les paliers `2`, `1`, `0,5`,
    `0,3`, `0,2`, `0,15` et `0,1 mm`.
-6. Au dernier palier, utiliser la cale papier réelle d'environ `0,09 mm` et les
+7. Au dernier palier, utiliser la cale papier réelle d'environ `0,09 mm` et les
    seuls ajustements proposés par l'interface. Ne confirmer qu'après observation
    d'un jeu sûr et perceptible.
-7. Confirmer le jeu, vérifier la remontée, puis enregistrer le Z depuis l'écran.
+8. Confirmer le jeu, vérifier la remontée, puis enregistrer le Z depuis l'écran.
 
 ## OK final
 
 L'écran affiche `Calibration acceptée`, l'API reste connectée, la phase vaut
-`accepted`, les six meshes sont qualifiés et le backup de campagne existe. Le
-contrôle indépendant doit ensuite confirmer le profil attendu, le stockage Z
+`accepted`, les quatre groupes de six meshes sont qualifiés et chaque capture
+intermédiaire existe. Le contrôle indépendant doit confirmer les profils
+`n06x06`, `n09x09`, `n11x11` et `n15x15`, le stockage Z
 `ok`, `accepted_z_valid=1`, la session et les mouvements bas désarmés, le chemin
 `committed`, `standby`, les deux cibles à zéro et deux CFS connectés.
 
+## Enchaînement des preuves locales
+
+Codex crée un seul identifiant
+`YYYYMMDD-HHMMSS-g4-k1-control-calibration-ui-campaign-v1` et son dossier privé
+ignoré par Git. Avec ce même identifiant, il exécute `Preflight`, puis
+`CaptureLevel -Level standard`, `precise`, `expert` et `quick` aux checkpoints
+décrits ci-dessus, enfin `Validate`. Ces actions ne contiennent aucune route
+G-code et ne font que relire les empreintes, l'API, l'état privé et Klipper.
+
 ## KO et retour sûr
 
-Au premier écart, Thomas utilise `Annuler la calibration` depuis l'écran. Une
-fois l'opération bornée terminée, il utilise `Restaurer avant cette calibration`
-et confirme la boîte de dialogue. Aucun rerun automatique n'est accepté. Une
-intervention console ou Codex pour terminer la campagne invalide la preuve
+Au premier écart, Thomas utilise `Annuler la calibration` depuis l'écran et la
+gate s'arrête. Aucun niveau suivant n'est lancé. Aucun rerun automatique n'est
+accepté. Un profil déjà qualifié peut rester présent ; aucun profil refusé n'est
+persisté. Une intervention console ou Codex pour terminer la campagne invalide la preuve
 d'autonomie, même si l'état matériel final paraît correct.
 
 Le script local `scripts/validate-k1-control-calibration-ui-campaign-v1.ps1`
-fournit `Plan`, `Preflight` et `Validate`. Ses deux actions connectées restent
+fournit `Plan`, `Preflight`, `CaptureLevel` et `Validate`. Ses actions connectées restent
 strictement en lecture seule : empreintes, API métier, état privé de campagne et
 état Klipper. Elles enregistrent les captures complètes uniquement sous
 `inventory/raw/`, ignoré par Git.

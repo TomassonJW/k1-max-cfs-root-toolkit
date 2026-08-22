@@ -14,25 +14,62 @@
       {"name": "expert", "matrix": [15, 15], "interpolation": "bicubic"}
     ],
     "offline_server_and_aggregation_proof": "required_for_all_presets",
-    "physical_campaign_preset": "quick",
-    "physical_campaign_scope": "one_complete_browser_only_workflow_without_claiming_four_physical_campaigns"
+    "physical_proof": "six_real_meshes_at_every_preset",
+    "full_z_workflow_preset": "quick"
   },
-  "operator_settings": {
+  "common_operator_settings": {
     "plate": "PEI_TEXTURED_A",
     "bed_temperature_c": 55,
     "nozzle_temperature_c": 140,
     "soak_seconds": 200,
-    "matrix": [6, 6],
-    "interpolation": "lagrange",
     "seed_z_source": "current_accepted_runtime_value",
     "expected_initial_seed_z_mm": -0.04,
-    "replace_existing": true,
     "plate_clear_confirmation": true
   },
+  "physical_sequence": [
+    {
+      "order": 1,
+      "name": "standard",
+      "matrix": [9, 9],
+      "interpolation": "bicubic",
+      "replace_existing": false,
+      "expected_profile": "k1_p001_t055_r001_n09x09",
+      "finish": "cancel_from_ui_then_capture_closed_qualified_state"
+    },
+    {
+      "order": 2,
+      "name": "precise",
+      "matrix": [11, 11],
+      "interpolation": "bicubic",
+      "replace_existing": false,
+      "expected_profile": "k1_p001_t055_r001_n11x11",
+      "finish": "cancel_from_ui_then_capture_closed_qualified_state"
+    },
+    {
+      "order": 3,
+      "name": "expert",
+      "matrix": [15, 15],
+      "interpolation": "bicubic",
+      "replace_existing": false,
+      "expected_profile": "k1_p001_t055_r001_n15x15",
+      "finish": "cancel_from_ui_then_capture_closed_qualified_state"
+    },
+    {
+      "order": 4,
+      "name": "quick",
+      "matrix": [6, 6],
+      "interpolation": "lagrange",
+      "replace_existing": true,
+      "expected_profile": "k1_p001_t055_r001_n06x06",
+      "finish": "complete_bounded_z_and_accept_from_ui"
+    }
+  ],
   "operator_only_actions": [
     "authenticate_in_the_calibration_browser_origin",
     "confirm_plate_and_clear_bed",
-    "start_the_six_mesh_campaign_from_the_ui",
+    "run_each_reviewed_six_mesh_level_from_the_ui_in_order",
+    "cancel_standard_precise_and_expert_from_the_ui_after_mesh_qualification",
+    "capture_each_closed_qualified_mesh_level_read_only",
     "confirm_nozzle_clean_before_z",
     "advance_each_bounded_z_step_from_the_ui",
     "observe_the_real_gap_with_the_paper_gauge",
@@ -42,12 +79,18 @@
   "required_results": {
     "browser_title": "K1 Control — calibration",
     "api_connected": true,
-    "campaign_phase": "accepted",
+    "final_campaign_phase": "accepted",
     "campaign_busy": false,
-    "mesh_measurements": 6,
-    "mesh_accepted": true,
+    "mesh_measurements_per_level": 6,
+    "total_mesh_measurements": 24,
+    "every_level_mesh_accepted": true,
     "automatic_extra_measurement": false,
-    "profile": "k1_p001_t055_r001_n06x06",
+    "profiles": [
+      "k1_p001_t055_r001_n06x06",
+      "k1_p001_t055_r001_n09x09",
+      "k1_p001_t055_r001_n11x11",
+      "k1_p001_t055_r001_n15x15"
+    ],
     "runtime_store_integrity": "ok",
     "runtime_accepted_z_valid": 1,
     "runtime_session_active": 0,
@@ -63,12 +106,13 @@
     "unexpected_browser_application_or_http_error",
     "api_disconnected",
     "mesh_rejected",
-    "seventh_mesh_requested_or_observed",
+    "seventh_mesh_requested_or_observed_at_any_level",
+    "level_order_or_algorithm_differs_from_the_reviewed_sequence",
     "unexpected_motion_or_extrusion",
     "heater_target_outside_reviewed_values",
     "runtime_or_path_guard_not_closed",
     "operator_cannot_observe_a_safe_gap"
   ],
-  "failure_action": "cancel_from_ui_then_restore_exact_campaign_backup_from_ui",
+  "failure_action": "cancel_current_level_from_ui_and_stop_without_automatic_rerun",
   "rerun_policy": "no_automatic_rerun"
 }

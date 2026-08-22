@@ -4,11 +4,11 @@
   "artifacts": [
     {
       "path": "packages/k1-control-v1/calibration-ui-campaign-v1/calibration-ui-campaign-contract.json",
-      "sha256": "9fe0a251925b62d7d7a7c59724d1d752d43b4213a5bb7289fe9105242cde5713"
+      "sha256": "768d257c4b6c0f114edbdf7f8172920c1bf593646dc06e3bcf490b6fbfa457ae"
     },
     {
       "path": "scripts/validate-k1-control-calibration-ui-campaign-v1.ps1",
-      "sha256": "79589d5b69902bd6171af2df3ecde7c83fbb45c2b7084bcb0894cf8d47829104"
+      "sha256": "e8243b38272b39442fc220660e92e9514eff88a6286e3318d42008f2d13942cb"
     },
     {
       "path": "packages/k1-control-v1/calibration-ui-matrix-v1/deployment-manifest.json",
@@ -17,7 +17,9 @@
   ],
   "remote_file_installation": false,
   "operator_control": "browser_only",
-  "fixed_mesh_measurements": 6,
+  "mesh_measurements_per_level": 6,
+  "physical_levels": 4,
+  "total_mesh_measurements": 24,
   "automatic_extra_measurement": false,
-  "failure_action": "cancel_and_restore_from_the_ui"
+  "failure_action": "cancel_current_level_from_the_ui_and_stop"
 }

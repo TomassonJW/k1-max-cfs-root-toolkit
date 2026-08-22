@@ -584,10 +584,12 @@ propre ». Le manifeste épingle les nouvelles empreintes.
 
 Le protocole séparé `G4-K1-CONTROL-CALIBRATION-UI-CAMPAIGN-V1` est préparé hors
 imprimante. Après une pose UI entièrement verte, Thomas devra réaliser depuis
-l'écran uniquement les six meshes, le parcours Z et l'acceptation. Aucun clic
-ou commande de calibration Codex, septième passage ou rerun automatique ne sera
-accepté comme preuve d'autonomie. Le validateur séparé n'expose que `Plan`,
-`Preflight` et `Validate`; son plan local est vert avec
+l'écran six meshes réels en `9 × 9`, `11 × 11`, `15 × 15`, puis six meshes et le
+parcours Z complet en `6 × 6`. Les trois premiers niveaux sont annulés depuis
+l'écran après qualification et capture en lecture seule. Aucun clic ou commande
+de calibration Codex, septième passage par niveau ou rerun automatique ne sera
+accepté. Le validateur expose `Plan`, `Preflight`, `CaptureLevel` et `Validate`;
+son plan local est vert avec
 `PLAN_CALIBRATION_UI_CAMPAIGN_V1_OK`.
 
 La préparation production a progressé sans toucher à la K1 : OrcaSlicer `2.4.2`

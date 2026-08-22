@@ -519,11 +519,13 @@ l'état serveur et laisse les confirmations physiques accessibles ; le bouton Z
 les exige explicitement. Les nouvelles empreintes doivent être figées avant GO.
 
 `CALIBRATION-UI-CAMPAIGN-V1` est préparé hors imprimante comme gate séparée de
-preuve, dépendante de l'UI posée et rendue. Thomas y opère uniquement depuis
-l'écran les six meshes, les paliers Z et l'acceptation. Toute intervention
-console/Codex, septième passage ou relance automatique invalide l'autonomie.
-Son contrat, son manifeste et son validateur en lecture seule sont épinglés ; le
-plan local est vert.
+preuve, dépendante de l'UI posée et rendue. Son protocole couvre désormais les
+quatre niveaux physiques : six meshes en `9 × 9`, `11 × 11`, `15 × 15`, puis six
+meshes et le parcours Z complet en `6 × 6`. Les niveaux supérieurs sont annulés
+depuis l'écran après capture de leur qualification, sans perdre leur profil.
+Toute intervention console/Codex, septième passage sur un niveau ou relance
+automatique invalide l'autonomie. Le validateur capture chaque niveau et exige
+les quatre profils au contrôle final ; son plan local est vert.
 
 Thomas a ensuite signalé l'écart de matrice : l'interface installée est limitée
 à `6 × 6` alors que le contrat produit va jusqu'à `15 × 15`. Le delta séparé

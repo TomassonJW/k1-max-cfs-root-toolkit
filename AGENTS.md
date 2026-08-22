@@ -200,8 +200,10 @@ fausse tout en restant désactivée. Le composant expose désormais le Z accept�
 le formulaire reprend l'état serveur exact et les confirmations physiques
 restent accessibles et obligatoires avant le Z. Le candidat séparé
 `G4-K1-CONTROL-CALIBRATION-UI-CAMPAIGN-V1` fixe le protocole de preuve : six
-meshes, parcours Z et acceptation uniquement depuis l'écran, sans console ni
-commande Codex, sans septième passage ni rerun automatique. L'UI doit d'abord
+meshes physiques pour chacun des niveaux `9 × 9`, `11 × 11`, `15 × 15` et
+`6 × 6`, puis parcours Z et acceptation sur le niveau rapide uniquement depuis
+l'écran, sans console ni commande Codex, sans septième passage par niveau ni
+rerun automatique. L'UI doit d'abord
 être posée, validée et rendue dans le vrai navigateur ; la campagne exigera
 ensuite son propre GO exact.
 
