@@ -75,6 +75,20 @@ l'overlay absent. Aucun déploiement n'a été lancé. La commande revue ayant
 changé après le GO consommé, la pose exige un nouveau GO exact sur le commit
 corrigé.
 
+Thomas a renouvelé ce GO. La capture
+`20260822-115608-g4-k1-control-calibration-path-v1` a passé le préflight, créé le
+backup exact, posé l'overlay et envoyé le `RESTART`. La validation a interrogé
+le socket Klipper pendant sa transition et le premier `RESTART` du rollback a
+rencontré le même état. L'action `Rollback` reprise sur le backup exact a obtenu
+`ROLLBACK_CALIBRATION_PATH_V1_OK`, puis le préflight final a prouvé la base
+exacte, l'overlay absent, les axes non référencés, les chauffes à zéro, le
+runtime vide, deux CFS et la fondation conformes. Aucun mouvement, homing,
+chauffage, mesh ou état Z n'a eu lieu. Le déployeur attend maintenant le socket
+de façon bornée après pose et avant le restart du rollback. Cette commande ayant
+changé après le GO consommé, aucune nouvelle pose n'est autorisée avant un
+nouveau GO exact. Le préflight réel du déployeur corrigé est vert en lecture
+seule.
+
 Thomas demande que chaque prochaine reprise commence par un état explicite de
 l'autonomie, sans confondre le runtime installé avec une interface terminée :
 

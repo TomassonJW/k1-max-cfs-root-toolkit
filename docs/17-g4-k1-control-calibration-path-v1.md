@@ -1,7 +1,8 @@
 # G4 — K1 Control calibration path V1
 
-Statut au 2026-08-22 : **préflight réel corrigé et vert ; aucune pose ni
-calibration effectuées ; nouveau GO exact obligatoire**.
+Statut au 2026-08-22 : **première tentative de pose rollbackée ; base exacte
+restaurée ; attente du restart corrigée hors imprimante ; nouveau GO exact
+obligatoire**.
 
 ## Préflight réel de la capture `20260822-113503`
 
@@ -28,6 +29,34 @@ privées restent ignorées sous la capture complète
 La commande revue ayant changé après le GO, ce GO n'autorise plus la pose. Le
 déploiement attend un nouveau texte exact
 `GO G4-K1-CONTROL-CALIBRATION-PATH-V1` portant sur le commit corrigé.
+
+## Tentative de pose `20260822-115608` et rollback
+
+Le GO renouvelé a ouvert la capture
+`20260822-115608-g4-k1-control-calibration-path-v1`. Son préflight frais a obtenu
+`PREFLIGHT_CALIBRATION_PATH_V1_OK`. Le déployeur a créé et vérifié le backup,
+posé l'overlay et son include, puis envoyé le seul `RESTART` prévu.
+
+La validation a interrogé la liste des objets trop tôt pendant le redémarrage.
+Le socket n'a pas répondu dans sa fenêtre de cinq secondes. Le rollback a
+restauré les fichiers, mais son premier `RESTART` a rencontré le même socket en
+transition. Aucun mouvement, homing, chauffage, mesh ou enregistrement Z n'a eu
+lieu.
+
+Un audit en lecture seule a alors prouvé que `printer.cfg` était déjà revenu à
+son empreinte exacte et que l'overlay était absent, tandis que le chemin restait
+chargé seulement dans le processus Klipper courant. L'action `Rollback` a été
+reprise sur le backup exact et a obtenu
+`ROLLBACK_CALIBRATION_PATH_V1_OK`. Le préflight final est vert : base exacte,
+overlay absent, axes non référencés, chauffes à zéro, runtime vide, deux CFS et
+fondation conformes.
+
+Le déployeur attend désormais de façon bornée que le socket Klipper réponde
+avant de lire les objets après une pose et avant d'envoyer le `RESTART` du
+rollback. Une seconde pose est interdite tant que ce changement revu n'a pas
+reçu un nouveau GO exact. Le préflight du déployeur corrigé a lui-même obtenu
+`PREFLIGHT_CALIBRATION_PATH_V1_OK` en lecture seule sous le sous-dossier de
+preuve `corrected-preflight`.
 
 Le nom `G4-K1-CONTROL-CALIBRATION-PATH-V1` choisit ce lot. Il ne vaut pas GO de
 mutation. L'ouverture future exigera le texte exact
@@ -94,8 +123,8 @@ Avant la première écriture, le préflight :
 1. repointe toutes les empreintes ci-dessus ;
 2. vérifie l'identité exacte, le repos, les deux CFS et la fondation réseau ;
 3. vérifie que le runtime reste vide et fermé à la production ;
-4. transmet le candidat uniquement comme argument Base64 au Python/Jinja exact
-   de la K1 pour le parser en mémoire, sans fichier distant ;
+4. transmet le programme et le candidat par l'entrée standard au Python/Jinja
+   exact de la K1 pour les parser en mémoire, sans fichier distant ;
 5. refuse toute cible ou inclusion déjà présente.
 
 La capture future doit respecter

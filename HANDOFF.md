@@ -1,8 +1,8 @@
 # HANDOFF
 
 Date: 2026-08-22
-Phase: P4 / runtime Z/mesh retenu ; préflight CALIBRATION-PATH-V1 vert, pose non faite
-Next operator: annoncer l'écart d'autonomie, puis attendre le GO exact renouvelé
+Phase: P4 / runtime Z/mesh retenu ; tentative CALIBRATION-PATH-V1 rollbackée, base exacte restaurée
+Next operator: annoncer l'écart d'autonomie, relire l'attente restart corrigée, puis attendre le GO exact renouvelé
 
 ## Message obligatoire au début de la prochaine session
 
@@ -61,6 +61,26 @@ G-code ou état distant n'a été créé ou modifié.
 La commande revue a changé après le GO consommé. Aucun `Deploy` n'a été lancé.
 La prochaine autorisation doit renouveler exactement
 `GO G4-K1-CONTROL-CALIBRATION-PATH-V1` sur le commit corrigé.
+
+Thomas a renouvelé ce GO. La capture
+`20260822-115608-g4-k1-control-calibration-path-v1` a obtenu un préflight frais
+vert, créé et vérifié le backup, posé l'overlay et envoyé le `RESTART`. La
+validation a toutefois interrogé le socket Klipper pendant sa transition et a
+déclenché le rollback. Les fichiers ont été restaurés immédiatement ; le chemin
+est resté un court moment chargé uniquement en mémoire car le `RESTART` du
+rollback avait rencontré le même socket indisponible.
+
+Après audit de cet état précis, l'action `Rollback` a été reprise sur le backup
+exact et a obtenu `ROLLBACK_CALIBRATION_PATH_V1_OK`. Le préflight final a obtenu
+`PREFLIGHT_CALIBRATION_PATH_V1_OK` : overlay absent, `printer.cfg` exact, axes
+non référencés, chauffes à zéro, runtime `ready=1`/`empty`, deux CFS et fondation
+conformes. Aucun mouvement, homing, chauffage, mesh ou état Z n'a eu lieu.
+
+Le déployeur attend maintenant de façon bornée que le socket réponde avant la
+lecture des objets après pose et avant le `RESTART` de rollback. Ce changement
+de commande consomme l'autorisation précédente : une nouvelle pose exige encore
+un GO exact renouvelé. Le préflight réel du déployeur corrigé est vert en
+lecture seule.
 
 ## Current state
 
@@ -300,7 +320,7 @@ Un écran `K1 Control` sans dépendance, un moteur d'état Python pur, un faux
 Moonraker, le contrat Orca et la matrice exécutable sont présents sous
 `prototype/`, `orca/` et `tests/`. Les vues bureau/mobile et les actions
 calibration, sauvegarde, redémarrage et invalidation ont été vérifiées sans
-erreur JavaScript. La suite courante exécute 116 tests : 114 passent et deux
+erreur JavaScript. La suite courante exécute 117 tests : 115 passent et deux
 contrôles Jinja locaux sont ignorés. Les 17 templates du runtime installé ont
 déjà passé le Python/Jinja exact de la K1. Le nouvel overlay devra passer son
 parse exact en mémoire pendant son préflight, avant toute écriture. Les noms de
@@ -401,20 +421,21 @@ Codex has permanent authority to complete all normal Git and GitHub operations f
 
 ## Next bounded mission
 
-Relire le commit corrigé de `G4-K1-CONTROL-CALIBRATION-PATH-V1`, rappeler qu'il
-ne rend pas encore l'interface autonome et attendre le GO exact renouvelé. Après ce GO
-seulement : préflight frais, backup, pose du seul overlay, `RESTART` hôte,
-validation sans mouvement et clôture complète ou rollback automatique.
+Relire le commit qui ajoute l'attente bornée du socket à
+`G4-K1-CONTROL-CALIBRATION-PATH-V1`, rappeler qu'il ne rend pas encore
+l'interface autonome et attendre le GO exact renouvelé. Après ce GO seulement :
+préflight frais, backup, pose du seul overlay, `RESTART` hôte, validation sans
+mouvement et clôture complète ou rollback automatique.
 
 Critères de fin : `DEPLOY_CALIBRATION_PATH_V1_OK` puis validation indépendante
 `VALIDATE_CALIBRATION_PATH_V1_OK`, runtime existant toujours vide et sain,
 chauffes à zéro, axes non référencés, deux CFS connectés, empreintes exactes et
 aucun état physique changé par la garde.
 
-Autorisation actuelle : **ATTENDRE_GO_RENOUVELE**. Le préflight corrigé est déjà
-vert mais devra être répété juste avant la pose. Aucun G-code, restart, backup
-ou fichier distant n'a été exécuté ou créé. Seul le programme de contrôle en
-mémoire a transité sur l'entrée standard de SSH.
+Autorisation actuelle : **ATTENDRE_GO_RENOUVELE**. La tentative précédente est
+entièrement rollbackée et le préflight final est vert. Le backup et le staging
+de preuve restent sur la K1 ; l'overlay et son include sont absents. Aucun
+nouveau `Deploy` ne doit réutiliser le GO consommé.
 
 Une fois cette pose retenue, la mission suivante sera
 `G4-K1-CONTROL-FIRST-CALIBRATION-V1` : plaque, température, stabilisation,

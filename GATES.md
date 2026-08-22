@@ -339,7 +339,8 @@ Passing G4 authorises only that named mutation.
 
 ### Prochaine gate nommée — `G4-K1-CONTROL-CALIBRATION-PATH-V1`
 
-Status: **préflight réel corrigé et vert ; aucune pose ; GO renouvelé requis**
+Status: **tentative rollbackée ; base exacte restaurée ; attente restart
+corrigée hors imprimante ; GO renouvelé requis**
 
 Cette gate ajoute uniquement le chemin borné non extrusif nécessaire au premier
 Z. Les sources, empreintes, destinations, backup, validation sans mouvement et
@@ -375,7 +376,26 @@ ou modifié.
 La commande revue ayant changé après le GO, aucun `Deploy` n'a été lancé. La
 pose exige un nouveau GO exact sur le commit corrigé.
 
-La suite hors imprimante exécute 116 tests : 114 passent et deux contrôles Jinja
+Thomas a renouvelé ce GO. La capture
+`20260822-115608-g4-k1-control-calibration-path-v1` a passé son préflight, créé
+le backup exact, posé l'overlay et envoyé le `RESTART`. La validation a interrogé
+le socket Klipper avant sa stabilisation, puis le premier `RESTART` du rollback
+a rencontré le même socket en transition. Les fichiers étaient déjà restaurés,
+mais le chemin restait chargé en mémoire.
+
+L'action `Rollback` reprise sur le backup exact a obtenu
+`ROLLBACK_CALIBRATION_PATH_V1_OK`. Le préflight final a obtenu
+`PREFLIGHT_CALIBRATION_PATH_V1_OK` et prouve l'overlay absent, la base exacte,
+les axes non référencés, les chauffes à zéro, le runtime vide et prêt, deux CFS
+et la fondation conformes. Aucun mouvement, homing, chauffage, mesh ou état Z
+n'a été produit.
+
+Le déployeur attend désormais le socket de façon bornée avant les lectures
+d'objets après pose et avant le `RESTART` du rollback. Cette commande ayant
+changé après le GO consommé, une nouvelle tentative exige un nouveau GO exact.
+Son préflight corrigé est déjà vert en lecture seule.
+
+La suite hors imprimante exécute 117 tests : 115 passent et deux contrôles Jinja
 locaux sont ignorés. Celui du runtime installé a déjà été validé sur
 l'environnement exact de la K1. Celui du nouvel overlay est intégré au
 préflight distant en mémoire et doit être vert avant la première écriture.

@@ -1,6 +1,6 @@
 {
   "package": "G4-K1-CONTROL-CALIBRATION-PATH-V1",
-  "status": "preflight_validated_awaiting_renewed_go",
+  "status": "restart_race_rolled_back_corrected_awaiting_renewed_go",
   "printer_mutation_authorized": false,
   "target": {
     "board": "CR4CU220812S12",

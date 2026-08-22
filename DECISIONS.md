@@ -523,3 +523,24 @@ ne crée aucun fichier. Le préflight corrigé a obtenu
 
 Comme cette commande fait partie du paquet revu, sa correction après le GO
 consommé impose un nouveau GO exact avant toute pose.
+
+## D-035 — Toute lecture post-restart attend le socket Klipper
+
+Date: 2026-08-22
+
+Status: accepté hors imprimante après rollback exact
+
+La tentative `20260822-115608` a envoyé le `RESTART` prévu, puis la validation a
+lu immédiatement la liste des objets. Le socket Klipper existait mais ne
+répondait pas encore dans sa fenêtre de cinq secondes. Le rollback a restauré
+les fichiers, puis son propre `RESTART` a rencontré le même socket en transition.
+
+La reprise explicite du rollback a obtenu
+`ROLLBACK_CALIBRATION_PATH_V1_OK`. Le préflight final a confirmé la base exacte,
+l'overlay absent, les axes non référencés, les chauffes à zéro, le runtime vide,
+les deux CFS et la fondation. Aucun acte physique de calibration n'a été lancé.
+
+Le déployeur remplace maintenant les lectures immédiates par une attente bornée
+de la liste des objets. Il applique la même garde avant le `RESTART` de rollback
+afin de ne pas traiter une transition normale comme une panne définitive.
+Comme la commande revue change, une nouvelle pose exige un nouveau GO exact.

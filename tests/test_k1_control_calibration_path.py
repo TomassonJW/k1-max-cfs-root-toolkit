@@ -246,6 +246,20 @@ class CalibrationPathPackageTests(unittest.TestCase):
             self.assertIn(field, text)
         self.assertIn("Assert-NoPhysicalChange -Before $before -After $after", text)
 
+    def test_restart_waits_for_the_klipper_socket_before_object_checks_and_rollback(self) -> None:
+        text = DEPLOYER.read_text(encoding="utf-8")
+        installed = text[
+            text.index("function Assert-CalibrationPathInstalled") :
+            text.index("function Invoke-CalibrationPathRollback")
+        ]
+        self.assertIn("$objects = Wait-KlipperObjectNames -Attempts 30", installed)
+        self.assertNotIn("$objects = Get-KlipperObjectNames", installed)
+
+        rollback = text[text.index("function Invoke-CalibrationPathRollback") :]
+        wait = rollback.index("[void](Wait-KlipperObjectNames -Attempts 30)")
+        restart = rollback.index("Invoke-KlipperScript 'RESTART' -NoResponse")
+        self.assertLess(wait, restart)
+
     def test_rollback_removes_only_the_new_overlay_and_preserves_runtime(self) -> None:
         text = DEPLOYER.read_text(encoding="utf-8")
         rollback = text[text.index("function Invoke-CalibrationPathRollback") :]

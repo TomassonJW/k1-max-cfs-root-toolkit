@@ -202,6 +202,24 @@ print(json.dumps(message.get("result", {}).get("objects", []), sort_keys=True))
     return @(($line -join "`n") | ConvertFrom-Json)
 }
 
+function Wait-KlipperObjectNames {
+    param([int]$Attempts = 30)
+
+    $lastError = 'liste des objets non encore disponible'
+    for ($attempt = 1; $attempt -le $Attempts; $attempt++) {
+        try {
+            $objects = @(Get-KlipperObjectNames)
+            if ($objects.Count -gt 0) { return $objects }
+            $lastError = 'liste des objets vide'
+        }
+        catch {
+            $lastError = $_.Exception.Message
+        }
+        if ($attempt -lt $Attempts) { Start-Sleep -Seconds 1 }
+    }
+    throw "Socket Klipper non stabilise apres $Attempts tentatives : $lastError"
+}
+
 function Invoke-KlipperScript {
     param(
         [Parameter(Mandatory = $true)][string]$Script,
@@ -403,7 +421,7 @@ function Invoke-CalibrationPathPreflight {
     $runtimeIncludeCount = Get-ExactRemoteLineCount -Path $PrinterConfig -Line '[include k1-control-z-mesh.cfg]'
     $pathIncludeCount = Get-ExactRemoteLineCount -Path $PrinterConfig -Line '[include k1-control-calibration-path.cfg]'
     if ($runtimeIncludeCount -ne 1 -or $pathIncludeCount -ne 0) { throw 'Inclusions K1 Control inattendues avant pose.' }
-    $objects = Get-KlipperObjectNames
+    $objects = Wait-KlipperObjectNames -Attempts 30
     if ($objects -notcontains 'gcode_macro KCTRL_STATE' -or $objects -notcontains 'k1_control_store') {
         throw 'Runtime Z/mesh existant non charge.'
     }
@@ -449,7 +467,7 @@ function Assert-CalibrationPathInstalled {
     $runtimeIncludeCount = Get-ExactRemoteLineCount -Path $PrinterConfig -Line '[include k1-control-z-mesh.cfg]'
     $pathIncludeCount = Get-ExactRemoteLineCount -Path $PrinterConfig -Line '[include k1-control-calibration-path.cfg]'
     if ($runtimeIncludeCount -ne 1 -or $pathIncludeCount -ne 1) { throw 'Nombre d inclusions K1 Control inattendu apres pose.' }
-    $objects = Get-KlipperObjectNames
+    $objects = Wait-KlipperObjectNames -Attempts 30
     if ($objects -notcontains 'gcode_macro KCTRL_CAL_PATH_STATE') { throw 'Chemin de calibration non charge.' }
     $snapshot = Wait-IdleSnapshot -IncludeCalibrationPath -RequireUnhomed -Attempts 60
     Assert-RuntimeBaseline $snapshot
@@ -494,6 +512,7 @@ function Invoke-CalibrationPathRollback {
         catch { if (-not $BestEffort) { throw } }
     }
     try {
+        [void](Wait-KlipperObjectNames -Attempts 30)
         Invoke-KlipperScript 'RESTART' -NoResponse | Out-Null
         $unloaded = $false
         for ($attempt = 1; $attempt -le 60; $attempt++) {
