@@ -1,0 +1,151 @@
+{
+  "contract_id": "G4-K1-CONTROL-FIRST-CALIBRATION-V1",
+  "status": "offline_review_candidate",
+  "printer_mutation_authorized": false,
+  "capture_pattern": "YYYYMMDD-HHMMSS-g4-k1-control-first-calibration-v1",
+  "purpose": "qualify_one_reference_mesh_and_accept_the_first_bounded_z",
+  "requires": {
+    "calibration_path_capture": "20260822-124207-g4-k1-control-calibration-path-v1",
+    "runtime_integrity": "empty",
+    "accepted_z_valid": 0,
+    "low_moves_armed": 0,
+    "printer_state": "standby",
+    "heater_targets_c": {
+      "bed": 0,
+      "nozzle": 0
+    },
+    "homed_axes": "",
+    "connected_cfs_units": 2,
+    "operator_confirmations": [
+      "correct_plate_installed_and_clear",
+      "nozzle_visually_clean_before_bounded_z",
+      "final_gap_observed_before_acceptance"
+    ]
+  },
+  "identity": {
+    "plate_id": 1,
+    "plate_label": "PEI_TEXTURED_A",
+    "temperature_band_c": 60,
+    "probe_revision": 1,
+    "probe_label": "PR_TOUCH_CAPTURED_STACK_REV_1",
+    "nozzle_id": 1,
+    "nozzle_label": "UNICORN_INSTALLED_REV_1",
+    "config_id": 1,
+    "config_label": "K1_CONTROL_V1_FIRST_CALIBRATION"
+  },
+  "thermal": {
+    "bed_target_c": 60,
+    "nozzle_target_c": 140,
+    "soak_seconds": 600,
+    "bed_actual_tolerance_c": 2.0,
+    "nozzle_actual_tolerance_c": 5.0,
+    "cleaning": {
+      "command": "NOZZLE_CLEAR",
+      "hot_min_c": 140,
+      "hot_max_c": 180,
+      "bed_max_c": 60,
+      "extrusion": false,
+      "cfs_command": false
+    }
+  },
+  "mesh": {
+    "profile": "k1_p001_t060_r001_n06x06",
+    "bounds_mm": [5.0, 5.0, 295.0, 295.0],
+    "probe_count": [6, 6],
+    "algorithm": "lagrange",
+    "measurements": 2,
+    "qualification": {
+      "method": "absolute_pointwise_delta",
+      "maximum_delta_mm": 0.025,
+      "automatic_rerun": false,
+      "same_dimensions_required": true,
+      "same_thermal_context_required": true
+    },
+    "persistence": "only_after_two_measurements_qualify"
+  },
+  "z": {
+    "seed_offset_mm": 0.0,
+    "seed_reason": "explicit neutral seed because the validated runtime store is empty",
+    "center_mm": [150.0, 150.0],
+    "height_ladder_mm": [5.0, 2.0, 1.0, 0.5, 0.3, 0.2, 0.15, 0.1],
+    "allowed_adjustments_mm": [-0.1, -0.05, -0.01, -0.005, 0.005, 0.01, 0.05, 0.1],
+    "gap_confirmation_required": true,
+    "park_lift_mm": 5.0,
+    "acceptance_timestamp": "utc_unix_seconds_at_explicit_acceptance"
+  },
+  "sequence": [
+    "Preflight",
+    "Prepare",
+    "Mesh1",
+    "Mesh2",
+    "CommitMesh",
+    "BeginZ",
+    "StepZ",
+    "AdjustZ_optional",
+    "ConfirmGap",
+    "Accept_or_Cancel",
+    "Validate"
+  ],
+  "checkpoints": {
+    "prepare": "heaters_stabilized_nozzle_cleaned_xyz_homed",
+    "mesh_1": "first_6x6_probed_matrix_captured",
+    "mesh_2": "second_6x6_probed_matrix_captured_and_compared",
+    "mesh_commit": "qualified_named_profile_persisted_after_restart",
+    "z_ready": "named_mesh_loaded_and_guarded_z_session_open",
+    "z_each_step": "one_reviewed_height_only",
+    "acceptance": "gap_confirmed_parked_then_atomic_z_commit"
+  },
+  "stop_conditions": [
+    "wrong_machine_or_firmware",
+    "printer_not_in_standby",
+    "heater_target_already_nonzero",
+    "cfs_unit_missing_or_wrong_version",
+    "runtime_or_calibration_path_hash_mismatch",
+    "runtime_store_not_empty",
+    "target_mesh_profile_already_exists",
+    "thermal_context_outside_tolerance",
+    "mesh_dimensions_or_bounds_changed",
+    "maximum_mesh_delta_above_0.025_mm",
+    "operator_confirmation_missing",
+    "unexpected_axis_mesh_z_or_session_state"
+  ],
+  "cancel": {
+    "effect": "park_if_needed_cancel_provisional_z_turn_off_heaters",
+    "qualified_mesh_preserved": true,
+    "accepted_z_created": false
+  },
+  "rollback": {
+    "effect": "restore_exact_printer_cfg_and_empty_z_store_from_verified_backup",
+    "qualified_mesh_preserved": false,
+    "accepted_z_preserved": false,
+    "installed_runtime_preserved": true,
+    "installed_calibration_path_preserved": true,
+    "klipper_restart": true,
+    "final_heater_targets_c": {
+      "bed": 0,
+      "nozzle": 0
+    }
+  },
+  "daily_ui_future_contract": {
+    "this_gate_proves_calibration_autonomy": false,
+    "must_later_expose": [
+      "plate_and_temperature_selection",
+      "soak_matrix_and_interpolation_selection",
+      "two_mesh_results_and_plain_language_qualification",
+      "guided_height_and_z_adjustment_controls",
+      "save_cancel_and_restore_actions",
+      "actionable_ready_or_blocked_status"
+    ]
+  },
+  "forbidden": [
+    "print_start",
+    "extrusion",
+    "cfs_command",
+    "orca_profile_change",
+    "start_print_change",
+    "legacy_plus_0_27_removal",
+    "automatic_third_mesh",
+    "hidden_z_default",
+    "commit_without_human_gap_confirmation"
+  ]
+}

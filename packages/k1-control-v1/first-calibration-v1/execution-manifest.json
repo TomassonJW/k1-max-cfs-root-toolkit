@@ -1,0 +1,67 @@
+{
+  "package": "G4-K1-CONTROL-FIRST-CALIBRATION-V1",
+  "status": "offline_review_candidate",
+  "printer_mutation_authorized": false,
+  "artifacts": [
+    {
+      "path": "packages/k1-control-v1/first-calibration-v1/first-calibration-contract.json",
+      "sha256": "7216e7cd3966389a46520063fe3954445358ce2123dd019791f1774403f74a6c"
+    },
+    {
+      "path": "packages/k1-control-v1/first-calibration-v1/compare_meshes.py",
+      "sha256": "2014d9127ca951d2e1cbc96ce41a4e3462c28cf1eb0b6ee5fc5924afae7b1578"
+    },
+    {
+      "path": "scripts/run-k1-control-first-calibration-v1.ps1",
+      "sha256": "0082fe284bccfd7c2cb64b04c7e32e88af350bbabff30119859e763996ae5630"
+    }
+  ],
+  "required_installed_hashes": {
+    "printer_cfg_sha256": "0d59dd656844c3198ee43a81056b06830dbe60779d558b71aaa8c28fa708d9ee",
+    "z_mesh_runtime_config_sha256": "dd7fa02a8b7b9bd46850c90cf2a85afa71ce27cfa263c120ef4e9cca6b48c113",
+    "z_mesh_runtime_module_sha256": "696eabec936bd81300acb4e6882d141c1a9ce2494df3bd1f686ff4ee8cbb8ede",
+    "calibration_path_config_sha256": "825aadac8679e0d0e9be140cc5ba4e7656b2bff0d197d1683a73d2b5be4e364e"
+  },
+  "remote_file_installation": false,
+  "reviewed_gcode": [
+    "KCTRL_CALIBRATION_PREHEAT BED_TEMP=60 NOZZLE_TEMP=140 SOAK_SECONDS=600",
+    "NOZZLE_CLEAR HOT_MIN_TEMP=140 HOT_MAX_TEMP=180 BED_MAX_TEMP=60",
+    "KCTRL_CALIBRATION_HOME",
+    "KCTRL_MESH_CALIBRATE X_COUNT=6 Y_COUNT=6 ALGORITHM=lagrange",
+    "KCTRL_MESH_COMMIT PLATE=1 TEMP_BAND=60 PROBE_REV=1 X_COUNT=6 Y_COUNT=6",
+    "KCTRL_CAL_PATH_LOAD_MESH PLATE=1 TEMP_BAND=60 PROBE_REV=1 X_COUNT=6 Y_COUNT=6 BED_TEMP=60 NOZZLE_TEMP=140",
+    "KCTRL_CAL_PATH_START_Z SEED=0.0 PLATE=1 TEMP_BAND=60 PROBE_REV=1 NOZZLE_ID=1 CONFIG_ID=1",
+    "KCTRL_CAL_PATH_BEGIN CLEAR_PLATE=1 CLEAN_NOZZLE=1",
+    "KCTRL_CAL_PATH_MOVE HEIGHT=<next reviewed ladder value>",
+    "KCTRL_CAL_PATH_ADJUST DELTA=<reviewed bounded value>",
+    "KCTRL_CAL_PATH_CONFIRM_GAP CONFIRMED=1",
+    "KCTRL_CAL_PATH_PARK",
+    "KCTRL_CAL_PATH_COMMIT_Z ACCEPTED_AT=<utc unix seconds>",
+    "KCTRL_CAL_PATH_CANCEL_Z",
+    "TURN_OFF_HEATERS",
+    "RESTART only for SAVE_CONFIG completion or exact rollback"
+  ],
+  "persistent_effect_on_success": {
+    "printer_cfg": "one generated bed_mesh profile k1_p001_t060_r001_n06x06",
+    "z_store": "one atomically verified accepted Z record",
+    "runtime_and_calibration_path_files": "unchanged"
+  },
+  "backup": {
+    "path": "/usr/data/k1-control-v1/backups/<capture>/first-calibration-v1",
+    "files": [
+      "printer.cfg.before",
+      "checksums.sha256",
+      "state-baseline-absent"
+    ],
+    "created_before": "first heater command"
+  },
+  "rollback": {
+    "restore_printer_cfg_exactly": true,
+    "restore_z_store_to_absent": true,
+    "preserve_installed_runtime": true,
+    "preserve_installed_calibration_path": true,
+    "turn_off_heaters": true,
+    "restart_klipper": true,
+    "automatic_rerun": false
+  }
+}

@@ -74,7 +74,7 @@ et Mainsail `v2.18.2` épinglés, contrat Orca complet et
 
 ## P4 — Installation contrôlée du système de pilotage
 
-Status: **V3 foundation installed and validated; eight-hour observation pending**
+Status: **V3 + PATHS-V1 observés, runtime et chemin Z installés ; première calibration préparée hors imprimante**
 
 Le produit est posé par étapes techniques réversibles, mais Thomas reçoit un
 seul fonctionnement quotidien :
@@ -83,7 +83,8 @@ seul fonctionnement quotidien :
    rollbackée après preuve d'incompatibilité du compte Moonraker ; V3 conserve
    le syslog stock, place l'authentification compatible sur nginx et est
    installée avec compte vérifié et ouverture LAN contrôlée ;
-2. état et interface de calibration Z ;
+2. état et chemin de calibration Z installés ; candidat de première calibration
+   préparé par checkpoints, sans GO ni exécution ;
 3. mesh, nettoyage, démarrage et purge sûrs ;
 4. propriété dynamique des températures des deux CFS ;
 5. contrat Orca final et retrait prouvé de l'ancien post-traitement.
