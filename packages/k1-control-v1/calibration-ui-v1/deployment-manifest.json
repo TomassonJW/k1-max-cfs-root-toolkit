@@ -7,7 +7,7 @@
   },
   "deployer": {
     "path": "scripts/deploy-k1-control-calibration-ui-v1.ps1",
-    "sha256": "591070225bba7af760e11e006adfbd837a6977c6ccbfb2f1916eafda61784156"
+    "sha256": "1700dd1d17f06598eff4c8fb1409dfda27dd58bfd7cf44c42a37df3abd7d1951"
   },
   "files": [
     {

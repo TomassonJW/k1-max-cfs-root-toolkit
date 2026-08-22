@@ -530,6 +530,17 @@ préflight réel en lecture seule ont obtenu `PLAN_CALIBRATION_UI_V1_OK` et
 `PREFLIGHT_CALIBRATION_UI_V1_OK`. Les nouveaux chemins restent absents et aucun
 service n'a été relancé. La pose exige toujours le GO exact séparé.
 
+Un premier GO exact a ensuite été consommé par la capture
+`20260822-192821-g4-k1-control-calibration-ui-v1`. Le préflight et le backup
+étaient verts, mais le premier `scp` a tenté SFTP et s'est arrêté parce que le
+Dropbear Creality ne fournit pas `sftp-server`. Aucun payload n'a été posé. Le
+rollback automatique a restauré la base exacte, retiré les chemins candidats,
+redémarré seulement Moonraker et le préflight final est vert. Le candidat
+corrigé force maintenant le protocole historique avec `scp -O` et retire le
+staging exact au rollback. Comme le déployeur revu a changé, cette nouvelle
+version a repassé `PREFLIGHT_CALIBRATION_UI_V1_OK` en lecture seule, mais sa pose
+exige un nouveau GO exact séparé.
+
 ## G5 — V1 production baseline
 
 Status: **not passed**

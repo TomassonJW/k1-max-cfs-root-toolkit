@@ -740,3 +740,21 @@ sans fichier distant. Le déployeur est épinglé comme les fichiers posés.
 
 Le préflight réel en lecture seule est vert. Cette preuve ne constitue pas un GO
 de pose et n'a redémarré aucun service.
+
+## D-045 — Les transferts vers Dropbear forcent le protocole SCP historique
+
+Date: 2026-08-22
+
+Status: accepté hors imprimante après rollback réel
+
+Le premier déploiement UI autorisé a atteint son backup exact puis le premier
+transfert. L'OpenSSH Windows actuel emploie SFTP par défaut pour `scp`, tandis
+que le Dropbear Creality ne fournit pas `/usr/libexec/sftp-server`. Le transfert
+s'est donc fermé avant tout payload. Le rollback automatique a restauré la base
+exacte et le préflight final est vert.
+
+Le déployeur force désormais le protocole historique avec `scp -O`. Cette
+option reste limitée à la fonction de transfert vers la K1 ; SSH, les hashes et
+les contrôles ne changent pas. Le rollback supprime également les six noms de
+staging exacts puis retire leur répertoire vide. Le script et son empreinte ayant
+changé après le GO consommé, une seconde tentative exige un nouveau GO exact.

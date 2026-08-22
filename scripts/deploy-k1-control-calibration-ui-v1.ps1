@@ -64,6 +64,7 @@ function Copy-ToRemote {
         [Parameter(Mandatory = $true)][string]$Destination
     )
     $args = @(
+        '-O',
         '-o', 'BatchMode=yes',
         '-o', 'PasswordAuthentication=no',
         '-o', 'KbdInteractiveAuthentication=no',
@@ -219,6 +220,7 @@ function Invoke-ExactRollback {
     [void](Invoke-Remote "cp '$RemoteBackup/moonraker.conf.before' '$RemoteConfig.rollback-next' && mv '$RemoteConfig.rollback-next' '$RemoteConfig'")
     [void](Invoke-Remote "rm -f '$RemoteComponents/k1_control.py' '$RemoteComponents/k1_control_calibration_core.py' '$RemoteComponents/__pycache__/k1_control.cpython-38.pyc' '$RemoteComponents/__pycache__/k1_control_calibration_core.cpython-38.pyc'")
     [void](Invoke-Remote "rm -f '$RemoteUi/index.html' '$RemoteUi/app.js' '$RemoteUi/styles.css' && rmdir '$RemoteUi' 2>/dev/null || true")
+    [void](Invoke-Remote "rm -f '$RemoteStaging/moonraker.conf' '$RemoteStaging/k1_control.py' '$RemoteStaging/k1_control_calibration_core.py' '$RemoteStaging/www__index.html' '$RemoteStaging/www__app.js' '$RemoteStaging/www__styles.css' && rmdir '$RemoteStaging' 2>/dev/null || true")
     [void](Invoke-Remote "'$MoonrakerService' restart")
     Wait-Moonraker
     if ((Get-RemoteSha256 $RemoteConfig) -cne $backupHash) {

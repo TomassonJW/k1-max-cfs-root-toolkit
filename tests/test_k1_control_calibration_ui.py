@@ -382,6 +382,10 @@ class CalibrationUiPackageTests(unittest.TestCase):
         self.assertIn("$RequiredGate = 'G4-K1-CONTROL-CALIBRATION-UI-V1'", source)
         self.assertIn("Get-LocalSha256 $PSCommandPath", source)
         self.assertIn("[string]$Action = 'Plan'", source)
+        copy_to_remote = source[
+            source.index("function Copy-ToRemote"):source.index("function Get-RemoteSha256")
+        ]
+        self.assertIn("'-O'", copy_to_remote)
         backup = source.index("cp '$RemoteConfig' '$RemoteBackup/moonraker.conf.before'")
         mutation = source.index("$MutationStarted = $true", backup)
         transfer = source.index("Copy-ToRemote", mutation)
@@ -391,6 +395,7 @@ class CalibrationUiPackageTests(unittest.TestCase):
         self.assertLess(transfer, install)
         self.assertIn("if ($MutationStarted)", source)
         self.assertIn("Invoke-ExactRollback", source)
+        self.assertIn("rmdir '$RemoteStaging'", source)
         self.assertIn("k1-control-calibration-workflow.json", source)
         self.assertIn("$closedPhases = @('idle', 'committed', 'cancelled')", source)
         self.assertIn("$closedPhases -notcontains [string]$path.phase", source)

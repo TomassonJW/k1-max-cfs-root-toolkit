@@ -468,8 +468,8 @@ lecture seule a obtenu `VALIDATE_FIRST_CALIBRATION_V2_OK`.
 contrôleur Moonraker serveur et une page réelle avec choix de plaque,
 températures, stabilisation, matrice, interpolation, enregistrement, annulation
 et restaurations. Sa pose ne lancerait aucune calibration et redémarrerait
-Moonraker seulement. Elle n'est ni autorisée, ni installée, ni validée sur la
-machine ; l'autonomie calibration reste donc non atteinte.
+Moonraker seulement. Elle n'est pas installée ni validée sur la machine ;
+l'autonomie calibration reste donc non atteinte.
 
 La revue post-calibration a rendu le candidat compatible avec l'état final réel :
 les phases fermées admises sont `idle`, `committed` et `cancelled`; les lectures
@@ -479,14 +479,26 @@ préflight compile et importe les sources en mémoire avec le Python Moonraker
 et le préflight réel en lecture seule sont verts. Aucun fichier distant ou
 restart n'a été produit. La pose attend toujours le GO exact UI séparé.
 
+Thomas a ensuite autorisé cette gate. La capture
+`20260822-192821-g4-k1-control-calibration-ui-v1` a obtenu le préflight et le
+backup exact, puis le premier transfert a échoué avant toute pose parce que
+l'OpenSSH Windows a tenté SFTP sur un Dropbear sans `sftp-server`. Le rollback
+automatique a restauré la base exacte, retiré les chemins candidats et
+redémarré seulement Moonraker. Le préflight final est vert et le staging est
+vide. Le transport corrigé utilise `scp -O` et le rollback retire désormais le
+staging exact. Ce changement de déployeur exige un nouveau GO exact avant une
+seconde tentative. Le paquet corrigé a déjà repassé
+`PREFLIGHT_CALIBRATION_UI_V1_OK` en lecture seule.
+
 The Orca cutover remains a later atomic gate. This runtime slice intentionally
 keeps the active Orca profile, `START_PRINT` and the legacy `+0.27 mm`
 post-processor unchanged.
 
 Thomas explicitly rejected further sacrificial print campaigns on 2026-08-21.
 The V3 + PATHS-V1 observation remains useful coexistence evidence but no longer
-blocks offline product construction. Aucune nouvelle mutation n'est autorisée
-sur la K1 après la clôture de `G4-K1-CONTROL-FIRST-CALIBRATION-V2`.
+blocks offline product construction. Après le rollback UI confirmé, aucune
+nouvelle mutation n'est autorisée sur la K1 sans le nouveau GO exact du candidat
+corrigé.
 
 Do not remove or disable the current Orca `+0.27 mm` post-processor. Its
 retirement remains atomic with the later proven machine/Orca replacement.
