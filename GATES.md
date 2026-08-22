@@ -721,7 +721,7 @@ XS3002 avant toute chauffe ou mesure. Le rollback automatique a restauré
 
 ### Gate corrective — `G4-K1-CONTROL-CALIBRATION-UI-PRTOUCH-BED-MESH-V2`
 
-Status: **candidat figé ; 195 tests et préflight réel verts ; autorisée par le goal global**
+Status: **installée et validée**
 
 V2 remplace uniquement le composant prtouch V1 et redémarre le Moonraker dédié,
 sans modifier `printer.cfg` pendant la pose ni lancer d'action physique. Pendant
@@ -730,7 +730,11 @@ la campagne, il commute atomiquement puis relit le couple
 `9/11/15` exigent `bicubic`; le niveau `6` revient à `lagrange`. Un échec restaure
 les deux valeurs ensemble. Le préflight réel a obtenu
 `PREFLIGHT_CALIBRATION_UI_PRTOUCH_BED_MESH_V2_OK` sur l'état XS3002 restauré à
-zéro mesh.
+zéro mesh. La capture
+`20260823-005835-g4-k1-control-calibration-ui-prtouch-bed-mesh-v2` a ensuite
+obtenu le déploiement et deux validations vertes. Après rollback exact de la
+campagne XS3002, le préflight complet
+`20260823-010153-g4-k1-control-calibration-ui-campaign-v1` est vert.
 
 ## G5 — V1 production baseline
 

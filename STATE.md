@@ -629,9 +629,12 @@ Le candidat séparé
 composant prtouch déjà installé. Il commute, vérifie et restaure atomiquement
 `probe_count + algorithm`; `9/11/15` utilisent bicubique et `6` revient à
 Lagrange. Les 10 tests ciblés et les 195 tests complets sont verts, avec 3
-ignorés connus. Le préflight réel a obtenu
-`PREFLIGHT_CALIBRATION_UI_PRTOUCH_BED_MESH_V2_OK`; aucune pose V2 n'a encore eu
-lieu.
+ignorés connus. La capture
+`20260823-005835-g4-k1-control-calibration-ui-prtouch-bed-mesh-v2` a obtenu le
+déploiement et deux validations vertes. La campagne XS3002 a été restaurée
+exactement, puis le préflight complet
+`20260823-010153-g4-k1-control-calibration-ui-campaign-v1` est vert. La K1 attend
+le nouveau départ écran `9 × 9`.
 
 The Orca cutover remains a later atomic gate. This runtime slice intentionally
 keeps the active Orca profile, `START_PRINT` and the legacy `+0.27 mm`

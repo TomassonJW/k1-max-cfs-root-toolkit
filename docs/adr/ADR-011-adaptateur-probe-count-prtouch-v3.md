@@ -2,7 +2,7 @@
 
 Date : 2026-08-23
 
-Statut : accepté puis complété par PRTOUCH-BED-MESH-V2 après XS3002
+Statut : accepté, complété par PRTOUCH-BED-MESH-V2, installé et validé
 
 ## Contexte
 

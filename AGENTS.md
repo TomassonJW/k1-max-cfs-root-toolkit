@@ -14,8 +14,9 @@ FIRST-CALIBRATION-V1 stopped KO; FIRST-CALIBRATION-V2 is installed and validated
 CALIBRATION-UI-V1, MATRIX-V1, RETRY-SAFETY-V1, PRTOUCH-MATRIX-V1 et
 PRTOUCH-PRESETS-V1 sont installés ; le second départ réel `9 × 9` a exposé la
 frontière couplée `probe_count + algorithm` par XS3002 avant toute chauffe ; le
-rollback automatique est vert ; PRTOUCH-BED-MESH-V2 est figé, testé et
-préflighté, mais pas encore posé ; production remains closed**.
+rollback automatique est vert ; PRTOUCH-BED-MESH-V2 est installé et validé ;
+le préflight de reprise est vert et attend le nouveau départ écran `9 × 9` ;
+production remains closed**.
 
 Thomas authorised V1, but the mandatory preflight proved that `logrotate` was
 absent. V1 is closed and must never be deployed. Thomas later authorised V2;
@@ -322,9 +323,13 @@ automatiquement `6,6 + lagrange` ; Klipper est prêt, les chauffes sont à zéro
 le Z `−0,04 mm`, le profil rapide et les deux CFS sont intacts. Le paquet séparé
 `G4-K1-CONTROL-CALIBRATION-UI-PRTOUCH-BED-MESH-V2` remplace seulement le
 composant déjà installé et commute désormais le couple exact. Ses 10 tests
-ciblés, les 195 tests complets et son préflight réel sont verts. Sa pose sous
-l'autorité du goal est la prochaine action ; elle redémarre seulement le
-Moonraker dédié et ne lance aucune action physique.
+ciblés et les 195 tests complets sont verts. La capture
+`20260823-005835-g4-k1-control-calibration-ui-prtouch-bed-mesh-v2` a obtenu le
+déploiement et deux validations vertes. La campagne XS3002 a été restaurée
+exactement, puis le préflight complet
+`20260823-010153-g4-k1-control-calibration-ui-campaign-v1` est vert. La prochaine
+action est le nouveau départ écran `9 × 9` avec confirmation fraîche du plateau
+libre.
 
 Thomas demande que chaque prochaine reprise commence par un état explicite de
 l'autonomie, sans confondre le runtime installé avec une interface terminée :

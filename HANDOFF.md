@@ -2,7 +2,7 @@
 
 Date: 2026-08-23
 Phase: P4 / FIRST-CALIBRATION-V2 validée ; mesh robuste et Z `−0,04 mm` retenus ; production fermée
-Next operator: poser et valider PRTOUCH-BED-MESH-V2, restaurer la campagne XS3002, puis relancer le niveau 9 × 9 depuis l'écran
+Next operator: recharger l'interface, confirmer le plateau libre et relancer le niveau 9 × 9 depuis l'écran
 
 ## Message obligatoire au début de la prochaine session
 
@@ -690,8 +690,13 @@ Le paquet séparé
 composant V1 et redémarre uniquement le Moonraker dédié. Son runtime commute et
 relit ensemble `probe_count + algorithm`, refuse `9/11/15 + lagrange`, puis
 restaure les deux valeurs après chauffes ou échec. Les 10 tests ciblés, les 195
-tests complets et le préflight réel sont verts. Aucune pose V2 n'a encore eu
-lieu ; elle est la prochaine action couverte par l'autorité globale du goal.
+tests complets sont verts. La capture
+`20260823-005835-g4-k1-control-calibration-ui-prtouch-bed-mesh-v2` a obtenu le
+déploiement et deux validations vertes. La campagne XS3002 est restaurée
+exactement et le préflight complet
+`20260823-010153-g4-k1-control-calibration-ui-campaign-v1` est vert. La prochaine
+action est uniquement le nouveau départ écran `9 × 9` avec confirmation fraîche
+du plateau libre.
 
 La gate précédente est close avec `DEPLOY_CALIBRATION_PATH_V1_OK` et
 `VALIDATE_CALIBRATION_PATH_V1_OK` sous la capture
