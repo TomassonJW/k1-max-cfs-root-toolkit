@@ -265,7 +265,13 @@ sans supprimer la possibilité d'un remplacement volontaire. Il ne remplacerait
 que `app.js`, sans restart ni action physique. Ses 179 tests et son préflight
 réel `20260822-231240-g4-k1-control-calibration-ui-retry-safety-v1` sont verts.
 L'autorité globale explicite du goal couvre cette correction nécessaire sans
-nouveau GO ; elle doit être posée et rendue avant la reprise de la campagne.
+nouveau GO. Le même identifiant a ensuite obtenu
+`DEPLOY_CALIBRATION_UI_RETRY_SAFETY_V1_OK` et deux
+`VALIDATE_CALIBRATION_UI_RETRY_SAFETY_V1_OK`. Seul `app.js` a été remplacé après
+backup exact, sans restart, chauffe, homing, mouvement, mesure ou Z. Le rendu
+réel attend l'authentification humaine sur le tunnel temporaire neuf `4410`,
+créé pour éviter le cache Mainsail de l'origine `4409`. La campagne ne reprend
+pas avant la preuve des deux cases décochées sur ce vrai rendu.
 
 Thomas demande que chaque prochaine reprise commence par un état explicite de
 l'autonomie, sans confondre le runtime installé avec une interface terminée :

@@ -629,8 +629,12 @@ intact. Le paquet correctif séparé
 restart. Il remet une seule fois remplacement et plateau libre à faux après une
 reprise incomplète. Ses 179 tests et son préflight réel sous la capture
 `20260822-231240-g4-k1-control-calibration-ui-retry-safety-v1` sont verts.
-L'autorité globale du goal couvre sa pose sans nouveau GO. La prochaine action
-est sa pose exacte, son rendu réel, puis la reprise `9 × 9`.
+L'autorité globale du goal a couvert sa pose sans nouveau GO. Le même identifiant
+a obtenu le déploiement et deux validations vertes. Seul `app.js` a été remplacé
+après backup exact, sans restart ni action physique. Le rechargement sur `4409`
+a affiché le cache Mainsail ; le tunnel temporaire propre `127.0.0.1:4410` est
+actif et attend l'authentification humaine. La prochaine action est le vrai rendu
+des deux cases décochées sur `4410`, puis la reprise `9 × 9`.
 
 La gate précédente est close avec `DEPLOY_CALIBRATION_PATH_V1_OK` et
 `VALIDATE_CALIBRATION_PATH_V1_OK` sous la capture

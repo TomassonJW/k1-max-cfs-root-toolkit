@@ -565,7 +565,12 @@ volontaire. Son write-set est le seul `app.js`; aucun service, chauffage,
 homing, mouvement, mesh ou Z n'est appelé. Les 179 tests sont verts et le
 préflight réel de la capture
 `20260822-231240-g4-k1-control-calibration-ui-retry-safety-v1` est vert.
-L'autorité globale explicite du goal couvre sa pose sans nouveau GO.
+L'autorité globale explicite du goal a couvert sa pose sans nouveau GO. Le même
+identifiant a obtenu le déploiement et deux validations vertes. Seul `app.js` a
+été remplacé après backup exact ; aucun service n'a été redémarré et aucune
+action physique n'a eu lieu. Le vrai rendu reste à valider après authentification
+humaine sur le tunnel neuf `127.0.0.1:4410`, isolé du cache Mainsail observé sur
+`4409`.
 
 The Orca cutover remains a later atomic gate. This runtime slice intentionally
 keeps the active Orca profile, `START_PRINT` and the legacy `+0.27 mm`

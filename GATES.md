@@ -611,7 +611,7 @@ décochées. La gate est close ; son GO ne couvre aucun rerun ni la campagne.
 
 ### Gate corrective — `G4-K1-CONTROL-CALIBRATION-UI-RETRY-SAFETY-V1`
 
-Status: **candidat figé, préflight réel vert, autorisé par le goal global**
+Status: **déployée et validée côté machine ; rendu navigateur en attente**
 
 Deux départs humains `9 × 9` ont prouvé que `replace_existing=true` restait
 collant après une annulation à `0/6`. Les deux tentatives ont été arrêtées avant
@@ -624,8 +624,13 @@ Les 179 tests sont verts. Le préflight réel sous la capture
 `20260822-231240-g4-k1-control-calibration-ui-retry-safety-v1` a obtenu
 `PREFLIGHT_CALIBRATION_UI_RETRY_SAFETY_V1_OK` sur une K1 au repos, chauffes à
 zéro, Z accepté intact, chemin fermé et aucun profil transitoire. Le goal global
-de Thomas autorise explicitement les corrections nécessaires sans redemander un
-GO ; la pose doit précéder la reprise de la campagne.
+de Thomas a autorisé la pose sans redemander un GO. Le même identifiant a obtenu
+`DEPLOY_CALIBRATION_UI_RETRY_SAFETY_V1_OK` puis deux
+`VALIDATE_CALIBRATION_UI_RETRY_SAFETY_V1_OK`. Seul `app.js` a été remplacé après
+backup exact, sans restart ni action physique. La route `4409` ayant été reprise
+par le cache Mainsail au rechargement, un tunnel temporaire neuf `4410` est prêt.
+La gate attend uniquement l'authentification humaine puis la preuve réelle des
+deux cases décochées avant reprise de la campagne.
 
 ### Gate préparée — `G4-K1-CONTROL-CALIBRATION-UI-CAMPAIGN-V1`
 
