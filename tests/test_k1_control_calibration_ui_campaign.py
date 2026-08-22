@@ -21,6 +21,9 @@ class CalibrationUiCampaignContractTests(unittest.TestCase):
             "G4-K1-CONTROL-CALIBRATION-UI-CAMPAIGN-V1",
         )
         self.assertEqual(manifest["operator_control"], "browser_only")
+        self.assertEqual(manifest["mesh_measurements_per_level"], 6)
+        self.assertEqual(manifest["physical_levels"], 4)
+        self.assertEqual(manifest["total_mesh_measurements"], 24)
         for artifact in manifest["artifacts"]:
             path = ROOT / artifact["path"]
             self.assertEqual(
@@ -44,7 +47,7 @@ class CalibrationUiCampaignContractTests(unittest.TestCase):
         )
         self.assertEqual(contract["rerun_policy"], "no_automatic_rerun")
 
-    def test_all_matrix_levels_are_declared_without_overclaiming_physical_runs(self):
+    def test_all_matrix_levels_require_real_physical_mesh_proof(self):
         contract = json.loads(CONTRACT.read_text(encoding="utf-8"))
         capability = contract["matrix_capability"]
         self.assertEqual(
@@ -56,25 +59,29 @@ class CalibrationUiCampaignContractTests(unittest.TestCase):
                 ([15, 15], "bicubic"),
             ],
         )
-        self.assertEqual(capability["physical_campaign_preset"], "quick")
-        self.assertIn("without_claiming_four_physical_campaigns", capability["physical_campaign_scope"])
+        self.assertEqual(capability["physical_proof"], "six_real_meshes_at_every_preset")
+        self.assertEqual(capability["full_z_workflow_preset"], "quick")
 
     def test_exact_proven_settings_and_final_guards_are_declared(self):
         contract = json.loads(CONTRACT.read_text(encoding="utf-8"))
-        settings = contract["operator_settings"]
+        settings = contract["common_operator_settings"]
         self.assertEqual(settings["plate"], "PEI_TEXTURED_A")
         self.assertEqual(
             (settings["bed_temperature_c"], settings["nozzle_temperature_c"]),
             (55, 140),
         )
         self.assertEqual(settings["soak_seconds"], 200)
-        self.assertEqual(settings["matrix"], [6, 6])
-        self.assertEqual(settings["interpolation"], "lagrange")
         self.assertEqual(settings["expected_initial_seed_z_mm"], -0.04)
-        self.assertTrue(settings["replace_existing"])
+        sequence = contract["physical_sequence"]
+        self.assertEqual([item["name"] for item in sequence], ["standard", "precise", "expert", "quick"])
+        self.assertEqual([item["matrix"] for item in sequence], [[9, 9], [11, 11], [15, 15], [6, 6]])
+        self.assertEqual([item["interpolation"] for item in sequence], ["bicubic", "bicubic", "bicubic", "lagrange"])
+        self.assertEqual([item["replace_existing"] for item in sequence], [False, False, False, True])
         results = contract["required_results"]
-        self.assertEqual(results["mesh_measurements"], 6)
+        self.assertEqual(results["mesh_measurements_per_level"], 6)
+        self.assertEqual(results["total_mesh_measurements"], 24)
         self.assertFalse(results["automatic_extra_measurement"])
+        self.assertEqual(len(results["profiles"]), 4)
         self.assertEqual(results["runtime_store_integrity"], "ok")
         self.assertEqual(results["runtime_accepted_z_valid"], 1)
         self.assertEqual(results["runtime_session_active"], 0)
@@ -104,13 +111,16 @@ class CalibrationUiCampaignContractTests(unittest.TestCase):
         self.assertIn("sans console et sans commande Codex", readme)
         self.assertIn("Aucun septième passage", readme)
         self.assertIn("Aucun rerun automatique", readme)
+        self.assertIn("vingt-quatre meshes", readme)
 
     def test_validator_is_read_only_and_checks_the_full_final_state(self):
         source = VALIDATOR.read_text(encoding="utf-8")
-        self.assertIn("[ValidateSet('Plan', 'Preflight', 'Validate')]", source)
+        self.assertIn("[ValidateSet('Plan', 'Preflight', 'CaptureLevel', 'Validate')]", source)
         self.assertIn("Assert-InstalledUi", source)
         self.assertIn("Assert-ExactCampaignConfig", source)
         self.assertIn("Assert-Qualification", source)
+        self.assertIn("Assert-ExpectedProfiles", source)
+        self.assertIn("CAPTURE_CALIBRATION_UI_LEVEL_OK", source)
         self.assertIn("@($privateState.meshes).Count -ne 6", source)
         self.assertIn("Assert-SafeAcceptedMachine", source)
         self.assertIn("VALIDATE_CALIBRATION_UI_CAMPAIGN_V1_OK", source)

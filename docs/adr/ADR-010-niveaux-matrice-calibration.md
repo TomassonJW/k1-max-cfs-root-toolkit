@@ -47,6 +47,9 @@ runtime interne sait aller plus loin.
   meshes complets restent obligatoires ;
 - les quatre niveaux passent des tests de configuration et d'agrégation hors
   imprimante ;
-- la première campagne physique de validation de l'interface reste en `6 × 6`
-  pour prouver le parcours complet sans prétendre qualifier physiquement les
-  quatre niveaux.
+- la campagne de validation qualifie physiquement six meshes pour chacun des
+  quatre niveaux ; les niveaux `9 × 9`, `11 × 11` et `15 × 15` sont capturés
+  puis annulés proprement sans refaire le Z ;
+- le `6 × 6` est exécuté en dernier et porte seul le parcours Z complet, afin de
+  terminer la preuve dans l'état quotidien `accepted` avec les quatre profils
+  persistants.
