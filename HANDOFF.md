@@ -1,15 +1,17 @@
 # HANDOFF
 
-Date: 2026-08-22
+Date: 2026-08-23
 Phase: P4 / FIRST-CALIBRATION-V2 validée ; mesh robuste et Z `−0,04 mm` retenus ; production fermée
-Next operator: annoncer l'écart d'autonomie, présenter la revue figée UI, puis attendre son GO exact
+Next operator: poser et valider PRTOUCH-BED-MESH-V2, restaurer la campagne XS3002, puis relancer le niveau 9 × 9 depuis l'écran
 
 ## Message obligatoire au début de la prochaine session
 
 Dire clairement à Thomas, avant toute proposition d'exécution :
 
-- **l'autonomie calibration n'est pas encore atteinte** : une interface réelle
-  est préparée hors imprimante, mais elle n'est ni posée ni validée sur la K1 ;
+- **l'autonomie calibration n'est pas encore atteinte** : l'interface réelle est
+  posée, mais la première preuve `9 × 9` a révélé la frontière `probe_count` du
+  wrapper Creality ; le correctif séparé est prêt et doit encore être posé puis
+  prouvé par la campagne complète ;
 - **l'autonomie production n'est pas encore atteinte** : Orca, `START_PRINT`,
   l'ancien `+0,27 mm` et les températures CFS ne sont pas encore basculés vers
   le nouveau contrat ;
@@ -621,17 +623,87 @@ gate unique est `G4-K1-CONTROL-CALIBRATION-UI-CAMPAIGN-V1`; elle prouvera
 l'autonomie de calibration par vingt-quatre meshes et un parcours Z entièrement
 pilotés depuis l'écran.
 
+Le premier départ `9 × 9` a toutefois montré que la case de remplacement restait
+cochée après une annulation à `0/6`; une seconde reprise a répété le problème.
+Les deux tentatives ont été annulées avant toute mesure et l'état durable est
+intact. Le paquet correctif séparé
+`G4-K1-CONTROL-CALIBRATION-UI-RETRY-SAFETY-V1` ne remplace que `app.js`, sans
+restart. Il remet une seule fois remplacement et plateau libre à faux après une
+reprise incomplète. Ses 179 tests et son préflight réel sous la capture
+`20260822-231240-g4-k1-control-calibration-ui-retry-safety-v1` sont verts.
+L'autorité globale du goal a couvert sa pose sans nouveau GO. Le même identifiant
+a obtenu le déploiement et deux validations vertes. Seul `app.js` a été remplacé
+après backup exact, sans restart ni action physique. Le rechargement sur `4409`
+a affiché le cache Mainsail ; le tunnel temporaire propre `127.0.0.1:4410` est
+actif et attend l'authentification humaine. La prochaine action est le vrai rendu
+des deux cases décochées sur `4410`, puis la reprise `9 × 9`.
+
+Le tunnel `4410` a depuis été recréé avec un seul processus connecté et les
+empreintes distantes confirment que l'interface et le correctif existent. Le
+préflight de campagne bloquait toutefois à tort sur l'état sûr `cancelled`
+laissé à `0/6`. Le validateur accepte maintenant uniquement un `idle` neuf ou
+ce cas précis à zéro mesure avec backup ; il refuse une reprise après le premier
+mesh. Le test ciblé est vert et la capture
+`20260822-233717-g4-k1-control-calibration-ui-campaign-v1` a obtenu
+`PREFLIGHT_CALIBRATION_UI_CAMPAIGN_V1_OK`. Il reste à recharger `4410`, constater
+les deux confirmations décochées, puis lancer le niveau `9 × 9` depuis l'écran.
+
+Le lancement a été conforme (`9 × 9`, bicubique, remplacement faux). Après la
+chauffe, les `200 s`, le nettoyage et le homing, la première grille s'est
+arrêtée à `1/6` avec `Le mesh ne contient pas le nombre de lignes attendu.`
+Aucune matrice n'a été conservée. Les chauffes sont à zéro, le Z `−0,04 mm` et
+le profil `6 × 6` sont intacts. Le firmware exact montre que `prtouch_v3`
+utilise le `probe_count` chargé à `6,6` et ignore l'extension dynamique attendue.
+
+ADR-011 et `G4-K1-CONTROL-CALIBRATION-UI-PRTOUCH-MATRIX-V1` corrigent cette
+frontière sans contourner le capteur Creality : commutation atomique après
+backup et avant chauffe, restart Klipper vérifié, restauration après coupure
+des chauffes. La pose ajoute seulement le composant et sa section Moonraker,
+sans toucher `printer.cfg`. La capture
+`20260823-001724-g4-k1-control-calibration-ui-prtouch-matrix-v1` a obtenu le
+déploiement et deux validations vertes. L'essai vide est restauré exactement en
+phase `rolled_back`, avec le Z `−0,04 mm`, le profil `6 × 6`, le stockage et les
+chauffes conformes.
+
+Le delta statique `G4-K1-CONTROL-CALIBRATION-UI-PRTOUCH-PRESETS-V1` retire le
+choix `4 × 4` inexécutable et conserve `3/5/6/9/11/15`. Son premier transfert a
+rencontré un défaut de guillemets dans la validation locale puis a restauré
+automatiquement les deux fichiers exacts. Après correction, la capture
+`20260823-003755-g4-k1-control-calibration-ui-prtouch-presets-v1` a obtenu le
+déploiement et deux validations vertes, sans restart ni action physique. La
+suite complète compte 191 tests verts, 3 ignorés connus. Le préflight de reprise
+`20260823-002500-g4-k1-control-calibration-ui-campaign-v1` est vert. L'autorité
+globale du goal couvre toute la campagne ; le seul verrou courant est la
+confirmation physique fraîche du plateau libre avant le nouveau départ écran
+`9 × 9`.
+
+Thomas a relancé le `9 × 9`. Le composant V1 a chargé `probe_count=9,9`, puis
+Klipper a refusé son démarrage avec XS3002 parce que l'algorithme persistant
+restait `lagrange`. Aucun chauffage, homing, mouvement ou mesh n'avait commencé.
+La garde de 120 s a déclenché le rollback automatique : `6,6 + lagrange`,
+Klipper prêt, cibles zéro, Z `−0,04 mm`, profil rapide, stockage et deux CFS
+intacts. La campagne `20260823-004305-421-calibration-ui-v1` est `failed` à
+`0/6` avec son backup disponible.
+
+Le paquet séparé
+`G4-K1-CONTROL-CALIBRATION-UI-PRTOUCH-BED-MESH-V2` remplace seulement le
+composant V1 et redémarre uniquement le Moonraker dédié. Son runtime commute et
+relit ensemble `probe_count + algorithm`, refuse `9/11/15 + lagrange`, puis
+restaure les deux valeurs après chauffes ou échec. Les 10 tests ciblés, les 195
+tests complets et le préflight réel sont verts. Aucune pose V2 n'a encore eu
+lieu ; elle est la prochaine action couverte par l'autorité globale du goal.
+
 La gate précédente est close avec `DEPLOY_CALIBRATION_PATH_V1_OK` et
 `VALIDATE_CALIBRATION_PATH_V1_OK` sous la capture
 `20260822-124207-g4-k1-control-calibration-path-v1`.
 
-Autorisation actuelle : **AUCUNE NOUVELLE MUTATION IMPRIMANTE**.
+Autorisation actuelle : **GOAL GLOBAL ACTIF POUR LA CORRECTION ET LA CAMPAGNE**.
 FIRST-CALIBRATION-V2, CALIBRATION-UI-V1 et CALIBRATION-UI-MATRIX-V1 sont
-validées et closes. Le GO matrice est consommé. Le GO de campagne envoyé avant
-la correction de matrice n'est pas consommé, car son protocole a changé depuis.
-La prochaine mutation possible est uniquement
-`G4-K1-CONTROL-CALIBRATION-UI-CAMPAIGN-V1` après son nouveau GO exact. La
-bascule production reste une gate plus tardive et séparée.
+validées et closes. Le GO matrice est consommé. Thomas a ensuite donné dans le
+goal une autorité globale explicite pour aller jusqu'au vert calibration sans
+redemander de GO. Elle couvre `CALIBRATION-UI-RETRY-SAFETY-V1`, puis la campagne
+écran revue. Elle ne couvre pas la bascule production, qui reste une gate plus
+tardive et séparée.
 
 La bascule Orca reste une gate ultérieure unique : wrappers de travail côté
 machine, trois champs Orca et retrait du post-traitement doivent changer

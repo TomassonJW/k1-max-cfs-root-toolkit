@@ -124,9 +124,26 @@ class CalibrationUiCampaignContractTests(unittest.TestCase):
         self.assertIn("@($privateState.meshes).Count -ne 6", source)
         self.assertIn("Assert-SafeAcceptedMachine", source)
         self.assertIn("VALIDATE_CALIBRATION_UI_CAMPAIGN_V1_OK", source)
+        self.assertIn("ExpectedProbeCountManifestHash", source)
+        self.assertIn("ProbeCountManifest", source)
+        self.assertIn("Payload adaptateur prtouch distant inattendu", source)
+        self.assertIn("ExpectedPresetManifestHash", source)
+        self.assertIn("PresetManifest", source)
+        self.assertIn("Payload des choix prtouch distant inattendu", source)
         self.assertNotIn("/printer/gcode/script", source)
         self.assertNotIn("KCTRL_MESH_CALIBRATE", source)
         self.assertNotIn("KCTRL_CAL_PATH_MOVE", source)
+
+    def test_preflight_accepts_only_fresh_cancelled_zero_or_exact_rollback(self):
+        source = VALIDATOR.read_text(encoding="utf-8")
+        self.assertIn("$freshIdle", source)
+        self.assertIn("$cancelledBeforeFirstMesh", source)
+        self.assertIn("$exactRollback", source)
+        self.assertIn("[int]$api.mesh_index -eq 0", source)
+        self.assertIn("[bool]$api.backup_available", source)
+        self.assertIn("$api.rollback.printer_cfg_sha256", source)
+        self.assertIn("Assert-SafeAcceptedMachine $snapshot\n", source)
+        self.assertNotIn("@('cancelled', 'failed', 'mesh_rejected')", source)
 
 
 if __name__ == "__main__":

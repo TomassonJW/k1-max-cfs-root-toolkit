@@ -22,8 +22,17 @@ if ($PSVersionTable.PSVersion.Major -lt 7) {
 $WorkspaceRoot = (Resolve-Path (Join-Path $PSScriptRoot '..')).Path
 $UiPackage = Join-Path $WorkspaceRoot 'packages\k1-control-v1\calibration-ui-matrix-v1'
 $UiManifestPath = Join-Path $UiPackage 'deployment-manifest.json'
+$RetryPackage = Join-Path $WorkspaceRoot 'packages\k1-control-v1\calibration-ui-retry-safety-v1'
+$RetryManifestPath = Join-Path $RetryPackage 'deployment-manifest.json'
+$ProbeCountPackage = Join-Path $WorkspaceRoot 'packages\k1-control-v1\calibration-ui-prtouch-matrix-v1'
+$ProbeCountManifestPath = Join-Path $ProbeCountPackage 'deployment-manifest.json'
+$PresetPackage = Join-Path $WorkspaceRoot 'packages\k1-control-v1\calibration-ui-prtouch-presets-v1'
+$PresetManifestPath = Join-Path $PresetPackage 'deployment-manifest.json'
 $CampaignContractPath = Join-Path $WorkspaceRoot 'packages\k1-control-v1\calibration-ui-campaign-v1\calibration-ui-campaign-contract.json'
 $ExpectedUiManifestHash = '8970109289fb64645de22d6530c32c397738509ede0983a5e6362f1c4feae7db'
+$ExpectedRetryManifestHash = '6c50d95bd542a59284a67291ade4a216ae53b125fc4cd5a0521bc726cf0c7c0f'
+$ExpectedProbeCountManifestHash = '055a55d413482f20b3bc2dcfc6d54a3f9e85b434b3b0e72f5d9d9fc46917530f'
+$ExpectedPresetManifestHash = 'aa6b2a6b173359202b0586ccb95cedbfbaa4d229c570880b5fdfbdab532271e2'
 $ExpectedCampaignContractHash = '768d257c4b6c0f114edbdf7f8172920c1bf593646dc06e3bcf490b6fbfa457ae'
 $RemoteUi = '/usr/data/k1-control-v1/current/www/mainsail/k1-control'
 $RemoteState = '/usr/data/k1-control-v1/state/k1-control-calibration-workflow.json'
@@ -69,9 +78,24 @@ function Assert-ReviewedLocalFiles {
     if ((Get-LocalSha256 $CampaignContractPath) -cne $ExpectedCampaignContractHash) {
         throw 'Contrat de campagne local différent de la version revue.'
     }
+    if ((Get-LocalSha256 $RetryManifestPath) -cne $ExpectedRetryManifestHash) {
+        throw 'Manifeste de sécurité de reprise différent de la version revue.'
+    }
+    if ((Get-LocalSha256 $ProbeCountManifestPath) -cne $ExpectedProbeCountManifestHash) {
+        throw 'Manifeste adaptateur prtouch différent de la version revue.'
+    }
+    if ((Get-LocalSha256 $PresetManifestPath) -cne $ExpectedPresetManifestHash) {
+        throw 'Manifeste des choix prtouch différent de la version revue.'
+    }
     $manifest = Get-Content -LiteralPath $UiManifestPath -Raw | ConvertFrom-Json
+    $retryManifest = Get-Content -LiteralPath $RetryManifestPath -Raw | ConvertFrom-Json
+    $probeCountManifest = Get-Content -LiteralPath $ProbeCountManifestPath -Raw | ConvertFrom-Json
+    $presetManifest = Get-Content -LiteralPath $PresetManifestPath -Raw | ConvertFrom-Json
     $contract = Get-Content -LiteralPath $CampaignContractPath -Raw | ConvertFrom-Json
     if ($manifest.contract_id -cne 'G4-K1-CONTROL-CALIBRATION-UI-MATRIX-V1' -or
+        $retryManifest.contract_id -cne 'G4-K1-CONTROL-CALIBRATION-UI-RETRY-SAFETY-V1' -or
+        $probeCountManifest.contract_id -cne 'G4-K1-CONTROL-CALIBRATION-UI-PRTOUCH-MATRIX-V1' -or
+        $presetManifest.contract_id -cne 'G4-K1-CONTROL-CALIBRATION-UI-PRTOUCH-PRESETS-V1' -or
         $contract.contract_id -cne 'G4-K1-CONTROL-CALIBRATION-UI-CAMPAIGN-V1') {
         throw 'Identité du paquet UI ou de la campagne inattendue.'
     }
@@ -81,7 +105,29 @@ function Assert-ReviewedLocalFiles {
             throw "Payload UI local non revu : $($file.source)"
         }
     }
-    return @{ Manifest = $manifest; Contract = $contract }
+    $retrySource = Join-Path $RetryPackage ([string]$retryManifest.file.source)
+    if ((Get-LocalSha256 $retrySource) -cne ([string]$retryManifest.file.sha256)) {
+        throw 'Payload de sécurité de reprise local non revu.'
+    }
+    foreach ($file in $probeCountManifest.files) {
+        $local = Join-Path $ProbeCountPackage ([string]$file.source)
+        if ((Get-LocalSha256 $local) -cne ([string]$file.sha256)) {
+            throw "Payload adaptateur prtouch local non revu : $($file.source)"
+        }
+    }
+    foreach ($file in $presetManifest.files) {
+        $local = Join-Path $PresetPackage ([string]$file.source)
+        if ((Get-LocalSha256 $local) -cne ([string]$file.sha256)) {
+            throw "Payload des choix prtouch local non revu : $($file.source)"
+        }
+    }
+    return @{
+        Manifest = $manifest
+        RetryManifest = $retryManifest
+        ProbeCountManifest = $probeCountManifest
+        PresetManifest = $presetManifest
+        Contract = $contract
+    }
 }
 
 function Assert-EvidenceDirectory {
@@ -116,15 +162,46 @@ function Save-Evidence {
 }
 
 function Assert-InstalledUi {
-    param([Parameter(Mandatory = $true)]$Manifest)
+    param(
+        [Parameter(Mandatory = $true)]$Manifest,
+        [Parameter(Mandatory = $true)]$RetryManifest,
+        [Parameter(Mandatory = $true)]$ProbeCountManifest,
+        [Parameter(Mandatory = $true)]$PresetManifest
+    )
+    $probeCountDestinations = @($ProbeCountManifest.files | ForEach-Object { [string]$_.destination })
+    $presetDestinations = @($PresetManifest.files | ForEach-Object { [string]$_.destination })
+    $supersededDestinations = @($probeCountDestinations + $presetDestinations)
     foreach ($file in $Manifest.files) {
+        if ([string]$file.destination -ceq [string]$RetryManifest.file.destination -or
+            $presetDestinations -ccontains [string]$file.destination) { continue }
         if ((Get-RemoteSha256 ([string]$file.destination)) -cne ([string]$file.sha256)) {
             throw "Payload UI distant inattendu : $($file.destination)"
         }
     }
+    if ($presetDestinations -notcontains [string]$RetryManifest.file.destination -and
+        (Get-RemoteSha256 ([string]$RetryManifest.file.destination)) -cne ([string]$RetryManifest.file.sha256)) {
+        throw 'Correctif distant de sécurité de reprise inattendu.'
+    }
     foreach ($file in $Manifest.unchanged.files) {
+        if ($supersededDestinations -ccontains [string]$file.destination) { continue }
         if ((Get-RemoteSha256 ([string]$file.destination)) -cne ([string]$file.sha256)) {
             throw "Payload UI hors write-set inattendu : $($file.destination)"
+        }
+    }
+    foreach ($file in $RetryManifest.unchanged.files) {
+        if ($supersededDestinations -ccontains [string]$file.destination) { continue }
+        if ((Get-RemoteSha256 ([string]$file.destination)) -cne ([string]$file.sha256)) {
+            throw "Payload hors write-set RETRY-SAFETY inattendu : $($file.destination)"
+        }
+    }
+    foreach ($file in $ProbeCountManifest.files) {
+        if ((Get-RemoteSha256 ([string]$file.destination)) -cne ([string]$file.sha256)) {
+            throw "Payload adaptateur prtouch distant inattendu : $($file.destination)"
+        }
+    }
+    foreach ($file in $PresetManifest.files) {
+        if ((Get-RemoteSha256 ([string]$file.destination)) -cne ([string]$file.sha256)) {
+            throw "Payload des choix prtouch distant inattendu : $($file.destination)"
         }
     }
     $mode = ((Invoke-Remote "stat -c '%a' '$RemoteUi'") | Select-Object -First 1).Trim()
@@ -267,15 +344,25 @@ if ($Action -eq 'Plan') {
 }
 
 [void](Assert-EvidenceDirectory)
-Assert-InstalledUi $reviewed.Manifest
+Assert-InstalledUi $reviewed.Manifest $reviewed.RetryManifest $reviewed.ProbeCountManifest $reviewed.PresetManifest
 $api = Get-ApiState
 $snapshot = Get-PrinterSnapshot
 
 if ($Action -eq 'Preflight') {
-    if ($api.phase -cne 'idle' -or [bool]$api.busy -or [bool]$api.backup_available) {
+    $freshIdle = $api.phase -ceq 'idle' -and -not [bool]$api.busy -and
+        -not [bool]$api.backup_available
+    $cancelledBeforeFirstMesh = $api.phase -ceq 'cancelled' -and
+        -not [bool]$api.busy -and [int]$api.mesh_index -eq 0 -and
+        [bool]$api.backup_available
+    $exactRollback = $api.phase -ceq 'rolled_back' -and
+        -not [bool]$api.busy -and [bool]$api.backup_available -and
+        $api.rollback -and [string]$api.rollback.printer_cfg_sha256
+    if (-not $freshIdle -and -not $cancelledBeforeFirstMesh -and -not $exactRollback) {
         throw "État UI initial inattendu : $($api.phase)"
     }
-    Assert-SafeAcceptedMachine $snapshot -RequireCommittedPath
+    # Un rollback redémarre Klipper : le store Z accepté reste persistant, tandis
+    # que le petit automate de mouvement revient normalement en phase idle.
+    Assert-SafeAcceptedMachine $snapshot
     Assert-ExpectedProfiles $snapshot @($MeshProfiles[0]) @($MeshProfiles[1..3])
     Save-Evidence 'preflight-api.json' $api
     Save-Evidence 'preflight-printer.json' $snapshot

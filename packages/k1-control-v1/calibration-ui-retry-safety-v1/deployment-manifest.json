@@ -1,0 +1,48 @@
+{
+  "contract_id": "G4-K1-CONTROL-CALIBRATION-UI-RETRY-SAFETY-V1",
+  "status": "offline_review_candidate",
+  "dependency": "G4-K1-CONTROL-CALIBRATION-UI-MATRIX-V1 installed and validated",
+  "deployer": {
+    "path": "scripts/deploy-k1-control-calibration-ui-retry-safety-v1.ps1",
+    "sha256": "1169c04ed6184a2de244df31fa3c6f33d0335f52c2c07c1877382146ef83b5f2"
+  },
+  "contract": {
+    "path": "packages/k1-control-v1/calibration-ui-retry-safety-v1/calibration-ui-retry-safety-contract.json",
+    "sha256": "db8336f083fa98775c1423f7e99a892afd16a2504e3f3eb3de5538539f96b039"
+  },
+  "baseline": {
+    "destination": "/usr/data/k1-control-v1/current/www/mainsail/k1-control/app.js",
+    "sha256": "28aa6c88e4de75d2b3f4b7dfc97bb901b8af3c157c4da46458069592e1801946"
+  },
+  "file": {
+    "source": "app.js",
+    "destination": "/usr/data/k1-control-v1/current/www/mainsail/k1-control/app.js",
+    "sha256": "be41570888d88c17a89755c98915f313be3e7295b36315f6400f3b666ef1d348"
+  },
+  "unchanged": {
+    "files": [
+      {
+        "destination": "/usr/data/k1-control-v1/current/moonraker/moonraker/moonraker/components/k1_control_calibration_core.py",
+        "sha256": "12f7826f6bdc2cfee4320d56563054b0e7453fa9969cf5654b5e0a5b383e58d1"
+      },
+      {
+        "destination": "/usr/data/k1-control-v1/current/www/mainsail/k1-control/index.html",
+        "sha256": "3dd31bb9508eb77b90f1bb7b4ca57ff6fc5aeaea19e87456348eaec47941bf41"
+      },
+      {
+        "destination": "/usr/data/k1-control-v1/current/config/moonraker.conf",
+        "sha256": "f68e54c7b9c3d36f2f577e68de0cabfddbdec06122055b3e1bc9469909a97b31"
+      },
+      {
+        "destination": "/usr/data/k1-control-v1/current/moonraker/moonraker/moonraker/components/k1_control.py",
+        "sha256": "27c0734f149ea89a8ba0d5e17f7f65aecc95c1383c359662cb366a687bb7d303"
+      },
+      {
+        "destination": "/usr/data/k1-control-v1/current/www/mainsail/k1-control/styles.css",
+        "sha256": "a7c27fbcdc07f24b00b6d47cc1d9aa8570b9483bcf4dd3615419de579f9aaa12"
+      }
+    ]
+  },
+  "service_action": "none",
+  "calibration_action": false
+}

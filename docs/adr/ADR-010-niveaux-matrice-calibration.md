@@ -2,7 +2,7 @@
 
 Date : 2026-08-22
 
-Statut : candidat hors imprimante
+Statut : partiellement remplacé par ADR-011 après la première preuve `9 × 9`
 
 ## Contexte
 
@@ -13,6 +13,11 @@ appliquait la même limite. Le runtime Klipper installé accepte déjà de `3` �
 
 Klipper limite en revanche l'interpolation Lagrange à six points par axe. Une
 matrice plus grande doit utiliser l'interpolation bicubique.
+
+La première preuve physique a ensuite montré que cette analyse ne couvrait pas
+le remplacement propriétaire `prtouch_v3` de Creality : il utilise le
+`probe_count` chargé au démarrage plutôt que le paramètre dynamique attendu.
+ADR-011 corrige cette hypothèse sans changer les quatre niveaux retenus.
 
 ## Options examinées
 

@@ -8,11 +8,15 @@
     },
     {
       "path": "scripts/validate-k1-control-calibration-ui-campaign-v1.ps1",
-      "sha256": "e8243b38272b39442fc220660e92e9514eff88a6286e3318d42008f2d13942cb"
+      "sha256": "60d7f67d7e59ed58c0cb41ea1d3b7f4a5a3c71a5704d70670ca833d4f5449f00"
     },
     {
       "path": "packages/k1-control-v1/calibration-ui-matrix-v1/deployment-manifest.json",
       "sha256": "8970109289fb64645de22d6530c32c397738509ede0983a5e6362f1c4feae7db"
+    },
+    {
+      "path": "packages/k1-control-v1/calibration-ui-retry-safety-v1/deployment-manifest.json",
+      "sha256": "6c50d95bd542a59284a67291ade4a216ae53b125fc4cd5a0521bc726cf0c7c0f"
     }
   ],
   "remote_file_installation": false,

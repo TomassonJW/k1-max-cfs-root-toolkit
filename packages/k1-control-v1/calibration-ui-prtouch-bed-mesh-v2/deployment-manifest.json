@@ -1,0 +1,67 @@
+{
+  "contract_id": "G4-K1-CONTROL-CALIBRATION-UI-PRTOUCH-BED-MESH-V2",
+  "status": "offline_review_candidate",
+  "deployer": {
+    "path": "scripts/deploy-k1-control-calibration-ui-prtouch-bed-mesh-v2.ps1",
+    "sha256": "b3d7dd1db4a46c860ef26c7a6f74b0d46cfc613789c9aec994383ae580c1d156"
+  },
+  "contract": {
+    "path": "calibration-ui-prtouch-bed-mesh-v2-contract.json",
+    "sha256": "cc707c486b0b7fedad16f410109df0c8adb94732c9ae5d0d43abea96b7e26866"
+  },
+  "baseline": {
+    "component_sha256": "6b97095f1cb4f62d7207d8e63186c9a93b6f53603b15bc5e4354de4aa767254e",
+    "moonraker_conf_sha256": "9b451f9b864c798872f674688d1c3354f31ab5a03283cad1d7a224561308fcb1",
+    "printer_cfg_sha256": "36cfb7e71180268841ab5cedd31628c8d9953ba437c47662ced16df18bb1bacd",
+    "loaded_probe_count": [6, 6],
+    "loaded_algorithm": "lagrange"
+  },
+  "files": [
+    {
+      "source": "k1_control_probe_count.py",
+      "destination": "/usr/data/k1-control-v1/current/moonraker/moonraker/moonraker/components/k1_control_probe_count.py",
+      "sha256": "72e2010c06afe58d78416fca1c65e746c805568c90cf2ac13d1f6196b46f09ca"
+    }
+  ],
+  "unchanged": {
+    "files": [
+      {
+        "destination": "/usr/data/k1-control-v1/current/config/moonraker.conf",
+        "sha256": "9b451f9b864c798872f674688d1c3354f31ab5a03283cad1d7a224561308fcb1"
+      },
+      {
+        "destination": "/usr/data/k1-control-v1/current/moonraker/moonraker/moonraker/components/k1_control.py",
+        "sha256": "27c0734f149ea89a8ba0d5e17f7f65aecc95c1383c359662cb366a687bb7d303"
+      },
+      {
+        "destination": "/usr/data/k1-control-v1/current/moonraker/moonraker/moonraker/components/k1_control_calibration_core.py",
+        "sha256": "12f7826f6bdc2cfee4320d56563054b0e7453fa9969cf5654b5e0a5b383e58d1"
+      },
+      {
+        "destination": "/usr/data/k1-control-v1/current/www/mainsail/k1-control/index.html",
+        "sha256": "d764dcce200440ff4ba1716e60f560740e30710b26e7339703c646ca52981a07"
+      },
+      {
+        "destination": "/usr/data/k1-control-v1/current/www/mainsail/k1-control/app.js",
+        "sha256": "ad43bf7cd5340955b085e30ce5bb40f2547257ebc2784092aa5f98767b89a822"
+      },
+      {
+        "destination": "/usr/data/k1-control-v1/current/www/mainsail/k1-control/styles.css",
+        "sha256": "a7c27fbcdc07f24b00b6d47cc1d9aa8570b9483bcf4dd3615419de579f9aaa12"
+      }
+    ]
+  },
+  "firmware_dependencies": [
+    {
+      "path": "/usr/share/klipper/klippy/extras/prtouch_v3_wrapper.cpython-38-mipsel-linux-gnu.so",
+      "sha256": "0ecddc258b03c0508e4e92eb5acb9d5896194e20d4b32ba8ccf0b36d29e233b0"
+    },
+    {
+      "path": "/usr/share/klipper/klippy/extras/bed_mesh.py",
+      "sha256": "443d4a5945a9e30dbddbc7df9776fce18ff4378cf01e45c8515af692c88e2921"
+    }
+  ],
+  "service_action": "restart /etc/init.d/S56k1_control_moonraker only",
+  "printer_cfg_changed_during_deployment": false,
+  "calibration_action": false
+}

@@ -1,0 +1,178 @@
+<!doctype html>
+<html lang="fr">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="color-scheme" content="dark">
+    <title>K1 Control — calibration</title>
+    <link rel="icon" href="data:,">
+    <link rel="stylesheet" href="styles.css">
+  </head>
+  <body data-mode="real">
+    <header class="topbar">
+      <div>
+        <p class="eyebrow">K1 Max · calibration guidée</p>
+        <h1>K1 Control</h1>
+      </div>
+      <div class="topbar-actions">
+        <span class="simulation-badge real-badge">Interface réelle</span>
+        <a class="ghost-button link-button" href="/">Ouvrir Mainsail</a>
+      </div>
+    </header>
+
+    <main class="layout" aria-live="polite">
+      <section class="hero-card" id="readiness-card">
+        <div>
+          <p class="eyebrow">État de la calibration</p>
+          <div class="status-line">
+            <span class="status-dot" aria-hidden="true"></span>
+            <h2 id="phase-title">Connexion…</h2>
+          </div>
+          <p id="phase-detail">Lecture du composant K1 Control.</p>
+        </div>
+        <div class="hero-actions">
+          <button class="secondary-button" id="cancel-workflow" type="button">Annuler en sécurité</button>
+          <button class="ghost-button" id="restore-z" type="button">Restaurer le Z précédent</button>
+          <button class="ghost-button" id="rollback-campaign" type="button">Restaurer avant cette calibration</button>
+        </div>
+      </section>
+
+      <section class="dashboard-grid">
+        <article class="panel calibration-panel">
+          <div class="panel-heading">
+            <div>
+              <p class="eyebrow">Contexte enregistré</p>
+              <h2>Paramètres</h2>
+            </div>
+            <span class="pill" id="connection-status">—</span>
+          </div>
+
+          <form id="calibration-form" class="settings-grid">
+            <label>Plaque
+              <select id="plate">
+                <option value="1" selected>PEI_TEXTURED_A</option>
+              </select>
+            </label>
+            <label>Plateau
+              <span class="input-unit"><input id="bed-temp" type="number" min="45" max="100" value="55" required><span>°C</span></span>
+            </label>
+            <label>Buse
+              <span class="input-unit"><input id="nozzle-temp" type="number" min="100" max="180" value="140" required><span>°C</span></span>
+            </label>
+            <label>Stabilisation
+              <span class="input-unit"><input id="soak-seconds" type="number" min="60" max="1200" value="200" step="10" required><span>s</span></span>
+            </label>
+            <label>Matrice
+              <select id="matrix-size">
+                <option value="3">3 × 3 — Personnalisé</option>
+                <option value="5">5 × 5 — Personnalisé</option>
+                <option value="6" selected>6 × 6 — Rapide</option>
+                <option value="9">9 × 9 — Standard</option>
+                <option value="11">11 × 11 — Précis</option>
+                <option value="15">15 × 15 — Expert</option>
+              </select>
+            </label>
+            <label>Interpolation
+              <select id="algorithm">
+                <option value="lagrange" selected>Lagrange</option>
+                <option value="bicubic">Bicubique — requis au-delà de 6 × 6</option>
+              </select>
+            </label>
+            <label>Seed Z explicite
+              <span class="input-unit"><input id="seed-offset" type="number" min="-1" max="1" value="0" step="0.005" required><span>mm</span></span>
+            </label>
+            <label class="check-field">
+              <input id="replace-existing" type="checkbox">
+              Remplacer la référence existante après backup
+            </label>
+            <label class="check-field full-width">
+              <input id="plate-clear" type="checkbox" required>
+              La plaque sélectionnée est installée et le plateau est libre
+            </label>
+            <button class="primary-button full-width" id="start-mesh" type="submit">Mesurer et qualifier le mesh robuste</button>
+          </form>
+        </article>
+
+        <article class="panel">
+          <div class="panel-heading">
+            <div>
+              <p class="eyebrow">Six passages fixes</p>
+              <h2>Qualification du mesh</h2>
+            </div>
+            <span class="pill" id="mesh-status">—</span>
+          </div>
+          <div class="progress-track" aria-label="Progression des six maillages">
+            <span id="mesh-progress"></span>
+          </div>
+          <dl class="facts">
+            <div><dt>Passage</dt><dd id="mesh-index">0 / 6</dd></div>
+            <div><dt>Moyenne absolue</dt><dd id="mesh-mean">—</dd></div>
+            <div><dt>RMS</dt><dd id="mesh-rms">—</dd></div>
+            <div><dt>Maximum</dt><dd id="mesh-maximum">—</dd></div>
+          </dl>
+          <p class="callout" id="mesh-explanation">Le candidat n'est jamais enregistré avant la qualification des deux groupes de trois.</p>
+        </article>
+
+        <article class="panel calibration-panel">
+          <div class="panel-heading">
+            <div>
+              <p class="eyebrow">Descente centrale bornée</p>
+              <h2>Premier Z</h2>
+            </div>
+            <span class="pill" id="z-status">Verrouillé</span>
+          </div>
+          <p class="muted" id="z-instruction">Qualifie d’abord le mesh robuste.</p>
+          <label class="check-field">
+            <input id="nozzle-clean" type="checkbox">
+            Buse visuellement propre
+          </label>
+          <div class="button-row">
+            <button class="primary-button" id="start-z" type="button">Commencer à 5 mm</button>
+            <button class="secondary-button" id="next-z" type="button">Palier suivant</button>
+          </div>
+          <div class="offset-display compact-offset">
+            <span id="z-height">—</span><small>mm</small>
+          </div>
+          <div class="nudge-grid" aria-label="Ajustement Z au dernier palier">
+            <button type="button" data-adjust="-0.01">−0,010</button>
+            <button type="button" data-adjust="-0.005">−0,005</button>
+            <button type="button" data-adjust="0.005">+0,005</button>
+            <button type="button" data-adjust="0.01">+0,010</button>
+          </div>
+          <label class="check-field">
+            <input id="gap-observed" type="checkbox">
+            J’ai réellement observé le jeu final à 0,1 mm
+          </label>
+          <div class="button-row">
+            <button class="secondary-button" id="confirm-gap" type="button">Confirmer et remonter</button>
+            <button class="primary-button" id="accept-z" type="button">Enregistrer le Z</button>
+          </div>
+        </article>
+
+        <article class="panel sequence-panel">
+          <div class="panel-heading">
+            <div>
+              <p class="eyebrow">État durable</p>
+              <h2>Étapes</h2>
+            </div>
+          </div>
+          <ol class="sequence" id="sequence-list"></ol>
+          <p class="callout warning">Aucune impression, extrusion ou commande CFS n’est disponible dans cette interface de calibration.</p>
+        </article>
+      </section>
+
+      <section class="panel event-panel">
+        <div class="panel-heading">
+          <div>
+            <p class="eyebrow">Dernier résultat</p>
+            <h2>Explication</h2>
+          </div>
+        </div>
+        <p id="last-error">Aucune erreur.</p>
+      </section>
+    </main>
+
+    <footer>K1 Control · API métier bornée · Mainsail reste disponible pour la vue experte</footer>
+    <script type="module" src="app.js"></script>
+  </body>
+</html>
