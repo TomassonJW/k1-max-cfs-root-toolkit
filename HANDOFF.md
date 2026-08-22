@@ -555,13 +555,33 @@ ayant changé après le GO consommé, cette version a repassé
 `PREFLIGHT_CALIBRATION_UI_V1_OK` en lecture seule. Elle doit recevoir un nouveau
 GO exact avant toute nouvelle pose.
 
+Thomas a renouvelé ce GO. La capture
+`20260822-202014-g4-k1-control-calibration-ui-v1` a obtenu le préflight, posé le
+paquet et passé ses validations par fichiers/API. La recette dans le vrai
+navigateur a cependant trouvé deux défauts non couverts par le validateur : le
+service worker Mainsail intercepte `/k1-control/` sur l'origine
+`127.0.0.1:4409`, et le dossier UI avait été créé en mode `0700`. Sur l'origine
+isolée `localhost:4409`, nginx a confirmé `Permission denied`. Le rollback exact
+a retiré l'UI et le composant, restauré la configuration puis obtenu
+`PREFLIGHT_CALIBRATION_UI_V1_OK`. Aucun chauffage, homing, mouvement, mesh ou Z
+n'a eu lieu.
+
+Le candidat corrigé hors imprimante crée et valide désormais le dossier UI en
+`0755`. Un lanceur dédié ouvre `http://localhost:4409/k1-control/` sur le même
+tunnel, ce qui isole la page du service worker Mainsail sans ajouter de port ni
+de service. Cette origine possède sa propre session navigateur : Thomas devra y
+saisir les mêmes identifiants une fois. Le déployeur et son empreinte ayant de
+nouveau changé après le GO consommé, toute nouvelle pose exige encore un GO
+exact renouvelé.
+
 ## Next bounded mission
 
-Le candidat `G4-K1-CONTROL-CALIBRATION-UI-V1` corrigé est figé, auto-vérifié et
-son préflight réel est vert. La prochaine action est son nouveau GO exact
-séparé, puis `Deploy` et `Validate`. La pose ne lance aucune
-calibration et redémarre seulement Moonraker. Après pose, une campagne complète
-depuis l'écran, sans console ni aide Codex, restera nécessaire avant de déclarer
+Le candidat `G4-K1-CONTROL-CALIBRATION-UI-V1` corrigé doit maintenant être
+figé, auto-vérifié, revu et intégré. La prochaine mutation possible restera son
+nouveau GO exact séparé, puis `Deploy`, `Validate` et la recette dans le vrai
+navigateur sur l'origine isolée. La pose ne lance aucune calibration et
+redémarre seulement Moonraker. Après pose, une campagne complète depuis
+l'écran, sans console ni aide Codex, restera nécessaire avant de déclarer
 l'autonomie calibration.
 
 La gate précédente est close avec `DEPLOY_CALIBRATION_PATH_V1_OK` et

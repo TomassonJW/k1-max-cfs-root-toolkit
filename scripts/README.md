@@ -71,6 +71,12 @@ Il appelle `launch-control-dashboard.ps1`, réutilise le tunnel local s'il répo
 correctement ou en démarre un nouveau en arrière-plan, exige HTTP `401` avant
 d'ouvrir Mainsail et ne contient aucune adresse privée ni aucun secret.
 
+`Ouvrir-Calibration-K1-Max.cmd` réutilise exactement le même tunnel et la même
+authentification, mais ouvre `http://localhost:4409/k1-control/`. Cette origine
+distincte empêche le service worker de Mainsail, enregistré sur
+`127.0.0.1:4409`, d'intercepter l'écran de calibration. Aucun nouveau port ni
+service n'est créé.
+
 During P0/P1, scripts must default to no remote write and fail closed on ambiguity.
 
 A future remote-mutating script must:

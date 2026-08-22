@@ -541,6 +541,24 @@ staging exact au rollback. Comme le déployeur revu a changé, cette nouvelle
 version a repassé `PREFLIGHT_CALIBRATION_UI_V1_OK` en lecture seule, mais sa pose
 exige un nouveau GO exact séparé.
 
+Ce second GO exact a ensuite été consommé par la capture
+`20260822-202014-g4-k1-control-calibration-ui-v1`. Le déploiement et les
+contrôles par fichiers/API ont d'abord été verts, mais la validation dans le
+navigateur réel a refusé l'interface : le service worker Mainsail interceptait
+le chemin sur l'origine `127.0.0.1` et nginx ne pouvait pas traverser le dossier
+UI créé en mode `0700`. Le journal nginx a confirmé `Permission denied`. Le
+rollback exact a retiré le composant et l'interface, restauré la configuration,
+redémarré seulement Moonraker puis obtenu un nouveau
+`PREFLIGHT_CALIBRATION_UI_V1_OK`. Aucun chauffage, homing, mouvement, mesh ou Z
+n'a été exécuté.
+
+Le candidat hors imprimante impose maintenant le mode `0755` du dossier UI et
+le valide exactement. Le lanceur calibration utilise l'origine isolée
+`http://localhost:4409/k1-control/`, sur le même tunnel et la même frontière
+d'authentification, afin que le service worker Mainsail ne puisse pas masquer la
+page. Ces changements de déployeur et de parcours navigateur exigent une
+nouvelle revue figée puis un nouveau GO exact séparé.
+
 ## G5 — V1 production baseline
 
 Status: **not passed**

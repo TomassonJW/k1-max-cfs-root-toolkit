@@ -1,14 +1,23 @@
 [CmdletBinding()]
 param(
-    [switch]$NoOpen
+    [switch]$NoOpen,
+
+    [ValidateSet('Mainsail', 'Calibration')]
+    [string]$View = 'Mainsail'
 )
 
 $ErrorActionPreference = 'Stop'
-$DashboardUrl = 'http://127.0.0.1:4409/'
+$ProbeUrl = 'http://127.0.0.1:4409/'
+$DashboardUrl = if ($View -eq 'Calibration') {
+    'http://localhost:4409/k1-control/'
+}
+else {
+    $ProbeUrl
+}
 
 function Get-DashboardStatus {
     try {
-        $request = [Net.HttpWebRequest]::Create($DashboardUrl)
+        $request = [Net.HttpWebRequest]::Create($ProbeUrl)
         $request.Method = 'GET'
         $request.AllowAutoRedirect = $false
         $request.Timeout = 2000
@@ -73,7 +82,7 @@ try {
     }
 
     if ($NoOpen) {
-        Write-Output "LAUNCHER_PREFLIGHT_OK source=$source http=401"
+        Write-Output "LAUNCHER_PREFLIGHT_OK source=$source http=401 view=$View url=$DashboardUrl"
         exit 0
     }
     Start-Process $DashboardUrl

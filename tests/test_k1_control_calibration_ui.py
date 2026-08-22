@@ -396,6 +396,8 @@ class CalibrationUiPackageTests(unittest.TestCase):
         self.assertIn("if ($MutationStarted)", source)
         self.assertIn("Invoke-ExactRollback", source)
         self.assertIn("rmdir '$RemoteStaging'", source)
+        self.assertIn("chmod 0755 '$RemoteUi'", source)
+        self.assertIn("stat -c '%a' '$RemoteUi'", source)
         self.assertIn("k1-control-calibration-workflow.json", source)
         self.assertIn("$closedPhases = @('idle', 'committed', 'cancelled')", source)
         self.assertIn("$closedPhases -notcontains [string]$path.phase", source)

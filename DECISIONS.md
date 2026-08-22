@@ -758,3 +758,28 @@ option reste limitée à la fonction de transfert vers la K1 ; SSH, les hashes e
 les contrôles ne changent pas. Le rollback supprime également les six noms de
 staging exacts puis retire leur répertoire vide. Le script et son empreinte ayant
 changé après le GO consommé, une seconde tentative exige un nouveau GO exact.
+
+## D-046 — L'interface calibration utilise une origine navigateur isolée et un dossier traversable
+
+Date: 2026-08-22
+
+Status: accepté hors imprimante après second rollback réel
+
+Le second déploiement UI a passé les contrôles par fichiers et API, mais la
+recette dans le vrai navigateur a prouvé deux écarts. Sur
+`127.0.0.1:4409/k1-control/`, le service worker de Mainsail renvoie sa propre
+application. Sur l'origine distincte `localhost:4409`, nginx atteint bien la
+route mais refuse le dossier UI créé en `0700`. Le journal nginx a confirmé
+`Permission denied`. Le rollback exact a restauré l'état sûr.
+
+La page calibration s'ouvre désormais par un lanceur dédié sur
+`http://localhost:4409/k1-control/`. Elle conserve le même tunnel et la même
+authentification nginx, sans ajouter de port ou de service sur la K1, mais son
+origine navigateur distincte l'isole du service worker Mainsail. La session
+d'authentification est propre à cette origine et doit donc être saisie une fois
+par l'opérateur.
+
+Le déployeur crée explicitement le dossier UI en `0755` et le validateur exige
+ce mode exact en plus des empreintes. Toute autre permission, ou toute réponse
+Mainsail à la place de la page K1 Control, est un KO. Ces changements suivent
+l'ADR-009 et exigent un nouveau GO exact avant pose.

@@ -490,15 +490,31 @@ staging exact. Ce changement de déployeur exige un nouveau GO exact avant une
 seconde tentative. Le paquet corrigé a déjà repassé
 `PREFLIGHT_CALIBRATION_UI_V1_OK` en lecture seule.
 
+Thomas a renouvelé le GO exact. La capture
+`20260822-202014-g4-k1-control-calibration-ui-v1` a posé le paquet et passé les
+contrôles par fichiers/API, mais la recette dans le vrai navigateur a révélé
+que le service worker Mainsail masquait `/k1-control/` sur l'origine
+`127.0.0.1:4409` et que le dossier UI créé en `0700` était interdit à nginx.
+Le journal nginx a confirmé `Permission denied`. Le rollback exact a retiré
+l'UI et le composant, restauré la configuration puis obtenu un préflight final
+vert. Aucun chauffage, homing, mouvement, mesh ou Z n'a été exécuté.
+
+Le candidat hors imprimante impose et vérifie désormais le mode `0755` du
+dossier UI. Le lanceur calibration utilise l'origine isolée
+`http://localhost:4409/k1-control/` sur le même tunnel afin d'éviter le service
+worker Mainsail. La K1 ne garde actuellement aucun fichier de cette UI : le
+nouveau déployeur doit être figé et recevoir un nouveau GO exact avant une
+troisième tentative.
+
 The Orca cutover remains a later atomic gate. This runtime slice intentionally
 keeps the active Orca profile, `START_PRINT` and the legacy `+0.27 mm`
 post-processor unchanged.
 
 Thomas explicitly rejected further sacrificial print campaigns on 2026-08-21.
 The V3 + PATHS-V1 observation remains useful coexistence evidence but no longer
-blocks offline product construction. Après le rollback UI confirmé, aucune
-nouvelle mutation n'est autorisée sur la K1 sans le nouveau GO exact du candidat
-corrigé.
+blocks offline product construction. Après le second rollback UI confirmé,
+aucune nouvelle mutation n'est autorisée sur la K1 sans le nouveau GO exact du
+candidat corrigé.
 
 Do not remove or disable the current Orca `+0.27 mm` post-processor. Its
 retirement remains atomic with the later proven machine/Orca replacement.
