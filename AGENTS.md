@@ -179,6 +179,19 @@ le paquet corrigé a obtenu un nouveau `PREFLIGHT_CALIBRATION_UI_V1_OK` en
 lecture seule. Aucune nouvelle pose n'est autorisée avant un nouveau GO exact
 `GO G4-K1-CONTROL-CALIBRATION-UI-V1` sur le commit corrigé.
 
+Thomas a renouvelé ce GO. La capture
+`20260822-202014-g4-k1-control-calibration-ui-v1` a obtenu le préflight, la pose
+et les validations scriptées vertes. La validation navigateur a cependant
+révélé deux défauts non couverts : le service worker Mainsail intercepte la
+route sous l'origine `127.0.0.1:4409`, et le dossier statique créé en `0700`
+provoque `403 Forbidden` sous l'origine isolée `localhost:4409`. Le syslog a
+confirmé `Permission denied`. Le rollback exact et le préflight final sont
+verts ; l'UI et son composant sont de nouveau absents, la K1 est revenue à sa
+base sûre. Hors imprimante, le déployeur applique désormais `chmod 0755` et
+valide le mode `755`; un lanceur dédié ouvre l'origine `localhost` sans nouveau
+port ni service, suivant ADR-009. Ce paquet changé exige encore un nouveau GO
+exact avant toute pose.
+
 Thomas demande que chaque prochaine reprise commence par un état explicite de
 l'autonomie, sans confondre le runtime installé avec une interface terminée :
 

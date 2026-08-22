@@ -8,6 +8,11 @@ statique est servie sous `/k1-control/` par le nginx déjà installé. Elle ne p
 appeler que dix routes métier du composant Moonraker original. Elle n'expose
 ni G-code arbitraire, ni impression, ni extrusion, ni action CFS.
 
+Le lanceur poste ouvre cette route sous l'origine
+`http://localhost:4409/k1-control/`, distincte de l'origine Mainsail
+`127.0.0.1:4409` et de son service worker. Le déployeur fixe le dossier statique
+en `0755` et le validateur exige ce mode exact avant d'accepter la pose.
+
 Le composant exécute côté machine les six maillages fixes, conserve les
 matrices dans un état JSON atomique, compare deux médianes indépendantes de
 trois, charge le candidat robuste, le relit puis le persiste. Une fermeture du

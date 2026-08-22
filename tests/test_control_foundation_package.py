@@ -133,11 +133,18 @@ class ControlFoundationPackageTests(unittest.TestCase):
 
     def test_double_click_launcher_uses_the_secure_tunnel_without_secrets(self) -> None:
         launcher = (ROOT / "Ouvrir-Mainsail-K1-Max.cmd").read_text(encoding="utf-8")
+        calibration_launcher = (ROOT / "Ouvrir-Calibration-K1-Max.cmd").read_text(
+            encoding="utf-8"
+        )
         helper = (ROOT / "scripts" / "launch-control-dashboard.ps1").read_text(
             encoding="utf-8"
         )
         self.assertIn("launch-control-dashboard.ps1", launcher)
         self.assertIn("-WindowStyle Hidden", launcher)
+        self.assertIn("launch-control-dashboard.ps1", calibration_launcher)
+        self.assertIn("-View Calibration", calibration_launcher)
+        self.assertIn("http://localhost:4409/k1-control/", helper)
+        self.assertIn("[ValidateSet('Mainsail', 'Calibration')]", helper)
         self.assertIn("127.0.0.1:4409:127.0.0.1:4409", helper)
         self.assertIn("ExitOnForwardFailure=yes", helper)
         self.assertIn("ServerAliveInterval=30", helper)

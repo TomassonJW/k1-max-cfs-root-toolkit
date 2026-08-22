@@ -250,6 +250,10 @@ if ($Action -eq 'Validate') {
             throw "Empreinte distante inattendue : $($file.destination)"
         }
     }
+    $uiMode = ((Invoke-Remote "stat -c '%a' '$RemoteUi'") | Select-Object -First 1).Trim()
+    if ($uiMode -cne '755') {
+        throw "Droits du dossier UI inattendus : $uiMode"
+    }
     $raw = (Invoke-Remote "curl 'http://127.0.0.1:7125/machine/k1_control/status'") -join "`n"
     $state = ($raw | ConvertFrom-Json).result
     if (-not $state -or $state.busy -or $state.phase -cne 'idle' -or $state.backup_available) {
@@ -289,7 +293,7 @@ try {
     $python = "$RemoteCurrent/moonraker/moonraker-env/bin/python"
     $compileCommand = "'$python' -c `"compile(open('$RemoteStaging/k1_control.py').read(), 'k1_control.py', 'exec'); compile(open('$RemoteStaging/k1_control_calibration_core.py').read(), 'k1_control_calibration_core.py', 'exec')`""
     [void](Invoke-Remote $compileCommand)
-    [void](Invoke-Remote "mkdir -p '$RemoteUi'")
+    [void](Invoke-Remote "mkdir -p '$RemoteUi' && chmod 0755 '$RemoteUi'")
     foreach ($file in $manifest.files) {
         $destination = [string]$file.destination
         $stagedName = ([string]$file.source).Replace('/', '__')
