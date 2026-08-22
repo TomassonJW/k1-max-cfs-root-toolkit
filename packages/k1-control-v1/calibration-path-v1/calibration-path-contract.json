@@ -1,6 +1,6 @@
 {
   "contract_id": "K1-CONTROL-CALIBRATION-PATH-V1",
-  "status": "offline_candidate",
+  "status": "installed_validated",
   "printer_mutation_authorized": false,
   "purpose": "guarded_non_extrusion_first_z_reference",
   "requires": {

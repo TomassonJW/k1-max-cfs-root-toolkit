@@ -45,6 +45,14 @@ fait uniquement un `RESTART` hôte, puis vérifie à vide que la garde refuse sa
 changer position, origine ou chauffe. Le script n'appelle aucune macro de
 chauffe, homing, mesh, mouvement, ajustement ou commit.
 
+`run-k1-control-first-calibration-v1.ps1` est le pilote découpé de la première
+calibration. `Plan` reste purement local. Le futur GO exact ouvre seulement la
+liste figée d'actions : préflight, backup et préparation thermique, deux meshes
+séparés, qualification locale sans rerun automatique, commit mesh, chemin Z par
+palier, acceptation/annulation, validation et rollback. Chaque action exige la
+capture privée et les checkpoints précédents ; aucun nouveau fichier n'est
+installé sur la K1.
+
 `Ouvrir-Mainsail-K1-Max.cmd`, à la racine du dépôt, se lance par double-clic.
 Il appelle `launch-control-dashboard.ps1`, réutilise le tunnel local s'il répond
 correctement ou en démarre un nouveau en arrière-plan, exige HTTP `401` avant

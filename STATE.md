@@ -329,12 +329,19 @@ commencent sur cet état final retenu.
   deux CFS `1.1.3`, fondation intacte, `ready=1`, `integrity=empty`,
   `accepted_z_valid=0`, `block_reason=no_accepted_z` et `low_moves_armed=0`.
   Le runtime est installé mais ne peut pas encore armer un travail de production.
-- La suite courante exécute 117 tests : 115 passent et deux contrôles Jinja
+- La suite courante exécute 131 tests : 129 passent et deux contrôles Jinja
   locaux sont ignorés. Le runtime installé a déjà passé son contrôle exact sur
   la K1 ; l'overlay a également passé son parse exact en mémoire avant sa pose.
 - `G4-K1-CONTROL-CALIBRATION-PATH-V1` est installé et validé sous la capture
   `20260822-124207-g4-k1-control-calibration-path-v1` : un fichier, un include,
   un `RESTART` hôte et une validation sans mouvement.
+- Le candidat `G4-K1-CONTROL-FIRST-CALIBRATION-V1` est préparé hors imprimante.
+  Son contrat fixe `PEI_TEXTURED_A`, `60/140 °C`, `600 s`, nettoyage stock
+  borné à `180 °C`, deux meshes `6 × 6` Lagrange et un seuil point par point de
+  `0,025 mm`, sans rerun automatique.
+- Le pilote local découpe préparation, chaque mesh, qualification, persistance,
+  chaque palier Z, acceptation, annulation et rollback. Son mode par défaut
+  `Plan` ne contacte pas la K1. Aucune action distante n'a été exécutée.
 
 - Complete-system audit, A/B/C comparison, safety invariant, input contract and
   time-bounded roadmap documented in
@@ -412,11 +419,11 @@ et son unique include sont installés avec leurs empreintes exactes ; le runtime
 reste vide, les axes sont non référencés, les chauffes à zéro et la garde à vide
 refuse sans changement physique.
 
-La prochaine gate unique est désormais à préparer puis faire autoriser hors
-imprimante : `G4-K1-CONTROL-FIRST-CALIBRATION-V1`. Elle figera identité de plaque,
-températures, stabilisation, matrice, interpolation, nettoyage, homing, deux
-mesures comparables, seuil de qualification et session Z volontaire. La
-calibration réelle restera une autorisation séparée.
+La prochaine gate unique est désormais préparée hors imprimante :
+`G4-K1-CONTROL-FIRST-CALIBRATION-V1`. Le paquet, ADR-006, le contrat, le pilote,
+le comparateur et les tests doivent être relus et figés dans Git avant de pouvoir
+recevoir le GO exact `GO G4-K1-CONTROL-FIRST-CALIBRATION-V1`. La calibration
+réelle reste non autorisée jusque-là.
 
 The Orca cutover remains a later atomic gate. This runtime slice intentionally
 keeps the active Orca profile, `START_PRINT` and the legacy `+0.27 mm`

@@ -405,20 +405,21 @@ chauffes demandées sont à zéro. La garde à vide refuse sans modifier positio
 origine Z ou cibles. Aucun chauffage, homing, mouvement, extrusion, mesh ou état
 Z n'a été exécuté.
 
-La suite hors imprimante exécute 117 tests : 115 passent et deux contrôles Jinja
+La suite hors imprimante exécute 131 tests : 129 passent et deux contrôles Jinja
 locaux sont ignorés. Celui du runtime installé a déjà été validé sur
 l'environnement exact de la K1. Celui du nouvel overlay est intégré au
 préflight distant en mémoire et a été vert avant la première écriture.
 
 ### Prochaine gate — `G4-K1-CONTROL-FIRST-CALIBRATION-V1`
 
-Status: **à préparer/revoir hors imprimante ; aucune calibration ni GO reçus**
+Status: **candidat préparé hors imprimante ; revue et GO exact requis ; aucune
+calibration ni GO reçus**
 
 Le prérequis `G4-K1-CONTROL-CALIBRATION-PATH-V1` est désormais installé et
-validé à vide. Cette nouvelle gate doit encore être préparée et revue avant de
-pouvoir recevoir son propre GO exact.
+validé à vide. Cette nouvelle gate est préparée hors imprimante et doit encore
+être revue puis figée avant de pouvoir recevoir son propre GO exact.
 
-Avant présentation à Thomas, son paquet devra contenir :
+Le paquet préparé contient :
 
 - plaque, températures, stabilisation, matrice et interpolation explicites ;
 - nettoyage et homing dans un ordre revu ;
@@ -427,6 +428,25 @@ Avant présentation à Thomas, son paquet devra contenir :
 - préflight, backup, preuves avant/après et rollback exacts ;
 - contrat UX montrant comment les mêmes choix deviendront accessibles sans
   console ni assistance Codex.
+
+Le candidat se trouve dans
+`packages/k1-control-v1/first-calibration-v1/`, son pilote est
+`scripts/run-k1-control-first-calibration-v1.ps1` et son contrat complet est
+documenté dans `docs/18-g4-k1-control-first-calibration-v1.md` et ADR-006.
+
+Le lot fige `PEI_TEXTURED_A` ID `1`, plateau `60 °C`, buse `140 °C`,
+stabilisation `600 s`, nettoyage stock borné à `180 °C`, puis deux meshes
+`6 × 6` Lagrange sur `5–295 mm`. L'écart point par point doit rester inférieur
+ou égal à `0,025 mm`; sinon la mission s'arrête sans troisième essai automatique.
+Le second mesh qualifié pourra être persisté sous
+`k1_p001_t060_r001_n06x06`, puis le chemin installé guidera le Z à partir du
+seed neutre explicite `0,0 mm`.
+
+Le mode `Plan` du pilote est purement local. Toute action distante exigera
+`-Execute`, la gate exacte, une capture privée et les checkpoints précédents.
+Le backup avant première chauffe conserve le `printer.cfg` exact et la preuve
+d'absence du stockage Z. `Cancel` préserve le mesh qualifié ; `Rollback` restaure
+la base vide exacte tout en conservant le runtime et le chemin installés.
 
 Son éventuelle réussite qualifiera une première calibration. Elle ne validera
 pas encore l'autonomie production, qui reste conditionnée par la bascule

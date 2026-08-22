@@ -8,10 +8,10 @@ The printer is production hardware. It is never treated as a disposable sandbox.
 
 ## Current authority and phase
 
-The active phase is **P4 — V1 and V2 are closed; V3, PATHS-V1 and
-`G4-K1-CONTROL-Z-MESH-RUNTIME-V1` are installed and validated; the Z/mesh
-runtime is empty and calibration-ready but remains closed to production until a
-separate authorised calibration accepts Z**.
+The active phase is **P4 — V1 and V2 are closed; V3, PATHS-V1, the Z/mesh
+runtime and CALIBRATION-PATH-V1 are installed and validated; FIRST-CALIBRATION-V1
+is prepared offline but has no GO; the runtime remains empty and closed to
+production until a separately authorised calibration accepts Z**.
 
 Thomas authorised V1, but the mandatory preflight proved that `logrotate` was
 absent. V1 is closed and must never be deployed. Thomas later authorised V2;
@@ -98,9 +98,12 @@ non référencés, les chauffes demandées sont à zéro, deux CFS et la fondati
 conformes, et la garde à vide refuse sans changement de position, origine Z ou
 cible. Aucun chauffage, homing, mouvement, extrusion, mesh, réglage ou
 enregistrement Z n'a été exécuté. `CALIBRATION-PATH-V1` est clos ; aucune autre
-mutation n'est autorisée. La prochaine gate unique est la préparation hors
-imprimante de `G4-K1-CONTROL-FIRST-CALIBRATION-V1`, qui exigera son propre GO
-avant toute calibration.
+mutation n'est autorisée. La gate suivante
+`G4-K1-CONTROL-FIRST-CALIBRATION-V1` est maintenant préparée hors imprimante :
+plaque `PEI_TEXTURED_A`, `60/140 °C`, stabilisation `600 s`, nettoyage stock
+borné à `180 °C`, deux meshes `6 × 6` Lagrange, seuil `0,025 mm`, aucun rerun
+automatique et chemin Z par checkpoints. Elle exige encore la revue du commit
+figé puis son propre GO exact avant toute calibration.
 
 Thomas demande que chaque prochaine reprise commence par un état explicite de
 l'autonomie, sans confondre le runtime installé avec une interface terminée :

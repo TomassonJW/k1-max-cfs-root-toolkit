@@ -2,7 +2,7 @@
 
 Date: 2026-08-22
 Phase: P4 / runtime Z/mesh et CALIBRATION-PATH-V1 installés et validés ; aucune calibration exécutée
-Next operator: annoncer l'écart d'autonomie, puis préparer/revoir FIRST-CALIBRATION-V1 hors imprimante
+Next operator: annoncer l'écart d'autonomie, puis revoir le candidat FIRST-CALIBRATION-V1 figé hors imprimante
 
 ## Message obligatoire au début de la prochaine session
 
@@ -329,10 +329,10 @@ Un écran `K1 Control` sans dépendance, un moteur d'état Python pur, un faux
 Moonraker, le contrat Orca et la matrice exécutable sont présents sous
 `prototype/`, `orca/` et `tests/`. Les vues bureau/mobile et les actions
 calibration, sauvegarde, redémarrage et invalidation ont été vérifiées sans
-erreur JavaScript. La suite courante exécute 117 tests : 115 passent et deux
+erreur JavaScript. La suite courante exécute 131 tests : 129 passent et deux
 contrôles Jinja locaux sont ignorés. Les 17 templates du runtime installé ont
-déjà passé le Python/Jinja exact de la K1. Le nouvel overlay devra passer son
-parse exact en mémoire pendant son préflight, avant toute écriture. Les noms de
+déjà passé le Python/Jinja exact de la K1. L'overlay installé a également passé
+son parse exact en mémoire avant toute écriture. Les noms de
 commandes des deux lots sont contrôlés contre le parseur Creality exact.
 
 ## Preuves historiques utiles
@@ -428,13 +428,35 @@ Codex has permanent authority to complete all normal Git and GitHub operations f
 - persistent storage and large Klipper log footprint documented;
 - no remote write performed.
 
+## FIRST-CALIBRATION-V1 préparé hors imprimante
+
+Le candidat `G4-K1-CONTROL-FIRST-CALIBRATION-V1` est maintenant présent sous
+`packages/k1-control-v1/first-calibration-v1/`. Il n'installe aucun nouveau
+fichier : son pilote local orchestre seulement les commandes déjà installées,
+par checkpoints séparés.
+
+Le contexte est figé : `PEI_TEXTURED_A` ID `1`, plateau `60 °C`, buse `140 °C`,
+stabilisation `600 s`, nettoyage stock borné jusqu'à `180 °C`, homing après
+nettoyage, deux meshes `6 × 6` Lagrange sur `5–295 mm` et seuil absolu maximum
+`0,025 mm` sur les 36 points. Un KO s'arrête sans troisième mesh automatique.
+
+Le second mesh qualifié pourra être enregistré sous
+`k1_p001_t060_r001_n06x06`, puis la session Z partira du seed neutre explicite
+`0,0 mm` et suivra les paliers déjà installés. Chaque mouvement bas reste une
+action distincte. L'acceptation exige confirmation humaine et remontée de
+`5 mm`.
+
+Le mode `Plan` de `scripts/run-k1-control-first-calibration-v1.ps1` est purement
+local. Les actions distantes exigent le GO exact, la capture privée et les
+checkpoints précédents. `Cancel` ferme le Z provisoire et conserve le mesh ;
+`Rollback` restaure le `printer.cfg` exact et l'état Z vide tout en conservant
+le runtime et le chemin installés. Détails : document 18 et ADR-006.
+
 ## Next bounded mission
 
-Préparer et revoir hors imprimante `G4-K1-CONTROL-FIRST-CALIBRATION-V1`, tout en
-rappelant que le chemin installé ne rend pas encore l'interface autonome. Le
-paquet devra figer plaque, températures, stabilisation, matrice, interpolation,
-nettoyage, homing, deux meshes comparables, seuil d'acceptation, session Z,
-annulation et rollback avant tout GO.
+Relire et figer le candidat hors imprimante, puis attendre le GO exact
+`GO G4-K1-CONTROL-FIRST-CALIBRATION-V1`. Ne lancer aucun préflight distant,
+chauffage, nettoyage, homing, mesh, mouvement ou écriture Z avant ce GO.
 
 La gate précédente est close avec `DEPLOY_CALIBRATION_PATH_V1_OK` et
 `VALIDATE_CALIBRATION_PATH_V1_OK` sous la capture
@@ -444,11 +466,8 @@ Autorisation actuelle : **HORS_IMPRIMANTE_FIRST_CALIBRATION_V1**. Aucun GO de
 calibration n'a été reçu. L'overlay et son include sont installés ; le backup et
 le staging de preuve restent sur la K1.
 
-La mission suivante sera `G4-K1-CONTROL-FIRST-CALIBRATION-V1` : plaque,
-température, stabilisation,
-matrice, interpolation, chauffe, nettoyage, homing, deux mesures comparables,
-seuil de qualification, réglage Z, acceptation, annulation et rollback. Cette
-calibration aura son propre GO.
+La mission suivante sera l'exécution de
+`G4-K1-CONTROL-FIRST-CALIBRATION-V1` seulement après sa revue et son propre GO.
 
 La bascule Orca reste une gate ultérieure unique : wrappers de travail côté
 machine, trois champs Orca et retrait du post-traitement doivent changer

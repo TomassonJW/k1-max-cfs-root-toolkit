@@ -566,3 +566,32 @@ Le chemin est retenu mais reste inerte : `idle`, non prêt, non armé et sans dr
 de commit. Il n'autorise aucune calibration implicite. La prochaine mutation
 possible appartient à la gate séparée
 `G4-K1-CONTROL-FIRST-CALIBRATION-V1` après préparation, revue et GO exact.
+
+## D-037 — La première calibration est sérielle, observable et sans rerun automatique
+
+Date: 2026-08-22
+
+Status: accepté hors imprimante, non autorisé à l'exécution
+
+La première calibration ne sera ni une macro monolithique, ni le bouton
+générique de Mainsail. Le pilote local sépare préflight, chauffe/nettoyage/homing,
+les deux meshes, leur qualification, la persistance mesh, chaque palier Z et
+l'acceptation. Chaque phase laisse une preuve privée avant la suivante.
+
+Le contexte initial est figé : `PEI_TEXTURED_A` ID `1`, plateau `60 °C`, buse
+`140 °C`, stabilisation `600 s`, nettoyage stock borné jusqu'à `180 °C`, mesh
+`6 × 6` Lagrange sur `5–295 mm`. Deux mesures sont obligatoires et l'écart
+absolu maximum entre points homologues doit rester à `0,025 mm`. Un KO coupe les
+chauffes et s'arrête ; aucune troisième mesure automatique n'est autorisée.
+
+Le second mesh qualifié devient `k1_p001_t060_r001_n06x06`. Le Z part du seed
+neutre explicite `0,0 mm`, suit uniquement les paliers d'ADR-005 et ne peut être
+enregistré qu'après confirmation humaine puis remontée de `5 mm`.
+
+`Cancel` ferme la session Z mais conserve le mesh qualifié. `Rollback` restaure
+le `printer.cfg` exact et l'absence initiale du stockage Z, tout en conservant
+le runtime et le chemin installés. Aucun acte de ce protocole n'est autorisé
+avant le GO exact `GO G4-K1-CONTROL-FIRST-CALIBRATION-V1` sur le commit revu.
+
+Une réussite qualifiera la première calibration mais ne validera ni l'autonomie
+de calibration dans l'interface, ni l'autonomie production.

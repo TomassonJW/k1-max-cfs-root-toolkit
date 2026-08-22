@@ -33,6 +33,14 @@ Le moteur d'état et l'interface locale ont leurs contrôles dédiés :
 python -m unittest tests.test_k1_control_prototype -v
 ```
 
+Le candidat de première calibration, ses paramètres figés, l'absence de rerun
+automatique, la distinction annulation/rollback et le comparateur `6 × 6` se
+contrôlent ainsi :
+
+```powershell
+python -m unittest tests.test_k1_control_first_calibration -v
+```
+
 Le premier paquet de fondation, le contrat Orca et la matrice complète se
 contrôlent ainsi :
 
