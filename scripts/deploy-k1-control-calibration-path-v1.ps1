@@ -82,6 +82,19 @@ function Invoke-Remote {
     return @($output)
 }
 
+function Invoke-RemoteStdin {
+    param(
+        [Parameter(Mandatory = $true)][string]$Command,
+        [Parameter(Mandatory = $true)][string]$StandardInput
+    )
+
+    $output = $StandardInput | & ssh.exe @SshArguments $Command 2>&1
+    if ($LASTEXITCODE -ne 0) {
+        throw "Commande distante avec stdin KO ($LASTEXITCODE) : $Command`n$($output -join "`n")"
+    }
+    return @($output)
+}
+
 function Invoke-RemoteTest {
     param([Parameter(Mandatory = $true)][string]$Command)
 
@@ -322,10 +335,9 @@ function Assert-ExactRemoteJinjaSyntax {
 from __future__ import print_function
 import base64
 import re
-import sys
 import jinja2
 
-text = base64.b64decode(sys.argv[1]).decode("utf-8")
+text = base64.b64decode("__CONFIG_PAYLOAD__").decode("utf-8")
 environment = jinja2.Environment(
     block_start_string="{%",
     block_end_string="%}",
@@ -339,10 +351,10 @@ for body in bodies:
     environment.parse(body)
 print("REMOTE_JINJA_PARSE_OK macros=%d" % len(bodies))
 '@
-    $pythonPayload = [Convert]::ToBase64String([Text.Encoding]::UTF8.GetBytes($python.Replace("`r`n", "`n")))
     $configText = [IO.File]::ReadAllText($LocalConfig).Replace("`r`n", "`n")
     $configPayload = [Convert]::ToBase64String([Text.Encoding]::UTF8.GetBytes($configText))
-    $output = Invoke-Remote "echo '$pythonPayload' | base64 -d | /usr/share/klippy-env/bin/python - '$configPayload'"
+    $program = $python.Replace('__CONFIG_PAYLOAD__', $configPayload).Replace("`r`n", "`n")
+    $output = Invoke-RemoteStdin '/usr/share/klippy-env/bin/python -' $program
     if (($output -join "`n") -notmatch '^REMOTE_JINJA_PARSE_OK macros=') {
         throw 'Validation Jinja exacte distante absente.'
     }

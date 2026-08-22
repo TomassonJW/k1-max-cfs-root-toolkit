@@ -4,9 +4,8 @@ Last updated: 2026-08-22
 
 ## Current phase
 
-**P4 — fondation V3 + PATHS-V1 et runtime Z/mesh retenus ; chemin borné du
-premier Z préparé hors imprimante mais non installé ; production volontairement
-bloquée**
+**P4 — fondation V3 + PATHS-V1 et runtime Z/mesh retenus ; préflight corrigé du
+chemin borné vert mais overlay non installé ; production volontairement bloquée**
 
 The repository baseline, stock acquisition, complete Orca/G-code intake and
 passive P1–P5/PETG trace are complete. Gate G3 is passed for offline design and
@@ -394,10 +393,13 @@ Au début de la prochaine session, annoncer explicitement à Thomas :
 - Mainsail et le runtime sont installés, mais aucun écran réel ne permet encore
   de sélectionner et d'orchestrer les paramètres sans console ni Codex.
 
-La prochaine gate unique est
-`G4-K1-CONTROL-CALIBRATION-PATH-V1`. Son candidat hors imprimante ajoute le
+La prochaine gate unique reste
+`G4-K1-CONTROL-CALIBRATION-PATH-V1`. Son candidat ajoute le
 chemin borné qui manquait pour évaluer le premier Z sans console libre ni valeur
-cachée. La pose future, après GO exact, ajoutera seulement un overlay et un
+cachée. Son premier préflight réel a échoué avant écriture sur une ligne SSH
+trop longue. Le transport Jinja corrigé par stdin a ensuite obtenu
+`PREFLIGHT_CALIBRATION_PATH_V1_OK` sous la capture `20260822-113503`. La pose
+future, après GO exact renouvelé, ajoutera seulement un overlay et un
 include, fera un `RESTART` hôte et le validera à vide : aucune chauffe, aucun
 homing, aucun mouvement, aucune écriture Z ou mesh. Le runtime installé ne doit
 pas être reposé.
@@ -433,8 +435,8 @@ retirement remains atomic with the later proven machine/Orca replacement.
 - Toute commande de calibration Z/mesh, chauffe ou homing du runtime avant une
   gate séparée explicitement approuvée.
 - Toute pose ou validation distante de
-  `G4-K1-CONTROL-CALIBRATION-PATH-V1` avant son GO exact ; le nom reçu sans
-  préfixe `GO` n'est pas cette autorisation.
+  `G4-K1-CONTROL-CALIBRATION-PATH-V1` avant son GO exact renouvelé ; le premier
+  GO a été consommé par le préflight dont le transport a ensuite changé.
 - BTT Eddy preparation, installation, firmware or calibration.
 - Firmware downgrade or replacement.
 - Any SSH write other than the completed `G4-SSH-KEY` deployment.

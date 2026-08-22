@@ -66,6 +66,15 @@ Une pose exige encore la revue du commit figé puis le GO exact
 `GO G4-K1-CONTROL-CALIBRATION-PATH-V1`. La première calibration restera une
 gate différente, `G4-K1-CONTROL-FIRST-CALIBRATION-V1`.
 
+Thomas a ensuite envoyé le GO exact. Le premier préflight a joint la K1 puis a
+échoué avant toute écriture parce que le candidat Base64 dépassait la ligne de
+commande acceptée par Dropbear. Le parse Jinja passe désormais par stdin, sans
+fichier distant. Le préflight corrigé de la capture `20260822-113503` est vert
+et confirme la base exacte, le runtime vide, les chauffes à zéro, deux CFS et
+l'overlay absent. Aucun déploiement n'a été lancé. La commande revue ayant
+changé après le GO consommé, la pose exige un nouveau GO exact sur le commit
+corrigé.
+
 Thomas demande que chaque prochaine reprise commence par un état explicite de
 l'autonomie, sans confondre le runtime installé avec une interface terminée :
 

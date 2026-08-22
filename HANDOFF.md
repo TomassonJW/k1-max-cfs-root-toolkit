@@ -1,8 +1,8 @@
 # HANDOFF
 
 Date: 2026-08-22
-Phase: P4 / runtime Z/mesh retenu ; chemin borné du premier Z préparé hors imprimante
-Next operator: annoncer l'écart d'autonomie, puis relire le candidat CALIBRATION-PATH-V1 avant tout GO
+Phase: P4 / runtime Z/mesh retenu ; préflight CALIBRATION-PATH-V1 vert, pose non faite
+Next operator: annoncer l'écart d'autonomie, puis attendre le GO exact renouvelé
 
 ## Message obligatoire au début de la prochaine session
 
@@ -47,6 +47,20 @@ Le déployeur reste en `Plan` par défaut et toute action distante exige
 `-Execute -Gate G4-K1-CONTROL-CALIBRATION-PATH-V1`. La pose n'est pas
 autorisée avant le GO exact `GO G4-K1-CONTROL-CALIBRATION-PATH-V1` portant sur
 le commit figé.
+
+Thomas a envoyé ce GO. Le premier préflight a échoué avant mutation parce que
+le candidat Base64 rendait la commande SSH trop longue pour Dropbear. Le
+transport du parse Jinja passe maintenant par stdin, sans fichier distant. Le
+préflight corrigé de la capture
+`20260822-113503-g4-k1-control-calibration-path-v1` est vert : machine exacte,
+`standby`, chauffes à zéro, runtime `ready=1`/`empty`, aucun Z accepté, overlay
+absent, deux CFS `1.1.3`, fondation et parse Jinja exact conformes. Les axes
+étaient référencés avant restart, état admis. Aucun backup, fichier, restart,
+G-code ou état distant n'a été créé ou modifié.
+
+La commande revue a changé après le GO consommé. Aucun `Deploy` n'a été lancé.
+La prochaine autorisation doit renouveler exactement
+`GO G4-K1-CONTROL-CALIBRATION-PATH-V1` sur le commit corrigé.
 
 ## Current state
 
@@ -387,8 +401,8 @@ Codex has permanent authority to complete all normal Git and GitHub operations f
 
 ## Next bounded mission
 
-Relire le commit figé de `G4-K1-CONTROL-CALIBRATION-PATH-V1`, rappeler qu'il ne
-rend pas encore l'interface autonome et attendre le GO exact. Après ce GO
+Relire le commit corrigé de `G4-K1-CONTROL-CALIBRATION-PATH-V1`, rappeler qu'il
+ne rend pas encore l'interface autonome et attendre le GO exact renouvelé. Après ce GO
 seulement : préflight frais, backup, pose du seul overlay, `RESTART` hôte,
 validation sans mouvement et clôture complète ou rollback automatique.
 
@@ -397,9 +411,10 @@ Critères de fin : `DEPLOY_CALIBRATION_PATH_V1_OK` puis validation indépendante
 chauffes à zéro, axes non référencés, deux CFS connectés, empreintes exactes et
 aucun état physique changé par la garde.
 
-Autorisation actuelle : **ATTENDRE_GO**. Même le préflight distant est conservé
-pour la session autorisée. Aucun G-code, SSH ou transfert n'a été envoyé pendant
-la préparation actuelle.
+Autorisation actuelle : **ATTENDRE_GO_RENOUVELE**. Le préflight corrigé est déjà
+vert mais devra être répété juste avant la pose. Aucun G-code, restart, backup
+ou fichier distant n'a été exécuté ou créé. Seul le programme de contrôle en
+mémoire a transité sur l'entrée standard de SSH.
 
 Une fois cette pose retenue, la mission suivante sera
 `G4-K1-CONTROL-FIRST-CALIBRATION-V1` : plaque, température, stabilisation,

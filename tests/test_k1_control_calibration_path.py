@@ -222,9 +222,14 @@ class CalibrationPathPackageTests(unittest.TestCase):
     def test_remote_jinja_parse_uses_stdin_and_runs_before_mutation(self) -> None:
         text = DEPLOYER.read_text(encoding="utf-8")
         self.assertIn(
-            "/usr/share/klippy-env/bin/python - '$configPayload'",
+            "function Invoke-RemoteStdin",
             text,
         )
+        self.assertIn(
+            "Invoke-RemoteStdin '/usr/share/klippy-env/bin/python -' $program",
+            text,
+        )
+        self.assertNotIn("python - '$configPayload'", text)
         preflight = text.index("Assert-ExactRemoteJinjaSyntax")
         mutation_flag = text.index("$MutationStarted = $true")
         self.assertLess(preflight, mutation_flag)

@@ -339,7 +339,7 @@ Passing G4 authorises only that named mutation.
 
 ### Prochaine gate nommée — `G4-K1-CONTROL-CALIBRATION-PATH-V1`
 
-Status: **candidat préparé hors imprimante ; aucune pose ni GO reçus**
+Status: **préflight réel corrigé et vert ; aucune pose ; GO renouvelé requis**
 
 Cette gate ajoute uniquement le chemin borné non extrusif nécessaire au premier
 Z. Les sources, empreintes, destinations, backup, validation sans mouvement et
@@ -361,6 +361,19 @@ Sa pose future doit :
 
 Le texte reçu `G4-K1-CONTROL-CALIBRATION-PATH-V1` a sélectionné la préparation
 du lot. Sans le préfixe exact `GO`, il n'autorise aucune action distante.
+
+Thomas a ensuite envoyé le GO exact. Le premier préflight a joint la K1 mais
+Dropbear a fermé la session sur la ligne SSH trop longue contenant tout le
+candidat Base64. Il n'avait encore exécuté aucune écriture. Le transport Jinja
+utilise désormais stdin avec une commande distante courte. Le préflight corrigé
+de la capture `20260822-113503-g4-k1-control-calibration-path-v1` a obtenu
+`PREFLIGHT_CALIBRATION_PATH_V1_OK` : base exacte, runtime vide et prêt, overlay
+absent, chauffes à zéro, `standby`, deux CFS et fondation conformes, parse Jinja
+exact vert. Aucun backup, fichier distant, restart, G-code ou état n'a été créé
+ou modifié.
+
+La commande revue ayant changé après le GO, aucun `Deploy` n'a été lancé. La
+pose exige un nouveau GO exact sur le commit corrigé.
 
 La suite hors imprimante exécute 116 tests : 114 passent et deux contrôles Jinja
 locaux sont ignorés. Celui du runtime installé a déjà été validé sur

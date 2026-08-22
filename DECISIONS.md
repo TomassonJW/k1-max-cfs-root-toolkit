@@ -503,3 +503,23 @@ la descente `5 → 2 → 1 → 0,5 → 0,3 → 0,2 → 0,15 → 0,1 mm`, les aju
 uniquement à la dernière hauteur, un repositionnement physique à `0,1 mm` après
 chaque incrément, une confirmation explicite et une remontée relative de `5 mm`
 avant acceptation ou annulation. Il n'existe aucune valeur Z par défaut.
+
+## D-034 — Le candidat Jinja transite par stdin, pas par la ligne SSH
+
+Date: 2026-08-22
+
+Status: accepté après préflight réel sans mutation
+
+Le premier préflight de `CALIBRATION-PATH-V1` encodait le programme Python et
+le candidat dans la commande distante. La ligne obtenue dépassait la taille
+acceptée par Dropbear, qui fermait la connexion avant le parse. Aucun effet
+distant n'avait encore eu lieu.
+
+Le programme complet est désormais envoyé sur l'entrée standard de
+`ssh.exe` vers la commande distante courte
+`/usr/share/klippy-env/bin/python -`. Il reste exécuté uniquement en mémoire et
+ne crée aucun fichier. Le préflight corrigé a obtenu
+`PREFLIGHT_CALIBRATION_PATH_V1_OK` sur l'environnement Jinja exact de la K1.
+
+Comme cette commande fait partie du paquet revu, sa correction après le GO
+consommé impose un nouveau GO exact avant toute pose.

@@ -1,7 +1,33 @@
 # G4 — K1 Control calibration path V1
 
-Statut au 2026-08-22 : **candidat préparé hors imprimante ; aucune pose et
-aucune calibration autorisées**.
+Statut au 2026-08-22 : **préflight réel corrigé et vert ; aucune pose ni
+calibration effectuées ; nouveau GO exact obligatoire**.
+
+## Préflight réel de la capture `20260822-113503`
+
+Thomas a envoyé le GO exact. Le premier préflight a joint la K1 puis s'est
+arrêté avant toute écriture : le candidat complet était placé en Base64 dans la
+ligne de commande SSH et dépassait la taille acceptée par le Dropbear de cette
+machine. La connexion a été fermée pendant le parse Jinja ; aucun fichier,
+backup, service, G-code ou état Klipper n'a été modifié.
+
+Le déployeur transmet maintenant le même programme et le même candidat sur
+l'entrée standard de SSH. La commande distante reste courte, exécute
+`/usr/share/klippy-env/bin/python -` et ne crée toujours aucun fichier. Les
+tests hors imprimante restent verts.
+
+Le préflight corrigé a ensuite obtenu
+`PREFLIGHT_CALIBRATION_PATH_V1_OK`. Il confirme : machine exacte, `standby`,
+chauffes demandées à zéro, deux CFS `1.1.3`, runtime `ready=1`, stockage
+`empty`, aucun Z accepté, production fermée, overlay/include absents, hashes
+attendus, fondation intacte et parse Jinja exact vert. Les axes étaient encore
+référencés avant le futur restart, état admis par ce préflight. Les preuves
+privées restent ignorées sous la capture complète
+`20260822-113503-g4-k1-control-calibration-path-v1`.
+
+La commande revue ayant changé après le GO, ce GO n'autorise plus la pose. Le
+déploiement attend un nouveau texte exact
+`GO G4-K1-CONTROL-CALIBRATION-PATH-V1` portant sur le commit corrigé.
 
 Le nom `G4-K1-CONTROL-CALIBRATION-PATH-V1` choisit ce lot. Il ne vaut pas GO de
 mutation. L'ouverture future exigera le texte exact
