@@ -1,0 +1,15 @@
+{
+  "contract_id": "G4-K1-CONTROL-CALIBRATION-UI-PRTOUCH-PRESETS-V1",
+  "purpose": "remove_the_unsupported_even_4x4_choice_from_the_real_calibration_ui",
+  "dependency": "G4-K1-CONTROL-CALIBRATION-UI-PRTOUCH-MATRIX-V1 installed and validated",
+  "displayed_matrices": [3, 5, 6, 9, 11, 15],
+  "product_levels": [6, 9, 11, 15],
+  "forbidden_displayed_matrices": [4],
+  "server_side_even_matrix_guard_retained": true,
+  "files_replaced": ["index.html", "app.js"],
+  "service_action": "none",
+  "printer_cfg_change": false,
+  "calibration_action": false,
+  "physical_action": false,
+  "rollback": "restore_the_two_exact_static_files_from_the_deployment_backup"
+}

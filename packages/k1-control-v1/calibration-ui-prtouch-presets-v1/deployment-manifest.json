@@ -1,0 +1,56 @@
+{
+  "contract_id": "G4-K1-CONTROL-CALIBRATION-UI-PRTOUCH-PRESETS-V1",
+  "status": "offline_review_candidate",
+  "dependency": "G4-K1-CONTROL-CALIBRATION-UI-PRTOUCH-MATRIX-V1 installed and validated",
+  "deployer": {
+    "path": "scripts/deploy-k1-control-calibration-ui-prtouch-presets-v1.ps1",
+    "sha256": "85edaf545bffb9e9dd1c282f82a45a07fdaaac6534a06ac729bcd71de82cc304"
+  },
+  "contract": {
+    "path": "calibration-ui-prtouch-presets-contract.json",
+    "sha256": "0c087f9622e0a1da89a5317da1adc58ee8fdc5705b82b350b9512fc1e04cc579"
+  },
+  "baseline": {
+    "index_html_sha256": "3dd31bb9508eb77b90f1bb7b4ca57ff6fc5aeaea19e87456348eaec47941bf41",
+    "app_js_sha256": "be41570888d88c17a89755c98915f313be3e7295b36315f6400f3b666ef1d348"
+  },
+  "files": [
+    {
+      "source": "index.html",
+      "destination": "/usr/data/k1-control-v1/current/www/mainsail/k1-control/index.html",
+      "sha256": "d764dcce200440ff4ba1716e60f560740e30710b26e7339703c646ca52981a07"
+    },
+    {
+      "source": "app.js",
+      "destination": "/usr/data/k1-control-v1/current/www/mainsail/k1-control/app.js",
+      "sha256": "ad43bf7cd5340955b085e30ce5bb40f2547257ebc2784092aa5f98767b89a822"
+    }
+  ],
+  "unchanged": {
+    "files": [
+      {
+        "destination": "/usr/data/k1-control-v1/current/config/moonraker.conf",
+        "sha256": "9b451f9b864c798872f674688d1c3354f31ab5a03283cad1d7a224561308fcb1"
+      },
+      {
+        "destination": "/usr/data/k1-control-v1/current/moonraker/moonraker/moonraker/components/k1_control_probe_count.py",
+        "sha256": "6b97095f1cb4f62d7207d8e63186c9a93b6f53603b15bc5e4354de4aa767254e"
+      },
+      {
+        "destination": "/usr/data/k1-control-v1/current/moonraker/moonraker/moonraker/components/k1_control.py",
+        "sha256": "27c0734f149ea89a8ba0d5e17f7f65aecc95c1383c359662cb366a687bb7d303"
+      },
+      {
+        "destination": "/usr/data/k1-control-v1/current/moonraker/moonraker/moonraker/components/k1_control_calibration_core.py",
+        "sha256": "12f7826f6bdc2cfee4320d56563054b0e7453fa9969cf5654b5e0a5b383e58d1"
+      },
+      {
+        "destination": "/usr/data/k1-control-v1/current/www/mainsail/k1-control/styles.css",
+        "sha256": "a7c27fbcdc07f24b00b6d47cc1d9aa8570b9483bcf4dd3615419de579f9aaa12"
+      }
+    ]
+  },
+  "service_action": "none",
+  "printer_cfg_changed": false,
+  "calibration_action": false
+}
