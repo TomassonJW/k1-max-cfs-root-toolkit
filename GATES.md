@@ -613,3 +613,12 @@ Required:
 
 The presence of Mainsail, Moonraker or `KCTRL_*` macros alone does not satisfy
 either calibration autonomy or this production gate.
+
+Le profil Orca réellement actif a maintenant été capturé directement depuis la
+configuration `2.4.2` : ancien départ avec `G28` et outil avant `START_PRINT`,
+changement de filament vide et processus actif gardant
+`--start-z-offset 0.27`. Les indicateurs live `box.state` et `box.t_command` sont
+disponibles et intégrés au traceur passif. Cela lève le manque d'identité du
+profil actif, mais pas la frontière CFS compilée : aucun propriétaire de
+température ou paquet de bascule production n'est encore suffisamment prouvé
+pour recevoir un GO.

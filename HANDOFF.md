@@ -590,6 +590,16 @@ accepté comme preuve d'autonomie. Le validateur séparé n'expose que `Plan`,
 `Preflight` et `Validate`; son plan local est vert avec
 `PLAN_CALIBRATION_UI_CAMPAIGN_V1_OK`.
 
+La préparation production a progressé sans toucher à la K1 : OrcaSlicer `2.4.2`
+sélectionne réellement la machine `Creality K1 Max (0.4 nozzle) - Copie` et le
+processus `0.20mm - SpeedClassics - MultiMaterials`. Leurs quatre fichiers sont
+capturés en privé avec empreintes. Le départ ancien, le changement vide et le
+post-traitement `--start-z-offset 0.27` sont donc prouvés sur l'état courant.
+L'objet live `box` expose `state` et `t_command`; le traceur passif les suit
+désormais sans collecter l'inventaire CFS. Le cœur du refill reste compilé : ne
+pas inventer de propriétaire de température ni ouvrir une bascule production
+avant preuve pendant une impression utile.
+
 ## Next bounded mission
 
 Le candidat `G4-K1-CONTROL-CALIBRATION-UI-V1` avec reprise navigateur doit

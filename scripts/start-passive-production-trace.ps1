@@ -79,6 +79,7 @@ OBJECTS = {
     "heater_bed": ["temperature", "target", "power"],
     "toolhead": ["homed_axes", "position", "print_time", "estimated_print_time", "stalls"],
     "gcode_move": ["homing_origin", "position", "gcode_position", "speed_factor", "extrude_factor"],
+    "box": ["state", "t_command", "auto_refill", "filament_useup", "filament"],
 }
 
 

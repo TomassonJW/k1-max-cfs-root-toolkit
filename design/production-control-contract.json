@@ -1,7 +1,7 @@
 {
   "contract_id": "K1-CONTROL-V1",
   "contract_version": 1,
-  "status": "runtime_installed_calibration_path_offline_candidate",
+  "status": "first_calibration_v2_validated_ui_and_production_cutover_offline",
   "printer_mutation_authorized": false,
   "target": {
     "printer": "Creality K1 Max S12 structure 0",
@@ -290,10 +290,14 @@
     }
   ],
   "deployment": {
-    "active_g4_candidate": "G4-K1-CONTROL-CALIBRATION-PATH-V1",
+    "active_g4_candidate": "G4-K1-CONTROL-CALIBRATION-UI-V1",
     "foundation": "V3 plus PATHS-V1 installed, observed and retained",
-    "z_mesh_runtime": "installed, validated, empty and production closed",
-    "first_calibration_gate": "G4-K1-CONTROL-FIRST-CALIBRATION-V1 after calibration path installation",
+    "z_mesh_runtime": "installed and validated with one accepted Z record at -0.04 mm",
+    "calibration_path": "installed and validated",
+    "first_calibration_gate": "G4-K1-CONTROL-FIRST-CALIBRATION-V2 validated and closed",
+    "calibration_ui": "corrected offline candidate; exact deployment GO still required",
+    "calibration_ui_campaign": "separate browser-only proof candidate after UI deployment",
+    "production_cutover": "not prepared for deployment; printer-side job and CFS temperature owners remain absent",
     "offline_prototype_required_before_g4": true,
     "community_installer_allowed_as_is": false,
     "rollback_required_per_slice": true
