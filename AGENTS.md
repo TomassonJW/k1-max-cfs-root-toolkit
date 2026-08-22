@@ -165,6 +165,20 @@ le manifeste. Le préflight réel en lecture seule a obtenu
 `PREFLIGHT_CALIBRATION_UI_V1_OK`. Aucune pose ni aucun restart n'a eu lieu ; le
 GO exact UI reste obligatoire.
 
+Thomas a ensuite donné le GO exact. La capture
+`20260822-192821-g4-k1-control-calibration-ui-v1` a obtenu le préflight vert et
+le backup exact, puis le premier transfert a échoué avant toute pose :
+l'OpenSSH Windows récent a tenté SFTP alors que Dropbear ne fournit pas
+`/usr/libexec/sftp-server`. Le rollback automatique a retiré les chemins
+candidats, restauré la base exacte, redémarré seulement Moonraker et le
+préflight final a de nouveau obtenu `PREFLIGHT_CALIBRATION_UI_V1_OK`. Aucun
+chauffage, homing, mouvement, mesh ou Z n'a eu lieu. Le transport utilise
+désormais le SCP historique explicite `scp -O` et le rollback nettoie aussi le
+staging exact. Le déployeur et son empreinte ayant changé après le GO consommé,
+le paquet corrigé a obtenu un nouveau `PREFLIGHT_CALIBRATION_UI_V1_OK` en
+lecture seule. Aucune nouvelle pose n'est autorisée avant un nouveau GO exact
+`GO G4-K1-CONTROL-CALIBRATION-UI-V1` sur le commit corrigé.
+
 Thomas demande que chaque prochaine reprise commence par un état explicite de
 l'autonomie, sans confondre le runtime installé avec une interface terminée :
 

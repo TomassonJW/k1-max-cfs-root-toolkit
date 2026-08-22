@@ -31,3 +31,8 @@ Son préflight accepte un chemin réellement fermé après une calibration réus
 tout état intermédiaire ou armé reste refusé.
 Il compile et importe aussi les deux sources en mémoire avec le Python Moonraker
 exact, par stdin et sans créer de fichier distant, avant toute mutation.
+
+Les fichiers sont transférés avec `scp -O` : l'OpenSSH Windows récent utilise
+sinon SFTP par défaut, alors que le Dropbear Creality exact ne fournit pas de
+serveur SFTP. Le rollback retire également le staging exact avant de restaurer
+et vérifier la base.
