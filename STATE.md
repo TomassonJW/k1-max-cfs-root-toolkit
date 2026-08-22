@@ -336,9 +336,12 @@ commencent sur cet état final retenu.
   `20260822-124207-g4-k1-control-calibration-path-v1` : un fichier, un include,
   un `RESTART` hôte et une validation sans mouvement.
 - Le candidat `G4-K1-CONTROL-FIRST-CALIBRATION-V1` est préparé hors imprimante.
-  Son contrat fixe `PEI_TEXTURED_A`, `60/140 °C`, `600 s`, nettoyage stock
+  Son contrat fixe `PEI_TEXTURED_A`, `55/140 °C`, `200 s`, nettoyage stock
   borné à `180 °C`, deux meshes `6 × 6` Lagrange et un seuil point par point de
   `0,025 mm`, sans rerun automatique.
+- Thomas a validé ces paramètres hors imprimante. Son `GO` générique ne nomme
+  pas la gate exacte et précède le commit révisé ; aucune autorisation distante
+  n'est donc consommée.
 - Le pilote local découpe préparation, chaque mesh, qualification, persistance,
   chaque palier Z, acceptation, annulation et rollback. Son mode par défaut
   `Plan` ne contacte pas la K1. Aucune action distante n'a été exécutée.

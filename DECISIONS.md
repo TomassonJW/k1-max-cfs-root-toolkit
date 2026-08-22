@@ -578,13 +578,16 @@ générique de Mainsail. Le pilote local sépare préflight, chauffe/nettoyage/h
 les deux meshes, leur qualification, la persistance mesh, chaque palier Z et
 l'acceptation. Chaque phase laisse une preuve privée avant la suivante.
 
-Le contexte initial est figé : `PEI_TEXTURED_A` ID `1`, plateau `60 °C`, buse
-`140 °C`, stabilisation `600 s`, nettoyage stock borné jusqu'à `180 °C`, mesh
+Le contexte initial a d'abord été figé avec `PEI_TEXTURED_A` ID `1`, plateau
+`60 °C`, buse `140 °C` et stabilisation `600 s`. D-038 remplace le plateau et
+la durée avant toute exécution ; la buse reste inchangée. Le reste reste :
+nettoyage stock borné jusqu'à `180 °C`, mesh
 `6 × 6` Lagrange sur `5–295 mm`. Deux mesures sont obligatoires et l'écart
 absolu maximum entre points homologues doit rester à `0,025 mm`. Un KO coupe les
 chauffes et s'arrête ; aucune troisième mesure automatique n'est autorisée.
 
-Le second mesh qualifié devient `k1_p001_t060_r001_n06x06`. Le Z part du seed
+Le profil initial prévu était `k1_p001_t060_r001_n06x06` ; D-038 le remplace
+par l'identité thermique `t055`. Le Z part du seed
 neutre explicite `0,0 mm`, suit uniquement les paliers d'ADR-005 et ne peut être
 enregistré qu'après confirmation humaine puis remontée de `5 mm`.
 
@@ -595,3 +598,26 @@ avant le GO exact `GO G4-K1-CONTROL-FIRST-CALIBRATION-V1` sur le commit revu.
 
 Une réussite qualifiera la première calibration mais ne validera ni l'autonomie
 de calibration dans l'interface, ni l'autonomie production.
+
+## D-038 — Le premier contexte PLA passe à 55 °C et 200 s
+
+Date: 2026-08-22
+
+Status: accepté hors imprimante, non autorisé à l'exécution
+
+Avant toute calibration, Thomas remplace le plateau `60 °C` par `55 °C` et la
+stabilisation `600 s` par `200 s`. La buse reste à `140 °C`. Tous les autres
+paramètres et toutes les gardes de D-037 restent inchangés.
+
+Les `200 s` sont une valeur de départ revue, pas une stabilité déjà prouvée.
+L'exécution doit encore confirmer les tolérances thermiques puis la répétabilité
+des deux meshes ; un écart arrête la gate sans prolongation ou rerun automatique.
+
+L'identité thermique devient `55` et le profil qualifié prévu devient
+`k1_p001_t055_r001_n06x06`. Le pilote, le contrat, le manifeste, les tests et la
+documentation doivent être à nouveau figés ensemble.
+
+Le mot `GO` joint à cette décision ne déclenche aucune action distante : il ne
+reprend pas le nom exact de la gate et précède le nouveau commit revu. Après
+intégration du candidat révisé, l'exécution exige toujours le GO exact
+`GO G4-K1-CONTROL-FIRST-CALIBRATION-V1`.

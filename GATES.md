@@ -412,12 +412,13 @@ préflight distant en mémoire et a été vert avant la première écriture.
 
 ### Prochaine gate — `G4-K1-CONTROL-FIRST-CALIBRATION-V1`
 
-Status: **candidat préparé hors imprimante ; revue et GO exact requis ; aucune
-calibration ni GO reçus**
+Status: **candidat révisé hors imprimante ; GO exact requis ; aucune calibration
+ni autorisation exacte reçues**
 
 Le prérequis `G4-K1-CONTROL-CALIBRATION-PATH-V1` est désormais installé et
-validé à vide. Cette nouvelle gate est préparée hors imprimante et doit encore
-être revue puis figée avant de pouvoir recevoir son propre GO exact.
+validé à vide. Thomas a validé hors imprimante le contexte thermique révisé
+`55/140 °C` et `200 s`. Son `GO` générique ne correspond pas au nom exact de la
+gate et précède le commit révisé : il n'autorise donc aucune action distante.
 
 Le paquet préparé contient :
 
@@ -434,12 +435,12 @@ Le candidat se trouve dans
 `scripts/run-k1-control-first-calibration-v1.ps1` et son contrat complet est
 documenté dans `docs/18-g4-k1-control-first-calibration-v1.md` et ADR-006.
 
-Le lot fige `PEI_TEXTURED_A` ID `1`, plateau `60 °C`, buse `140 °C`,
-stabilisation `600 s`, nettoyage stock borné à `180 °C`, puis deux meshes
+Le lot fige `PEI_TEXTURED_A` ID `1`, plateau `55 °C`, buse `140 °C`,
+stabilisation `200 s`, nettoyage stock borné à `180 °C`, puis deux meshes
 `6 × 6` Lagrange sur `5–295 mm`. L'écart point par point doit rester inférieur
 ou égal à `0,025 mm`; sinon la mission s'arrête sans troisième essai automatique.
 Le second mesh qualifié pourra être persisté sous
-`k1_p001_t060_r001_n06x06`, puis le chemin installé guidera le Z à partir du
+`k1_p001_t055_r001_n06x06`, puis le chemin installé guidera le Z à partir du
 seed neutre explicite `0,0 mm`.
 
 Le mode `Plan` du pilote est purement local. Toute action distante exigera

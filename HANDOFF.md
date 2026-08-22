@@ -2,7 +2,7 @@
 
 Date: 2026-08-22
 Phase: P4 / runtime Z/mesh et CALIBRATION-PATH-V1 installés et validés ; aucune calibration exécutée
-Next operator: annoncer l'écart d'autonomie, puis revoir le candidat FIRST-CALIBRATION-V1 figé hors imprimante
+Next operator: annoncer l'écart d'autonomie, puis attendre le GO exact de FIRST-CALIBRATION-V1
 
 ## Message obligatoire au début de la prochaine session
 
@@ -435,13 +435,13 @@ Le candidat `G4-K1-CONTROL-FIRST-CALIBRATION-V1` est maintenant présent sous
 fichier : son pilote local orchestre seulement les commandes déjà installées,
 par checkpoints séparés.
 
-Le contexte est figé : `PEI_TEXTURED_A` ID `1`, plateau `60 °C`, buse `140 °C`,
-stabilisation `600 s`, nettoyage stock borné jusqu'à `180 °C`, homing après
+Le contexte est figé : `PEI_TEXTURED_A` ID `1`, plateau `55 °C`, buse `140 °C`,
+stabilisation `200 s`, nettoyage stock borné jusqu'à `180 °C`, homing après
 nettoyage, deux meshes `6 × 6` Lagrange sur `5–295 mm` et seuil absolu maximum
 `0,025 mm` sur les 36 points. Un KO s'arrête sans troisième mesh automatique.
 
 Le second mesh qualifié pourra être enregistré sous
-`k1_p001_t060_r001_n06x06`, puis la session Z partira du seed neutre explicite
+`k1_p001_t055_r001_n06x06`, puis la session Z partira du seed neutre explicite
 `0,0 mm` et suivra les paliers déjà installés. Chaque mouvement bas reste une
 action distincte. L'acceptation exige confirmation humaine et remontée de
 `5 mm`.
@@ -454,17 +454,19 @@ le runtime et le chemin installés. Détails : document 18 et ADR-006.
 
 ## Next bounded mission
 
-Relire et figer le candidat hors imprimante, puis attendre le GO exact
-`GO G4-K1-CONTROL-FIRST-CALIBRATION-V1`. Ne lancer aucun préflight distant,
+Le candidat révisé hors imprimante est figé à `55/140 °C` et `200 s`. Le `GO`
+générique reçu avec ce choix ne nomme pas la gate exacte et a précédé le commit
+révisé. Attendre donc le GO exact `GO G4-K1-CONTROL-FIRST-CALIBRATION-V1`.
+Ne lancer aucun préflight distant,
 chauffage, nettoyage, homing, mesh, mouvement ou écriture Z avant ce GO.
 
 La gate précédente est close avec `DEPLOY_CALIBRATION_PATH_V1_OK` et
 `VALIDATE_CALIBRATION_PATH_V1_OK` sous la capture
 `20260822-124207-g4-k1-control-calibration-path-v1`.
 
-Autorisation actuelle : **HORS_IMPRIMANTE_FIRST_CALIBRATION_V1**. Aucun GO de
-calibration n'a été reçu. L'overlay et son include sont installés ; le backup et
-le staging de preuve restent sur la K1.
+Autorisation actuelle : **HORS_IMPRIMANTE_FIRST_CALIBRATION_V1**. Aucun GO exact
+de calibration n'a été reçu. L'overlay et son include sont installés ; le backup
+et le staging de preuve restent sur la K1.
 
 La mission suivante sera l'exécution de
 `G4-K1-CONTROL-FIRST-CALIBRATION-V1` seulement après sa revue et son propre GO.
@@ -475,8 +477,8 @@ ensemble, après validation de ce runtime.
 
 Le post-traitement PHP/Orca `+0,27 mm`, le Start G-code et le G-code de changement
 de filament restent strictement inchangés. Aucune commande Z, mesh, chauffe,
-homing ou calibration du candidat ne peut être envoyée avant la revue complète
-et le GO exact `G4-K1-CONTROL-FIRST-CALIBRATION-V1`.
+homing ou calibration du candidat ne peut être envoyée avant le GO exact
+`GO G4-K1-CONTROL-FIRST-CALIBRATION-V1`.
 
 ## Stop conditions
 
