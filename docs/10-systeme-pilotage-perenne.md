@@ -1,8 +1,8 @@
 # 10 — Système de pilotage pérenne
 
-Date : 2026-08-20
+Date : 2026-08-22
 
-Statut : **besoin accepté ; contrat et premier prototype local réalisés ; aucun déploiement autorisé**
+Statut : **fondation et runtime Z/mesh installés ; interfaces autonomes non atteintes**
 
 ## Décision claire
 
@@ -28,6 +28,23 @@ Le paquet `G4-ZSAFE-START-V1` ne répond pas à ce besoin. Il est rejeté, n'a
 jamais été déployé et ne doit plus être proposé.
 
 ## Ce que Thomas verra
+
+### Seuils d'autonomie vérifiables
+
+Le projet ne doit plus appeler « terminé » un état qui exige encore la console
+ou Codex. Deux sorties distinctes sont suivies :
+
+- **autonomie calibration** : choix plaque, températures, stabilisation,
+  matrice et interpolation ; déroulé sûr ; comparaison des mesures ; actions
+  enregistrer, annuler et restaurer ; erreurs compréhensibles, le tout sans
+  commande manuelle ;
+- **autonomie production** : contrat Orca actif, démarrage sûr, Z et mesh
+  automatiquement cohérents, ancien `+0,27 mm` retiré, températures des deux
+  CFS respectées et travaux ordinaires sans intervention Codex.
+
+État au 2026-08-22 : **aucun de ces deux seuils n'est encore atteint**. Mainsail
+`v2.18.2` et le runtime `KCTRL_*` sont installés, mais ils constituent la vue
+experte et le moteur, pas encore l'interface quotidienne autonome.
 
 ### Écran quotidien `K1 Control`
 
@@ -273,7 +290,7 @@ Le premier écran local et le moteur d'état pur sont présents sous `prototype/
 Ils utilisent uniquement des données synthétiques et ne connaissent aucune
 adresse d'imprimante.
 
-## Prototype terminé et prochaine gate
+## État livré et prochaine gate
 
 Le prototype hors imprimante a maintenant réalisé les cinq points annoncés :
 pile épinglée, faux Moonraker relié à l'interface et au moteur, 17/17 scénarios
@@ -283,12 +300,20 @@ V1 a reçu son GO, puis son préflight a détecté l'absence de `logrotate` avan
 toute mutation. V2 a reçu son GO, atteint un Mainsail fonctionnel par tunnel,
 puis a été rollbackée lorsque l'absence de flux de compte Mainsail a rendu son
 contrat d'authentification impossible. Les deux noms sont fermés.
-`G4-K1-CONTROL-FOUNDATION-V3` est la prochaine gate humaine. Elle garde
-uniquement Moonraker et Mainsail en observation, réutilise le syslog stock borné
-et place l'authentification compatible sur nginx. `K1 Control` réel, le Z, le
-mesh, le démarrage, la purge et les températures CFS restent dans les poses
-suivantes.
+La fondation V3, sa correction PATHS-V1 et le runtime Z/mesh sont désormais
+installés et validés. Le runtime démarre dans un état vide calibrable, mais garde
+sa production fermée sans Z accepté. Il ne remplace encore ni `START_PRINT`, ni
+le contrat Orca, ni le post-traitement `+0,27 mm`, ni la propriété des
+températures CFS.
 
-Toute installation, écriture, chauffe, mouvement, calibration ou impression
-reste interdite jusqu'à un GO portant exactement ce nom. Le GO de fondation
-n'autoriserait toujours aucune commande G-code ni impression lancée par Codex.
+La prochaine gate canonique est
+`G4-K1-CONTROL-FIRST-CALIBRATION-V1`. Sa préparation hors imprimante doit figer
+le contexte de plaque, les températures, la stabilisation, la matrice,
+l'interpolation, deux mesures qualifiées, le Z provisoire, l'acceptation et le
+rollback. Elle doit également figer le parcours de l'écran autonome, sans faire
+passer une exécution en console pour l'UX finale.
+
+Toute chauffe, mouvement, homing, calibration ou écriture persistante attend la
+revue complète puis le GO exact de cette gate. Après cette première calibration,
+la bascule atomique interface/Orca/`START_PRINT`, la propriété des températures
+CFS et G5 resteront nécessaires avant de déclarer le pilotage autonome.

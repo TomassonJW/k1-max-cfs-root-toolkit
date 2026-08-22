@@ -2,7 +2,27 @@
 
 Date: 2026-08-22
 Phase: P4 / retained foundation observed; Z/mesh runtime installed and validated
-Next operator: prepare the separately gated first calibration, without sending it yet
+Next operator: announce the autonomy gap, then prepare the separately gated first calibration without sending it
+
+## Message obligatoire au début de la prochaine session
+
+Dire clairement à Thomas, avant toute proposition d'exécution :
+
+- **l'autonomie calibration n'est pas encore atteinte** : le runtime existe,
+  mais les paramètres doivent encore être orchestrés hors interface réelle ;
+- **l'autonomie production n'est pas encore atteinte** : Orca, `START_PRINT`,
+  l'ancien `+0,27 mm` et les températures CFS ne sont pas encore basculés vers
+  le nouveau contrat ;
+- la prochaine gate rendra possible la première calibration contrôlée, mais une
+  calibration réussie ne suffira pas encore à déclarer le pilotage quotidien
+  autonome ;
+- l'interface ne sera déclarée « nickel sans Codex » que lorsque Thomas pourra
+  choisir les paramètres, lancer, comprendre le statut, enregistrer, annuler et
+  restaurer depuis l'écran, puis imprimer normalement depuis Orca sans commande
+  manuelle ni correction cachée.
+
+Ne pas présenter Mainsail `v2.18.2`, la console ou les macros `KCTRL_*` comme
+l'interface quotidienne terminée.
 
 ## Current state
 
@@ -342,11 +362,24 @@ Codex has permanent authority to complete all normal Git and GitHub operations f
 
 ## Next bounded mission
 
-Préparer hors imprimante le contrat de première calibration sur le runtime
-installé : plaque, température, matrice, interpolation, chauffe, nettoyage,
-homing, mesure, réglage Z, acceptation et rollback. Ne transmettre encore aucune
-commande : chauffe, mouvement et écriture d'état exigent une gate séparée et un
-nouveau GO nommé.
+Préparer hors imprimante `G4-K1-CONTROL-FIRST-CALIBRATION-V1` sur le runtime
+installé : plaque, température, stabilisation, matrice, interpolation, chauffe,
+nettoyage, homing, deux mesures comparables, seuil de qualification, réglage Z,
+acceptation, annulation et rollback. Figer en même temps le contrat UX de
+l'écran de calibration autonome : presets simples, options expertes, états
+compréhensibles et aucune console obligatoire. Ne transmettre encore aucune
+commande : chauffe, mouvement et écriture d'état exigent la revue complète et
+un nouveau GO portant exactement ce nom.
+
+Critères de fin de cette prochaine mission : fichiers et commandes exacts,
+préflight, backup, déroulé observable, conditions OK/KO, rollback et maquette du
+parcours utilisateur tous revus ; aucun G-code envoyé avant le GO. La mission
+doit annoncer explicitement ce qu'elle débloque et ce qui restera nécessaire
+avant l'autonomie production.
+
+Autorisation de démarrage : **ATTENDRE_GO**. La prochaine session peut relire,
+auditer et préparer hors imprimante ; elle ne peut ni chauffer, ni déplacer, ni
+calibrer, ni écrire sur l'imprimante avant le GO exact.
 
 La bascule Orca reste une gate ultérieure unique : wrappers de travail côté
 machine, trois champs Orca et retrait du post-traitement doivent changer
@@ -355,7 +388,7 @@ ensemble, après validation de ce runtime.
 Le post-traitement PHP/Orca `+0,27 mm`, le Start G-code et le G-code de changement
 de filament restent strictement inchangés. Aucune commande Z, mesh, chauffe,
 homing ou calibration du candidat ne peut être envoyée avant la revue complète
-et le GO exact `G4-K1-CONTROL-Z-MESH-RUNTIME-V1`.
+et le GO exact `G4-K1-CONTROL-FIRST-CALIBRATION-V1`.
 
 ## Stop conditions
 

@@ -380,11 +380,22 @@ commencent sur cet état final retenu.
 
 ## Next safe action
 
-Préparer la gate séparée de première calibration : paramètres explicites de
-plaque, température, matrice et interpolation, séquence chauffe/nettoyage/homing,
-acceptation Z volontaire et critères de rollback. La calibration impliquera des
-mouvements, de la chauffe et une écriture d'état ; elle exige donc une nouvelle
-revue et un nouveau GO nommé. Le runtime déjà installé ne doit pas être reposé.
+Au début de la prochaine session, annoncer explicitement à Thomas :
+
+- autonomie calibration : **non atteinte** ;
+- autonomie production : **non atteinte** ;
+- Mainsail et le runtime sont installés, mais aucun écran réel ne permet encore
+  de sélectionner et d'orchestrer les paramètres sans console ni Codex.
+
+La prochaine mission unique est de préparer hors imprimante la gate séparée
+`G4-K1-CONTROL-FIRST-CALIBRATION-V1` : identité de plaque, températures,
+stabilisation, matrice, interpolation, nettoyage, homing, deux mesures
+comparables, seuil de qualification, session Z volontaire et rollback. Elle
+doit également figer le contrat fonctionnel de l'écran de calibration autonome,
+mais ne doit encore transmettre aucun G-code. La calibration réelle impliquera
+des mouvements, de la chauffe et une écriture d'état ; elle exigera donc une
+revue complète et ce nouveau GO exact. Le runtime installé ne doit pas être
+reposé.
 
 The Orca cutover remains a later atomic gate. This runtime slice intentionally
 keeps the active Orca profile, `START_PRINT` and the legacy `+0.27 mm`
@@ -446,7 +457,8 @@ retirement remains atomic with the later proven machine/Orca replacement.
   gated.
 - Persistent named mesh commit is now mapped exactly: save the deterministic
   profile, remove `K1_TRANSIENT`, then `SAVE_CONFIG`, which restarts Klipper.
-  The installer and rollback still need offline proof.
+  The installer and package rollback are now proven by the retained deployment;
+  the separately gated first-calibration rollback still needs its exact review.
 - Every reference-changing Creality calibration path must be detected or
   wrapped so that an old accepted Z cannot survive a real recalibration.
 - The compiled `BOX_*` owner may contain a late temperature write that no macro
@@ -460,6 +472,11 @@ retirement remains atomic with the later proven machine/Orca replacement.
 - The real `K1 Control` adapter and offline Z/mesh guards exist. START_PRINT,
   Orca and CFS integration remain intentionally absent until their atomic
   contracts and rollback are complete.
+- Calibration autonomy remains absent until the real interface exposes presets
+  and expert parameters, qualification results, save/cancel/restore and clear
+  status without manual console commands.
+- Production autonomy remains absent until the atomic Orca/START_PRINT cutover,
+  removal of the legacy `+0.27 mm`, CFS temperature ownership and G5 proof.
 
 ## Exit condition for this phase
 

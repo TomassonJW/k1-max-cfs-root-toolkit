@@ -56,6 +56,22 @@ the printer. The runtime is retained with `ready=1`, `integrity=empty`,
 `accepted_z_valid=0` and `low_moves_armed=0`. No further printer mutation,
 including calibration, is authorised by the completed runtime gate.
 
+Thomas demande que chaque prochaine reprise commence par un état explicite de
+l'autonomie, sans confondre le runtime installé avec une interface terminée :
+
+- **autonomie calibration** : pas encore atteinte ; elle exige une interface
+  réelle permettant de choisir plaque, températures, stabilisation, matrice,
+  interpolation et actions enregistrer/annuler/restaurer, sans console ni
+  assistance Codex ;
+- **autonomie production** : pas encore atteinte ; elle exige en plus la bascule
+  atomique Orca/`START_PRINT`, le retrait prouvé du `+0,27 mm`, la propriété des
+  températures CFS et la validation G5 sans intervention Codex.
+
+Au début de la prochaine session, l'agent doit rappeler ces deux statuts,
+indiquer la prochaine gate unique et expliquer ce qu'elle rendra autonome. Il
+ne doit jamais annoncer « interface prête » sur la seule présence de Mainsail
+ou des macros `KCTRL_*`.
+
 Authority order:
 
 1. an explicit decision from Thomas;

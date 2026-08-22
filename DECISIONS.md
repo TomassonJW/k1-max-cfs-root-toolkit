@@ -455,3 +455,29 @@ l'insertion revue et celle obtenue après la normalisation exacte observée. Ell
 exige toujours une seule inclusion et les hashes exacts des deux fichiers
 runtime. La validation indépendante a ensuite obtenu
 `VALIDATE_Z_MESH_RUNTIME_V1_OK` sans nouvelle mutation.
+
+## D-032 — L'autonomie se valide dans l'interface, pas dans la console
+
+Date: 2026-08-22
+
+Status: accepté par Thomas pour le pilotage et le handoff
+
+Le runtime Z/mesh installé est une fondation technique, pas encore un produit
+utilisable seul. Mainsail fournit la vue experte et la console, mais la saisie
+manuelle de commandes `KCTRL_*` ou l'assistance de Codex ne satisfont pas la
+cible d'usage quotidien.
+
+Deux seuils séparés deviennent des critères de pilotage :
+
+1. **autonomie calibration** : Thomas choisit dans une interface les paramètres
+   de plaque, température, stabilisation, matrice et interpolation, lance la
+   séquence sûre, voit les deux mesures et leur qualification, puis peut
+   enregistrer, annuler ou restaurer sans console ni Codex ;
+2. **autonomie production** : Orca et la machine appliquent automatiquement la
+   calibration acceptée, le bon mesh et les températures des deux CFS, sans
+   ancien `+0,27 mm`, modification manuelle de fichier ou intervention Codex.
+
+Une première calibration pilotée et surveillée ne vaut donc pas validation de
+l'interface autonome. Chaque nouvelle session doit annoncer le seuil atteint,
+les éléments manquants et la prochaine gate unique avant de proposer une
+mutation.

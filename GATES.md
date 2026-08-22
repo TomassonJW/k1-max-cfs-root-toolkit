@@ -337,6 +337,25 @@ Pour le système de pilotage, un G4 exige aussi :
 
 Passing G4 authorises only that named mutation.
 
+### Prochaine gate nommée — `G4-K1-CONTROL-FIRST-CALIBRATION-V1`
+
+Status: **préparation hors imprimante autorisée ; aucune exécution ni GO reçu**
+
+Cette gate devra contenir avant présentation à Thomas :
+
+- plaque, températures, stabilisation, matrice et interpolation explicites ;
+- nettoyage et homing dans un ordre revu ;
+- deux meshes transitoires comparables et un seuil de qualification borné ;
+- session Z provisoire avec acceptation, annulation et restauration ;
+- préflight, backup, preuves avant/après et rollback exacts ;
+- contrat UX montrant comment les mêmes choix deviendront accessibles sans
+  console ni assistance Codex.
+
+Son éventuelle réussite qualifiera une première calibration. Elle ne validera
+pas encore l'autonomie production, qui reste conditionnée par la bascule
+interface/Orca/`START_PRINT`, le retrait du `+0,27 mm`, les températures CFS et
+G5.
+
 ## G5 — V1 production baseline
 
 Status: **not passed**
@@ -354,4 +373,12 @@ Required:
 - rollback has been tested or safely simulated;
 - repository state matches the deployed state;
 - normal jobs need no Codex intervention or per-print manual file edit;
+- calibration can be completed from the daily interface without console input,
+  with plate/temperature/matrix/interpolation selection and visible
+  qualification, save, cancel and restore actions;
+- the interface reports `Prêt` or `Bloqué` with an actionable reason and never
+  requires Codex to translate an internal runtime state;
 - remaining limitations are explicit.
+
+The presence of Mainsail, Moonraker or `KCTRL_*` macros alone does not satisfy
+either calibration autonomy or this production gate.
