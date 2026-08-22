@@ -1,8 +1,8 @@
 # G4 — K1 Control calibration path V1
 
-Statut au 2026-08-22 : **première tentative de pose rollbackée ; base exacte
-restaurée ; attente du restart corrigée hors imprimante ; nouveau GO exact
-obligatoire**.
+Statut au 2026-08-22 : **installé et validé sous la capture
+`20260822-124207-g4-k1-control-calibration-path-v1` ; aucune calibration
+effectuée**.
 
 ## Préflight réel de la capture `20260822-113503`
 
@@ -58,10 +58,33 @@ reçu un nouveau GO exact. Le préflight du déployeur corrigé a lui-même obte
 `PREFLIGHT_CALIBRATION_PATH_V1_OK` en lecture seule sous le sous-dossier de
 preuve `corrected-preflight`.
 
-Le nom `G4-K1-CONTROL-CALIBRATION-PATH-V1` choisit ce lot. Il ne vaut pas GO de
-mutation. L'ouverture future exigera le texte exact
-`GO G4-K1-CONTROL-CALIBRATION-PATH-V1` après revue de ce document et du commit
-figé.
+## Pose retenue `20260822-124207`
+
+Le nouveau GO exact a ouvert la capture
+`20260822-124207-g4-k1-control-calibration-path-v1`. Le préflight frais a obtenu
+`PREFLIGHT_CALIBRATION_PATH_V1_OK` sur la base restaurée. Le backup exact de
+`printer.cfg` a été créé et vérifié avant la première mutation.
+
+La pose corrigée a ajouté l'overlay, ajouté son unique include et envoyé le seul
+`RESTART` prévu. L'attente bornée a absorbé la transition Klipper/CFS puis le
+déployeur a obtenu `DEPLOY_CALIBRATION_PATH_V1_OK`.
+
+L'action `Validate`, relancée séparément, a obtenu
+`VALIDATE_CALIBRATION_PATH_V1_OK`. Elle a repointé les quatre empreintes exactes,
+le runtime toujours `ready=1`/`empty`, les deux CFS et la fondation, puis prouvé
+que `KCTRL_CAL_PATH_ASSERT_ARMED` refuse à vide sans modifier position, origine
+Z ou cibles de chauffe. Les axes sont non référencés et les chauffes demandées
+restent à zéro.
+
+Aucun chauffage, homing, mouvement, extrusion, mesh, réglage ou enregistrement
+Z n'a été exécuté. Le chemin est installé mais reste `idle`, non prêt, non armé
+et incapable de commit tant qu'une gate de calibration séparée ne lui fournit
+pas son contexte explicite.
+
+Le nom `G4-K1-CONTROL-CALIBRATION-PATH-V1` choisissait ce lot mais ne valait pas
+GO de mutation. La pose a ensuite reçu ses GO exacts et cette gate est close.
+Toute correction ou repose devra appartenir à une nouvelle gate revue ; ce nom
+ne doit pas être réutilisé comme autorisation implicite.
 
 ## Résultat visé
 

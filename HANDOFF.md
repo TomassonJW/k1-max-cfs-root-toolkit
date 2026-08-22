@@ -1,8 +1,8 @@
 # HANDOFF
 
 Date: 2026-08-22
-Phase: P4 / runtime Z/mesh retenu ; tentative CALIBRATION-PATH-V1 rollbackée, base exacte restaurée
-Next operator: annoncer l'écart d'autonomie, relire l'attente restart corrigée, puis attendre le GO exact renouvelé
+Phase: P4 / runtime Z/mesh et CALIBRATION-PATH-V1 installés et validés ; aucune calibration exécutée
+Next operator: annoncer l'écart d'autonomie, puis préparer/revoir FIRST-CALIBRATION-V1 hors imprimante
 
 ## Message obligatoire au début de la prochaine session
 
@@ -13,8 +13,8 @@ Dire clairement à Thomas, avant toute proposition d'exécution :
 - **l'autonomie production n'est pas encore atteinte** : Orca, `START_PRINT`,
   l'ancien `+0,27 mm` et les températures CFS ne sont pas encore basculés vers
   le nouveau contrat ;
-- la prochaine gate installe seulement le chemin borné du premier Z, sans
-  lancer de calibration ; la première calibration restera une gate séparée et
+- le chemin borné du premier Z est maintenant installé et validé à vide ; la
+  prochaine gate effectuera la première calibration sous un contrat séparé et
   même sa réussite ne suffira pas à déclarer le pilotage quotidien autonome ;
 - l'interface ne sera déclarée « nickel sans Codex » que lorsque Thomas pourra
   choisir les paramètres, lancer, comprendre le statut, enregistrer, annuler et
@@ -24,7 +24,7 @@ Dire clairement à Thomas, avant toute proposition d'exécution :
 Ne pas présenter Mainsail `v2.18.2`, la console ou les macros `KCTRL_*` comme
 l'interface quotidienne terminée.
 
-## Candidat actif préparé hors imprimante
+## CALIBRATION-PATH-V1 installé et validé
 
 Thomas a nommé `G4-K1-CONTROL-CALIBRATION-PATH-V1` sans préfixe `GO`. Cette
 instruction a sélectionné la préparation du lot ; elle n'a autorisé aucune
@@ -81,6 +81,15 @@ lecture des objets après pose et avant le `RESTART` de rollback. Ce changement
 de commande consomme l'autorisation précédente : une nouvelle pose exige encore
 un GO exact renouvelé. Le préflight réel du déployeur corrigé est vert en
 lecture seule.
+
+Thomas a renouvelé une dernière fois le GO. La capture
+`20260822-124207-g4-k1-control-calibration-path-v1` a obtenu le préflight frais,
+`DEPLOY_CALIBRATION_PATH_V1_OK` puis
+`VALIDATE_CALIBRATION_PATH_V1_OK`. Les quatre empreintes sont exactes, l'overlay
+et son unique include sont retenus, le runtime reste `ready=1`/`empty`, les axes
+sont non référencés, les chauffes à zéro et les deux CFS sont connectés. La garde
+à vide a refusé sans changer position, origine Z ou cibles. Aucun chauffage,
+homing, mouvement, extrusion, mesh, réglage ou enregistrement Z n'a été exécuté.
 
 ## Current state
 
@@ -421,24 +430,22 @@ Codex has permanent authority to complete all normal Git and GitHub operations f
 
 ## Next bounded mission
 
-Relire le commit qui ajoute l'attente bornée du socket à
-`G4-K1-CONTROL-CALIBRATION-PATH-V1`, rappeler qu'il ne rend pas encore
-l'interface autonome et attendre le GO exact renouvelé. Après ce GO seulement :
-préflight frais, backup, pose du seul overlay, `RESTART` hôte, validation sans
-mouvement et clôture complète ou rollback automatique.
+Préparer et revoir hors imprimante `G4-K1-CONTROL-FIRST-CALIBRATION-V1`, tout en
+rappelant que le chemin installé ne rend pas encore l'interface autonome. Le
+paquet devra figer plaque, températures, stabilisation, matrice, interpolation,
+nettoyage, homing, deux meshes comparables, seuil d'acceptation, session Z,
+annulation et rollback avant tout GO.
 
-Critères de fin : `DEPLOY_CALIBRATION_PATH_V1_OK` puis validation indépendante
-`VALIDATE_CALIBRATION_PATH_V1_OK`, runtime existant toujours vide et sain,
-chauffes à zéro, axes non référencés, deux CFS connectés, empreintes exactes et
-aucun état physique changé par la garde.
+La gate précédente est close avec `DEPLOY_CALIBRATION_PATH_V1_OK` et
+`VALIDATE_CALIBRATION_PATH_V1_OK` sous la capture
+`20260822-124207-g4-k1-control-calibration-path-v1`.
 
-Autorisation actuelle : **ATTENDRE_GO_RENOUVELE**. La tentative précédente est
-entièrement rollbackée et le préflight final est vert. Le backup et le staging
-de preuve restent sur la K1 ; l'overlay et son include sont absents. Aucun
-nouveau `Deploy` ne doit réutiliser le GO consommé.
+Autorisation actuelle : **HORS_IMPRIMANTE_FIRST_CALIBRATION_V1**. Aucun GO de
+calibration n'a été reçu. L'overlay et son include sont installés ; le backup et
+le staging de preuve restent sur la K1.
 
-Une fois cette pose retenue, la mission suivante sera
-`G4-K1-CONTROL-FIRST-CALIBRATION-V1` : plaque, température, stabilisation,
+La mission suivante sera `G4-K1-CONTROL-FIRST-CALIBRATION-V1` : plaque,
+température, stabilisation,
 matrice, interpolation, chauffe, nettoyage, homing, deux mesures comparables,
 seuil de qualification, réglage Z, acceptation, annulation et rollback. Cette
 calibration aura son propre GO.

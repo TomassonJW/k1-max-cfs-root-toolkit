@@ -89,6 +89,19 @@ changé après le GO consommé, aucune nouvelle pose n'est autorisée avant un
 nouveau GO exact. Le préflight réel du déployeur corrigé est vert en lecture
 seule.
 
+Thomas a renouvelé une dernière fois le GO. La capture
+`20260822-124207-g4-k1-control-calibration-path-v1` a obtenu le préflight frais,
+`DEPLOY_CALIBRATION_PATH_V1_OK` puis
+`VALIDATE_CALIBRATION_PATH_V1_OK`. L'overlay et son unique include sont retenus
+avec leurs empreintes exactes. Le runtime reste `ready=1`/`empty`, les axes sont
+non référencés, les chauffes demandées sont à zéro, deux CFS et la fondation sont
+conformes, et la garde à vide refuse sans changement de position, origine Z ou
+cible. Aucun chauffage, homing, mouvement, extrusion, mesh, réglage ou
+enregistrement Z n'a été exécuté. `CALIBRATION-PATH-V1` est clos ; aucune autre
+mutation n'est autorisée. La prochaine gate unique est la préparation hors
+imprimante de `G4-K1-CONTROL-FIRST-CALIBRATION-V1`, qui exigera son propre GO
+avant toute calibration.
+
 Thomas demande que chaque prochaine reprise commence par un état explicite de
 l'autonomie, sans confondre le runtime installé avec une interface terminée :
 

@@ -4,15 +4,16 @@ Last updated: 2026-08-22
 
 ## Current phase
 
-**P4 — fondation V3 + PATHS-V1 et runtime Z/mesh retenus ; tentative du chemin
-borné rollbackée, base exacte restaurée et attente restart corrigée hors
-imprimante ; production volontairement bloquée**
+**P4 — fondation V3 + PATHS-V1, runtime Z/mesh et chemin borné du premier Z
+installés et validés ; aucune calibration exécutée ; production volontairement
+bloquée**
 
 The repository baseline, stock acquisition, complete Orca/G-code intake and
 passive P1–P5/PETG trace are complete. Gate G3 is passed for offline design and
-simulation only. No printer-behaviour deployment is authorised. The separate
-`G4-SSH-KEY` access change and the observation-only V3 control foundation are
-the deployed printer-side changes; neither changed print behaviour.
+simulation only. No further printer mutation is authorised after the completed
+gate. The deployed printer-side slices are `G4-SSH-KEY`, the V3 + PATHS-V1
+control foundation, the empty Z/mesh runtime and the inert calibration path.
+Production and every physical calibration action remain closed.
 
 Thomas rejected `G4-ZSAFE-START-V1` before deployment. Its fixed `+0.27 mm`,
 single `default` mesh and manual clean flow are not a production solution. The
@@ -330,12 +331,10 @@ commencent sur cet état final retenu.
   Le runtime est installé mais ne peut pas encore armer un travail de production.
 - La suite courante exécute 117 tests : 115 passent et deux contrôles Jinja
   locaux sont ignorés. Le runtime installé a déjà passé son contrôle exact sur
-  la K1 ; le nouvel overlay devra passer son parse en mémoire pendant le
-  préflight exact, avant toute écriture.
-- Le candidat `G4-K1-CONTROL-CALIBRATION-PATH-V1` est préparé uniquement hors
-  imprimante : overlay, contrat UX, manifeste, déployeur à vide, ADR-005 et
-  procédure complète. Il n'a pas contacté la K1. Sa pose future est figée sur
-  un fichier, un include, un `RESTART` hôte et une validation sans mouvement.
+  la K1 ; l'overlay a également passé son parse exact en mémoire avant sa pose.
+- `G4-K1-CONTROL-CALIBRATION-PATH-V1` est installé et validé sous la capture
+  `20260822-124207-g4-k1-control-calibration-path-v1` : un fichier, un include,
+  un `RESTART` hôte et une validation sans mouvement.
 
 - Complete-system audit, A/B/C comparison, safety invariant, input contract and
   time-bounded roadmap documented in
@@ -394,10 +393,9 @@ Au début de la prochaine session, annoncer explicitement à Thomas :
 - Mainsail et le runtime sont installés, mais aucun écran réel ne permet encore
   de sélectionner et d'orchestrer les paramètres sans console ni Codex.
 
-La prochaine gate unique reste
-`G4-K1-CONTROL-CALIBRATION-PATH-V1`. Son candidat ajoute le
-chemin borné qui manquait pour évaluer le premier Z sans console libre ni valeur
-cachée. Son premier préflight réel a échoué avant écriture sur une ligne SSH
+Le chemin borné `G4-K1-CONTROL-CALIBRATION-PATH-V1` ajoute ce qui manquait pour
+évaluer le premier Z sans console libre ni valeur cachée. Son premier préflight
+réel a échoué avant écriture sur une ligne SSH
 trop longue. Le transport Jinja corrigé par stdin a ensuite obtenu
 `PREFLIGHT_CALIBRATION_PATH_V1_OK` sous la capture `20260822-113503`. La pose
 autorisée sous la capture `20260822-115608` a ensuite posé l'overlay, mais sa
@@ -407,13 +405,15 @@ préflight final a prouvé la base exacte, l'overlay absent et la pleine santé.
 Aucune chauffe, homing, mouvement, mesure mesh ou écriture Z n'a eu lieu.
 
 Le déployeur attend maintenant le socket de façon bornée après pose et avant le
-`RESTART` du rollback. La pose future, après un nouveau GO exact renouvelé,
-ajoutera seulement un overlay et un include, fera un `RESTART` hôte et le
-validera à vide. Son préflight réel corrigé est déjà vert en lecture seule. Le
-runtime installé ne doit pas être reposé.
+`RESTART` du rollback. Le GO renouvelé a ensuite retenu la pose sous la capture
+`20260822-124207-g4-k1-control-calibration-path-v1` avec
+`DEPLOY_CALIBRATION_PATH_V1_OK` et `VALIDATE_CALIBRATION_PATH_V1_OK`. L'overlay
+et son unique include sont installés avec leurs empreintes exactes ; le runtime
+reste vide, les axes sont non référencés, les chauffes à zéro et la garde à vide
+refuse sans changement physique.
 
-Après seulement cette pose validée, la mission suivante pourra préparer puis
-faire autoriser `G4-K1-CONTROL-FIRST-CALIBRATION-V1` : identité de plaque,
+La prochaine gate unique est désormais à préparer puis faire autoriser hors
+imprimante : `G4-K1-CONTROL-FIRST-CALIBRATION-V1`. Elle figera identité de plaque,
 températures, stabilisation, matrice, interpolation, nettoyage, homing, deux
 mesures comparables, seuil de qualification et session Z volontaire. La
 calibration réelle restera une autorisation séparée.
@@ -442,10 +442,10 @@ retirement remains atomic with the later proven machine/Orca replacement.
   `G4-K1-CONTROL-Z-MESH-RUNTIME-V1` désormais installé.
 - Toute commande de calibration Z/mesh, chauffe ou homing du runtime avant une
   gate séparée explicitement approuvée.
-- Toute pose ou validation distante de
-  `G4-K1-CONTROL-CALIBRATION-PATH-V1` avant son GO exact renouvelé ; le dernier
-  GO a été consommé par la tentative rollbackée et l'attente du socket a ensuite
-  changé.
+- Toute correction, repose ou suppression du chemin installé
+  `G4-K1-CONTROL-CALIBRATION-PATH-V1`.
+- Toute exécution de `G4-K1-CONTROL-FIRST-CALIBRATION-V1` avant son paquet revu
+  et son propre GO exact.
 - BTT Eddy preparation, installation, firmware or calibration.
 - Firmware downgrade or replacement.
 - Any SSH write other than the completed `G4-SSH-KEY` deployment.

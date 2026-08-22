@@ -544,3 +544,25 @@ Le déployeur remplace maintenant les lectures immédiates par une attente born�
 de la liste des objets. Il applique la même garde avant le `RESTART` de rollback
 afin de ne pas traiter une transition normale comme une panne définitive.
 Comme la commande revue change, une nouvelle pose exige un nouveau GO exact.
+
+## D-036 — CALIBRATION-PATH-V1 est retenu après validation indépendante
+
+Date: 2026-08-22
+
+Status: accepté et installé
+
+Le GO renouvelé a ouvert la capture
+`20260822-124207-g4-k1-control-calibration-path-v1`. Le préflight frais a validé
+la base exacte, puis la pose corrigée a obtenu
+`DEPLOY_CALIBRATION_PATH_V1_OK`. L'attente bornée a absorbé la transition du
+socket Klipper et des deux CFS sans seconde commande concurrente.
+
+L'action `Validate`, exécutée séparément, a obtenu
+`VALIDATE_CALIBRATION_PATH_V1_OK`. Elle a confirmé les quatre empreintes, le
+runtime toujours vide, les axes non référencés, les chauffes à zéro, les deux
+CFS, la fondation et le refus de la garde sans modification physique.
+
+Le chemin est retenu mais reste inerte : `idle`, non prêt, non armé et sans droit
+de commit. Il n'autorise aucune calibration implicite. La prochaine mutation
+possible appartient à la gate séparée
+`G4-K1-CONTROL-FIRST-CALIBRATION-V1` après préparation, revue et GO exact.

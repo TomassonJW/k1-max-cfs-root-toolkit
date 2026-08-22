@@ -1,7 +1,12 @@
 {
   "package": "G4-K1-CONTROL-CALIBRATION-PATH-V1",
-  "status": "restart_race_rolled_back_corrected_awaiting_renewed_go",
+  "status": "installed_and_validated",
   "printer_mutation_authorized": false,
+  "deployment": {
+    "capture_id": "20260822-124207-g4-k1-control-calibration-path-v1",
+    "deploy_result": "DEPLOY_CALIBRATION_PATH_V1_OK",
+    "validation_result": "VALIDATE_CALIBRATION_PATH_V1_OK"
+  },
   "target": {
     "board": "CR4CU220812S12",
     "structure_version": "0",

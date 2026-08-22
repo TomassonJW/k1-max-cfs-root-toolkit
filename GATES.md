@@ -337,10 +337,10 @@ Pour le système de pilotage, un G4 exige aussi :
 
 Passing G4 authorises only that named mutation.
 
-### Prochaine gate nommée — `G4-K1-CONTROL-CALIBRATION-PATH-V1`
+### Gate installée — `G4-K1-CONTROL-CALIBRATION-PATH-V1`
 
-Status: **tentative rollbackée ; base exacte restaurée ; attente restart
-corrigée hors imprimante ; GO renouvelé requis**
+Status: **installée et validée sous la capture
+`20260822-124207-g4-k1-control-calibration-path-v1`**
 
 Cette gate ajoute uniquement le chemin borné non extrusif nécessaire au premier
 Z. Les sources, empreintes, destinations, backup, validation sans mouvement et
@@ -349,7 +349,7 @@ rollback sont figés dans
 `scripts/deploy-k1-control-calibration-path-v1.ps1` et
 `docs/17-g4-k1-control-calibration-path-v1.md`.
 
-Sa pose future doit :
+Sa pose retenue devait :
 
 - partir du runtime installé, `ready=1`, `empty`, sans Z accepté ;
 - parser le candidat en mémoire avec le Python/Jinja exact de la K1 avant toute
@@ -395,18 +395,28 @@ d'objets après pose et avant le `RESTART` du rollback. Cette commande ayant
 changé après le GO consommé, une nouvelle tentative exige un nouveau GO exact.
 Son préflight corrigé est déjà vert en lecture seule.
 
+Thomas a renouvelé une dernière fois le GO exact. La capture
+`20260822-124207-g4-k1-control-calibration-path-v1` a obtenu le préflight frais,
+`DEPLOY_CALIBRATION_PATH_V1_OK` puis la validation indépendante
+`VALIDATE_CALIBRATION_PATH_V1_OK`. L'attente bornée a absorbé la transition du
+socket et des CFS. Les quatre empreintes sont exactes, l'overlay et son unique
+include sont retenus, le runtime reste vide, les axes sont non référencés et les
+chauffes demandées sont à zéro. La garde à vide refuse sans modifier position,
+origine Z ou cibles. Aucun chauffage, homing, mouvement, extrusion, mesh ou état
+Z n'a été exécuté.
+
 La suite hors imprimante exécute 117 tests : 115 passent et deux contrôles Jinja
 locaux sont ignorés. Celui du runtime installé a déjà été validé sur
 l'environnement exact de la K1. Celui du nouvel overlay est intégré au
-préflight distant en mémoire et doit être vert avant la première écriture.
+préflight distant en mémoire et a été vert avant la première écriture.
 
-### Gate suivante après pose validée — `G4-K1-CONTROL-FIRST-CALIBRATION-V1`
+### Prochaine gate — `G4-K1-CONTROL-FIRST-CALIBRATION-V1`
 
-Status: **bloquée par la pose validée de CALIBRATION-PATH-V1 ; aucune exécution
-ni GO reçu**
+Status: **à préparer/revoir hors imprimante ; aucune calibration ni GO reçus**
 
-Elle ne peut être préparée comme exécution ni recevoir un GO utile tant que
-`G4-K1-CONTROL-CALIBRATION-PATH-V1` n'est pas installé et validé à vide.
+Le prérequis `G4-K1-CONTROL-CALIBRATION-PATH-V1` est désormais installé et
+validé à vide. Cette nouvelle gate doit encore être préparée et revue avant de
+pouvoir recevoir son propre GO exact.
 
 Avant présentation à Thomas, son paquet devra contenir :
 
