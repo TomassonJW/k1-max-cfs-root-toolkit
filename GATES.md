@@ -505,9 +505,9 @@ pilote cherchait l'en-tête non commenté du profil ; Klipper le génère sous
 `#*# [bed_mesh ...]`. Le contrôle corrigé et testé a ensuite obtenu
 `VALIDATE_FIRST_CALIBRATION_V2_OK`. Le GO est consommé et n'autorise aucun rerun.
 
-### Gate préparée — `G4-K1-CONTROL-CALIBRATION-UI-V1`
+### Gate exécutée — `G4-K1-CONTROL-CALIBRATION-UI-V1`
 
-Status: **candidat hors imprimante ; non autorisé ; non installé**
+Status: **installée, validée et close**
 
 Cette gate pose deux composants Python, leurs deux caches `cpython-38`, trois
 fichiers statiques et une configuration Moonraker qui ajoute uniquement
@@ -567,9 +567,21 @@ le bouton Z. Cela permet de fermer puis rouvrir le navigateur sans console et
 sans perdre la campagne. Les empreintes du paquet ont changé ; le prochain GO
 exact devra porter sur cette version figée.
 
+Thomas a renouvelé le GO exact sur cette version. La capture
+`20260822-211633-g4-k1-control-calibration-ui-v1` a obtenu
+`PREFLIGHT_CALIBRATION_UI_V1_OK`, `DEPLOY_CALIBRATION_UI_V1_OK`, puis un second
+`VALIDATE_CALIBRATION_UI_V1_OK` indépendant. Le dossier UI est en `0755`, l'API
+est `idle`, le Z accepté est `−0,04 mm`, la K1 est `standby`, les cibles sont à
+zéro et les mouvements bas sont désarmés. Seul Moonraker a été redémarré. Le GO
+est consommé et ne couvre pas la campagne. Après authentification humaine sur
+`localhost`, le vrai rendu Chrome a confirmé l'API, les paramètres exacts et le
+seed `−0,04 mm`. Un rechargement complet a restauré ces valeurs depuis le
+serveur tout en laissant les confirmations physiques décochées. La gate est
+close.
+
 ### Gate préparée — `G4-K1-CONTROL-CALIBRATION-UI-CAMPAIGN-V1`
 
-Status: **protocole hors imprimante ; dépend de l'UI posée et rendue ; non autorisé**
+Status: **protocole prêt ; UI posée et rendue ; non autorisé**
 
 Cette gate ne pose aucun fichier. Elle qualifie l'autonomie calibration par une
 campagne réellement opérée depuis l'écran : paramètres `PEI_TEXTURED_A`,

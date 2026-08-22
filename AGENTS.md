@@ -11,8 +11,8 @@ The printer is production hardware. It is never treated as a disposable sandbox.
 The active phase is **P4 — V1 and V2 foundations are closed; V3, PATHS-V1, the
 Z/mesh runtime and CALIBRATION-PATH-V1 are installed and validated;
 FIRST-CALIBRATION-V1 stopped KO; FIRST-CALIBRATION-V2 is installed and validated;
-CALIBRATION-UI-V1 is prepared offline but not authorised; production remains
-closed**.
+CALIBRATION-UI-V1 is installed and fully validated; its separate screen-only
+campaign is prepared but not authorised; production remains closed**.
 
 Thomas authorised V1, but the mandatory preflight proved that `logrotate` was
 absent. V1 is closed and must never be deployed. Thomas later authorised V2;
@@ -214,12 +214,26 @@ restent dans le module compilé. Aucun propriétaire de température, wrapper
 `KCTRL_JOB_*`, changement Orca ou paquet de bascule production n'est encore
 installé ou autorisé.
 
+Thomas a renouvelé le GO exact UI. La capture
+`20260822-211633-g4-k1-control-calibration-ui-v1` a obtenu le préflight frais,
+`DEPLOY_CALIBRATION_UI_V1_OK` et deux
+`VALIDATE_CALIBRATION_UI_V1_OK`. Le dossier statique est confirmé en `0755`,
+l'API est `idle`, le Z accepté vaut `−0,04 mm`, la K1 reste `standby`, les
+cibles sont à zéro et les mouvements bas sont désarmés. Seul Moonraker a été
+redémarré ; aucune chauffe, référence, mesure, extrusion, commande CFS,
+impression ou écriture Z n'a eu lieu. L'origine `localhost` attend maintenant
+l'authentification humaine. Le vrai rendu Chrome a ensuite confirmé l'API, les
+paramètres `PEI_TEXTURED_A`, `55/140 °C`, `200 s`, `6 × 6` Lagrange et le seed
+`−0,04 mm`. Un rechargement complet a restauré les mêmes valeurs depuis le
+serveur tout en laissant les confirmations physiques décochées. Cette gate est
+close. Son GO est consommé et ne couvre pas la campagne physique séparée.
+
 Thomas demande que chaque prochaine reprise commence par un état explicite de
 l'autonomie, sans confondre le runtime installé avec une interface terminée :
 
-- **autonomie calibration** : pas encore atteinte ; le candidat d'interface
-  couvre ces choix et actions hors imprimante, mais il doit encore être posé,
-  validé et réussir une campagne complète sans console ni assistance Codex ;
+- **autonomie calibration** : pas encore atteinte ; l'interface et son vrai
+  rendu sont validés, mais une campagne complète sans console ni assistance
+  Codex doit encore réussir ;
 - **autonomie production** : pas encore atteinte ; elle exige en plus la bascule
   atomique Orca/`START_PRINT`, le retrait prouvé du `+0,27 mm`, la propriété des
   températures CFS et la validation G5 sans intervention Codex.
