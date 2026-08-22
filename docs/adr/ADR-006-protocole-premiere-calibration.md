@@ -41,12 +41,12 @@ gate, la capture privée et les checkpoints précédents.
 `G4-K1-CONTROL-FIRST-CALIBRATION-V1` utilise :
 
 - `PEI_TEXTURED_A`, identifiant numérique `1` ;
-- plateau `60 °C`, buse stabilisée à `140 °C` pendant `600 s` ;
+- plateau `55 °C`, buse stabilisée à `140 °C` pendant `200 s` ;
 - nettoyage stock borné `140 → 180 → 140 °C`, puis homing explicite ;
 - deux mesures `6 × 6` Lagrange sur `5–295 mm` ;
 - qualification par écart absolu point par point, maximum `0,025 mm` ;
 - aucun troisième mesh automatique en cas de KO ;
-- profil accepté `k1_p001_t060_r001_n06x06` ;
+- profil accepté `k1_p001_t055_r001_n06x06` ;
 - seed Z neutre et explicite `0,0 mm`, puis les paliers installés par ADR-005 ;
 - confirmation humaine du jeu, remontée de `5 mm`, puis commit atomique du Z.
 
@@ -58,6 +58,11 @@ annulation, validation.
 `Cancel` ferme la session Z et conserve le mesh qualifié. `Rollback` restaure
 le `printer.cfg` exact et l'absence initiale du stockage Z ; il conserve les
 deux composants déjà installés.
+
+Les `200 s` sont un point de départ à valider, pas une stabilité thermique déjà
+mesurée. La suite refuse de continuer hors des tolérances `55 ± 2 °C` et
+`140 ± 5 °C`, puis la comparaison des deux meshes mesure la répétabilité réelle.
+Elle n'allonge pas automatiquement l'attente et ne lance aucun essai de plus.
 
 ## Conséquences
 

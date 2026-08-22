@@ -5,7 +5,7 @@
   "artifacts": [
     {
       "path": "packages/k1-control-v1/first-calibration-v1/first-calibration-contract.json",
-      "sha256": "7216e7cd3966389a46520063fe3954445358ce2123dd019791f1774403f74a6c"
+      "sha256": "e3931e6e7597668f6b741f8085a92c94a0bc48a6e8bedbe314ec098b90717870"
     },
     {
       "path": "packages/k1-control-v1/first-calibration-v1/compare_meshes.py",
@@ -13,7 +13,7 @@
     },
     {
       "path": "scripts/run-k1-control-first-calibration-v1.ps1",
-      "sha256": "0082fe284bccfd7c2cb64b04c7e32e88af350bbabff30119859e763996ae5630"
+      "sha256": "c79074b2c552b4402d6ddf23ca9a6a3e7b1949226fb784dbd0068c2d9ea3c522"
     }
   ],
   "required_installed_hashes": {
@@ -24,13 +24,13 @@
   },
   "remote_file_installation": false,
   "reviewed_gcode": [
-    "KCTRL_CALIBRATION_PREHEAT BED_TEMP=60 NOZZLE_TEMP=140 SOAK_SECONDS=600",
-    "NOZZLE_CLEAR HOT_MIN_TEMP=140 HOT_MAX_TEMP=180 BED_MAX_TEMP=60",
+    "KCTRL_CALIBRATION_PREHEAT BED_TEMP=55 NOZZLE_TEMP=140 SOAK_SECONDS=200",
+    "NOZZLE_CLEAR HOT_MIN_TEMP=140 HOT_MAX_TEMP=180 BED_MAX_TEMP=55",
     "KCTRL_CALIBRATION_HOME",
     "KCTRL_MESH_CALIBRATE X_COUNT=6 Y_COUNT=6 ALGORITHM=lagrange",
-    "KCTRL_MESH_COMMIT PLATE=1 TEMP_BAND=60 PROBE_REV=1 X_COUNT=6 Y_COUNT=6",
-    "KCTRL_CAL_PATH_LOAD_MESH PLATE=1 TEMP_BAND=60 PROBE_REV=1 X_COUNT=6 Y_COUNT=6 BED_TEMP=60 NOZZLE_TEMP=140",
-    "KCTRL_CAL_PATH_START_Z SEED=0.0 PLATE=1 TEMP_BAND=60 PROBE_REV=1 NOZZLE_ID=1 CONFIG_ID=1",
+    "KCTRL_MESH_COMMIT PLATE=1 TEMP_BAND=55 PROBE_REV=1 X_COUNT=6 Y_COUNT=6",
+    "KCTRL_CAL_PATH_LOAD_MESH PLATE=1 TEMP_BAND=55 PROBE_REV=1 X_COUNT=6 Y_COUNT=6 BED_TEMP=55 NOZZLE_TEMP=140",
+    "KCTRL_CAL_PATH_START_Z SEED=0.0 PLATE=1 TEMP_BAND=55 PROBE_REV=1 NOZZLE_ID=1 CONFIG_ID=1",
     "KCTRL_CAL_PATH_BEGIN CLEAR_PLATE=1 CLEAN_NOZZLE=1",
     "KCTRL_CAL_PATH_MOVE HEIGHT=<next reviewed ladder value>",
     "KCTRL_CAL_PATH_ADJUST DELTA=<reviewed bounded value>",
@@ -42,7 +42,7 @@
     "RESTART only for SAVE_CONFIG completion or exact rollback"
   ],
   "persistent_effect_on_success": {
-    "printer_cfg": "one generated bed_mesh profile k1_p001_t060_r001_n06x06",
+    "printer_cfg": "one generated bed_mesh profile k1_p001_t055_r001_n06x06",
     "z_store": "one atomically verified accepted Z record",
     "runtime_and_calibration_path_files": "unchanged"
   },

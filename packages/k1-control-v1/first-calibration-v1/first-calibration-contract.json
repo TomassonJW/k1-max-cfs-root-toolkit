@@ -25,7 +25,7 @@
   "identity": {
     "plate_id": 1,
     "plate_label": "PEI_TEXTURED_A",
-    "temperature_band_c": 60,
+    "temperature_band_c": 55,
     "probe_revision": 1,
     "probe_label": "PR_TOUCH_CAPTURED_STACK_REV_1",
     "nozzle_id": 1,
@@ -34,22 +34,22 @@
     "config_label": "K1_CONTROL_V1_FIRST_CALIBRATION"
   },
   "thermal": {
-    "bed_target_c": 60,
+    "bed_target_c": 55,
     "nozzle_target_c": 140,
-    "soak_seconds": 600,
+    "soak_seconds": 200,
     "bed_actual_tolerance_c": 2.0,
     "nozzle_actual_tolerance_c": 5.0,
     "cleaning": {
       "command": "NOZZLE_CLEAR",
       "hot_min_c": 140,
       "hot_max_c": 180,
-      "bed_max_c": 60,
+      "bed_max_c": 55,
       "extrusion": false,
       "cfs_command": false
     }
   },
   "mesh": {
-    "profile": "k1_p001_t060_r001_n06x06",
+    "profile": "k1_p001_t055_r001_n06x06",
     "bounds_mm": [5.0, 5.0, 295.0, 295.0],
     "probe_count": [6, 6],
     "algorithm": "lagrange",

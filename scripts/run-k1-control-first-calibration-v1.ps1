@@ -34,7 +34,7 @@ $PackageRoot = Join-Path $WorkspaceRoot 'packages\k1-control-v1\first-calibratio
 $ContractPath = Join-Path $PackageRoot 'first-calibration-contract.json'
 $CompareScript = Join-Path $PackageRoot 'compare_meshes.py'
 
-$ExpectedContractHash = '7216e7cd3966389a46520063fe3954445358ce2123dd019791f1774403f74a6c'
+$ExpectedContractHash = 'e3931e6e7597668f6b741f8085a92c94a0bc48a6e8bedbe314ec098b90717870'
 $ExpectedCompareHash = '2014d9127ca951d2e1cbc96ce41a4e3462c28cf1eb0b6ee5fc5924afae7b1578'
 $ExpectedPrinterHash = '0d59dd656844c3198ee43a81056b06830dbe60779d558b71aaa8c28fa708d9ee'
 $ExpectedRuntimeConfigHash = 'dd7fa02a8b7b9bd46850c90cf2a85afa71ce27cfa263c120ef4e9cca6b48c113'
@@ -48,7 +48,7 @@ $CalibrationPathConfig = '/usr/data/printer_data/config/k1-control-calibration-p
 $RuntimeState = '/usr/data/k1-control-v1/state/k1-control-z-state.json'
 $RemoteRoot = '/usr/data/k1-control-v1'
 $KlipperSocket = '/tmp/klippy_uds'
-$MeshProfile = 'k1_p001_t060_r001_n06x06'
+$MeshProfile = 'k1_p001_t055_r001_n06x06'
 $MeshToleranceMm = 0.025
 $EmptyFileHash = 'e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855'
 
@@ -246,13 +246,13 @@ function Wait-RollbackRestart {
 function Test-ReviewedGcode {
     param([Parameter(Mandatory = $true)][string]$Script)
     $fixed = @(
-        'KCTRL_CALIBRATION_PREHEAT BED_TEMP=60 NOZZLE_TEMP=140 SOAK_SECONDS=600',
-        'NOZZLE_CLEAR HOT_MIN_TEMP=140 HOT_MAX_TEMP=180 BED_MAX_TEMP=60',
+        'KCTRL_CALIBRATION_PREHEAT BED_TEMP=55 NOZZLE_TEMP=140 SOAK_SECONDS=200',
+        'NOZZLE_CLEAR HOT_MIN_TEMP=140 HOT_MAX_TEMP=180 BED_MAX_TEMP=55',
         'KCTRL_CALIBRATION_HOME',
         'KCTRL_MESH_CALIBRATE X_COUNT=6 Y_COUNT=6 ALGORITHM=lagrange',
-        'KCTRL_MESH_COMMIT PLATE=1 TEMP_BAND=60 PROBE_REV=1 X_COUNT=6 Y_COUNT=6',
-        'KCTRL_CAL_PATH_LOAD_MESH PLATE=1 TEMP_BAND=60 PROBE_REV=1 X_COUNT=6 Y_COUNT=6 BED_TEMP=60 NOZZLE_TEMP=140',
-        'KCTRL_CAL_PATH_START_Z SEED=0.0 PLATE=1 TEMP_BAND=60 PROBE_REV=1 NOZZLE_ID=1 CONFIG_ID=1',
+        'KCTRL_MESH_COMMIT PLATE=1 TEMP_BAND=55 PROBE_REV=1 X_COUNT=6 Y_COUNT=6',
+        'KCTRL_CAL_PATH_LOAD_MESH PLATE=1 TEMP_BAND=55 PROBE_REV=1 X_COUNT=6 Y_COUNT=6 BED_TEMP=55 NOZZLE_TEMP=140',
+        'KCTRL_CAL_PATH_START_Z SEED=0.0 PLATE=1 TEMP_BAND=55 PROBE_REV=1 NOZZLE_ID=1 CONFIG_ID=1',
         'KCTRL_CAL_PATH_BEGIN CLEAR_PLATE=1 CLEAN_NOZZLE=1',
         'KCTRL_CAL_PATH_CONFIRM_GAP CONFIRMED=1',
         'KCTRL_CAL_PATH_PARK',
@@ -353,8 +353,8 @@ function Assert-Standby {
 
 function Assert-ThermalContext {
     param([Parameter(Mandatory = $true)]$Snapshot)
-    if ([math]::Abs([double]$Snapshot.heater_bed.target - 60.0) -gt 0.1 -or
-        [math]::Abs([double]$Snapshot.heater_bed.temperature - 60.0) -gt 2.0 -or
+    if ([math]::Abs([double]$Snapshot.heater_bed.target - 55.0) -gt 0.1 -or
+        [math]::Abs([double]$Snapshot.heater_bed.temperature - 55.0) -gt 2.0 -or
         [math]::Abs([double]$Snapshot.extruder.target - 140.0) -gt 0.1 -or
         [math]::Abs([double]$Snapshot.extruder.temperature - 140.0) -gt 5.0) {
         throw 'Contexte thermique hors des tolerances revues.'
@@ -516,7 +516,7 @@ function Assert-AcceptedState {
     $store = $Snapshot.k1_control_store
     $path = $Snapshot.'gcode_macro KCTRL_CAL_PATH_STATE'
     if ([int]$runtime.ready -ne 1 -or [int]$runtime.accepted_z_valid -ne 1 -or [int]$runtime.session_active -ne 0 -or
-        [int]$runtime.plate_id -ne 1 -or [int]$runtime.temperature_band_c -ne 60 -or [int]$runtime.probe_revision -ne 1 -or
+        [int]$runtime.plate_id -ne 1 -or [int]$runtime.temperature_band_c -ne 55 -or [int]$runtime.probe_revision -ne 1 -or
         [int]$runtime.nozzle_id -ne 1 -or [int]$runtime.config_id -ne 1 -or [int]$runtime.low_moves_armed -ne 0) {
         throw 'Etat Z accepte incomplet ou contexte inattendu.'
     }
@@ -538,8 +538,8 @@ if ($Action -eq 'Plan') {
         gate = $RequiredGate
         printer_mutation_authorized = $false
         plate = 'PEI_TEXTURED_A (id=1)'
-        temperatures_c = @{ bed = 60; nozzle = 140; cleaning_max = 180 }
-        soak_seconds = 600
+        temperatures_c = @{ bed = 55; nozzle = 140; cleaning_max = 180 }
+        soak_seconds = 200
         mesh = 'two 6x6 Lagrange measurements over 5-295 mm'
         tolerance_mm = $MeshToleranceMm
         automatic_rerun = $false
@@ -565,8 +565,8 @@ if ($Action -eq 'Prepare') {
     Invoke-FreshPreflight | Out-Null
     [void](New-RemoteBackup)
     try {
-        Invoke-KlipperScript 'KCTRL_CALIBRATION_PREHEAT BED_TEMP=60 NOZZLE_TEMP=140 SOAK_SECONDS=600' | Out-Null
-        Invoke-KlipperScript 'NOZZLE_CLEAR HOT_MIN_TEMP=140 HOT_MAX_TEMP=180 BED_MAX_TEMP=60' | Out-Null
+        Invoke-KlipperScript 'KCTRL_CALIBRATION_PREHEAT BED_TEMP=55 NOZZLE_TEMP=140 SOAK_SECONDS=200' | Out-Null
+        Invoke-KlipperScript 'NOZZLE_CLEAR HOT_MIN_TEMP=140 HOT_MAX_TEMP=180 BED_MAX_TEMP=55' | Out-Null
         Invoke-KlipperScript 'KCTRL_CALIBRATION_HOME' | Out-Null
         $snapshot = Get-KlipperSnapshot
         Assert-PreparedSnapshot $snapshot
@@ -638,7 +638,7 @@ if ($Action -eq 'CommitMesh') {
     if (($snapshot.bed_mesh.probed_matrix | ConvertTo-Json -Compress) -ne ($mesh2.bed_mesh.probed_matrix | ConvertTo-Json -Compress)) {
         throw 'Le mesh transitoire actif ne correspond plus au second mesh qualifie.'
     }
-    Invoke-KlipperScript 'KCTRL_MESH_COMMIT PLATE=1 TEMP_BAND=60 PROBE_REV=1 X_COUNT=6 Y_COUNT=6' -NoResponse | Out-Null
+    Invoke-KlipperScript 'KCTRL_MESH_COMMIT PLATE=1 TEMP_BAND=55 PROBE_REV=1 X_COUNT=6 Y_COUNT=6' -NoResponse | Out-Null
     $after = Wait-MeshCommitRestart -Attempts 120
     Assert-Standby $after
     Assert-InstalledHashes
@@ -666,10 +666,10 @@ if ($Action -eq 'BeginZ') {
         throw 'Profil qualifie absent avant la session Z.'
     }
     try {
-        Invoke-KlipperScript 'KCTRL_CALIBRATION_PREHEAT BED_TEMP=60 NOZZLE_TEMP=140 SOAK_SECONDS=600' | Out-Null
+        Invoke-KlipperScript 'KCTRL_CALIBRATION_PREHEAT BED_TEMP=55 NOZZLE_TEMP=140 SOAK_SECONDS=200' | Out-Null
         Invoke-KlipperScript 'KCTRL_CALIBRATION_HOME' | Out-Null
-        Invoke-KlipperScript 'KCTRL_CAL_PATH_LOAD_MESH PLATE=1 TEMP_BAND=60 PROBE_REV=1 X_COUNT=6 Y_COUNT=6 BED_TEMP=60 NOZZLE_TEMP=140' | Out-Null
-        Invoke-KlipperScript 'KCTRL_CAL_PATH_START_Z SEED=0.0 PLATE=1 TEMP_BAND=60 PROBE_REV=1 NOZZLE_ID=1 CONFIG_ID=1' | Out-Null
+        Invoke-KlipperScript 'KCTRL_CAL_PATH_LOAD_MESH PLATE=1 TEMP_BAND=55 PROBE_REV=1 X_COUNT=6 Y_COUNT=6 BED_TEMP=55 NOZZLE_TEMP=140' | Out-Null
+        Invoke-KlipperScript 'KCTRL_CAL_PATH_START_Z SEED=0.0 PLATE=1 TEMP_BAND=55 PROBE_REV=1 NOZZLE_ID=1 CONFIG_ID=1' | Out-Null
         Invoke-KlipperScript 'KCTRL_CAL_PATH_BEGIN CLEAR_PLATE=1 CLEAN_NOZZLE=1' | Out-Null
         $after = Get-KlipperSnapshot
         $path = $after.'gcode_macro KCTRL_CAL_PATH_STATE'

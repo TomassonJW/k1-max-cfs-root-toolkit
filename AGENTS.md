@@ -100,10 +100,15 @@ cible. Aucun chauffage, homing, mouvement, extrusion, mesh, réglage ou
 enregistrement Z n'a été exécuté. `CALIBRATION-PATH-V1` est clos ; aucune autre
 mutation n'est autorisée. La gate suivante
 `G4-K1-CONTROL-FIRST-CALIBRATION-V1` est maintenant préparée hors imprimante :
-plaque `PEI_TEXTURED_A`, `60/140 °C`, stabilisation `600 s`, nettoyage stock
+plaque `PEI_TEXTURED_A`, `55/140 °C`, stabilisation `200 s`, nettoyage stock
 borné à `180 °C`, deux meshes `6 × 6` Lagrange, seuil `0,025 mm`, aucun rerun
-automatique et chemin Z par checkpoints. Elle exige encore la revue du commit
-figé puis son propre GO exact avant toute calibration.
+automatique et chemin Z par checkpoints. Elle exige son propre GO exact sur le
+commit figé avant toute calibration.
+
+Thomas a validé hors imprimante ces paramètres révisés avec un `GO` générique.
+Ce mot ne nomme pas la gate exacte et précède le commit révisé ; il n'autorise
+donc aucune connexion ni action distante. Après intégration, la seule prochaine
+autorisation valable reste `GO G4-K1-CONTROL-FIRST-CALIBRATION-V1`.
 
 Thomas demande que chaque prochaine reprise commence par un état explicite de
 l'autonomie, sans confondre le runtime installé avec une interface terminée :

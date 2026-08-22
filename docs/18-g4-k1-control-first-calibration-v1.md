@@ -1,6 +1,6 @@
 # G4 — K1 Control first calibration V1
 
-Statut au 2026-08-22 : **candidat préparé hors imprimante ; aucun GO reçu ;
+Statut au 2026-08-22 : **candidat révisé hors imprimante ; aucun GO exact reçu ;
 aucune chauffe, aucun homing, aucun mouvement et aucune calibration exécutés**.
 
 ## Ce que cette gate fera
@@ -42,7 +42,7 @@ une nouvelle revue puis un nouveau GO.
 - chemin `idle`, non prêt, non armé ;
 - `standby`, axes non référencés, chauffes demandées à zéro ;
 - deux CFS `1.1.3` connectés ;
-- profil `k1_p001_t060_r001_n06x06` absent en mémoire et dans `printer.cfg`.
+- profil `k1_p001_t055_r001_n06x06` absent en mémoire et dans `printer.cfg`.
 
 Une différence arrête le préflight.
 
@@ -51,20 +51,25 @@ Une différence arrête le préflight.
 | Paramètre | Valeur revue |
 |---|---:|
 | plaque | `PEI_TEXTURED_A`, ID `1` |
-| plateau | `60 °C` |
+| plateau | `55 °C` |
 | buse de mesure | `140 °C` |
-| stabilisation | `600 s` |
-| nettoyage | `NOZZLE_CLEAR`, min `140 °C`, max `180 °C`, lit `60 °C` |
+| stabilisation | `200 s` |
+| nettoyage | `NOZZLE_CLEAR`, min `140 °C`, max `180 °C`, lit `55 °C` |
 | homing | `KCTRL_CALIBRATION_HOME`, après nettoyage |
 | zone mesh | `5,5` à `295,295 mm` |
 | matrice | `6 × 6` |
 | interpolation | Lagrange |
 | répétitions | `2`, sans troisième essai automatique |
 | seuil | écart absolu maximum `0,025 mm` sur chacun des 36 points |
-| profil final | `k1_p001_t060_r001_n06x06` |
+| profil final | `k1_p001_t055_r001_n06x06` |
 | seed Z | `0,0 mm`, explicite et neutre |
 | centre Z | `(150,150)` |
 | paliers | `5 → 2 → 1 → 0,5 → 0,3 → 0,2 → 0,15 → 0,1 mm` |
+
+Les `200 s` sont une valeur initiale à qualifier sur la machine. Après cette
+attente, le pilote exige encore le plateau à `55 ± 2 °C` et la buse à
+`140 ± 5 °C`. Un écart arrête la gate ; il n'allonge pas automatiquement
+l'attente et ne relance pas un mesh.
 
 Le nettoyage stock a été retenu uniquement pour cette calibration de référence :
 son code exact chauffe et essuie sans extrusion ni commande CFS, puis le homing
@@ -127,7 +132,7 @@ session Z.
 
 `Accept` n'est disponible qu'après confirmation humaine du jeu et remontée de
 sécurité. Il enregistre le Z avec l'heure UTC Unix courante, coupe les chauffes
-et exige : stockage `ok`, Z accepté, contexte `1/60/1/1/1`, session fermée,
+et exige : stockage `ok`, Z accepté, contexte `1/55/1/1/1`, session fermée,
 mouvements bas toujours fermés et profil mesh présent.
 
 `Cancel` parque si nécessaire, annule le Z provisoire et coupe les chauffes. Le

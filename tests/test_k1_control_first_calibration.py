@@ -45,10 +45,17 @@ class FirstCalibrationContractTests(unittest.TestCase):
     def test_first_calibration_context_is_explicit(self):
         self.assertEqual(self.contract["identity"]["plate_label"], "PEI_TEXTURED_A")
         self.assertEqual(self.contract["identity"]["plate_id"], 1)
-        self.assertEqual(self.contract["thermal"]["bed_target_c"], 60)
+        self.assertEqual(self.contract["identity"]["temperature_band_c"], 55)
+        self.assertEqual(self.contract["thermal"]["bed_target_c"], 55)
         self.assertEqual(self.contract["thermal"]["nozzle_target_c"], 140)
-        self.assertEqual(self.contract["thermal"]["soak_seconds"], 600)
+        self.assertEqual(self.contract["thermal"]["soak_seconds"], 200)
         self.assertEqual(self.contract["thermal"]["cleaning"]["hot_max_c"], 180)
+        self.assertEqual(self.contract["thermal"]["cleaning"]["bed_max_c"], 55)
+        self.assertEqual(self.contract["mesh"]["profile"], "k1_p001_t055_r001_n06x06")
+        self.assertIn(
+            "KCTRL_CALIBRATION_PREHEAT BED_TEMP=55 NOZZLE_TEMP=140 SOAK_SECONDS=200",
+            self.runner,
+        )
 
     def test_two_meshes_are_required_without_automatic_rerun(self):
         mesh = self.contract["mesh"]
