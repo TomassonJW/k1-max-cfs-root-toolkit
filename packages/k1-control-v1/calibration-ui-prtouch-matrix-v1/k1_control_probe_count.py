@@ -1,0 +1,275 @@
+"""Creality prtouch_v3 probe-count adapter for K1 Control calibration.
+
+The proprietary prtouch_v3 BED_MESH_CALIBRATE implementation reads the
+``[bed_mesh] probe_count`` value loaded at Klipper start. It does not honour
+the dynamic PROBE_COUNT argument like upstream Klipper. This component wraps
+only the K1 Control calibration backend so the reviewed matrix is loaded before
+heating, then restores the previous count after heaters are turned off.
+"""
+
+from __future__ import annotations
+
+import asyncio
+import hashlib
+import logging
+import os
+import re
+import stat
+from pathlib import Path
+from typing import TYPE_CHECKING, Any, Dict, Optional, Tuple
+
+if TYPE_CHECKING:
+    from ..confighelper import ConfigHelper
+
+
+ALLOWED_COUNTS = {(3, 3), (5, 5), (6, 6), (9, 9), (11, 11), (15, 15)}
+CLOSED_PATH_PHASES = {"idle", "committed", "cancelled"}
+
+
+class ProbeCountError(Exception):
+    pass
+
+
+class ProbeCountFile:
+    def __init__(self, path: Path) -> None:
+        self.path = Path(path)
+
+    @staticmethod
+    def _sha256(path: Path) -> str:
+        digest = hashlib.sha256()
+        with path.open("rb") as stream:
+            for block in iter(lambda: stream.read(65536), b""):
+                digest.update(block)
+        return digest.hexdigest()
+
+    @staticmethod
+    def _rewrite(document: bytes, target: Tuple[int, int]) -> Tuple[bytes, Tuple[int, int]]:
+        if target not in ALLOWED_COUNTS:
+            raise ProbeCountError("Matrice non compatible avec prtouch_v3.")
+        lines = document.splitlines(keepends=True)
+        in_bed_mesh = False
+        section_count = 0
+        match_count = 0
+        previous: Optional[Tuple[int, int]] = None
+        rewritten = []
+        pattern = re.compile(
+            rb"^(?P<prefix>[ \t]*probe_count[ \t]*:[ \t]*)"
+            rb"(?P<x>[0-9]+)[ \t]*,[ \t]*(?P<y>[0-9]+)"
+            rb"(?P<suffix>[ \t]*(?:[#;].*)?)(?P<eol>\r?\n)?$",
+            re.IGNORECASE,
+        )
+        for line in lines:
+            stripped = line.strip()
+            if stripped.startswith(b"[") and stripped.endswith(b"]"):
+                in_bed_mesh = stripped.lower() == b"[bed_mesh]"
+                if in_bed_mesh:
+                    section_count += 1
+            if in_bed_mesh:
+                match = pattern.match(line)
+                if match:
+                    match_count += 1
+                    previous = (int(match.group("x")), int(match.group("y")))
+                    line = (
+                        match.group("prefix")
+                        + ("%d,%d" % target).encode("ascii")
+                        + match.group("suffix")
+                        + (match.group("eol") or b"")
+                    )
+            rewritten.append(line)
+        if section_count != 1 or match_count != 1 or previous is None:
+            raise ProbeCountError("Le probe_count [bed_mesh] n'est pas unique.")
+        if previous not in ALLOWED_COUNTS:
+            raise ProbeCountError("Le probe_count courant n'est pas une base revue.")
+        return b"".join(rewritten), previous
+
+    def read(self) -> Tuple[int, int]:
+        document = self.path.read_bytes()
+        _, current = self._rewrite(document, (6, 6))
+        return current
+
+    def write(self, target: Tuple[int, int]) -> Tuple[int, int]:
+        source = self.path.read_bytes()
+        rewritten, previous = self._rewrite(source, target)
+        if previous == target:
+            return previous
+        mode = stat.S_IMODE(self.path.stat().st_mode)
+        temporary = self.path.with_name(self.path.name + ".k1-control-probe-count.next")
+        try:
+            with temporary.open("wb") as stream:
+                stream.write(rewritten)
+                stream.flush()
+                os.fsync(stream.fileno())
+            os.chmod(str(temporary), mode)
+            if self._sha256(temporary) != hashlib.sha256(rewritten).hexdigest():
+                raise ProbeCountError("La copie probe_count préparée est invalide.")
+            os.replace(str(temporary), str(self.path))
+        finally:
+            if temporary.exists():
+                temporary.unlink()
+        if self.read() != target:
+            raise ProbeCountError("Le probe_count écrit ne peut pas être relu.")
+        return previous
+
+
+class ProbeCountAwareBackend:
+    def __init__(self, backend: Any, orchestrator: Any) -> None:
+        self.backend = backend
+        self.orchestrator = orchestrator
+        self.config = ProbeCountFile(orchestrator.backups.printer_config)
+        self.previous_count: Optional[Tuple[int, int]] = None
+        self.changed = False
+        self._recover_existing_change()
+
+    def _backup_count(self) -> Optional[Tuple[int, int]]:
+        evidence = self.orchestrator.state.get("backup")
+        campaign_id = self.orchestrator.state.get("campaign_id")
+        if not isinstance(evidence, dict) or not campaign_id:
+            return None
+        root = Path(str(evidence.get("root", "")))
+        expected = self.orchestrator.backups.backup_root / str(campaign_id)
+        try:
+            if root.resolve() != expected.resolve():
+                return None
+        except OSError:
+            return None
+        backup = root / "printer.cfg.before"
+        if not backup.is_file():
+            return None
+        expected_hash = str(evidence.get("printer_cfg_sha256", ""))
+        if ProbeCountFile._sha256(backup) != expected_hash:
+            return None
+        return ProbeCountFile(backup).read()
+
+    def _recover_existing_change(self) -> None:
+        previous = self._backup_count()
+        if previous is None:
+            return
+        current = self.config.read()
+        if current != previous:
+            self.previous_count = previous
+            self.changed = True
+
+    async def query_status(self) -> Dict[str, Any]:
+        return await self.backend.query_status()
+
+    async def update_mesh(self, matrix: Any) -> Any:
+        return await self.backend.update_mesh(matrix)
+
+    async def wait_klippy_ready(self, timeout: int) -> None:
+        await self.backend.wait_klippy_ready(timeout)
+
+    async def _loaded_count(self) -> Tuple[int, int]:
+        result = await self.backend.klippy_apis.query_objects({"configfile": None})
+        raw = result.get("configfile", {}).get("settings", {}).get("bed_mesh", {}).get("probe_count")
+        if not isinstance(raw, (list, tuple)) or len(raw) != 2:
+            raise ProbeCountError("Le probe_count chargé n'est pas observable.")
+        return int(raw[0]), int(raw[1])
+
+    @staticmethod
+    def _safe_after_restart(status: Dict[str, Any]) -> bool:
+        stats = status.get("print_stats", {})
+        runtime = status.get("gcode_macro KCTRL_STATE", {})
+        path = status.get("gcode_macro KCTRL_CAL_PATH_STATE", {})
+        return (
+            stats.get("state") == "standby"
+            and not stats.get("filename")
+            and float(status.get("extruder", {}).get("target", 0)) == 0
+            and float(status.get("heater_bed", {}).get("target", 0)) == 0
+            and int(runtime.get("ready", 0)) == 1
+            and int(runtime.get("session_active", 0)) == 0
+            and int(runtime.get("low_moves_armed", 0)) == 0
+            and path.get("phase") in CLOSED_PATH_PHASES
+            and int(path.get("motion_armed", 0)) == 0
+        )
+
+    async def _restart_and_verify(self, expected: Tuple[int, int]) -> None:
+        try:
+            await self.backend.run_gcode("RESTART", disconnect_ok=True)
+        finally:
+            await self.backend.wait_klippy_ready(120)
+        deadline = asyncio.get_running_loop().time() + 120
+        last_error = "état non prêt"
+        while asyncio.get_running_loop().time() < deadline:
+            try:
+                loaded = await self._loaded_count()
+                status = await self.backend.query_status()
+                if loaded == expected and self._safe_after_restart(status):
+                    return
+                last_error = "probe_count=%s, safe=%s" % (
+                    loaded,
+                    self._safe_after_restart(status),
+                )
+            except Exception as error:
+                last_error = str(error)
+            await asyncio.sleep(1)
+        raise ProbeCountError("Klipper n'a pas chargé la matrice sûre : %s" % last_error)
+
+    def _assert_backup_precedes_change(self) -> None:
+        previous = self._backup_count()
+        if previous is None:
+            raise ProbeCountError("Le backup exact doit précéder le changement de matrice.")
+
+    async def _configure(self, target: Tuple[int, int]) -> None:
+        if target not in ALLOWED_COUNTS:
+            raise ProbeCountError("Matrice non compatible avec prtouch_v3.")
+        loaded = await self._loaded_count()
+        current = self.config.read()
+        if loaded != current:
+            raise ProbeCountError("printer.cfg et le probe_count chargé divergent.")
+        if current == target:
+            return
+        self._assert_backup_precedes_change()
+        previous = self.config.write(target)
+        self.previous_count = previous
+        self.changed = True
+        try:
+            await self._restart_and_verify(target)
+        except Exception:
+            try:
+                self.config.write(previous)
+                await self._restart_and_verify(previous)
+                self.changed = False
+                self.previous_count = None
+            except Exception:
+                logging.exception("K1 Control probe_count rollback failed")
+            raise
+
+    async def _restore(self) -> None:
+        if not self.changed or self.previous_count is None:
+            return
+        previous = self.previous_count
+        self.config.write(previous)
+        await self._restart_and_verify(previous)
+        self.changed = False
+        self.previous_count = None
+
+    async def run_gcode(self, script: str, disconnect_ok: bool = False) -> Any:
+        state = self.orchestrator.state
+        if script == "BED_MESH_CLEAR" and state.get("phase") == "preparing":
+            config = state.get("config") or {}
+            target = (int(config.get("x_count", 0)), int(config.get("y_count", 0)))
+            await self._configure(target)
+        result = await self.backend.run_gcode(script, disconnect_ok=disconnect_ok)
+        if script == "TURN_OFF_HEATERS" and self.changed:
+            try:
+                await self._restore()
+            except Exception:
+                logging.exception("K1 Control probe_count restore after heaters-off failed")
+                raise
+        return result
+
+
+class K1ControlProbeCount:
+    def __init__(self, config: "ConfigHelper") -> None:
+        self.server = config.get_server()
+
+    def component_init(self) -> None:
+        control = self.server.lookup_component("k1_control")
+        orchestrator = control.orchestrator
+        if isinstance(orchestrator.backend, ProbeCountAwareBackend):
+            return
+        orchestrator.backend = ProbeCountAwareBackend(orchestrator.backend, orchestrator)
+
+
+def load_component(config: "ConfigHelper") -> K1ControlProbeCount:
+    return K1ControlProbeCount(config)

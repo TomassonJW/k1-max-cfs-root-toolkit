@@ -8,7 +8,7 @@
     },
     {
       "path": "scripts/validate-k1-control-calibration-ui-campaign-v1.ps1",
-      "sha256": "39deace90ee1810b5fbca17b11cc38dd51b828ce73e9402e789cbf19004b1b62"
+      "sha256": "d4ea109ec9e21e2af59842be313e6827752cea1f24146130a7a7a96891af719c"
     },
     {
       "path": "packages/k1-control-v1/calibration-ui-matrix-v1/deployment-manifest.json",

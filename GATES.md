@@ -677,6 +677,26 @@ préflight réel sous la capture
 campagne attend maintenant le rendu humain des cases décochées, puis le départ
 écran `9 × 9`.
 
+Le départ écran a ensuite été conforme mais s'est arrêté proprement à `1/6`,
+sans matrice exploitable, avec `Le mesh ne contient pas le nombre de lignes
+attendu.` Les chauffes, le Z et le profil `6 × 6` ont été vérifiés sûrs. Le
+firmware exact prouve que le wrapper Creality `prtouch_v3` utilise le
+`probe_count` chargé depuis `[bed_mesh]` et non le paramètre dynamique amont.
+
+### Gate corrective — `G4-K1-CONTROL-CALIBRATION-UI-PRTOUCH-MATRIX-V1`
+
+Status: **candidat figé ; 186 tests et préflight réel verts ; autorisée par le goal global**
+
+Le composant séparé ne remplace ni le core UI ni le runtime Klipper. Sa pose
+ajoute un fichier, ajoute sa section au `moonraker.conf` dédié et redémarre
+seulement ce Moonraker, sans modifier `printer.cfg` ni lancer d'action physique.
+Pendant une future calibration, il commute atomiquement l'unique
+`[bed_mesh] probe_count` après le backup et avant la chauffe, redémarre Klipper,
+relit la valeur chargée et toutes les gardes, puis restaure la valeur précédente
+après `TURN_OFF_HEATERS`. Le préflight exact de la capture
+`20260823-001724-g4-k1-control-calibration-ui-prtouch-matrix-v1` a obtenu
+`PREFLIGHT_CALIBRATION_UI_PRTOUCH_MATRIX_V1_OK`.
+
 ## G5 — V1 production baseline
 
 Status: **not passed**

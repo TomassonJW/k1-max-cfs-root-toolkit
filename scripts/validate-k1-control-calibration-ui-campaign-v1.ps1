@@ -301,7 +301,10 @@ if ($Action -eq 'Preflight') {
     $cancelledBeforeFirstMesh = $api.phase -ceq 'cancelled' -and
         -not [bool]$api.busy -and [int]$api.mesh_index -eq 0 -and
         [bool]$api.backup_available
-    if (-not $freshIdle -and -not $cancelledBeforeFirstMesh) {
+    $exactRollback = $api.phase -ceq 'rolled_back' -and
+        -not [bool]$api.busy -and [bool]$api.backup_available -and
+        $api.rollback -and [string]$api.rollback.printer_cfg_sha256
+    if (-not $freshIdle -and -not $cancelledBeforeFirstMesh -and -not $exactRollback) {
         throw "État UI initial inattendu : $($api.phase)"
     }
     Assert-SafeAcceptedMachine $snapshot -RequireCommittedPath

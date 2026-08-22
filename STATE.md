@@ -583,6 +583,26 @@ après le début des meshes. Le test ciblé est vert et la capture
 `20260822-233717-g4-k1-control-calibration-ui-campaign-v1` a obtenu
 `PREFLIGHT_CALIBRATION_UI_CAMPAIGN_V1_OK`.
 
+Thomas a lancé le niveau `9 × 9` depuis l'écran avec le remplacement décoché.
+La chauffe `55/140 °C`, la stabilisation `200 s`, le nettoyage et le homing ont
+réussi. La première grille a parcouru la machine puis la tâche s'est arrêtée à
+`1/6` avec `Le mesh ne contient pas le nombre de lignes attendu.` L'état privé
+contient zéro matrice exploitable. L'arrêt automatique a coupé les chauffes ;
+le Z accepté `−0,04 mm`, le profil robuste `6 × 6`, le stockage `ok`, le chemin
+`committed`, les deux CFS et le `standby` sont intacts.
+
+L'audit du firmware exact a invalidé l'hypothèse dynamique d'ADR-010 : le module
+Creality `prtouch_v3` remplace `BED_MESH_CALIBRATE` et utilise le
+`[bed_mesh] probe_count` chargé au démarrage, resté à `6,6`. Son parcours
+spiralé exige une matrice carrée impaire, avec le `6 × 6` stock déjà prouvé.
+ADR-011 et le candidat séparé
+`G4-K1-CONTROL-CALIBRATION-UI-PRTOUCH-MATRIX-V1` ajoutent un adaptateur borné :
+changement atomique après backup et avant chauffe, restart Klipper, relecture
+de la valeur chargée, puis restauration après coupure des chauffes. Sa pose ne
+touche pas `printer.cfg`, redémarre seulement le Moonraker dédié, compte 186
+tests verts et a obtenu `PREFLIGHT_CALIBRATION_UI_PRTOUCH_MATRIX_V1_OK` sous la
+capture `20260823-001724-g4-k1-control-calibration-ui-prtouch-matrix-v1`.
+
 The Orca cutover remains a later atomic gate. This runtime slice intentionally
 keeps the active Orca profile, `START_PRINT` and the legacy `+0.27 mm`
 post-processor unchanged.

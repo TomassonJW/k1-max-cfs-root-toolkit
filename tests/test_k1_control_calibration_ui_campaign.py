@@ -128,12 +128,14 @@ class CalibrationUiCampaignContractTests(unittest.TestCase):
         self.assertNotIn("KCTRL_MESH_CALIBRATE", source)
         self.assertNotIn("KCTRL_CAL_PATH_MOVE", source)
 
-    def test_preflight_accepts_only_a_fresh_idle_or_zero_mesh_cancelled_retry(self):
+    def test_preflight_accepts_only_fresh_cancelled_zero_or_exact_rollback(self):
         source = VALIDATOR.read_text(encoding="utf-8")
         self.assertIn("$freshIdle", source)
         self.assertIn("$cancelledBeforeFirstMesh", source)
+        self.assertIn("$exactRollback", source)
         self.assertIn("[int]$api.mesh_index -eq 0", source)
         self.assertIn("[bool]$api.backup_available", source)
+        self.assertIn("$api.rollback.printer_cfg_sha256", source)
         self.assertNotIn("@('cancelled', 'failed', 'mesh_rejected')", source)
 
 

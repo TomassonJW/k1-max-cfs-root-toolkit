@@ -1,15 +1,17 @@
 # HANDOFF
 
-Date: 2026-08-22
+Date: 2026-08-23
 Phase: P4 / FIRST-CALIBRATION-V2 validée ; mesh robuste et Z `−0,04 mm` retenus ; production fermée
-Next operator: annoncer l'écart d'autonomie, présenter la revue figée UI, puis attendre son GO exact
+Next operator: poser le correctif prtouch_v3 autorisé par le goal, restaurer l'essai vide, puis reprendre la campagne écran
 
 ## Message obligatoire au début de la prochaine session
 
 Dire clairement à Thomas, avant toute proposition d'exécution :
 
-- **l'autonomie calibration n'est pas encore atteinte** : une interface réelle
-  est préparée hors imprimante, mais elle n'est ni posée ni validée sur la K1 ;
+- **l'autonomie calibration n'est pas encore atteinte** : l'interface réelle est
+  posée, mais la première preuve `9 × 9` a révélé la frontière `probe_count` du
+  wrapper Creality ; le correctif séparé est prêt et doit encore être posé puis
+  prouvé par la campagne complète ;
 - **l'autonomie production n'est pas encore atteinte** : Orca, `START_PRINT`,
   l'ancien `+0,27 mm` et les températures CFS ne sont pas encore basculés vers
   le nouveau contrat ;
@@ -645,6 +647,22 @@ mesh. Le test ciblé est vert et la capture
 `20260822-233717-g4-k1-control-calibration-ui-campaign-v1` a obtenu
 `PREFLIGHT_CALIBRATION_UI_CAMPAIGN_V1_OK`. Il reste à recharger `4410`, constater
 les deux confirmations décochées, puis lancer le niveau `9 × 9` depuis l'écran.
+
+Le lancement a été conforme (`9 × 9`, bicubique, remplacement faux). Après la
+chauffe, les `200 s`, le nettoyage et le homing, la première grille s'est
+arrêtée à `1/6` avec `Le mesh ne contient pas le nombre de lignes attendu.`
+Aucune matrice n'a été conservée. Les chauffes sont à zéro, le Z `−0,04 mm` et
+le profil `6 × 6` sont intacts. Le firmware exact montre que `prtouch_v3`
+utilise le `probe_count` chargé à `6,6` et ignore l'extension dynamique attendue.
+
+ADR-011 et `G4-K1-CONTROL-CALIBRATION-UI-PRTOUCH-MATRIX-V1` corrigent cette
+frontière sans contourner le capteur Creality : commutation atomique après
+backup et avant chauffe, restart Klipper vérifié, restauration après coupure
+des chauffes. La pose ajoute seulement le composant et sa section Moonraker,
+sans toucher `printer.cfg`. Les 186 tests et le préflight réel de la capture
+`20260823-001724-g4-k1-control-calibration-ui-prtouch-matrix-v1` sont verts.
+L'autorité globale du goal couvre sa pose et la reprise complète après rollback
+exact de l'essai vide.
 
 La gate précédente est close avec `DEPLOY_CALIBRATION_PATH_V1_OK` et
 `VALIDATE_CALIBRATION_PATH_V1_OK` sous la capture
