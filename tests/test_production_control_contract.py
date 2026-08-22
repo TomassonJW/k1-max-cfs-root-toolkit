@@ -23,12 +23,12 @@ class ProductionControlContractTests(unittest.TestCase):
     def test_contract_never_authorizes_printer_mutation(self) -> None:
         self.assertEqual(
             self.contract["status"],
-            "first_calibration_v2_validated_ui_and_production_cutover_offline",
+            "calibration_ui_v1_validated_campaign_pending",
         )
         self.assertFalse(self.contract["printer_mutation_authorized"])
         self.assertEqual(
             self.contract["deployment"]["active_g4_candidate"],
-            "G4-K1-CONTROL-CALIBRATION-UI-V1",
+            "G4-K1-CONTROL-CALIBRATION-UI-CAMPAIGN-V1",
         )
         self.assertIn("-0.04 mm", self.contract["deployment"]["z_mesh_runtime"])
         self.assertIn("validated and closed", self.contract["deployment"]["first_calibration_gate"])

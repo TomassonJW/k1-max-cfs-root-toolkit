@@ -602,23 +602,22 @@ avant preuve pendant une impression utile.
 
 ## Next bounded mission
 
-Le candidat `G4-K1-CONTROL-CALIBRATION-UI-V1` avec reprise navigateur doit
-maintenant être figé, auto-vérifié, revu et intégré. La prochaine mutation
-possible restera son nouveau GO exact séparé, puis `Deploy`, `Validate` et la
-recette dans le vrai navigateur sur l'origine isolée. La pose ne lance aucune
-calibration et redémarre seulement Moonraker. Après pose, la gate séparée
-`G4-K1-CONTROL-CALIBRATION-UI-CAMPAIGN-V1` devra réussir entièrement depuis
-l'écran avant de déclarer l'autonomie calibration.
+`G4-K1-CONTROL-CALIBRATION-UI-V1` est installée sous la capture
+`20260822-211633-g4-k1-control-calibration-ui-v1` avec préflight, déploiement,
+deux validations côté machine, vrai rendu Chrome et rechargement verts. La gate
+est close. La prochaine gate séparée
+`G4-K1-CONTROL-CALIBRATION-UI-CAMPAIGN-V1` doit recevoir son propre GO exact et
+réussir entièrement depuis l'écran avant de déclarer l'autonomie calibration.
 
 La gate précédente est close avec `DEPLOY_CALIBRATION_PATH_V1_OK` et
 `VALIDATE_CALIBRATION_PATH_V1_OK` sous la capture
 `20260822-124207-g4-k1-control-calibration-path-v1`.
 
 Autorisation actuelle : **AUCUNE NOUVELLE MUTATION IMPRIMANTE**.
-FIRST-CALIBRATION-V2 est validée et close. La prochaine mutation possible est la
-pose UI, uniquement après revue figée et GO exact
-`GO G4-K1-CONTROL-CALIBRATION-UI-V1`. La bascule production reste une gate plus
-tardive et séparée.
+FIRST-CALIBRATION-V2 est validée et close. Le GO de pose UI est consommé et ne
+couvre ni la recette physique ni la campagne. La prochaine mutation possible
+est uniquement `G4-K1-CONTROL-CALIBRATION-UI-CAMPAIGN-V1`. La bascule
+production reste une gate plus tardive et séparée.
 
 La bascule Orca reste une gate ultérieure unique : wrappers de travail côté
 machine, trois champs Orca et retrait du post-traitement doivent changer

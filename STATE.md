@@ -499,12 +499,17 @@ Le journal nginx a confirmé `Permission denied`. Le rollback exact a retiré
 l'UI et le composant, restauré la configuration puis obtenu un préflight final
 vert. Aucun chauffage, homing, mouvement, mesh ou Z n'a été exécuté.
 
-Le candidat hors imprimante impose et vérifie désormais le mode `0755` du
-dossier UI. Le lanceur calibration utilise l'origine isolée
+Le candidat impose et vérifie désormais le mode `0755` du dossier UI. Le
+lanceur calibration utilise l'origine isolée
 `http://localhost:4409/k1-control/` sur le même tunnel afin d'éviter le service
-worker Mainsail. La K1 ne garde actuellement aucun fichier de cette UI : le
-nouveau déployeur doit être figé et recevoir un nouveau GO exact avant une
-troisième tentative.
+worker Mainsail. Thomas a renouvelé le GO exact : la capture
+`20260822-211633-g4-k1-control-calibration-ui-v1` a obtenu le préflight frais,
+la pose et deux validations vertes. L'API est `idle`, le Z accepté vaut
+`−0,04 mm`, la K1 reste `standby`, les cibles sont à zéro et les mouvements bas
+sont désarmés. Après authentification humaine, le vrai rendu Chrome et un
+rechargement complet ont confirmé l'API, les paramètres exacts, le seed
+`−0,04 mm` restauré et les confirmations physiques volontairement décochées.
+`CALIBRATION-UI-V1` est close.
 
 L'audit de reprise navigateur a ensuite trouvé que le formulaire ne reprenait
 pas le Z accepté et qu'une fermeture entre le mesh et le Z rendait la
@@ -551,8 +556,8 @@ retirement remains atomic with the later proven machine/Orca replacement.
   et consommée.
 - Toute nouvelle exécution de `G4-K1-CONTROL-FIRST-CALIBRATION-V2`, gate validée,
   consommée et close.
-- Toute pose de `G4-K1-CONTROL-CALIBRATION-UI-V1` sans sa revue figée et son GO
-  exact séparé.
+- Toute correction, repose ou suppression de l'interface
+  `G4-K1-CONTROL-CALIBRATION-UI-V1` désormais installée.
 - BTT Eddy preparation, installation, firmware or calibration.
 - Firmware downgrade or replacement.
 - Any SSH write other than the completed `G4-SSH-KEY` deployment.
@@ -604,9 +609,8 @@ retirement remains atomic with the later proven machine/Orca replacement.
 - The real `K1 Control` adapter and offline Z/mesh guards exist. START_PRINT,
   Orca and CFS integration remain intentionally absent until their atomic
   contracts and rollback are complete.
-- Calibration autonomy remains absent. The corrected interface candidate now
-  survives browser reload, restores its server context and exposes every
-  save/cancel/restore action, but it is still offline and unvalidated on the K1.
+- Calibration autonomy remains absent. The corrected interface and its browser
+  reload are validated, but one complete screen-only campaign remains unproven.
 - Production autonomy remains absent until the atomic Orca/START_PRINT cutover,
   removal of the legacy `+0.27 mm`, CFS temperature ownership and G5 proof.
 
