@@ -26,3 +26,8 @@ jeu observé et une remontée préalable. La restauration complète remet exacte
 La pose future ajoute deux composants Python, trois fichiers statiques et une
 configuration Moonraker complète dérivée de la base PATHS-V1. Elle redémarre
 Moonraker seulement ; elle ne chauffe, ne home et ne lance aucune calibration.
+Son préflight accepte un chemin réellement fermé après une calibration réussie
+(`committed`), après annulation (`cancelled`) ou avant toute session (`idle`) ;
+tout état intermédiaire ou armé reste refusé.
+Il compile et importe aussi les deux sources en mémoire avec le Python Moonraker
+exact, par stdin et sans créer de fichier distant, avant toute mutation.

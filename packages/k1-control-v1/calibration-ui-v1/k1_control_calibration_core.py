@@ -632,7 +632,7 @@ class CalibrationOrchestrator:
         if int(runtime.get("ready", 0)) != 1 or int(runtime.get("session_active", 0)) != 0 or int(runtime.get("low_moves_armed", 0)) != 0:
             raise CalibrationError("Le runtime K1 Control n'est pas vide et fermé.")
         path = status.get("gcode_macro KCTRL_CAL_PATH_STATE", {})
-        if path.get("phase") != "idle" or int(path.get("motion_armed", 0)) != 0:
+        if path.get("phase") not in ("idle", "committed", "cancelled") or int(path.get("motion_armed", 0)) != 0:
             raise CalibrationError("Le chemin de calibration n'est pas fermé.")
         if target_profile in status.get("bed_mesh", {}).get("profiles", {}) and not replace_existing:
             raise CalibrationError("Le profil cible existe déjà.")

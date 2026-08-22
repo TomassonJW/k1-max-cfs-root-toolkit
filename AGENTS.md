@@ -155,6 +155,16 @@ annulables, et un backup complet peut restaurer `printer.cfg` et l'état Z. Sa
 pose future redémarrerait Moonraker seulement et ne lancerait aucune
 calibration. Elle exige une revue figée puis son propre GO exact séparé.
 
+La revue post-calibration a corrigé le candidat UI sans toucher à la K1 : le
+préflight et le contrôleur acceptent maintenant uniquement les phases fermées
+`idle`, `committed` et `cancelled`; le transport Moonraker utilise le `curl`
+Creality sans options incompatibles et encode les espaces par `+`. Le préflight
+compile et importe en mémoire les deux sources avec le Python Moonraker `3.8.2`
+exact, par stdin et sans fichier distant. Le déployeur est lui-même épinglé dans
+le manifeste. Le préflight réel en lecture seule a obtenu
+`PREFLIGHT_CALIBRATION_UI_V1_OK`. Aucune pose ni aucun restart n'a eu lieu ; le
+GO exact UI reste obligatoire.
+
 Thomas demande que chaque prochaine reprise commence par un état explicite de
 l'autonomie, sans confondre le runtime installé avec une interface terminée :
 

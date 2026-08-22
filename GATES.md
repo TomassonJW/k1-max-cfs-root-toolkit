@@ -522,6 +522,14 @@ future exige son propre GO exact séparé après revue du commit. Même install�
 elle ne pourra ouvrir l'autonomie calibration qu'après une campagne complète
 réussie depuis l'écran.
 
+La revue post-calibration accepte uniquement les phases de chemin fermées
+`idle`, `committed` et `cancelled`, corrige le transport du `curl` Creality et
+importe les deux sources en mémoire sous le Python Moonraker `3.8.2` exact avant
+toute mutation. Le déployeur est épinglé dans le manifeste. Le plan local et le
+préflight réel en lecture seule ont obtenu `PLAN_CALIBRATION_UI_V1_OK` et
+`PREFLIGHT_CALIBRATION_UI_V1_OK`. Les nouveaux chemins restent absents et aucun
+service n'a été relancé. La pose exige toujours le GO exact séparé.
+
 ## G5 — V1 production baseline
 
 Status: **not passed**

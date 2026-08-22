@@ -471,6 +471,14 @@ et restaurations. Sa pose ne lancerait aucune calibration et redémarrerait
 Moonraker seulement. Elle n'est ni autorisée, ni installée, ni validée sur la
 machine ; l'autonomie calibration reste donc non atteinte.
 
+La revue post-calibration a rendu le candidat compatible avec l'état final réel :
+les phases fermées admises sont `idle`, `committed` et `cancelled`; les lectures
+Moonraker utilisent le `curl` Creality sans `-fsS` et `+` pour les espaces. Le
+préflight compile et importe les sources en mémoire avec le Python Moonraker
+`3.8.2` exact, par stdin, et vérifie aussi l'empreinte du déployeur. Le plan local
+et le préflight réel en lecture seule sont verts. Aucun fichier distant ou
+restart n'a été produit. La pose attend toujours le GO exact UI séparé.
+
 The Orca cutover remains a later atomic gate. This runtime slice intentionally
 keeps the active Orca profile, `START_PRINT` and the legacy `+0.27 mm`
 post-processor unchanged.

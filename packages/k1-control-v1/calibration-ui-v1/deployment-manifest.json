@@ -5,6 +5,10 @@
     "moonraker_conf_sha256": "fef837a1acaa59af400ac63c244df78dec6e70a71e1707d61f242f56cb1c7fba",
     "new_paths_must_be_absent": true
   },
+  "deployer": {
+    "path": "scripts/deploy-k1-control-calibration-ui-v1.ps1",
+    "sha256": "591070225bba7af760e11e006adfbd837a6977c6ccbfb2f1916eafda61784156"
+  },
   "files": [
     {
       "source": "moonraker.conf",
@@ -19,7 +23,7 @@
     {
       "source": "k1_control_calibration_core.py",
       "destination": "/usr/data/k1-control-v1/current/moonraker/moonraker/moonraker/components/k1_control_calibration_core.py",
-      "sha256": "a1403c36e5ab0b21a27dee945545b996080b0a25f95608b792e35e572f9d1496"
+      "sha256": "34b13db0cd8c475077f8a848a815f95fc4655c24ae1d62e04943e493d4630e96"
     },
     {
       "source": "www/index.html",

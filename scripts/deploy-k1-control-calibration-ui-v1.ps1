@@ -86,6 +86,10 @@ function Assert-Package {
     if ($manifest.contract_id -cne $RequiredGate -or $manifest.status -cne 'offline_review_candidate') {
         throw 'Manifeste CALIBRATION-UI-V1 inattendu.'
     }
+    if ([string]$manifest.deployer.path -cne 'scripts/deploy-k1-control-calibration-ui-v1.ps1' -or
+        (Get-LocalSha256 $PSCommandPath) -cne ([string]$manifest.deployer.sha256)) {
+        throw 'Empreinte du déployeur CALIBRATION-UI-V1 inattendue.'
+    }
     foreach ($file in $manifest.files) {
         $local = Join-Path $PackageRoot ([string]$file.source)
         if ((Get-LocalSha256 $local) -cne ([string]$file.sha256)) {
@@ -96,8 +100,8 @@ function Assert-Package {
 }
 
 function Get-PrinterStatus {
-    $url = "http://127.0.0.1:7125/printer/objects/query?print_stats&extruder&heater_bed&gcode_macro%20KCTRL_STATE&gcode_macro%20KCTRL_CAL_PATH_STATE"
-    $raw = (Invoke-Remote "curl -fsS '$url'") -join "`n"
+    $url = "http://127.0.0.1:7125/printer/objects/query?print_stats&extruder&heater_bed&gcode_macro+KCTRL_STATE&gcode_macro+KCTRL_CAL_PATH_STATE"
+    $raw = (Invoke-Remote "curl '$url'") -join "`n"
     $payload = $raw | ConvertFrom-Json
     if (-not $payload.result.status) { throw 'Réponse Moonraker sans état Klipper.' }
     return $payload.result.status
@@ -116,10 +120,57 @@ function Assert-PrinterIdle {
         throw "Le runtime K1 Control n'est pas vide et fermé."
     }
     $path = $status.'gcode_macro KCTRL_CAL_PATH_STATE'
-    if ([string]$path.phase -cne 'idle' -or [int]$path.motion_armed -ne 0) {
+    $closedPhases = @('idle', 'committed', 'cancelled')
+    if ($closedPhases -notcontains [string]$path.phase -or [int]$path.motion_armed -ne 0) {
         throw "Le chemin Z n'est pas fermé."
     }
     return $status
+}
+
+function Assert-RemotePythonCompatibility {
+    $componentSource = [Convert]::ToBase64String(
+        [IO.File]::ReadAllBytes((Join-Path $PackageRoot 'k1_control.py'))
+    )
+    $coreSource = [Convert]::ToBase64String(
+        [IO.File]::ReadAllBytes((Join-Path $PackageRoot 'k1_control_calibration_core.py'))
+    )
+    $pythonRoot = "$RemoteCurrent/moonraker/moonraker"
+    $python = "$RemoteCurrent/moonraker/moonraker-env/bin/python"
+    $program = @"
+import base64
+import sys
+import types
+
+sys.path.insert(0, '$pythonRoot')
+import moonraker.common
+
+core_name = 'moonraker.components.k1_control_calibration_core'
+core = types.ModuleType(core_name)
+core.__file__ = 'k1_control_calibration_core.py'
+core.__package__ = 'moonraker.components'
+sys.modules[core_name] = core
+exec(compile(base64.b64decode('$coreSource'), core.__file__, 'exec'), core.__dict__)
+
+component_name = 'moonraker.components.k1_control'
+component = types.ModuleType(component_name)
+component.__file__ = 'k1_control.py'
+component.__package__ = 'moonraker.components'
+sys.modules[component_name] = component
+exec(compile(base64.b64decode('$componentSource'), component.__file__, 'exec'), component.__dict__)
+print('REMOTE_CALIBRATION_UI_IMPORT_OK')
+"@
+    $args = @(
+        '-o', 'BatchMode=yes',
+        '-o', 'PasswordAuthentication=no',
+        '-o', 'KbdInteractiveAuthentication=no',
+        '-o', 'ConnectTimeout=8',
+        $PrinterHost,
+        "'$python' -"
+    )
+    $output = $program | & ssh.exe @args 2>&1
+    if ($LASTEXITCODE -ne 0 -or ($output | Select-Object -Last 1) -cne 'REMOTE_CALIBRATION_UI_IMPORT_OK') {
+        throw "Import Python distant CALIBRATION-UI-V1 KO : $($output -join "`n")"
+    }
 }
 
 function Assert-BasePreflight {
@@ -140,6 +191,7 @@ function Assert-BasePreflight {
         [void](Invoke-Remote "test ! -e '$path'")
     }
     [void](Invoke-Remote "test ! -e '$RemoteRoot/state/k1-control-calibration-workflow.json'")
+    Assert-RemotePythonCompatibility
     [void](Assert-PrinterIdle)
 }
 
@@ -148,7 +200,7 @@ function Wait-Moonraker {
     $last = 'aucune réponse'
     for ($index = 1; $index -le $Attempts; $index++) {
         try {
-            [void](Invoke-Remote "curl -fsS 'http://127.0.0.1:7125/server/info'")
+            [void](Invoke-Remote "curl 'http://127.0.0.1:7125/server/info'")
             return
         }
         catch { $last = $_.Exception.Message }
@@ -196,7 +248,7 @@ if ($Action -eq 'Validate') {
             throw "Empreinte distante inattendue : $($file.destination)"
         }
     }
-    $raw = (Invoke-Remote "curl -fsS 'http://127.0.0.1:7125/machine/k1_control/status'") -join "`n"
+    $raw = (Invoke-Remote "curl 'http://127.0.0.1:7125/machine/k1_control/status'") -join "`n"
     $state = ($raw | ConvertFrom-Json).result
     if (-not $state -or $state.busy -or $state.phase -cne 'idle' -or $state.backup_available) {
         throw 'Le composant K1 Control ne démarre pas dans son état vide.'

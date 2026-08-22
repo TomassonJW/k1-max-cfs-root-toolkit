@@ -2,7 +2,7 @@
 
 Date: 2026-08-22
 Phase: P4 / FIRST-CALIBRATION-V2 validée ; mesh robuste et Z `−0,04 mm` retenus ; production fermée
-Next operator: annoncer l'écart d'autonomie, puis préparer la revue figée de CALIBRATION-UI-V1
+Next operator: annoncer l'écart d'autonomie, présenter la revue figée UI, puis attendre son GO exact
 
 ## Message obligatoire au début de la prochaine session
 
@@ -528,13 +528,29 @@ préparés, mais aucun GO UI n'a été demandé ou consommé. L'import exact sur
 doit rester dans le préflight de cette future pose ; sa tentative anticipée en
 mémoire a été refusée par la barrière de sécurité et n'a rien modifié.
 
+La revue après FIRST-CALIBRATION-V2 a trouvé deux incompatibilités avant pose :
+le chemin fermé réel est `committed`, pas seulement `idle`, et le `curl`
+Creality signale `-fsS` comme options invalides tout en renvoyant le corps. Le
+déployeur et le contrôleur n'acceptent désormais que `idle`, `committed` ou
+`cancelled`, avec `motion_armed=0`. Les lectures Moonraker utilisent `curl` sans
+ces options et `+` pour les espaces des macros. Le préflight compile et importe
+les deux sources en mémoire sous le Python Moonraker `3.8.2`, par stdin et sans
+fichier distant. Le déployeur lui-même est épinglé dans le manifeste.
+
+Le plan local et le préflight réel en lecture seule sont verts :
+`PLAN_CALIBRATION_UI_V1_OK` et `PREFLIGHT_CALIBRATION_UI_V1_OK`. Ils confirment
+la base Moonraker exacte, les nouveaux chemins absents, `standby`, cibles zéro,
+runtime fermé avec Z accepté et chemin `committed` non armé. Aucune pose,
+création distante ou relance de service n'a eu lieu.
+
 ## Next bounded mission
 
-Revoir le candidat figé `G4-K1-CONTROL-CALIBRATION-UI-V1`, ses fichiers exacts,
-son backup, sa validation et son rollback. Sa pose future ne lance aucune
-calibration et redémarre seulement Moonraker, mais elle exige son propre GO exact
-séparé. Après pose, une campagne complète depuis l'écran, sans console ni aide
-Codex, restera nécessaire avant de déclarer l'autonomie calibration.
+Le candidat `G4-K1-CONTROL-CALIBRATION-UI-V1` est figé, auto-vérifié et son
+préflight réel en lecture seule est vert. La prochaine action est uniquement son
+GO exact séparé, puis `Deploy` et `Validate`. La pose ne lance aucune calibration
+et redémarre seulement Moonraker. Après pose, une campagne complète depuis
+l'écran, sans console ni aide Codex, restera nécessaire avant de déclarer
+l'autonomie calibration.
 
 La gate précédente est close avec `DEPLOY_CALIBRATION_PATH_V1_OK` et
 `VALIDATE_CALIBRATION_PATH_V1_OK` sous la capture

@@ -719,3 +719,24 @@ Klipper persiste les profils mesh générés sous l'en-tête commenté
 `#*# [bed_mesh ...]`. Le validateur doit compter cette forme exacte, et non la
 forme de section active non commentée. Cette correction locale ne change aucune
 commande ni aucun fichier de l'imprimante.
+
+## D-044 — L'UI doit accepter un Z déjà commité et prouver son import avant pose
+
+Date: 2026-08-22
+
+Status: accepté hors imprimante et confirmé par préflight en lecture seule
+
+Après la première calibration validée, le chemin reste correctement en phase
+`committed`. Exiger uniquement `idle` aurait bloqué la pose UI avant écriture et
+toute nouvelle campagne. Le déployeur et le contrôleur acceptent donc exactement
+les trois phases fermées `idle`, `committed` et `cancelled`, toujours avec
+`motion_armed=0`. Aucun état intermédiaire n'est admis.
+
+Le `curl` Creality exact ne supporte pas `-fsS` et son Moonraker attend `+` pour
+les espaces des noms de macros. Les lectures ont été corrigées sur cette preuve
+machine. Le préflight injecte désormais les deux sources par stdin, les compile
+et les importe en mémoire sous le Python Moonraker `3.8.2` et ses vrais modules,
+sans fichier distant. Le déployeur est épinglé comme les fichiers posés.
+
+Le préflight réel en lecture seule est vert. Cette preuve ne constitue pas un GO
+de pose et n'a redémarré aucun service.

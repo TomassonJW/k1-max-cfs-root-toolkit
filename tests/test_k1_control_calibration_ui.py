@@ -187,6 +187,17 @@ class CalibrationUiCoreTests(unittest.IsolatedAsyncioTestCase):
         value.update(overrides)
         return value
 
+    def test_start_state_accepts_only_closed_path_phases(self):
+        backend = FakeBackend([])
+        target = "k1_p001_t055_r001_n06x06"
+        for phase in ("idle", "committed", "cancelled"):
+            backend.status["gcode_macro KCTRL_CAL_PATH_STATE"]["phase"] = phase
+            self.core.CalibrationOrchestrator._assert_start_state(backend.status, target, False)
+        for phase in ("mesh_ready", "testing", "parked_confirmed"):
+            backend.status["gcode_macro KCTRL_CAL_PATH_STATE"]["phase"] = phase
+            with self.assertRaisesRegex(self.core.CalibrationError, "n'est pas fermé"):
+                self.core.CalibrationOrchestrator._assert_start_state(backend.status, target, False)
+
     def make_orchestrator(self, backend):
         backups = FakeBackups()
         clock = FakeClock()
@@ -354,6 +365,8 @@ class CalibrationUiPackageTests(unittest.TestCase):
     def test_manifest_pins_every_payload_hash(self):
         manifest = json.loads(MANIFEST.read_text(encoding="utf-8"))
         self.assertEqual(manifest["contract_id"], "G4-K1-CONTROL-CALIBRATION-UI-V1")
+        deployer = ROOT / manifest["deployer"]["path"]
+        self.assertEqual(hashlib.sha256(deployer.read_bytes()).hexdigest(), manifest["deployer"]["sha256"])
         for item in manifest["files"]:
             payload = PACKAGE / item["source"]
             self.assertEqual(hashlib.sha256(payload.read_bytes()).hexdigest(), item["sha256"])
@@ -367,6 +380,7 @@ class CalibrationUiPackageTests(unittest.TestCase):
     def test_deployer_is_exactly_gated_and_has_automatic_rollback(self):
         source = DEPLOYER.read_text(encoding="utf-8")
         self.assertIn("$RequiredGate = 'G4-K1-CONTROL-CALIBRATION-UI-V1'", source)
+        self.assertIn("Get-LocalSha256 $PSCommandPath", source)
         self.assertIn("[string]$Action = 'Plan'", source)
         backup = source.index("cp '$RemoteConfig' '$RemoteBackup/moonraker.conf.before'")
         mutation = source.index("$MutationStarted = $true", backup)
@@ -378,7 +392,14 @@ class CalibrationUiPackageTests(unittest.TestCase):
         self.assertIn("if ($MutationStarted)", source)
         self.assertIn("Invoke-ExactRollback", source)
         self.assertIn("k1-control-calibration-workflow.json", source)
-        self.assertIn("$state.phase -cne 'idle'", source)
+        self.assertIn("$closedPhases = @('idle', 'committed', 'cancelled')", source)
+        self.assertIn("$closedPhases -notcontains [string]$path.phase", source)
+        self.assertIn("gcode_macro+KCTRL_STATE&gcode_macro+KCTRL_CAL_PATH_STATE", source)
+        self.assertNotIn("curl -fsS", source)
+        self.assertIn("Assert-RemotePythonCompatibility", source)
+        self.assertIn("REMOTE_CALIBRATION_UI_IMPORT_OK", source)
+        preflight = source[source.index("function Assert-BasePreflight"):]
+        self.assertLess(preflight.index("Assert-RemotePythonCompatibility"), preflight.index("[void](Assert-PrinterIdle)"))
         self.assertNotIn("KCTRL_CALIBRATION_PREHEAT", source)
         self.assertNotIn("KCTRL_CALIBRATION_HOME", source)
         self.assertNotIn("KCTRL_MESH_CALIBRATE", source)
@@ -387,6 +408,8 @@ class CalibrationUiPackageTests(unittest.TestCase):
         contract = json.loads(CONTRACT.read_text(encoding="utf-8"))
         self.assertTrue(contract["safety"]["exact_campaign_backup_restore"])
         self.assertTrue(contract["safety"]["cancellable_heat_and_soak"])
+        self.assertTrue(contract["safety"]["exact_remote_python_import_before_mutation"])
+        self.assertEqual(contract["safety"]["closed_path_phases"], ["idle", "committed", "cancelled"])
         self.assertEqual(sum(path.endswith(".pyc") for path in contract["write_set"]), 2)
 
     def test_real_ui_has_operator_choices_and_no_free_gcode(self):
