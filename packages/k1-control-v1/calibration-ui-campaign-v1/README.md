@@ -1,8 +1,9 @@
 # CALIBRATION-UI-CAMPAIGN-V1
 
-Statut : protocole préparé hors imprimante. Cette campagne physique n'est pas
-autorisée tant que l'interface corrigée n'est pas posée, validée et rendue dans
-le vrai navigateur, puis que la gate exacte
+Statut : protocole préparé hors imprimante. Le GO reçu avant la correction des
+matrices n'est pas consommé. Cette campagne physique n'est pas autorisée tant
+que `CALIBRATION-UI-MATRIX-V1` n'est pas posée, validée et rendue dans le vrai
+navigateur, puis que la gate exacte mise à jour
 `G4-K1-CONTROL-CALIBRATION-UI-CAMPAIGN-V1` n'a pas été approuvée.
 
 ## But
@@ -12,10 +13,20 @@ depuis l'écran K1 Control, sans console et sans commande Codex. Codex peut
 observer les états en lecture seule et réunir les preuves, mais ne clique pas et
 n'envoie aucune action de calibration à sa place.
 
+## Niveaux de matrice réellement couverts
+
+L'interface corrigée expose quatre niveaux : `6 × 6` rapide en Lagrange, puis
+`9 × 9` standard, `11 × 11` précis et `15 × 15` expert en bicubique. Les quatre
+combinaisons doivent passer les contrôles du navigateur, du serveur et de
+l'agrégation de six matrices. La campagne physique ci-dessous reste volontairement
+sur le niveau rapide `6 × 6` : elle prouve une fois le parcours matériel complet
+sans prétendre avoir répété quatre campagnes longues. Les niveaux supérieurs ne
+sont donc pas qualifiés physiquement par cette seule gate.
+
 ## Préconditions
 
-- `CALIBRATION-UI-V1` est installée, son dossier est en `0755`, ses empreintes
-  sont exactes et son API est en phase `idle` ;
+- `CALIBRATION-UI-MATRIX-V1` est installée, son dossier est en `0755`, ses
+  empreintes sont exactes et son API est en phase `idle` ;
 - la page `http://localhost:4409/k1-control/` affiche réellement
   `K1 Control — calibration`, pas Mainsail ni une erreur HTTP ;
 - la K1 est en `standby`, cibles à zéro, runtime Z sain et chemin fermé ;

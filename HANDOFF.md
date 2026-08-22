@@ -605,9 +605,12 @@ avant preuve pendant une impression utile.
 `G4-K1-CONTROL-CALIBRATION-UI-V1` est installée sous la capture
 `20260822-211633-g4-k1-control-calibration-ui-v1` avec préflight, déploiement,
 deux validations côté machine, vrai rendu Chrome et rechargement verts. La gate
-est close. La prochaine gate séparée
-`G4-K1-CONTROL-CALIBRATION-UI-CAMPAIGN-V1` doit recevoir son propre GO exact et
-réussir entièrement depuis l'écran avant de déclarer l'autonomie calibration.
+est close. L'audit utilisateur a cependant prouvé que sa matrice est limitée à
+`6 × 6` malgré le contrat jusqu'à `15 × 15`. Le delta hors imprimante
+`G4-K1-CONTROL-CALIBRATION-UI-MATRIX-V1` ajoute les niveaux `6/9/11/15`, force
+le bicubique au-delà de six et ne remplacerait que trois fichiers avec restart
+Moonraker. La prochaine gate unique est sa pose exacte. La campagne écran mise
+à jour viendra ensuite avec un nouveau GO exact.
 
 La gate précédente est close avec `DEPLOY_CALIBRATION_PATH_V1_OK` et
 `VALIDATE_CALIBRATION_PATH_V1_OK` sous la capture
@@ -615,8 +618,10 @@ La gate précédente est close avec `DEPLOY_CALIBRATION_PATH_V1_OK` et
 
 Autorisation actuelle : **AUCUNE NOUVELLE MUTATION IMPRIMANTE**.
 FIRST-CALIBRATION-V2 est validée et close. Le GO de pose UI est consommé et ne
-couvre ni la recette physique ni la campagne. La prochaine mutation possible
-est uniquement `G4-K1-CONTROL-CALIBRATION-UI-CAMPAIGN-V1`. La bascule
+couvre ni la correction de matrice ni la recette physique. Le GO de campagne
+envoyé pendant la demande de correction n'est pas consommé, car son paquet a
+changé. La prochaine mutation possible est uniquement
+`G4-K1-CONTROL-CALIBRATION-UI-MATRIX-V1`. La bascule
 production reste une gate plus tardive et séparée.
 
 La bascule Orca reste une gate ultérieure unique : wrappers de travail côté

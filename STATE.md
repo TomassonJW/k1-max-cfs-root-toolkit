@@ -525,6 +525,15 @@ console/Codex, septième passage ou relance automatique invalide l'autonomie.
 Son contrat, son manifeste et son validateur en lecture seule sont épinglés ; le
 plan local est vert.
 
+Thomas a ensuite signalé l'écart de matrice : l'interface installée est limitée
+à `6 × 6` alors que le contrat produit va jusqu'à `15 × 15`. Le delta séparé
+`CALIBRATION-UI-MATRIX-V1` est préparé hors imprimante. Il expose `6 × 6`
+Lagrange, puis `9 × 9`, `11 × 11` et `15 × 15` bicubiques, avec choix automatique
+et double garde navigateur/serveur. Il ne change ni Klipper, ni mesh, ni Z et
+ne redémarrerait que Moonraker après backup exact. Le GO de campagne associé à
+la demande n'est pas consommé, car la campagne revue dépend maintenant de ce
+delta posé et validé.
+
 The Orca cutover remains a later atomic gate. This runtime slice intentionally
 keeps the active Orca profile, `START_PRINT` and the legacy `+0.27 mm`
 post-processor unchanged.

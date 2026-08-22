@@ -3,8 +3,19 @@
   "status": "offline_review_candidate",
   "printer_mutation_authorized": false,
   "dependency": {
-    "gate": "G4-K1-CONTROL-CALIBRATION-UI-V1",
-    "required_result": "deployed_validated_and_rendered_in_browser"
+    "gate": "G4-K1-CONTROL-CALIBRATION-UI-MATRIX-V1",
+    "required_result": "deployed_validated_and_rendered_in_browser_with_6_9_11_15_presets"
+  },
+  "matrix_capability": {
+    "selectable_presets": [
+      {"name": "quick", "matrix": [6, 6], "interpolation": "lagrange"},
+      {"name": "standard", "matrix": [9, 9], "interpolation": "bicubic"},
+      {"name": "precise", "matrix": [11, 11], "interpolation": "bicubic"},
+      {"name": "expert", "matrix": [15, 15], "interpolation": "bicubic"}
+    ],
+    "offline_server_and_aggregation_proof": "required_for_all_presets",
+    "physical_campaign_preset": "quick",
+    "physical_campaign_scope": "one_complete_browser_only_workflow_without_claiming_four_physical_campaigns"
   },
   "operator_settings": {
     "plate": "PEI_TEXTURED_A",
