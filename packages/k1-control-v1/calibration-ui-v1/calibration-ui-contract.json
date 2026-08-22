@@ -1,0 +1,67 @@
+{
+  "contract_id": "G4-K1-CONTROL-CALIBRATION-UI-V1",
+  "status": "offline_review_candidate",
+  "printer_mutation_authorized": false,
+  "purpose": "provide_a_real_console_free_calibration_interface",
+  "routes": {
+    "ui": "/k1-control/",
+    "status": "GET /machine/k1_control/status",
+    "mesh_start": "POST /machine/k1_control/calibration/start",
+    "cancel": "POST /machine/k1_control/calibration/cancel",
+    "campaign_rollback": "POST /machine/k1_control/calibration/rollback",
+    "z_start": "POST /machine/k1_control/z/start",
+    "z_step": "POST /machine/k1_control/z/step",
+    "z_adjust": "POST /machine/k1_control/z/adjust",
+    "z_confirm": "POST /machine/k1_control/z/confirm",
+    "z_accept": "POST /machine/k1_control/z/accept",
+    "z_restore": "POST /machine/k1_control/z/restore"
+  },
+  "selectable": {
+    "plate": ["PEI_TEXTURED_A"],
+    "bed_temperature_c": [45, 100],
+    "nozzle_temperature_c": [100, 180],
+    "soak_seconds": [60, 1200],
+    "matrix": [3, 4, 5, 6],
+    "interpolation": ["lagrange", "bicubic"],
+    "seed_z_mm": [-1.0, 1.0]
+  },
+  "mesh_protocol": {
+    "measurements": 6,
+    "batch_size": 3,
+    "estimator": "pointwise_median",
+    "mean_absolute_limit_mm": 0.020,
+    "rms_limit_mm": 0.025,
+    "maximum_limit_mm": 0.060,
+    "automatic_extra_measurement": false
+  },
+  "safety": {
+    "server_side_workflow": true,
+    "atomic_local_state": true,
+    "backup_before_first_heater_command": true,
+    "exact_campaign_backup_restore": true,
+    "cancellable_heat_and_soak": true,
+    "bounded_primitive_completion_before_cancel": true,
+    "heaters_off_on_error_or_cancel": true,
+    "bounded_z_ladder": [5.0, 2.0, 1.0, 0.5, 0.3, 0.2, 0.15, 0.1],
+    "observed_gap_required": true,
+    "arbitrary_gcode_api": false,
+    "print_extrusion_and_cfs_commands": false
+  },
+  "write_set": [
+    "/usr/data/k1-control-v1/current/moonraker/moonraker/moonraker/components/k1_control.py",
+    "/usr/data/k1-control-v1/current/moonraker/moonraker/moonraker/components/k1_control_calibration_core.py",
+    "/usr/data/k1-control-v1/current/moonraker/moonraker/moonraker/components/__pycache__/k1_control.cpython-38.pyc",
+    "/usr/data/k1-control-v1/current/moonraker/moonraker/moonraker/components/__pycache__/k1_control_calibration_core.cpython-38.pyc",
+    "/usr/data/k1-control-v1/current/www/mainsail/k1-control/index.html",
+    "/usr/data/k1-control-v1/current/www/mainsail/k1-control/app.js",
+    "/usr/data/k1-control-v1/current/www/mainsail/k1-control/styles.css",
+    "/usr/data/k1-control-v1/current/config/moonraker.conf"
+  ],
+  "unchanged": [
+    "printer.cfg",
+    "installed_klipper_runtime_and_calibration_path",
+    "stock_creality_services_and_web_interfaces",
+    "cfs_macros",
+    "orca_profiles"
+  ]
+}

@@ -640,3 +640,38 @@ ni persistance mesh, ni session Z.
 Cette mesure ne suffit pas à attribuer la divergence aux `200 s`, à la mécanique
 ou au palpage. Le GO est consommé. Toute nouvelle campagne exige d'abord une
 analyse hors imprimante et un protocole révisé explicitement autorisé.
+
+## D-040 — V2 qualifie deux groupes robustes de trois meshes
+
+Date: 2026-08-22
+
+Status: accepté hors imprimante, non autorisé à l'exécution
+
+Le module PR Touch exact et le journal privé montrent que les gros faux
+contacts sont filtrés, mais que le bruit résiduel point par point rend deux
+meshes insuffisants. Le code constructeur n'est pas modifié. V2 exécute six
+meshes, réduit séparément les passages 1–3 et 4–6 par médiane point par point,
+puis exige simultanément moyenne absolue `≤ 0,020 mm`, RMS `≤ 0,025 mm` et
+maximum `≤ 0,060 mm` entre les deux groupes.
+
+La médiane des six devient le candidat seulement après qualification. Elle est
+chargée par l'endpoint Klipper exact, relue puis persistée. Aucun septième
+passage ou ajustement automatique des seuils n'est autorisé. Le préflight réel
+est vert ; l'exécution reste fermée jusqu'au GO exact V2.
+
+## D-041 — L'interface de calibration est un composant Moonraker borné
+
+Date: 2026-08-22
+
+Status: accepté hors imprimante, non autorisé à la pose
+
+Une page JavaScript seule ne peut pas garantir l'arrêt des chauffes ni conserver
+les six matrices si le navigateur se ferme. Un second serveur serait une
+dépendance inutile. Le candidat retenu ajoute donc un petit composant au
+Moonraker épinglé et sert une page statique sous `/k1-control/`.
+
+Le serveur expose dix routes métier, jamais une route G-code libre. La chauffe
+et la stabilisation sont annulables ; une primitive physique déjà engagée finit
+avant l'arrêt, sans lancer la suivante. Le backup précède la chauffe et peut
+restaurer exactement `printer.cfg` et l'état Z. La pose de l'interface est une
+gate séparée qui redémarre Moonraker seulement et ne démarre aucune calibration.

@@ -1,0 +1,36 @@
+{
+  "package": "G4-K1-CONTROL-FIRST-CALIBRATION-V2",
+  "status": "authorized_by_completion_goal",
+  "artifacts": [
+    {
+      "path": "packages/k1-control-v1/first-calibration-v2/first-calibration-contract.json",
+      "sha256": "7272e47777d22bd075464e7843e703f7431ba97d302825186efeec06e3417e7d"
+    },
+    {
+      "path": "packages/k1-control-v1/first-calibration-v2/aggregate_meshes.py",
+      "sha256": "7668bdcb321748289fbcb35bf053f378ef51f6cf13ec05f451c660fd0e9b9031"
+    },
+    {
+      "path": "scripts/run-k1-control-first-calibration-v2.ps1",
+      "sha256": "2d563a17745626400382aaf92ea93286443e299b9575e71a8a33d28070184e38"
+    }
+  ],
+  "required_installed_hashes": {
+    "printer_cfg_sha256": "0d59dd656844c3198ee43a81056b06830dbe60779d558b71aaa8c28fa708d9ee",
+    "z_mesh_runtime_config_sha256": "dd7fa02a8b7b9bd46850c90cf2a85afa71ce27cfa263c120ef4e9cca6b48c113",
+    "z_mesh_runtime_module_sha256": "696eabec936bd81300acb4e6882d141c1a9ce2494df3bd1f686ff4ee8cbb8ede",
+    "calibration_path_config_sha256": "825aadac8679e0d0e9be140cc5ba4e7656b2bff0d197d1683a73d2b5be4e364e"
+  },
+  "remote_file_installation": false,
+  "fixed_mesh_measurements": 6,
+  "automatic_extra_measurement": false,
+  "persistent_effect_on_success": {
+    "printer_cfg": "one robust generated bed_mesh profile k1_p001_t055_r001_n06x06",
+    "z_store": "one atomically verified accepted Z record",
+    "runtime_and_calibration_path_files": "unchanged"
+  },
+  "backup": {
+    "path": "/usr/data/k1-control-v1/backups/<capture>/first-calibration-v2",
+    "created_before": "first heater command"
+  }
+}

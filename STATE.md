@@ -437,8 +437,18 @@ refuse sans changement physique.
 `20260822-140602-g4-k1-control-first-calibration-v1`. Les deux meshes ont été
 mesurés, mais leur écart maximal `0,062125 mm` dépasse le seuil `0,025 mm`.
 L'arrêt KO a laissé la base persistante exacte, sans profil cible et sans état Z.
-La prochaine action sûre est l'analyse hors imprimante ; aucune nouvelle
-calibration ni répétition n'est autorisée par ce GO consommé.
+L'analyse hors imprimante a produit `FIRST-CALIBRATION-V2` : six meshes, deux
+médianes indépendantes de trois, qualification moyenne/RMS/maximum et aucun
+septième passage. Son préflight réel
+`20260822-150723-g4-k1-control-first-calibration-v2` est vert, mais la mutation
+a été refusée faute du GO nommé exact. Aucune action physique V2 n'a eu lieu.
+
+`CALIBRATION-UI-V1` est également préparé hors imprimante. Il fournit un
+contrôleur Moonraker serveur et une page réelle avec choix de plaque,
+températures, stabilisation, matrice, interpolation, enregistrement, annulation
+et restaurations. Sa pose ne lancerait aucune calibration et redémarrerait
+Moonraker seulement. Elle n'est ni autorisée, ni installée, ni validée sur la
+machine ; l'autonomie calibration reste donc non atteinte.
 
 The Orca cutover remains a later atomic gate. This runtime slice intentionally
 keeps the active Orca profile, `START_PRINT` and the legacy `+0.27 mm`
@@ -466,8 +476,12 @@ retirement remains atomic with the later proven machine/Orca replacement.
   gate séparée explicitement approuvée.
 - Toute correction, repose ou suppression du chemin installé
   `G4-K1-CONTROL-CALIBRATION-PATH-V1`.
-- Toute exécution de `G4-K1-CONTROL-FIRST-CALIBRATION-V1` avant son paquet revu
-  et son propre GO exact.
+- Toute nouvelle exécution de `G4-K1-CONTROL-FIRST-CALIBRATION-V1`, gate close
+  et consommée.
+- Toute exécution de `G4-K1-CONTROL-FIRST-CALIBRATION-V2` sans le GO exact
+  `GO G4-K1-CONTROL-FIRST-CALIBRATION-V2`.
+- Toute pose de `G4-K1-CONTROL-CALIBRATION-UI-V1` sans sa revue figée et son GO
+  exact séparé.
 - BTT Eddy preparation, installation, firmware or calibration.
 - Firmware downgrade or replacement.
 - Any SSH write other than the completed `G4-SSH-KEY` deployment.
@@ -519,9 +533,9 @@ retirement remains atomic with the later proven machine/Orca replacement.
 - The real `K1 Control` adapter and offline Z/mesh guards exist. START_PRINT,
   Orca and CFS integration remain intentionally absent until their atomic
   contracts and rollback are complete.
-- Calibration autonomy remains absent until the real interface exposes presets
-  and expert parameters, qualification results, save/cancel/restore and clear
-  status without manual console commands.
+- Calibration autonomy remains absent. The real interface candidate now exposes
+  presets and expert parameters, qualification results, save/cancel/restore and
+  clear status, but it is still offline and unvalidated on the K1.
 - Production autonomy remains absent until the atomic Orca/START_PRINT cutover,
   removal of the legacy `+0.27 mm`, CFS temperature ownership and G5 proof.
 

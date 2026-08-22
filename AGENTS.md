@@ -8,10 +8,11 @@ The printer is production hardware. It is never treated as a disposable sandbox.
 
 ## Current authority and phase
 
-The active phase is **P4 — V1 and V2 are closed; V3, PATHS-V1, the Z/mesh
-runtime and CALIBRATION-PATH-V1 are installed and validated;
-FIRST-CALIBRATION-V1 consumed its GO and stopped KO after exactly two meshes;
-the runtime remains empty and closed to production**.
+The active phase is **P4 — V1 and V2 foundations are closed; V3, PATHS-V1, the
+Z/mesh runtime and CALIBRATION-PATH-V1 are installed and validated;
+FIRST-CALIBRATION-V1 stopped KO; FIRST-CALIBRATION-V2 and CALIBRATION-UI-V1 are
+prepared offline but not authorised; the runtime remains empty and closed to
+production**.
 
 Thomas authorised V1, but the mandatory preflight proved that `logrotate` was
 absent. V1 is closed and must never be deployed. Thomas later authorised V2;
@@ -115,13 +116,30 @@ lecture seule a confirmé la base persistante exacte, le stockage Z absent,
 `standby` et les cibles à zéro avant de s'arrêter, comme attendu, sur les axes
 encore référencés. Ce GO est consommé et n'autorise aucun rerun.
 
+L'analyse hors imprimante a ensuite préparé
+`G4-K1-CONTROL-FIRST-CALIBRATION-V2`. Le protocole conserve `55/140 °C`,
+`200 s` et `6 × 6` Lagrange, mais exécute exactement six meshes. Il compare
+deux médianes indépendantes de trois avec moyenne absolue `≤ 0,020 mm`, RMS
+`≤ 0,025 mm` et maximum `≤ 0,060 mm`, sans septième passage. Le préflight réel
+`20260822-150723-g4-k1-control-first-calibration-v2` est vert. La mutation a été
+refusée faute du GO exact ; aucune action physique V2 n'a eu lieu. La prochaine
+gate unique exige `GO G4-K1-CONTROL-FIRST-CALIBRATION-V2`.
+
+Le candidat séparé `G4-K1-CONTROL-CALIBRATION-UI-V1` est préparé hors
+imprimante. Il ajoute un composant au Moonraker épinglé et une page statique
+`/k1-control/` pour choisir plaque, températures, stabilisation, matrice,
+interpolation et seed Z, puis enregistrer, annuler et restaurer sans console.
+Le flux robuste reste côté serveur, la chauffe et la stabilisation sont
+annulables, et un backup complet peut restaurer `printer.cfg` et l'état Z. Sa
+pose future redémarrerait Moonraker seulement et ne lancerait aucune
+calibration. Elle exige une revue figée puis son propre GO exact séparé.
+
 Thomas demande que chaque prochaine reprise commence par un état explicite de
 l'autonomie, sans confondre le runtime installé avec une interface terminée :
 
-- **autonomie calibration** : pas encore atteinte ; elle exige une interface
-  réelle permettant de choisir plaque, températures, stabilisation, matrice,
-  interpolation et actions enregistrer/annuler/restaurer, sans console ni
-  assistance Codex ;
+- **autonomie calibration** : pas encore atteinte ; le candidat d'interface
+  couvre ces choix et actions hors imprimante, mais il doit encore être posé,
+  validé et réussir une campagne complète sans console ni assistance Codex ;
 - **autonomie production** : pas encore atteinte ; elle exige en plus la bascule
   atomique Orca/`START_PRINT`, le retrait prouvé du `+0,27 mm`, la propriété des
   températures CFS et la validation G5 sans intervention Codex.

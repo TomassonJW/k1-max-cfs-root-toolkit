@@ -468,6 +468,41 @@ pas encore l'autonomie production, qui reste conditionnée par la bascule
 interface/Orca/`START_PRINT`, le retrait du `+0,27 mm`, les températures CFS et
 G5.
 
+### Gate préparée — `G4-K1-CONTROL-FIRST-CALIBRATION-V2`
+
+Status: **préflight réel vert ; aucun GO exact ; aucune action physique V2**
+
+V2 remplace la preuve fragile à deux meshes par exactement six mesures dans le
+même contexte `PEI_TEXTURED_A`, `55/140 °C`, `200 s`, `6 × 6` Lagrange. Les
+mesures 1–3 et 4–6 forment deux médianes point par point indépendantes. Leur
+écart doit respecter moyenne absolue `≤ 0,020 mm`, RMS `≤ 0,025 mm` et maximum
+`≤ 0,060 mm`. Aucun septième mesh automatique n'est permis. La médiane des six
+n'est chargée, relue et persistée qu'après succès des trois critères.
+
+Le préflight de la capture
+`20260822-150723-g4-k1-control-first-calibration-v2` a confirmé la base exacte,
+l'imprimante au repos, les chauffes à zéro et les prérequis installés. La
+barrière de sécurité a ensuite bloqué `Prepare` faute du GO exact. La seule
+autorisation ouvrant cette gate est
+`GO G4-K1-CONTROL-FIRST-CALIBRATION-V2` sur le candidat figé.
+
+### Gate préparée — `G4-K1-CONTROL-CALIBRATION-UI-V1`
+
+Status: **candidat hors imprimante ; non autorisé ; non installé**
+
+Cette gate pose deux composants Python, leurs deux caches `cpython-38`, trois
+fichiers statiques et une configuration Moonraker qui ajoute uniquement
+`[k1_control]`. Elle crée un backup exact avant la première modification,
+redémarre seulement le Moonraker dédié et valide l'API métier. Elle ne chauffe,
+ne home, ne bouge, ne mesure et n'écrit aucun Z.
+
+L'interface choisit plaque, températures, stabilisation, matrice,
+interpolation et seed ; elle orchestre côté serveur le protocole robuste, la
+descente Z, l'enregistrement, l'annulation et les deux restaurations. Une pose
+future exige son propre GO exact séparé après revue du commit. Même installée,
+elle ne pourra ouvrir l'autonomie calibration qu'après une campagne complète
+réussie depuis l'écran.
+
 ## G5 — V1 production baseline
 
 Status: **not passed**

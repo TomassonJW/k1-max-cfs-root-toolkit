@@ -1,0 +1,75 @@
+{
+  "contract_id": "G4-K1-CONTROL-FIRST-CALIBRATION-V2",
+  "status": "authorized_by_completion_goal",
+  "purpose": "qualify_and_persist_one_robust_reference_mesh_then_accept_the_first_bounded_z",
+  "identity": {
+    "plate_id": 1,
+    "plate_label": "PEI_TEXTURED_A",
+    "temperature_band_c": 55,
+    "probe_revision": 1,
+    "nozzle_id": 1,
+    "config_id": 1
+  },
+  "thermal": {
+    "bed_target_c": 55,
+    "nozzle_target_c": 140,
+    "soak_seconds": 200,
+    "cleaning_max_c": 180
+  },
+  "mesh": {
+    "profile": "k1_p001_t055_r001_n06x06",
+    "bounds_mm": [5.0, 5.0, 295.0, 295.0],
+    "probe_count": [6, 6],
+    "algorithm": "lagrange",
+    "measurements": 6,
+    "batches": [[1, 2, 3], [4, 5, 6]],
+    "estimator": "pointwise_median",
+    "qualification": {
+      "mean_absolute_limit_mm": 0.020,
+      "rms_limit_mm": 0.025,
+      "maximum_limit_mm": 0.060,
+      "automatic_extra_measurement": false
+    },
+    "candidate": "pointwise_median_of_all_six_measurements",
+    "persistence": "load_candidate_through_reviewed_klipper_update_mesh_endpoint_then_commit_named_profile"
+  },
+  "z": {
+    "seed_offset_mm": 0.0,
+    "center_mm": [150.0, 150.0],
+    "height_ladder_mm": [5.0, 2.0, 1.0, 0.5, 0.3, 0.2, 0.15, 0.1],
+    "park_lift_mm": 5.0,
+    "acceptance_requires_observed_gap": true
+  },
+  "fixed_sequence": [
+    "Preflight",
+    "Prepare",
+    "Mesh1",
+    "Mesh2",
+    "Mesh3",
+    "Mesh4",
+    "Mesh5",
+    "Mesh6AndQualify",
+    "CommitRobustMesh",
+    "BeginZ",
+    "StepZ",
+    "ConfirmGap",
+    "Accept",
+    "Validate"
+  ],
+  "rollback": {
+    "restore_exact_printer_cfg": true,
+    "restore_empty_z_store": true,
+    "turn_off_heaters": true,
+    "preserve_installed_runtime_and_calibration_path": true
+  },
+  "forbidden": [
+    "open_ended_rerun",
+    "automatic_seventh_mesh",
+    "hidden_z_default",
+    "accept_without_observed_gap",
+    "print_start",
+    "extrusion",
+    "cfs_command",
+    "orca_change"
+  ]
+}

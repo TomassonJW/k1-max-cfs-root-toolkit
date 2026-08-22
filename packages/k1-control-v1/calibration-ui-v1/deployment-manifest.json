@@ -1,0 +1,46 @@
+{
+  "contract_id": "G4-K1-CONTROL-CALIBRATION-UI-V1",
+  "status": "offline_review_candidate",
+  "baseline": {
+    "moonraker_conf_sha256": "fef837a1acaa59af400ac63c244df78dec6e70a71e1707d61f242f56cb1c7fba",
+    "new_paths_must_be_absent": true
+  },
+  "files": [
+    {
+      "source": "moonraker.conf",
+      "destination": "/usr/data/k1-control-v1/current/config/moonraker.conf",
+      "sha256": "f68e54c7b9c3d36f2f577e68de0cabfddbdec06122055b3e1bc9469909a97b31"
+    },
+    {
+      "source": "k1_control.py",
+      "destination": "/usr/data/k1-control-v1/current/moonraker/moonraker/moonraker/components/k1_control.py",
+      "sha256": "b21affcd4087f209c18cf98d1bf386ab38951ddf0d0784171e74d5fac2f38738"
+    },
+    {
+      "source": "k1_control_calibration_core.py",
+      "destination": "/usr/data/k1-control-v1/current/moonraker/moonraker/moonraker/components/k1_control_calibration_core.py",
+      "sha256": "a1403c36e5ab0b21a27dee945545b996080b0a25f95608b792e35e572f9d1496"
+    },
+    {
+      "source": "www/index.html",
+      "destination": "/usr/data/k1-control-v1/current/www/mainsail/k1-control/index.html",
+      "sha256": "c8f8a65a8148b6b570743c96321bafd2f5d25142a6ab4ea214c4719c885e2f11"
+    },
+    {
+      "source": "www/app.js",
+      "destination": "/usr/data/k1-control-v1/current/www/mainsail/k1-control/app.js",
+      "sha256": "4ea93aab97e5fbbfe258afe6d93da8671bac05734d30de3501313bf18722076b"
+    },
+    {
+      "source": "www/styles.css",
+      "destination": "/usr/data/k1-control-v1/current/www/mainsail/k1-control/styles.css",
+      "sha256": "a7c27fbcdc07f24b00b6d47cc1d9aa8570b9483bcf4dd3615419de579f9aaa12"
+    }
+  ],
+  "generated_files": [
+    "/usr/data/k1-control-v1/current/moonraker/moonraker/moonraker/components/__pycache__/k1_control.cpython-38.pyc",
+    "/usr/data/k1-control-v1/current/moonraker/moonraker/moonraker/components/__pycache__/k1_control_calibration_core.cpython-38.pyc"
+  ],
+  "service_action": "restart /etc/init.d/S56k1_control_moonraker only",
+  "calibration_action": false
+}

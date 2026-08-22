@@ -1,20 +1,20 @@
 # HANDOFF
 
 Date: 2026-08-22
-Phase: P4 / première calibration V1 exécutée KO après deux meshes ; aucun mesh cible ni Z persistés
-Next operator: annoncer l'écart d'autonomie, puis analyser le KO hors imprimante sans rerun
+Phase: P4 / V1 KO ; V2 robuste et CALIBRATION-UI-V1 préparés hors imprimante
+Next operator: annoncer l'écart d'autonomie, puis demander le GO exact V2 sans exécuter l'UI
 
 ## Message obligatoire au début de la prochaine session
 
 Dire clairement à Thomas, avant toute proposition d'exécution :
 
-- **l'autonomie calibration n'est pas encore atteinte** : le runtime existe,
-  mais les paramètres doivent encore être orchestrés hors interface réelle ;
+- **l'autonomie calibration n'est pas encore atteinte** : une interface réelle
+  est préparée hors imprimante, mais elle n'est ni posée ni validée sur la K1 ;
 - **l'autonomie production n'est pas encore atteinte** : Orca, `START_PRINT`,
   l'ancien `+0,27 mm` et les températures CFS ne sont pas encore basculés vers
   le nouveau contrat ;
-- le chemin borné du premier Z est maintenant installé et validé à vide ; la
-  prochaine gate effectuera la première calibration sous un contrat séparé et
+- le chemin borné du premier Z est installé et validé à vide ; la prochaine
+  gate unique exécute la campagne robuste V2 sous un contrat séparé et
   même sa réussite ne suffira pas à déclarer le pilotage quotidien autonome ;
 - l'interface ne sera déclarée « nickel sans Codex » que lorsque Thomas pourra
   choisir les paramètres, lancer, comprendre le statut, enregistrer, annuler et
@@ -464,18 +464,53 @@ confirmé la base exacte, le profil cible absent, le stockage Z absent,
 `standby` et les cibles à zéro avant de signaler les axes `xyz` encore
 référencés. Le GO est consommé et ne couvre aucun rerun.
 
+## FIRST-CALIBRATION-V2 et CALIBRATION-UI-V1 préparés hors imprimante
+
+L'analyse du module PR Touch exact et du journal privé a retrouvé 209 contacts
+pour 72 points. Les gros faux contacts sont filtrés, mais deux meshes bruts ne
+suffisent pas à prouver la répétabilité point par point. V2 ne modifie pas le
+constructeur : il impose exactement six meshes, deux groupes indépendants de
+trois réduits par médiane, puis trois limites simultanées : moyenne absolue
+`0,020 mm`, RMS `0,025 mm` et maximum `0,060 mm`. Il n'existe aucun septième
+passage automatique. Le candidat final est la médiane des six mesures et n'est
+chargé, relu puis persisté qu'après qualification.
+
+Le préflight réel en lecture seule de la capture
+`20260822-150723-g4-k1-control-first-calibration-v2` est vert. Thomas a confirmé
+`PEI_TEXTURED_A` installée et le plateau libre, mais cette confirmation devra
+être renouvelée au moment de l'exécution. La barrière de sécurité a refusé la
+mutation faute du GO nommé exact. Aucune chauffe, homing, mesure ou écriture V2
+n'a été lancé. La prochaine gate unique exige exactement
+`GO G4-K1-CONTROL-FIRST-CALIBRATION-V2`.
+
+Le candidat séparé `G4-K1-CONTROL-CALIBRATION-UI-V1` ajoute hors imprimante un
+petit composant au Moonraker épinglé et une page statique `/k1-control/`. Les
+choix plaque, températures, stabilisation, matrice, interpolation et seed Z y
+sont réels. Le flux serveur survit à la fermeture du navigateur, exécute les six
+meshes, guide les paliers Z et expose enregistrer, annuler, restaurer le Z ou
+restaurer le backup complet. La stabilisation est annulable ; un homing,
+nettoyage ou mesh déjà engagé finit seulement son opération bornée avant arrêt.
+
+La pose UI future a un write-set exact : deux sources Python, deux caches
+`cpython-38`, trois fichiers statiques et `moonraker.conf`. Elle sauvegarde la
+configuration puis redémarre uniquement le Moonraker dédié. Elle ne lance
+aucune calibration. Son paquet, ADR-008, manifeste, déployeur et tests sont
+préparés, mais aucun GO UI n'a été demandé ou consommé. L'import exact sur la K1
+doit rester dans le préflight de cette future pose ; sa tentative anticipée en
+mémoire a été refusée par la barrière de sécurité et n'a rien modifié.
+
 ## Next bounded mission
 
-Analyser hors imprimante l'écart des deux matrices et décider avec Thomas s'il
-faut préparer un protocole révisé distinct. Ne lancer aucun troisième mesh,
-nouvelle chauffe, homing, mouvement ou écriture Z sous le GO consommé.
+Obtenir le GO exact `GO G4-K1-CONTROL-FIRST-CALIBRATION-V2`, refaire un
+préflight frais et exécuter les six checkpoints sans passage supplémentaire.
+Ne lancer aucune mutation sous le GO V1 consommé ni sous la préparation UI.
 
 La gate précédente est close avec `DEPLOY_CALIBRATION_PATH_V1_OK` et
 `VALIDATE_CALIBRATION_PATH_V1_OK` sous la capture
 `20260822-124207-g4-k1-control-calibration-path-v1`.
 
-Autorisation actuelle : **LECTURE_ET_ANALYSE_HORS_IMPRIMANTE**. L'overlay et son
-include restent installés ; le backup de la capture KO reste sur la K1.
+Autorisation actuelle : **LECTURE_ET_PREPARATION_HORS_IMPRIMANTE**. L'overlay et
+son include restent installés ; le backup de la capture KO reste sur la K1.
 
 La bascule Orca reste une gate ultérieure unique : wrappers de travail côté
 machine, trois champs Orca et retrait du post-traitement doivent changer

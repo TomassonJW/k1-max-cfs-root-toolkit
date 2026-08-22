@@ -53,6 +53,19 @@ palier, acceptation/annulation, validation et rollback. Chaque action exige la
 capture privée et les checkpoints précédents ; aucun nouveau fichier n'est
 installé sur la K1.
 
+`run-k1-control-first-calibration-v2.ps1` conserve les checkpoints, le backup
+et le rollback de V1, mais mesure exactement six meshes. Il compare deux
+médianes indépendantes de trois avec trois limites, sans septième mesure, puis
+charge et relit la médiane des six avant toute persistance. Toute action physique
+exige la gate exacte `G4-K1-CONTROL-FIRST-CALIBRATION-V2`.
+
+`deploy-k1-control-calibration-ui-v1.ps1` prépare la pose séparée de l'interface
+réelle. `Plan` est local. `Preflight` et `Validate` sont en lecture seule ;
+`Deploy` et `Rollback` exigent `-Execute` et
+`G4-K1-CONTROL-CALIBRATION-UI-V1`. Le script sauvegarde `moonraker.conf`, pose
+deux composants et trois fichiers statiques, redémarre seulement Moonraker et
+rollbacke automatiquement sur KO. Il n'envoie aucun G-code de calibration.
+
 `Ouvrir-Mainsail-K1-Max.cmd`, à la racine du dépôt, se lance par double-clic.
 Il appelle `launch-control-dashboard.ps1`, réutilise le tunnel local s'il répond
 correctement ou en démarre un nouveau en arrière-plan, exige HTTP `401` avant
