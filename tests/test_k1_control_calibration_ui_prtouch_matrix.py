@@ -28,11 +28,20 @@ class FakeKlippyApis:
     def __init__(self, config_file, module):
         self.config_file = config_file
         self.module = module
-        self.loaded = (6, 6)
+        self.loaded = ((6, 6), "lagrange")
 
     async def query_objects(self, objects):
         self.assert_configfile_request(objects)
-        return {"configfile": {"settings": {"bed_mesh": {"probe_count": list(self.loaded)}}}}
+        return {
+            "configfile": {
+                "settings": {
+                    "bed_mesh": {
+                        "probe_count": list(self.loaded[0]),
+                        "algorithm": self.loaded[1],
+                    }
+                }
+            }
+        }
 
     @staticmethod
     def assert_configfile_request(objects):
@@ -77,33 +86,47 @@ class ProbeCountAdapterTests(unittest.IsolatedAsyncioTestCase):
         cls.module = load_component()
 
     @staticmethod
-    def printer_config(count=(6, 6)):
+    def printer_config(count=(6, 6), algorithm="lagrange"):
         return (
             "[include helper.cfg]\n"
             "[bed_mesh]\n"
             "speed: 150\n"
             f"probe_count: {count[0]},{count[1]}\n"
+            f"algorithm: {algorithm}\n"
             "fade_start: 5.0\n\n"
             "#*# [bed_mesh saved]\n"
             "#*# points = 0,0\n"
         ).encode("utf-8")
 
-    def test_exact_rewrite_changes_only_the_unique_base_probe_count(self):
+    def test_exact_rewrite_changes_only_count_and_compatible_algorithm(self):
         source = self.printer_config()
-        rewritten, previous = self.module.ProbeCountFile._rewrite(source, (9, 9))
-        self.assertEqual(previous, (6, 6))
+        rewritten, previous = self.module.ProbeCountFile._rewrite(
+            source, ((9, 9), "bicubic")
+        )
+        self.assertEqual(previous, ((6, 6), "lagrange"))
         self.assertEqual(
             rewritten,
-            source.replace(b"probe_count: 6,6", b"probe_count: 9,9"),
+            source.replace(b"probe_count: 6,6", b"probe_count: 9,9").replace(
+                b"algorithm: lagrange", b"algorithm: bicubic"
+            ),
         )
         self.assertIn(b"#*# [bed_mesh saved]", rewritten)
 
     def test_even_spiral_matrix_and_ambiguous_config_fail_closed(self):
         with self.assertRaisesRegex(self.module.ProbeCountError, "compatible"):
-            self.module.ProbeCountFile._rewrite(self.printer_config(), (4, 4))
-        duplicated = self.printer_config() + b"\n[bed_mesh]\nprobe_count: 6,6\n"
+            self.module.ProbeCountFile._rewrite(
+                self.printer_config(), ((4, 4), "lagrange")
+            )
+        with self.assertRaisesRegex(self.module.ProbeCountError, "bicubic"):
+            self.module.ProbeCountFile._rewrite(
+                self.printer_config(), ((9, 9), "lagrange")
+            )
+        duplicated = (
+            self.printer_config()
+            + b"\n[bed_mesh]\nprobe_count: 6,6\nalgorithm: lagrange\n"
+        )
         with self.assertRaisesRegex(self.module.ProbeCountError, "unique"):
-            self.module.ProbeCountFile._rewrite(duplicated, (9, 9))
+            self.module.ProbeCountFile._rewrite(duplicated, ((9, 9), "bicubic"))
 
     async def test_backend_switches_before_clear_and_restores_after_heaters_off(self):
         with tempfile.TemporaryDirectory() as directory:
@@ -126,22 +149,26 @@ class ProbeCountAdapterTests(unittest.IsolatedAsyncioTestCase):
                 state={
                     "phase": "preparing",
                     "campaign_id": campaign_id,
-                    "config": {"x_count": 9, "y_count": 9},
+                    "config": {"x_count": 9, "y_count": 9, "algorithm": "bicubic"},
                     "backup": evidence,
                 },
             )
             backend = FakeBackend(printer, self.module)
             wrapped = self.module.ProbeCountAwareBackend(backend, orchestrator)
             await wrapped.run_gcode("BED_MESH_CLEAR")
-            self.assertEqual(self.module.ProbeCountFile(printer).read(), (9, 9))
-            self.assertEqual(backend.klippy_apis.loaded, (9, 9))
+            self.assertEqual(
+                self.module.ProbeCountFile(printer).read(), ((9, 9), "bicubic")
+            )
+            self.assertEqual(backend.klippy_apis.loaded, ((9, 9), "bicubic"))
             self.assertEqual(backend.commands[:2], [("RESTART", True), ("BED_MESH_CLEAR", False)])
             self.assertTrue(wrapped.changed)
 
             orchestrator.state["phase"] = "mesh_ready"
             await wrapped.run_gcode("TURN_OFF_HEATERS")
-            self.assertEqual(self.module.ProbeCountFile(printer).read(), (6, 6))
-            self.assertEqual(backend.klippy_apis.loaded, (6, 6))
+            self.assertEqual(
+                self.module.ProbeCountFile(printer).read(), ((6, 6), "lagrange")
+            )
+            self.assertEqual(backend.klippy_apis.loaded, ((6, 6), "lagrange"))
             self.assertEqual(backend.commands[-2:], [("TURN_OFF_HEATERS", False), ("RESTART", True)])
             self.assertFalse(wrapped.changed)
 
@@ -157,6 +184,14 @@ class ProbeCountAdapterTests(unittest.IsolatedAsyncioTestCase):
         self.assertTrue(runtime["loaded_value_verified"])
         self.assertTrue(runtime["restore_after_heaters_off"])
         self.assertEqual(runtime["forbidden_probe_count"], [4, 4])
+        self.assertEqual(
+            runtime["changed_printer_cfg_fields"],
+            ["bed_mesh.probe_count", "bed_mesh.algorithm"],
+        )
+        self.assertEqual(
+            runtime["required_loaded_pairs"]["standard"],
+            {"probe_count": [9, 9], "algorithm": "bicubic"},
+        )
 
     def test_deployment_is_separate_and_has_no_physical_command(self):
         source = DEPLOYER.read_text(encoding="utf-8")

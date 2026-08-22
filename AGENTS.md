@@ -11,11 +11,11 @@ The printer is production hardware. It is never treated as a disposable sandbox.
 The active phase is **P4 — V1 and V2 foundations are closed; V3, PATHS-V1, the
 Z/mesh runtime and CALIBRATION-PATH-V1 are installed and validated;
 FIRST-CALIBRATION-V1 stopped KO; FIRST-CALIBRATION-V2 is installed and validated;
-CALIBRATION-UI-V1, MATRIX-V1 et RETRY-SAFETY-V1 sont installés ; la première
-preuve réelle `9 × 9` a exposé la frontière du `probe_count` Creality ; le
-correctif PRTOUCH-MATRIX-V1 est figé, testé, préflighté et autorisé par le goal
-global ; la campagne écran attend sa pose et le rollback exact de l'essai vide ;
-production remains closed**.
+CALIBRATION-UI-V1, MATRIX-V1, RETRY-SAFETY-V1, PRTOUCH-MATRIX-V1 et
+PRTOUCH-PRESETS-V1 sont installés ; le second départ réel `9 × 9` a exposé la
+frontière couplée `probe_count + algorithm` par XS3002 avant toute chauffe ; le
+rollback automatique est vert ; PRTOUCH-BED-MESH-V2 est figé, testé et
+préflighté, mais pas encore posé ; production remains closed**.
 
 Thomas authorised V1, but the mandatory preflight proved that `logrotate` was
 absent. V1 is closed and must never be deployed. Thomas later authorised V2;
@@ -293,15 +293,38 @@ le stockage et le chemin restent conformes. L'audit du firmware exact montre
 que le wrapper propriétaire `prtouch_v3` utilise le `[bed_mesh] probe_count`
 chargé au démarrage, resté à `6,6`, plutôt que le paramètre dynamique amont.
 
-ADR-011 et le candidat
+ADR-011 et
 `G4-K1-CONTROL-CALIBRATION-UI-PRTOUCH-MATRIX-V1` ajoutent un adaptateur séparé
 qui commute atomiquement cette seule valeur après backup et avant chauffe,
 redémarre Klipper, relit la valeur et les gardes, puis restaure la valeur
 précédente après coupure des chauffes. Sa pose ne modifie pas `printer.cfg` et
-redémarre seulement le Moonraker dédié. Les 186 tests et le préflight réel de la
-capture `20260823-001724-g4-k1-control-calibration-ui-prtouch-matrix-v1` sont
-verts. Le goal global autorise sa pose sans nouveau GO, puis un nouveau protocole
-de campagne après rollback exact de l'essai vide.
+redémarre seulement le Moonraker dédié. La capture
+`20260823-001724-g4-k1-control-calibration-ui-prtouch-matrix-v1` a obtenu
+`DEPLOY_CALIBRATION_UI_PRTOUCH_MATRIX_V1_OK` et deux validations vertes.
+L'essai vide a ensuite été restauré exactement : phase `rolled_back`, backup
+reconnu, `printer.cfg` de base, Z `−0,04 mm`, profil `6 × 6`, chauffes et runtime
+conformes.
+
+Le correctif statique séparé `PRTOUCH-PRESETS-V1` retire le choix `4 × 4`
+inexécutable et conserve `3/5/6/9/11/15`. Son premier transfert a rencontré un
+bug local de guillemets dans la validation et a restauré automatiquement les
+deux fichiers exacts. Après correction, la capture
+`20260823-003755-g4-k1-control-calibration-ui-prtouch-presets-v1` a obtenu le
+déploiement et deux validations vertes, sans restart ni action physique. La
+suite complète compte 191 tests verts, 3 ignorés connus. Le préflight de reprise
+`20260823-002500-g4-k1-control-calibration-ui-campaign-v1` est vert ; il attend
+le nouveau départ écran `9 × 9` avec une confirmation fraîche de plateau libre.
+
+Thomas a relancé ce départ. Le composant V1 a correctement écrit `9,9`, mais a
+laissé l'algorithme persistant `lagrange`. Klipper a donc refusé son démarrage
+avec XS3002 avant toute chauffe, homing ou mesure. La garde bornée a restauré
+automatiquement `6,6 + lagrange` ; Klipper est prêt, les chauffes sont à zéro,
+le Z `−0,04 mm`, le profil rapide et les deux CFS sont intacts. Le paquet séparé
+`G4-K1-CONTROL-CALIBRATION-UI-PRTOUCH-BED-MESH-V2` remplace seulement le
+composant déjà installé et commute désormais le couple exact. Ses 10 tests
+ciblés, les 195 tests complets et son préflight réel sont verts. Sa pose sous
+l'autorité du goal est la prochaine action ; elle redémarre seulement le
+Moonraker dédié et ne lance aucune action physique.
 
 Thomas demande que chaque prochaine reprise commence par un état explicite de
 l'autonomie, sans confondre le runtime installé avec une interface terminée :

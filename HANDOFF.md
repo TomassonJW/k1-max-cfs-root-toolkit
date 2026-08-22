@@ -2,7 +2,7 @@
 
 Date: 2026-08-23
 Phase: P4 / FIRST-CALIBRATION-V2 validée ; mesh robuste et Z `−0,04 mm` retenus ; production fermée
-Next operator: poser le correctif prtouch_v3 autorisé par le goal, restaurer l'essai vide, puis reprendre la campagne écran
+Next operator: poser et valider PRTOUCH-BED-MESH-V2, restaurer la campagne XS3002, puis relancer le niveau 9 × 9 depuis l'écran
 
 ## Message obligatoire au début de la prochaine session
 
@@ -659,10 +659,39 @@ ADR-011 et `G4-K1-CONTROL-CALIBRATION-UI-PRTOUCH-MATRIX-V1` corrigent cette
 frontière sans contourner le capteur Creality : commutation atomique après
 backup et avant chauffe, restart Klipper vérifié, restauration après coupure
 des chauffes. La pose ajoute seulement le composant et sa section Moonraker,
-sans toucher `printer.cfg`. Les 186 tests et le préflight réel de la capture
-`20260823-001724-g4-k1-control-calibration-ui-prtouch-matrix-v1` sont verts.
-L'autorité globale du goal couvre sa pose et la reprise complète après rollback
-exact de l'essai vide.
+sans toucher `printer.cfg`. La capture
+`20260823-001724-g4-k1-control-calibration-ui-prtouch-matrix-v1` a obtenu le
+déploiement et deux validations vertes. L'essai vide est restauré exactement en
+phase `rolled_back`, avec le Z `−0,04 mm`, le profil `6 × 6`, le stockage et les
+chauffes conformes.
+
+Le delta statique `G4-K1-CONTROL-CALIBRATION-UI-PRTOUCH-PRESETS-V1` retire le
+choix `4 × 4` inexécutable et conserve `3/5/6/9/11/15`. Son premier transfert a
+rencontré un défaut de guillemets dans la validation locale puis a restauré
+automatiquement les deux fichiers exacts. Après correction, la capture
+`20260823-003755-g4-k1-control-calibration-ui-prtouch-presets-v1` a obtenu le
+déploiement et deux validations vertes, sans restart ni action physique. La
+suite complète compte 191 tests verts, 3 ignorés connus. Le préflight de reprise
+`20260823-002500-g4-k1-control-calibration-ui-campaign-v1` est vert. L'autorité
+globale du goal couvre toute la campagne ; le seul verrou courant est la
+confirmation physique fraîche du plateau libre avant le nouveau départ écran
+`9 × 9`.
+
+Thomas a relancé le `9 × 9`. Le composant V1 a chargé `probe_count=9,9`, puis
+Klipper a refusé son démarrage avec XS3002 parce que l'algorithme persistant
+restait `lagrange`. Aucun chauffage, homing, mouvement ou mesh n'avait commencé.
+La garde de 120 s a déclenché le rollback automatique : `6,6 + lagrange`,
+Klipper prêt, cibles zéro, Z `−0,04 mm`, profil rapide, stockage et deux CFS
+intacts. La campagne `20260823-004305-421-calibration-ui-v1` est `failed` à
+`0/6` avec son backup disponible.
+
+Le paquet séparé
+`G4-K1-CONTROL-CALIBRATION-UI-PRTOUCH-BED-MESH-V2` remplace seulement le
+composant V1 et redémarre uniquement le Moonraker dédié. Son runtime commute et
+relit ensemble `probe_count + algorithm`, refuse `9/11/15 + lagrange`, puis
+restaure les deux valeurs après chauffes ou échec. Les 10 tests ciblés, les 195
+tests complets et le préflight réel sont verts. Aucune pose V2 n'a encore eu
+lieu ; elle est la prochaine action couverte par l'autorité globale du goal.
 
 La gate précédente est close avec `DEPLOY_CALIBRATION_PATH_V1_OK` et
 `VALIDATE_CALIBRATION_PATH_V1_OK` sous la capture

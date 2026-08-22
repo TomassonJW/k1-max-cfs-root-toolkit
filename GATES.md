@@ -634,7 +634,7 @@ deux cases décochées avant reprise de la campagne.
 
 ### Gate préparée — `G4-K1-CONTROL-CALIBRATION-UI-CAMPAIGN-V1`
 
-Status: **préflight réel vert ; autorisée par le goal global ; suspendue derrière RETRY-SAFETY-V1**
+Status: **préflight de reprise vert ; autorisée par le goal global ; attend le départ physique 9 × 9**
 
 Cette gate ne pose aucun fichier. Elle qualifie physiquement les quatre niveaux
 depuis l'écran avec `PEI_TEXTURED_A`, `55/140 °C` et `200 s` : `9 × 9`,
@@ -663,8 +663,7 @@ repos, cibles à zéro, Z accepté et profil rapide présents, profils `9/11/15`
 absents comme attendu. Le GO envoyé avant la correction de matrice n'a pas été
 consommé. Thomas a ensuite donné une autorité globale explicite dans le goal
 pour aller jusqu'au vert calibration sans redemander de GO. La campagne est
-donc autorisée, mais ne peut reprendre qu'après la pose et le rendu verts de
-`CALIBRATION-UI-RETRY-SAFETY-V1`.
+donc autorisée.
 
 Le tunnel `4410` a été rétabli avec un seul processus neuf et connecté ; les
 fichiers UI distants, dont l'empreinte exacte du correctif, sont présents. Un
@@ -685,7 +684,7 @@ firmware exact prouve que le wrapper Creality `prtouch_v3` utilise le
 
 ### Gate corrective — `G4-K1-CONTROL-CALIBRATION-UI-PRTOUCH-MATRIX-V1`
 
-Status: **candidat figé ; 186 tests et préflight réel verts ; autorisée par le goal global**
+Status: **installée et validée**
 
 Le composant séparé ne remplace ni le core UI ni le runtime Klipper. Sa pose
 ajoute un fichier, ajoute sa section au `moonraker.conf` dédié et redémarre
@@ -695,7 +694,43 @@ Pendant une future calibration, il commute atomiquement l'unique
 relit la valeur chargée et toutes les gardes, puis restaure la valeur précédente
 après `TURN_OFF_HEATERS`. Le préflight exact de la capture
 `20260823-001724-g4-k1-control-calibration-ui-prtouch-matrix-v1` a obtenu
-`PREFLIGHT_CALIBRATION_UI_PRTOUCH_MATRIX_V1_OK`.
+`PREFLIGHT_CALIBRATION_UI_PRTOUCH_MATRIX_V1_OK`,
+`DEPLOY_CALIBRATION_UI_PRTOUCH_MATRIX_V1_OK` et deux
+`VALIDATE_CALIBRATION_UI_PRTOUCH_MATRIX_V1_OK`. L'essai `9 × 9` vide a ensuite
+été restauré exactement ; le nouveau préflight de campagne est vert sous
+`20260823-002500-g4-k1-control-calibration-ui-campaign-v1`.
+
+### Gate corrective — `G4-K1-CONTROL-CALIBRATION-UI-PRTOUCH-PRESETS-V1`
+
+Status: **installée et validée**
+
+Ce delta statique retire le choix pair `4 × 4` que le parcours spiralé Creality
+refuse, conserve `3/5/6/9/11/15` et remplace le repli JavaScript par `5 × 5`.
+Il sauvegarde et remplace seulement `index.html` et `app.js`, sans restart ni
+action physique. Le premier transfert a rencontré un défaut local de guillemets
+dans la validation et a restauré automatiquement les deux fichiers exacts. La
+capture corrigée
+`20260823-003755-g4-k1-control-calibration-ui-prtouch-presets-v1` a ensuite
+obtenu le déploiement et deux validations vertes. La suite complète compte 191
+tests verts et 3 ignorés connus.
+
+Le second départ `9 × 9` a ensuite prouvé une seconde dépendance chargée au
+démarrage : avec `probe_count=9,9` mais `algorithm=lagrange`, Klipper a affiché
+XS3002 avant toute chauffe ou mesure. Le rollback automatique a restauré
+`6,6 + lagrange`, Klipper prêt, chauffes zéro, Z et profil rapide intacts.
+
+### Gate corrective — `G4-K1-CONTROL-CALIBRATION-UI-PRTOUCH-BED-MESH-V2`
+
+Status: **candidat figé ; 195 tests et préflight réel verts ; autorisée par le goal global**
+
+V2 remplace uniquement le composant prtouch V1 et redémarre le Moonraker dédié,
+sans modifier `printer.cfg` pendant la pose ni lancer d'action physique. Pendant
+la campagne, il commute atomiquement puis relit le couple
+`probe_count + algorithm` après le backup et avant la chauffe. Les niveaux
+`9/11/15` exigent `bicubic`; le niveau `6` revient à `lagrange`. Un échec restaure
+les deux valeurs ensemble. Le préflight réel a obtenu
+`PREFLIGHT_CALIBRATION_UI_PRTOUCH_BED_MESH_V2_OK` sur l'état XS3002 restauré à
+zéro mesh.
 
 ## G5 — V1 production baseline
 

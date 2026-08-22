@@ -2,7 +2,7 @@
 
 Date : 2026-08-23
 
-Statut : candidat correctif après preuve réelle
+Statut : accepté puis complété par PRTOUCH-BED-MESH-V2 après XS3002
 
 ## Contexte
 
@@ -58,8 +58,14 @@ partir du backup exact de la campagne.
 
 Les matrices physiques retenues sont `6 × 6`, `9 × 9`, `11 × 11` et `15 × 15`.
 Les petites matrices carrées impaires `3 × 3` et `5 × 5` restent compatibles.
-Le `4 × 4`, non conforme à la contrainte observée du wrapper spiralé, doit être
-retiré de l'interface avant de déclarer l'autonomie complète.
+Le `4 × 4`, non conforme à la contrainte observée du wrapper spiralé, a été
+retiré par le delta statique `PRTOUCH-PRESETS-V1` installé et validé.
+
+La seconde preuve réelle a montré que `algorithm` appartient à la même frontière
+de démarrage que `probe_count` : `9,9 + lagrange` arrête Klipper avec XS3002
+avant chauffe. La révision V2 applique donc la décision au couple atomique
+`probe_count + algorithm`, vérifie les deux valeurs chargées et restaure les deux
+depuis le backup exact.
 
 ## Conséquences
 
