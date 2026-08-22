@@ -567,9 +567,11 @@ retirement remains atomic with the later proven machine/Orca replacement.
 
 ## Current blockers
 
-- A complete Orca printer-config bundle has not yet been exported; the exact
-  user profiles, current Z post-processor and representative projects/G-codes
-  are nevertheless captured individually and verified.
+- Le couple Orca réellement sélectionné est maintenant capturé directement
+  depuis OrcaSlicer `2.4.2`, avec les quatre empreintes machine/processus. Le
+  départ ancien, le changement vide et le post-traitement actif
+  `--start-z-offset 0.27` sont prouvés. La bascule atomique reste à construire,
+  mais l'identité du profil actif n'est plus un blocage.
 - The PETG G-code has no matching `P1-PETG.3mf` in the intake.
 - Recovery artefacts and procedure have not been matched locally to the exact revision.
 - The core `BOX_*` state machine is compiled and its readable source is not present on the machine.
@@ -584,29 +586,27 @@ retirement remains atomic with the later proven machine/Orca replacement.
 - The exact Creality Klipper commit is unknown; the newly captured exact
   `bed_mesh.py` remains the implementation authority for the mesh adapter.
 - The captured `save_variables.py` was rejected for final persistence because it
-  rewrites directly. The original atomic store has deployer integration and
-  exact-target in-memory import proof; its first real write and rollback remain
-  gated.
-- Persistent named mesh commit is now mapped exactly: save the deterministic
-  profile, remove `K1_TRANSIENT`, then `SAVE_CONFIG`, which restarts Klipper.
-  The installer and package rollback are now proven by the retained deployment;
-  the separately gated first-calibration rollback still needs its exact review.
+  rewrites directly. The original atomic store has now completed a real atomic
+  write and final validation through FIRST-CALIBRATION-V2.
+- Persistent named mesh commit is mapped and proven: the robust deterministic
+  profile is retained without `K1_TRANSIENT`, and FIRST-CALIBRATION-V2 is closed.
 - Every reference-changing Creality calibration path must be detected or
   wrapped so that an old accepted Z cannot survive a real recalibration.
 - The compiled `BOX_*` owner may contain a late temperature write that no macro
-  can intercept. The complete matrix decides whether a small replacement owner
-  is required.
+  can intercept. The live object exposes `box.state` and `box.t_command`; the
+  passive trace now records them. A useful production transition must decide
+  whether a small replacement owner is required.
 - The pinned Moonraker/Mainsail package and its file-manager roots completed the
   retained coexistence observation and the final read-only validation.
-- A manual Mainsail calibration created an active `Base` mesh with the captured
-  `6 x 6` Lagrange configuration over `5–295 mm`. It was not written to
-  `printer.cfg` and is therefore transient; only `default` remains persistent.
+- The historical transient Mainsail `Base` mesh is no longer current;
+  FIRST-CALIBRATION-V2 retained the qualified profile
+  `k1_p001_t055_r001_n06x06`.
 - The real `K1 Control` adapter and offline Z/mesh guards exist. START_PRINT,
   Orca and CFS integration remain intentionally absent until their atomic
   contracts and rollback are complete.
-- Calibration autonomy remains absent. The real interface candidate now exposes
-  presets and expert parameters, qualification results, save/cancel/restore and
-  clear status, but it is still offline and unvalidated on the K1.
+- Calibration autonomy remains absent. The corrected interface candidate now
+  survives browser reload, restores its server context and exposes every
+  save/cancel/restore action, but it is still offline and unvalidated on the K1.
 - Production autonomy remains absent until the atomic Orca/START_PRINT cutover,
   removal of the legacy `+0.27 mm`, CFS temperature ownership and G5 proof.
 

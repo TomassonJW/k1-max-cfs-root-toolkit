@@ -33,6 +33,8 @@ Le script [start-passive-production-trace.ps1](../scripts/start-passive-producti
 - relève la taille et la date du journal Klipper actif ;
 - suit uniquement les nouvelles lignes du journal, y compris après rotation ;
 - ouvre un abonnement Klipper unique et enregistre les changements d'état, avec un échantillon complet toutes les deux secondes pour les températures, la pression advance, la position, le Z visible et l'origine de homing ;
+- suit aussi les seuls indicateurs CFS non secrets utiles à la causalité : état
+  global, commande `T` en cours, refill automatique et présence filament ;
 - écrit tout dans le dossier privé local sans créer de fichier sur l'imprimante.
 
 La capture démarre quand la machine est au repos, avant le lancement humain. Elle s'arrête après le retour au repos et quelques minutes de refroidissement. `Ctrl+C` arrête seulement l'observateur.
@@ -62,5 +64,7 @@ La comparaison porte d'abord sur les transitions d'état :
 - mesh chargé, vérifié ou régénéré ;
 - ordre nettoyage → homing → mesh → extrusion ;
 - différences de chemin entre le travail long et son successeur.
+- transitions exactes de `box.state` et `box.t_command` autour d'un chargement,
+  refill équivalent ou changement volontaire entre les deux CFS.
 
 Si le défaut ne se produit pas, la capture reste utile mais n'autorise pas une conclusion causale. Aucun troisième travail sacrificiel n'est ajouté automatiquement.

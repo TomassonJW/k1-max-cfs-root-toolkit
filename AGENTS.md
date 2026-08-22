@@ -204,6 +204,16 @@ commande Codex, sans septième passage ni rerun automatique. L'UI doit d'abord
 être posée, validée et rendue dans le vrai navigateur ; la campagne exigera
 ensuite son propre GO exact.
 
+La préparation production en lecture seule a ensuite capturé directement les
+profils Orca actuellement sélectionnés sous OrcaSlicer `2.4.2`. La machine
+active garde son ancien départ, le changement de filament vide et le processus
+actif garde le post-traitement `--start-z-offset 0.27`. Le blocage « profil actif
+non capturé » est levé. Sur la K1, `box.state` et `box.t_command` sont exposés et
+le traceur passif les suit désormais, mais les commandes de départ/refill CFS
+restent dans le module compilé. Aucun propriétaire de température, wrapper
+`KCTRL_JOB_*`, changement Orca ou paquet de bascule production n'est encore
+installé ou autorisé.
+
 Thomas demande que chaque prochaine reprise commence par un état explicite de
 l'autonomie, sans confondre le runtime installé avec une interface terminée :
 
