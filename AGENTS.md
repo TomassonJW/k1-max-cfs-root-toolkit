@@ -9,9 +9,9 @@ The printer is production hardware. It is never treated as a disposable sandbox.
 ## Current authority and phase
 
 The active phase is **P4 — V1 and V2 are closed; V3, PATHS-V1, the Z/mesh
-runtime and CALIBRATION-PATH-V1 are installed and validated; FIRST-CALIBRATION-V1
-is prepared offline but has no GO; the runtime remains empty and closed to
-production until a separately authorised calibration accepts Z**.
+runtime and CALIBRATION-PATH-V1 are installed and validated;
+FIRST-CALIBRATION-V1 consumed its GO and stopped KO after exactly two meshes;
+the runtime remains empty and closed to production**.
 
 Thomas authorised V1, but the mandatory preflight proved that `logrotate` was
 absent. V1 is closed and must never be deployed. Thomas later authorised V2;
@@ -99,16 +99,21 @@ conformes, et la garde à vide refuse sans changement de position, origine Z ou
 cible. Aucun chauffage, homing, mouvement, extrusion, mesh, réglage ou
 enregistrement Z n'a été exécuté. `CALIBRATION-PATH-V1` est clos ; aucune autre
 mutation n'est autorisée. La gate suivante
-`G4-K1-CONTROL-FIRST-CALIBRATION-V1` est maintenant préparée hors imprimante :
+`G4-K1-CONTROL-FIRST-CALIBRATION-V1` a ensuite été préparée hors imprimante :
 plaque `PEI_TEXTURED_A`, `55/140 °C`, stabilisation `200 s`, nettoyage stock
 borné à `180 °C`, deux meshes `6 × 6` Lagrange, seuil `0,025 mm`, aucun rerun
-automatique et chemin Z par checkpoints. Elle exige son propre GO exact sur le
-commit figé avant toute calibration.
+automatique et chemin Z par checkpoints.
 
-Thomas a validé hors imprimante ces paramètres révisés avec un `GO` générique.
-Ce mot ne nomme pas la gate exacte et précède le commit révisé ; il n'autorise
-donc aucune connexion ni action distante. Après intégration, la seule prochaine
-autorisation valable reste `GO G4-K1-CONTROL-FIRST-CALIBRATION-V1`.
+Thomas a ensuite envoyé le GO exact sur le commit figé. La capture
+`20260822-140602-g4-k1-control-first-calibration-v1` a obtenu le préflight, le
+backup vérifié, `PREPARE_FIRST_CALIBRATION_V1_OK` et
+`MESH1_FIRST_CALIBRATION_V1_OK`. Le second mesh a été mesuré une seule fois puis
+refusé : écart maximal `0,062125 mm` pour un seuil de `0,025 mm` et moyenne
+`0,018049 mm` sur 36 points. Le pilote a coupé les chauffes et s'est arrêté sans
+troisième mesh, persistance, session Z ou écriture Z. Le contrôle final en
+lecture seule a confirmé la base persistante exacte, le stockage Z absent,
+`standby` et les cibles à zéro avant de s'arrêter, comme attendu, sur les axes
+encore référencés. Ce GO est consommé et n'autorise aucun rerun.
 
 Thomas demande que chaque prochaine reprise commence par un état explicite de
 l'autonomie, sans confondre le runtime installé avec une interface terminée :

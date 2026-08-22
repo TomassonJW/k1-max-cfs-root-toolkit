@@ -5,8 +5,8 @@ Last updated: 2026-08-22
 ## Current phase
 
 **P4 — fondation V3 + PATHS-V1, runtime Z/mesh et chemin borné du premier Z
-installés et validés ; aucune calibration exécutée ; production volontairement
-bloquée**
+installés et validés ; première calibration arrêtée KO après deux meshes ;
+production volontairement bloquée**
 
 The repository baseline, stock acquisition, complete Orca/G-code intake and
 passive P1–P5/PETG trace are complete. Gate G3 is passed for offline design and
@@ -344,7 +344,18 @@ commencent sur cet état final retenu.
   n'est donc consommée.
 - Le pilote local découpe préparation, chaque mesh, qualification, persistance,
   chaque palier Z, acceptation, annulation et rollback. Son mode par défaut
-  `Plan` ne contacte pas la K1. Aucune action distante n'a été exécutée.
+  `Plan` ne contacte pas la K1. Aucune action distante n'avait été exécutée
+  avant le GO exact décrit ci-dessous.
+- Thomas a ensuite envoyé le GO exact. La capture
+  `20260822-140602-g4-k1-control-first-calibration-v1` a passé le préflight,
+  créé et vérifié le backup, préparé la machine puis mesuré exactement deux
+  meshes. La qualification est KO : maximum `0,062125 mm`, moyenne
+  `0,018049 mm`, seuil `0,025 mm` sur 36 points.
+- Le pilote a coupé les chauffes et s'est arrêté sans rerun. Aucun profil cible
+  n'a été persisté, aucun stockage Z n'a été créé et aucune session Z n'a été
+  ouverte. Le contrôle final en lecture seule a confirmé `printer.cfg` exact,
+  profil cible absent, état Z absent, `standby` et cibles de chauffe à zéro ;
+  les axes restent référencés après les mesures.
 
 - Complete-system audit, A/B/C comparison, safety invariant, input contract and
   time-bounded roadmap documented in
@@ -422,11 +433,12 @@ et son unique include sont installés avec leurs empreintes exactes ; le runtime
 reste vide, les axes sont non référencés, les chauffes à zéro et la garde à vide
 refuse sans changement physique.
 
-La prochaine gate unique est désormais préparée hors imprimante :
-`G4-K1-CONTROL-FIRST-CALIBRATION-V1`. Le paquet, ADR-006, le contrat, le pilote,
-le comparateur et les tests doivent être relus et figés dans Git avant de pouvoir
-recevoir le GO exact `GO G4-K1-CONTROL-FIRST-CALIBRATION-V1`. La calibration
-réelle reste non autorisée jusque-là.
+`G4-K1-CONTROL-FIRST-CALIBRATION-V1` a consommé son GO exact sous la capture
+`20260822-140602-g4-k1-control-first-calibration-v1`. Les deux meshes ont été
+mesurés, mais leur écart maximal `0,062125 mm` dépasse le seuil `0,025 mm`.
+L'arrêt KO a laissé la base persistante exacte, sans profil cible et sans état Z.
+La prochaine action sûre est l'analyse hors imprimante ; aucune nouvelle
+calibration ni répétition n'est autorisée par ce GO consommé.
 
 The Orca cutover remains a later atomic gate. This runtime slice intentionally
 keeps the active Orca profile, `START_PRINT` and the legacy `+0.27 mm`

@@ -410,15 +410,29 @@ locaux sont ignorés. Celui du runtime installé a déjà été validé sur
 l'environnement exact de la K1. Celui du nouvel overlay est intégré au
 préflight distant en mémoire et a été vert avant la première écriture.
 
-### Prochaine gate — `G4-K1-CONTROL-FIRST-CALIBRATION-V1`
+### Gate exécutée KO — `G4-K1-CONTROL-FIRST-CALIBRATION-V1`
 
-Status: **candidat révisé hors imprimante ; GO exact requis ; aucune calibration
-ni autorisation exacte reçues**
+Status: **GO exact consommé ; arrêt KO après exactement deux meshes ; aucun
+rerun autorisé**
 
-Le prérequis `G4-K1-CONTROL-CALIBRATION-PATH-V1` est désormais installé et
-validé à vide. Thomas a validé hors imprimante le contexte thermique révisé
-`55/140 °C` et `200 s`. Son `GO` générique ne correspond pas au nom exact de la
-gate et précède le commit révisé : il n'autorise donc aucune action distante.
+Le prérequis `G4-K1-CONTROL-CALIBRATION-PATH-V1` était installé et validé à
+vide. Thomas a ensuite envoyé le GO exact sur le contexte thermique révisé
+`55/140 °C` et `200 s` du commit figé.
+
+La capture `20260822-140602-g4-k1-control-first-calibration-v1` a obtenu
+`PREFLIGHT_FIRST_CALIBRATION_V1_OK`, créé et vérifié le backup avant chauffe,
+puis obtenu `PREPARE_FIRST_CALIBRATION_V1_OK` et
+`MESH1_FIRST_CALIBRATION_V1_OK`. Le second mesh a été capturé une seule fois.
+Sa comparaison sur 36 points retourne `accepted=false`, maximum
+`0,062125 mm`, moyenne `0,018049 mm`, pour le seuil `0,025 mm`.
+
+Le pilote a exécuté l'arrêt KO prévu et coupé les chauffes. Aucun troisième
+mesh, `CommitMesh`, `BeginZ`, palier bas, acceptation ou validation de succès
+n'a été lancé. Le profil cible est absent de `printer.cfg`, les trois fichiers
+d'état Z restent absents et la base persistante conserve son empreinte exacte.
+Le contrôle final en lecture seule confirme `standby` et les cibles à zéro ; il
+s'arrête ensuite sur les axes `xyz` encore référencés, état normal après les
+mesures. Le backup exact reste sur la K1 comme preuve.
 
 Le paquet préparé contient :
 

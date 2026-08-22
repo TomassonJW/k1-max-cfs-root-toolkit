@@ -2,7 +2,7 @@
 
 Date : 2026-08-22
 
-Statut : accepté hors imprimante, non autorisé à l'exécution
+Statut : exécuté KO le 2026-08-22, sans rerun automatique
 
 ## Contexte
 
@@ -75,3 +75,13 @@ devra encore pouvoir choisir ces paramètres, voir les deux résultats et utilis
 enregistrer/annuler/restaurer depuis une vraie interface. Elle ne prouvera pas
 non plus l'autonomie production, toujours fermée par Orca, `START_PRINT`, le
 `+0,27 mm`, les températures CFS et G5.
+
+## Résultat observé
+
+Le GO exact a exécuté le protocole sous la capture
+`20260822-140602-g4-k1-control-first-calibration-v1`. Les deux mesures prévues
+ont été obtenues, mais leur écart maximal atteint `0,062125 mm` pour un seuil de
+`0,025 mm`. Le pilote a donc coupé les chauffes et s'est arrêté sans troisième
+mesure, persistance mesh ni session Z. Cette décision confirme le caractère
+effectif des checkpoints ; elle ne permet pas de conclure, à elle seule, si la
+cause est thermique, mécanique ou liée au palpage.
