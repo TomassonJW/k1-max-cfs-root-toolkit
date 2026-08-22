@@ -27,6 +27,7 @@ ALLOWED_COUNTS = {(3, 3), (5, 5), (6, 6), (9, 9), (11, 11), (15, 15)}
 ALLOWED_ALGORITHMS = {"lagrange", "bicubic"}
 CLOSED_PATH_PHASES = {"idle", "committed", "cancelled"}
 MeshConfiguration = Tuple[Tuple[int, int], str]
+FileMeshConfiguration = Tuple[Tuple[int, int], Optional[str]]
 
 
 class ProbeCountError(Exception):
@@ -46,13 +47,22 @@ class ProbeCountFile:
         return digest.hexdigest()
 
     @staticmethod
-    def _rewrite(document: bytes, target: MeshConfiguration) -> Tuple[bytes, MeshConfiguration]:
+    def _effective(configuration: FileMeshConfiguration) -> MeshConfiguration:
+        count, algorithm = configuration
+        return count, algorithm or "lagrange"
+
+    @staticmethod
+    def _rewrite(
+        document: bytes,
+        target: FileMeshConfiguration,
+    ) -> Tuple[bytes, FileMeshConfiguration]:
         target_count, target_algorithm = target
+        effective_target_algorithm = target_algorithm or "lagrange"
         if target_count not in ALLOWED_COUNTS:
             raise ProbeCountError("Matrice non compatible avec prtouch_v3.")
-        if target_algorithm not in ALLOWED_ALGORITHMS:
+        if effective_target_algorithm not in ALLOWED_ALGORITHMS:
             raise ProbeCountError("Interpolation non compatible avec prtouch_v3.")
-        if max(target_count) > 6 and target_algorithm != "bicubic":
+        if max(target_count) > 6 and effective_target_algorithm != "bicubic":
             raise ProbeCountError("Les matrices supérieures à 6 exigent bicubic au démarrage.")
         lines = document.splitlines(keepends=True)
         in_bed_mesh = False
@@ -62,6 +72,9 @@ class ProbeCountFile:
         previous_count: Optional[Tuple[int, int]] = None
         previous_algorithm: Optional[str] = None
         rewritten = []
+        count_line_index: Optional[int] = None
+        count_indent = b""
+        count_eol = b"\n"
         count_pattern = re.compile(
             rb"^(?P<prefix>[ \t]*probe_count[ \t]*:[ \t]*)"
             rb"(?P<x>[0-9]+)[ \t]*,[ \t]*(?P<y>[0-9]+)"
@@ -88,6 +101,9 @@ class ProbeCountFile:
                         int(count_match.group("x")),
                         int(count_match.group("y")),
                     )
+                    count_line_index = len(rewritten)
+                    count_indent = re.match(rb"^[ \t]*", line).group(0)
+                    count_eol = count_match.group("eol") or b"\n"
                     line = (
                         count_match.group("prefix")
                         + ("%d,%d" % target_count).encode("ascii")
@@ -98,31 +114,43 @@ class ProbeCountFile:
                 if algorithm_match:
                     algorithm_match_count += 1
                     previous_algorithm = algorithm_match.group("algorithm").decode("ascii").lower()
-                    line = (
-                        algorithm_match.group("prefix")
-                        + target_algorithm.encode("ascii")
-                        + algorithm_match.group("suffix")
-                        + (algorithm_match.group("eol") or b"")
-                    )
+                    if target_algorithm is None:
+                        line = b""
+                    else:
+                        line = (
+                            algorithm_match.group("prefix")
+                            + target_algorithm.encode("ascii")
+                            + algorithm_match.group("suffix")
+                            + (algorithm_match.group("eol") or b"")
+                        )
             rewritten.append(line)
         if (
             section_count != 1
             or count_match_count != 1
-            or algorithm_match_count != 1
+            or algorithm_match_count > 1
             or previous_count is None
-            or previous_algorithm is None
+            or count_line_index is None
         ):
             raise ProbeCountError("Le couple probe_count/algorithm [bed_mesh] n'est pas unique.")
-        if previous_count not in ALLOWED_COUNTS or previous_algorithm not in ALLOWED_ALGORITHMS:
+        if previous_count not in ALLOWED_COUNTS or (
+            previous_algorithm is not None and previous_algorithm not in ALLOWED_ALGORITHMS
+        ):
             raise ProbeCountError("La configuration bed_mesh courante n'est pas une base revue.")
+        if previous_algorithm is None and max(previous_count) > 6:
+            raise ProbeCountError("Une matrice supérieure à 6 sans algorithme explicite est invalide.")
+        if algorithm_match_count == 0 and target_algorithm is not None:
+            rewritten.insert(
+                count_line_index + 1,
+                count_indent + b"algorithm: " + target_algorithm.encode("ascii") + count_eol,
+            )
         return b"".join(rewritten), (previous_count, previous_algorithm)
 
-    def read(self) -> MeshConfiguration:
+    def read(self) -> FileMeshConfiguration:
         document = self.path.read_bytes()
-        _, current = self._rewrite(document, ((6, 6), "lagrange"))
+        _, current = self._rewrite(document, ((6, 6), None))
         return current
 
-    def write(self, target: MeshConfiguration) -> MeshConfiguration:
+    def write(self, target: FileMeshConfiguration) -> FileMeshConfiguration:
         source = self.path.read_bytes()
         rewritten, previous = self._rewrite(source, target)
         if previous == target:
@@ -151,11 +179,11 @@ class ProbeCountAwareBackend:
         self.backend = backend
         self.orchestrator = orchestrator
         self.config = ProbeCountFile(orchestrator.backups.printer_config)
-        self.previous_config: Optional[MeshConfiguration] = None
+        self.previous_config: Optional[FileMeshConfiguration] = None
         self.changed = False
         self._recover_existing_change()
 
-    def _backup_config(self) -> Optional[MeshConfiguration]:
+    def _backup_config(self) -> Optional[FileMeshConfiguration]:
         evidence = self.orchestrator.state.get("backup")
         campaign_id = self.orchestrator.state.get("campaign_id")
         if not isinstance(evidence, dict) or not campaign_id:
@@ -257,13 +285,14 @@ class ProbeCountAwareBackend:
         if max(target_count) > 6 and target_algorithm != "bicubic":
             raise ProbeCountError("Les matrices supérieures à 6 exigent bicubic au démarrage.")
         loaded = await self._loaded_config()
-        current = self.config.read()
+        current_file = self.config.read()
+        current = ProbeCountFile._effective(current_file)
         if loaded != current:
             raise ProbeCountError("printer.cfg et la configuration bed_mesh chargée divergent.")
         if current == target:
             return
         self._assert_backup_precedes_change()
-        previous = self.config.write(target)
+        previous = self.config.write((target_count, target_algorithm))
         self.previous_config = previous
         self.changed = True
         try:
@@ -271,7 +300,7 @@ class ProbeCountAwareBackend:
         except Exception:
             try:
                 self.config.write(previous)
-                await self._restart_and_verify(previous)
+                await self._restart_and_verify(ProbeCountFile._effective(previous))
                 self.changed = False
                 self.previous_config = None
             except Exception:
@@ -283,7 +312,7 @@ class ProbeCountAwareBackend:
             return
         previous = self.previous_config
         self.config.write(previous)
-        await self._restart_and_verify(previous)
+        await self._restart_and_verify(ProbeCountFile._effective(previous))
         self.changed = False
         self.previous_config = None
 

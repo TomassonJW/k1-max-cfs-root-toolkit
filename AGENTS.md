@@ -322,12 +322,17 @@ avec XS3002 avant toute chauffe, homing ou mesure. La garde bornée a restauré
 automatiquement `6,6 + lagrange` ; Klipper est prêt, les chauffes sont à zéro,
 le Z `−0,04 mm`, le profil rapide et les deux CFS sont intacts. Le paquet séparé
 `G4-K1-CONTROL-CALIBRATION-UI-PRTOUCH-BED-MESH-V2` remplace seulement le
-composant déjà installé et commute désormais le couple exact. Ses 10 tests
-ciblés et les 195 tests complets sont verts. La capture
-`20260823-005835-g4-k1-control-calibration-ui-prtouch-bed-mesh-v2` a obtenu le
-déploiement et deux validations vertes. La campagne XS3002 a été restaurée
-exactement, puis le préflight complet
-`20260823-010153-g4-k1-control-calibration-ui-campaign-v1` est vert. La prochaine
+composant déjà installé et commute désormais le couple exact. Sa première pose
+a révélé après coup une lacune de validation : sur la configuration réelle,
+`lagrange` est implicite et la ligne `algorithm` est absente ; le composant était
+donc listé dans `failed_components` malgré les anciens marqueurs verts. Aucun
+mouvement ni chauffage n'a eu lieu. La révision corrigée préserve exactement
+cette absence, insère `bicubic` seulement pendant `9/11/15` et refuse désormais
+un composant Moonraker échoué. La capture
+`20260823-012755-g4-k1-control-calibration-ui-prtouch-bed-mesh-v2-r2` a obtenu le
+préflight, le déploiement et deux validations vertes ; `server/info` confirme
+`failed_components=[]` et `warnings=[]`. Le préflight complet
+`20260823-013151-g4-k1-control-calibration-ui-campaign-v1` est vert. La prochaine
 action est le nouveau départ écran `9 × 9` avec confirmation fraîche du plateau
 libre.
 

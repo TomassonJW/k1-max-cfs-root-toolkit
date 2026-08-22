@@ -31,7 +31,7 @@ $PresetManifestPath = Join-Path $PresetPackage 'deployment-manifest.json'
 $CampaignContractPath = Join-Path $WorkspaceRoot 'packages\k1-control-v1\calibration-ui-campaign-v1\calibration-ui-campaign-contract.json'
 $ExpectedUiManifestHash = '8970109289fb64645de22d6530c32c397738509ede0983a5e6362f1c4feae7db'
 $ExpectedRetryManifestHash = '6c50d95bd542a59284a67291ade4a216ae53b125fc4cd5a0521bc726cf0c7c0f'
-$ExpectedBedMeshManifestHash = '1164d1fff87e26c13b662e3a127a9417358e15530cb54b77de60ed41fa961b1e'
+$ExpectedBedMeshManifestHash = 'c9812723c8a719d3561ae320c8cc98d9c872ca01b8eb876c90bcac8805349c76'
 $ExpectedPresetManifestHash = 'aa6b2a6b173359202b0586ccb95cedbfbaa4d229c570880b5fdfbdab532271e2'
 $ExpectedCampaignContractHash = '768d257c4b6c0f114edbdf7f8172920c1bf593646dc06e3bcf490b6fbfa457ae'
 $RemoteUi = '/usr/data/k1-control-v1/current/www/mainsail/k1-control'
@@ -206,6 +206,12 @@ function Assert-InstalledUi {
         if ((Get-RemoteSha256 ([string]$file.destination)) -cne ([string]$file.sha256)) {
             throw "Payload des choix prtouch distant inattendu : $($file.destination)"
         }
+    }
+    $serverInfoRaw = (Invoke-Remote "curl 'http://127.0.0.1:7125/server/info'") -join "`n"
+    $serverInfo = ($serverInfoRaw | ConvertFrom-Json).result
+    if (-not $serverInfo -or @($serverInfo.components) -notcontains 'k1_control_probe_count' -or
+        @($serverInfo.failed_components) -contains 'k1_control_probe_count') {
+        throw "L'adaptateur bed_mesh V2 n'est pas chargé proprement : $(@($serverInfo.warnings) -join ' | ')"
     }
     $mode = ((Invoke-Remote "stat -c '%a' '$RemoteUi'") | Select-Object -First 1).Trim()
     if ($mode -cne '755') {

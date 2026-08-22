@@ -17,5 +17,10 @@ V2 commute et vérifie atomiquement le couple :
 
 Le backup de campagne précède toujours la mutation. Les deux valeurs sont
 restaurées ensemble après coupure des chauffes ou après tout échec de démarrage.
+Sur la configuration réelle de la K1, `lagrange` est implicite : la ligne
+`algorithm` est absente de `printer.cfg`. La révision corrigée accepte cette
+forme, ajoute `algorithm: bicubic` uniquement pendant les matrices supérieures à
+6, puis restitue exactement l'absence initiale de la ligne. La validation refuse
+désormais aussi tout composant signalé dans `failed_components` par Moonraker.
 La pose V2 remplace seulement le composant déjà installé, redémarre uniquement
 le Moonraker dédié et ne lance aucune action physique.

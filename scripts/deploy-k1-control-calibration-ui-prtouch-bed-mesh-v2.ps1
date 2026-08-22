@@ -166,6 +166,7 @@ function Assert-RemotePythonCompatibility {
 import base64
 import sys
 import types
+from pathlib import Path
 
 name = 'moonraker.components.k1_control_probe_count'
 module = types.ModuleType(name)
@@ -173,11 +174,15 @@ module.__file__ = 'k1_control_probe_count.py'
 module.__package__ = 'moonraker.components'
 sys.modules[name] = module
 exec(compile(base64.b64decode('$source'), module.__file__, 'exec'), module.__dict__)
-document = b'[bed_mesh]\nprobe_count: 6,6\nalgorithm: lagrange\n[printer]\nkinematics: corexy\n'
+document = b'[bed_mesh]\nprobe_count: 6,6\n[printer]\nkinematics: corexy\n'
 rewritten, previous = module.ProbeCountFile._rewrite(document, ((9, 9), 'bicubic'))
-assert previous == ((6, 6), 'lagrange')
+assert previous == ((6, 6), None)
 assert b'probe_count: 9,9' in rewritten
 assert b'algorithm: bicubic' in rewritten
+restored, changed = module.ProbeCountFile._rewrite(rewritten, previous)
+assert changed == ((9, 9), 'bicubic')
+assert restored == document
+assert module.ProbeCountFile(Path('$RemotePrinterConfig')).read() == ((6, 6), None)
 try:
     module.ProbeCountFile._rewrite(document, ((9, 9), 'lagrange'))
 except module.ProbeCountError:
@@ -239,7 +244,12 @@ function Wait-Moonraker {
     for ($index = 1; $index -le $Attempts; $index++) {
         try {
             $info = Get-ServerInfo
-            if (@($info.components) -contains 'k1_control') { return }
+            $probeLoaded = @($info.components) -contains 'k1_control_probe_count'
+            $probeFailed = @($info.failed_components) -contains 'k1_control_probe_count'
+            if (@($info.components) -contains 'k1_control' -and $probeLoaded -and -not $probeFailed) {
+                return
+            }
+            $last = "components=$(@($info.components) -join ',') failed=$(@($info.failed_components) -join ',')"
         }
         catch { $last = $_.Exception.Message }
         Start-Sleep -Seconds 1
@@ -265,6 +275,9 @@ function Assert-Installed {
     $info = Get-ServerInfo
     if (@($info.components) -notcontains 'k1_control_probe_count') {
         throw 'Le composant k1_control_probe_count est absent des composants chargés.'
+    }
+    if (@($info.failed_components) -contains 'k1_control_probe_count') {
+        throw "Le composant k1_control_probe_count a échoué au chargement : $(@($info.warnings) -join ' | ')"
     }
     [void](Assert-SafeState)
 }

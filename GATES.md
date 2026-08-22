@@ -731,10 +731,17 @@ la campagne, il commute atomiquement puis relit le couple
 les deux valeurs ensemble. Le préflight réel a obtenu
 `PREFLIGHT_CALIBRATION_UI_PRTOUCH_BED_MESH_V2_OK` sur l'état XS3002 restauré à
 zéro mesh. La capture
-`20260823-005835-g4-k1-control-calibration-ui-prtouch-bed-mesh-v2` a ensuite
-obtenu le déploiement et deux validations vertes. Après rollback exact de la
+`20260823-005835-g4-k1-control-calibration-ui-prtouch-bed-mesh-v2` a d'abord
+obtenu des marqueurs verts insuffisants : le validateur ne contrôlait pas
+`failed_components`, et la K1 omet la ligne `algorithm` pour son `lagrange`
+implicite. Le composant avait donc échoué au chargement sans action physique.
+La révision corrigée préserve exactement cette forme implicite, ajoute
+`bicubic` seulement pendant les grandes matrices et valide le chargement réel.
+La capture `20260823-012755-g4-k1-control-calibration-ui-prtouch-bed-mesh-v2-r2`
+a obtenu le préflight, le déploiement et deux validations vertes ; Moonraker
+rapporte `failed_components=[]` et `warnings=[]`. Après rollback exact de la
 campagne XS3002, le préflight complet
-`20260823-010153-g4-k1-control-calibration-ui-campaign-v1` est vert.
+`20260823-013151-g4-k1-control-calibration-ui-campaign-v1` est vert.
 
 ## G5 — V1 production baseline
 

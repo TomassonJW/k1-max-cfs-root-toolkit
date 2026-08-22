@@ -3,24 +3,25 @@
   "status": "offline_review_candidate",
   "deployer": {
     "path": "scripts/deploy-k1-control-calibration-ui-prtouch-bed-mesh-v2.ps1",
-    "sha256": "b3d7dd1db4a46c860ef26c7a6f74b0d46cfc613789c9aec994383ae580c1d156"
+    "sha256": "b69eb0a5c262f36b690c8610c1b7d67714c055a691330fc4488155dfe96fb1fa"
   },
   "contract": {
     "path": "calibration-ui-prtouch-bed-mesh-v2-contract.json",
-    "sha256": "cc707c486b0b7fedad16f410109df0c8adb94732c9ae5d0d43abea96b7e26866"
+    "sha256": "6b2d062a8d67b5364221c415192a3ddc26feff4223dfd805a9fcd23307a732f1"
   },
   "baseline": {
-    "component_sha256": "6b97095f1cb4f62d7207d8e63186c9a93b6f53603b15bc5e4354de4aa767254e",
+    "component_sha256": "72e2010c06afe58d78416fca1c65e746c805568c90cf2ac13d1f6196b46f09ca",
     "moonraker_conf_sha256": "9b451f9b864c798872f674688d1c3354f31ab5a03283cad1d7a224561308fcb1",
     "printer_cfg_sha256": "36cfb7e71180268841ab5cedd31628c8d9953ba437c47662ced16df18bb1bacd",
     "loaded_probe_count": [6, 6],
-    "loaded_algorithm": "lagrange"
+    "loaded_algorithm": "lagrange",
+    "algorithm_line_present": false
   },
   "files": [
     {
       "source": "k1_control_probe_count.py",
       "destination": "/usr/data/k1-control-v1/current/moonraker/moonraker/moonraker/components/k1_control_probe_count.py",
-      "sha256": "72e2010c06afe58d78416fca1c65e746c805568c90cf2ac13d1f6196b46f09ca"
+      "sha256": "ab570669c1d7519d4ae4e59a260b6ece8b0b919e0388b7287c672b3cd0f8733d"
     }
   ],
   "unchanged": {

@@ -628,12 +628,15 @@ Le candidat séparé
 `G4-K1-CONTROL-CALIBRATION-UI-PRTOUCH-BED-MESH-V2` remplace seulement le
 composant prtouch déjà installé. Il commute, vérifie et restaure atomiquement
 `probe_count + algorithm`; `9/11/15` utilisent bicubique et `6` revient à
-Lagrange. Les 10 tests ciblés et les 195 tests complets sont verts, avec 3
-ignorés connus. La capture
-`20260823-005835-g4-k1-control-calibration-ui-prtouch-bed-mesh-v2` a obtenu le
-déploiement et deux validations vertes. La campagne XS3002 a été restaurée
-exactement, puis le préflight complet
-`20260823-010153-g4-k1-control-calibration-ui-campaign-v1` est vert. La K1 attend
+Lagrange. La première validation ne contrôlait pas `failed_components` : elle a
+donc laissé passer un composant refusé parce que la K1 omet la ligne
+`algorithm` lorsque `lagrange` est implicite. Aucun chauffage ni mouvement n'a
+eu lieu. La révision corrigée conserve exactement cette absence au rollback et
+vérifie le chargement réel. La capture
+`20260823-012755-g4-k1-control-calibration-ui-prtouch-bed-mesh-v2-r2` a obtenu le
+préflight, le déploiement et deux validations vertes ; `server/info` donne
+`failed_components=[]` et `warnings=[]`. Le préflight complet
+`20260823-013151-g4-k1-control-calibration-ui-campaign-v1` est vert. La K1 attend
 le nouveau départ écran `9 × 9`.
 
 The Orca cutover remains a later atomic gate. This runtime slice intentionally

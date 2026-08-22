@@ -9,6 +9,11 @@
     "heater_targets_c": [0, 0],
     "automatic_rollback": "6x6_lagrange_ready_z_minus_0_04_intact"
   },
+  "observed_component_failure": {
+    "cause": "printer.cfg uses implicit lagrange and has no algorithm line",
+    "moonraker_failed_component": "k1_control_probe_count",
+    "physical_action": false
+  },
   "deployment": {
     "replaced_file": "/usr/data/k1-control-v1/current/moonraker/moonraker/moonraker/components/k1_control_probe_count.py",
     "service_action": "restart /etc/init.d/S56k1_control_moonraker only",
@@ -20,6 +25,8 @@
     "change_before_heat": true,
     "atomic_fields": ["bed_mesh.probe_count", "bed_mesh.algorithm"],
     "loaded_pair_verified": true,
+    "component_load_verified_through_server_info": true,
+    "implicit_lagrange_preserved_exactly": true,
     "safe_runtime_verified_after_restart": true,
     "restore_pair_after_heaters_off": true,
     "supported_pairs": [

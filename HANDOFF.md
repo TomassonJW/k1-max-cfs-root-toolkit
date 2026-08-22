@@ -689,12 +689,16 @@ Le paquet séparé
 `G4-K1-CONTROL-CALIBRATION-UI-PRTOUCH-BED-MESH-V2` remplace seulement le
 composant V1 et redémarre uniquement le Moonraker dédié. Son runtime commute et
 relit ensemble `probe_count + algorithm`, refuse `9/11/15 + lagrange`, puis
-restaure les deux valeurs après chauffes ou échec. Les 10 tests ciblés, les 195
-tests complets sont verts. La capture
-`20260823-005835-g4-k1-control-calibration-ui-prtouch-bed-mesh-v2` a obtenu le
-déploiement et deux validations vertes. La campagne XS3002 est restaurée
+restaure les deux valeurs après chauffes ou échec. La première pose a exposé une
+lacune du validateur : la K1 utilise `lagrange` implicitement sans ligne
+`algorithm`, ce qui avait placé le composant dans `failed_components` sans être
+détecté. Aucun chauffage, homing ou mouvement n'a eu lieu. La révision corrigée
+préserve exactement cette forme implicite et vérifie désormais `server/info`.
+La capture `20260823-012755-g4-k1-control-calibration-ui-prtouch-bed-mesh-v2-r2`
+a obtenu le préflight, le déploiement et deux validations vertes ;
+`failed_components=[]` et `warnings=[]`. La campagne XS3002 reste restaurée
 exactement et le préflight complet
-`20260823-010153-g4-k1-control-calibration-ui-campaign-v1` est vert. La prochaine
+`20260823-013151-g4-k1-control-calibration-ui-campaign-v1` est vert. La prochaine
 action est uniquement le nouveau départ écran `9 × 9` avec confirmation fraîche
 du plateau libre.
 
