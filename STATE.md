@@ -4,8 +4,9 @@ Last updated: 2026-08-22
 
 ## Current phase
 
-**P4 — fondation V3 + PATHS-V1 retenue ; runtime Z/mesh installé et validé ;
-état vide prêt pour calibration mais production volontairement bloquée**
+**P4 — fondation V3 + PATHS-V1 et runtime Z/mesh retenus ; chemin borné du
+premier Z préparé hors imprimante mais non installé ; production volontairement
+bloquée**
 
 The repository baseline, stock acquisition, complete Orca/G-code intake and
 passive P1–P5/PETG trace are complete. Gate G3 is passed for offline design and
@@ -327,8 +328,14 @@ commencent sur cet état final retenu.
   deux CFS `1.1.3`, fondation intacte, `ready=1`, `integrity=empty`,
   `accepted_z_valid=0`, `block_reason=no_accepted_z` et `low_moves_armed=0`.
   Le runtime est installé mais ne peut pas encore armer un travail de production.
-- La suite finale exécute 100 tests : 99 passent et le seul contrôle Jinja
-  local ignoré reste couvert sur le Python/Jinja exact de la K1.
+- La suite courante exécute 116 tests : 114 passent et deux contrôles Jinja
+  locaux sont ignorés. Le runtime installé a déjà passé son contrôle exact sur
+  la K1 ; le nouvel overlay devra passer son parse en mémoire pendant le
+  préflight exact, avant toute écriture.
+- Le candidat `G4-K1-CONTROL-CALIBRATION-PATH-V1` est préparé uniquement hors
+  imprimante : overlay, contrat UX, manifeste, déployeur à vide, ADR-005 et
+  procédure complète. Il n'a pas contacté la K1. Sa pose future est figée sur
+  un fichier, un include, un `RESTART` hôte et une validation sans mouvement.
 
 - Complete-system audit, A/B/C comparison, safety invariant, input contract and
   time-bounded roadmap documented in
@@ -387,15 +394,19 @@ Au début de la prochaine session, annoncer explicitement à Thomas :
 - Mainsail et le runtime sont installés, mais aucun écran réel ne permet encore
   de sélectionner et d'orchestrer les paramètres sans console ni Codex.
 
-La prochaine mission unique est de préparer hors imprimante la gate séparée
-`G4-K1-CONTROL-FIRST-CALIBRATION-V1` : identité de plaque, températures,
-stabilisation, matrice, interpolation, nettoyage, homing, deux mesures
-comparables, seuil de qualification, session Z volontaire et rollback. Elle
-doit également figer le contrat fonctionnel de l'écran de calibration autonome,
-mais ne doit encore transmettre aucun G-code. La calibration réelle impliquera
-des mouvements, de la chauffe et une écriture d'état ; elle exigera donc une
-revue complète et ce nouveau GO exact. Le runtime installé ne doit pas être
-reposé.
+La prochaine gate unique est
+`G4-K1-CONTROL-CALIBRATION-PATH-V1`. Son candidat hors imprimante ajoute le
+chemin borné qui manquait pour évaluer le premier Z sans console libre ni valeur
+cachée. La pose future, après GO exact, ajoutera seulement un overlay et un
+include, fera un `RESTART` hôte et le validera à vide : aucune chauffe, aucun
+homing, aucun mouvement, aucune écriture Z ou mesh. Le runtime installé ne doit
+pas être reposé.
+
+Après seulement cette pose validée, la mission suivante pourra préparer puis
+faire autoriser `G4-K1-CONTROL-FIRST-CALIBRATION-V1` : identité de plaque,
+températures, stabilisation, matrice, interpolation, nettoyage, homing, deux
+mesures comparables, seuil de qualification et session Z volontaire. La
+calibration réelle restera une autorisation séparée.
 
 The Orca cutover remains a later atomic gate. This runtime slice intentionally
 keeps the active Orca profile, `START_PRINT` and the legacy `+0.27 mm`
@@ -421,6 +432,9 @@ retirement remains atomic with the later proven machine/Orca replacement.
   `G4-K1-CONTROL-Z-MESH-RUNTIME-V1` désormais installé.
 - Toute commande de calibration Z/mesh, chauffe ou homing du runtime avant une
   gate séparée explicitement approuvée.
+- Toute pose ou validation distante de
+  `G4-K1-CONTROL-CALIBRATION-PATH-V1` avant son GO exact ; le nom reçu sans
+  préfixe `GO` n'est pas cette autorisation.
 - BTT Eddy preparation, installation, firmware or calibration.
 - Firmware downgrade or replacement.
 - Any SSH write other than the completed `G4-SSH-KEY` deployment.

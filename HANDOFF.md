@@ -1,8 +1,8 @@
 # HANDOFF
 
 Date: 2026-08-22
-Phase: P4 / retained foundation observed; Z/mesh runtime installed and validated
-Next operator: announce the autonomy gap, then prepare the separately gated first calibration without sending it
+Phase: P4 / runtime Z/mesh retenu ; chemin borné du premier Z préparé hors imprimante
+Next operator: annoncer l'écart d'autonomie, puis relire le candidat CALIBRATION-PATH-V1 avant tout GO
 
 ## Message obligatoire au début de la prochaine session
 
@@ -13,9 +13,9 @@ Dire clairement à Thomas, avant toute proposition d'exécution :
 - **l'autonomie production n'est pas encore atteinte** : Orca, `START_PRINT`,
   l'ancien `+0,27 mm` et les températures CFS ne sont pas encore basculés vers
   le nouveau contrat ;
-- la prochaine gate rendra possible la première calibration contrôlée, mais une
-  calibration réussie ne suffira pas encore à déclarer le pilotage quotidien
-  autonome ;
+- la prochaine gate installe seulement le chemin borné du premier Z, sans
+  lancer de calibration ; la première calibration restera une gate séparée et
+  même sa réussite ne suffira pas à déclarer le pilotage quotidien autonome ;
 - l'interface ne sera déclarée « nickel sans Codex » que lorsque Thomas pourra
   choisir les paramètres, lancer, comprendre le statut, enregistrer, annuler et
   restaurer depuis l'écran, puis imprimer normalement depuis Orca sans commande
@@ -23,6 +23,30 @@ Dire clairement à Thomas, avant toute proposition d'exécution :
 
 Ne pas présenter Mainsail `v2.18.2`, la console ou les macros `KCTRL_*` comme
 l'interface quotidienne terminée.
+
+## Candidat actif préparé hors imprimante
+
+Thomas a nommé `G4-K1-CONTROL-CALIBRATION-PATH-V1` sans préfixe `GO`. Cette
+instruction a sélectionné la préparation du lot ; elle n'a autorisé aucune
+connexion ni mutation de la K1.
+
+Le candidat ajoute un overlay séparé au runtime existant. Il impose une
+descente centrale `5 → 2 → 1 → 0,5 → 0,3 → 0,2 → 0,15 → 0,1 mm`, ajuste le Z
+seulement à la dernière hauteur, repositionne physiquement la buse à `0,1 mm`,
+exige une confirmation puis une remontée de `5 mm` avant acceptation ou
+annulation. Il n'a ni extrusion, ni chauffe, ni CFS, ni valeur Z par défaut.
+
+La pose revue ajoute seulement
+`/usr/data/printer_data/config/k1-control-calibration-path.cfg`, une inclusion
+après le runtime puis un `RESTART` hôte. Sa validation appelle uniquement une
+garde qui doit refuser et prouve que position, origine et cibles de chauffe ne
+changent pas. Le rollback préserve entièrement le runtime installé. Détails :
+`docs/17-g4-k1-control-calibration-path-v1.md` et ADR-005.
+
+Le déployeur reste en `Plan` par défaut et toute action distante exige
+`-Execute -Gate G4-K1-CONTROL-CALIBRATION-PATH-V1`. La pose n'est pas
+autorisée avant le GO exact `GO G4-K1-CONTROL-CALIBRATION-PATH-V1` portant sur
+le commit figé.
 
 ## Current state
 
@@ -262,10 +286,11 @@ Un écran `K1 Control` sans dépendance, un moteur d'état Python pur, un faux
 Moonraker, le contrat Orca et la matrice exécutable sont présents sous
 `prototype/`, `orca/` et `tests/`. Les vues bureau/mobile et les actions
 calibration, sauvegarde, redémarrage et invalidation ont été vérifiées sans
-erreur JavaScript. La suite courante exécute 100 tests, dont 99 passent localement
-et un contrôle Jinja est couvert sur l'environnement exact de la K1, avec le
-contrôle des 17 templates Jinja et la compatibilité de tous les noms de commandes
-avec le parseur exact de la K1.
+erreur JavaScript. La suite courante exécute 116 tests : 114 passent et deux
+contrôles Jinja locaux sont ignorés. Les 17 templates du runtime installé ont
+déjà passé le Python/Jinja exact de la K1. Le nouvel overlay devra passer son
+parse exact en mémoire pendant son préflight, avant toute écriture. Les noms de
+commandes des deux lots sont contrôlés contre le parseur Creality exact.
 
 ## Preuves historiques utiles
 
@@ -362,24 +387,25 @@ Codex has permanent authority to complete all normal Git and GitHub operations f
 
 ## Next bounded mission
 
-Préparer hors imprimante `G4-K1-CONTROL-FIRST-CALIBRATION-V1` sur le runtime
-installé : plaque, température, stabilisation, matrice, interpolation, chauffe,
-nettoyage, homing, deux mesures comparables, seuil de qualification, réglage Z,
-acceptation, annulation et rollback. Figer en même temps le contrat UX de
-l'écran de calibration autonome : presets simples, options expertes, états
-compréhensibles et aucune console obligatoire. Ne transmettre encore aucune
-commande : chauffe, mouvement et écriture d'état exigent la revue complète et
-un nouveau GO portant exactement ce nom.
+Relire le commit figé de `G4-K1-CONTROL-CALIBRATION-PATH-V1`, rappeler qu'il ne
+rend pas encore l'interface autonome et attendre le GO exact. Après ce GO
+seulement : préflight frais, backup, pose du seul overlay, `RESTART` hôte,
+validation sans mouvement et clôture complète ou rollback automatique.
 
-Critères de fin de cette prochaine mission : fichiers et commandes exacts,
-préflight, backup, déroulé observable, conditions OK/KO, rollback et maquette du
-parcours utilisateur tous revus ; aucun G-code envoyé avant le GO. La mission
-doit annoncer explicitement ce qu'elle débloque et ce qui restera nécessaire
-avant l'autonomie production.
+Critères de fin : `DEPLOY_CALIBRATION_PATH_V1_OK` puis validation indépendante
+`VALIDATE_CALIBRATION_PATH_V1_OK`, runtime existant toujours vide et sain,
+chauffes à zéro, axes non référencés, deux CFS connectés, empreintes exactes et
+aucun état physique changé par la garde.
 
-Autorisation de démarrage : **ATTENDRE_GO**. La prochaine session peut relire,
-auditer et préparer hors imprimante ; elle ne peut ni chauffer, ni déplacer, ni
-calibrer, ni écrire sur l'imprimante avant le GO exact.
+Autorisation actuelle : **ATTENDRE_GO**. Même le préflight distant est conservé
+pour la session autorisée. Aucun G-code, SSH ou transfert n'a été envoyé pendant
+la préparation actuelle.
+
+Une fois cette pose retenue, la mission suivante sera
+`G4-K1-CONTROL-FIRST-CALIBRATION-V1` : plaque, température, stabilisation,
+matrice, interpolation, chauffe, nettoyage, homing, deux mesures comparables,
+seuil de qualification, réglage Z, acceptation, annulation et rollback. Cette
+calibration aura son propre GO.
 
 La bascule Orca reste une gate ultérieure unique : wrappers de travail côté
 machine, trois champs Orca et retrait du post-traitement doivent changer

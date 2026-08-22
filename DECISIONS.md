@@ -481,3 +481,25 @@ Une première calibration pilotée et surveillée ne vaut donc pas validation de
 l'interface autonome. Chaque nouvelle session doit annoncer le seuil atteint,
 les éléments manquants et la prochaine gate unique avant de proposer une
 mutation.
+
+## D-033 — Le premier Z exige un chemin borné installé avant la calibration
+
+Date: 2026-08-22
+
+Status: accepté hors imprimante
+
+Le runtime installé sait conserver une session Z provisoire, mais sa garde de
+mouvements bas exige déjà un Z accepté. Utiliser la console, une commande libre
+ou l'ancien `+0,27 mm` pour amorcer le premier Z contournerait donc la sécurité
+et réintroduirait une valeur non qualifiée.
+
+La pose du chemin physique et la calibration sont séparées. La gate
+`G4-K1-CONTROL-CALIBRATION-PATH-V1` ajoute seulement un overlay puis le valide
+au repos, sans chauffe ni mouvement. La gate ultérieure
+`G4-K1-CONTROL-FIRST-CALIBRATION-V1` pourra seule employer ses paliers.
+
+Le chemin retenu impose le centre `(150, 150)`, une première hauteur de `5 mm`,
+la descente `5 → 2 → 1 → 0,5 → 0,3 → 0,2 → 0,15 → 0,1 mm`, les ajustements
+uniquement à la dernière hauteur, un repositionnement physique à `0,1 mm` après
+chaque incrément, une confirmation explicite et une remontée relative de `5 mm`
+avant acceptation ou annulation. Il n'existe aucune valeur Z par défaut.

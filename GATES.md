@@ -337,11 +337,45 @@ Pour le système de pilotage, un G4 exige aussi :
 
 Passing G4 authorises only that named mutation.
 
-### Prochaine gate nommée — `G4-K1-CONTROL-FIRST-CALIBRATION-V1`
+### Prochaine gate nommée — `G4-K1-CONTROL-CALIBRATION-PATH-V1`
 
-Status: **préparation hors imprimante autorisée ; aucune exécution ni GO reçu**
+Status: **candidat préparé hors imprimante ; aucune pose ni GO reçus**
 
-Cette gate devra contenir avant présentation à Thomas :
+Cette gate ajoute uniquement le chemin borné non extrusif nécessaire au premier
+Z. Les sources, empreintes, destinations, backup, validation sans mouvement et
+rollback sont figés dans
+`packages/k1-control-v1/calibration-path-v1/`,
+`scripts/deploy-k1-control-calibration-path-v1.ps1` et
+`docs/17-g4-k1-control-calibration-path-v1.md`.
+
+Sa pose future doit :
+
+- partir du runtime installé, `ready=1`, `empty`, sans Z accepté ;
+- parser le candidat en mémoire avec le Python/Jinja exact de la K1 avant toute
+  écriture ;
+- ajouter un seul fichier et un seul include ;
+- ne faire qu'un `RESTART` de l'hôte Klipper ;
+- ne lancer ni chauffe, ni homing, ni mesh, ni mouvement, ni écriture Z ;
+- prouver que la garde à vide refuse sans changement physique ;
+- rollbacker uniquement cet overlay tout en préservant le runtime existant.
+
+Le texte reçu `G4-K1-CONTROL-CALIBRATION-PATH-V1` a sélectionné la préparation
+du lot. Sans le préfixe exact `GO`, il n'autorise aucune action distante.
+
+La suite hors imprimante exécute 116 tests : 114 passent et deux contrôles Jinja
+locaux sont ignorés. Celui du runtime installé a déjà été validé sur
+l'environnement exact de la K1. Celui du nouvel overlay est intégré au
+préflight distant en mémoire et doit être vert avant la première écriture.
+
+### Gate suivante après pose validée — `G4-K1-CONTROL-FIRST-CALIBRATION-V1`
+
+Status: **bloquée par la pose validée de CALIBRATION-PATH-V1 ; aucune exécution
+ni GO reçu**
+
+Elle ne peut être préparée comme exécution ni recevoir un GO utile tant que
+`G4-K1-CONTROL-CALIBRATION-PATH-V1` n'est pas installé et validé à vide.
+
+Avant présentation à Thomas, son paquet devra contenir :
 
 - plaque, températures, stabilisation, matrice et interpolation explicites ;
 - nettoyage et homing dans un ordre revu ;

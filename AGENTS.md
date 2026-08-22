@@ -56,6 +56,16 @@ the printer. The runtime is retained with `ready=1`, `integrity=empty`,
 `accepted_z_valid=0` and `low_moves_armed=0`. No further printer mutation,
 including calibration, is authorised by the completed runtime gate.
 
+Le candidat séparé `G4-K1-CONTROL-CALIBRATION-PATH-V1` est maintenant préparé
+hors imprimante. Il ajoute un overlay original pour évaluer le premier Z par
+une descente centrale bornée, sans extrusion et sans valeur Z cachée. Sa pose
+prévue ne ferait qu'ajouter l'include et recharger l'hôte Klipper ; elle ne
+chauffe, ne home, ne bouge et n'écrit aucun état. Le nom envoyé sans le préfixe
+`GO` a sélectionné cette mission de préparation mais n'autorise aucune mutation.
+Une pose exige encore la revue du commit figé puis le GO exact
+`GO G4-K1-CONTROL-CALIBRATION-PATH-V1`. La première calibration restera une
+gate différente, `G4-K1-CONTROL-FIRST-CALIBRATION-V1`.
+
 Thomas demande que chaque prochaine reprise commence par un état explicite de
 l'autonomie, sans confondre le runtime installé avec une interface terminée :
 

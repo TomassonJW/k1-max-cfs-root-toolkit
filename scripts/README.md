@@ -36,6 +36,15 @@ Moonraker dédié, valide les permissions API sans écriture et rollbacke au pre
 KO. Toute action distante exige `-Execute` et le gate exact
 `G4-K1-CONTROL-FOUNDATION-V3-PATHS-V1`.
 
+`deploy-k1-control-calibration-path-v1.ps1` prépare cinq actions pour l'overlay
+borné du premier Z. `Plan` reste purement local. Les quatre actions distantes
+exigent `-Execute` et le gate exact
+`G4-K1-CONTROL-CALIBRATION-PATH-V1`. Le préflight parse le candidat en mémoire
+avec le Python/Jinja exact de la K1 ; la pose ajoute un fichier et un include,
+fait uniquement un `RESTART` hôte, puis vérifie à vide que la garde refuse sans
+changer position, origine ou chauffe. Le script n'appelle aucune macro de
+chauffe, homing, mesh, mouvement, ajustement ou commit.
+
 `Ouvrir-Mainsail-K1-Max.cmd`, à la racine du dépôt, se lance par double-clic.
 Il appelle `launch-control-dashboard.ps1`, réutilise le tunnel local s'il répond
 correctement ou en démarre un nouveau en arrière-plan, exige HTTP `401` avant

@@ -2,7 +2,10 @@
 
 Unofficial, evidence-driven tooling and documentation for taking controlled ownership of a rooted Creality K1 Max equipped with the classic K1 CFS upgrade and multiple CFS units.
 
-> **Status:** P3 / Gate G3 passed for offline design. The fixed Z package was rejected and never deployed. A complete, parameterised control system is now being prototyped locally; no behaviour G4 is active.
+> **Status:** P4. V3, PATHS-V1 et le runtime Z/mesh sont installés et validés.
+> Le runtime est vide et fermé à la production. Le chemin borné du premier Z
+> est préparé hors imprimante sous `G4-K1-CONTROL-CALIBRATION-PATH-V1`, mais
+> n'est ni installé ni autorisé.
 
 ## Target configuration
 
@@ -75,7 +78,9 @@ Until the repository gate explicitly changes:
 Read [`AGENTS.md`](AGENTS.md), [`GATES.md`](GATES.md) and the protocol applicable
 to the mission before any SSH session. The active product contract is defined in
 [`docs/10-systeme-pilotage-perenne.md`](docs/10-systeme-pilotage-perenne.md).
-There is currently no printer-side behaviour package to approve.
+Le candidat actuellement revu est décrit dans
+[`docs/17-g4-k1-control-calibration-path-v1.md`](docs/17-g4-k1-control-calibration-path-v1.md).
+Son nom seul ne vaut pas GO et sa pose future ne lancerait aucune calibration.
 
 ## Repository map
 

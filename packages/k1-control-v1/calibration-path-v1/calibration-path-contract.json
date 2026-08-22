@@ -1,0 +1,91 @@
+{
+  "contract_id": "K1-CONTROL-CALIBRATION-PATH-V1",
+  "status": "offline_candidate",
+  "printer_mutation_authorized": false,
+  "purpose": "guarded_non_extrusion_first_z_reference",
+  "requires": {
+    "runtime": "G4-K1-CONTROL-Z-MESH-RUNTIME-V1 installed and validated",
+    "qualified_persistent_mesh": true,
+    "standby": true,
+    "homed_axes": "xyz",
+    "temperature_targets_verified": true,
+    "temperature_actuals_verified": true,
+    "operator_clear_plate_confirmation": true,
+    "operator_clean_nozzle_confirmation": true
+  },
+  "states": [
+    "idle",
+    "mesh_ready",
+    "z_session",
+    "testing",
+    "gap_confirmed",
+    "parked_unconfirmed",
+    "parked_confirmed",
+    "committed",
+    "cancelled"
+  ],
+  "approach": {
+    "center_mm": [150.0, 150.0],
+    "start_height_mm": 5.0,
+    "height_ladder_mm": [5.0, 2.0, 1.0, 0.5, 0.3, 0.2, 0.15, 0.1],
+    "z_feedrate_mm_min": 120,
+    "initial_lift_mm": 5.0,
+    "final_park_lift_mm": 5.0,
+    "extrusion": false
+  },
+  "z_adjustment": {
+    "allowed_only_at_height_mm": 0.1,
+    "allowed_deltas_mm": [-0.1, -0.05, -0.01, -0.005, 0.005, 0.01, 0.05, 0.1],
+    "reposition_after_each_adjustment_mm": 0.1,
+    "reposition_feedrate_mm_min": 60,
+    "numeric_default_mm": null,
+    "explicit_confirmation_required": true,
+    "park_before_commit_or_cancel": true
+  },
+  "daily_ui": {
+    "console_required": false,
+    "simple_actions": [
+      "Charger le mesh qualifie",
+      "Ouvrir la session Z",
+      "Confirmer plateau degage et buse propre",
+      "Commencer l'approche",
+      "Descendre d'une etape",
+      "Ajuster le Z",
+      "Confirmer le jeu",
+      "Remonter",
+      "Enregistrer",
+      "Annuler"
+    ],
+    "expert_fields": [
+      "plate_id",
+      "temperature_band_c",
+      "probe_revision",
+      "nozzle_id",
+      "config_id",
+      "mesh_matrix",
+      "bed_temperature_c",
+      "nozzle_temperature_c",
+      "seed_offset_mm"
+    ],
+    "must_show": [
+      "current_phase",
+      "active_mesh",
+      "current_height_mm",
+      "provisional_z_mm",
+      "temperature_targets_and_actuals",
+      "commit_ready",
+      "plain_language_block_reason"
+    ]
+  },
+  "forbidden": [
+    "extrusion",
+    "cfs_command",
+    "purge",
+    "start_print_override",
+    "universal_z_default",
+    "skipped_height_step",
+    "commit_before_gap_confirmation",
+    "commit_or_cancel_before_park",
+    "manual_console_required_by_final_ui"
+  ]
+}
