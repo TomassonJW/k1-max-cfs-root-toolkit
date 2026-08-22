@@ -783,3 +783,27 @@ Le déployeur crée explicitement le dossier UI en `0755` et le validateur exige
 ce mode exact en plus des empreintes. Toute autre permission, ou toute réponse
 Mainsail à la place de la page K1 Control, est un KO. Ces changements suivent
 l'ADR-009 et exigent un nouveau GO exact avant pose.
+
+## D-047 — L'état serveur reprend le formulaire, les confirmations physiques ne sont jamais héritées
+
+Date: 2026-08-22
+
+Status: accepté hors imprimante
+
+Une campagne serveur survit volontairement à la fermeture du navigateur, mais
+la première interface ne restaurait pas ses paramètres dans le formulaire. Plus
+grave, après les six meshes, la case « plateau libre » revenait décochée au
+rechargement tout en restant désactivée ; le Z devenait impossible à lancer
+depuis l'écran.
+
+Le statut métier expose désormais le Z accepté du runtime. À son premier rendu,
+le navigateur reprend ce seed, ou les paramètres exacts de la campagne si elle
+existe. Cette hydratation n'est faite qu'une fois par campagne afin de ne pas
+écraser les modifications humaines pendant l'édition.
+
+Les confirmations physiques ne sont jamais reprises de l'état serveur :
+« plateau libre » et « buse propre » doivent être cochées à nouveau par
+l'opérateur. Elles restent accessibles après rechargement et conditionnent
+ensemble le bouton de démarrage Z. Cette séparation permet une vraie reprise
+sans console tout en refusant de transformer une observation passée en fait
+physique courant.

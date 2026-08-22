@@ -166,6 +166,16 @@ class K1ControlCalibration:
         status = await self.orchestrator.backend.query_status()
         runtime = status.get("gcode_macro KCTRL_STATE", {})
         previous_available = int(runtime.get("previous_z_valid", 0)) == 1
+        accepted_available = int(runtime.get("accepted_z_valid", 0)) == 1
+        try:
+            accepted_offset = float(runtime.get("accepted_z_offset"))
+        except (TypeError, ValueError):
+            accepted_offset = None
+            accepted_available = False
+        result["accepted_z_valid"] = accepted_available
+        result["accepted_z_offset_mm"] = (
+            accepted_offset if accepted_available else None
+        )
         result["previous_z_available"] = previous_available
         result["previous_z_restorable"] = (
             previous_available

@@ -1,0 +1,23 @@
+{
+  "package": "G4-K1-CONTROL-CALIBRATION-UI-CAMPAIGN-V1",
+  "status": "offline_review_candidate",
+  "artifacts": [
+    {
+      "path": "packages/k1-control-v1/calibration-ui-campaign-v1/calibration-ui-campaign-contract.json",
+      "sha256": "8c54365f831db39d01beb128f4e15f0bc4727dc7d6b5e0fb5ae9e975c93e940c"
+    },
+    {
+      "path": "scripts/validate-k1-control-calibration-ui-campaign-v1.ps1",
+      "sha256": "29a3f4f478da5a141d3a29441d16207017c764f9e901ebf1ea15f4311ff9c846"
+    },
+    {
+      "path": "packages/k1-control-v1/calibration-ui-v1/deployment-manifest.json",
+      "sha256": "69ca6af3b242e8c9c3625651bedc018cd343675c73e0f384c3593f3de0c97e11"
+    }
+  ],
+  "remote_file_installation": false,
+  "operator_control": "browser_only",
+  "fixed_mesh_measurements": 6,
+  "automatic_extra_measurement": false,
+  "failure_action": "cancel_and_restore_from_the_ui"
+}

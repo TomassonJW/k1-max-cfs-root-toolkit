@@ -574,15 +574,31 @@ saisir les mêmes identifiants une fois. Le déployeur et son empreinte ayant de
 nouveau changé après le GO consommé, toute nouvelle pose exige encore un GO
 exact renouvelé.
 
+L'audit du parcours complet après rechargement a ensuite trouvé deux blocages
+hors imprimante : le seed Z accepté n'était pas repris par le formulaire et la
+case « plateau libre » redevenait décochée mais inaccessible après les six
+meshes. Le composant expose maintenant le Z accepté ; le navigateur hydrate une
+fois le formulaire depuis l'état serveur et laisse les confirmations physiques
+accessibles. Le bouton Z exige simultanément « plateau libre » et « buse
+propre ». Le manifeste épingle les nouvelles empreintes.
+
+Le protocole séparé `G4-K1-CONTROL-CALIBRATION-UI-CAMPAIGN-V1` est préparé hors
+imprimante. Après une pose UI entièrement verte, Thomas devra réaliser depuis
+l'écran uniquement les six meshes, le parcours Z et l'acceptation. Aucun clic
+ou commande de calibration Codex, septième passage ou rerun automatique ne sera
+accepté comme preuve d'autonomie. Le validateur séparé n'expose que `Plan`,
+`Preflight` et `Validate`; son plan local est vert avec
+`PLAN_CALIBRATION_UI_CAMPAIGN_V1_OK`.
+
 ## Next bounded mission
 
-Le candidat `G4-K1-CONTROL-CALIBRATION-UI-V1` corrigé doit maintenant être
-figé, auto-vérifié, revu et intégré. La prochaine mutation possible restera son
-nouveau GO exact séparé, puis `Deploy`, `Validate` et la recette dans le vrai
-navigateur sur l'origine isolée. La pose ne lance aucune calibration et
-redémarre seulement Moonraker. Après pose, une campagne complète depuis
-l'écran, sans console ni aide Codex, restera nécessaire avant de déclarer
-l'autonomie calibration.
+Le candidat `G4-K1-CONTROL-CALIBRATION-UI-V1` avec reprise navigateur doit
+maintenant être figé, auto-vérifié, revu et intégré. La prochaine mutation
+possible restera son nouveau GO exact séparé, puis `Deploy`, `Validate` et la
+recette dans le vrai navigateur sur l'origine isolée. La pose ne lance aucune
+calibration et redémarre seulement Moonraker. Après pose, la gate séparée
+`G4-K1-CONTROL-CALIBRATION-UI-CAMPAIGN-V1` devra réussir entièrement depuis
+l'écran avant de déclarer l'autonomie calibration.
 
 La gate précédente est close avec `DEPLOY_CALIBRATION_PATH_V1_OK` et
 `VALIDATE_CALIBRATION_PATH_V1_OK` sous la capture

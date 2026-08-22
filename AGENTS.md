@@ -192,6 +192,18 @@ valide le mode `755`; un lanceur dédié ouvre l'origine `localhost` sans nouvea
 port ni service, suivant ADR-009. Ce paquet changé exige encore un nouveau GO
 exact avant toute pose.
 
+L'audit de reprise navigateur a ensuite trouvé deux défauts supplémentaires
+hors imprimante : le seed accepté n'était pas réinjecté dans le formulaire et,
+après rechargement entre mesh et Z, la confirmation « plateau libre » redevenait
+fausse tout en restant désactivée. Le composant expose désormais le Z accepté,
+le formulaire reprend l'état serveur exact et les confirmations physiques
+restent accessibles et obligatoires avant le Z. Le candidat séparé
+`G4-K1-CONTROL-CALIBRATION-UI-CAMPAIGN-V1` fixe le protocole de preuve : six
+meshes, parcours Z et acceptation uniquement depuis l'écran, sans console ni
+commande Codex, sans septième passage ni rerun automatique. L'UI doit d'abord
+être posée, validée et rendue dans le vrai navigateur ; la campagne exigera
+ensuite son propre GO exact.
+
 Thomas demande que chaque prochaine reprise commence par un état explicite de
 l'autonomie, sans confondre le runtime installé avec une interface terminée :
 
