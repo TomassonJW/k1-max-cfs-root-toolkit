@@ -124,6 +124,9 @@ class CalibrationUiCampaignContractTests(unittest.TestCase):
         self.assertIn("@($privateState.meshes).Count -ne 6", source)
         self.assertIn("Assert-SafeAcceptedMachine", source)
         self.assertIn("VALIDATE_CALIBRATION_UI_CAMPAIGN_V1_OK", source)
+        self.assertIn("ExpectedProbeCountManifestHash", source)
+        self.assertIn("ProbeCountManifest", source)
+        self.assertIn("Payload adaptateur prtouch distant inattendu", source)
         self.assertNotIn("/printer/gcode/script", source)
         self.assertNotIn("KCTRL_MESH_CALIBRATE", source)
         self.assertNotIn("KCTRL_CAL_PATH_MOVE", source)
@@ -136,6 +139,7 @@ class CalibrationUiCampaignContractTests(unittest.TestCase):
         self.assertIn("[int]$api.mesh_index -eq 0", source)
         self.assertIn("[bool]$api.backup_available", source)
         self.assertIn("$api.rollback.printer_cfg_sha256", source)
+        self.assertIn("Assert-SafeAcceptedMachine $snapshot\n", source)
         self.assertNotIn("@('cancelled', 'failed', 'mesh_rejected')", source)
 
 
