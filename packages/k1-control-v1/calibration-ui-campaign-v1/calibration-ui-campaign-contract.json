@@ -1,0 +1,63 @@
+{
+  "contract_id": "G4-K1-CONTROL-CALIBRATION-UI-CAMPAIGN-V1",
+  "status": "offline_review_candidate",
+  "printer_mutation_authorized": false,
+  "dependency": {
+    "gate": "G4-K1-CONTROL-CALIBRATION-UI-V1",
+    "required_result": "deployed_validated_and_rendered_in_browser"
+  },
+  "operator_settings": {
+    "plate": "PEI_TEXTURED_A",
+    "bed_temperature_c": 55,
+    "nozzle_temperature_c": 140,
+    "soak_seconds": 200,
+    "matrix": [6, 6],
+    "interpolation": "lagrange",
+    "seed_z_source": "current_accepted_runtime_value",
+    "expected_initial_seed_z_mm": -0.04,
+    "replace_existing": true,
+    "plate_clear_confirmation": true
+  },
+  "operator_only_actions": [
+    "authenticate_in_the_calibration_browser_origin",
+    "confirm_plate_and_clear_bed",
+    "start_the_six_mesh_campaign_from_the_ui",
+    "confirm_nozzle_clean_before_z",
+    "advance_each_bounded_z_step_from_the_ui",
+    "observe_the_real_gap_with_the_paper_gauge",
+    "apply_only_ui_z_adjustments_if_needed",
+    "confirm_the_gap_and_accept_z_from_the_ui"
+  ],
+  "required_results": {
+    "browser_title": "K1 Control — calibration",
+    "api_connected": true,
+    "campaign_phase": "accepted",
+    "campaign_busy": false,
+    "mesh_measurements": 6,
+    "mesh_accepted": true,
+    "automatic_extra_measurement": false,
+    "profile": "k1_p001_t055_r001_n06x06",
+    "runtime_store_integrity": "ok",
+    "runtime_accepted_z_valid": 1,
+    "runtime_session_active": 0,
+    "runtime_low_moves_armed": 0,
+    "path_phase": "committed",
+    "path_motion_armed": 0,
+    "print_state": "standby",
+    "heater_targets_c": [0, 0],
+    "cfs_connected": 2,
+    "console_or_codex_control_during_campaign": false
+  },
+  "stop_conditions": [
+    "unexpected_browser_application_or_http_error",
+    "api_disconnected",
+    "mesh_rejected",
+    "seventh_mesh_requested_or_observed",
+    "unexpected_motion_or_extrusion",
+    "heater_target_outside_reviewed_values",
+    "runtime_or_path_guard_not_closed",
+    "operator_cannot_observe_a_safe_gap"
+  ],
+  "failure_action": "cancel_from_ui_then_restore_exact_campaign_backup_from_ui",
+  "rerun_policy": "no_automatic_rerun"
+}

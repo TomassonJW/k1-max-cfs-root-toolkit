@@ -5,6 +5,7 @@ const Z_LADDER = [5, 2, 1, 0.5, 0.3, 0.2, 0.15, 0.1];
 const byId = (id) => document.getElementById(id);
 let state = null;
 let requestPending = false;
+let hydratedFormKey = null;
 
 const PHASES = {
   idle: ["Prêt à configurer", "Choisis le contexte puis confirme que le plateau est libre."],
@@ -82,6 +83,26 @@ function formatMm(value) {
   return Number.isFinite(Number(value)) ? `${Number(value).toFixed(3).replace(".", ",")} mm` : "—";
 }
 
+function hydrateForm() {
+  const acceptedOffset = Number(state?.accepted_z_offset_mm);
+  const key = state?.campaign_id ?? `accepted:${state?.accepted_z_valid}:${state?.accepted_z_offset_mm}`;
+  if (hydratedFormKey === key) return;
+  const config = state?.config;
+  if (config) {
+    byId("plate").value = String(config.plate_id);
+    byId("bed-temp").value = String(config.bed_temp_c);
+    byId("nozzle-temp").value = String(config.nozzle_temp_c);
+    byId("soak-seconds").value = String(config.soak_seconds);
+    byId("matrix-size").value = String(config.x_count);
+    byId("algorithm").value = config.algorithm;
+    byId("seed-offset").value = String(config.seed_offset_mm);
+    byId("replace-existing").checked = Boolean(config.replace_existing);
+  } else if (state?.accepted_z_valid && Number.isFinite(acceptedOffset)) {
+    byId("seed-offset").value = String(acceptedOffset);
+  }
+  hydratedFormKey = key;
+}
+
 function renderSequence() {
   const phase = state?.phase ?? "idle";
   const stages = [
@@ -129,7 +150,8 @@ function renderZ() {
   const index = state?.z_ladder_index;
   const testing = phase === "z_testing";
   const atLastStep = testing && index === Z_LADDER.length - 1;
-  byId("start-z").disabled = requestPending || phase !== "mesh_ready";
+  byId("start-z").disabled = requestPending || phase !== "mesh_ready"
+    || !byId("plate-clear").checked || !byId("nozzle-clean").checked;
   byId("next-z").disabled = requestPending || !testing || atLastStep;
   byId("confirm-gap").disabled = requestPending || !atLastStep || !byId("gap-observed").checked;
   byId("accept-z").disabled = requestPending || phase !== "z_confirmed";
@@ -150,6 +172,7 @@ function renderZ() {
 
 function render() {
   if (!state) return;
+  hydrateForm();
   const [title, detail] = PHASES[state.phase] ?? [state.phase, "État non documenté."];
   byId("phase-title").textContent = title;
   byId("phase-detail").textContent = state.last_error || detail;
@@ -159,9 +182,10 @@ function render() {
   byId("last-error").textContent = state.last_error || "Aucune erreur.";
   const startable = ["idle", "cancelled", "failed", "mesh_rejected", "accepted", "restored", "rolled_back"].includes(state.phase);
   byId("start-mesh").disabled = requestPending || state.busy || !startable;
-  document.querySelectorAll("#calibration-form input, #calibration-form select").forEach((field) => {
+  document.querySelectorAll("#calibration-form input:not(#plate-clear), #calibration-form select").forEach((field) => {
     field.disabled = requestPending || state.busy || !startable;
   });
+  byId("plate-clear").disabled = requestPending || state.busy;
   byId("cancel-workflow").disabled = requestPending || ["idle", "cancelled", "accepted", "restored", "rolled_back", "cancelling"].includes(state.phase);
   byId("restore-z").disabled = requestPending || !state.previous_z_restorable;
   byId("rollback-campaign").disabled = requestPending || state.busy || !state.backup_available || state.phase === "rolled_back";
@@ -190,6 +214,8 @@ function bind() {
     button.addEventListener("click", () => void post("/z/adjust", {delta: Number(button.dataset.adjust)}));
   });
   byId("gap-observed").addEventListener("change", render);
+  byId("plate-clear").addEventListener("change", render);
+  byId("nozzle-clean").addEventListener("change", render);
   byId("confirm-gap").addEventListener("click", () => void post("/z/confirm", {
     observed: byId("gap-observed").checked,
   }));

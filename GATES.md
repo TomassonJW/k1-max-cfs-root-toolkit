@@ -559,6 +559,34 @@ d'authentification, afin que le service worker Mainsail ne puisse pas masquer la
 page. Ces changements de déployeur et de parcours navigateur exigent une
 nouvelle revue figée puis un nouveau GO exact séparé.
 
+L'audit du parcours complet après rechargement a encore corrigé le candidat hors
+imprimante : l'API expose le Z accepté, le formulaire reprend le seed et les
+paramètres de campagne depuis l'état serveur, tandis que « plateau libre » et
+« buse propre » restent des confirmations physiques à refaire et conditionnent
+le bouton Z. Cela permet de fermer puis rouvrir le navigateur sans console et
+sans perdre la campagne. Les empreintes du paquet ont changé ; le prochain GO
+exact devra porter sur cette version figée.
+
+### Gate préparée — `G4-K1-CONTROL-CALIBRATION-UI-CAMPAIGN-V1`
+
+Status: **protocole hors imprimante ; dépend de l'UI posée et rendue ; non autorisé**
+
+Cette gate ne pose aucun fichier. Elle qualifie l'autonomie calibration par une
+campagne réellement opérée depuis l'écran : paramètres `PEI_TEXTURED_A`,
+`55/140 °C`, `200 s`, `6 × 6` Lagrange, seed repris du Z accepté, remplacement
+explicite après backup, exactement six meshes, puis descente Z bornée et
+acceptation humaine du jeu. Codex n'envoie aucune commande de calibration et ne
+clique pas à la place de Thomas ; ses contrôles restent en lecture seule.
+
+Tout rejet du mesh, septième passage, rerun automatique, intervention console,
+perte de l'API, mouvement inattendu ou impossibilité d'observer un jeu sûr est
+un KO. L'opérateur annule et restaure depuis l'interface. La gate ne peut être
+ouverte qu'après `DEPLOY_CALIBRATION_UI_V1_OK`,
+`VALIDATE_CALIBRATION_UI_V1_OK` et la preuve du vrai rendu navigateur. Son
+contrat, son manifeste d'exécution et son validateur strictement en lecture
+seule sont épinglés ; le plan local a obtenu
+`PLAN_CALIBRATION_UI_CAMPAIGN_V1_OK`.
+
 ## G5 — V1 production baseline
 
 Status: **not passed**

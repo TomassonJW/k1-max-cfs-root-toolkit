@@ -334,6 +334,8 @@ class CalibrationUiCoreTests(unittest.IsolatedAsyncioTestCase):
             self.assertIn(endpoint, source)
         self.assertNotIn("subprocess", source)
         self.assertNotIn("os.system", source)
+        self.assertIn('result["accepted_z_valid"]', source)
+        self.assertIn('result["accepted_z_offset_mm"]', source)
 
     def test_backup_manager_restores_exact_config_and_z_absence(self):
         root = ROOT / ".codex-work" / "test-calibration-ui-backup"
@@ -416,6 +418,8 @@ class CalibrationUiPackageTests(unittest.TestCase):
         self.assertTrue(contract["safety"]["exact_campaign_backup_restore"])
         self.assertTrue(contract["safety"]["cancellable_heat_and_soak"])
         self.assertTrue(contract["safety"]["exact_remote_python_import_before_mutation"])
+        self.assertTrue(contract["safety"]["browser_reload_resumable"])
+        self.assertTrue(contract["safety"]["accepted_z_seed_prefill"])
         self.assertEqual(contract["safety"]["closed_path_phases"], ["idle", "committed", "cancelled"])
         self.assertEqual(sum(path.endswith(".pyc") for path in contract["write_set"]), 2)
 
@@ -428,6 +432,10 @@ class CalibrationUiPackageTests(unittest.TestCase):
             self.assertIn('id="%s"' % control, index)
         self.assertIn('/calibration/rollback', app)
         self.assertIn('previous_z_restorable', app)
+        self.assertIn('function hydrateForm()', app)
+        self.assertIn('state?.accepted_z_offset_mm', app)
+        self.assertIn('input:not(#plate-clear)', app)
+        self.assertIn('!byId("plate-clear").checked || !byId("nozzle-clean").checked', app)
         self.assertNotIn('/printer/gcode/script', app)
         self.assertNotIn('gcode/script', app)
 

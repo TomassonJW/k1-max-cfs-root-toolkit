@@ -36,6 +36,8 @@
   },
   "safety": {
     "server_side_workflow": true,
+    "browser_reload_resumable": true,
+    "accepted_z_seed_prefill": true,
     "exact_remote_python_import_before_mutation": true,
     "atomic_local_state": true,
     "backup_before_first_heater_command": true,

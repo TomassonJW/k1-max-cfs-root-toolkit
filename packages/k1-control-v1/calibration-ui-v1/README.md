@@ -23,6 +23,12 @@ homing, nettoyage ou mesh physique déjà commencé va seulement jusqu'à la fin
 cette opération bornée avant l'arrêt. Un backup vérifié de `printer.cfg` et, s'il
 existe, de l'état Z précède la première chauffe.
 
+Au premier affichage, le formulaire reprend le Z accepté par le runtime comme
+seed explicite. Après un rechargement du navigateur, il réaffiche aussi les
+paramètres exacts de la campagne serveur. La confirmation physique « plateau
+libre » reste volontairement à refaire et demeure accessible avant le début du
+Z ; avec « buse propre », elle conditionne directement le bouton de descente.
+
 Après le mesh, l'interface guide les huit paliers Z. Les ajustements ne sont
 disponibles qu'à `0,1 mm`. L'enregistrement exige une confirmation explicite du
 jeu observé et une remontée préalable. La restauration complète remet exactement

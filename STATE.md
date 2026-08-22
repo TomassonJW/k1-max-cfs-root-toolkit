@@ -506,6 +506,20 @@ worker Mainsail. La K1 ne garde actuellement aucun fichier de cette UI : le
 nouveau déployeur doit être figé et recevoir un nouveau GO exact avant une
 troisième tentative.
 
+L'audit de reprise navigateur a ensuite trouvé que le formulaire ne reprenait
+pas le Z accepté et qu'une fermeture entre le mesh et le Z rendait la
+confirmation « plateau libre » fausse mais désactivée. Le candidat hors
+imprimante expose maintenant le Z accepté, réhydrate les paramètres depuis
+l'état serveur et laisse les confirmations physiques accessibles ; le bouton Z
+les exige explicitement. Les nouvelles empreintes doivent être figées avant GO.
+
+`CALIBRATION-UI-CAMPAIGN-V1` est préparé hors imprimante comme gate séparée de
+preuve, dépendante de l'UI posée et rendue. Thomas y opère uniquement depuis
+l'écran les six meshes, les paliers Z et l'acceptation. Toute intervention
+console/Codex, septième passage ou relance automatique invalide l'autonomie.
+Son contrat, son manifeste et son validateur en lecture seule sont épinglés ; le
+plan local est vert.
+
 The Orca cutover remains a later atomic gate. This runtime slice intentionally
 keeps the active Orca profile, `START_PRINT` and the legacy `+0.27 mm`
 post-processor unchanged.

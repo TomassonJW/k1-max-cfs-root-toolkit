@@ -77,6 +77,13 @@ distincte empêche le service worker de Mainsail, enregistré sur
 `127.0.0.1:4409`, d'intercepter l'écran de calibration. Aucun nouveau port ni
 service n'est créé.
 
+`validate-k1-control-calibration-ui-campaign-v1.ps1` prépare puis contrôle en
+lecture seule la campagne d'autonomie opérée depuis l'écran. `Preflight` exige
+l'UI exacte et l'état sûr avant chauffe ; `Validate` exige la phase `accepted`,
+exactement six meshes, les paramètres revus et les gardes finales fermées. Le
+script n'expose aucune action de calibration et conserve ses preuves dans la
+capture privée ignorée.
+
 During P0/P1, scripts must default to no remote write and fail closed on ambiguity.
 
 A future remote-mutating script must:
