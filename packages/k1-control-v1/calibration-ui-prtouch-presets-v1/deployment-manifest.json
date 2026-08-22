@@ -4,7 +4,7 @@
   "dependency": "G4-K1-CONTROL-CALIBRATION-UI-PRTOUCH-MATRIX-V1 installed and validated",
   "deployer": {
     "path": "scripts/deploy-k1-control-calibration-ui-prtouch-presets-v1.ps1",
-    "sha256": "85edaf545bffb9e9dd1c282f82a45a07fdaaac6534a06ac729bcd71de82cc304"
+    "sha256": "fe6a5439c93451711cf666499c713446f65335dbf25ee0628e5e078c96e7b33c"
   },
   "contract": {
     "path": "calibration-ui-prtouch-presets-contract.json",

@@ -202,7 +202,7 @@ if ($Action -eq 'Preflight') {
 
 if ($Action -eq 'Validate') {
     Assert-RemoteFiles $manifest ([string]$manifest.files[0].sha256) ([string]$manifest.files[1].sha256)
-    [void](Invoke-Remote "grep -q 'option value=\"15\"' '$RemoteIndex' && ! grep -q 'option value=\"4\"' '$RemoteIndex' && grep -q 'matrixField.value = \"5\"' '$RemoteApp'")
+    [void](Invoke-Remote "grep -q 'value=.15.' '$RemoteIndex' && ! grep -q 'value=.4.' '$RemoteIndex' && grep -q 'matrixField.value = .5.' '$RemoteApp'")
     [void](Assert-SafeState)
     Write-Output 'VALIDATE_CALIBRATION_UI_PRTOUCH_PRESETS_V1_OK'
     exit 0
