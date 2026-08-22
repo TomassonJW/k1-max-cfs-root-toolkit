@@ -1,0 +1,62 @@
+{
+  "contract_id": "G4-K1-CONTROL-CALIBRATION-UI-MATRIX-V1",
+  "status": "offline_review_candidate",
+  "dependency": "G4-K1-CONTROL-CALIBRATION-UI-V1 installed and validated",
+  "deployer": {
+    "path": "scripts/deploy-k1-control-calibration-ui-matrix-v1.ps1",
+    "sha256": "256fb0aaf80b80489bab24aea4a85ec3ce99e511f120c32b513c96c6c549382f"
+  },
+  "baseline": {
+    "files": [
+      {
+        "destination": "/usr/data/k1-control-v1/current/moonraker/moonraker/moonraker/components/k1_control_calibration_core.py",
+        "sha256": "34b13db0cd8c475077f8a848a815f95fc4655c24ae1d62e04943e493d4630e96"
+      },
+      {
+        "destination": "/usr/data/k1-control-v1/current/www/mainsail/k1-control/index.html",
+        "sha256": "c8f8a65a8148b6b570743c96321bafd2f5d25142a6ab4ea214c4719c885e2f11"
+      },
+      {
+        "destination": "/usr/data/k1-control-v1/current/www/mainsail/k1-control/app.js",
+        "sha256": "1188bd6056909c1c14f130c6127de96e569a9e5f19c8109a41b4eb5fa73de3cb"
+      }
+    ]
+  },
+  "files": [
+    {
+      "source": "k1_control_calibration_core.py",
+      "destination": "/usr/data/k1-control-v1/current/moonraker/moonraker/moonraker/components/k1_control_calibration_core.py",
+      "sha256": "12f7826f6bdc2cfee4320d56563054b0e7453fa9969cf5654b5e0a5b383e58d1"
+    },
+    {
+      "source": "www/index.html",
+      "destination": "/usr/data/k1-control-v1/current/www/mainsail/k1-control/index.html",
+      "sha256": "3dd31bb9508eb77b90f1bb7b4ca57ff6fc5aeaea19e87456348eaec47941bf41"
+    },
+    {
+      "source": "www/app.js",
+      "destination": "/usr/data/k1-control-v1/current/www/mainsail/k1-control/app.js",
+      "sha256": "28aa6c88e4de75d2b3f4b7dfc97bb901b8af3c157c4da46458069592e1801946"
+    }
+  ],
+  "unchanged": {
+    "k1_control_sha256": "27c0734f149ea89a8ba0d5e17f7f65aecc95c1383c359662cb366a687bb7d303",
+    "files": [
+      {
+        "destination": "/usr/data/k1-control-v1/current/config/moonraker.conf",
+        "sha256": "f68e54c7b9c3d36f2f577e68de0cabfddbdec06122055b3e1bc9469909a97b31"
+      },
+      {
+        "destination": "/usr/data/k1-control-v1/current/moonraker/moonraker/moonraker/components/k1_control.py",
+        "sha256": "27c0734f149ea89a8ba0d5e17f7f65aecc95c1383c359662cb366a687bb7d303"
+      },
+      {
+        "destination": "/usr/data/k1-control-v1/current/www/mainsail/k1-control/styles.css",
+        "sha256": "a7c27fbcdc07f24b00b6d47cc1d9aa8570b9483bcf4dd3615419de579f9aaa12"
+      }
+    ]
+  },
+  "generated_file": "/usr/data/k1-control-v1/current/moonraker/moonraker/moonraker/components/__pycache__/k1_control_calibration_core.cpython-38.pyc",
+  "service_action": "restart /etc/init.d/S56k1_control_moonraker only",
+  "calibration_action": false
+}

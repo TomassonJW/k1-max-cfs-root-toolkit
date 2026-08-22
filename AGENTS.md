@@ -11,8 +11,9 @@ The printer is production hardware. It is never treated as a disposable sandbox.
 The active phase is **P4 — V1 and V2 foundations are closed; V3, PATHS-V1, the
 Z/mesh runtime and CALIBRATION-PATH-V1 are installed and validated;
 FIRST-CALIBRATION-V1 stopped KO; FIRST-CALIBRATION-V2 is installed and validated;
-CALIBRATION-UI-V1 is installed and fully validated; its separate screen-only
-campaign is prepared but not authorised; production remains closed**.
+CALIBRATION-UI-V1 is installed and fully validated; its `6/9/11/15` matrix
+correction is prepared offline but not authorised; the screen-only campaign is
+suspended behind that correction; production remains closed**.
 
 Thomas authorised V1, but the mandatory preflight proved that `logrotate` was
 absent. V1 is closed and must never be deployed. Thomas later authorised V2;
@@ -227,6 +228,17 @@ paramètres `PEI_TEXTURED_A`, `55/140 °C`, `200 s`, `6 × 6` Lagrange et le see
 `−0,04 mm`. Un rechargement complet a restauré les mêmes valeurs depuis le
 serveur tout en laissant les confirmations physiques décochées. Cette gate est
 close. Son GO est consommé et ne couvre pas la campagne physique séparée.
+
+Thomas a ensuite relevé que l'interface installée s'arrêtait à `6 × 6`, alors
+que le contrat produit prévoyait aussi `9 × 9`, `11 × 11` et `15 × 15`. Le
+candidat séparé `G4-K1-CONTROL-CALIBRATION-UI-MATRIX-V1` corrige uniquement le
+core Moonraker et deux fichiers statiques. Il garde Lagrange jusqu'à `6 × 6`,
+force le bicubique au-delà et borne l'interface à `15 × 15`; le runtime Klipper
+installé accepte déjà ces dimensions. Sa pose future sauvegarde les trois
+fichiers, redémarre seulement Moonraker et ne lance aucune calibration. Le GO
+de campagne envoyé avec la demande de correction n'est pas consommé : la
+campagne dépend désormais de ce delta figé, posé, validé et rendu. La prochaine
+gate unique est donc `G4-K1-CONTROL-CALIBRATION-UI-MATRIX-V1`.
 
 Thomas demande que chaque prochaine reprise commence par un état explicite de
 l'autonomie, sans confondre le runtime installé avec une interface terminée :

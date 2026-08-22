@@ -17,11 +17,11 @@ if ($PSVersionTable.PSVersion.Major -lt 7) {
 }
 
 $WorkspaceRoot = (Resolve-Path (Join-Path $PSScriptRoot '..')).Path
-$UiPackage = Join-Path $WorkspaceRoot 'packages\k1-control-v1\calibration-ui-v1'
+$UiPackage = Join-Path $WorkspaceRoot 'packages\k1-control-v1\calibration-ui-matrix-v1'
 $UiManifestPath = Join-Path $UiPackage 'deployment-manifest.json'
 $CampaignContractPath = Join-Path $WorkspaceRoot 'packages\k1-control-v1\calibration-ui-campaign-v1\calibration-ui-campaign-contract.json'
-$ExpectedUiManifestHash = '69ca6af3b242e8c9c3625651bedc018cd343675c73e0f384c3593f3de0c97e11'
-$ExpectedCampaignContractHash = '8c54365f831db39d01beb128f4e15f0bc4727dc7d6b5e0fb5ae9e975c93e940c'
+$ExpectedUiManifestHash = '8970109289fb64645de22d6530c32c397738509ede0983a5e6362f1c4feae7db'
+$ExpectedCampaignContractHash = '9fe0a251925b62d7d7a7c59724d1d752d43b4213a5bb7289fe9105242cde5713'
 $RemoteUi = '/usr/data/k1-control-v1/current/www/mainsail/k1-control'
 $RemoteState = '/usr/data/k1-control-v1/state/k1-control-calibration-workflow.json'
 $MeshProfile = 'k1_p001_t055_r001_n06x06'
@@ -63,7 +63,7 @@ function Assert-ReviewedLocalFiles {
     }
     $manifest = Get-Content -LiteralPath $UiManifestPath -Raw | ConvertFrom-Json
     $contract = Get-Content -LiteralPath $CampaignContractPath -Raw | ConvertFrom-Json
-    if ($manifest.contract_id -cne 'G4-K1-CONTROL-CALIBRATION-UI-V1' -or
+    if ($manifest.contract_id -cne 'G4-K1-CONTROL-CALIBRATION-UI-MATRIX-V1' -or
         $contract.contract_id -cne 'G4-K1-CONTROL-CALIBRATION-UI-CAMPAIGN-V1') {
         throw 'Identité du paquet UI ou de la campagne inattendue.'
     }
@@ -112,6 +112,11 @@ function Assert-InstalledUi {
     foreach ($file in $Manifest.files) {
         if ((Get-RemoteSha256 ([string]$file.destination)) -cne ([string]$file.sha256)) {
             throw "Payload UI distant inattendu : $($file.destination)"
+        }
+    }
+    foreach ($file in $Manifest.unchanged.files) {
+        if ((Get-RemoteSha256 ([string]$file.destination)) -cne ([string]$file.sha256)) {
+            throw "Payload UI hors write-set inattendu : $($file.destination)"
         }
     }
     $mode = ((Invoke-Remote "stat -c '%a' '$RemoteUi'") | Select-Object -First 1).Trim()

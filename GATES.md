@@ -579,9 +579,25 @@ seed `−0,04 mm`. Un rechargement complet a restauré ces valeurs depuis le
 serveur tout en laissant les confirmations physiques décochées. La gate est
 close.
 
+### Gate préparée — `G4-K1-CONTROL-CALIBRATION-UI-MATRIX-V1`
+
+Status: **candidat hors imprimante ; non autorisé**
+
+Cette gate corrige l'écart entre le contrat produit et l'interface installée :
+les niveaux rapide `6 × 6`, standard `9 × 9`, précis `11 × 11` et expert
+`15 × 15` deviennent sélectionnables. Lagrange reste disponible au maximum en
+`6 × 6`; le navigateur force le bicubique au-delà et le serveur refuse toute
+combinaison incompatible. Les tailles `3 × 3`, `4 × 4` et `5 × 5` restent des
+choix personnalisés.
+
+La pose remplace seulement le core de calibration Moonraker, `index.html` et
+`app.js`, après backup exact, puis redémarre le Moonraker dédié. Elle ne chauffe,
+ne home, ne bouge, ne mesure et n'écrit aucun Z. Les quatre niveaux passent les
+tests hors imprimante, y compris l'agrégation de six matrices `15 × 15`.
+
 ### Gate préparée — `G4-K1-CONTROL-CALIBRATION-UI-CAMPAIGN-V1`
 
-Status: **protocole prêt ; UI posée et rendue ; non autorisé**
+Status: **protocole mis à jour ; suspendu derrière UI-MATRIX-V1 ; non autorisé**
 
 Cette gate ne pose aucun fichier. Elle qualifie l'autonomie calibration par une
 campagne réellement opérée depuis l'écran : paramètres `PEI_TEXTURED_A`,
@@ -593,8 +609,9 @@ clique pas à la place de Thomas ; ses contrôles restent en lecture seule.
 Tout rejet du mesh, septième passage, rerun automatique, intervention console,
 perte de l'API, mouvement inattendu ou impossibilité d'observer un jeu sûr est
 un KO. L'opérateur annule et restaure depuis l'interface. La gate ne peut être
-ouverte qu'après `DEPLOY_CALIBRATION_UI_V1_OK`,
-`VALIDATE_CALIBRATION_UI_V1_OK` et la preuve du vrai rendu navigateur. Son
+ouverte qu'après `DEPLOY_CALIBRATION_UI_MATRIX_V1_OK`,
+`VALIDATE_CALIBRATION_UI_MATRIX_V1_OK` et la preuve du vrai rendu navigateur
+avec les quatre niveaux. Son
 contrat, son manifeste d'exécution et son validateur strictement en lecture
 seule sont épinglés ; le plan local a obtenu
 `PLAN_CALIBRATION_UI_CAMPAIGN_V1_OK`.

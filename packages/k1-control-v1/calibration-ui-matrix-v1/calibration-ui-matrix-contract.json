@@ -1,0 +1,40 @@
+{
+  "contract_id": "G4-K1-CONTROL-CALIBRATION-UI-MATRIX-V1",
+  "status": "offline_review_candidate",
+  "printer_mutation_authorized": false,
+  "dependency": {
+    "gate": "G4-K1-CONTROL-CALIBRATION-UI-V1",
+    "required_result": "installed_validated_and_browser_reload_proven"
+  },
+  "selectable_square_matrices": [3, 4, 5, 6, 9, 11, 15],
+  "presets": {
+    "quick": {"matrix": [6, 6], "algorithm": "lagrange"},
+    "standard": {"matrix": [9, 9], "algorithm": "bicubic"},
+    "precise": {"matrix": [11, 11], "algorithm": "bicubic"},
+    "expert": {"matrix": [15, 15], "algorithm": "bicubic"}
+  },
+  "algorithm_rules": {
+    "lagrange_max_points_per_axis": 6,
+    "larger_matrix_algorithm": "bicubic",
+    "ui_automatically_selects_bicubic_above_6": true,
+    "server_rejects_incompatible_combinations": true
+  },
+  "write_set": [
+    "/usr/data/k1-control-v1/current/moonraker/moonraker/moonraker/components/k1_control_calibration_core.py",
+    "/usr/data/k1-control-v1/current/moonraker/moonraker/moonraker/components/__pycache__/k1_control_calibration_core.cpython-38.pyc",
+    "/usr/data/k1-control-v1/current/www/mainsail/k1-control/index.html",
+    "/usr/data/k1-control-v1/current/www/mainsail/k1-control/app.js"
+  ],
+  "service_action": "restart dedicated Moonraker only",
+  "calibration_action": false,
+  "unchanged": [
+    "printer.cfg",
+    "k1_control.py",
+    "styles.css",
+    "moonraker.conf",
+    "Klipper runtime and calibration path",
+    "stored mesh and Z",
+    "CFS",
+    "Orca profiles"
+  ]
+}

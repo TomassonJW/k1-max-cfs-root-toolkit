@@ -9,7 +9,7 @@ PACKAGE = ROOT / "packages" / "k1-control-v1" / "calibration-ui-campaign-v1"
 CONTRACT = PACKAGE / "calibration-ui-campaign-contract.json"
 README = PACKAGE / "README.md"
 MANIFEST = PACKAGE / "execution-manifest.json"
-UI_PACKAGE = ROOT / "packages" / "k1-control-v1" / "calibration-ui-v1"
+UI_PACKAGE = ROOT / "packages" / "k1-control-v1" / "calibration-ui-matrix-v1"
 VALIDATOR = ROOT / "scripts" / "validate-k1-control-calibration-ui-campaign-v1.ps1"
 
 
@@ -37,12 +37,27 @@ class CalibrationUiCampaignContractTests(unittest.TestCase):
         self.assertFalse(contract["printer_mutation_authorized"])
         self.assertEqual(
             contract["dependency"]["required_result"],
-            "deployed_validated_and_rendered_in_browser",
+            "deployed_validated_and_rendered_in_browser_with_6_9_11_15_presets",
         )
         self.assertFalse(
             contract["required_results"]["console_or_codex_control_during_campaign"]
         )
         self.assertEqual(contract["rerun_policy"], "no_automatic_rerun")
+
+    def test_all_matrix_levels_are_declared_without_overclaiming_physical_runs(self):
+        contract = json.loads(CONTRACT.read_text(encoding="utf-8"))
+        capability = contract["matrix_capability"]
+        self.assertEqual(
+            [(item["matrix"], item["interpolation"]) for item in capability["selectable_presets"]],
+            [
+                ([6, 6], "lagrange"),
+                ([9, 9], "bicubic"),
+                ([11, 11], "bicubic"),
+                ([15, 15], "bicubic"),
+            ],
+        )
+        self.assertEqual(capability["physical_campaign_preset"], "quick")
+        self.assertIn("without_claiming_four_physical_campaigns", capability["physical_campaign_scope"])
 
     def test_exact_proven_settings_and_final_guards_are_declared(self):
         contract = json.loads(CONTRACT.read_text(encoding="utf-8"))
