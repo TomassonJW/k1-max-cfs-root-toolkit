@@ -1,6 +1,6 @@
 {
   "package": "G4-K1-CONTROL-FIRST-CALIBRATION-V2",
-  "status": "authorized_by_completion_goal",
+  "status": "mesh_accepted_z_pending_human_observation",
   "artifacts": [
     {
       "path": "packages/k1-control-v1/first-calibration-v2/first-calibration-contract.json",
@@ -12,7 +12,7 @@
     },
     {
       "path": "scripts/run-k1-control-first-calibration-v2.ps1",
-      "sha256": "2d563a17745626400382aaf92ea93286443e299b9575e71a8a33d28070184e38"
+      "sha256": "780267cdb181ee293d7e568de916d2dadde11f7a1b0e89fcc1112e1357c1fcc8"
     }
   ],
   "required_installed_hashes": {

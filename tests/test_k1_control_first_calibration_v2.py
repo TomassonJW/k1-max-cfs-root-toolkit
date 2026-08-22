@@ -88,6 +88,10 @@ class FirstCalibrationV2AggregationTests(unittest.TestCase):
         commit_block = self.runner[commit_start:]
         self.assertLess(commit_block.index("Assert-QualifiedEvidence"), commit_block.index("Invoke-KlipperMeshUpdate"))
         self.assertIn('"method": "update_mesh"', self.runner)
+        self.assertIn("function Wait-TransientMeshUpdate", self.runner)
+        self.assertIn("$snapshot.toolhead.homed_axes -eq 'xyz'", self.runner)
+        self.assertIn("$snapshot.bed_mesh.profile_name -eq 'K1_TRANSIENT'", self.runner)
+        self.assertNotIn("function Wait-TransientMeshRestart", self.runner)
         self.assertIn("Assert-CandidateMatrix -Actual $loaded.bed_mesh.probed_matrix", commit_block)
         self.assertIn("KCTRL_MESH_COMMIT PLATE=1 TEMP_BAND=55", commit_block)
 

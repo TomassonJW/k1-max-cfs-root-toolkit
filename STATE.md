@@ -439,9 +439,29 @@ mesurés, mais leur écart maximal `0,062125 mm` dépasse le seuil `0,025 mm`.
 L'arrêt KO a laissé la base persistante exacte, sans profil cible et sans état Z.
 L'analyse hors imprimante a produit `FIRST-CALIBRATION-V2` : six meshes, deux
 médianes indépendantes de trois, qualification moyenne/RMS/maximum et aucun
-septième passage. Son préflight réel
-`20260822-150723-g4-k1-control-first-calibration-v2` est vert, mais la mutation
-a été refusée faute du GO nommé exact. Aucune action physique V2 n'a eu lieu.
+septième passage. Thomas a donné le GO exact. La capture
+`20260822-160948-g4-k1-control-first-calibration-v2` a exécuté les six mesures
+et accepté leur répétabilité : moyenne absolue `0,010788694 mm`, RMS
+`0,013996452 mm`, maximum `0,034352 mm`. Le profil robuste
+`k1_p001_t055_r001_n06x06` est conservé.
+
+L'endpoint `update_mesh` a réellement conservé le homing au lieu de redémarrer,
+ce qui a déclenché un faux KO du validateur. Le diff exact ne contenait que la
+matrice robuste transitoire. Une reprise bornée a vérifié backup, hashes,
+runtime vide et matrice, puis exécuté le commit déjà revu. Le pilote et son test
+attendent maintenant ce comportement réel.
+
+La session Z provisoire à `0,0 mm` a parcouru tous les paliers jusqu'à
+`0,1 mm`. Sans observation physique humaine, aucune confirmation ni acceptation
+n'a été envoyée. `Cancel` a remonté la buse, fermé la session et coupé les
+chauffes. État final observé : `standby`, cibles zéro, profil robuste présent,
+`accepted_z_valid=0`, `session_active=0`, chemin `cancelled` non armé.
+
+La prochaine action sûre ne refait pas les six meshes. Lorsque Thomas est
+physiquement présent, reprendre `BeginZ`, parcourir les mêmes paliers, obtenir
+son observation explicite sur une cale de `0,10 mm`, ajuster si nécessaire,
+puis confirmer, accepter et valider. Le GO V2 exact couvre cette continuation ;
+il ne couvre ni la pose UI ni la bascule production.
 
 `CALIBRATION-UI-V1` est également préparé hors imprimante. Il fournit un
 contrôleur Moonraker serveur et une page réelle avec choix de plaque,
@@ -456,8 +476,8 @@ post-processor unchanged.
 
 Thomas explicitly rejected further sacrificial print campaigns on 2026-08-21.
 The V3 + PATHS-V1 observation remains useful coexistence evidence but no longer
-blocks offline product construction. Codex still must not transmit G-code or
-mutate the printer without the later exact named G4 approval.
+blocks offline product construction. Seule la continuation Z de
+`G4-K1-CONTROL-FIRST-CALIBRATION-V2` est actuellement autorisée sur la K1.
 
 Do not remove or disable the current Orca `+0.27 mm` post-processor. Its
 retirement remains atomic with the later proven machine/Orca replacement.

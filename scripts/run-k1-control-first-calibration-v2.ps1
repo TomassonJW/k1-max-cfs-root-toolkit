@@ -220,23 +220,23 @@ function Wait-MeshCommitRestart {
     throw "Restart du commit mesh non stabilise apres $Attempts tentatives : $lastState"
 }
 
-function Wait-TransientMeshRestart {
+function Wait-TransientMeshUpdate {
     param([int]$Attempts = 120)
-    $lastState = 'restart du mesh robuste non encore observe'
+    $lastState = 'mise a jour du mesh robuste non encore observee'
     for ($attempt = 1; $attempt -le $Attempts; $attempt++) {
         try {
             $snapshot = Get-KlipperSnapshot
             $profiles = @($snapshot.bed_mesh.profiles.PSObject.Properties.Name)
-            if ($snapshot.print_stats.state -eq 'standby' -and -not $snapshot.toolhead.homed_axes -and
-                $profiles -contains 'K1_TRANSIENT') {
+            if ($snapshot.print_stats.state -eq 'standby' -and $snapshot.toolhead.homed_axes -eq 'xyz' -and
+                $snapshot.bed_mesh.profile_name -eq 'K1_TRANSIENT' -and $profiles -contains 'K1_TRANSIENT') {
                 return $snapshot
             }
-            $lastState = "state=$($snapshot.print_stats.state) homed=$($snapshot.toolhead.homed_axes) transient_present=$($profiles -contains 'K1_TRANSIENT')"
+            $lastState = "state=$($snapshot.print_stats.state) homed=$($snapshot.toolhead.homed_axes) active=$($snapshot.bed_mesh.profile_name) transient_present=$($profiles -contains 'K1_TRANSIENT')"
         }
         catch { $lastState = $_.Exception.Message }
         if ($attempt -lt $Attempts) { Start-Sleep -Seconds 1 }
     }
-    throw "Restart du mesh robuste non stabilise apres $Attempts tentatives : $lastState"
+    throw "Mise a jour du mesh robuste non stabilisee apres $Attempts tentatives : $lastState"
 }
 
 function Wait-RollbackRestart {
@@ -709,7 +709,7 @@ if ($Action -eq 'CommitRobustMesh') {
     Assert-TransientMesh $snapshot
     try {
         Invoke-KlipperMeshUpdate -Matrix $qualification.candidate_matrix | Out-Null
-        [void](Wait-TransientMeshRestart -Attempts 120)
+        [void](Wait-TransientMeshUpdate -Attempts 120)
         Invoke-KlipperScript 'BED_MESH_PROFILE LOAD=K1_TRANSIENT' | Out-Null
         $loaded = Get-KlipperSnapshot
         Assert-TransientMesh $loaded

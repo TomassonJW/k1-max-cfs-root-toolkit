@@ -1,8 +1,8 @@
 # HANDOFF
 
 Date: 2026-08-22
-Phase: P4 / V1 KO ; V2 robuste et CALIBRATION-UI-V1 préparés hors imprimante
-Next operator: annoncer l'écart d'autonomie, puis demander le GO exact V2 sans exécuter l'UI
+Phase: P4 / V2 mesh robuste retenu ; Z provisoire annulé en attente de l'observation physique finale
+Next operator: annoncer l'écart d'autonomie, puis reprendre seulement le chemin Z avec Thomas présent
 
 ## Message obligatoire au début de la prochaine session
 
@@ -13,9 +13,9 @@ Dire clairement à Thomas, avant toute proposition d'exécution :
 - **l'autonomie production n'est pas encore atteinte** : Orca, `START_PRINT`,
   l'ancien `+0,27 mm` et les températures CFS ne sont pas encore basculés vers
   le nouveau contrat ;
-- le chemin borné du premier Z est installé et validé à vide ; la prochaine
-  gate unique exécute la campagne robuste V2 sous un contrat séparé et
-  même sa réussite ne suffira pas à déclarer le pilotage quotidien autonome ;
+- le mesh robuste V2 est qualifié et conservé ; les six mesures ne sont pas à
+  refaire. Le Z reste non accepté et la session provisoire a été parquée,
+  annulée et refroidie faute d'observation humaine du jeu final ;
 - l'interface ne sera déclarée « nickel sans Codex » que lorsque Thomas pourra
   choisir les paramètres, lancer, comprendre le statut, enregistrer, annuler et
   restaurer depuis l'écran, puis imprimer normalement depuis Orca sans commande
@@ -464,7 +464,7 @@ confirmé la base exacte, le profil cible absent, le stockage Z absent,
 `standby` et les cibles à zéro avant de signaler les axes `xyz` encore
 référencés. Le GO est consommé et ne couvre aucun rerun.
 
-## FIRST-CALIBRATION-V2 et CALIBRATION-UI-V1 préparés hors imprimante
+## FIRST-CALIBRATION-V2 exécutée jusqu'à la gate physique finale
 
 L'analyse du module PR Touch exact et du journal privé a retrouvé 209 contacts
 pour 72 points. Les gros faux contacts sont filtrés, mais deux meshes bruts ne
@@ -475,13 +475,35 @@ trois réduits par médiane, puis trois limites simultanées : moyenne absolue
 passage automatique. Le candidat final est la médiane des six mesures et n'est
 chargé, relu puis persisté qu'après qualification.
 
-Le préflight réel en lecture seule de la capture
-`20260822-150723-g4-k1-control-first-calibration-v2` est vert. Thomas a confirmé
-`PEI_TEXTURED_A` installée et le plateau libre, mais cette confirmation devra
-être renouvelée au moment de l'exécution. La barrière de sécurité a refusé la
-mutation faute du GO nommé exact. Aucune chauffe, homing, mesure ou écriture V2
-n'a été lancé. La prochaine gate unique exige exactement
-`GO G4-K1-CONTROL-FIRST-CALIBRATION-V2`.
+Thomas a ensuite envoyé le GO exact. La capture
+`20260822-160948-g4-k1-control-first-calibration-v2` a passé le préflight frais,
+créé et vérifié le backup, puis obtenu `PREPARE_FIRST_CALIBRATION_V2_OK` à
+`55/140 °C` avec `200 s`. Les six meshes ont été exécutés exactement une fois.
+La qualification est acceptée sur 36 points : moyenne absolue
+`0,010788694 mm`, RMS `0,013996452 mm` et maximum `0,034352 mm`.
+
+L'endpoint `update_mesh` a chargé et généré le profil robuste sans redémarrer
+Klipper, alors que le premier validateur attendait à tort la perte du homing.
+Le diff exact a prouvé que seule la section `K1_TRANSIENT` et ses 36 valeurs
+avaient été ajoutées. Une reprise bornée a vérifié le hash, le backup, les
+composants installés, l'état Z vide et la matrice avant d'envoyer la commande
+déjà revue `KCTRL_MESH_COMMIT`. Le profil final
+`k1_p001_t055_r001_n06x06` est conservé, le transitoire est absent et le diff
+final ne contient que cette section générée. Le pilote attend désormais le
+comportement réellement observé de `update_mesh`, avec un test de
+non-régression et une nouvelle empreinte dans le manifeste.
+
+Le chemin Z a ensuite atteint en série `5 → 2 → 1 → 0,5 → 0,3 → 0,2 → 0,15
+→ 0,1 mm`, avec session provisoire à `0,0 mm` et sans extrusion. Faute de
+retour humain sur le jeu final, Codex n'a ni confirmé ni accepté le Z. Après un
+court délai, `Cancel` a remonté la buse, fermé la session et coupé les chauffes.
+État vérifié : `standby`, cibles à zéro, profil robuste présent,
+`accepted_z_valid=0`, `session_active=0`, chemin `cancelled` non armé. Les six
+meshes ne sont pas à refaire. La copie finale après l'écriture différée Creality
+a le hash `36cfb7e71180268841ab5cedd31628c8d9953ba437c47662ced16df18bb1bacd` ;
+son diff contre le backup contient toujours uniquement le profil robuste.
+
+## CALIBRATION-UI-V1 préparée hors imprimante
 
 Le candidat séparé `G4-K1-CONTROL-CALIBRATION-UI-V1` ajoute hors imprimante un
 petit composant au Moonraker épinglé et une page statique `/k1-control/`. Les
@@ -501,25 +523,29 @@ mémoire a été refusée par la barrière de sécurité et n'a rien modifié.
 
 ## Next bounded mission
 
-Obtenir le GO exact `GO G4-K1-CONTROL-FIRST-CALIBRATION-V2`, refaire un
-préflight frais et exécuter les six checkpoints sans passage supplémentaire.
-Ne lancer aucune mutation sous le GO V1 consommé ni sous la préparation UI.
+Quand Thomas est physiquement devant la K1, reprendre `BeginZ` avec le GO V2
+déjà donné, parcourir les paliers bornés, puis demander uniquement son constat
+sur une cale de `0,10 mm` : friction correcte, trop serré ou trop lâche. Ajuster
+si nécessaire, confirmer, accepter et lancer `Validate`. Ne jamais fabriquer
+cette observation. Ne pas refaire les six meshes et ne pas exécuter la pose UI
+sous le GO V2.
 
 La gate précédente est close avec `DEPLOY_CALIBRATION_PATH_V1_OK` et
 `VALIDATE_CALIBRATION_PATH_V1_OK` sous la capture
 `20260822-124207-g4-k1-control-calibration-path-v1`.
 
-Autorisation actuelle : **LECTURE_ET_PREPARATION_HORS_IMPRIMANTE**. L'overlay et
-son include restent installés ; le backup de la capture KO reste sur la K1.
+Autorisation actuelle : **CONTINUATION_FIRST_CALIBRATION_V2**. Le GO V2 exact
+a été donné ; la prochaine mutation autorisée est uniquement la reprise du
+chemin Z de cette campagne. La pose UI et la bascule production restent des
+gates séparées.
 
 La bascule Orca reste une gate ultérieure unique : wrappers de travail côté
 machine, trois champs Orca et retrait du post-traitement doivent changer
 ensemble, après validation de ce runtime.
 
 Le post-traitement PHP/Orca `+0,27 mm`, le Start G-code et le G-code de changement
-de filament restent strictement inchangés. Aucune commande Z, mesh, chauffe,
-homing ou calibration ne peut être envoyée sous le GO consommé. Une future
-campagne exigera un protocole distinct revu et sa propre autorisation exacte.
+de filament restent strictement inchangés. Le GO V2 ne couvre ni la pose UI, ni
+la bascule Orca, ni G5.
 
 ## Stop conditions
 

@@ -645,7 +645,7 @@ analyse hors imprimante et un protocole révisé explicitement autorisé.
 
 Date: 2026-08-22
 
-Status: accepté hors imprimante, non autorisé à l'exécution
+Status: exécuté jusqu'à la confirmation humaine du Z
 
 Le module PR Touch exact et le journal privé montrent que les gros faux
 contacts sont filtrés, mais que le bruit résiduel point par point rend deux
@@ -656,8 +656,13 @@ maximum `≤ 0,060 mm` entre les deux groupes.
 
 La médiane des six devient le candidat seulement après qualification. Elle est
 chargée par l'endpoint Klipper exact, relue puis persistée. Aucun septième
-passage ou ajustement automatique des seuils n'est autorisé. Le préflight réel
-est vert ; l'exécution reste fermée jusqu'au GO exact V2.
+passage ou ajustement automatique des seuils n'est autorisé.
+
+L'exécution réelle a accepté les deux médianes avec moyenne absolue
+`0,010788694 mm`, RMS `0,013996452 mm` et maximum `0,034352 mm`. Le profil
+robuste est conservé. Le Z n'est pas accepté : après la descente complète à
+`0,1 mm`, l'absence d'observation humaine a déclenché le parcage, l'annulation
+de la session et la coupure des chauffes sans perdre le mesh.
 
 ## D-041 — L'interface de calibration est un composant Moonraker borné
 
@@ -675,3 +680,22 @@ et la stabilisation sont annulables ; une primitive physique déjà engagée fin
 avant l'arrêt, sans lancer la suivante. Le backup précède la chauffe et peut
 restaurer exactement `printer.cfg` et l'état Z. La pose de l'interface est une
 gate séparée qui redémarre Moonraker seulement et ne démarre aucune calibration.
+
+## D-042 — `update_mesh` conserve le homing sur la K1 exacte
+
+Date: 2026-08-22
+
+Status: accepté par observation réelle
+
+Sur la K1 exacte, l'endpoint Klipper `update_mesh` a remplacé la matrice active
+et généré la section `K1_TRANSIENT` sans redémarrer Klipper : `standby`, homing
+`xyz` et profil actif sont restés présents. Le premier validateur attendait une
+perte du homing et a donc signalé un faux KO avant le commit final.
+
+Avant toute reprise, le hash et le diff exact de `printer.cfg`, les composants
+installés, le backup, le runtime Z vide et les 36 valeurs ont été revérifiés.
+La commande `KCTRL_MESH_COMMIT` déjà incluse dans le protocole revu a ensuite
+persisté le profil final et supprimé le transitoire. Le pilote attend désormais
+explicitement `standby`, homing `xyz`, profil actif `K1_TRANSIENT` et présence
+du profil avant sa relecture. Un test empêche le retour de l'attente erronée
+d'un redémarrage.

@@ -468,9 +468,9 @@ pas encore l'autonomie production, qui reste conditionnée par la bascule
 interface/Orca/`START_PRINT`, le retrait du `+0,27 mm`, les températures CFS et
 G5.
 
-### Gate préparée — `G4-K1-CONTROL-FIRST-CALIBRATION-V2`
+### Gate en attente de l'observation physique finale — `G4-K1-CONTROL-FIRST-CALIBRATION-V2`
 
-Status: **préflight réel vert ; aucun GO exact ; aucune action physique V2**
+Status: **GO exact reçu ; mesh robuste accepté et conservé ; Z non accepté**
 
 V2 remplace la preuve fragile à deux meshes par exactement six mesures dans le
 même contexte `PEI_TEXTURED_A`, `55/140 °C`, `200 s`, `6 × 6` Lagrange. Les
@@ -479,12 +479,24 @@ mesures 1–3 et 4–6 forment deux médianes point par point indépendantes. Le
 `≤ 0,060 mm`. Aucun septième mesh automatique n'est permis. La médiane des six
 n'est chargée, relue et persistée qu'après succès des trois critères.
 
-Le préflight de la capture
-`20260822-150723-g4-k1-control-first-calibration-v2` a confirmé la base exacte,
-l'imprimante au repos, les chauffes à zéro et les prérequis installés. La
-barrière de sécurité a ensuite bloqué `Prepare` faute du GO exact. La seule
-autorisation ouvrant cette gate est
-`GO G4-K1-CONTROL-FIRST-CALIBRATION-V2` sur le candidat figé.
+La capture `20260822-160948-g4-k1-control-first-calibration-v2` a passé le
+préflight et le backup avant chauffe, puis exécuté exactement six meshes. La
+qualification accepte les deux médianes indépendantes : moyenne absolue
+`0,010788694 mm`, RMS `0,013996452 mm`, maximum `0,034352 mm` sur 36 points.
+Le profil robuste `k1_p001_t055_r001_n06x06` est le seul ajout persistant à
+`printer.cfg`.
+
+Le premier commit local a rencontré un faux KO : l'endpoint `update_mesh`
+conserve le homing `xyz` au lieu de redémarrer Klipper. Le hash et le diff exact
+ont prouvé que la matrice robuste seule était chargée sous `K1_TRANSIENT` ; une
+reprise bornée a alors exécuté la commande de commit déjà revue. Le pilote est
+corrigé hors imprimante pour attendre cet état réellement observé.
+
+Le chemin Z a parcouru tous les paliers jusqu'à `0,1 mm`. Aucune confirmation
+humaine n'étant arrivée, le Z n'a pas été accepté. `Cancel` a parqué la buse,
+fermé la session provisoire et coupé les chauffes tout en conservant le mesh.
+La continuation doit reprendre uniquement le chemin Z lorsque Thomas est
+présent, puis obtenir son observation explicite du jeu avant `Accept`.
 
 ### Gate préparée — `G4-K1-CONTROL-CALIBRATION-UI-V1`
 

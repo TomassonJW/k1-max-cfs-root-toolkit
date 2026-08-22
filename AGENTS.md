@@ -117,13 +117,27 @@ lecture seule a confirmé la base persistante exacte, le stockage Z absent,
 encore référencés. Ce GO est consommé et n'autorise aucun rerun.
 
 L'analyse hors imprimante a ensuite préparé
-`G4-K1-CONTROL-FIRST-CALIBRATION-V2`. Le protocole conserve `55/140 °C`,
-`200 s` et `6 × 6` Lagrange, mais exécute exactement six meshes. Il compare
-deux médianes indépendantes de trois avec moyenne absolue `≤ 0,020 mm`, RMS
-`≤ 0,025 mm` et maximum `≤ 0,060 mm`, sans septième passage. Le préflight réel
-`20260822-150723-g4-k1-control-first-calibration-v2` est vert. La mutation a été
-refusée faute du GO exact ; aucune action physique V2 n'a eu lieu. La prochaine
-gate unique exige `GO G4-K1-CONTROL-FIRST-CALIBRATION-V2`.
+`G4-K1-CONTROL-FIRST-CALIBRATION-V2`. Thomas a donné le GO exact. La capture
+`20260822-160948-g4-k1-control-first-calibration-v2` a exécuté exactement six
+meshes à `55/140 °C`, `200 s`, `6 × 6` Lagrange. Les deux médianes indépendantes
+sont acceptées : moyenne absolue `0,010788694 mm`, RMS `0,013996452 mm` et
+maximum `0,034352 mm`. Le profil robuste `k1_p001_t055_r001_n06x06` est
+persisté ; aucun septième passage n'a eu lieu.
+
+Le premier commit a rencontré un faux KO du pilote : l'endpoint `update_mesh`
+a chargé la matrice robuste sans redémarrer Klipper et a conservé le homing
+`xyz`. Le diff exact ne contenait que le profil transitoire attendu. Une reprise
+bornée a revérifié backup, hashes, matrice et runtime vide, puis exécuté la
+commande de commit déjà revue. Le pilote attend désormais le comportement réel
+avec un test dédié.
+
+Le chemin Z a atteint tous les paliers jusqu'à `0,1 mm`, mais aucune observation
+humaine du jeu n'est arrivée. Aucun Z n'a été confirmé ni accepté. `Cancel` a
+relevé la buse, fermé la session et coupé les chauffes sans supprimer le mesh.
+État final vérifié : `standby`, cibles zéro, `accepted_z_valid=0`,
+`session_active=0`, chemin `cancelled` non armé. La prochaine action unique est
+de reprendre seulement le chemin Z lorsque Thomas est présent, puis d'obtenir
+son constat physique avant acceptation. Les six meshes ne sont pas à refaire.
 
 Le candidat séparé `G4-K1-CONTROL-CALIBRATION-UI-V1` est préparé hors
 imprimante. Il ajoute un composant au Moonraker épinglé et une page statique
