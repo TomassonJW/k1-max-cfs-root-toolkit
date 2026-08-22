@@ -550,6 +550,23 @@ présents, ainsi que l'absence attendue des profils `9/11/15`. Le GO de campagne
 envoyé avant la correction de matrice n'est pas consommé, car le protocole a
 changé depuis. La campagne physique n'est pas autorisée.
 
+Le premier départ humain `9 × 9` a exposé un piège de reprise : après annulation
+à `0/6`, `replace_existing=true` restait hydraté dans le formulaire. Une seconde
+reprise l'a donc renvoyé. Les deux tentatives ont été annulées avant toute
+mesure ; le second arrêt de sécurité a été cliqué par Codex sur une tentative
+déjà invalide. Les contrôles ont confirmé `standby`, cibles zéro, stockage Z
+`ok`, Z accepté `−0,04 mm`, chemin `committed`, profil `6 × 6` présent et aucun
+profil `9 × 9`.
+
+`CALIBRATION-UI-RETRY-SAFETY-V1` est préparé comme correction statique séparée.
+Après une reprise incomplète, il réinitialise une seule fois le remplacement et
+la confirmation de plateau, tout en permettant ensuite un remplacement
+volontaire. Son write-set est le seul `app.js`; aucun service, chauffage,
+homing, mouvement, mesh ou Z n'est appelé. Les 179 tests sont verts et le
+préflight réel de la capture
+`20260822-231240-g4-k1-control-calibration-ui-retry-safety-v1` est vert.
+L'autorité globale explicite du goal couvre sa pose sans nouveau GO.
+
 The Orca cutover remains a later atomic gate. This runtime slice intentionally
 keeps the active Orca profile, `START_PRINT` and the legacy `+0.27 mm`
 post-processor unchanged.
@@ -585,8 +602,8 @@ retirement remains atomic with the later proven machine/Orca replacement.
   `G4-K1-CONTROL-CALIBRATION-UI-V1` désormais installée.
 - Toute correction, repose ou suppression du delta
   `G4-K1-CONTROL-CALIBRATION-UI-MATRIX-V1` désormais installé.
-- Toute exécution physique de
-  `G4-K1-CONTROL-CALIBRATION-UI-CAMPAIGN-V1` avant son nouveau GO exact.
+- Toute action hors de la correction `G4-K1-CONTROL-CALIBRATION-UI-RETRY-SAFETY-V1`
+  et de la campagne écran revue couverte par le goal global actif.
 - BTT Eddy preparation, installation, firmware or calibration.
 - Firmware downgrade or replacement.
 - Any SSH write other than the completed `G4-SSH-KEY` deployment.

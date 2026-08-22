@@ -248,9 +248,24 @@ Le préflight strictement en lecture seule de la campagne suivante est vert sous
 la capture `20260822-222450-g4-k1-control-calibration-ui-campaign-v1`. Il
 confirme l'UI inactive, la K1 au repos, les cibles à zéro, le Z accepté et le
 profil rapide présents, ainsi que l'absence attendue des profils `9/11/15`. Le
-GO de campagne envoyé avant la correction de matrice n'est pas consommé : le
-protocole a changé depuis. La prochaine gate unique est donc
-`G4-K1-CONTROL-CALIBRATION-UI-CAMPAIGN-V1`.
+GO de campagne envoyé avant la correction de matrice n'a pas été consommé. Le
+goal global donné ensuite autorise toutefois explicitement Codex à poursuivre
+les corrections nécessaires et la campagne jusqu'au vert sans redemander de
+GO.
+
+La première tentative écran `9 × 9` a ensuite révélé que la case volontaire
+`replace_existing` restait cochée après une annulation à `0/6`; une seconde
+reprise l'a réutilisée malgré l'instruction humaine. Les deux tentatives ont été
+annulées avant toute mesure, dont la seconde par l'action de sécurité UI de
+Codex. Les contrôles réels ont confirmé les chauffes coupées, le profil `6 × 6`
+et le Z `−0,04 mm` intacts. Le correctif séparé
+`G4-K1-CONTROL-CALIBRATION-UI-RETRY-SAFETY-V1` remet une seule fois
+`replace_existing=false` et `plate_clear=false` après une reprise incomplète,
+sans supprimer la possibilité d'un remplacement volontaire. Il ne remplacerait
+que `app.js`, sans restart ni action physique. Ses 179 tests et son préflight
+réel `20260822-231240-g4-k1-control-calibration-ui-retry-safety-v1` sont verts.
+L'autorité globale explicite du goal couvre cette correction nécessaire sans
+nouveau GO ; elle doit être posée et rendue avant la reprise de la campagne.
 
 Thomas demande que chaque prochaine reprise commence par un état explicite de
 l'autonomie, sans confondre le runtime installé avec une interface terminée :

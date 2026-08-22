@@ -22,8 +22,11 @@ if ($PSVersionTable.PSVersion.Major -lt 7) {
 $WorkspaceRoot = (Resolve-Path (Join-Path $PSScriptRoot '..')).Path
 $UiPackage = Join-Path $WorkspaceRoot 'packages\k1-control-v1\calibration-ui-matrix-v1'
 $UiManifestPath = Join-Path $UiPackage 'deployment-manifest.json'
+$RetryPackage = Join-Path $WorkspaceRoot 'packages\k1-control-v1\calibration-ui-retry-safety-v1'
+$RetryManifestPath = Join-Path $RetryPackage 'deployment-manifest.json'
 $CampaignContractPath = Join-Path $WorkspaceRoot 'packages\k1-control-v1\calibration-ui-campaign-v1\calibration-ui-campaign-contract.json'
 $ExpectedUiManifestHash = '8970109289fb64645de22d6530c32c397738509ede0983a5e6362f1c4feae7db'
+$ExpectedRetryManifestHash = '6c50d95bd542a59284a67291ade4a216ae53b125fc4cd5a0521bc726cf0c7c0f'
 $ExpectedCampaignContractHash = '768d257c4b6c0f114edbdf7f8172920c1bf593646dc06e3bcf490b6fbfa457ae'
 $RemoteUi = '/usr/data/k1-control-v1/current/www/mainsail/k1-control'
 $RemoteState = '/usr/data/k1-control-v1/state/k1-control-calibration-workflow.json'
@@ -69,9 +72,14 @@ function Assert-ReviewedLocalFiles {
     if ((Get-LocalSha256 $CampaignContractPath) -cne $ExpectedCampaignContractHash) {
         throw 'Contrat de campagne local différent de la version revue.'
     }
+    if ((Get-LocalSha256 $RetryManifestPath) -cne $ExpectedRetryManifestHash) {
+        throw 'Manifeste de sécurité de reprise différent de la version revue.'
+    }
     $manifest = Get-Content -LiteralPath $UiManifestPath -Raw | ConvertFrom-Json
+    $retryManifest = Get-Content -LiteralPath $RetryManifestPath -Raw | ConvertFrom-Json
     $contract = Get-Content -LiteralPath $CampaignContractPath -Raw | ConvertFrom-Json
     if ($manifest.contract_id -cne 'G4-K1-CONTROL-CALIBRATION-UI-MATRIX-V1' -or
+        $retryManifest.contract_id -cne 'G4-K1-CONTROL-CALIBRATION-UI-RETRY-SAFETY-V1' -or
         $contract.contract_id -cne 'G4-K1-CONTROL-CALIBRATION-UI-CAMPAIGN-V1') {
         throw 'Identité du paquet UI ou de la campagne inattendue.'
     }
@@ -81,7 +89,11 @@ function Assert-ReviewedLocalFiles {
             throw "Payload UI local non revu : $($file.source)"
         }
     }
-    return @{ Manifest = $manifest; Contract = $contract }
+    $retrySource = Join-Path $RetryPackage ([string]$retryManifest.file.source)
+    if ((Get-LocalSha256 $retrySource) -cne ([string]$retryManifest.file.sha256)) {
+        throw 'Payload de sécurité de reprise local non revu.'
+    }
+    return @{ Manifest = $manifest; RetryManifest = $retryManifest; Contract = $contract }
 }
 
 function Assert-EvidenceDirectory {
@@ -116,15 +128,27 @@ function Save-Evidence {
 }
 
 function Assert-InstalledUi {
-    param([Parameter(Mandatory = $true)]$Manifest)
+    param(
+        [Parameter(Mandatory = $true)]$Manifest,
+        [Parameter(Mandatory = $true)]$RetryManifest
+    )
     foreach ($file in $Manifest.files) {
+        if ([string]$file.destination -ceq [string]$RetryManifest.file.destination) { continue }
         if ((Get-RemoteSha256 ([string]$file.destination)) -cne ([string]$file.sha256)) {
             throw "Payload UI distant inattendu : $($file.destination)"
         }
     }
+    if ((Get-RemoteSha256 ([string]$RetryManifest.file.destination)) -cne ([string]$RetryManifest.file.sha256)) {
+        throw 'Correctif distant de sécurité de reprise inattendu.'
+    }
     foreach ($file in $Manifest.unchanged.files) {
         if ((Get-RemoteSha256 ([string]$file.destination)) -cne ([string]$file.sha256)) {
             throw "Payload UI hors write-set inattendu : $($file.destination)"
+        }
+    }
+    foreach ($file in $RetryManifest.unchanged.files) {
+        if ((Get-RemoteSha256 ([string]$file.destination)) -cne ([string]$file.sha256)) {
+            throw "Payload hors write-set RETRY-SAFETY inattendu : $($file.destination)"
         }
     }
     $mode = ((Invoke-Remote "stat -c '%a' '$RemoteUi'") | Select-Object -First 1).Trim()
@@ -267,7 +291,7 @@ if ($Action -eq 'Plan') {
 }
 
 [void](Assert-EvidenceDirectory)
-Assert-InstalledUi $reviewed.Manifest
+Assert-InstalledUi $reviewed.Manifest $reviewed.RetryManifest
 $api = Get-ApiState
 $snapshot = Get-PrinterSnapshot
 

@@ -621,17 +621,28 @@ gate unique est `G4-K1-CONTROL-CALIBRATION-UI-CAMPAIGN-V1`; elle prouvera
 l'autonomie de calibration par vingt-quatre meshes et un parcours Z entièrement
 pilotés depuis l'écran.
 
+Le premier départ `9 × 9` a toutefois montré que la case de remplacement restait
+cochée après une annulation à `0/6`; une seconde reprise a répété le problème.
+Les deux tentatives ont été annulées avant toute mesure et l'état durable est
+intact. Le paquet correctif séparé
+`G4-K1-CONTROL-CALIBRATION-UI-RETRY-SAFETY-V1` ne remplace que `app.js`, sans
+restart. Il remet une seule fois remplacement et plateau libre à faux après une
+reprise incomplète. Ses 179 tests et son préflight réel sous la capture
+`20260822-231240-g4-k1-control-calibration-ui-retry-safety-v1` sont verts.
+L'autorité globale du goal couvre sa pose sans nouveau GO. La prochaine action
+est sa pose exacte, son rendu réel, puis la reprise `9 × 9`.
+
 La gate précédente est close avec `DEPLOY_CALIBRATION_PATH_V1_OK` et
 `VALIDATE_CALIBRATION_PATH_V1_OK` sous la capture
 `20260822-124207-g4-k1-control-calibration-path-v1`.
 
-Autorisation actuelle : **AUCUNE NOUVELLE MUTATION IMPRIMANTE**.
+Autorisation actuelle : **GOAL GLOBAL ACTIF POUR LA CORRECTION ET LA CAMPAGNE**.
 FIRST-CALIBRATION-V2, CALIBRATION-UI-V1 et CALIBRATION-UI-MATRIX-V1 sont
-validées et closes. Le GO matrice est consommé. Le GO de campagne envoyé avant
-la correction de matrice n'est pas consommé, car son protocole a changé depuis.
-La prochaine mutation possible est uniquement
-`G4-K1-CONTROL-CALIBRATION-UI-CAMPAIGN-V1` après son nouveau GO exact. La
-bascule production reste une gate plus tardive et séparée.
+validées et closes. Le GO matrice est consommé. Thomas a ensuite donné dans le
+goal une autorité globale explicite pour aller jusqu'au vert calibration sans
+redemander de GO. Elle couvre `CALIBRATION-UI-RETRY-SAFETY-V1`, puis la campagne
+écran revue. Elle ne couvre pas la bascule production, qui reste une gate plus
+tardive et séparée.
 
 La bascule Orca reste une gate ultérieure unique : wrappers de travail côté
 machine, trois champs Orca et retrait du post-traitement doivent changer

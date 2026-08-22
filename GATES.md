@@ -609,9 +609,27 @@ Le vrai rendu Chrome authentifié a confirmé les quatre niveaux. Les sélection
 a restauré `6 × 6` Lagrange, le seed `−0,04 mm` et les confirmations physiques
 décochées. La gate est close ; son GO ne couvre aucun rerun ni la campagne.
 
+### Gate corrective — `G4-K1-CONTROL-CALIBRATION-UI-RETRY-SAFETY-V1`
+
+Status: **candidat figé, préflight réel vert, autorisé par le goal global**
+
+Deux départs humains `9 × 9` ont prouvé que `replace_existing=true` restait
+collant après une annulation à `0/6`. Les deux tentatives ont été arrêtées avant
+toute mesure et l'état durable est intact. Cette gate remplace uniquement
+`app.js` après backup exact, sans restart. Une reprise interrompue avant six
+meshes remet une seule fois `replace_existing=false` et `plate_clear=false`;
+l'opérateur peut ensuite réactiver explicitement un remplacement volontaire.
+
+Les 179 tests sont verts. Le préflight réel sous la capture
+`20260822-231240-g4-k1-control-calibration-ui-retry-safety-v1` a obtenu
+`PREFLIGHT_CALIBRATION_UI_RETRY_SAFETY_V1_OK` sur une K1 au repos, chauffes à
+zéro, Z accepté intact, chemin fermé et aucun profil transitoire. Le goal global
+de Thomas autorise explicitement les corrections nécessaires sans redemander un
+GO ; la pose doit précéder la reprise de la campagne.
+
 ### Gate préparée — `G4-K1-CONTROL-CALIBRATION-UI-CAMPAIGN-V1`
 
-Status: **prête et préflight réel vert ; non autorisée**
+Status: **préflight réel vert ; autorisée par le goal global ; suspendue derrière RETRY-SAFETY-V1**
 
 Cette gate ne pose aucun fichier. Elle qualifie physiquement les quatre niveaux
 depuis l'écran avec `PEI_TEXTURED_A`, `55/140 °C` et `200 s` : `9 × 9`,
@@ -637,9 +655,11 @@ strictement en lecture seule a obtenu
 `PREFLIGHT_CALIBRATION_UI_CAMPAIGN_V1_OK` sous la capture
 `20260822-222450-g4-k1-control-calibration-ui-campaign-v1` : UI inactive, K1 au
 repos, cibles à zéro, Z accepté et profil rapide présents, profils `9/11/15`
-absents comme attendu. Le GO envoyé avant la correction de matrice n'est pas
-consommé, car le protocole a changé depuis. Un nouveau GO exact est nécessaire
-avant la première chauffe ou mesure de cette campagne.
+absents comme attendu. Le GO envoyé avant la correction de matrice n'a pas été
+consommé. Thomas a ensuite donné une autorité globale explicite dans le goal
+pour aller jusqu'au vert calibration sans redemander de GO. La campagne est
+donc autorisée, mais ne peut reprendre qu'après la pose et le rendu verts de
+`CALIBRATION-UI-RETRY-SAFETY-V1`.
 
 ## G5 — V1 production baseline
 
