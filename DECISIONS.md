@@ -621,3 +621,22 @@ Le mot `GO` joint à cette décision ne déclenche aucune action distante : il n
 reprend pas le nom exact de la gate et précède le nouveau commit revu. Après
 intégration du candidat révisé, l'exécution exige toujours le GO exact
 `GO G4-K1-CONTROL-FIRST-CALIBRATION-V1`.
+
+## D-039 — Le premier couple de meshes est refusé sans rerun
+
+Date: 2026-08-22
+
+Status: accepté par exécution du contrat
+
+Thomas a envoyé le GO exact sur le candidat figé à `55/140 °C` et `200 s`.
+Préflight, backup, préparation et premier mesh ont passé leurs checkpoints. Le
+second mesh a été mesuré une seule fois puis comparé au premier sur 36 points.
+
+L'écart maximal observé est `0,062125 mm` et la moyenne `0,018049 mm`, pour le
+seuil contractuel `0,025 mm`. La qualification est donc refusée. Conformément à
+D-037 et D-038, le pilote coupe les chauffes et ne lance ni troisième mesure,
+ni persistance mesh, ni session Z.
+
+Cette mesure ne suffit pas à attribuer la divergence aux `200 s`, à la mécanique
+ou au palpage. Le GO est consommé. Toute nouvelle campagne exige d'abord une
+analyse hors imprimante et un protocole révisé explicitement autorisé.

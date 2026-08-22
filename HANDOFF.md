@@ -1,8 +1,8 @@
 # HANDOFF
 
 Date: 2026-08-22
-Phase: P4 / runtime Z/mesh et CALIBRATION-PATH-V1 installés et validés ; aucune calibration exécutée
-Next operator: annoncer l'écart d'autonomie, puis attendre le GO exact de FIRST-CALIBRATION-V1
+Phase: P4 / première calibration V1 exécutée KO après deux meshes ; aucun mesh cible ni Z persistés
+Next operator: annoncer l'écart d'autonomie, puis analyser le KO hors imprimante sans rerun
 
 ## Message obligatoire au début de la prochaine session
 
@@ -452,24 +452,30 @@ checkpoints précédents. `Cancel` ferme le Z provisoire et conserve le mesh ;
 `Rollback` restaure le `printer.cfg` exact et l'état Z vide tout en conservant
 le runtime et le chemin installés. Détails : document 18 et ADR-006.
 
+Thomas a ensuite envoyé le GO exact. La capture
+`20260822-140602-g4-k1-control-first-calibration-v1` a passé le préflight, créé
+et vérifié le backup, puis terminé la préparation et le premier mesh. Le second
+mesh a été exécuté une seule fois et sa qualification est KO : maximum
+`0,062125 mm`, moyenne `0,018049 mm`, seuil `0,025 mm` sur 36 points.
+
+L'arrêt prévu a coupé les chauffes. Aucun troisième mesh, profil persistant,
+session Z ou état Z n'a été produit. Un contrôle final en lecture seule a
+confirmé la base exacte, le profil cible absent, le stockage Z absent,
+`standby` et les cibles à zéro avant de signaler les axes `xyz` encore
+référencés. Le GO est consommé et ne couvre aucun rerun.
+
 ## Next bounded mission
 
-Le candidat révisé hors imprimante est figé à `55/140 °C` et `200 s`. Le `GO`
-générique reçu avec ce choix ne nomme pas la gate exacte et a précédé le commit
-révisé. Attendre donc le GO exact `GO G4-K1-CONTROL-FIRST-CALIBRATION-V1`.
-Ne lancer aucun préflight distant,
-chauffage, nettoyage, homing, mesh, mouvement ou écriture Z avant ce GO.
+Analyser hors imprimante l'écart des deux matrices et décider avec Thomas s'il
+faut préparer un protocole révisé distinct. Ne lancer aucun troisième mesh,
+nouvelle chauffe, homing, mouvement ou écriture Z sous le GO consommé.
 
 La gate précédente est close avec `DEPLOY_CALIBRATION_PATH_V1_OK` et
 `VALIDATE_CALIBRATION_PATH_V1_OK` sous la capture
 `20260822-124207-g4-k1-control-calibration-path-v1`.
 
-Autorisation actuelle : **HORS_IMPRIMANTE_FIRST_CALIBRATION_V1**. Aucun GO exact
-de calibration n'a été reçu. L'overlay et son include sont installés ; le backup
-et le staging de preuve restent sur la K1.
-
-La mission suivante sera l'exécution de
-`G4-K1-CONTROL-FIRST-CALIBRATION-V1` seulement après sa revue et son propre GO.
+Autorisation actuelle : **LECTURE_ET_ANALYSE_HORS_IMPRIMANTE**. L'overlay et son
+include restent installés ; le backup de la capture KO reste sur la K1.
 
 La bascule Orca reste une gate ultérieure unique : wrappers de travail côté
 machine, trois champs Orca et retrait du post-traitement doivent changer
@@ -477,8 +483,8 @@ ensemble, après validation de ce runtime.
 
 Le post-traitement PHP/Orca `+0,27 mm`, le Start G-code et le G-code de changement
 de filament restent strictement inchangés. Aucune commande Z, mesh, chauffe,
-homing ou calibration du candidat ne peut être envoyée avant le GO exact
-`GO G4-K1-CONTROL-FIRST-CALIBRATION-V1`.
+homing ou calibration ne peut être envoyée sous le GO consommé. Une future
+campagne exigera un protocole distinct revu et sa propre autorisation exacte.
 
 ## Stop conditions
 

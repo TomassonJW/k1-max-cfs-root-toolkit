@@ -1,11 +1,11 @@
 # G4 — K1 Control first calibration V1
 
-Statut au 2026-08-22 : **candidat révisé hors imprimante ; aucun GO exact reçu ;
-aucune chauffe, aucun homing, aucun mouvement et aucune calibration exécutés**.
+Statut au 2026-08-22 : **GO exact consommé ; arrêt KO après deux meshes ; aucun
+profil cible ni Z persistés ; aucun rerun autorisé**.
 
-## Ce que cette gate fera
+## Ce que cette gate devait faire
 
-La gate qualifiera un premier mesh de référence reproductible puis ouvrira la
+La gate devait qualifier un premier mesh de référence reproductible puis ouvrir la
 session Z bornée déjà installée. Elle n'ajoute aucun logiciel ni configuration
 de commande. Elle utilise uniquement le runtime Z/mesh et
 `CALIBRATION-PATH-V1` déjà validés.
@@ -16,15 +16,12 @@ destiné à l'usage quotidien.
 
 ## Autorité actuelle
 
-Autorisation : `HORS_IMPRIMANTE_FIRST_CALIBRATION_V1`.
+Autorisation : `LECTURE_ET_ANALYSE_HORS_IMPRIMANTE`.
 
-L'exécution exigera un futur GO exact :
-
-`GO G4-K1-CONTROL-FIRST-CALIBRATION-V1`
-
-Le GO devra porter sur le commit figé. Toute modification ultérieure du contrat,
-du pilote, des commandes, des seuils ou du rollback le consommera et imposera
-une nouvelle revue puis un nouveau GO.
+Le GO exact `GO G4-K1-CONTROL-FIRST-CALIBRATION-V1` a été consommé par la
+capture KO. Il n'autorise aucune troisième mesure ni reprise. Une future
+campagne devra d'abord disposer d'un protocole distinct revu puis de sa propre
+autorisation exacte.
 
 ## Base obligatoire
 
@@ -127,6 +124,27 @@ positif. Son code retour est `0` pour OK, `2` pour une divergence qualifiée et
 Si l'écart maximal dépasse `0,025 mm`, le pilote coupe les chauffes, écrit le
 résultat KO et s'arrête. Il ne lance ni troisième mesure, ni commit mesh, ni
 session Z.
+
+## Résultat réel du 2026-08-22
+
+La capture `20260822-140602-g4-k1-control-first-calibration-v1` a passé le
+préflight, créé et vérifié le backup exact, puis obtenu les checkpoints
+`Prepare` et `Mesh1`. Le second mesh a été mesuré exactement une fois.
+
+Résultat de la comparaison locale :
+
+- 36 points comparés, forme `6 × 6` conforme ;
+- écart maximal `0,062125 mm` ;
+- écart moyen `0,018049 mm` ;
+- seuil `0,025 mm` ;
+- décision `accepted=false`.
+
+L'arrêt KO a coupé les chauffes. `CommitMesh`, `BeginZ`, les paliers, `Accept`
+et la validation de succès n'ont pas été exécutés. Le contrôle final en lecture
+seule a confirmé l'empreinte initiale de `printer.cfg`, le profil cible absent,
+le stockage Z absent, `standby` et les deux cibles à zéro, puis s'est arrêté sur
+les axes `xyz` encore référencés après les mesures. Le détail public est dans
+`experiments/p4/20260822-first-calibration-v1-ko-report.md`.
 
 ## Acceptation, annulation et restauration
 

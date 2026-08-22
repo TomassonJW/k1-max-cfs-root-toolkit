@@ -1,8 +1,8 @@
 # First calibration V1
 
-Statut : candidat préparé hors imprimante. Aucune calibration n'est autorisée
-sans le GO exact `GO G4-K1-CONTROL-FIRST-CALIBRATION-V1` portant sur le commit
-revu.
+Statut : exécuté KO le 2026-08-22 après exactement deux meshes. Le GO exact est
+consommé ; aucun rerun n'est autorisé sans nouveau protocole revu et nouvelle
+autorisation explicite.
 
 Ce paquet n'installe aucun nouveau fichier sur la K1. Il orchestre, par étapes
 séparées, les commandes déjà installées par le runtime Z/mesh et le chemin borné
