@@ -1,8 +1,8 @@
 # HANDOFF
 
 Date: 2026-08-22
-Phase: P4 / V2 mesh robuste retenu ; Z provisoire annulé en attente de l'observation physique finale
-Next operator: annoncer l'écart d'autonomie, puis reprendre seulement le chemin Z avec Thomas présent
+Phase: P4 / FIRST-CALIBRATION-V2 validée ; mesh robuste et Z `−0,04 mm` retenus ; production fermée
+Next operator: annoncer l'écart d'autonomie, puis préparer la revue figée de CALIBRATION-UI-V1
 
 ## Message obligatoire au début de la prochaine session
 
@@ -13,9 +13,8 @@ Dire clairement à Thomas, avant toute proposition d'exécution :
 - **l'autonomie production n'est pas encore atteinte** : Orca, `START_PRINT`,
   l'ancien `+0,27 mm` et les températures CFS ne sont pas encore basculés vers
   le nouveau contrat ;
-- le mesh robuste V2 est qualifié et conservé ; les six mesures ne sont pas à
-  refaire. Le Z reste non accepté et la session provisoire a été parquée,
-  annulée et refroidie faute d'observation humaine du jeu final ;
+- le mesh robuste V2 et le Z `−0,04 mm` sont qualifiés, persistés et validés ;
+  FIRST-CALIBRATION-V2 est close et ne doit pas être rejouée ;
 - l'interface ne sera déclarée « nickel sans Codex » que lorsque Thomas pourra
   choisir les paramètres, lancer, comprendre le statut, enregistrer, annuler et
   restaurer depuis l'écran, puis imprimer normalement depuis Orca sans commande
@@ -493,15 +492,23 @@ final ne contient que cette section générée. Le pilote attend désormais le
 comportement réellement observé de `update_mesh`, avec un test de
 non-régression et une nouvelle empreinte dans le manifeste.
 
-Le chemin Z a ensuite atteint en série `5 → 2 → 1 → 0,5 → 0,3 → 0,2 → 0,15
-→ 0,1 mm`, avec session provisoire à `0,0 mm` et sans extrusion. Faute de
-retour humain sur le jeu final, Codex n'a ni confirmé ni accepté le Z. Après un
-court délai, `Cancel` a remonté la buse, fermé la session et coupé les chauffes.
-État vérifié : `standby`, cibles à zéro, profil robuste présent,
-`accepted_z_valid=0`, `session_active=0`, chemin `cancelled` non armé. Les six
-meshes ne sont pas à refaire. La copie finale après l'écriture différée Creality
-a le hash `36cfb7e71180268841ab5cedd31628c8d9953ba437c47662ced16df18bb1bacd` ;
-son diff contre le backup contient toujours uniquement le profil robuste.
+Le chemin Z a d'abord été annulé sans observation, puis repris avec Thomas
+présent sans refaire les six meshes. Une pile de dix épaisseurs a évalué la cale
+papier à `0,09 mm`. Les pas provisoires ont trouvé une friction nette à
+`−0,05 mm`; le retour à `−0,04 mm` a rendu la cale libre, ce qui encadre le jeu
+visé de `0,10 mm`. Thomas a confirmé ce constat. La buse a été parquée avant le
+commit atomique. `ACCEPT_FIRST_CALIBRATION_V2_OK` a enregistré `−0,04 mm` puis
+coupé les chauffes.
+
+Le premier `Validate` a signalé un faux KO documentaire : le pilote cherchait
+`[bed_mesh ...]`, mais Klipper persiste réellement `#*# [bed_mesh ...]`. Le
+correctif local, son test et la nouvelle empreinte du manifeste ne changent
+aucune commande imprimante. La relance en lecture seule a obtenu
+`VALIDATE_FIRST_CALIBRATION_V2_OK`. État final : `standby`, cibles zéro,
+stockage `ok`, `accepted_z_valid=1`, `accepted_z_offset=-0,04`,
+`session_active=0`, chemin `committed` non armé, profil robuste présent, deux
+CFS et fondation conformes. La copie persistante de `printer.cfg` garde le hash
+`36cfb7e71180268841ab5cedd31628c8d9953ba437c47662ced16df18bb1bacd`.
 
 ## CALIBRATION-UI-V1 préparée hors imprimante
 
@@ -523,21 +530,21 @@ mémoire a été refusée par la barrière de sécurité et n'a rien modifié.
 
 ## Next bounded mission
 
-Quand Thomas est physiquement devant la K1, reprendre `BeginZ` avec le GO V2
-déjà donné, parcourir les paliers bornés, puis demander uniquement son constat
-sur une cale de `0,10 mm` : friction correcte, trop serré ou trop lâche. Ajuster
-si nécessaire, confirmer, accepter et lancer `Validate`. Ne jamais fabriquer
-cette observation. Ne pas refaire les six meshes et ne pas exécuter la pose UI
-sous le GO V2.
+Revoir le candidat figé `G4-K1-CONTROL-CALIBRATION-UI-V1`, ses fichiers exacts,
+son backup, sa validation et son rollback. Sa pose future ne lance aucune
+calibration et redémarre seulement Moonraker, mais elle exige son propre GO exact
+séparé. Après pose, une campagne complète depuis l'écran, sans console ni aide
+Codex, restera nécessaire avant de déclarer l'autonomie calibration.
 
 La gate précédente est close avec `DEPLOY_CALIBRATION_PATH_V1_OK` et
 `VALIDATE_CALIBRATION_PATH_V1_OK` sous la capture
 `20260822-124207-g4-k1-control-calibration-path-v1`.
 
-Autorisation actuelle : **CONTINUATION_FIRST_CALIBRATION_V2**. Le GO V2 exact
-a été donné ; la prochaine mutation autorisée est uniquement la reprise du
-chemin Z de cette campagne. La pose UI et la bascule production restent des
-gates séparées.
+Autorisation actuelle : **AUCUNE NOUVELLE MUTATION IMPRIMANTE**.
+FIRST-CALIBRATION-V2 est validée et close. La prochaine mutation possible est la
+pose UI, uniquement après revue figée et GO exact
+`GO G4-K1-CONTROL-CALIBRATION-UI-V1`. La bascule production reste une gate plus
+tardive et séparée.
 
 La bascule Orca reste une gate ultérieure unique : wrappers de travail côté
 machine, trois champs Orca et retrait du post-traitement doivent changer

@@ -1,6 +1,10 @@
 {
   "package": "G4-K1-CONTROL-FIRST-CALIBRATION-V2",
-  "status": "mesh_accepted_z_pending_human_observation",
+  "status": "validated_and_closed",
+  "validated_capture": "20260822-160948-g4-k1-control-first-calibration-v2",
+  "accepted_z_offset_mm": -0.04,
+  "human_gap_reference_mm": 0.09,
+  "human_gap_method": "first clear-to-friction threshold at -0.05 mm, then one +0.01 mm release step",
   "artifacts": [
     {
       "path": "packages/k1-control-v1/first-calibration-v2/first-calibration-contract.json",
@@ -12,7 +16,7 @@
     },
     {
       "path": "scripts/run-k1-control-first-calibration-v2.ps1",
-      "sha256": "780267cdb181ee293d7e568de916d2dadde11f7a1b0e89fcc1112e1357c1fcc8"
+      "sha256": "41e5bd6b81e198edc2567d9aac540defbf2e17cf2ad67add230bc953ec211ca3"
     }
   ],
   "required_installed_hashes": {

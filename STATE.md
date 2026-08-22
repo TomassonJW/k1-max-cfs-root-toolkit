@@ -4,16 +4,16 @@ Last updated: 2026-08-22
 
 ## Current phase
 
-**P4 — fondation V3 + PATHS-V1, runtime Z/mesh et chemin borné du premier Z
-installés et validés ; première calibration arrêtée KO après deux meshes ;
-production volontairement bloquée**
+**P4 — fondation V3 + PATHS-V1, runtime Z/mesh, chemin borné et première
+calibration V2 installés et validés ; production volontairement bloquée**
 
 The repository baseline, stock acquisition, complete Orca/G-code intake and
 passive P1–P5/PETG trace are complete. Gate G3 is passed for offline design and
 simulation only. No further printer mutation is authorised after the completed
 gate. The deployed printer-side slices are `G4-SSH-KEY`, the V3 + PATHS-V1
-control foundation, the empty Z/mesh runtime and the inert calibration path.
-Production and every physical calibration action remain closed.
+control foundation, the Z/mesh runtime carrying one accepted Z record, the
+calibration path and the robust mesh from FIRST-CALIBRATION-V2. Production and
+every new physical calibration action remain closed.
 
 Thomas rejected `G4-ZSAFE-START-V1` before deployment. Its fixed `+0.27 mm`,
 single `default` mesh and manual clean flow are not a production solution. The
@@ -451,17 +451,18 @@ matrice robuste transitoire. Une reprise bornée a vérifié backup, hashes,
 runtime vide et matrice, puis exécuté le commit déjà revu. Le pilote et son test
 attendent maintenant ce comportement réel.
 
-La session Z provisoire à `0,0 mm` a parcouru tous les paliers jusqu'à
-`0,1 mm`. Sans observation physique humaine, aucune confirmation ni acceptation
-n'a été envoyée. `Cancel` a remonté la buse, fermé la session et coupé les
-chauffes. État final observé : `standby`, cibles zéro, profil robuste présent,
-`accepted_z_valid=0`, `session_active=0`, chemin `cancelled` non armé.
+Le chemin Z a été repris avec Thomas présent sans refaire les six meshes. Une
+pile de dix épaisseurs a évalué la cale à `0,09 mm`. La friction est devenue
+nette à `−0,05 mm`; le cran retenu `−0,04 mm` laisse cette cale libre et vise le
+jeu final `0,10 mm`. Thomas a confirmé le constat. Le Z a été parqué, persisté
+atomiquement et validé. État final observé : `standby`, cibles zéro, profil
+robuste présent, stockage `ok`, `accepted_z_valid=1`,
+`accepted_z_offset=-0,04`, `session_active=0`, chemin `committed` non armé.
 
-La prochaine action sûre ne refait pas les six meshes. Lorsque Thomas est
-physiquement présent, reprendre `BeginZ`, parcourir les mêmes paliers, obtenir
-son observation explicite sur une cale de `0,10 mm`, ajuster si nécessaire,
-puis confirmer, accepter et valider. Le GO V2 exact couvre cette continuation ;
-il ne couvre ni la pose UI ni la bascule production.
+Le premier contrôle final a été un faux KO local : Klipper génère l'en-tête
+persistant `#*# [bed_mesh ...]`. Le pilote cherchait sa forme non commentée. Le
+contrôle et son test ont été corrigés sans mutation imprimante ; la relance en
+lecture seule a obtenu `VALIDATE_FIRST_CALIBRATION_V2_OK`.
 
 `CALIBRATION-UI-V1` est également préparé hors imprimante. Il fournit un
 contrôleur Moonraker serveur et une page réelle avec choix de plaque,
@@ -476,8 +477,8 @@ post-processor unchanged.
 
 Thomas explicitly rejected further sacrificial print campaigns on 2026-08-21.
 The V3 + PATHS-V1 observation remains useful coexistence evidence but no longer
-blocks offline product construction. Seule la continuation Z de
-`G4-K1-CONTROL-FIRST-CALIBRATION-V2` est actuellement autorisée sur la K1.
+blocks offline product construction. Aucune nouvelle mutation n'est autorisée
+sur la K1 après la clôture de `G4-K1-CONTROL-FIRST-CALIBRATION-V2`.
 
 Do not remove or disable the current Orca `+0.27 mm` post-processor. Its
 retirement remains atomic with the later proven machine/Orca replacement.
@@ -498,8 +499,8 @@ retirement remains atomic with the later proven machine/Orca replacement.
   `G4-K1-CONTROL-CALIBRATION-PATH-V1`.
 - Toute nouvelle exécution de `G4-K1-CONTROL-FIRST-CALIBRATION-V1`, gate close
   et consommée.
-- Toute exécution de `G4-K1-CONTROL-FIRST-CALIBRATION-V2` sans le GO exact
-  `GO G4-K1-CONTROL-FIRST-CALIBRATION-V2`.
+- Toute nouvelle exécution de `G4-K1-CONTROL-FIRST-CALIBRATION-V2`, gate validée,
+  consommée et close.
 - Toute pose de `G4-K1-CONTROL-CALIBRATION-UI-V1` sans sa revue figée et son GO
   exact séparé.
 - BTT Eddy preparation, installation, firmware or calibration.

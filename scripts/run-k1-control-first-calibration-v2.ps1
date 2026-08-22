@@ -456,7 +456,7 @@ function Invoke-FreshPreflight {
     foreach ($path in @($RuntimeState, "$RuntimeState.previous", "$RuntimeState.tmp")) {
         if (Invoke-RemoteTest "test -e '$path'") { throw "Etat Z inattendu avant premiere calibration : $path" }
     }
-    if ((Get-ExactRemoteLineCount -Path $PrinterConfig -Line "[bed_mesh $MeshProfile]") -ne 0) {
+    if ((Get-ExactRemoteLineCount -Path $PrinterConfig -Line "#*# [bed_mesh $MeshProfile]") -ne 0) {
         throw 'Le profil mesh cible existe deja dans printer.cfg.'
     }
     $snapshot = Get-KlipperSnapshot
@@ -865,7 +865,7 @@ if ($Action -eq 'Validate') {
     if ([double]$snapshot.extruder.target -ne 0 -or [double]$snapshot.heater_bed.target -ne 0) {
         throw 'Une chauffe reste demandee pendant la validation.'
     }
-    if ((Get-ExactRemoteLineCount -Path $PrinterConfig -Line "[bed_mesh $MeshProfile]") -ne 1) {
+    if ((Get-ExactRemoteLineCount -Path $PrinterConfig -Line "#*# [bed_mesh $MeshProfile]") -ne 1) {
         throw 'Section persistante du mesh qualifie absente ou dupliquee.'
     }
     $listeners = Assert-CfsAndFoundation $snapshot

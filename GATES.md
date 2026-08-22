@@ -468,9 +468,9 @@ pas encore l'autonomie production, qui reste conditionnée par la bascule
 interface/Orca/`START_PRINT`, le retrait du `+0,27 mm`, les températures CFS et
 G5.
 
-### Gate en attente de l'observation physique finale — `G4-K1-CONTROL-FIRST-CALIBRATION-V2`
+### Gate validée et close — `G4-K1-CONTROL-FIRST-CALIBRATION-V2`
 
-Status: **GO exact reçu ; mesh robuste accepté et conservé ; Z non accepté**
+Status: **VALIDATE_FIRST_CALIBRATION_V2_OK ; mesh robuste et Z `−0,04 mm` retenus**
 
 V2 remplace la preuve fragile à deux meshes par exactement six mesures dans le
 même contexte `PEI_TEXTURED_A`, `55/140 °C`, `200 s`, `6 × 6` Lagrange. Les
@@ -492,11 +492,18 @@ ont prouvé que la matrice robuste seule était chargée sous `K1_TRANSIENT` ; u
 reprise bornée a alors exécuté la commande de commit déjà revue. Le pilote est
 corrigé hors imprimante pour attendre cet état réellement observé.
 
-Le chemin Z a parcouru tous les paliers jusqu'à `0,1 mm`. Aucune confirmation
-humaine n'étant arrivée, le Z n'a pas été accepté. `Cancel` a parqué la buse,
-fermé la session provisoire et coupé les chauffes tout en conservant le mesh.
-La continuation doit reprendre uniquement le chemin Z lorsque Thomas est
-présent, puis obtenir son observation explicite du jeu avant `Accept`.
+Le chemin Z a été repris avec Thomas présent sans refaire les meshes. Une pile
+de dix épaisseurs a évalué la cale papier à `0,09 mm`. Le premier contact net a
+été observé à `−0,05 mm`; le retour à `−0,04 mm` a laissé la cale libre et vise
+le jeu de `0,10 mm`. Thomas a confirmé l'observation. La buse a été parquée,
+l'état Z a été persisté atomiquement, puis les chauffes ont été coupées.
+
+La validation finale confirme stockage `ok`, `accepted_z_valid=1`, offset
+`−0,04 mm`, session fermée, chemin `committed`, profil robuste présent,
+`standby`, cibles zéro, deux CFS et fondation conformes. Un premier faux KO du
+pilote cherchait l'en-tête non commenté du profil ; Klipper le génère sous
+`#*# [bed_mesh ...]`. Le contrôle corrigé et testé a ensuite obtenu
+`VALIDATE_FIRST_CALIBRATION_V2_OK`. Le GO est consommé et n'autorise aucun rerun.
 
 ### Gate préparée — `G4-K1-CONTROL-CALIBRATION-UI-V1`
 

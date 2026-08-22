@@ -102,6 +102,14 @@ class FirstCalibrationV2AggregationTests(unittest.TestCase):
         for token in ("START_PRINT", "BOX_", "G92 E", "G1 E", "EXTRUDE"):
             self.assertNotIn(token, self.runner)
 
+    def test_runner_checks_the_klipper_generated_mesh_header(self):
+        generated_header = 'Get-ExactRemoteLineCount -Path $PrinterConfig -Line "#*# [bed_mesh $MeshProfile]"'
+        self.assertEqual(self.runner.count(generated_header), 2)
+        self.assertNotIn(
+            'Get-ExactRemoteLineCount -Path $PrinterConfig -Line "[bed_mesh $MeshProfile]"',
+            self.runner,
+        )
+
     def test_manifest_pins_every_executable_artifact(self):
         for artifact in self.manifest["artifacts"]:
             path = ROOT / artifact["path"]

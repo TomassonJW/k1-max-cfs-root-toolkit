@@ -10,9 +10,9 @@ The printer is production hardware. It is never treated as a disposable sandbox.
 
 The active phase is **P4 — V1 and V2 foundations are closed; V3, PATHS-V1, the
 Z/mesh runtime and CALIBRATION-PATH-V1 are installed and validated;
-FIRST-CALIBRATION-V1 stopped KO; FIRST-CALIBRATION-V2 and CALIBRATION-UI-V1 are
-prepared offline but not authorised; the runtime remains empty and closed to
-production**.
+FIRST-CALIBRATION-V1 stopped KO; FIRST-CALIBRATION-V2 is installed and validated;
+CALIBRATION-UI-V1 is prepared offline but not authorised; production remains
+closed**.
 
 Thomas authorised V1, but the mandatory preflight proved that `logrotate` was
 absent. V1 is closed and must never be deployed. Thomas later authorised V2;
@@ -131,13 +131,20 @@ bornée a revérifié backup, hashes, matrice et runtime vide, puis exécuté la
 commande de commit déjà revue. Le pilote attend désormais le comportement réel
 avec un test dédié.
 
-Le chemin Z a atteint tous les paliers jusqu'à `0,1 mm`, mais aucune observation
-humaine du jeu n'est arrivée. Aucun Z n'a été confirmé ni accepté. `Cancel` a
-relevé la buse, fermé la session et coupé les chauffes sans supprimer le mesh.
-État final vérifié : `standby`, cibles zéro, `accepted_z_valid=0`,
-`session_active=0`, chemin `cancelled` non armé. La prochaine action unique est
-de reprendre seulement le chemin Z lorsque Thomas est présent, puis d'obtenir
-son constat physique avant acceptation. Les six meshes ne sont pas à refaire.
+Thomas a repris le chemin Z devant la K1 sous le même GO V2. Une pile de dix
+épaisseurs a évalué la cale papier à `0,09 mm`. Les pas provisoires de
+`−0,01 mm` ont trouvé une friction nette à `−0,05 mm`; le retour d'un pas à
+`−0,04 mm` a rendu la cale libre et vise le jeu final de `0,10 mm`. Thomas a
+confirmé ce constat. Le chemin a parqué la buse, enregistré atomiquement
+`−0,04 mm` et coupé les chauffes. La validation finale est verte : stockage
+`ok`, `accepted_z_valid=1`, `session_active=0`, chemin `committed`, profil
+robuste présent, `standby`, cibles zéro, deux CFS et fondation conformes.
+
+Le premier `Validate` a rencontré un faux KO local : il cherchait l'en-tête
+persistant non commenté, alors que Klipper génère `#*# [bed_mesh ...]`. Le
+contrôle corrigé et testé reconnaît ce format réel ; la relance en lecture seule
+a obtenu `VALIDATE_FIRST_CALIBRATION_V2_OK`. FIRST-CALIBRATION-V2 est close et
+son GO ne couvre aucun rerun, la pose UI ou la production.
 
 Le candidat séparé `G4-K1-CONTROL-CALIBRATION-UI-V1` est préparé hors
 imprimante. Il ajoute un composant au Moonraker épinglé et une page statique

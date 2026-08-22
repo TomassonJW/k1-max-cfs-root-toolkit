@@ -645,7 +645,7 @@ analyse hors imprimante et un protocole révisé explicitement autorisé.
 
 Date: 2026-08-22
 
-Status: exécuté jusqu'à la confirmation humaine du Z
+Status: exécuté et validé
 
 Le module PR Touch exact et le journal privé montrent que les gros faux
 contacts sont filtrés, mais que le bruit résiduel point par point rend deux
@@ -660,9 +660,8 @@ passage ou ajustement automatique des seuils n'est autorisé.
 
 L'exécution réelle a accepté les deux médianes avec moyenne absolue
 `0,010788694 mm`, RMS `0,013996452 mm` et maximum `0,034352 mm`. Le profil
-robuste est conservé. Le Z n'est pas accepté : après la descente complète à
-`0,1 mm`, l'absence d'observation humaine a déclenché le parcage, l'annulation
-de la session et la coupure des chauffes sans perdre le mesh.
+robuste est conservé. Le chemin Z a ensuite été repris avec Thomas présent,
+confirmé physiquement et persisté à `−0,04 mm`. La validation finale est verte.
 
 ## D-041 — L'interface de calibration est un composant Moonraker borné
 
@@ -699,3 +698,24 @@ persisté le profil final et supprimé le transitoire. Le pilote attend désorma
 explicitement `standby`, homing `xyz`, profil actif `K1_TRANSIENT` et présence
 du profil avant sa relecture. Un test empêche le retour de l'attente erronée
 d'un redémarrage.
+
+## D-043 — Le premier Z est encadré par contact puis relâchement d'un cran
+
+Date: 2026-08-22
+
+Status: accepté par observation réelle
+
+La cale disponible n'était pas certifiée. Sa mesure directe au pied à coulisse
+était trop proche de la résolution de l'outil ; une pile de dix épaisseurs a
+donné `0,90 mm`, soit environ `0,09 mm` par épaisseur. Les checkpoints ont prouvé
+que chaque ajustement changeait bien l'origine et la position physique de
+`0,01 mm`.
+
+La friction nette est apparue à `−0,05 mm`. Le retour de `+0,01 mm` à
+`−0,04 mm` a rendu la cale libre et vise donc le jeu de référence `0,10 mm`.
+Thomas a confirmé cette observation avant le parcage et le commit atomique.
+
+Klipper persiste les profils mesh générés sous l'en-tête commenté
+`#*# [bed_mesh ...]`. Le validateur doit compter cette forme exacte, et non la
+forme de section active non commentée. Cette correction locale ne change aucune
+commande ni aucun fichier de l'imprimante.
