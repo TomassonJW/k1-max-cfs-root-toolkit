@@ -572,6 +572,17 @@ action physique n'a eu lieu. Le vrai rendu reste à valider après authentificat
 humaine sur le tunnel neuf `127.0.0.1:4410`, isolé du cache Mainsail observé sur
 `4409`.
 
+Le tunnel `4410` a ensuite été recréé et son ancien processus en doublon retiré.
+Les fichiers distants sont toujours présents et `app.js` porte exactement
+l'empreinte du correctif. Le premier nouveau préflight de campagne a exposé un
+faux KO local : il exigeait `idle`, alors que les deux arrêts avant toute mesure
+laissent légitimement l'API en `cancelled`, `mesh_index=0`, backup disponible et
+machine sûre. Le validateur accepte désormais uniquement soit un `idle` neuf,
+soit ce cas de reprise borné à zéro mesure ; il refuse toujours une annulation
+après le début des meshes. Le test ciblé est vert et la capture
+`20260822-233717-g4-k1-control-calibration-ui-campaign-v1` a obtenu
+`PREFLIGHT_CALIBRATION_UI_CAMPAIGN_V1_OK`.
+
 The Orca cutover remains a later atomic gate. This runtime slice intentionally
 keeps the active Orca profile, `START_PRINT` and the legacy `+0.27 mm`
 post-processor unchanged.

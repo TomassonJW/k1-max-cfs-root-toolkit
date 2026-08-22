@@ -666,6 +666,17 @@ pour aller jusqu'au vert calibration sans redemander de GO. La campagne est
 donc autorisée, mais ne peut reprendre qu'après la pose et le rendu verts de
 `CALIBRATION-UI-RETRY-SAFETY-V1`.
 
+Le tunnel `4410` a été rétabli avec un seul processus neuf et connecté ; les
+fichiers UI distants, dont l'empreinte exacte du correctif, sont présents. Un
+premier préflight a rejeté à tort l'état sûr `cancelled` laissé par les deux
+arrêts à `0/6`. Le validateur accepte maintenant seulement un départ `idle`
+sans backup ou une reprise `cancelled` strictement à zéro mesure avec backup ;
+toute annulation après le premier mesh reste refusée. Le test ciblé et le
+préflight réel sous la capture
+`20260822-233717-g4-k1-control-calibration-ui-campaign-v1` sont verts. La
+campagne attend maintenant le rendu humain des cases décochées, puis le départ
+écran `9 × 9`.
+
 ## G5 — V1 production baseline
 
 Status: **not passed**

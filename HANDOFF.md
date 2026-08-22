@@ -636,6 +636,16 @@ a affiché le cache Mainsail ; le tunnel temporaire propre `127.0.0.1:4410` est
 actif et attend l'authentification humaine. La prochaine action est le vrai rendu
 des deux cases décochées sur `4410`, puis la reprise `9 × 9`.
 
+Le tunnel `4410` a depuis été recréé avec un seul processus connecté et les
+empreintes distantes confirment que l'interface et le correctif existent. Le
+préflight de campagne bloquait toutefois à tort sur l'état sûr `cancelled`
+laissé à `0/6`. Le validateur accepte maintenant uniquement un `idle` neuf ou
+ce cas précis à zéro mesure avec backup ; il refuse une reprise après le premier
+mesh. Le test ciblé est vert et la capture
+`20260822-233717-g4-k1-control-calibration-ui-campaign-v1` a obtenu
+`PREFLIGHT_CALIBRATION_UI_CAMPAIGN_V1_OK`. Il reste à recharger `4410`, constater
+les deux confirmations décochées, puis lancer le niveau `9 × 9` depuis l'écran.
+
 La gate précédente est close avec `DEPLOY_CALIBRATION_PATH_V1_OK` et
 `VALIDATE_CALIBRATION_PATH_V1_OK` sous la capture
 `20260822-124207-g4-k1-control-calibration-path-v1`.

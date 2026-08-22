@@ -273,6 +273,16 @@ réel attend l'authentification humaine sur le tunnel temporaire neuf `4410`,
 créé pour éviter le cache Mainsail de l'origine `4409`. La campagne ne reprend
 pas avant la preuve des deux cases décochées sur ce vrai rendu.
 
+Le tunnel `4410` a ensuite été recréé avec un seul processus connecté et les
+empreintes distantes prouvent que l'interface corrigée est toujours présente.
+Le préflight de campagne rejetait à tort l'état sûr `cancelled` laissé à `0/6`.
+Il accepte désormais uniquement un départ `idle` sans backup ou cette reprise
+bornée à zéro mesure avec backup ; une annulation après le premier mesh reste
+un KO. Le test ciblé et le préflight réel de la capture
+`20260822-233717-g4-k1-control-calibration-ui-campaign-v1` sont verts. La
+prochaine action physique est le rendu des cases décochées puis le lancement
+écran du niveau `9 × 9`.
+
 Thomas demande que chaque prochaine reprise commence par un état explicite de
 l'autonomie, sans confondre le runtime installé avec une interface terminée :
 

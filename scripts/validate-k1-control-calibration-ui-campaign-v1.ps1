@@ -296,7 +296,12 @@ $api = Get-ApiState
 $snapshot = Get-PrinterSnapshot
 
 if ($Action -eq 'Preflight') {
-    if ($api.phase -cne 'idle' -or [bool]$api.busy -or [bool]$api.backup_available) {
+    $freshIdle = $api.phase -ceq 'idle' -and -not [bool]$api.busy -and
+        -not [bool]$api.backup_available
+    $cancelledBeforeFirstMesh = $api.phase -ceq 'cancelled' -and
+        -not [bool]$api.busy -and [int]$api.mesh_index -eq 0 -and
+        [bool]$api.backup_available
+    if (-not $freshIdle -and -not $cancelledBeforeFirstMesh) {
         throw "État UI initial inattendu : $($api.phase)"
     }
     Assert-SafeAcceptedMachine $snapshot -RequireCommittedPath
