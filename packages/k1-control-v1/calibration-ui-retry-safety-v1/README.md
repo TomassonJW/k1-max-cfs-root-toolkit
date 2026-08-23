@@ -2,6 +2,9 @@
 
 Correction statique bornée de l'interface de calibration.
 
+Statut : installée et validée sous la capture
+`20260823-164558-g4-k1-control-calibration-ui-retry-safety-v1`.
+
 Après toute fin non acceptée du mesh quotidien unique (`cancelled`, `failed`,
 `mesh_rejected` ou `rolled_back`), la reprise réinitialise une seule fois les
 deux confirmations dangereuses :

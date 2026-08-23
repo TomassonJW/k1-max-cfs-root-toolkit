@@ -15,15 +15,16 @@ CALIBRATION-UI-V1 et ses correctifs historiques sont installés ; la campagne
 réelle `9 × 9` a ensuite prouvé la limite physique PRTouch à trente-six points
 par un `IndexError` au point 37 ; le rollback est vert ; la correction hors
 imprimante impose désormais `6 × 6` Lagrange et un seul mesh quotidien ; les
-deltas sûrs PRTOUCH-BED-MESH-V2 et MATRIX-V1 sont installés et validés ;
+deltas sûrs PRTOUCH-BED-MESH-V2, MATRIX-V1 et RETRY-SAFETY-V1 sont installés et validés ;
 production remains closed**.
 
-La capture `20260823-161103-g4-k1-control-calibration-ui-matrix-v1` a clos
-MATRIX-V1 avec préflight, pose et deux validations vertes. Seul Moonraker a été
-redémarré ; les backups et hashes sont conformes, Klippy est prêt, les listes
-d'échec et d'avertissement sont vides et aucune action physique n'a eu lieu. La
-prochaine mission unique est `G4-K1-CONTROL-CALIBRATION-UI-RETRY-SAFETY-V1`,
-uniquement après son autorisation séparée.
+La capture `20260823-164558-g4-k1-control-calibration-ui-retry-safety-v1` a clos
+RETRY-SAFETY-V1 après correction du cas à un mesh `rolled_back 1 / 1`. Seul
+`app.js` a été remplacé après backup exact, sans restart ni action physique ;
+les hashes, Klippy, les listes d'échec et d'avertissement, le profil, le Z et les
+deux CFS sont conformes. La prochaine mission unique est
+`G4-K1-CONTROL-CALIBRATION-UI-PRTOUCH-PRESETS-V1`, uniquement après son
+autorisation séparée.
 
 Thomas authorised V1, but the mandatory preflight proved that `logrotate` was
 absent. V1 is closed and must never be deployed. Thomas later authorised V2;

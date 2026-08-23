@@ -1,8 +1,33 @@
 # HANDOFF
 
-Date: 2026-08-23 16:13 +02:00
+Date: 2026-08-23 16:48 +02:00
 Phase: P4 / FIRST-CALIBRATION-V2 validée ; corrections UI sûres et prototype composite préparés hors imprimante ; production fermée
-Next operator: `ATTENDRE_GO` ; MATRIX-V1 est close, la prochaine gate séparée est `G4-K1-CONTROL-CALIBRATION-UI-RETRY-SAFETY-V1`
+Next operator: `ATTENDRE_GO` ; RETRY-SAFETY-V1 est close, la prochaine gate séparée est `G4-K1-CONTROL-CALIBRATION-UI-PRTOUCH-PRESETS-V1`
+
+## Clôture RETRY-SAFETY-V1 du 23 août 2026
+
+Thomas a autorisé `G4-K1-CONTROL-CALIBRATION-UI-RETRY-SAFETY-V1` jusqu'au vert,
+sans redemander la même autorisation. L'audit a trouvé que la règle historique
+`mesh_index < mesh_target_count` ne détectait plus un échec du protocole à un
+mesh : l'état réel est `rolled_back`, `1 / 1`. Le correctif réinitialise donc
+une seule fois les deux confirmations sur toute fin non acceptée `cancelled`,
+`failed`, `mesh_rejected` ou `rolled_back`.
+
+La capture `20260823-164558-g4-k1-control-calibration-ui-retry-safety-v1` a
+obtenu le préflight, `DEPLOY_CALIBRATION_UI_RETRY_SAFETY_V1_OK`, la validation
+intégrée puis une validation indépendante verte. Seul `app.js` a été remplacé,
+après backup exact, sans aucun restart. Le hash installé est `3d3d53ea…` et le
+backup MATRIX est `33a20db2…`. Le core, `index.html`, BED-MESH-V2 et
+`printer.cfg` sont inchangés. Klippy est `ready`, `failed_components=[]`,
+`warnings=[]`, la K1 est au repos, cibles zéro, runtime/Z/profil robuste,
+`6 × 6` Lagrange et deux CFS conformes.
+
+La preuve navigateur des octets exacts installés simule volontairement le cas
+`rolled_back`, `1 / 1`, avec `replace_existing=true` côté serveur. Le premier
+rendu force `replace_existing=false` et `plate_clear=false`; une coche
+volontaire reste active pendant les rafraîchissements de la même phase, puis un
+rechargement frais remet les deux cases à `false`. Aucun POST, clic de
+calibration ou effet imprimante n'a eu lieu. RETRY-SAFETY-V1 est close.
 
 ## Clôture MATRIX-V1 du 23 août 2026
 
