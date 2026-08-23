@@ -1,8 +1,26 @@
 # HANDOFF
 
-Date: 2026-08-23 16:48 +02:00
+Date: 2026-08-23 17:06 +02:00
 Phase: P4 / FIRST-CALIBRATION-V2 validée ; corrections UI sûres et prototype composite préparés hors imprimante ; production fermée
-Next operator: `ATTENDRE_GO` ; RETRY-SAFETY-V1 est close, la prochaine gate séparée est `G4-K1-CONTROL-CALIBRATION-UI-PRTOUCH-PRESETS-V1`
+Next operator: envoyer `GO G4-K1-CONTROL-CALIBRATION-UI-CAMPAIGN-V1` ; PRESETS-V1 est close et le préflight campagne n'a pas encore joint la K1
+
+## Clôture PRTOUCH-PRESETS-V1 du 23 août 2026
+
+La capture `20260823-165742-g4-k1-control-calibration-ui-prtouch-presets-v1` a
+obtenu le préflight, le déploiement et deux validations vertes. Les hashes sûrs
+étaient déjà installés par les deltas précédents : le déployeur a conclu avec
+`already_present=true` et `remote_write=false`, sans backup, transfert, restart
+ou action physique. Klippy est `ready`, `failed_components=[]`, `warnings=[]`,
+la K1 est au repos avec cibles zéro, le profil robuste, le Z accepté, le mesh
+`6 × 6` Lagrange et les deux CFS conformes.
+
+Le validateur CAMPAIGN-V1 a ensuite été corrigé hors imprimante pour épingler le
+manifeste UI sûr réel, vérifier `server/info`, le mesh chargé et les versions des
+deux CFS. Son plan, ses tests ciblés et la suite complète sont verts. La couche
+d'approbation a refusé le préflight SSH CAMPAIGN-V1 en exigeant un GO frais qui
+porte exactement ce nom malgré l'autorisation globale de Thomas. Le dossier de
+preuves campagne est donc vide et aucun accès distant, chauffage, homing,
+mouvement, mesure ou écriture Z n'a suivi.
 
 ## Clôture RETRY-SAFETY-V1 du 23 août 2026
 
@@ -912,38 +930,30 @@ Z. Les six meshes de FIRST-CALIBRATION-V2 restent la qualification statistique
 initiale déjà validée, pas une répétition quotidienne. Le workaround
 communautaire `pr_version: 1` avec retrait des tables est explicitement rejeté.
 
-Les six familles de payloads ont été corrigées hors imprimante et la suite
-complète est verte : 196 tests, 3 ignorés connus, parse PowerShell OK et diff
-sans erreur d'espace. La K1 porte encore l'ancienne UI et l'ancien composant V2 :
-ne pas relancer depuis l'écran. La barrière de sécurité a refusé la pose des
-payloads modifiés après les GO précédents. La reprise exige donc exactement :
+Les familles de payloads ont été corrigées hors imprimante. Les quatre deltas
+sûrs PRTOUCH-BED-MESH-V2, MATRIX-V1, RETRY-SAFETY-V1 et PRTOUCH-PRESETS-V1 ont
+depuis été préflightés, posés ou reconnus déjà présents, puis validés séparément.
+La suite complète compte maintenant 220 tests verts et 3 ignorés connus. La
+seule gate quotidienne restante est :
 
 ```text
-GO G4-K1-CONTROL-CALIBRATION-UI-PRTOUCH-BED-MESH-V2
-GO G4-K1-CONTROL-CALIBRATION-UI-MATRIX-V1
-GO G4-K1-CONTROL-CALIBRATION-UI-RETRY-SAFETY-V1
-GO G4-K1-CONTROL-CALIBRATION-UI-PRTOUCH-PRESETS-V1
 GO G4-K1-CONTROL-CALIBRATION-UI-CAMPAIGN-V1
 ```
 
-Après ces gates, Codex pose les quatre deltas dans cet ordre, valide chaque
-état, puis Thomas lance depuis l'écran l'unique `6 × 6` et termine le chemin Z.
-La production et G5 restent hors périmètre.
+Après son préflight frais, Thomas lance depuis l'écran l'unique `6 × 6` et
+termine le chemin Z. Codex reste en observation et validation uniquement. La
+production et G5 restent hors périmètre.
 
 La gate précédente est close avec `DEPLOY_CALIBRATION_PATH_V1_OK` et
 `VALIDATE_CALIBRATION_PATH_V1_OK` sous la capture
 `20260822-124207-g4-k1-control-calibration-path-v1`.
 
-Autorisation de reprise : **ATTENDRE_GO**. Le Goal global de la tâche source
-reste techniquement `blocked` et n'est pas transmis. FIRST-CALIBRATION-V2,
-CALIBRATION-UI-V1 et la pose historique CALIBRATION-UI-MATRIX-V1 sont validées
-et closes, mais les payloads sûrs ont changé depuis leurs anciennes
-autorisations. La prochaine mission unique est la pose puis la validation de
-`G4-K1-CONTROL-CALIBRATION-UI-PRTOUCH-BED-MESH-V2`, après préflight frais et GO
-exact. MATRIX-V1, RETRY-SAFETY-V1, PRESETS-V1, la campagne quotidienne
-`6 × 6 / 1 mesh` et la sous-grille composite restent différés et ne doivent pas
-être lancés dans le même incrément. La bascule production reste une gate
-ultérieure séparée.
+Autorisation de reprise : Thomas a donné une autorisation globale, mais la
+couche d'approbation exige encore le GO exact CAMPAIGN-V1 ci-dessus avant toute
+connexion SSH. FIRST-CALIBRATION-V2, CALIBRATION-UI-V1 et les quatre deltas sûrs
+sont validés et clos. La prochaine mission unique est le préflight puis la
+campagne quotidienne `6 × 6 / 1 mesh`; la sous-grille composite et la bascule
+production restent des gates ultérieures séparées.
 
 La bascule Orca reste une gate ultérieure unique : wrappers de travail côté
 machine, trois champs Orca et retrait du post-traitement doivent changer
