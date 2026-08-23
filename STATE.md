@@ -7,9 +7,12 @@ la capture `20260823-151026-g4-k1-control-calibration-ui-prtouch-bed-mesh-v2`.
 Le GO MATRIX-V1 reçu ensuite n'a déclenché aucune connexion : la revue locale a
 trouvé que son préflight acceptait encore les anciennes grandes matrices et
 que son validateur cherchait des marqueurs retirés. Le paquet a été corrigé et
-repasse 220 tests avec 3 ignorés connus. Le déployeur ayant changé, MATRIX-V1
-revient en `ATTENDRE_GO` sur le commit corrigé. L'interface installée ne doit
-pas être relancée entre-temps.
+repasse 220 tests avec 3 ignorés connus. Le GO renouvelé a lancé un préflight
+SSH strictement en lecture seule, arrêté sans mutation sur la phase sûre
+`rolled_back` que sa garde locale omettait. Cette phase terminale est désormais
+acceptée seulement avec `busy=false`. Le déployeur ayant encore changé,
+MATRIX-V1 revient en `ATTENDRE_GO` sur le nouveau commit corrigé. L'interface
+installée ne doit pas être relancée entre-temps.
 
 ## Current phase
 

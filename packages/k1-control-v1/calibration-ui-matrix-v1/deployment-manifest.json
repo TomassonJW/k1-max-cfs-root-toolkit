@@ -4,7 +4,7 @@
   "dependency": "G4-K1-CONTROL-CALIBRATION-UI-V1 installed and validated",
   "deployer": {
     "path": "scripts/deploy-k1-control-calibration-ui-matrix-v1.ps1",
-    "sha256": "7d98439f8db6c51eea27f3dd2960df1bf277bae3d22d7eb326587906530d93f7"
+    "sha256": "8491c09ddb96e440f7733ef9720280a0f77ec6a6193a093f00487cc922649b3f"
   },
   "baseline": {
     "files": [

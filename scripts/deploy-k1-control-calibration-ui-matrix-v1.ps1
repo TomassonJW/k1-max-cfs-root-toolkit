@@ -158,7 +158,7 @@ function Get-CalibrationUiState {
 
 function Assert-ClosedUiState {
     $state = Get-CalibrationUiState
-    if ($state.busy -or @('idle', 'accepted', 'cancelled') -notcontains [string]$state.phase) {
+    if ($state.busy -or @('idle', 'accepted', 'cancelled', 'rolled_back') -notcontains [string]$state.phase) {
         throw "La campagne UI n'est pas fermée : phase=$($state.phase) busy=$($state.busy)"
     }
     return $state

@@ -858,7 +858,7 @@ complète, reprise et preuve des deux CFS. La décision détaillée est l'ADR-01
 
 Date: 2026-08-23
 
-Status: accepté hors imprimante après revue préalable au déploiement
+Status: accepté hors imprimante après deux préflights bloqués sans mutation
 
 Après le GO exact MATRIX-V1, la revue locale obligatoire a trouvé deux restes
 du contrat historique : l'import distant demandait encore au core d'accepter
@@ -876,3 +876,11 @@ deux CFS connectés.
 Ces changements renforcent les commandes revues après le GO. Conformément à
 D-027, aucune pose n'est autorisée avant un nouveau GO exact MATRIX-V1 sur le
 commit corrigé.
+
+Ce GO renouvelé a ensuite ouvert le préflight SSH réel. Il s'est arrêté avant
+toute écriture sur `phase=rolled_back`, `busy=false`, état terminal sûr produit
+par la restauration de campagne. Le core, l'interface et les autres gardes de
+déploiement reconnaissent déjà cet état. La garde MATRIX l'accepte désormais
+explicitement, sans élargir les phases actives ou échouées acceptables. Comme ce
+changement modifie encore le script revu, D-027 impose un nouveau GO exact avant
+la pose.

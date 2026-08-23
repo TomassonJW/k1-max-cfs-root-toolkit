@@ -20,8 +20,11 @@ La prochaine gate unique est
 sous la capture `20260823-151026-g4-k1-control-calibration-ui-prtouch-bed-mesh-v2`.
 Le premier GO MATRIX a été suivi d'une correction locale avant toute connexion :
 son ancien préflight essayait encore d'accepter les matrices désormais refusées
-et son validateur cherchait des marqueurs retirés. Le paquet corrigé exige donc
-un GO MATRIX renouvelé. RETRY-SAFETY-V1, PRTOUCH-PRESETS-V1, CAMPAIGN-V1 et
+et son validateur cherchait des marqueurs retirés. Le GO renouvelé a permis un
+préflight SSH en lecture seule, arrêté sans mutation sur la phase terminale sûre
+`rolled_back` que la garde MATRIX omettait. Cette garde accepte désormais cet
+état seulement avec `busy=false`; le script revu exige donc encore un GO MATRIX
+renouvelé. RETRY-SAFETY-V1, PRTOUCH-PRESETS-V1, CAMPAIGN-V1 et
 COMPOSITE-MESH-SUBGRID-V1 restent fermées pendant cet incrément.
 
 ## G0 — Repository bootstrap
