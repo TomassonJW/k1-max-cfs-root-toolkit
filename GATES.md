@@ -599,39 +599,37 @@ close.
 
 ### Gate exécutée — `G4-K1-CONTROL-CALIBRATION-UI-MATRIX-V1`
 
-Status: **pose historique validée ; correction `6 × 6` revue hors imprimante ; nouveau GO requis après correction du déployeur**
+Status: **correction `6 × 6` installée et validée**
 
 La révision actuelle retire les choix historiques `3/4/5/9/11/15` et expose
 uniquement `6 × 6` Lagrange avec un seul mesh quotidien. Le serveur refuse toute
 autre combinaison avant chauffe.
 
-Le GO exact suivant a été reçu, mais la revue locale préalable a trouvé que le
-programme d'import distant validait encore `9/11/15` et que l'action `Validate`
-cherchait deux anciens marqueurs incompatibles avec le payload sûr. Aucun SSH,
-backup ou effet distant MATRIX n'a eu lieu. Le déployeur corrigé prouve le refus
-des tailles non qualifiées, épingle BED-MESH-V2 et `printer.cfg`, puis contrôle
-le Z, le profil robuste, les deux CFS et `server/info`. Les 220 tests sont verts,
-avec 3 ignorés connus. Le changement de commandes après GO impose un nouveau GO
-exact avant toute pose.
+Deux défauts de préflight ont d'abord été corrigés sans mutation : les anciennes
+assertions `9/11/15`, puis l'omission de la phase terminale sûre `rolled_back`.
+Le GO persistant de Thomas a ensuite couvert les corrections nécessaires jusqu'au
+vert. Le déployeur prouve sur le Python Moonraker exact l'acceptation unique de
+`6 × 6` Lagrange et le refus de `3/4/5/9/11/15` et de `6 × 6` bicubique.
 
-La pose remplace seulement le core de calibration Moonraker, `index.html` et
-`app.js`, après backup exact, puis redémarre le Moonraker dédié. Elle ne chauffe,
-ne home, ne bouge, ne mesure et n'écrit aucun Z. Les quatre niveaux passent les
-tests hors imprimante, y compris l'agrégation de six matrices `15 × 15`.
-
-Le GO exact a été consommé par la capture
-`20260822-222005-g4-k1-control-calibration-ui-matrix-v1`, qui a obtenu
+La capture `20260823-161103-g4-k1-control-calibration-ui-matrix-v1` a obtenu
 `PREFLIGHT_CALIBRATION_UI_MATRIX_V1_OK`,
-`DEPLOY_CALIBRATION_UI_MATRIX_V1_OK` et deux
-`VALIDATE_CALIBRATION_UI_MATRIX_V1_OK` indépendants. Le backup exact précède le
-remplacement des trois seuls fichiers prévus et le restart du Moonraker dédié.
-Aucune calibration, chauffe, référence, mesure, extrusion, commande CFS,
-impression ou écriture Z n'a eu lieu.
+`DEPLOY_CALIBRATION_UI_MATRIX_V1_OK`, puis une validation indépendante
+`VALIDATE_CALIBRATION_UI_MATRIX_V1_OK`. Le core, `index.html` et `app.js` ont été
+remplacés après backup exact, puis seul le Moonraker dédié a été redémarré. Les
+hashes installés et de rollback sont conformes ; BED-MESH-V2 et `printer.cfg`
+sont inchangés. Klippy est `ready`, `failed_components=[]`, `warnings=[]`, la K1
+est au repos avec cibles zéro, le Z accepté et le profil robuste sont valides,
+`6 × 6` Lagrange est chargé et les deux CFS sont connectés. Les 220 tests sont
+verts avec 3 ignorés connus. Aucune calibration, chauffe, référence, mesure,
+extrusion, commande CFS, impression ou écriture Z n'a eu lieu. La gate est close.
 
-Le vrai rendu Chrome authentifié a confirmé les quatre niveaux. Les sélections
-`9/11/15` forcent le bicubique et désactivent Lagrange. Un rechargement complet
-a restauré `6 × 6` Lagrange, le seed `−0,04 mm` et les confirmations physiques
-décochées. La gate est close ; son GO ne couvre aucun rerun ni la campagne.
+Chrome a enfin rendu les octets dont les hashes correspondent exactement aux
+trois fichiers distants : titre `K1 Control — calibration`, unique matrice
+`6 × 6 — maximum PRTouch fiable`, unique interpolation Lagrange, `0 / 1`
+passage et 36 points. Les choix `9/11/15` sont absents et aucun bouton n'a été
+actionné. Le rendu a utilisé une origine locale temporaire sans API parce que
+l'origine authentifiée `4409` restait interceptée par l'ancien service worker
+Mainsail ; aucun cache navigateur n'a été supprimé.
 
 ### Gate corrective — `G4-K1-CONTROL-CALIBRATION-UI-RETRY-SAFETY-V1`
 
@@ -660,46 +658,22 @@ deux cases décochées avant reprise de la campagne.
 
 Status: **ancien protocole KO au point 37 ; protocole `6 × 6 / 1 mesh` préparé hors imprimante et en attente de GO renouvelé**
 
-Cette gate ne pose aucun fichier. Elle qualifie physiquement les quatre niveaux
-depuis l'écran avec `PEI_TEXTURED_A`, `55/140 °C` et `200 s` : `9 × 9`,
-`11 × 11` et `15 × 15` bicubiques, puis `6 × 6` Lagrange. Chaque niveau exécute
-exactement six meshes, soit vingt-quatre mesures. Les trois niveaux supérieurs
-sont annulés proprement après capture de leur qualification ; le niveau rapide
-termine seul la descente Z bornée et l'acceptation humaine du jeu. Codex n'envoie
+Cette gate ne pose aucun fichier. La révision actuelle qualifie depuis l'écran
+un seul mesh physique `6 × 6` Lagrange avec `PEI_TEXTURED_A`, `55/140 °C` et
+`200 s`, puis le chemin Z borné et l'acceptation humaine du jeu. Codex n'envoie
 aucune commande de calibration et ne clique pas à la place de Thomas ; ses
 contrôles restent en lecture seule.
 
-Tout rejet du mesh, septième passage, rerun automatique, intervention console,
-perte de l'API, mouvement inattendu ou impossibilité d'observer un jeu sûr est
-un KO. L'opérateur annule le niveau courant et s'arrête sans rerun. La gate ne peut être
-ouverte qu'après `DEPLOY_CALIBRATION_UI_MATRIX_V1_OK`,
-`VALIDATE_CALIBRATION_UI_MATRIX_V1_OK` et la preuve du vrai rendu navigateur
-avec les quatre niveaux. Son
-contrat, son manifeste d'exécution et son validateur strictement en lecture
-seule sont épinglés ; le plan local a obtenu
-`PLAN_CALIBRATION_UI_CAMPAIGN_V1_OK`.
+Tout rejet ou mesh incomplet, deuxième passage, rerun automatique, matrice autre
+que `6 × 6` Lagrange, intervention console, perte de l'API, mouvement inattendu
+ou impossibilité d'observer un jeu sûr est un KO avec restauration exacte et
+arrêt sans rerun. Le contrat, le manifeste et le validateur sont épinglés.
 
-Les préconditions de cette gate sont désormais satisfaites. Le préflight réel
-strictement en lecture seule a obtenu
-`PREFLIGHT_CALIBRATION_UI_CAMPAIGN_V1_OK` sous la capture
-`20260822-222450-g4-k1-control-calibration-ui-campaign-v1` : UI inactive, K1 au
-repos, cibles à zéro, Z accepté et profil rapide présents, profils `9/11/15`
-absents comme attendu. Le GO envoyé avant la correction de matrice n'a pas été
-consommé. Thomas a ensuite donné une autorité globale explicite dans le goal
-pour aller jusqu'au vert calibration sans redemander de GO. La campagne était
-alors autorisée. Le handoff du 23 août a fermé cette continuité : la tâche
-suivante repart en `ATTENDRE_GO` sur la seule gate PRTOUCH-BED-MESH-V2.
-
-Le tunnel `4410` a été rétabli avec un seul processus neuf et connecté ; les
-fichiers UI distants, dont l'empreinte exacte du correctif, sont présents. Un
-premier préflight a rejeté à tort l'état sûr `cancelled` laissé par les deux
-arrêts à `0/6`. Le validateur accepte maintenant seulement un départ `idle`
-sans backup ou une reprise `cancelled` strictement à zéro mesure avec backup ;
-toute annulation après le premier mesh reste refusée. Le test ciblé et le
-préflight réel sous la capture
-`20260822-233717-g4-k1-control-calibration-ui-campaign-v1` sont verts. La
-campagne attend maintenant le rendu humain des cases décochées, puis le départ
-écran `9 × 9`.
+MATRIX-V1 et son rendu fixe `6 × 6` sont maintenant clos. La campagne reste
+fermée jusqu'aux gates séparées RETRY-SAFETY-V1 et PRTOUCH-PRESETS-V1, puis à
+son propre préflight frais et son autorisation. Les captures de campagne
+`20260822-*` et leurs départs `9 × 9` appartiennent au protocole historique
+supersédé ; elles ne constituent plus une autorisation de relance.
 
 Le départ écran a ensuite été conforme mais s'est arrêté proprement à `1/6`,
 sans matrice exploitable, avec `Le mesh ne contient pas le nombre de lignes
