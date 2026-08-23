@@ -19,3 +19,11 @@ Elle ne lance aucune calibration.
 
 Après revue du commit figé, la seule autorisation de pose recevable est :
 `GO G4-K1-CONTROL-CALIBRATION-UI-MATRIX-V1`.
+
+Le premier GO reçu le 23 août a été arrêté hors imprimante avant toute
+connexion : le préflight conservait encore les assertions des grandes matrices
+et le validateur cherchait d'anciens marqueurs. La correction prouve désormais
+le refus des tailles non qualifiées sur le Python Moonraker exact et contrôle
+BED-MESH-V2, `printer.cfg`, le profil robuste, le Z, les deux CFS ainsi que
+`failed_components=[]` et `warnings=[]`. Le déployeur ayant changé, la pose
+attend un nouveau GO exact sur le commit corrigé.

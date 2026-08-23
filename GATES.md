@@ -16,10 +16,13 @@ lancée après cette décision. L'état physique courant devra donc être vérif
 frais avant toute exécution.
 
 La prochaine gate unique est
-`G4-K1-CONTROL-CALIBRATION-UI-PRTOUCH-BED-MESH-V2`. Elle doit être préflightée,
-autorisée exactement, posée et validée seule. MATRIX-V1, RETRY-SAFETY-V1,
-PRTOUCH-PRESETS-V1, CAMPAIGN-V1 et COMPOSITE-MESH-SUBGRID-V1 restent fermées
-pendant cet incrément.
+`G4-K1-CONTROL-CALIBRATION-UI-MATRIX-V1`. BED-MESH-V2 est installée et validée
+sous la capture `20260823-151026-g4-k1-control-calibration-ui-prtouch-bed-mesh-v2`.
+Le premier GO MATRIX a été suivi d'une correction locale avant toute connexion :
+son ancien préflight essayait encore d'accepter les matrices désormais refusées
+et son validateur cherchait des marqueurs retirés. Le paquet corrigé exige donc
+un GO MATRIX renouvelé. RETRY-SAFETY-V1, PRTOUCH-PRESETS-V1, CAMPAIGN-V1 et
+COMPOSITE-MESH-SUBGRID-V1 restent fermées pendant cet incrément.
 
 ## G0 — Repository bootstrap
 
@@ -598,14 +601,20 @@ close.
 
 ### Gate exécutée — `G4-K1-CONTROL-CALIBRATION-UI-MATRIX-V1`
 
-Status: **pose historique validée ; hypothèse grandes matrices réfutée ; correction `6 × 6` en attente de GO renouvelé**
+Status: **pose historique validée ; correction `6 × 6` revue hors imprimante ; nouveau GO requis après correction du déployeur**
 
-Cette gate corrige l'écart entre le contrat produit et l'interface installée :
-les niveaux rapide `6 × 6`, standard `9 × 9`, précis `11 × 11` et expert
-`15 × 15` deviennent sélectionnables. Lagrange reste disponible au maximum en
-`6 × 6`; le navigateur force le bicubique au-delà et le serveur refuse toute
-combinaison incompatible. Les tailles `3 × 3`, `4 × 4` et `5 × 5` restent des
-choix personnalisés.
+La révision actuelle retire les choix historiques `3/4/5/9/11/15` et expose
+uniquement `6 × 6` Lagrange avec un seul mesh quotidien. Le serveur refuse toute
+autre combinaison avant chauffe.
+
+Le GO exact suivant a été reçu, mais la revue locale préalable a trouvé que le
+programme d'import distant validait encore `9/11/15` et que l'action `Validate`
+cherchait deux anciens marqueurs incompatibles avec le payload sûr. Aucun SSH,
+backup ou effet distant MATRIX n'a eu lieu. Le déployeur corrigé prouve le refus
+des tailles non qualifiées, épingle BED-MESH-V2 et `printer.cfg`, puis contrôle
+le Z, le profil robuste, les deux CFS et `server/info`. Les 220 tests sont verts,
+avec 3 ignorés connus. Le changement de commandes après GO impose un nouveau GO
+exact avant toute pose.
 
 La pose remplace seulement le core de calibration Moonraker, `index.html` et
 `app.js`, après backup exact, puis redémarre le Moonraker dédié. Elle ne chauffe,

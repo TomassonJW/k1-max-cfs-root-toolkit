@@ -4,7 +4,7 @@
   "dependency": "G4-K1-CONTROL-CALIBRATION-UI-V1 installed and validated",
   "deployer": {
     "path": "scripts/deploy-k1-control-calibration-ui-matrix-v1.ps1",
-    "sha256": "c658e0e8f9e10cc02d58085969ccf152e1256550a0ac5eeb0bd024a821e4d36a"
+    "sha256": "7d98439f8db6c51eea27f3dd2960df1bf277bae3d22d7eb326587906530d93f7"
   },
   "baseline": {
     "files": [
@@ -51,8 +51,16 @@
         "sha256": "27c0734f149ea89a8ba0d5e17f7f65aecc95c1383c359662cb366a687bb7d303"
       },
       {
+        "destination": "/usr/data/k1-control-v1/current/moonraker/moonraker/moonraker/components/k1_control_probe_count.py",
+        "sha256": "8c8c4aaf20856be1880cea56badd2fe81bd488966eab0d55e7672f73eb1db7b0"
+      },
+      {
         "destination": "/usr/data/k1-control-v1/current/www/mainsail/k1-control/styles.css",
         "sha256": "a7c27fbcdc07f24b00b6d47cc1d9aa8570b9483bcf4dd3615419de579f9aaa12"
+      },
+      {
+        "destination": "/usr/data/printer_data/config/printer.cfg",
+        "sha256": "36cfb7e71180268841ab5cedd31628c8d9953ba437c47662ced16df18bb1bacd"
       }
     ]
   },

@@ -106,7 +106,7 @@ function Assert-Package {
 }
 
 function Get-PrinterStatus {
-    $url = "http://127.0.0.1:7125/printer/objects/query?print_stats&extruder&heater_bed&gcode_macro+KCTRL_STATE&gcode_macro+KCTRL_CAL_PATH_STATE"
+    $url = "http://127.0.0.1:7125/printer/objects/query?print_stats&extruder&heater_bed&bed_mesh&configfile&box&gcode_macro+KCTRL_STATE&k1_control_store&gcode_macro+KCTRL_CAL_PATH_STATE"
     $raw = (Invoke-Remote "curl '$url'") -join "`n"
     $payload = $raw | ConvertFrom-Json
     if (-not $payload.result.status) { throw 'Réponse Moonraker sans état Klipper.' }
@@ -122,12 +122,29 @@ function Assert-PrinterIdle {
         throw 'Une chauffe est déjà demandée.'
     }
     $runtime = $status.'gcode_macro KCTRL_STATE'
-    if ([int]$runtime.ready -ne 1 -or [int]$runtime.session_active -ne 0 -or [int]$runtime.low_moves_armed -ne 0) {
+    if ([int]$runtime.ready -ne 1 -or [int]$runtime.accepted_z_valid -ne 1 -or
+        [int]$runtime.session_active -ne 0 -or [int]$runtime.low_moves_armed -ne 0 -or
+        -not $status.k1_control_store -or $status.k1_control_store.integrity -cne 'ok') {
         throw "Le runtime K1 Control n'est pas fermé."
     }
     $path = $status.'gcode_macro KCTRL_CAL_PATH_STATE'
     if (@('idle', 'committed', 'cancelled') -notcontains [string]$path.phase -or [int]$path.motion_armed -ne 0) {
         throw "Le chemin Z n'est pas fermé."
+    }
+    $profiles = @($status.bed_mesh.profiles.PSObject.Properties.Name)
+    if ($profiles -notcontains 'k1_p001_t055_r001_n06x06' -or $profiles -contains 'K1_TRANSIENT') {
+        throw 'Profil robuste absent ou profil transitoire présent.'
+    }
+    $count = @($status.configfile.settings.bed_mesh.probe_count)
+    if ($count.Count -ne 2 -or [int]$count[0] -ne 6 -or [int]$count[1] -ne 6 -or
+        [string]$status.configfile.settings.bed_mesh.algorithm -cne 'lagrange') {
+        throw "La configuration bed_mesh chargée n'est pas 6x6 Lagrange."
+    }
+    foreach ($name in @('T1', 'T2')) {
+        $unit = $status.box.$name
+        if ($unit.state -cne 'connect' -or $unit.version -cne '1.1.3' -or @($unit.material_type).Count -ne 4) {
+            throw "CFS $name inattendu ou déconnecté."
+        }
     }
     return $status
 }
@@ -178,14 +195,30 @@ component.__package__ = 'moonraker.components'
 sys.modules[component_name] = component
 exec(compile(base64.b64decode('$componentSource'), component.__file__, 'exec'), component.__dict__)
 
-for size, algorithm in ((6, 'lagrange'), (9, 'bicubic'), (11, 'bicubic'), (15, 'bicubic')):
-    core.validate_config({
+def candidate(size, algorithm):
+    return {
         'plate_id': 1, 'plate_label': 'PEI_TEXTURED_A',
         'bed_temp_c': 55, 'nozzle_temp_c': 140, 'soak_seconds': 200,
         'probe_revision': 1, 'nozzle_id': 1, 'config_id': 1,
         'x_count': size, 'y_count': size, 'algorithm': algorithm,
         'seed_offset_mm': -0.04,
-    })
+    }
+
+accepted = core.validate_config(candidate(6, 'lagrange'))
+assert accepted['x_count'] == 6 and accepted['algorithm'] == 'lagrange'
+for size in (3, 4, 5, 9, 11, 15):
+    try:
+        core.validate_config(candidate(size, 'lagrange'))
+    except core.CalibrationError:
+        pass
+    else:
+        raise AssertionError('%sx%s must fail closed' % (size, size))
+try:
+    core.validate_config(candidate(6, 'bicubic'))
+except core.CalibrationError:
+    pass
+else:
+    raise AssertionError('6x6 bicubic must fail closed')
 print('REMOTE_CALIBRATION_UI_MATRIX_IMPORT_OK')
 "@
     $args = @(
@@ -222,12 +255,30 @@ function Assert-InstalledBaseline {
     Assert-RemotePythonCompatibility
 }
 
+function Get-ServerInfo {
+    $raw = (Invoke-Remote "curl 'http://127.0.0.1:7125/server/info'") -join "`n"
+    $info = ($raw | ConvertFrom-Json).result
+    if (-not $info) { throw 'Moonraker sans server/info.' }
+    return $info
+}
+
+function Assert-ServerInfo {
+    $info = Get-ServerInfo
+    if (-not [bool]$info.klippy_connected -or [string]$info.klippy_state -cne 'ready' -or
+        @($info.components) -notcontains 'k1_control' -or
+        @($info.components) -notcontains 'k1_control_probe_count' -or
+        @($info.failed_components).Count -ne 0 -or @($info.warnings).Count -ne 0) {
+        throw "Moonraker non sain : state=$($info.klippy_state) failed=$(@($info.failed_components) -join ',') warnings=$(@($info.warnings) -join ' | ')"
+    }
+    return $info
+}
+
 function Wait-Moonraker {
     param([int]$Attempts = 60)
     $last = 'aucune réponse'
     for ($index = 1; $index -le $Attempts; $index++) {
         try {
-            [void](Invoke-Remote "curl 'http://127.0.0.1:7125/server/info'")
+            [void](Assert-ServerInfo)
             return
         }
         catch { $last = $_.Exception.Message }
@@ -292,7 +343,7 @@ if ($Action -eq 'Validate') {
             throw "Fichier hors write-set modifié : $($file.destination)"
         }
     }
-    [void](Invoke-Remote "grep -q 'value=.15.' '$RemoteUi/index.html' && grep -q 'matrix > 6' '$RemoteUi/app.js'")
+    [void](Assert-ServerInfo)
     [void](Assert-ClosedUiState)
     [void](Assert-PrinterIdle)
     Write-Output 'VALIDATE_CALIBRATION_UI_MATRIX_V1_OK'

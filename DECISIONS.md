@@ -853,3 +853,26 @@ D-048 reste la règle du mode standard et de l'interface actuellement sûre : un
 seul `6 × 6`. Le composite est une mission séparée qui ne devient visible
 qu'après qualification physique, comparaison de première couche, coupure
 complète, reprise et preuve des deux CFS. La décision détaillée est l'ADR-013.
+
+## D-050 — Le préflight MATRIX doit prouver le refus des anciennes matrices
+
+Date: 2026-08-23
+
+Status: accepté hors imprimante après revue préalable au déploiement
+
+Après le GO exact MATRIX-V1, la revue locale obligatoire a trouvé deux restes
+du contrat historique : l'import distant demandait encore au core d'accepter
+`9 × 9`, `11 × 11` et `15 × 15`, et la validation cherchait des marqueurs
+statiques supprimés par le nouveau payload `6 × 6`. Le préflight aurait donc
+échoué avant mutation, mais ce conflit a été corrigé avant toute connexion SSH.
+
+Le préflight exécute maintenant sur le Python Moonraker exact l'acceptation de
+`6 × 6` Lagrange et le refus de `3/4/5/9/11/15` ainsi que de `6 × 6`
+bicubique. La baseline épingle aussi le composant BED-MESH-V2 déjà posé et
+`printer.cfg`. La validation exige Moonraker prêt, aucune composante échouée ni
+avertissement, le Z accepté, le profil robuste, `6 × 6` Lagrange chargé et les
+deux CFS connectés.
+
+Ces changements renforcent les commandes revues après le GO. Conformément à
+D-027, aucune pose n'est autorisée avant un nouveau GO exact MATRIX-V1 sur le
+commit corrigé.

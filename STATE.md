@@ -2,6 +2,15 @@
 
 Last updated: 2026-08-23
 
+La révision sûre `PRTOUCH-BED-MESH-V2` est maintenant installée et validée sous
+la capture `20260823-151026-g4-k1-control-calibration-ui-prtouch-bed-mesh-v2`.
+Le GO MATRIX-V1 reçu ensuite n'a déclenché aucune connexion : la revue locale a
+trouvé que son préflight acceptait encore les anciennes grandes matrices et
+que son validateur cherchait des marqueurs retirés. Le paquet a été corrigé et
+repasse 220 tests avec 3 ignorés connus. Le déployeur ayant changé, MATRIX-V1
+revient en `ATTENDRE_GO` sur le commit corrigé. L'interface installée ne doit
+pas être relancée entre-temps.
+
 ## Current phase
 
 **P4 — fondation V3 + PATHS-V1, runtime Z/mesh, chemin borné et première
@@ -433,13 +442,13 @@ Au début de la prochaine session, annoncer explicitement à Thomas :
 - l'écran réel est installé mais sa révision actuelle propose encore des
   matrices incompatibles ; ne pas le relancer avant la correction `6 × 6`.
 
-La prochaine action sûre n'est plus un départ `9 × 9`. La reprise est
-`ATTENDRE_GO` et n'hérite pas du Goal global bloqué de la tâche source. Sa
-mission unique est d'obtenir un état réel frais puis de poser et valider
-uniquement `G4-K1-CONTROL-CALIBRATION-UI-PRTOUCH-BED-MESH-V2`, après son GO
-exact. MATRIX-V1, RETRY-SAFETY-V1, PRTOUCH-PRESETS-V1, CAMPAIGN-V1 et la preuve
-composite restent des incréments ultérieurs. L'ancienne UI encore installée ne
-doit pas être relancée.
+La prochaine action sûre n'est plus un départ `9 × 9`. BED-MESH-V2 est installée
+et validée. La reprise est `ATTENDRE_GO` pour la seule gate
+`G4-K1-CONTROL-CALIBRATION-UI-MATRIX-V1` corrigée. Son premier GO a précédé la
+correction locale du préflight et ne couvre pas les nouvelles commandes revues.
+RETRY-SAFETY-V1, PRTOUCH-PRESETS-V1, CAMPAIGN-V1 et la preuve composite restent
+des incréments ultérieurs. L'ancienne UI encore installée ne doit pas être
+relancée.
 
 Le chemin borné `G4-K1-CONTROL-CALIBRATION-PATH-V1` ajoute ce qui manquait pour
 évaluer le premier Z sans console libre ni valeur cachée. Son premier préflight
