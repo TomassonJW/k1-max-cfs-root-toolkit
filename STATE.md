@@ -14,6 +14,10 @@ connectés. Aucune action physique n'a eu lieu. La prochaine gate séparée est
 `G4-K1-CONTROL-CALIBRATION-UI-RETRY-SAFETY-V1`; aucune calibration ne doit être
 lancée depuis l'écran avant la fermeture des deltas restants.
 
+Le rendu Chrome des octets exactement identiques aux hashes distants confirme
+le titre de calibration, l'unique choix `6 × 6`, Lagrange, un passage et 36
+points. Aucun choix supérieur ni clic de calibration n'a été observé.
+
 ## Current phase
 
 **P4 — fondation V3 + PATHS-V1, runtime Z/mesh, chemin borné et première

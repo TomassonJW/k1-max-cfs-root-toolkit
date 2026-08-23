@@ -29,6 +29,15 @@ Le rollback n'a pas été exécuté car il annulerait la pose réussie ; son bac
 exact est vérifié et conservé. MATRIX-V1 est close. Ne pas lancer de calibration
 depuis l'écran avant les gates séparées suivantes.
 
+La dernière preuve navigateur a utilisé les octets locaux dont les trois hashes
+correspondent exactement aux fichiers installés. Chrome a rendu le titre
+`K1 Control — calibration`, la seule matrice `6 × 6 — maximum PRTouch fiable`,
+le seul algorithme Lagrange, `0 / 1` passage et 36 points. Aucun choix
+`9/11/15` n'est présent et aucun bouton n'a été actionné. Cette origine locale
+sans API a été utilisée parce que l'origine authentifiée `4409` restait
+interceptée par son ancien service worker Mainsail ; aucun cache navigateur n'a
+été supprimé. La preuve structurée privée est conservée dans la capture.
+
 ## Reprise MATRIX-V1 du 23 août 2026
 
 `G4-K1-CONTROL-CALIBRATION-UI-PRTOUCH-BED-MESH-V2` a été posée et validée

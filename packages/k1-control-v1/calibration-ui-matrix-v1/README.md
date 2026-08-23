@@ -40,3 +40,7 @@ Le GO persistant a ensuite permis de terminer la gate sans redemander la même
 autorisation. Le préflight, le déploiement et deux validations sont verts. Le
 backup exact est conservé, seul Moonraker a été redémarré et aucune calibration
 ou action physique n'a été lancée. MATRIX-V1 est close.
+
+Le payload exact, relié aux trois hashes distants, a aussi été rendu dans Chrome
+sur une origine locale temporaire sans API : une seule matrice `6 × 6`,
+Lagrange, un passage et 36 points, sans choix supérieur ni clic d'action.
