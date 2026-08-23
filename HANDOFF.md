@@ -30,18 +30,23 @@ encore installée ne doit pas être relancée.
 ## Vérifications de clôture
 
 - dépôt : `C:\Users\janko\Documents\ChatGPT\k1-max-cfs-root-toolkit` ;
-- branche de mission avant intégration :
+- branche de mission intégrée :
   `codex/g4-k1-control-calibration-ui-retry-safety-v1` ;
-- tête candidate avant ce commit de handoff :
-  `e3da05b31c256c736442f743cddf13a61184775b`, identique à la branche distante ;
-- PR GitHub : `#36`, dont les références distantes `head` et `merge` existent ;
+- commit de handoff : `4a47aff162f88ddfa067d81d6b6607f5d20caa5d` ;
+- commit d'intégration vérifié sur `main` local et distant :
+  `4e4027e2a73b30dca69844c229712ec046150113` ;
+- PR GitHub : `#36` ; sa référence `head` reste lisible et sa référence `merge`
+  a disparu après l'intégration directe ;
+- branche de mission locale et distante : **supprimées après preuve
+  d'ascendance** ;
+- worktrees : un seul checkout principal, propre, sur `main` ;
 - suite locale : **OK**, 220 tests réussis, 3 ignorés connus ;
 - parse de tous les scripts PowerShell : **OK** ;
 - vérification réelle de la K1 pendant la clôture : **non exécutée**, par
   décision de Thomas ;
-- client GitHub `gh` : **KO authentification** (`HTTP 401`) ; l'intégration Git
-  normale doit être tentée avec le transport Git déjà configuré, puis son état
-  distant vérifié sans transformer ce KO en succès.
+- client GitHub `gh` : **KO authentification** (`HTTP 401`) ; l'intégration a
+  néanmoins été réalisée par le transport Git configuré, puis vérifiée par SHA
+  local, SHA distant et ascendance.
 
 ## Message obligatoire au début de la prochaine session
 
