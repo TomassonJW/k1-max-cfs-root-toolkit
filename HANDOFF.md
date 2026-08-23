@@ -1,6 +1,6 @@
 # HANDOFF
 
-Date: 2026-08-23 15:31 +02:00
+Date: 2026-08-23 15:55 +02:00
 Phase: P4 / FIRST-CALIBRATION-V2 validée ; corrections UI sûres et prototype composite préparés hors imprimante ; production fermée
 Next operator: `ATTENDRE_GO` ; commencer uniquement par le préflight, la pose et la validation de `G4-K1-CONTROL-CALIBRATION-UI-MATRIX-V1` corrigée
 
@@ -23,13 +23,23 @@ Le déployeur corrigé vérifie maintenant l'acceptation unique `6 × 6` Lagrang
 le refus de `3/4/5/9/11/15` et de `6 × 6` bicubique, le composant BED-MESH-V2,
 `printer.cfg`, le profil robuste, le stockage Z, les deux CFS et
 `server/info` avec listes d'échec et d'avertissement vides. Son hash est
-`7d98439f8db6c51eea27f3dd2960df1bf277bae3d22d7eb326587906530d93f7`.
+`8491c09ddb96e440f7733ef9720280a0f77ec6a6193a093f00487cc922649b3f`.
 La suite complète passe 220 tests, avec 3 ignorés connus.
 
 Comme les commandes revues ont changé après le GO, aucune pose MATRIX n'est
 autorisée par ce GO. La prochaine instruction requise est de nouveau
 `GO G4-K1-CONTROL-CALIBRATION-UI-MATRIX-V1` sur le commit corrigé. L'ancienne
 UI ne doit toujours pas être relancée.
+
+Thomas a renouvelé ce GO sur le commit corrigé. Le préflight SSH réel s'est
+arrêté avant toute écriture parce que l'API expose la phase terminale sûre
+`rolled_back`, laissée par la restauration de campagne, alors que la garde
+MATRIX n'acceptait encore que `idle`, `accepted` et `cancelled`. Les autres
+gardes de la chaîne, le core et l'interface reconnaissent déjà `rolled_back`
+comme état fermé. Le déployeur MATRIX accepte désormais ce quatrième état
+uniquement si `busy=false`; aucune pose, aucun backup, aucun transfert et aucun
+restart n'ont eu lieu sous ce GO. Le script revu ayant de nouveau changé, la
+mission revient en `ATTENDRE_GO` pour le même GO exact sur le nouveau commit.
 
 ## Décision de clôture de la session
 

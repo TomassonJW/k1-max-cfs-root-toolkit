@@ -138,6 +138,7 @@ class CalibrationUiMatrixTests(unittest.TestCase):
         self.assertIn("Assert-ServerInfo", deployer)
         self.assertIn("failed_components", deployer)
         self.assertIn("warnings", deployer)
+        self.assertIn("'cancelled', 'rolled_back'", deployer)
 
 
 if __name__ == "__main__":

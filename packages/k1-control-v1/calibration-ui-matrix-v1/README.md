@@ -27,3 +27,10 @@ le refus des tailles non qualifiées sur le Python Moonraker exact et contrôle
 BED-MESH-V2, `printer.cfg`, le profil robuste, le Z, les deux CFS ainsi que
 `failed_components=[]` et `warnings=[]`. Le déployeur ayant changé, la pose
 attend un nouveau GO exact sur le commit corrigé.
+
+Le GO renouvelé a ouvert un préflight SSH strictement en lecture seule. Il a
+confirmé l'état terminal sûr `rolled_back`, mais la garde MATRIX ne le listait
+pas encore parmi les états fermés. Elle l'accepte désormais uniquement avec
+`busy=false`, conformément au core et aux autres gardes. Aucune pose ni aucun
+restart n'ont eu lieu ; ce nouveau changement du déployeur exige encore le même
+GO exact sur le nouveau commit corrigé.
