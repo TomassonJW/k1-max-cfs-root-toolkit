@@ -20,11 +20,15 @@ class CalibrationUiRetrySafetyTests(unittest.TestCase):
     def test_incomplete_retry_resets_dangerous_confirmations_once(self):
         javascript = APP.read_text(encoding="utf-8")
         self.assertIn("function isIncompleteRetry(value)", javascript)
-        self.assertIn('["cancelled", "failed", "mesh_rejected"]', javascript)
         self.assertIn(
-            "Number(value?.mesh_index ?? 0) < Number(value?.mesh_target_count ?? 1)",
+            '["cancelled", "failed", "mesh_rejected", "rolled_back"]',
             javascript,
         )
+        retry_guard = javascript.split("function isIncompleteRetry(value)", 1)[1].split(
+            "function hydrateForm()", 1
+        )[0]
+        self.assertNotIn("mesh_index", retry_guard)
+        self.assertNotIn("mesh_target_count", retry_guard)
         self.assertIn("`${state.campaign_id}:${phase}`", javascript)
         self.assertIn('byId("replace-existing").checked = isIncompleteRetry(state)', javascript)
         self.assertIn('byId("plate-clear").checked = false', javascript)
@@ -35,9 +39,8 @@ class CalibrationUiRetrySafetyTests(unittest.TestCase):
             contract["contract_id"],
             "G4-K1-CONTROL-CALIBRATION-UI-RETRY-SAFETY-V1",
         )
-        self.assertEqual(
-            contract["reset_when"]["mesh_index_less_than"], "mesh_target_count"
-        )
+        self.assertIn("rolled_back", contract["reset_when"]["phases"])
+        self.assertIn("mesh_index equals", contract["reset_when"]["single_mesh_rule"])
         self.assertFalse(contract["one_time_reset"]["replace_existing"])
         self.assertFalse(contract["one_time_reset"]["plate_clear"])
         self.assertTrue(contract["operator_can_reenable_replace_explicitly"])
@@ -67,6 +70,10 @@ class CalibrationUiRetrySafetyTests(unittest.TestCase):
         self.assertNotIn("KCTRL_CAL_PATH_BEGIN", deployer)
         self.assertNotIn("M104", deployer)
         self.assertNotIn("M140", deployer)
+        self.assertIn("Assert-ServerInfo", deployer)
+        self.assertIn("failed_components", deployer)
+        self.assertIn("warnings", deployer)
+        self.assertIn("'restored', 'rolled_back'", deployer)
 
 
 if __name__ == "__main__":

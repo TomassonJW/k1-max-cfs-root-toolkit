@@ -1,14 +1,14 @@
 {
   "contract_id": "G4-K1-CONTROL-CALIBRATION-UI-RETRY-SAFETY-V1",
-  "status": "offline_review_candidate",
+  "status": "corrected_for_single_mesh_terminal_states",
   "dependency": "G4-K1-CONTROL-CALIBRATION-UI-MATRIX-V1 installed and validated",
   "deployer": {
     "path": "scripts/deploy-k1-control-calibration-ui-retry-safety-v1.ps1",
-    "sha256": "1169c04ed6184a2de244df31fa3c6f33d0335f52c2c07c1877382146ef83b5f2"
+    "sha256": "ef79d28ae2f7dd7cbb27f11a8e06dd5b1fb6761b5d2007ec436467d3cf1bb905"
   },
   "contract": {
     "path": "packages/k1-control-v1/calibration-ui-retry-safety-v1/calibration-ui-retry-safety-contract.json",
-    "sha256": "f49a282f36556e7b3584fcf91ef09c485fbb71dd8b8b17bb501b6c3f55199c97"
+    "sha256": "69efc0554a38e0816b9fc7112cc9e71fa3062a5ee0d839b9a31d79bb1129469c"
   },
   "baseline": {
     "destination": "/usr/data/k1-control-v1/current/www/mainsail/k1-control/app.js",
@@ -17,7 +17,7 @@
   "file": {
     "source": "app.js",
     "destination": "/usr/data/k1-control-v1/current/www/mainsail/k1-control/app.js",
-    "sha256": "67fe83aee144a2748d703b005fb337104c22e5760e2ae4dbc340306813c931bd"
+    "sha256": "3d3d53ead589e25c99d239de4415b4c35e96b3458c327f75b9f51f0ac43693ce"
   },
   "unchanged": {
     "files": [

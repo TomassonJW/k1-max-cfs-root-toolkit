@@ -89,8 +89,7 @@ function syncMatrixAlgorithm() {
 }
 
 function isIncompleteRetry(value) {
-  return ["cancelled", "failed", "mesh_rejected"].includes(value?.phase)
-    && Number(value?.mesh_index ?? 0) < Number(value?.mesh_target_count ?? 1);
+  return ["cancelled", "failed", "mesh_rejected", "rolled_back"].includes(value?.phase);
 }
 
 function hydrateForm() {
