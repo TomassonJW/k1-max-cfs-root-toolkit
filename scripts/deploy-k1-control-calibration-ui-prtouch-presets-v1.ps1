@@ -108,16 +108,35 @@ function Get-ApiState {
 }
 
 function Get-PrinterStatus {
-    $url = "http://127.0.0.1:7125/printer/objects/query?print_stats&extruder&heater_bed&bed_mesh&gcode_macro+KCTRL_STATE&k1_control_store&gcode_macro+KCTRL_CAL_PATH_STATE"
+    $url = "http://127.0.0.1:7125/printer/objects/query?print_stats&extruder&heater_bed&bed_mesh&configfile&box&gcode_macro+KCTRL_STATE&k1_control_store&gcode_macro+KCTRL_CAL_PATH_STATE"
     $raw = (Invoke-Remote "curl '$url'") -join "`n"
     $status = ($raw | ConvertFrom-Json).result.status
     if (-not $status) { throw 'Réponse Moonraker sans état Klipper.' }
     return $status
 }
 
+function Get-ServerInfo {
+    $raw = (Invoke-Remote "curl 'http://127.0.0.1:7125/server/info'") -join "`n"
+    $info = ($raw | ConvertFrom-Json).result
+    if (-not $info) { throw 'Moonraker sans server/info.' }
+    return $info
+}
+
+function Assert-ServerInfo {
+    $info = Get-ServerInfo
+    if (-not [bool]$info.klippy_connected -or [string]$info.klippy_state -cne 'ready' -or
+        @($info.components) -notcontains 'k1_control' -or
+        @($info.components) -notcontains 'k1_control_probe_count' -or
+        @($info.failed_components).Count -ne 0 -or @($info.warnings).Count -ne 0) {
+        throw "Moonraker non sain : state=$($info.klippy_state) failed=$(@($info.failed_components) -join ',') warnings=$(@($info.warnings) -join ' | ')"
+    }
+    return $info
+}
+
 function Assert-SafeState {
+    [void](Assert-ServerInfo)
     $api = Get-ApiState
-    if ([bool]$api.busy -or @('idle', 'accepted', 'cancelled', 'restored', 'rolled_back') -notcontains [string]$api.phase) {
+    if ([bool]$api.busy -or @('idle', 'accepted', 'cancelled', 'failed', 'mesh_rejected', 'restored', 'rolled_back') -notcontains [string]$api.phase) {
         throw "Campagne UI non fermée : phase=$($api.phase) busy=$($api.busy)"
     }
     $status = Get-PrinterStatus
@@ -141,6 +160,20 @@ function Assert-SafeState {
     }
     if ($status.bed_mesh.profiles.PSObject.Properties.Name -contains 'K1_TRANSIENT') {
         throw 'Profil mesh transitoire encore présent.'
+    }
+    if ($status.bed_mesh.profiles.PSObject.Properties.Name -notcontains 'k1_p001_t055_r001_n06x06') {
+        throw 'Profil robuste absent.'
+    }
+    $count = @($status.configfile.settings.bed_mesh.probe_count)
+    if ($count.Count -ne 2 -or [int]$count[0] -ne 6 -or [int]$count[1] -ne 6 -or
+        [string]$status.configfile.settings.bed_mesh.algorithm -cne 'lagrange') {
+        throw 'Configuration bed_mesh chargée autre que 6x6 Lagrange.'
+    }
+    foreach ($name in @('T1', 'T2')) {
+        $unit = $status.box.$name
+        if ($unit.state -cne 'connect' -or $unit.version -cne '1.1.3' -or @($unit.material_type).Count -ne 4) {
+            throw "CFS $name inattendu ou déconnecté."
+        }
     }
     return @{ Api = $api; Printer = $status }
 }
@@ -203,7 +236,6 @@ if ($Action -eq 'Preflight') {
 
 if ($Action -eq 'Validate') {
     Assert-RemoteFiles $manifest ([string]$manifest.files[0].sha256) ([string]$manifest.files[1].sha256)
-    [void](Invoke-Remote "grep -q 'value=.15.' '$RemoteIndex' && ! grep -q 'value=.4.' '$RemoteIndex' && grep -q 'matrixField.value = .5.' '$RemoteApp'")
     [void](Assert-SafeState)
     Write-Output 'VALIDATE_CALIBRATION_UI_PRTOUCH_PRESETS_V1_OK'
     exit 0

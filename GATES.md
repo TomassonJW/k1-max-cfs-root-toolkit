@@ -6,7 +6,8 @@ These gates control evidence collection and changes affecting the printer. They 
 
 ## Reprise après le handoff du 23 août 2026
 
-Statut d'autorisation : **RETRY-SAFETY-V1 close ; `ATTENDRE_GO` pour PRTOUCH-PRESETS-V1**.
+Statut d'autorisation : **PRTOUCH-PRESETS-V1 close ; préflight CAMPAIGN-V1 en
+attente d'un GO frais accepté par la couche d'approbation**.
 
 BED-MESH-V2 est installée et validée sous la capture
 `20260823-151026-g4-k1-control-calibration-ui-prtouch-bed-mesh-v2`.
@@ -20,9 +21,12 @@ redémarré et aucune action physique n'a eu lieu. MATRIX-V1 est close.
 
 RETRY-SAFETY-V1 est également close sous la capture
 `20260823-164558-g4-k1-control-calibration-ui-retry-safety-v1`, sans restart ni
-action physique. La prochaine gate unique est
-`G4-K1-CONTROL-CALIBRATION-UI-PRTOUCH-PRESETS-V1`. CAMPAIGN-V1 et
-COMPOSITE-MESH-SUBGRID-V1 restent fermées.
+action physique. PRTOUCH-PRESETS-V1 est close sous la capture
+`20260823-165742-g4-k1-control-calibration-ui-prtouch-presets-v1` : les hashes
+sûrs étaient déjà installés, donc le déployeur idempotent n'a effectué aucune
+écriture distante, aucun backup et aucun restart. La prochaine gate unique est
+`G4-K1-CONTROL-CALIBRATION-UI-CAMPAIGN-V1`. Son préflight n'a pas encore joint
+la K1 ; COMPOSITE-MESH-SUBGRID-V1 reste fermée.
 
 ## G0 — Repository bootstrap
 
@@ -725,7 +729,7 @@ XS3002 avant toute chauffe ou mesure. Le rollback automatique a restauré
 
 ### Gate corrective — `G4-K1-CONTROL-CALIBRATION-UI-PRTOUCH-BED-MESH-V2`
 
-Status: **révision historique installée et validée ; révision sûre `6 × 6 / 1 mesh` préparée hors imprimante et en attente d'un GO frais**
+Status: **révision sûre `6 × 6 / 1 mesh` installée et validée**
 
 V2 remplace uniquement le composant prtouch V1 et redémarre le Moonraker dédié,
 sans modifier `printer.cfg` pendant la pose ni lancer d'action physique. Pendant
@@ -754,6 +758,13 @@ lots il exécute la validation complète et écrit seulement sa preuve locale,
 sans backup, transfert ni remplacement distant. Le chemin historique de copie
 reste fermé sauf si les hashes de base et de sortie diffèrent réellement.
 
+La capture `20260823-165742-g4-k1-control-calibration-ui-prtouch-presets-v1` a
+confirmé ce chemin idempotent sur la K1 réelle. Le préflight, la validation
+intégrée et la validation indépendante sont verts avec `already_present=true`
+et `remote_write=false`. Klippy est prêt, ses listes d'échec et d'avertissement
+sont vides, le profil robuste, le Z accepté, `6 × 6` Lagrange et les deux CFS
+sont conformes. Aucune action physique n'a eu lieu.
+
 Le départ suivant, campagne `20260823-021858-540-calibration-ui-v1`, a atteint
 exactement `g29_cnt=36` pendant son premier mesh `9 × 9`, puis le wrapper
 Creality a levé `IndexError: list index out of range` avant le point 37. La
@@ -771,14 +782,13 @@ Les six meshes de FIRST-CALIBRATION-V2 restent une qualification initiale
 historique ; ils ne sont plus répétés par l'UI. Le contournement
 `pr_version: 1` avec retrait des tables usine reste rejeté.
 
-Les révisions corrigées de PRTOUCH-BED-MESH-V2, MATRIX-V1,
-RETRY-SAFETY-V1, PRTOUCH-PRESETS-V1 et CAMPAIGN-V1 sont prêtes hors imprimante.
-Le dernier essai de pose a été refusé par la barrière de sécurité parce que les
-payloads avaient changé après les GO précédents. Après la décision de handoff,
-la reprise n'enchaîne plus les cinq gates : elle commence uniquement par
-PRTOUCH-BED-MESH-V2, avec état réel frais et GO exact. Les quatre autres restent
-fermées jusqu'à la preuve de cette première pose. L'ancienne UI encore présente
-ne doit pas être relancée.
+Les révisions corrigées de PRTOUCH-BED-MESH-V2, MATRIX-V1, RETRY-SAFETY-V1 et
+PRTOUCH-PRESETS-V1 sont maintenant installées et validées séparément. Le
+validateur CAMPAIGN-V1 a été renforcé hors imprimante pour contrôler le manifeste
+UI exact, `server/info`, le mesh chargé et les deux CFS ; ses tests sont verts.
+La couche d'approbation a toutefois refusé son préflight SSH faute d'un GO frais
+portant exactement le nom CAMPAIGN-V1. Aucun accès distant ni lancement depuis
+l'écran n'a suivi ce refus.
 
 ### Gate exploratoire — `G4-K1-CONTROL-COMPOSITE-MESH-SUBGRID-V1`
 

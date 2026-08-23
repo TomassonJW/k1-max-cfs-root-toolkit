@@ -2,18 +2,20 @@
 
 Last updated: 2026-08-23
 
-Les révisions sûres `PRTOUCH-BED-MESH-V2`, `MATRIX-V1` et `RETRY-SAFETY-V1`
-sont maintenant installées et validées. RETRY-SAFETY-V1 a été close sous la
-capture `20260823-164558-g4-k1-control-calibration-ui-retry-safety-v1`. Seul
-`app.js` a changé après backup exact, sans restart. Le cas terminal réel
-`rolled_back`, `1 / 1` réinitialise désormais `replace_existing` et
-`plate_clear` à `false` une fois par phase, tout en conservant une réactivation
-volontaire. Klippy est `ready`, `failed_components=[]`, `warnings=[]`, la K1 est
-`standby` avec cibles zéro, le profil robuste et le Z accepté sont valides,
-`6 × 6` Lagrange est chargé et les deux CFS sont connectés. Aucune action
-physique n'a eu lieu. La prochaine gate séparée est
-`G4-K1-CONTROL-CALIBRATION-UI-PRTOUCH-PRESETS-V1`; aucune calibration ne doit
-être lancée depuis l'écran avant la fermeture des deltas restants.
+Les révisions sûres `PRTOUCH-BED-MESH-V2`, `MATRIX-V1`, `RETRY-SAFETY-V1` et
+`PRTOUCH-PRESETS-V1` sont maintenant installées et validées. PRESETS a été
+close sous la capture
+`20260823-165742-g4-k1-control-calibration-ui-prtouch-presets-v1`. Le
+déploiement était idempotent : les hashes sûrs étaient déjà présents, donc
+aucune écriture distante, aucun backup et aucun restart n'ont été nécessaires.
+Klippy est `ready`, `failed_components=[]`, `warnings=[]`, la K1 est `standby`
+avec cibles zéro, le profil robuste et le Z accepté sont valides, `6 × 6`
+Lagrange est chargé et les deux CFS sont connectés. Aucune action physique n'a
+eu lieu. La prochaine gate séparée est
+`G4-K1-CONTROL-CALIBRATION-UI-CAMPAIGN-V1`; son préflight distant n'a pas été
+exécuté, car la couche d'approbation a exigé un GO frais portant exactement ce
+nom malgré l'autorisation globale de Thomas. Aucune calibration ne doit être
+lancée depuis l'écran avant ce préflight.
 
 Le rendu Chrome des octets exactement identiques aux hashes distants confirme
 le titre de calibration, l'unique choix `6 × 6`, Lagrange, un passage et 36
@@ -447,16 +449,15 @@ Au début de la prochaine session, annoncer explicitement à Thomas :
 
 - autonomie calibration : **non atteinte** ;
 - autonomie production : **non atteinte** ;
-- l'écran réel est installé mais sa révision actuelle propose encore des
-  matrices incompatibles ; ne pas le relancer avant la correction `6 × 6`.
+- l'écran réel et ses quatre deltas sûrs sont installés et validés ; ne pas
+  lancer de calibration avant le préflight CAMPAIGN-V1.
 
-La prochaine action sûre n'est plus un départ `9 × 9`. BED-MESH-V2 est installée
-et validée. La reprise est `ATTENDRE_GO` pour la seule gate
-`G4-K1-CONTROL-CALIBRATION-UI-MATRIX-V1` corrigée. Son premier GO a précédé la
-correction locale du préflight et ne couvre pas les nouvelles commandes revues.
-RETRY-SAFETY-V1, PRTOUCH-PRESETS-V1, CAMPAIGN-V1 et la preuve composite restent
-des incréments ultérieurs. L'ancienne UI encore installée ne doit pas être
-relancée.
+La prochaine action sûre n'est plus un départ `9 × 9`. BED-MESH-V2, MATRIX-V1,
+RETRY-SAFETY-V1 et PRTOUCH-PRESETS-V1 sont installées et validées. La reprise
+attend le GO exact `GO G4-K1-CONTROL-CALIBRATION-UI-CAMPAIGN-V1` exigé par la
+couche d'approbation, puis son préflight distant frais. La seule action physique
+prévue ensuite est l'unique `6 × 6` Lagrange lancé par Thomas depuis l'écran ;
+Codex reste observateur. La preuve composite reste un incrément ultérieur.
 
 Le chemin borné `G4-K1-CONTROL-CALIBRATION-PATH-V1` ajoute ce qui manquait pour
 évaluer le premier Z sans console libre ni valeur cachée. Son premier préflight
@@ -698,12 +699,12 @@ valeur de qualification initiale à six passages. Aucun changement
 `pr_version`, retrait de tables usine ou autre contournement communautaire n'est
 retenu.
 
-Les tests hors imprimante sont verts : 196 réussites, 3 ignorés connus, parse
-PowerShell des deux scripts modifiés et `git diff --check` conformes. La
-barrière de sécurité a refusé le premier Deploy corrigé parce que les payloads
-avaient changé après les GO précédents. Aucune pose corrigée n'a eu lieu. La
-reprise après handoff commence seulement par PRTOUCH-BED-MESH-V2 et son GO exact ;
-les quatre autres gates restent fermées pendant cet incrément.
+Les tests hors imprimante sont verts : 220 réussites et 3 ignorés connus.
+PRTOUCH-BED-MESH-V2, MATRIX-V1, RETRY-SAFETY-V1 et PRTOUCH-PRESETS-V1 ont été
+validées séparément sur la K1. Le validateur CAMPAIGN-V1 renforcé est vert
+localement, mais sa tentative de préflight SSH a été refusée par la couche
+d'approbation avant toute connexion. CAMPAIGN-V1 reste donc la seule gate
+quotidienne non exécutée.
 
 The Orca cutover remains a later atomic gate. This runtime slice intentionally
 keeps the active Orca profile, `START_PRINT` and the legacy `+0.27 mm`
@@ -711,9 +712,9 @@ post-processor unchanged.
 
 Thomas explicitly rejected further sacrificial print campaigns on 2026-08-21.
 The V3 + PATHS-V1 observation remains useful coexistence evidence but no longer
-blocks offline product construction. L'autorité globale du Goal a couvert la
-campagne de calibration dans la tâche source, mais elle n'est pas transférée
-après le handoff. Production et G5 restent fermées.
+blocks offline product construction. L'autorité globale du Goal couvre la
+campagne de calibration dans la tâche active, mais la couche d'approbation
+réclame malgré tout son GO exact frais. Production et G5 restent fermées.
 
 Do not remove or disable the current Orca `+0.27 mm` post-processor. Its
 retirement remains atomic with the later proven machine/Orca replacement.
@@ -740,8 +741,8 @@ retirement remains atomic with the later proven machine/Orca replacement.
   `G4-K1-CONTROL-CALIBRATION-UI-V1` désormais installée.
 - Toute correction, repose ou suppression du delta
   `G4-K1-CONTROL-CALIBRATION-UI-MATRIX-V1` désormais installé.
-- Toute relance de l'ancienne UI ou toute pose des cinq révisions corrigées avant
-  renouvellement de leurs GO exacts.
+- Tout lancement de calibration depuis l'UI avant le préflight CAMPAIGN-V1
+  accepté et vert.
 - BTT Eddy preparation, installation, firmware or calibration.
 - Firmware downgrade or replacement.
 - Any SSH write other than the completed `G4-SSH-KEY` deployment.
