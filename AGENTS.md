@@ -11,11 +11,11 @@ The printer is production hardware. It is never treated as a disposable sandbox.
 The active phase is **P4 — V1 and V2 foundations are closed; V3, PATHS-V1, the
 Z/mesh runtime and CALIBRATION-PATH-V1 are installed and validated;
 FIRST-CALIBRATION-V1 stopped KO; FIRST-CALIBRATION-V2 is installed and validated;
-CALIBRATION-UI-V1, MATRIX-V1, RETRY-SAFETY-V1, PRTOUCH-MATRIX-V1 et
-PRTOUCH-PRESETS-V1 sont installés ; le second départ réel `9 × 9` a exposé la
-frontière couplée `probe_count + algorithm` par XS3002 avant toute chauffe ; le
-rollback automatique est vert ; PRTOUCH-BED-MESH-V2 est installé et validé ;
-le préflight de reprise est vert et attend le nouveau départ écran `9 × 9` ;
+CALIBRATION-UI-V1 et ses correctifs historiques sont installés ; la campagne
+réelle `9 × 9` a ensuite prouvé la limite physique PRTouch à trente-six points
+par un `IndexError` au point 37 ; le rollback est vert ; la correction hors
+imprimante impose désormais `6 × 6` Lagrange et un seul mesh quotidien ; son
+déploiement et sa campagne écran attendent les cinq GO exacts renouvelés ;
 production remains closed**.
 
 Thomas authorised V1, but the mandatory preflight proved that `logrotate` was
@@ -282,9 +282,9 @@ Le préflight de campagne rejetait à tort l'état sûr `cancelled` laissé à `
 Il accepte désormais uniquement un départ `idle` sans backup ou cette reprise
 bornée à zéro mesure avec backup ; une annulation après le premier mesh reste
 un KO. Le test ciblé et le préflight réel de la capture
-`20260822-233717-g4-k1-control-calibration-ui-campaign-v1` sont verts. La
-prochaine action physique est le rendu des cases décochées puis le lancement
-écran du niveau `9 × 9`.
+`20260822-233717-g4-k1-control-calibration-ui-campaign-v1` sont verts. À ce stade
+historique, l'action physique suivante était le rendu des cases décochées puis
+le lancement écran du niveau `9 × 9`.
 
 Thomas a lancé ce niveau correctement. La chauffe, les `200 s`, le nettoyage et
 le homing ont réussi, puis la première grille s'est arrêtée à `1/6` avec
@@ -335,6 +335,33 @@ préflight, le déploiement et deux validations vertes ; `server/info` confirme
 `20260823-013151-g4-k1-control-calibration-ui-campaign-v1` est vert. La prochaine
 action est le nouveau départ écran `9 × 9` avec confirmation fraîche du plateau
 libre.
+
+Thomas a relancé ce départ sous la campagne
+`20260823-021858-540-calibration-ui-v1`. Le premier mesh a atteint exactement
+`g29_cnt=36`, puis `prtouch_v2_wrapper.py` a levé `IndexError: list index out of
+range` avant le point 37. Le message applicatif sur le nombre de lignes était
+donc une conséquence de la matrice incomplète, pas la cause. L'arrêt automatique
+a coupé les chauffes et le rollback API a restauré un état sûr : `standby`,
+cibles zéro, axes non référencés, profil robuste `6 × 6` et Z `−0,04 mm`
+inchangés. Le XS3002 `nozzle_mcu` observé ensuite appartient au restart de
+restauration ; Klipper a récupéré et il n'a pas causé l'arrêt du mesh.
+
+La configuration usine exacte expose seulement trente-six paires
+`tri_min_hold_1..36` / `tri_max_hold_1..36`. L'ADR-012 remplace donc l'hypothèse
+des grandes matrices : K1 Control doit proposer uniquement `6 × 6` Lagrange et
+exécuter un seul mesh quotidien. Les six passages de FIRST-CALIBRATION-V2
+restent la qualification scientifique initiale déjà close. Le contournement
+communautaire par `pr_version: 1` et retrait des tables est rejeté à cause de la
+perte des compensations et d'un retour de démarrage bloqué après coupure.
+
+Les packages core, matrice, retry-safety, adaptateur, presets et campagne ont
+été corrigés hors imprimante. La suite locale compte 196 tests verts et 3
+ignorés connus ; les deux scripts PowerShell modifiés se parsèrent correctement
+et `git diff --check` est vert. Le dernier essai de pose a été refusé par la
+barrière de sécurité parce que les payloads avaient changé après les GO
+précédents. Aucun contournement n'est permis : il faut renouveler exactement les
+cinq gates PRTOUCH-BED-MESH-V2, MATRIX-V1, RETRY-SAFETY-V1,
+PRTOUCH-PRESETS-V1 et CAMPAIGN-V1 avant pose et preuve écran.
 
 Thomas demande que chaque prochaine reprise commence par un état explicite de
 l'autonomie, sans confondre le runtime installé avec une interface terminée :

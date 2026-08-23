@@ -12,24 +12,24 @@ DEPLOYER = ROOT / "scripts" / "deploy-k1-control-calibration-ui-prtouch-presets-
 
 
 class PrtouchPresetUiTests(unittest.TestCase):
-    def test_every_displayed_matrix_is_executable_by_prtouch_adapter(self):
+    def test_only_the_proven_matrix_is_displayed(self):
         contract = json.loads(CONTRACT.read_text(encoding="utf-8"))
-        self.assertEqual(contract["displayed_matrices"], [3, 5, 6, 9, 11, 15])
-        self.assertEqual(contract["product_levels"], [6, 9, 11, 15])
-        self.assertEqual(contract["forbidden_displayed_matrices"], [4])
-        self.assertTrue(contract["server_side_even_matrix_guard_retained"])
+        self.assertEqual(contract["displayed_matrices"], [6])
+        self.assertEqual(contract["product_levels"], [6])
+        self.assertEqual(contract["forbidden_displayed_matrices"], [3, 4, 5, 9, 11, 15])
+        self.assertTrue(contract["server_side_hardware_limit_guard_retained"])
 
-    def test_page_removes_four_but_keeps_all_product_levels(self):
+    def test_page_exposes_only_six_by_six(self):
         index = (PACKAGE / "index.html").read_text(encoding="utf-8")
-        self.assertNotIn('<option value="4">', index)
-        for size in (3, 5, 6, 9, 11, 15):
-            self.assertIn(f'<option value="{size}"', index)
+        self.assertIn('<option value="6"', index)
+        for size in (3, 4, 5, 9, 11, 15):
+            self.assertNotIn(f'<option value="{size}"', index)
 
-    def test_client_never_falls_back_to_the_removed_even_matrix(self):
+    def test_client_forces_the_proven_pair(self):
         app = (PACKAGE / "app.js").read_text(encoding="utf-8")
-        self.assertIn('matrixField.value = "5"', app)
-        self.assertNotIn('matrixField.value = "4"', app)
-        self.assertIn('const requiresBicubic = matrix > 6;', app)
+        self.assertIn('byId("matrix-size").value = "6"', app)
+        self.assertIn('byId("algorithm").value = "lagrange"', app)
+        self.assertNotIn('algorithmField.value = "bicubic"', app)
 
     def test_manifest_pins_both_static_files_and_exact_baseline(self):
         manifest = json.loads(MANIFEST.read_text(encoding="utf-8"))

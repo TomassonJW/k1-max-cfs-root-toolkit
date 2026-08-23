@@ -21,17 +21,15 @@
     "bed_temperature_c": [45, 100],
     "nozzle_temperature_c": [100, 180],
     "soak_seconds": [60, 1200],
-    "matrix": [3, 4, 5, 6],
-    "interpolation": ["lagrange", "bicubic"],
+    "matrix": [6],
+    "interpolation": ["lagrange"],
     "seed_z_mm": [-1.0, 1.0]
   },
   "mesh_protocol": {
-    "measurements": 6,
-    "batch_size": 3,
-    "estimator": "pointwise_median",
-    "mean_absolute_limit_mm": 0.020,
-    "rms_limit_mm": 0.025,
-    "maximum_limit_mm": 0.060,
+    "measurements": 1,
+    "estimator": "single_firmware_bounded_mesh",
+    "hardware_limit": "36 physical points, fixed 6x6",
+    "initial_qualification_reference": "FIRST-CALIBRATION-V2 used six 6x6 measurements and is already closed",
     "automatic_extra_measurement": false
   },
   "safety": {

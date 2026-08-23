@@ -23,17 +23,17 @@
     {
       "source": "k1_control_calibration_core.py",
       "destination": "/usr/data/k1-control-v1/current/moonraker/moonraker/moonraker/components/k1_control_calibration_core.py",
-      "sha256": "34b13db0cd8c475077f8a848a815f95fc4655c24ae1d62e04943e493d4630e96"
+      "sha256": "9a6a24195b504a82f88e3b7464c508eaf49f8450169578257c8fe98a5d5f4e97"
     },
     {
       "source": "www/index.html",
       "destination": "/usr/data/k1-control-v1/current/www/mainsail/k1-control/index.html",
-      "sha256": "c8f8a65a8148b6b570743c96321bafd2f5d25142a6ab4ea214c4719c885e2f11"
+      "sha256": "4892294d278497f2f4215564b3e70fcedb354fb880f306641a29a03042ad1abc"
     },
     {
       "source": "www/app.js",
       "destination": "/usr/data/k1-control-v1/current/www/mainsail/k1-control/app.js",
-      "sha256": "1188bd6056909c1c14f130c6127de96e569a9e5f19c8109a41b4eb5fa73de3cb"
+      "sha256": "f5a5ebc3bf5cb6a1a32cb237c4d61063d2d1f85e49ac8d049302ca18ee76b5b4"
     },
     {
       "source": "www/styles.css",

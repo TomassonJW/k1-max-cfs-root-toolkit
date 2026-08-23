@@ -2,7 +2,7 @@
 
 Date : 2026-08-23
 
-Statut : accepté, complété par PRTOUCH-BED-MESH-V2, installé et validé
+Statut : historique, complété puis limité par l'ADR-012
 
 ## Contexte
 
@@ -77,3 +77,8 @@ depuis le backup exact.
   n'est pas prouvée ;
 - la campagne réelle `9/11/15/6` doit être reprise depuis zéro sous un nouveau
   protocole, sans considérer l'essai vide `1/6` comme une mesure exploitable.
+
+L'essai réel ultérieur a prouvé une limite plus basse : le wrapper atteint ses
+trente-six tables physiques puis lève `IndexError` au trente-septième point.
+L'ADR-012 retire donc `9/11/15`, fixe l'usage à `6 × 6` Lagrange et interdit le
+contournement risqué par changement de `pr_version`.

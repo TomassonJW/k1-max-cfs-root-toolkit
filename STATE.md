@@ -1,11 +1,18 @@
 # STATE
 
-Last updated: 2026-08-22
+Last updated: 2026-08-23
 
 ## Current phase
 
 **P4 — fondation V3 + PATHS-V1, runtime Z/mesh, chemin borné et première
 calibration V2 installés et validés ; production volontairement bloquée**
+
+La calibration UI réelle est actuellement **fermée à toute relance** : le
+premier mesh `9 × 9` de la campagne `20260823-021858-540-calibration-ui-v1` a
+atteint la limite PRTouch de trente-six points puis levé `IndexError` avant le
+point 37. Le rollback a restauré un état sûr et les payloads corrigés restent
+hors imprimante. Le nouveau contrat est `6 × 6` Lagrange, un mesh quotidien,
+puis chemin Z. Il attend cinq GO exacts renouvelés avant pose et preuve écran.
 
 The repository baseline, stock acquisition, complete Orca/G-code intake and
 passive P1–P5/PETG trace are complete. Gate G3 is passed for offline design and
@@ -411,8 +418,14 @@ Au début de la prochaine session, annoncer explicitement à Thomas :
 
 - autonomie calibration : **non atteinte** ;
 - autonomie production : **non atteinte** ;
-- Mainsail et le runtime sont installés, mais aucun écran réel ne permet encore
-  de sélectionner et d'orchestrer les paramètres sans console ni Codex.
+- l'écran réel est installé mais sa révision actuelle propose encore des
+  matrices incompatibles ; ne pas le relancer avant la correction `6 × 6`.
+
+La prochaine action sûre n'est plus un départ `9 × 9`. Il faut renouveler les
+cinq gates PRTOUCH-BED-MESH-V2, MATRIX-V1, RETRY-SAFETY-V1,
+PRTOUCH-PRESETS-V1 et CAMPAIGN-V1, poser les quatre deltas dans cet ordre, puis
+prouver depuis l'écran un seul mesh `6 × 6` et le chemin Z complet. L'ancienne
+UI encore installée ne doit pas être relancée.
 
 Le chemin borné `G4-K1-CONTROL-CALIBRATION-PATH-V1` ajoute ce qui manquait pour
 évaluer le premier Z sans console libre ni valeur cachée. Son premier préflight
@@ -612,9 +625,9 @@ un défaut de validation locale. La capture corrigée
 `20260823-003755-g4-k1-control-calibration-ui-prtouch-presets-v1` a obtenu le
 déploiement et deux validations vertes, sans restart ni action physique. Les 191
 tests sont verts, avec 3 ignorés connus. Le préflight de campagne sous
-`20260823-002500-g4-k1-control-calibration-ui-campaign-v1` est vert ; la K1 est
-inactive et attend le départ écran `9 × 9` avec une confirmation fraîche du
-plateau libre.
+`20260823-002500-g4-k1-control-calibration-ui-campaign-v1` est vert ; à ce stade
+historique, la K1 était inactive et attendait le départ écran `9 × 9` avec une
+confirmation fraîche du plateau libre.
 
 Le départ `9 × 9` suivant, campagne
 `20260823-004305-421-calibration-ui-v1`, a chargé `probe_count=9,9` mais conservé
@@ -638,6 +651,27 @@ préflight, le déploiement et deux validations vertes ; `server/info` donne
 `failed_components=[]` et `warnings=[]`. Le préflight complet
 `20260823-013151-g4-k1-control-calibration-ui-campaign-v1` est vert. La K1 attend
 le nouveau départ écran `9 × 9`.
+
+Le départ suivant a créé la campagne
+`20260823-021858-540-calibration-ui-v1`. Le journal exact montre
+`g29_cnt=36`, puis `IndexError: list index out of range` dans
+`prtouch_v2_wrapper.py` avant le point 37. Le contrôleur a donc échoué à
+`mesh_index=1` sans matrice complète. L'arrêt et le rollback API ont restauré
+`standby`, cibles zéro, axes non référencés, deux CFS conformes, Z accepté
+`−0,04 mm`, stockage `ok` et profil robuste `6 × 6`.
+
+La configuration usine expose trente-six tables de compensation par point. La
+correction locale retire donc `9/11/15`, impose `6 × 6 + lagrange` et ramène le
+compteur quotidien de six meshes à un seul. FIRST-CALIBRATION-V2 conserve sa
+valeur de qualification initiale à six passages. Aucun changement
+`pr_version`, retrait de tables usine ou autre contournement communautaire n'est
+retenu.
+
+Les tests hors imprimante sont verts : 196 réussites, 3 ignorés connus, parse
+PowerShell des deux scripts modifiés et `git diff --check` conformes. La
+barrière de sécurité a refusé le premier Deploy corrigé parce que les payloads
+avaient changé après les GO précédents. Les cinq GO exacts doivent être
+renouvelés ; aucune pose corrigée n'a eu lieu.
 
 The Orca cutover remains a later atomic gate. This runtime slice intentionally
 keeps the active Orca profile, `START_PRINT` and the legacy `+0.27 mm`
@@ -673,8 +707,8 @@ retirement remains atomic with the later proven machine/Orca replacement.
   `G4-K1-CONTROL-CALIBRATION-UI-V1` désormais installée.
 - Toute correction, repose ou suppression du delta
   `G4-K1-CONTROL-CALIBRATION-UI-MATRIX-V1` désormais installé.
-- Toute action hors de la correction `G4-K1-CONTROL-CALIBRATION-UI-RETRY-SAFETY-V1`
-  et de la campagne écran revue couverte par le goal global actif.
+- Toute relance de l'ancienne UI ou toute pose des cinq révisions corrigées avant
+  renouvellement de leurs GO exacts.
 - BTT Eddy preparation, installation, firmware or calibration.
 - Firmware downgrade or replacement.
 - Any SSH write other than the completed `G4-SSH-KEY` deployment.

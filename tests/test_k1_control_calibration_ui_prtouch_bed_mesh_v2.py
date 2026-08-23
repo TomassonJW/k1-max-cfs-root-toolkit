@@ -97,12 +97,13 @@ class PrtouchBedMeshV2Tests(unittest.TestCase):
             contract["runtime"]["atomic_fields"],
             ["bed_mesh.probe_count", "bed_mesh.algorithm"],
         )
-        self.assertIn(
-            {"probe_count": [9, 9], "algorithm": "bicubic"},
+        self.assertEqual(contract["observed_physical_limit"]["stopped_after_points"], 36)
+        self.assertEqual(
             contract["runtime"]["supported_pairs"],
+            [{"probe_count": [6, 6], "algorithm": "lagrange"}],
         )
         self.assertIn(
-            {"probe_count": [9, 9], "algorithm": "lagrange"},
+            {"probe_count": [9, 9], "algorithm": "bicubic"},
             contract["runtime"]["forbidden_pairs"],
         )
 
@@ -110,7 +111,7 @@ class PrtouchBedMeshV2Tests(unittest.TestCase):
         manifest = json.loads(MANIFEST.read_text(encoding="utf-8"))
         self.assertEqual(
             manifest["baseline"]["component_sha256"],
-            "72e2010c06afe58d78416fca1c65e746c805568c90cf2ac13d1f6196b46f09ca",
+            "ab570669c1d7519d4ae4e59a260b6ece8b0b919e0388b7287c672b3cd0f8733d",
         )
         self.assertEqual(manifest["baseline"]["loaded_probe_count"], [6, 6])
         self.assertEqual(manifest["baseline"]["loaded_algorithm"], "lagrange")
@@ -135,7 +136,7 @@ class PrtouchBedMeshV2Tests(unittest.TestCase):
         self.assertIn("k1_control_probe_count.py.before", source)
         self.assertIn("Invoke-ExactRollback", source)
         self.assertIn("S56k1_control_moonraker", source)
-        self.assertIn("algorithm: bicubic", source)
+        self.assertIn("9x9 must fail closed before physical action", source)
         self.assertNotIn("moonraker.conf.before", source)
         for forbidden in ("KCTRL_MESH_CALIBRATE", "M104", "M140", "G28"):
             self.assertNotIn(forbidden, source)
@@ -143,11 +144,11 @@ class PrtouchBedMeshV2Tests(unittest.TestCase):
     def test_component_verifies_loaded_count_and_algorithm(self):
         source = COMPONENT.read_text(encoding="utf-8")
         self.assertIn('algorithm = str(bed_mesh.get("algorithm", "")).lower()', source)
-        self.assertIn('target_algorithm != "bicubic"', source)
+        self.assertIn('effective_target_algorithm != "lagrange"', source)
         self.assertIn("self.config.write(previous)", source)
         self.assertIn("ProbeCountFile._effective(previous)", source)
 
-    def test_implicit_lagrange_is_preserved_exactly_after_bicubic_round_trip(self):
+    def test_implicit_lagrange_is_preserved_exactly(self):
         source = (
             b"[include helper.cfg]\n"
             b"[bed_mesh]\n"
@@ -157,14 +158,11 @@ class PrtouchBedMeshV2Tests(unittest.TestCase):
             b"#*# [bed_mesh saved]\n"
             b"#*# points = 0,0\n"
         )
-        rewritten, previous = self.module.ProbeCountFile._rewrite(
-            source, ((9, 9), "bicubic")
-        )
+        rewritten, previous = self.module.ProbeCountFile._rewrite(source, ((6, 6), None))
         self.assertEqual(previous, ((6, 6), None))
-        self.assertIn(b"probe_count: 9,9\nalgorithm: bicubic\n", rewritten)
-        restored, changed = self.module.ProbeCountFile._rewrite(rewritten, previous)
-        self.assertEqual(changed, ((9, 9), "bicubic"))
-        self.assertEqual(restored, source)
+        self.assertEqual(rewritten, source)
+        with self.assertRaisesRegex(self.module.ProbeCountError, "36 points physiques"):
+            self.module.ProbeCountFile._rewrite(source, ((9, 9), "bicubic"))
 
     def test_file_read_distinguishes_implicit_from_explicit_lagrange(self):
         with tempfile.TemporaryDirectory() as directory:
@@ -183,7 +181,7 @@ class PrtouchBedMeshV2BackendTests(unittest.IsolatedAsyncioTestCase):
     def setUpClass(cls):
         cls.module = load_component()
 
-    async def test_runtime_round_trip_restores_implicit_lagrange_bytes_exactly(self):
+    async def test_runtime_keeps_implicit_lagrange_bytes_exactly(self):
         source = b"[bed_mesh]\nspeed: 150\nprobe_count: 6,6\nfade_start: 5.0\n"
         with tempfile.TemporaryDirectory() as directory:
             root = Path(directory)
@@ -204,9 +202,9 @@ class PrtouchBedMeshV2BackendTests(unittest.IsolatedAsyncioTestCase):
                     "phase": "preparing",
                     "campaign_id": campaign_id,
                     "config": {
-                        "x_count": 9,
-                        "y_count": 9,
-                        "algorithm": "bicubic",
+                        "x_count": 6,
+                        "y_count": 6,
+                        "algorithm": "lagrange",
                     },
                     "backup": {
                         "root": str(campaign_root),
@@ -218,8 +216,8 @@ class PrtouchBedMeshV2BackendTests(unittest.IsolatedAsyncioTestCase):
             wrapped = self.module.ProbeCountAwareBackend(backend, orchestrator)
 
             await wrapped.run_gcode("BED_MESH_CLEAR")
-            self.assertEqual(backend.klippy_apis.loaded, ((9, 9), "bicubic"))
-            self.assertIn(b"probe_count: 9,9\nalgorithm: bicubic\n", printer.read_bytes())
+            self.assertEqual(backend.klippy_apis.loaded, ((6, 6), "lagrange"))
+            self.assertEqual(printer.read_bytes(), source)
 
             orchestrator.state["phase"] = "mesh_ready"
             await wrapped.run_gcode("TURN_OFF_HEATERS")

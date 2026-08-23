@@ -1,15 +1,17 @@
 # CALIBRATION-UI-MATRIX-V1
 
-Statut : candidat hors imprimante, non autorisé.
+Statut : correction fondée sur la campagne réelle du 23 août 2026.
 
-Ce delta étend l'interface de calibration déjà installée aux matrices
-`3×3`, `4×4`, `5×5`, `6×6`, `9×9`, `11×11` et `15×15`.
+Ce delta corrige les choix de matrice après preuve sur la K1 exacte.
 
-- Lagrange reste limité à six points par axe.
-- Toute matrice supérieure à `6×6` utilise automatiquement l'interpolation
-  bicubique.
-- Le runtime Klipper existant accepte déjà ces tailles ; aucun fichier Klipper,
-  mesh, Z, profil Orca ou composant CFS n'est modifié.
+- le pilote propriétaire `prtouch_v2_wrapper.py` possède 36 emplacements et a
+  levé un `IndexError` exactement au point 37 d'une demande `9 × 9` ;
+- l'interface expose donc uniquement `6 × 6` avec Lagrange ;
+- `9 × 9`, `11 × 11` et `15 × 15` sont refusés côté serveur ;
+- le contournement communautaire par changement de `pr_version` est rejeté car
+  il modifie la sécurité du capteur et un retour signale un blocage au démarrage ;
+- une calibration normale mesure un seul mesh complet. La qualification initiale
+  en six passages reste conservée comme preuve historique, pas comme routine.
 
 La pose future remplacera uniquement le contrôleur de calibration et deux
 fichiers statiques, après backup exact, puis redémarrera seulement Moonraker.

@@ -21,7 +21,10 @@ class CalibrationUiRetrySafetyTests(unittest.TestCase):
         javascript = APP.read_text(encoding="utf-8")
         self.assertIn("function isIncompleteRetry(value)", javascript)
         self.assertIn('["cancelled", "failed", "mesh_rejected"]', javascript)
-        self.assertIn("Number(value?.mesh_index ?? 0) < 6", javascript)
+        self.assertIn(
+            "Number(value?.mesh_index ?? 0) < Number(value?.mesh_target_count ?? 1)",
+            javascript,
+        )
         self.assertIn("`${state.campaign_id}:${phase}`", javascript)
         self.assertIn('byId("replace-existing").checked = isIncompleteRetry(state)', javascript)
         self.assertIn('byId("plate-clear").checked = false', javascript)
@@ -32,7 +35,9 @@ class CalibrationUiRetrySafetyTests(unittest.TestCase):
             contract["contract_id"],
             "G4-K1-CONTROL-CALIBRATION-UI-RETRY-SAFETY-V1",
         )
-        self.assertEqual(contract["reset_when"]["mesh_index_less_than"], 6)
+        self.assertEqual(
+            contract["reset_when"]["mesh_index_less_than"], "mesh_target_count"
+        )
         self.assertFalse(contract["one_time_reset"]["replace_existing"])
         self.assertFalse(contract["one_time_reset"]["plate_clear"])
         self.assertTrue(contract["operator_can_reenable_replace_explicitly"])

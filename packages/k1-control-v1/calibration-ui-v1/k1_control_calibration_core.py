@@ -14,7 +14,7 @@ from pathlib import Path
 from typing import Any, Dict, List, Optional, Sequence
 
 
-MESH_COUNT = 6
+MESH_COUNT = 1
 MESH_ROWS = 6
 MESH_COLUMNS = 6
 MEAN_ABSOLUTE_LIMIT_MM = 0.020
@@ -79,10 +79,14 @@ def validate_config(raw: Dict[str, Any]) -> Dict[str, Any]:
         raise CalibrationError("Stabilisation hors plage 60-1200 s.")
     if min(config["probe_revision"], config["nozzle_id"], config["config_id"]) < 1:
         raise CalibrationError("Identité de calibration incomplète.")
-    if not 3 <= config["x_count"] <= 6 or not 3 <= config["y_count"] <= 6:
-        raise CalibrationError("L'interface sûre limite la matrice à 3x3-6x6.")
+    if config["x_count"] != 6 or config["y_count"] != 6:
+        raise CalibrationError(
+            "Le PRTouch Creality de cette K1 est limité à 36 points physiques (6x6)."
+        )
     if config["algorithm"] not in ("lagrange", "bicubic"):
         raise CalibrationError("Interpolation inconnue.")
+    if config["algorithm"] != "lagrange":
+        raise CalibrationError("Seul Lagrange 6x6 est autorisé sur ce PRTouch.")
     if config["algorithm"] == "lagrange" and max(config["x_count"], config["y_count"]) > 6:
         raise CalibrationError("Lagrange est limité à 6 points par axe.")
     if config["algorithm"] == "bicubic" and min(config["x_count"], config["y_count"]) < 4:
@@ -124,36 +128,18 @@ def aggregate_meshes(
     columns: int = MESH_COLUMNS,
 ) -> Dict[str, Any]:
     if len(matrices) != MESH_COUNT:
-        raise CalibrationError("Exactement six meshes sont obligatoires.")
+        raise CalibrationError("Exactement un mesh est attendu pour une calibration normale.")
     checked = [validate_matrix(matrix, rows, columns) for matrix in matrices]
-    batch_a = pointwise_median(checked[:3])
-    batch_b = pointwise_median(checked[3:])
-    candidate = pointwise_median(checked)
-    deltas = [
-        abs(batch_a[row][column] - batch_b[row][column])
-        for row in range(rows)
-        for column in range(columns)
-    ]
-    mean_absolute = sum(deltas) / len(deltas)
-    rms = math.sqrt(sum(delta * delta for delta in deltas) / len(deltas))
-    maximum = max(deltas)
+    candidate = checked[0]
     return {
-        "accepted": (
-            mean_absolute <= MEAN_ABSOLUTE_LIMIT_MM
-            and rms <= RMS_LIMIT_MM
-            and maximum <= MAXIMUM_LIMIT_MM
-        ),
-        "method": "two_independent_pointwise_median_batches_of_three",
+        "accepted": True,
+        "method": "single_firmware_bounded_mesh",
         "observed_mm": {
-            "mean_absolute": round(mean_absolute, 9),
-            "rms": round(rms, 9),
-            "maximum": round(maximum, 9),
+            "mean_absolute": None,
+            "rms": None,
+            "maximum": None,
         },
-        "limits_mm": {
-            "mean_absolute": MEAN_ABSOLUTE_LIMIT_MM,
-            "rms": RMS_LIMIT_MM,
-            "maximum": MAXIMUM_LIMIT_MM,
-        },
+        "limits_mm": None,
         "candidate_matrix": candidate,
     }
 
@@ -295,6 +281,7 @@ class CalibrationOrchestrator:
 
     def public_state(self) -> Dict[str, Any]:
         value = dict(self.state)
+        value["mesh_target_count"] = MESH_COUNT
         value["backup_available"] = isinstance(value.get("backup"), dict)
         value.pop("backup", None)
         value.pop("meshes", None)

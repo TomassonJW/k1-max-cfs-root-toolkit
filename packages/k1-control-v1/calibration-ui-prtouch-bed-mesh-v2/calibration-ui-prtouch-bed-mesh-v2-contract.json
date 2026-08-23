@@ -14,6 +14,13 @@
     "moonraker_failed_component": "k1_control_probe_count",
     "physical_action": false
   },
+  "observed_physical_limit": {
+    "campaign_id": "20260823-021858-540-calibration-ui-v1",
+    "requested_matrix": [9, 9],
+    "stopped_after_points": 36,
+    "exact_error": "prtouch_v2_wrapper.py IndexError: list index out of range",
+    "result": "automatic exact rollback, heaters off, 6x6 profile and accepted Z intact"
+  },
   "deployment": {
     "replaced_file": "/usr/data/k1-control-v1/current/moonraker/moonraker/moonraker/components/k1_control_probe_count.py",
     "service_action": "restart /etc/init.d/S56k1_control_moonraker only",
@@ -30,20 +37,17 @@
     "safe_runtime_verified_after_restart": true,
     "restore_pair_after_heaters_off": true,
     "supported_pairs": [
-      {"probe_count": [3, 3], "algorithm": "lagrange"},
-      {"probe_count": [5, 5], "algorithm": "lagrange"},
-      {"probe_count": [5, 5], "algorithm": "bicubic"},
-      {"probe_count": [6, 6], "algorithm": "lagrange"},
-      {"probe_count": [6, 6], "algorithm": "bicubic"},
-      {"probe_count": [9, 9], "algorithm": "bicubic"},
-      {"probe_count": [11, 11], "algorithm": "bicubic"},
-      {"probe_count": [15, 15], "algorithm": "bicubic"}
+      {"probe_count": [6, 6], "algorithm": "lagrange"}
     ],
     "forbidden_pairs": [
-      {"probe_count": [4, 4], "algorithm": "lagrange"},
+      {"probe_count": [3, 3], "algorithm": "lagrange"},
+      {"probe_count": [5, 5], "algorithm": "lagrange"},
       {"probe_count": [9, 9], "algorithm": "lagrange"},
+      {"probe_count": [9, 9], "algorithm": "bicubic"},
       {"probe_count": [11, 11], "algorithm": "lagrange"},
-      {"probe_count": [15, 15], "algorithm": "lagrange"}
+      {"probe_count": [11, 11], "algorithm": "bicubic"},
+      {"probe_count": [15, 15], "algorithm": "lagrange"},
+      {"probe_count": [15, 15], "algorithm": "bicubic"}
     ]
   },
   "rollback": {

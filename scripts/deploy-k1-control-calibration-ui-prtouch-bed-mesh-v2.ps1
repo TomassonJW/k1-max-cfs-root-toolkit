@@ -175,20 +175,16 @@ module.__package__ = 'moonraker.components'
 sys.modules[name] = module
 exec(compile(base64.b64decode('$source'), module.__file__, 'exec'), module.__dict__)
 document = b'[bed_mesh]\nprobe_count: 6,6\n[printer]\nkinematics: corexy\n'
-rewritten, previous = module.ProbeCountFile._rewrite(document, ((9, 9), 'bicubic'))
+rewritten, previous = module.ProbeCountFile._rewrite(document, ((6, 6), None))
 assert previous == ((6, 6), None)
-assert b'probe_count: 9,9' in rewritten
-assert b'algorithm: bicubic' in rewritten
-restored, changed = module.ProbeCountFile._rewrite(rewritten, previous)
-assert changed == ((9, 9), 'bicubic')
-assert restored == document
+assert rewritten == document
 assert module.ProbeCountFile(Path('$RemotePrinterConfig')).read() == ((6, 6), None)
 try:
-    module.ProbeCountFile._rewrite(document, ((9, 9), 'lagrange'))
+    module.ProbeCountFile._rewrite(document, ((9, 9), 'bicubic'))
 except module.ProbeCountError:
     pass
 else:
-    raise AssertionError('9x9 lagrange must fail closed')
+    raise AssertionError('9x9 must fail closed before physical action')
 print('REMOTE_PRTOUCH_BED_MESH_V2_IMPORT_OK')
 "@
     $arguments = @(

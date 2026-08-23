@@ -807,3 +807,25 @@ l'opérateur. Elles restent accessibles après rechargement et conditionnent
 ensemble le bouton de démarrage Z. Cette séparation permet une vraie reprise
 sans console tout en refusant de transformer une observation passée en fait
 physique courant.
+
+## D-048 — La limite PRTouch réelle fixe l'usage quotidien à un mesh `6 × 6`
+
+Date: 2026-08-23
+
+Status: accepté hors imprimante
+
+La campagne `20260823-021858-540-calibration-ui-v1` a atteint exactement
+`g29_cnt=36`, puis le wrapper Creality a levé `IndexError` avant le
+trente-septième point. Les trente-six tables usine par point confirment que les
+grandes matrices de l'ADR-010 dépassent la frontière physique du PRTouch exact.
+
+Le contournement communautaire par `pr_version: 1` et retrait des tables de
+compensation est rejeté : il change le mode du capteur, perd les corrections
+usine et comporte un retour de démarrage bloqué après coupure électrique. Aucun
+risque de ce type n'est acceptable pour gagner une résolution fictive.
+
+K1 Control expose donc uniquement `6 × 6` Lagrange et exécute un seul mesh par
+calibration quotidienne. Les six meshes de FIRST-CALIBRATION-V2 restent la
+qualification statistique initiale déjà réussie ; ils ne sont pas répétés à
+chaque usage. Le serveur et l'adaptateur refusent toute autre taille avant
+chauffe. Cette décision est détaillée dans l'ADR-012.

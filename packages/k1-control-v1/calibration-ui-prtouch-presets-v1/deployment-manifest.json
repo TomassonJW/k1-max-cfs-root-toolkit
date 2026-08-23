@@ -1,29 +1,29 @@
 {
   "contract_id": "G4-K1-CONTROL-CALIBRATION-UI-PRTOUCH-PRESETS-V1",
-  "status": "offline_review_candidate",
-  "dependency": "G4-K1-CONTROL-CALIBRATION-UI-PRTOUCH-MATRIX-V1 installed and validated",
+  "status": "corrected_after_exact_prtouch_runtime_limit_proof",
+  "dependency": "G4-K1-CONTROL-CALIBRATION-UI-PRTOUCH-BED-MESH-V2 corrected payload deployed and validated",
   "deployer": {
     "path": "scripts/deploy-k1-control-calibration-ui-prtouch-presets-v1.ps1",
-    "sha256": "fe6a5439c93451711cf666499c713446f65335dbf25ee0628e5e078c96e7b33c"
+    "sha256": "24435b1cb9c7ec6ec91967159cbf027f5dd96f964d8d5dd00f4659ff84934b79"
   },
   "contract": {
     "path": "calibration-ui-prtouch-presets-contract.json",
-    "sha256": "0c087f9622e0a1da89a5317da1adc58ee8fdc5705b82b350b9512fc1e04cc579"
+    "sha256": "507d21febffae0ee5a22b7cd7d86899024d2f2e9c4ba005dbe15729744cc5fee"
   },
   "baseline": {
-    "index_html_sha256": "3dd31bb9508eb77b90f1bb7b4ca57ff6fc5aeaea19e87456348eaec47941bf41",
-    "app_js_sha256": "be41570888d88c17a89755c98915f313be3e7295b36315f6400f3b666ef1d348"
+    "index_html_sha256": "4892294d278497f2f4215564b3e70fcedb354fb880f306641a29a03042ad1abc",
+    "app_js_sha256": "67fe83aee144a2748d703b005fb337104c22e5760e2ae4dbc340306813c931bd"
   },
   "files": [
     {
       "source": "index.html",
       "destination": "/usr/data/k1-control-v1/current/www/mainsail/k1-control/index.html",
-      "sha256": "d764dcce200440ff4ba1716e60f560740e30710b26e7339703c646ca52981a07"
+      "sha256": "4892294d278497f2f4215564b3e70fcedb354fb880f306641a29a03042ad1abc"
     },
     {
       "source": "app.js",
       "destination": "/usr/data/k1-control-v1/current/www/mainsail/k1-control/app.js",
-      "sha256": "ad43bf7cd5340955b085e30ce5bb40f2547257ebc2784092aa5f98767b89a822"
+      "sha256": "67fe83aee144a2748d703b005fb337104c22e5760e2ae4dbc340306813c931bd"
     }
   ],
   "unchanged": {
@@ -34,7 +34,7 @@
       },
       {
         "destination": "/usr/data/k1-control-v1/current/moonraker/moonraker/moonraker/components/k1_control_probe_count.py",
-        "sha256": "6b97095f1cb4f62d7207d8e63186c9a93b6f53603b15bc5e4354de4aa767254e"
+        "sha256": "8c8c4aaf20856be1880cea56badd2fe81bd488966eab0d55e7672f73eb1db7b0"
       },
       {
         "destination": "/usr/data/k1-control-v1/current/moonraker/moonraker/moonraker/components/k1_control.py",
@@ -42,7 +42,7 @@
       },
       {
         "destination": "/usr/data/k1-control-v1/current/moonraker/moonraker/moonraker/components/k1_control_calibration_core.py",
-        "sha256": "12f7826f6bdc2cfee4320d56563054b0e7453fa9969cf5654b5e0a5b383e58d1"
+        "sha256": "9a6a24195b504a82f88e3b7464c508eaf49f8450169578257c8fe98a5d5f4e97"
       },
       {
         "destination": "/usr/data/k1-control-v1/current/www/mainsail/k1-control/styles.css",

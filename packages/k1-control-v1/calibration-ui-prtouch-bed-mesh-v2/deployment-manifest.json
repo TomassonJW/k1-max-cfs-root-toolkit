@@ -3,14 +3,14 @@
   "status": "offline_review_candidate",
   "deployer": {
     "path": "scripts/deploy-k1-control-calibration-ui-prtouch-bed-mesh-v2.ps1",
-    "sha256": "b69eb0a5c262f36b690c8610c1b7d67714c055a691330fc4488155dfe96fb1fa"
+    "sha256": "48bc6328da899245b240644c988eff12371b6e42c937b310a430bdd0444fb2e9"
   },
   "contract": {
     "path": "calibration-ui-prtouch-bed-mesh-v2-contract.json",
-    "sha256": "6b2d062a8d67b5364221c415192a3ddc26feff4223dfd805a9fcd23307a732f1"
+    "sha256": "eaf047fde36a4adafc2b6c7dee8537d42d7d0fc282e79da18f2205afa4806533"
   },
   "baseline": {
-    "component_sha256": "72e2010c06afe58d78416fca1c65e746c805568c90cf2ac13d1f6196b46f09ca",
+    "component_sha256": "ab570669c1d7519d4ae4e59a260b6ece8b0b919e0388b7287c672b3cd0f8733d",
     "moonraker_conf_sha256": "9b451f9b864c798872f674688d1c3354f31ab5a03283cad1d7a224561308fcb1",
     "printer_cfg_sha256": "36cfb7e71180268841ab5cedd31628c8d9953ba437c47662ced16df18bb1bacd",
     "loaded_probe_count": [6, 6],
@@ -21,7 +21,7 @@
     {
       "source": "k1_control_probe_count.py",
       "destination": "/usr/data/k1-control-v1/current/moonraker/moonraker/moonraker/components/k1_control_probe_count.py",
-      "sha256": "ab570669c1d7519d4ae4e59a260b6ece8b0b919e0388b7287c672b3cd0f8733d"
+      "sha256": "8c8c4aaf20856be1880cea56badd2fe81bd488966eab0d55e7672f73eb1db7b0"
     }
   ],
   "unchanged": {

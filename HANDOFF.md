@@ -2,16 +2,16 @@
 
 Date: 2026-08-23
 Phase: P4 / FIRST-CALIBRATION-V2 validée ; mesh robuste et Z `−0,04 mm` retenus ; production fermée
-Next operator: recharger l'interface, confirmer le plateau libre et relancer le niveau 9 × 9 depuis l'écran
+Next operator: renouveler les cinq GO exacts, poser la correction `6 × 6 / 1 mesh`, puis lancer sa campagne écran
 
 ## Message obligatoire au début de la prochaine session
 
 Dire clairement à Thomas, avant toute proposition d'exécution :
 
 - **l'autonomie calibration n'est pas encore atteinte** : l'interface réelle est
-  posée, mais la première preuve `9 × 9` a révélé la frontière `probe_count` du
-  wrapper Creality ; le correctif séparé est prêt et doit encore être posé puis
-  prouvé par la campagne complète ;
+  posée, mais la preuve `9 × 9` a révélé la limite physique PRTouch à trente-six
+  points ; la correction `6 × 6` Lagrange avec un seul mesh quotidien est prête
+  hors imprimante et doit encore être posée puis prouvée par la campagne écran ;
 - **l'autonomie production n'est pas encore atteinte** : Orca, `START_PRINT`,
   l'ancien `+0,27 mm` et les températures CFS ne sont pas encore basculés vers
   le nouveau contrat ;
@@ -634,9 +634,9 @@ reprise incomplète. Ses 179 tests et son préflight réel sous la capture
 L'autorité globale du goal a couvert sa pose sans nouveau GO. Le même identifiant
 a obtenu le déploiement et deux validations vertes. Seul `app.js` a été remplacé
 après backup exact, sans restart ni action physique. Le rechargement sur `4409`
-a affiché le cache Mainsail ; le tunnel temporaire propre `127.0.0.1:4410` est
-actif et attend l'authentification humaine. La prochaine action est le vrai rendu
-des deux cases décochées sur `4410`, puis la reprise `9 × 9`.
+a affiché le cache Mainsail ; le tunnel temporaire propre `127.0.0.1:4410` était
+actif et attendait l'authentification humaine. L'action prévue à ce stade était
+le vrai rendu des deux cases décochées sur `4410`, puis la reprise `9 × 9`.
 
 Le tunnel `4410` a depuis été recréé avec un seul processus connecté et les
 empreintes distantes confirment que l'interface et le correctif existent. Le
@@ -701,6 +701,46 @@ exactement et le préflight complet
 `20260823-013151-g4-k1-control-calibration-ui-campaign-v1` est vert. La prochaine
 action est uniquement le nouveau départ écran `9 × 9` avec confirmation fraîche
 du plateau libre.
+
+Ce départ a été exécuté sous la campagne
+`20260823-021858-540-calibration-ui-v1`. Le journal Klipper exact montre le
+premier mesh `9 × 9` atteindre `g29_cnt=36`, puis
+`prtouch_v2_wrapper.py:1889` lever `IndexError: list index out of range` avant le
+point physique 37. Le `1/6` affiché signifie que le contrôleur était dans son
+premier des six passages prévus ; il ne signifie pas qu'un mesh valide a été
+enregistré. L'erreur « nombre de lignes attendu » est la conséquence locale de
+la matrice incomplète.
+
+Le rollback API a obtenu la phase `rolled_back`. L'état final contrôlé est sûr :
+`standby`, chauffes demandées à zéro, axes non référencés, deux CFS conformes,
+profil robuste `k1_p001_t055_r001_n06x06`, Z accepté `−0,04 mm` et stockage
+`ok`. Le XS3002 `nozzle_mcu` visible pendant la restauration est survenu pendant
+le restart et Klipper a récupéré ; ce n'est pas la cause du point 37.
+
+La configuration usine officielle contient exactement trente-six tables par
+point. L'ADR-012 retire donc `9/11/15` au lieu de contourner le capteur. Le mode
+quotidien devient uniquement `6 × 6` Lagrange, avec un seul mesh puis le chemin
+Z. Les six meshes de FIRST-CALIBRATION-V2 restent la qualification statistique
+initiale déjà validée, pas une répétition quotidienne. Le workaround
+communautaire `pr_version: 1` avec retrait des tables est explicitement rejeté.
+
+Les six familles de payloads ont été corrigées hors imprimante et la suite
+complète est verte : 196 tests, 3 ignorés connus, parse PowerShell OK et diff
+sans erreur d'espace. La K1 porte encore l'ancienne UI et l'ancien composant V2 :
+ne pas relancer depuis l'écran. La barrière de sécurité a refusé la pose des
+payloads modifiés après les GO précédents. La reprise exige donc exactement :
+
+```text
+GO G4-K1-CONTROL-CALIBRATION-UI-PRTOUCH-BED-MESH-V2
+GO G4-K1-CONTROL-CALIBRATION-UI-MATRIX-V1
+GO G4-K1-CONTROL-CALIBRATION-UI-RETRY-SAFETY-V1
+GO G4-K1-CONTROL-CALIBRATION-UI-PRTOUCH-PRESETS-V1
+GO G4-K1-CONTROL-CALIBRATION-UI-CAMPAIGN-V1
+```
+
+Après ces gates, Codex pose les quatre deltas dans cet ordre, valide chaque
+état, puis Thomas lance depuis l'écran l'unique `6 × 6` et termine le chemin Z.
+La production et G5 restent hors périmètre.
 
 La gate précédente est close avec `DEPLOY_CALIBRATION_PATH_V1_OK` et
 `VALIDATE_CALIBRATION_PATH_V1_OK` sous la capture

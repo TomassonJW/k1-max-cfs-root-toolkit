@@ -23,7 +23,7 @@ if TYPE_CHECKING:
     from ..confighelper import ConfigHelper
 
 
-ALLOWED_COUNTS = {(3, 3), (5, 5), (6, 6), (9, 9), (11, 11), (15, 15)}
+ALLOWED_COUNTS = {(6, 6)}
 ALLOWED_ALGORITHMS = {"lagrange", "bicubic"}
 CLOSED_PATH_PHASES = {"idle", "committed", "cancelled"}
 MeshConfiguration = Tuple[Tuple[int, int], str]
@@ -59,11 +59,11 @@ class ProbeCountFile:
         target_count, target_algorithm = target
         effective_target_algorithm = target_algorithm or "lagrange"
         if target_count not in ALLOWED_COUNTS:
-            raise ProbeCountError("Matrice non compatible avec prtouch_v3.")
-        if effective_target_algorithm not in ALLOWED_ALGORITHMS:
-            raise ProbeCountError("Interpolation non compatible avec prtouch_v3.")
-        if max(target_count) > 6 and effective_target_algorithm != "bicubic":
-            raise ProbeCountError("Les matrices supérieures à 6 exigent bicubic au démarrage.")
+            raise ProbeCountError(
+                "Le PRTouch Creality de cette K1 est limité à 36 points physiques (6x6)."
+            )
+        if effective_target_algorithm != "lagrange":
+            raise ProbeCountError("Seul Lagrange 6x6 est autorisé sur ce PRTouch.")
         lines = document.splitlines(keepends=True)
         in_bed_mesh = False
         section_count = 0

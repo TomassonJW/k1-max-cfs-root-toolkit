@@ -188,7 +188,7 @@ $manifest = Assert-Package
 if ($Action -eq 'Plan') {
     Write-Output "PLAN_CALIBRATION_UI_PRTOUCH_PRESETS_V1_OK gate=$RequiredGate"
     Write-Output 'Effet: backup exact et remplacement atomique de index.html et app.js; aucun restart.'
-    Write-Output 'Le choix 4x4 incompatible disparaît; 3, 5, 6, 9, 11 et 15 restent disponibles.'
+    Write-Output 'Seul 6x6 Lagrange reste visible; 3/4/5/9/11/15 sont retirés après preuve de la limite à 36 points.'
     Write-Output 'Aucun chauffage, homing, mouvement, mesh, Z, extrusion, impression ou action CFS.'
     exit 0
 }

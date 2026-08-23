@@ -21,9 +21,9 @@ class CalibrationUiCampaignContractTests(unittest.TestCase):
             "G4-K1-CONTROL-CALIBRATION-UI-CAMPAIGN-V1",
         )
         self.assertEqual(manifest["operator_control"], "browser_only")
-        self.assertEqual(manifest["mesh_measurements_per_level"], 6)
-        self.assertEqual(manifest["physical_levels"], 4)
-        self.assertEqual(manifest["total_mesh_measurements"], 24)
+        self.assertEqual(manifest["mesh_measurements_per_level"], 1)
+        self.assertEqual(manifest["physical_levels"], 1)
+        self.assertEqual(manifest["total_mesh_measurements"], 1)
         for artifact in manifest["artifacts"]:
             path = ROOT / artifact["path"]
             self.assertEqual(
@@ -40,7 +40,7 @@ class CalibrationUiCampaignContractTests(unittest.TestCase):
         self.assertFalse(contract["printer_mutation_authorized"])
         self.assertEqual(
             contract["dependency"]["required_result"],
-            "deployed_validated_and_rendered_in_browser_with_6_9_11_15_presets",
+            "deployed_validated_and_rendered_in_browser_with_fixed_6x6_grid",
         )
         self.assertFalse(
             contract["required_results"]["console_or_codex_control_during_campaign"]
@@ -52,15 +52,10 @@ class CalibrationUiCampaignContractTests(unittest.TestCase):
         capability = contract["matrix_capability"]
         self.assertEqual(
             [(item["matrix"], item["interpolation"]) for item in capability["selectable_presets"]],
-            [
-                ([6, 6], "lagrange"),
-                ([9, 9], "bicubic"),
-                ([11, 11], "bicubic"),
-                ([15, 15], "bicubic"),
-            ],
+            [([6, 6], "lagrange")],
         )
-        self.assertEqual(capability["physical_proof"], "six_real_meshes_at_every_preset")
-        self.assertEqual(capability["full_z_workflow_preset"], "quick")
+        self.assertEqual(capability["physical_proof"], "one_complete_36_point_mesh")
+        self.assertEqual(capability["full_z_workflow_preset"], "supported")
 
     def test_exact_proven_settings_and_final_guards_are_declared(self):
         contract = json.loads(CONTRACT.read_text(encoding="utf-8"))
@@ -73,15 +68,15 @@ class CalibrationUiCampaignContractTests(unittest.TestCase):
         self.assertEqual(settings["soak_seconds"], 200)
         self.assertEqual(settings["expected_initial_seed_z_mm"], -0.04)
         sequence = contract["physical_sequence"]
-        self.assertEqual([item["name"] for item in sequence], ["standard", "precise", "expert", "quick"])
-        self.assertEqual([item["matrix"] for item in sequence], [[9, 9], [11, 11], [15, 15], [6, 6]])
-        self.assertEqual([item["interpolation"] for item in sequence], ["bicubic", "bicubic", "bicubic", "lagrange"])
-        self.assertEqual([item["replace_existing"] for item in sequence], [False, False, False, True])
+        self.assertEqual([item["name"] for item in sequence], ["supported"])
+        self.assertEqual([item["matrix"] for item in sequence], [[6, 6]])
+        self.assertEqual([item["interpolation"] for item in sequence], ["lagrange"])
+        self.assertEqual([item["replace_existing"] for item in sequence], [True])
         results = contract["required_results"]
-        self.assertEqual(results["mesh_measurements_per_level"], 6)
-        self.assertEqual(results["total_mesh_measurements"], 24)
+        self.assertEqual(results["mesh_measurements"], 1)
+        self.assertEqual(results["physical_points"], 36)
         self.assertFalse(results["automatic_extra_measurement"])
-        self.assertEqual(len(results["profiles"]), 4)
+        self.assertEqual(len(results["profiles"]), 1)
         self.assertEqual(results["runtime_store_integrity"], "ok")
         self.assertEqual(results["runtime_accepted_z_valid"], 1)
         self.assertEqual(results["runtime_session_active"], 0)
@@ -109,9 +104,9 @@ class CalibrationUiCampaignContractTests(unittest.TestCase):
     def test_runbook_rejects_console_assistance_and_reruns(self):
         readme = README.read_text(encoding="utf-8")
         self.assertIn("sans console et sans commande Codex", readme)
-        self.assertIn("Aucun septième passage", readme)
+        self.assertIn("Aucun deuxième passage", readme)
         self.assertIn("Aucun rerun automatique", readme)
-        self.assertIn("vingt-quatre meshes", readme)
+        self.assertIn("un seul mesh complet", readme)
 
     def test_validator_is_read_only_and_checks_the_full_final_state(self):
         source = VALIDATOR.read_text(encoding="utf-8")
@@ -121,7 +116,7 @@ class CalibrationUiCampaignContractTests(unittest.TestCase):
         self.assertIn("Assert-Qualification", source)
         self.assertIn("Assert-ExpectedProfiles", source)
         self.assertIn("CAPTURE_CALIBRATION_UI_LEVEL_OK", source)
-        self.assertIn("@($privateState.meshes).Count -ne 6", source)
+        self.assertIn("@($privateState.meshes).Count -ne 1", source)
         self.assertIn("Assert-SafeAcceptedMachine", source)
         self.assertIn("VALIDATE_CALIBRATION_UI_CAMPAIGN_V1_OK", source)
         self.assertIn("ExpectedBedMeshManifestHash", source)

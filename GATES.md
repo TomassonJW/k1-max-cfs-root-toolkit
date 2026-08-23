@@ -581,7 +581,7 @@ close.
 
 ### Gate exécutée — `G4-K1-CONTROL-CALIBRATION-UI-MATRIX-V1`
 
-Status: **passed and closed**
+Status: **pose historique validée ; hypothèse grandes matrices réfutée ; correction `6 × 6` en attente de GO renouvelé**
 
 Cette gate corrige l'écart entre le contrat produit et l'interface installée :
 les niveaux rapide `6 × 6`, standard `9 × 9`, précis `11 × 11` et expert
@@ -611,7 +611,7 @@ décochées. La gate est close ; son GO ne couvre aucun rerun ni la campagne.
 
 ### Gate corrective — `G4-K1-CONTROL-CALIBRATION-UI-RETRY-SAFETY-V1`
 
-Status: **déployée et validée côté machine ; rendu navigateur en attente**
+Status: **ancienne révision déployée ; correction `1 mesh` en attente de GO renouvelé**
 
 Deux départs humains `9 × 9` ont prouvé que `replace_existing=true` restait
 collant après une annulation à `0/6`. Les deux tentatives ont été arrêtées avant
@@ -634,7 +634,7 @@ deux cases décochées avant reprise de la campagne.
 
 ### Gate préparée — `G4-K1-CONTROL-CALIBRATION-UI-CAMPAIGN-V1`
 
-Status: **préflight de reprise vert ; autorisée par le goal global ; attend le départ physique 9 × 9**
+Status: **ancien protocole KO au point 37 ; protocole `6 × 6 / 1 mesh` préparé hors imprimante et en attente de GO renouvelé**
 
 Cette gate ne pose aucun fichier. Elle qualifie physiquement les quatre niveaux
 depuis l'écran avec `PEI_TEXTURED_A`, `55/140 °C` et `200 s` : `9 × 9`,
@@ -742,6 +742,27 @@ a obtenu le préflight, le déploiement et deux validations vertes ; Moonraker
 rapporte `failed_components=[]` et `warnings=[]`. Après rollback exact de la
 campagne XS3002, le préflight complet
 `20260823-013151-g4-k1-control-calibration-ui-campaign-v1` est vert.
+
+Le départ suivant, campagne `20260823-021858-540-calibration-ui-v1`, a atteint
+exactement `g29_cnt=36` pendant son premier mesh `9 × 9`, puis le wrapper
+Creality a levé `IndexError: list index out of range` avant le point 37. La
+matrice incomplète a ensuite produit le message applicatif sur le nombre de
+lignes. Le rollback API a restauré `standby`, cibles zéro, axes non référencés,
+profil robuste `6 × 6`, stockage `ok` et Z accepté `−0,04 mm`. Aucun résultat de
+ce mesh n'est retenu.
+
+Cette preuve et les trente-six tables par point de la configuration usine
+invalident les niveaux `9/11/15`. L'ADR-012 fixe le contrat matériel à
+`6 × 6 + lagrange` et le contrat quotidien à un seul mesh. Les six meshes de
+FIRST-CALIBRATION-V2 restent une qualification initiale historique ; ils ne
+sont plus répétés par l'UI. Le contournement `pr_version: 1` avec retrait des
+tables usine est rejeté.
+
+Les révisions corrigées de PRTOUCH-BED-MESH-V2, MATRIX-V1,
+RETRY-SAFETY-V1, PRTOUCH-PRESETS-V1 et CAMPAIGN-V1 sont prêtes hors imprimante.
+Le dernier essai de pose a été refusé par la barrière de sécurité parce que les
+payloads avaient changé après les GO précédents. Chacune exige donc son GO exact
+renouvelé. L'ancienne UI encore présente ne doit pas être relancée.
 
 ## G5 — V1 production baseline
 

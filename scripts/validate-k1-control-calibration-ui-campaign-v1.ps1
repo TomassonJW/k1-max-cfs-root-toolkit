@@ -3,7 +3,7 @@ param(
     [ValidateSet('Plan', 'Preflight', 'CaptureLevel', 'Validate')]
     [string]$Action = 'Plan',
 
-    [ValidateSet('standard', 'precise', 'expert', 'quick')]
+    [ValidateSet('supported')]
     [string]$Level,
 
     [ValidatePattern('^[0-9]{8}-[0-9]{6}-g4-k1-control-calibration-ui-campaign-v1$')]
@@ -29,19 +29,14 @@ $BedMeshManifestPath = Join-Path $BedMeshPackage 'deployment-manifest.json'
 $PresetPackage = Join-Path $WorkspaceRoot 'packages\k1-control-v1\calibration-ui-prtouch-presets-v1'
 $PresetManifestPath = Join-Path $PresetPackage 'deployment-manifest.json'
 $CampaignContractPath = Join-Path $WorkspaceRoot 'packages\k1-control-v1\calibration-ui-campaign-v1\calibration-ui-campaign-contract.json'
-$ExpectedUiManifestHash = '8970109289fb64645de22d6530c32c397738509ede0983a5e6362f1c4feae7db'
-$ExpectedRetryManifestHash = '6c50d95bd542a59284a67291ade4a216ae53b125fc4cd5a0521bc726cf0c7c0f'
-$ExpectedBedMeshManifestHash = 'c9812723c8a719d3561ae320c8cc98d9c872ca01b8eb876c90bcac8805349c76'
-$ExpectedPresetManifestHash = 'aa6b2a6b173359202b0586ccb95cedbfbaa4d229c570880b5fdfbdab532271e2'
-$ExpectedCampaignContractHash = '768d257c4b6c0f114edbdf7f8172920c1bf593646dc06e3bcf490b6fbfa457ae'
+$ExpectedUiManifestHash = 'e43de6a5f34e35b0f375c22d0dcceaa09cc9eec063d8bfbe4b0869baae139149'
+$ExpectedRetryManifestHash = '45d452f96d70ad83534be7a52ce794b862bdc7150f0645a42a3bede1427faad7'
+$ExpectedBedMeshManifestHash = '3357113e8b7da06fceeb6c2053197e6f9410fec58abc85e851c2984e196d7dec'
+$ExpectedPresetManifestHash = '66bb9e59668ca280caaf6b71075f76d2a4ecbdcf0b5b4cc16ba2adb46ddc8d54'
+$ExpectedCampaignContractHash = 'd566fb9735fa2a3ca9f26c73dc0b848dd67ed69c9042719def6ca742afd29b13'
 $RemoteUi = '/usr/data/k1-control-v1/current/www/mainsail/k1-control'
 $RemoteState = '/usr/data/k1-control-v1/state/k1-control-calibration-workflow.json'
-$MeshProfiles = @(
-    'k1_p001_t055_r001_n06x06',
-    'k1_p001_t055_r001_n09x09',
-    'k1_p001_t055_r001_n11x11',
-    'k1_p001_t055_r001_n15x15'
-)
+$MeshProfiles = @('k1_p001_t055_r001_n06x06')
 
 $SshArguments = @(
     '-o', 'BatchMode=yes',
@@ -329,10 +324,8 @@ function Assert-Qualification {
     if (-not $qualification -or -not [bool]$qualification.accepted) {
         throw 'Qualification mesh absente ou refusée.'
     }
-    if ([double]$qualification.observed_mm.mean_absolute -gt 0.020 -or
-        [double]$qualification.observed_mm.rms -gt 0.025 -or
-        [double]$qualification.observed_mm.maximum -gt 0.060) {
-        throw 'Une métrique mesh dépasse sa limite revue.'
+    if ($qualification.method -cne 'single_firmware_bounded_mesh') {
+        throw 'La méthode de calibration normale n est pas celle revue.'
     }
 }
 
@@ -344,8 +337,8 @@ if ($Action -eq 'Plan') {
         control = 'browser_only_by_operator'
         common_settings = $reviewed.Contract.common_operator_settings
         sequence = $reviewed.Contract.physical_sequence
-        measurements_per_level = 6
-        total_measurements = 24
+        measurements_per_level = 1
+        total_measurements = 1
         automatic_rerun = $false
         printer_contact = $false
     } | ConvertTo-Json -Depth 8
@@ -372,7 +365,7 @@ if ($Action -eq 'Preflight') {
     # Un rollback redémarre Klipper : le store Z accepté reste persistant, tandis
     # que le petit automate de mouvement revient normalement en phase idle.
     Assert-SafeAcceptedMachine $snapshot
-    Assert-ExpectedProfiles $snapshot @($MeshProfiles[0]) @($MeshProfiles[1..3])
+    Assert-ExpectedProfiles $snapshot $MeshProfiles
     Save-Evidence 'preflight-api.json' $api
     Save-Evidence 'preflight-printer.json' $snapshot
     Write-Output "PREFLIGHT_CALIBRATION_UI_CAMPAIGN_V1_OK capture=$CaptureId"
@@ -384,21 +377,21 @@ if ($Action -eq 'CaptureLevel') {
     $expected = @($reviewed.Contract.physical_sequence | Where-Object { $_.name -ceq $Level })
     if ($expected.Count -ne 1) { throw "Niveau non revu : $Level" }
     $expected = $expected[0]
-    $expectedPhase = if ($Level -ceq 'quick') { 'accepted' } else { 'cancelled' }
-    if ($api.phase -cne $expectedPhase -or [bool]$api.busy -or [int]$api.mesh_index -ne 6 -or
+    $expectedPhase = 'accepted'
+    if ($api.phase -cne $expectedPhase -or [bool]$api.busy -or [int]$api.mesh_index -ne 1 -or
         -not [bool]$api.backup_available) {
         throw "Niveau $Level incomplet : phase=$($api.phase) mesh=$($api.mesh_index)"
     }
-    if ($Level -ceq 'quick' -and [int64]$api.accepted_at -le 0) {
-        throw 'Le parcours rapide ne contient pas une acceptation Z finale.'
+    if ([int64]$api.accepted_at -le 0) {
+        throw 'Le parcours ne contient pas une acceptation Z finale.'
     }
     Assert-ExactCampaignConfig $api $expected
     Assert-Qualification $api
     $privateState = Get-PrivateCampaignState
-    if (@($privateState.meshes).Count -ne 6 -or $privateState.phase -cne $expectedPhase) {
+    if (@($privateState.meshes).Count -ne 1 -or $privateState.phase -cne $expectedPhase) {
         throw "État privé incomplet pour le niveau $Level."
     }
-    Assert-SafeAcceptedMachine $snapshot -RequireCommittedPath:($Level -ceq 'quick')
+    Assert-SafeAcceptedMachine $snapshot -RequireCommittedPath
     Assert-ExpectedProfiles $snapshot @([string]$expected.expected_profile)
     Save-Evidence "level-$Level-api.json" $api
     Save-Evidence "level-$Level-private.json" $privateState
@@ -407,21 +400,21 @@ if ($Action -eq 'CaptureLevel') {
     exit 0
 }
 
-if ($api.phase -cne 'accepted' -or [bool]$api.busy -or [int]$api.mesh_index -ne 6 -or
+if ($api.phase -cne 'accepted' -or [bool]$api.busy -or [int]$api.mesh_index -ne 1 -or
     -not [bool]$api.backup_available -or [int64]$api.accepted_at -le 0) {
     throw "Campagne UI finale non acceptée : phase=$($api.phase) mesh=$($api.mesh_index)"
 }
-$quick = @($reviewed.Contract.physical_sequence | Where-Object { $_.name -ceq 'quick' })[0]
-Assert-ExactCampaignConfig $api $quick
+$supported = @($reviewed.Contract.physical_sequence | Where-Object { $_.name -ceq 'supported' })[0]
+Assert-ExactCampaignConfig $api $supported
 Assert-Qualification $api
 $privateState = Get-PrivateCampaignState
-if (@($privateState.meshes).Count -ne 6 -or $privateState.phase -cne 'accepted') {
-    throw 'État privé différent des six mesures acceptées.'
+if (@($privateState.meshes).Count -ne 1 -or $privateState.phase -cne 'accepted') {
+    throw 'État privé différent de la mesure acceptée.'
 }
 Assert-SafeAcceptedMachine $snapshot -RequireCommittedPath
 Assert-ExpectedProfiles $snapshot $MeshProfiles
 $evidenceRoot = Assert-EvidenceDirectory
-foreach ($name in @('standard', 'precise', 'expert', 'quick')) {
+foreach ($name in @('supported')) {
     foreach ($suffix in @('api', 'private', 'printer')) {
         if (-not (Test-Path -LiteralPath (Join-Path $evidenceRoot "level-$name-$suffix.json"))) {
             throw "Capture de niveau manquante : $name/$suffix"

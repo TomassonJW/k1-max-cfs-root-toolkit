@@ -64,20 +64,15 @@
             </label>
             <label>Matrice
               <select id="matrix-size">
-                <option value="3">3 × 3 — Personnalisé</option>
-                <option value="5">5 × 5 — Personnalisé</option>
-                <option value="6" selected>6 × 6 — Rapide</option>
-                <option value="9">9 × 9 — Standard</option>
-                <option value="11">11 × 11 — Précis</option>
-                <option value="15">15 × 15 — Expert</option>
+                <option value="6" selected>6 × 6 — maximum PRTouch fiable</option>
               </select>
             </label>
             <label>Interpolation
               <select id="algorithm">
                 <option value="lagrange" selected>Lagrange</option>
-                <option value="bicubic">Bicubique — requis au-delà de 6 × 6</option>
               </select>
             </label>
+            <p class="callout full-width">Le pilote propriétaire Creality de cette K1 accepte au plus 36 points physiques. Les matrices 9 × 9 à 15 × 15 sont volontairement bloquées.</p>
             <label>Seed Z explicite
               <span class="input-unit"><input id="seed-offset" type="number" min="-1" max="1" value="0" step="0.005" required><span>mm</span></span>
             </label>
@@ -89,28 +84,28 @@
               <input id="plate-clear" type="checkbox" required>
               La plaque sélectionnée est installée et le plateau est libre
             </label>
-            <button class="primary-button full-width" id="start-mesh" type="submit">Mesurer et qualifier le mesh robuste</button>
+            <button class="primary-button full-width" id="start-mesh" type="submit">Mesurer et enregistrer le mesh</button>
           </form>
         </article>
 
         <article class="panel">
           <div class="panel-heading">
             <div>
-              <p class="eyebrow">Six passages fixes</p>
-              <h2>Qualification du mesh</h2>
+              <p class="eyebrow">Un passage complet</p>
+              <h2>Mesure du mesh</h2>
             </div>
             <span class="pill" id="mesh-status">—</span>
           </div>
-          <div class="progress-track" aria-label="Progression des six maillages">
+          <div class="progress-track" aria-label="Progression du maillage">
             <span id="mesh-progress"></span>
           </div>
           <dl class="facts">
-            <div><dt>Passage</dt><dd id="mesh-index">0 / 6</dd></div>
-            <div><dt>Moyenne absolue</dt><dd id="mesh-mean">—</dd></div>
-            <div><dt>RMS</dt><dd id="mesh-rms">—</dd></div>
-            <div><dt>Maximum</dt><dd id="mesh-maximum">—</dd></div>
+            <div><dt>Passage</dt><dd id="mesh-index">0 / 1</dd></div>
+            <div><dt>Grille physique</dt><dd id="mesh-mean">6 × 6</dd></div>
+            <div><dt>Points</dt><dd id="mesh-rms">36</dd></div>
+            <div><dt>Méthode</dt><dd id="mesh-maximum">PRTouch</dd></div>
           </dl>
-          <p class="callout" id="mesh-explanation">Le candidat n'est jamais enregistré avant la qualification des deux groupes de trois.</p>
+          <p class="callout" id="mesh-explanation">Un mesh complet est mesuré puis relu avant son enregistrement. Le protocole exceptionnel de six passages reste réservé à la qualification initiale déjà validée.</p>
         </article>
 
         <article class="panel calibration-panel">
