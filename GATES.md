@@ -6,26 +6,21 @@ These gates control evidence collection and changes affecting the printer. They 
 
 ## Reprise après le handoff du 23 août 2026
 
-Statut d'autorisation : **`ATTENDRE_GO`**.
+Statut d'autorisation : **MATRIX-V1 close ; `ATTENDRE_GO` pour RETRY-SAFETY-V1**.
 
-Thomas a arrêté la reprise avant le nouveau préflight SSH et demandé une tâche
-neuve. L'ancien Goal global reste `blocked` dans la tâche source et n'est pas
-une autorisation transférable. Aucune connexion distante, pose, chauffe,
-référence, mesure, écriture Z, relance de service ou autre mutation n'a été
-lancée après cette décision. L'état physique courant devra donc être vérifié
-frais avant toute exécution.
+BED-MESH-V2 est installée et validée sous la capture
+`20260823-151026-g4-k1-control-calibration-ui-prtouch-bed-mesh-v2`.
+Après deux corrections de préflight sans mutation, Thomas a rendu le GO MATRIX
+persistant pour terminer cette mission sans redemander la même autorisation.
+La capture `20260823-161103-g4-k1-control-calibration-ui-matrix-v1` a passé le
+préflight, la pose et deux validations. Backup exact, hashes installés, fichiers
+hors write-set, Klippy `ready`, `failed_components=[]`, `warnings=[]`, état au
+repos, profil robuste, Z accepté et deux CFS sont conformes. Seul Moonraker a été
+redémarré et aucune action physique n'a eu lieu. MATRIX-V1 est close.
 
 La prochaine gate unique est
-`G4-K1-CONTROL-CALIBRATION-UI-MATRIX-V1`. BED-MESH-V2 est installée et validée
-sous la capture `20260823-151026-g4-k1-control-calibration-ui-prtouch-bed-mesh-v2`.
-Le premier GO MATRIX a été suivi d'une correction locale avant toute connexion :
-son ancien préflight essayait encore d'accepter les matrices désormais refusées
-et son validateur cherchait des marqueurs retirés. Le GO renouvelé a permis un
-préflight SSH en lecture seule, arrêté sans mutation sur la phase terminale sûre
-`rolled_back` que la garde MATRIX omettait. Cette garde accepte désormais cet
-état seulement avec `busy=false`; le script revu exige donc encore un GO MATRIX
-renouvelé. RETRY-SAFETY-V1, PRTOUCH-PRESETS-V1, CAMPAIGN-V1 et
-COMPOSITE-MESH-SUBGRID-V1 restent fermées pendant cet incrément.
+`G4-K1-CONTROL-CALIBRATION-UI-RETRY-SAFETY-V1`. PRTOUCH-PRESETS-V1,
+CAMPAIGN-V1 et COMPOSITE-MESH-SUBGRID-V1 restent fermées.
 
 ## G0 — Repository bootstrap
 

@@ -858,7 +858,7 @@ complète, reprise et preuve des deux CFS. La décision détaillée est l'ADR-01
 
 Date: 2026-08-23
 
-Status: accepté hors imprimante après deux préflights bloqués sans mutation
+Status: installé et validé sous la capture `20260823-161103-g4-k1-control-calibration-ui-matrix-v1`
 
 Après le GO exact MATRIX-V1, la revue locale obligatoire a trouvé deux restes
 du contrat historique : l'import distant demandait encore au core d'accepter
@@ -884,3 +884,11 @@ déploiement reconnaissent déjà cet état. La garde MATRIX l'accepte désormai
 explicitement, sans élargir les phases actives ou échouées acceptables. Comme ce
 changement modifie encore le script revu, D-027 impose un nouveau GO exact avant
 la pose.
+
+Thomas a ensuite autorisé ce GO à rester valable pour les corrections
+nécessaires jusqu'au vert. Le préflight corrigé, la pose et deux validations ont
+réussi. La pose a remplacé uniquement le core et deux fichiers statiques après
+backup exact, puis redémarré seulement Moonraker. Les fichiers hors write-set,
+l'état physique inactif, le profil robuste, le Z accepté, les deux CFS et les
+listes `failed_components=[]` / `warnings=[]` sont conformes. MATRIX-V1 est
+close ; cette autorisation ne couvre aucune calibration ni gate suivante.

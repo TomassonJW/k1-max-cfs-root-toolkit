@@ -1,8 +1,33 @@
 # HANDOFF
 
-Date: 2026-08-23 15:55 +02:00
+Date: 2026-08-23 16:13 +02:00
 Phase: P4 / FIRST-CALIBRATION-V2 validée ; corrections UI sûres et prototype composite préparés hors imprimante ; production fermée
-Next operator: `ATTENDRE_GO` ; commencer uniquement par le préflight, la pose et la validation de `G4-K1-CONTROL-CALIBRATION-UI-MATRIX-V1` corrigée
+Next operator: `ATTENDRE_GO` ; MATRIX-V1 est close, la prochaine gate séparée est `G4-K1-CONTROL-CALIBRATION-UI-RETRY-SAFETY-V1`
+
+## Clôture MATRIX-V1 du 23 août 2026
+
+Le GO persistant de Thomas a autorisé la correction des gardes nécessaires sans
+redemander le même GO. La capture
+`20260823-161103-g4-k1-control-calibration-ui-matrix-v1` a obtenu
+`PREFLIGHT_CALIBRATION_UI_MATRIX_V1_OK`,
+`DEPLOY_CALIBRATION_UI_MATRIX_V1_OK`, puis une seconde validation indépendante
+`VALIDATE_CALIBRATION_UI_MATRIX_V1_OK`.
+
+Le core et les deux fichiers statiques ont été remplacés après backup exact ;
+seul le Moonraker dédié a été redémarré. Les hashes installés sont
+`9a6a2419…`, `4892294d…` et `33a20db2…`. Les trois fichiers de rollback sont
+présents avec les hashes exacts de la baseline `12f7826f…`, `d764dcce…` et
+`ad43bf7c…`. Le composant BED-MESH-V2 `8c8c4aaf…` et `printer.cfg`
+`36cfb7e7…` sont inchangés.
+
+Le contrôle direct final confirme Klippy `ready`, `failed_components=[]` et
+`warnings=[]`. La validation complète confirme `standby`, cibles zéro, runtime
+fermé, Z accepté valide, profil `k1_p001_t055_r001_n06x06`, configuration
+chargée `6 × 6` Lagrange et deux CFS connectés. Aucun chauffage, homing,
+mouvement, mesh, extrusion, impression, commande CFS ou écriture Z n'a eu lieu.
+Le rollback n'a pas été exécuté car il annulerait la pose réussie ; son backup
+exact est vérifié et conservé. MATRIX-V1 est close. Ne pas lancer de calibration
+depuis l'écran avant les gates séparées suivantes.
 
 ## Reprise MATRIX-V1 du 23 août 2026
 
