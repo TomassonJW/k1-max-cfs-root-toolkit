@@ -1,0 +1,40 @@
+{
+  "id": "G4-K1-CONTROL-COMPOSITE-MESH-V1",
+  "status": "offline_prototype_only",
+  "printer_mutation_authorized": false,
+  "target": {
+    "matrix": "11x11",
+    "physical_points": 121,
+    "algorithm": "bicubic",
+    "mesh_min": [5, 5],
+    "mesh_max": [295, 295]
+  },
+  "bounded_passes": [
+    {"name": "even_even", "shape": "6x6", "physical_points": 36},
+    {"name": "odd_even", "shape": "5x6", "physical_points": 30},
+    {"name": "even_odd", "shape": "6x5", "physical_points": 30},
+    {"name": "odd_odd", "shape": "5x5", "physical_points": 25}
+  ],
+  "hard_guards": {
+    "maximum_contacts_per_pass": 36,
+    "same_klipper_session": true,
+    "same_homing_epoch": true,
+    "same_plate": true,
+    "same_temperature_targets": true,
+    "klipper_restart_between_passes": false,
+    "prtouch_version_change": false,
+    "remove_factory_hold_tables": false,
+    "replace_stock_bed_mesh_command": false,
+    "cfs_command_during_calibration": false,
+    "partial_profile_persistence": false
+  },
+  "next_physical_gate": "G4-K1-CONTROL-COMPOSITE-MESH-SUBGRID-V1",
+  "required_before_full_campaign": [
+    "offline fusion tests green",
+    "bounded standard handler call proven",
+    "one shifted subgrid captured without restart",
+    "automatic heater cutoff and exact rollback",
+    "stock 6x6 profile and accepted Z unchanged",
+    "two chained CFS healthy after full power cycle"
+  ]
+}

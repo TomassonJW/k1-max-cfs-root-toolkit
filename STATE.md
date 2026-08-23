@@ -9,10 +9,15 @@ calibration V2 installés et validés ; production volontairement bloquée**
 
 La calibration UI réelle est actuellement **fermée à toute relance** : le
 premier mesh `9 × 9` de la campagne `20260823-021858-540-calibration-ui-v1` a
-atteint la limite PRTouch de trente-six points puis levé `IndexError` avant le
-point 37. Le rollback a restauré un état sûr et les payloads corrigés restent
-hors imprimante. Le nouveau contrat est `6 × 6` Lagrange, un mesh quotidien,
-puis chemin Z. Il attend cinq GO exacts renouvelés avant pose et preuve écran.
+atteint la limite PRTouch de trente-six contacts par séquence puis levé
+`IndexError` avant le point 37. Le rollback a restauré un état sûr et la K1 est
+maintenant éteinte. La base sûre reste `6 × 6` Lagrange avec un seul mesh
+standard. L'audit complémentaire de l'ADR-013 montre toutefois que cette limite
+ne borne pas nécessairement la matrice finale : quatre sous-grilles de 36
+contacts maximum peuvent former 121 mesures physiques `11 × 11`, sans
+`pr_version: 1`, si elles restent dans la même chauffe et le même référencement.
+Le fusionneur hors imprimante est vert ; l'acquisition réelle composite n'est
+ni installée ni autorisée par cette preuve logicielle.
 
 The repository baseline, stock acquisition, complete Orca/G-code intake and
 passive P1–P5/PETG trace are complete. Gate G3 is passed for offline design and

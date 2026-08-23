@@ -751,18 +751,38 @@ lignes. Le rollback API a restauré `standby`, cibles zéro, axes non référenc
 profil robuste `6 × 6`, stockage `ok` et Z accepté `−0,04 mm`. Aucun résultat de
 ce mesh n'est retenu.
 
-Cette preuve et les trente-six tables par point de la configuration usine
-invalident les niveaux `9/11/15`. L'ADR-012 fixe le contrat matériel à
-`6 × 6 + lagrange` et le contrat quotidien à un seul mesh. Les six meshes de
-FIRST-CALIBRATION-V2 restent une qualification initiale historique ; ils ne
-sont plus répétés par l'UI. Le contournement `pr_version: 1` avec retrait des
-tables usine est rejeté.
+Cette preuve invalide `9/11/15` dans une seule séquence PRTouch. L'ADR-012 fixe
+le contrat standard à `6 × 6 + lagrange` et à un seul mesh. L'ADR-013 précise
+désormais que le profil final n'est pas borné à six : quatre sous-grilles de 36
+contacts maximum peuvent former 121 vraies mesures `11 × 11`, mais seulement
+après une qualification séparée dans la même chauffe et le même référencement.
+Les six meshes de FIRST-CALIBRATION-V2 restent une qualification initiale
+historique ; ils ne sont plus répétés par l'UI. Le contournement
+`pr_version: 1` avec retrait des tables usine reste rejeté.
 
 Les révisions corrigées de PRTOUCH-BED-MESH-V2, MATRIX-V1,
 RETRY-SAFETY-V1, PRTOUCH-PRESETS-V1 et CAMPAIGN-V1 sont prêtes hors imprimante.
 Le dernier essai de pose a été refusé par la barrière de sécurité parce que les
 payloads avaient changé après les GO précédents. Chacune exige donc son GO exact
 renouvelé. L'ancienne UI encore présente ne doit pas être relancée.
+
+### Gate exploratoire — `G4-K1-CONTROL-COMPOSITE-MESH-SUBGRID-V1`
+
+Status: **conception et fusion hors imprimante vertes ; acquisition non
+préparée, non installée et non ouverte**
+
+Cette gate future ne couvre qu'une sous-grille PRTouch décalée de 36 contacts
+maximum. Elle devra conserver le `pr_version: 2`, les 72 tables exactes, la
+commande stock et les deux CFS ; installer un composant séparé ; rester dans un
+seul référencement ; capturer chaque contact ; couper les chauffes ; puis
+restaurer automatiquement sans persister de profil composite. Son succès est
+obligatoire avant toute campagne quatre sous-grilles.
+
+Le fusionneur hors imprimante est disponible sous
+`packages/k1-control-v1/composite-mesh-v1`. Ses sept tests ciblés et la suite
+complète de 203 tests sont verts, avec 3 tests historiquement ignorés. Cette
+preuve valide uniquement la partition et la fusion ; elle ne prouve aucun
+mouvement PRTouch.
 
 ## G5 — V1 production baseline
 

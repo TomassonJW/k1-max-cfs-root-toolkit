@@ -2,8 +2,9 @@
 
 Date : 2026-08-23
 
-Statut : accepté hors imprimante ; remplace les grandes matrices de l'ADR-010
-et complète l'ADR-011
+Statut : accepté puis amendé par l'ADR-013. La limite de 36 contacts par
+séquence et le passage quotidien unique restent valides ; l'interdiction de
+toute matrice finale plus dense est remplacée par le maillage composite borné.
 
 ## Contexte
 

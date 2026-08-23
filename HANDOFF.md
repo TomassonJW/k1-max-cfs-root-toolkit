@@ -1,17 +1,19 @@
 # HANDOFF
 
 Date: 2026-08-23
-Phase: P4 / FIRST-CALIBRATION-V2 validée ; mesh robuste et Z `−0,04 mm` retenus ; production fermée
-Next operator: renouveler les cinq GO exacts, poser la correction `6 × 6 / 1 mesh`, puis lancer sa campagne écran
+Phase: P4 / FIRST-CALIBRATION-V2 validée ; audit haute confiance et prototype composite hors imprimante ; production fermée
+Next operator: K1 éteinte ; au prochain créneau, remettre d'abord l'UI sûre `6 × 6 / 1 mesh`, puis qualifier séparément une sous-grille composite bornée
 
 ## Message obligatoire au début de la prochaine session
 
 Dire clairement à Thomas, avant toute proposition d'exécution :
 
-- **l'autonomie calibration n'est pas encore atteinte** : l'interface réelle est
-  posée, mais la preuve `9 × 9` a révélé la limite physique PRTouch à trente-six
-  points ; la correction `6 × 6` Lagrange avec un seul mesh quotidien est prête
-  hors imprimante et doit encore être posée puis prouvée par la campagne écran ;
+- **l'autonomie calibration n'est pas encore atteinte** : l'essai `9 × 9` a
+  prouvé une limite de trente-six contacts par séquence PRTouch et l'interface
+  sûre `6 × 6 / 1 mesh` doit encore être reposée puis validée ; l'ADR-013 et le
+  prototype hors imprimante ouvrent ensuite un vrai mode précision composite
+  `11 × 11` en quatre sous-grilles, mais aucune acquisition composite n'est
+  encore installée ni qualifiée sur la K1 ;
 - **l'autonomie production n'est pas encore atteinte** : Orca, `START_PRINT`,
   l'ancien `+0,27 mm` et les températures CFS ne sont pas encore basculés vers
   le nouveau contrat ;
@@ -24,6 +26,28 @@ Dire clairement à Thomas, avant toute proposition d'exécution :
 
 Ne pas présenter Mainsail `v2.18.2`, la console ou les macros `KCTRL_*` comme
 l'interface quotidienne terminée.
+
+## Audit haute confiance après la panne au point 37
+
+L'analyse locale et en ligne est consignée dans
+`docs/19-audit-calibration-haute-confiance-k1-max-cfs.md` et l'ADR-013. La panne
+borne une séquence PRTouch V2 à 36 contacts ; elle ne borne pas le profil Bed
+Mesh que Klipper peut charger. Les 36 paires de seuils de cette machine sont
+toutes identiques et les six maillages FIRST-CALIBRATION-V2 prouvent que le
+compteur repart à zéro entre séquences.
+
+Le prototype `packages/k1-control-v1/composite-mesh-v1/compose_mesh.py` fusionne
+quatre sous-grilles `6 × 6`, `5 × 6`, `6 × 5`, `5 × 5` en 121 positions réelles
+`11 × 11`. Il refuse plus de 36 contacts par passage, les sessions physiques
+différentes, un restart Klipper, les trous, doublons et valeurs non finies. La
+suite complète est verte : 203 tests, 3 ignorés connus.
+
+Cette voie doit utiliser le moteur Bed Mesh standard de façon bornée sans
+remplacer la commande stock, sans `pr_version: 1` et sans restart entre les
+quatre sous-grilles. La prochaine gate physique de cette voie est une unique
+sous-grille décalée avec rollback automatique ; le profil complet n'est lancé
+qu'après cette preuve. Le mode `15 × 15` stock est refusé : neuf passages et
+plus de quarante minutes de palpage ne sont pas raisonnables sans gain prouvé.
 
 ## CALIBRATION-PATH-V1 installé et validé
 
