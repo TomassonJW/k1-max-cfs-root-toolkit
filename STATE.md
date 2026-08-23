@@ -16,8 +16,10 @@ standard. L'audit complémentaire de l'ADR-013 montre toutefois que cette limite
 ne borne pas nécessairement la matrice finale : quatre sous-grilles de 36
 contacts maximum peuvent former 121 mesures physiques `11 × 11`, sans
 `pr_version: 1`, si elles restent dans la même chauffe et le même référencement.
-Le fusionneur hors imprimante est vert ; l'acquisition réelle composite n'est
-ni installée ni autorisée par cette preuve logicielle.
+Le fusionneur hors imprimante est vert. Un composant séparé pour une unique
+sous-grille décalée `5 × 5` est maintenant préparé avec pose, rollback, pilote
+borné et 14 tests ciblés ; il n'est ni installé ni exécuté et cette preuve
+logicielle n'autorise pas encore quatre sous-grilles.
 
 The repository baseline, stock acquisition, complete Orca/G-code intake and
 passive P1–P5/PETG trace are complete. Gate G3 is passed for offline design and

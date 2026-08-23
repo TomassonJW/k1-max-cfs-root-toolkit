@@ -119,10 +119,14 @@ La page doit afficher séparément :
 1. Fusion et rejets testés entièrement hors imprimante sur données synthétiques.
 2. Composant installé sans modifier `pr_version`, les 72 tables, les macros CFS
    ni la commande stock `BED_MESH_CALIBRATE`.
-3. Essai sans contact ou petite grille bornée prouvant l'appel direct au moteur
-   Klipper attendu et le retour au repos.
+3. Pose sans mouvement du composant séparé, puis petite grille bornée prouvant
+   l'appel dynamique au moteur Bed Mesh et le retour au repos. Le premier essai
+   retenu est la partition impaire/impaire `5 × 5`, de `34` à `266 mm`, soit 25
+   contacts. Un restart est permis uniquement après sa capture afin de nettoyer
+   la session ; il ne prouve pas encore l'enchaînement sans restart.
 4. Une sous-grille décalée de 36 points maximum, avec arrêt, chauffes à zéro et
-   rollback automatique sur toute divergence.
+   rollback automatique sur toute divergence. La future campagne de quatre
+   sous-grilles interdira tout restart avant la quatrième capture.
 5. Quatre sous-grilles complètes dans la même session ; preuve de 121 positions
    uniques et profil final `11 × 11` bicubique.
 6. Comparaison du profil composite avec le robuste `6 × 6`, puis recette de

@@ -49,6 +49,24 @@ sous-grille décalée avec rollback automatique ; le profil complet n'est lancé
 qu'après cette preuve. Le mode `15 × 15` stock est refusé : neuf passages et
 plus de quarante minutes de palpage ne sont pas raisonnables sans gain prouvé.
 
+Le package physique `composite-subgrid-v1` est désormais préparé hors
+imprimante. Il ne peut demander que la partition impaire/impaire `5 × 5`, 25
+contacts de `34` à `266 mm`, après gate exacte et confirmation du plateau. Sa
+pose ne redémarre que Moonraker ; son essai coupe les chauffes, recharge le
+profil robuste et redémarre Klipper uniquement après la capture pour nettoyer
+la session. Les 14 tests ciblés et la suite complète de 217 tests sont verts,
+avec 3 ignorés connus. Détails :
+`docs/20-g4-k1-control-composite-subgrid-v1.md`.
+
+Dans la reprise courante, le préflight final de campagne a joint la K1 et a
+refusé comme prévu l'ancien core encore installé. Le préflight individuel
+suivant n'a pas atteint la machine : le sandbox Windows exécute SSH sous
+`CodexSandboxOnline`, sans la configuration de `C:\Users\janko\.ssh`, puis la
+plateforme a refusé l'escalade parce qu'elle jugeait l'alias ambigu. Il faut une
+approbation technique explicite après cet avertissement pour rendre visible
+l'alias `k1max-root` déjà qualifié ; aucun contournement par adresse n'est
+autorisé.
+
 ## CALIBRATION-PATH-V1 installé et validé
 
 Thomas a nommé `G4-K1-CONTROL-CALIBRATION-PATH-V1` sans préfixe `GO`. Cette

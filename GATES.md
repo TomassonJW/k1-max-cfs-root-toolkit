@@ -768,8 +768,8 @@ renouvelé. L'ancienne UI encore présente ne doit pas être relancée.
 
 ### Gate exploratoire — `G4-K1-CONTROL-COMPOSITE-MESH-SUBGRID-V1`
 
-Status: **conception et fusion hors imprimante vertes ; acquisition non
-préparée, non installée et non ouverte**
+Status: **package d'acquisition `5 × 5` préparé et testé hors imprimante ; non
+installé et non exécuté**
 
 Cette gate future ne couvre qu'une sous-grille PRTouch décalée de 36 contacts
 maximum. Elle devra conserver le `pr_version: 2`, les 72 tables exactes, la
@@ -778,11 +778,15 @@ seul référencement ; capturer chaque contact ; couper les chauffes ; puis
 restaurer automatiquement sans persister de profil composite. Son succès est
 obligatoire avant toute campagne quatre sous-grilles.
 
-Le fusionneur hors imprimante est disponible sous
-`packages/k1-control-v1/composite-mesh-v1`. Ses sept tests ciblés et la suite
-complète de 203 tests sont verts, avec 3 tests historiquement ignorés. Cette
-preuve valide uniquement la partition et la fusion ; elle ne prouve aucun
-mouvement PRTouch.
+Le fusionneur hors imprimante reste sous
+`packages/k1-control-v1/composite-mesh-v1`. Le paquet physique séparé
+`composite-subgrid-v1` impose maintenant une première grille impaire/impaire
+`5 × 5`, 25 contacts aux positions `34..266 mm`, puis chauffes zéro, nettoyage
+de la session et profil robuste restauré. Sa pose redémarre Moonraker seulement
+et son essai redémarre Klipper uniquement après la capture. Les 14 tests ciblés
+et la suite complète de 217 tests sont verts, avec 3 tests historiquement
+ignorés. Cette preuve valide le pilote hors imprimante ; elle ne prouve encore
+aucun mouvement PRTouch.
 
 ## G5 — V1 production baseline
 

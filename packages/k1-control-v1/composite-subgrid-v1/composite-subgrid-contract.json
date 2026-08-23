@@ -1,0 +1,38 @@
+{
+  "contract_id": "G4-K1-CONTROL-COMPOSITE-MESH-SUBGRID-V1",
+  "status": "offline_review_candidate",
+  "scope": "one shifted physical 5x5 PRTouch subgrid",
+  "fixed_settings": {
+    "plate": "PEI_TEXTURED_A",
+    "bed_target_c": 55,
+    "nozzle_target_c": 140,
+    "soak_seconds": 200,
+    "mesh_min": [34, 34],
+    "mesh_max": [266, 266],
+    "probe_count": [5, 5],
+    "algorithm": "lagrange",
+    "physical_contacts": 25
+  },
+  "hard_guards": {
+    "exact_gate_required": true,
+    "fresh_plate_clear_required": true,
+    "printer_standby_required": true,
+    "heater_targets_zero_before_start": true,
+    "accepted_z_required": true,
+    "two_cfs_required": true,
+    "maximum_contacts_per_pass": 36,
+    "prtouch_version_change": false,
+    "factory_hold_table_change": false,
+    "printer_config_change": false,
+    "persistent_composite_profile": false,
+    "heater_cutoff_on_exit": true,
+    "robust_6x6_restored_on_exit": true
+  },
+  "not_in_scope": [
+    "four-subgrid campaign",
+    "11x11 profile persistence",
+    "daily UI exposure",
+    "Orca or START_PRINT changes",
+    "CFS commands"
+  ]
+}
