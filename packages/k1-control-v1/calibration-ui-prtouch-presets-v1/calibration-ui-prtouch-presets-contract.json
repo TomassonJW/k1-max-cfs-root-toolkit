@@ -1,7 +1,7 @@
 {
   "contract_id": "G4-K1-CONTROL-CALIBRATION-UI-PRTOUCH-PRESETS-V1",
   "purpose": "expose_only_the_exactly_proven_6x6_prtouch_grid",
-  "dependency": "G4-K1-CONTROL-CALIBRATION-UI-PRTOUCH-BED-MESH-V2 corrected payload deployed and validated",
+  "dependency": "PRTOUCH-BED-MESH-V2, MATRIX-V1 and RETRY-SAFETY-V1 deployed and validated",
   "displayed_matrices": [6],
   "product_levels": [6],
   "forbidden_displayed_matrices": [3, 4, 5, 9, 11, 15],

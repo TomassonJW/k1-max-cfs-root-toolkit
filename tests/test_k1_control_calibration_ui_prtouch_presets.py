@@ -65,6 +65,11 @@ class PrtouchPresetUiTests(unittest.TestCase):
         self.assertIn("heater_command = $false", source)
         self.assertNotIn("S56k1_control_moonraker restart", source)
         self.assertNotIn("/printer/gcode/script", source)
+        self.assertIn("Assert-ServerInfo", source)
+        self.assertIn("failed_components", source)
+        self.assertIn("warnings", source)
+        self.assertNotIn("matrixField.value = .5.", source)
+        self.assertNotIn("value=.15.", source)
 
 
 if __name__ == "__main__":
