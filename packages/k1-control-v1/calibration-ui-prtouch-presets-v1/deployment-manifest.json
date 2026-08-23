@@ -4,7 +4,7 @@
   "dependency": "G4-K1-CONTROL-CALIBRATION-UI-PRTOUCH-BED-MESH-V2 corrected payload deployed and validated",
   "deployer": {
     "path": "scripts/deploy-k1-control-calibration-ui-prtouch-presets-v1.ps1",
-    "sha256": "24435b1cb9c7ec6ec91967159cbf027f5dd96f964d8d5dd00f4659ff84934b79"
+    "sha256": "2cff023202347963364aec3d3683e585fb752e4f5b23915e4b15b98787831554"
   },
   "contract": {
     "path": "calibration-ui-prtouch-presets-contract.json",

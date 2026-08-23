@@ -8,7 +8,7 @@
     },
     {
       "path": "scripts/validate-k1-control-calibration-ui-campaign-v1.ps1",
-      "sha256": "b195685aeb8e0024f8e93853a9dc768771cad985b99236e0f6f30d259015958c"
+      "sha256": "5a390411f0f6777eb270e21d8e5d4e7559d8b5bc0957914ad339d1e826a45a60"
     },
     {
       "path": "packages/k1-control-v1/calibration-ui-matrix-v1/deployment-manifest.json",
@@ -24,7 +24,7 @@
     },
     {
       "path": "packages/k1-control-v1/calibration-ui-prtouch-presets-v1/deployment-manifest.json",
-      "sha256": "66bb9e59668ca280caaf6b71075f76d2a4ecbdcf0b5b4cc16ba2adb46ddc8d54"
+      "sha256": "69fb18080f74dbe0bf776675250ab8f6587134ec3dac7663e0b7c4c30df8711b"
     }
   ],
   "remote_file_installation": false,

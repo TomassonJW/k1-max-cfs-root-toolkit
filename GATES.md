@@ -743,6 +743,13 @@ rapporte `failed_components=[]` et `warnings=[]`. Après rollback exact de la
 campagne XS3002, le préflight complet
 `20260823-013151-g4-k1-control-calibration-ui-campaign-v1` est vert.
 
+L'audit de chaîne hors imprimante montre maintenant que MATRIX-V1 puis
+RETRY-SAFETY-V1 produisent déjà exactement les deux hashes finaux de
+PRTOUCH-PRESETS-V1. Le déployeur PRESETS est donc idempotent : après ces deux
+lots il exécute la validation complète et écrit seulement sa preuve locale,
+sans backup, transfert ni remplacement distant. Le chemin historique de copie
+reste fermé sauf si les hashes de base et de sortie diffèrent réellement.
+
 Le départ suivant, campagne `20260823-021858-540-calibration-ui-v1`, a atteint
 exactement `g29_cnt=36` pendant son premier mesh `9 × 9`, puis le wrapper
 Creality a levé `IndexError: list index out of range` avant le point 37. La
@@ -784,7 +791,7 @@ Le fusionneur hors imprimante reste sous
 `5 × 5`, 25 contacts aux positions `34..266 mm`, puis chauffes zéro, nettoyage
 de la session et profil robuste restauré. Sa pose redémarre Moonraker seulement
 et son essai redémarre Klipper uniquement après la capture. Les 14 tests ciblés
-et la suite complète de 217 tests sont verts, avec 3 tests historiquement
+et la suite complète de 220 tests sont verts, avec 3 tests historiquement
 ignorés. Cette preuve valide le pilote hors imprimante ; elle ne prouve encore
 aucun mouvement PRTouch.
 

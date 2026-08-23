@@ -54,9 +54,15 @@ imprimante. Il ne peut demander que la partition impaire/impaire `5 × 5`, 25
 contacts de `34` à `266 mm`, après gate exacte et confirmation du plateau. Sa
 pose ne redémarre que Moonraker ; son essai coupe les chauffes, recharge le
 profil robuste et redémarre Klipper uniquement après la capture pour nettoyer
-la session. Les 14 tests ciblés et la suite complète de 217 tests sont verts,
+la session. Les 14 tests ciblés et la suite complète de 220 tests sont verts,
 avec 3 ignorés connus. Détails :
 `docs/20-g4-k1-control-composite-subgrid-v1.md`.
+
+Un test de chaîne supplémentaire rejoue les hashes distants attendus dans
+l'ordre BED-MESH-V2 → MATRIX → RETRY-SAFETY → PRESETS → COMPOSITE. Il prouve
+que chaque baseline correspond exactement à la sortie précédente. Il montre
+aussi que PRESETS est déjà produit bit pour bit par MATRIX + RETRY-SAFETY ; son
+déployeur rend donc un succès idempotent sans écriture distante dans cet état.
 
 Dans la reprise courante, le préflight final de campagne a joint la K1 et a
 refusé comme prévu l'ancien core encore installé. Le préflight individuel

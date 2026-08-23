@@ -24,7 +24,8 @@ Cette gate ne doit être posée qu'après les quatre révisions quotidiennes :
 1. PRTOUCH-BED-MESH-V2 corrigé ;
 2. core MATRIX-V1 limité à `6 × 6 / un mesh` ;
 3. RETRY-SAFETY-V1 corrigé ;
-4. PRTOUCH-PRESETS-V1 limité au seul `6 × 6` ;
+4. validation idempotente PRTOUCH-PRESETS-V1, sans écriture si les hashes de
+   MATRIX + RETRY-SAFETY sont déjà les hashes finaux ;
 5. campagne écran quotidienne verte.
 
 Le composant composite n'est pas visible dans l'interface quotidienne. Son API
@@ -121,5 +122,7 @@ n'autorise ni une deuxième sous-grille ni la campagne `11 × 11`.
 - grammaire Python 3.8 vérifiée ;
 - parse PowerShell des deux pilotes vert ;
 - hashes du contrat, du déployeur, du pilote et des payloads épinglés ;
-- suite complète : 217 tests attendus, 3 ignorés connus après intégration du
-  quatorzième test ciblé.
+- suite complète : 220 tests, 3 ignorés connus ;
+- trois tests de chaîne prouvent les transitions exactes BED-MESH-V2 → MATRIX
+  → RETRY-SAFETY → PRESETS → COMPOSITE et le caractère sans écriture de
+  PRESETS dans l'état final attendu.

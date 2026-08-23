@@ -187,7 +187,8 @@ $manifest = Assert-Package
 
 if ($Action -eq 'Plan') {
     Write-Output "PLAN_CALIBRATION_UI_PRTOUCH_PRESETS_V1_OK gate=$RequiredGate"
-    Write-Output 'Effet: backup exact et remplacement atomique de index.html et app.js; aucun restart.'
+    Write-Output 'Effet courant: validation idempotente sans écriture lorsque MATRIX + RETRY-SAFETY ont déjà produit les deux hashes finaux.'
+    Write-Output 'Le chemin historique de copie reste disponible uniquement si les fichiers de base et de sortie diffèrent.'
     Write-Output 'Seul 6x6 Lagrange reste visible; 3/4/5/9/11/15 sont retirés après preuve de la limite à 36 points.'
     Write-Output 'Aucun chauffage, homing, mouvement, mesh, Z, extrusion, impression ou action CFS.'
     exit 0
@@ -219,6 +220,25 @@ Assert-MutationGate
 Assert-RemoteFiles $manifest ([string]$manifest.baseline.index_html_sha256) ([string]$manifest.baseline.app_js_sha256)
 [void](Assert-SafeState)
 New-Item -ItemType Directory -Path $LocalCapture -Force | Out-Null
+
+if ([string]$manifest.baseline.index_html_sha256 -ceq [string]$manifest.files[0].sha256 -and
+    [string]$manifest.baseline.app_js_sha256 -ceq [string]$manifest.files[1].sha256) {
+    & $PSCommandPath -Action Validate -PrinterHost $PrinterHost -CaptureId $CaptureId
+    [pscustomobject]@{
+        capture_id = $CaptureId
+        gate = $RequiredGate
+        action = 'Deploy'
+        result = 'DEPLOY_CALIBRATION_UI_PRTOUCH_PRESETS_V1_OK'
+        already_present = $true
+        remote_write = $false
+        service_restart = $false
+        calibration_action = $false
+        printer_motion = $false
+        heater_command = $false
+    } | ConvertTo-Json | Set-Content -LiteralPath (Join-Path $LocalCapture 'deploy-result.json') -Encoding UTF8
+    Write-Output "DEPLOY_CALIBRATION_UI_PRTOUCH_PRESETS_V1_OK capture=$CaptureId already_present=true remote_write=false"
+    exit 0
+}
 
 try {
     [void](Invoke-Remote "mkdir -p '$RemoteBackup'")
