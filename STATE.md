@@ -2,17 +2,17 @@
 
 Last updated: 2026-08-23
 
-La révision sûre `PRTOUCH-BED-MESH-V2` est maintenant installée et validée sous
-la capture `20260823-151026-g4-k1-control-calibration-ui-prtouch-bed-mesh-v2`.
-Le GO MATRIX-V1 reçu ensuite n'a déclenché aucune connexion : la revue locale a
-trouvé que son préflight acceptait encore les anciennes grandes matrices et
-que son validateur cherchait des marqueurs retirés. Le paquet a été corrigé et
-repasse 220 tests avec 3 ignorés connus. Le GO renouvelé a lancé un préflight
-SSH strictement en lecture seule, arrêté sans mutation sur la phase sûre
-`rolled_back` que sa garde locale omettait. Cette phase terminale est désormais
-acceptée seulement avec `busy=false`. Le déployeur ayant encore changé,
-MATRIX-V1 revient en `ATTENDRE_GO` sur le nouveau commit corrigé. L'interface
-installée ne doit pas être relancée entre-temps.
+Les révisions sûres `PRTOUCH-BED-MESH-V2` et `MATRIX-V1` sont maintenant
+installées et validées. MATRIX-V1 a été close sous la capture
+`20260823-161103-g4-k1-control-calibration-ui-matrix-v1`, après correction de
+la garde terminale `rolled_back`. Le préflight, la pose, la validation intégrée
+et la validation indépendante sont verts. Le backup exact est conservé ; seul
+Moonraker a été redémarré. Klippy est `ready`, `failed_components=[]`,
+`warnings=[]`, la K1 est `standby` avec cibles zéro, le profil robuste et le Z
+accepté sont valides, `6 × 6` Lagrange est chargé et les deux CFS sont
+connectés. Aucune action physique n'a eu lieu. La prochaine gate séparée est
+`G4-K1-CONTROL-CALIBRATION-UI-RETRY-SAFETY-V1`; aucune calibration ne doit être
+lancée depuis l'écran avant la fermeture des deltas restants.
 
 ## Current phase
 

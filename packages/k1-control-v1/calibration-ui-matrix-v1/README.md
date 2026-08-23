@@ -1,6 +1,7 @@
 # CALIBRATION-UI-MATRIX-V1
 
-Statut : correction fondée sur la campagne réelle du 23 août 2026.
+Statut : installée et validée sous la capture
+`20260823-161103-g4-k1-control-calibration-ui-matrix-v1`.
 
 Ce delta corrige les choix de matrice après preuve sur la K1 exacte.
 
@@ -34,3 +35,8 @@ pas encore parmi les états fermés. Elle l'accepte désormais uniquement avec
 `busy=false`, conformément au core et aux autres gardes. Aucune pose ni aucun
 restart n'ont eu lieu ; ce nouveau changement du déployeur exige encore le même
 GO exact sur le nouveau commit corrigé.
+
+Le GO persistant a ensuite permis de terminer la gate sans redemander la même
+autorisation. Le préflight, le déploiement et deux validations sont verts. Le
+backup exact est conservé, seul Moonraker a été redémarré et aucune calibration
+ou action physique n'a été lancée. MATRIX-V1 est close.

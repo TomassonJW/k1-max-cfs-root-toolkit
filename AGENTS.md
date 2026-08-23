@@ -14,16 +14,16 @@ FIRST-CALIBRATION-V1 stopped KO; FIRST-CALIBRATION-V2 is installed and validated
 CALIBRATION-UI-V1 et ses correctifs historiques sont installés ; la campagne
 réelle `9 × 9` a ensuite prouvé la limite physique PRTouch à trente-six points
 par un `IndexError` au point 37 ; le rollback est vert ; la correction hors
-imprimante impose désormais `6 × 6` Lagrange et un seul mesh quotidien ; son
-premier delta sûr PRTOUCH-BED-MESH-V2 attend une reprise `ATTENDRE_GO` ;
+imprimante impose désormais `6 × 6` Lagrange et un seul mesh quotidien ; les
+deltas sûrs PRTOUCH-BED-MESH-V2 et MATRIX-V1 sont installés et validés ;
 production remains closed**.
 
-Thomas a clos la session le 23 août avant le nouveau préflight SSH. L'ancien
-Goal global reste `blocked` dans la tâche source et ne doit pas être transmis à
-une tâche neuve. Aucun accès élevé, aucune connexion distante et aucune mutation
-ne sont autorisés par ce handoff. La prochaine mission unique est le préflight,
-la pose et la validation de
-`G4-K1-CONTROL-CALIBRATION-UI-PRTOUCH-BED-MESH-V2`, uniquement après un GO frais.
+La capture `20260823-161103-g4-k1-control-calibration-ui-matrix-v1` a clos
+MATRIX-V1 avec préflight, pose et deux validations vertes. Seul Moonraker a été
+redémarré ; les backups et hashes sont conformes, Klippy est prêt, les listes
+d'échec et d'avertissement sont vides et aucune action physique n'a eu lieu. La
+prochaine mission unique est `G4-K1-CONTROL-CALIBRATION-UI-RETRY-SAFETY-V1`,
+uniquement après son autorisation séparée.
 
 Thomas authorised V1, but the mandatory preflight proved that `logrotate` was
 absent. V1 is closed and must never be deployed. Thomas later authorised V2;
@@ -364,12 +364,11 @@ perte des compensations et d'un retour de démarrage bloqué après coupure.
 Les packages core, matrice, retry-safety, adaptateur, presets, campagne et la
 preuve composite bornée ont été corrigés hors imprimante. La suite locale compte
 220 tests verts et 3 ignorés connus ; les scripts PowerShell se parsèrent
-correctement et `git diff --check` est vert. Le dernier essai de pose a été
-refusé par la barrière de sécurité parce que les payloads avaient changé après
-les GO précédents. Aucun contournement n'est permis. Après le handoff, ne pas
-enchaîner les cinq gates : commencer seulement par PRTOUCH-BED-MESH-V2 avec un
-préflight réel frais et son GO exact. MATRIX-V1, RETRY-SAFETY-V1,
-PRTOUCH-PRESETS-V1 et CAMPAIGN-V1 restent fermées pendant cet incrément.
+correctement et `git diff --check` est vert. Les corrections
+PRTOUCH-BED-MESH-V2 et MATRIX-V1 ont ensuite été posées et validées séparément,
+avec backups exacts, uniquement le restart Moonraker prévu et aucune action
+physique. Ne pas enchaîner les gates suivantes : RETRY-SAFETY-V1 est la
+prochaine gate unique ; PRTOUCH-PRESETS-V1 et CAMPAIGN-V1 restent fermées.
 
 Thomas demande que chaque prochaine reprise commence par un état explicite de
 l'autonomie, sans confondre le runtime installé avec une interface terminée :
