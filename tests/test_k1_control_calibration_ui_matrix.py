@@ -110,6 +110,20 @@ class CalibrationUiMatrixTests(unittest.TestCase):
         for item in manifest["files"]:
             self.assertEqual(item["sha256"], sha256(PACKAGE / item["source"]))
         self.assertEqual(len(manifest["baseline"]["files"]), 3)
+        unchanged = {
+            item["destination"]: item["sha256"]
+            for item in manifest["unchanged"]["files"]
+        }
+        self.assertEqual(
+            unchanged[
+                "/usr/data/k1-control-v1/current/moonraker/moonraker/moonraker/components/k1_control_probe_count.py"
+            ],
+            "8c8c4aaf20856be1880cea56badd2fe81bd488966eab0d55e7672f73eb1db7b0",
+        )
+        self.assertEqual(
+            unchanged["/usr/data/printer_data/config/printer.cfg"],
+            "36cfb7e71180268841ab5cedd31628c8d9953ba437c47662ced16df18bb1bacd",
+        )
         self.assertFalse(manifest["calibration_action"])
 
     def test_deployer_is_a_separate_exact_gate_without_physical_actions(self):
@@ -119,6 +133,11 @@ class CalibrationUiMatrixTests(unittest.TestCase):
         self.assertIn("S56k1_control_moonraker", deployer)
         self.assertNotIn("KCTRL_MESH_CALIBRATE", deployer)
         self.assertNotIn("KCTRL_CAL_PATH_BEGIN", deployer)
+        self.assertIn("for size in (3, 4, 5, 9, 11, 15):", deployer)
+        self.assertIn("6x6 bicubic must fail closed", deployer)
+        self.assertIn("Assert-ServerInfo", deployer)
+        self.assertIn("failed_components", deployer)
+        self.assertIn("warnings", deployer)
 
 
 if __name__ == "__main__":

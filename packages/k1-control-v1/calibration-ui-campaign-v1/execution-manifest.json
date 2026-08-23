@@ -12,7 +12,7 @@
     },
     {
       "path": "packages/k1-control-v1/calibration-ui-matrix-v1/deployment-manifest.json",
-      "sha256": "e43de6a5f34e35b0f375c22d0dcceaa09cc9eec063d8bfbe4b0869baae139149"
+      "sha256": "0787dd51e259d8e8fd80b3f78a6f4e4bcc540954d2a2b684f0472efae4cb0721"
     },
     {
       "path": "packages/k1-control-v1/calibration-ui-retry-safety-v1/deployment-manifest.json",

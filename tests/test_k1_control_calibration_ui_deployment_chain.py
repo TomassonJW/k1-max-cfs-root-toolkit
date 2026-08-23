@@ -51,6 +51,9 @@ class CalibrationUiDeploymentChainTests(unittest.TestCase):
     def test_four_safe_steps_form_one_exact_remote_hash_chain(self):
         remote = {}
         remote.update(_map(self.bedmesh["unchanged"]["files"]))
+        remote["/usr/data/printer_data/config/printer.cfg"] = self.bedmesh[
+            "baseline"
+        ]["printer_cfg_sha256"]
         component_path = self.bedmesh["files"][0]["destination"]
         remote[component_path] = self.bedmesh["baseline"]["component_sha256"]
         remote.update(_map(self.matrix["baseline"]["files"]))

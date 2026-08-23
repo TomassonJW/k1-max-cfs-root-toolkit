@@ -1,8 +1,35 @@
 # HANDOFF
 
-Date: 2026-08-23 14:17 +02:00
+Date: 2026-08-23 15:31 +02:00
 Phase: P4 / FIRST-CALIBRATION-V2 validée ; corrections UI sûres et prototype composite préparés hors imprimante ; production fermée
-Next operator: `ATTENDRE_GO` ; commencer uniquement par la pose et la validation de `G4-K1-CONTROL-CALIBRATION-UI-PRTOUCH-BED-MESH-V2`
+Next operator: `ATTENDRE_GO` ; commencer uniquement par le préflight, la pose et la validation de `G4-K1-CONTROL-CALIBRATION-UI-MATRIX-V1` corrigée
+
+## Reprise MATRIX-V1 du 23 août 2026
+
+`G4-K1-CONTROL-CALIBRATION-UI-PRTOUCH-BED-MESH-V2` a été posée et validée
+sous la capture
+`20260823-151026-g4-k1-control-calibration-ui-prtouch-bed-mesh-v2` : composant
+exact, `printer.cfg` inchangé, Moonraker prêt, `failed_components=[]`,
+`warnings=[]`, profil robuste et Z conservés, deux CFS connectés, aucune action
+physique.
+
+Thomas a ensuite donné le GO exact MATRIX-V1. La revue locale obligatoire a
+trouvé avant toute connexion deux restes de l'ancien contrat : le préflight
+essayait encore d'accepter `9/11/15`, désormais refusés par le core, et la
+validation cherchait d'anciens marqueurs statiques absents. Aucun SSH MATRIX,
+backup, transfert, restart ou effet distant n'a eu lieu.
+
+Le déployeur corrigé vérifie maintenant l'acceptation unique `6 × 6` Lagrange,
+le refus de `3/4/5/9/11/15` et de `6 × 6` bicubique, le composant BED-MESH-V2,
+`printer.cfg`, le profil robuste, le stockage Z, les deux CFS et
+`server/info` avec listes d'échec et d'avertissement vides. Son hash est
+`7d98439f8db6c51eea27f3dd2960df1bf277bae3d22d7eb326587906530d93f7`.
+La suite complète passe 220 tests, avec 3 ignorés connus.
+
+Comme les commandes revues ont changé après le GO, aucune pose MATRIX n'est
+autorisée par ce GO. La prochaine instruction requise est de nouveau
+`GO G4-K1-CONTROL-CALIBRATION-UI-MATRIX-V1` sur le commit corrigé. L'ancienne
+UI ne doit toujours pas être relancée.
 
 ## Décision de clôture de la session
 
