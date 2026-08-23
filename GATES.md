@@ -6,7 +6,7 @@ These gates control evidence collection and changes affecting the printer. They 
 
 ## Reprise après le handoff du 23 août 2026
 
-Statut d'autorisation : **MATRIX-V1 close ; `ATTENDRE_GO` pour RETRY-SAFETY-V1**.
+Statut d'autorisation : **RETRY-SAFETY-V1 close ; `ATTENDRE_GO` pour PRTOUCH-PRESETS-V1**.
 
 BED-MESH-V2 est installée et validée sous la capture
 `20260823-151026-g4-k1-control-calibration-ui-prtouch-bed-mesh-v2`.
@@ -18,9 +18,11 @@ hors write-set, Klippy `ready`, `failed_components=[]`, `warnings=[]`, état au
 repos, profil robuste, Z accepté et deux CFS sont conformes. Seul Moonraker a été
 redémarré et aucune action physique n'a eu lieu. MATRIX-V1 est close.
 
-La prochaine gate unique est
-`G4-K1-CONTROL-CALIBRATION-UI-RETRY-SAFETY-V1`. PRTOUCH-PRESETS-V1,
-CAMPAIGN-V1 et COMPOSITE-MESH-SUBGRID-V1 restent fermées.
+RETRY-SAFETY-V1 est également close sous la capture
+`20260823-164558-g4-k1-control-calibration-ui-retry-safety-v1`, sans restart ni
+action physique. La prochaine gate unique est
+`G4-K1-CONTROL-CALIBRATION-UI-PRTOUCH-PRESETS-V1`. CAMPAIGN-V1 et
+COMPOSITE-MESH-SUBGRID-V1 restent fermées.
 
 ## G0 — Repository bootstrap
 
@@ -633,26 +635,29 @@ Mainsail ; aucun cache navigateur n'a été supprimé.
 
 ### Gate corrective — `G4-K1-CONTROL-CALIBRATION-UI-RETRY-SAFETY-V1`
 
-Status: **ancienne révision déployée ; correction `1 mesh` en attente de GO renouvelé**
+Status: **correction `1 mesh` installée et validée**
 
-Deux départs humains `9 × 9` ont prouvé que `replace_existing=true` restait
-collant après une annulation à `0/6`. Les deux tentatives ont été arrêtées avant
-toute mesure et l'état durable est intact. Cette gate remplace uniquement
-`app.js` après backup exact, sans restart. Une reprise interrompue avant six
-meshes remet une seule fois `replace_existing=false` et `plate_clear=false`;
-l'opérateur peut ensuite réactiver explicitement un remplacement volontaire.
+La révision historique comparait `mesh_index < mesh_target_count`. L'état réel
+après l'échec du mesh quotidien unique est pourtant `rolled_back`, `1 / 1` : le
+test ne détectait plus cette fin non acceptée. La règle actuelle réinitialise
+une fois `replace_existing=false` et `plate_clear=false` sur `cancelled`,
+`failed`, `mesh_rejected` ou `rolled_back`, puis laisse l'opérateur réactiver
+explicitement un remplacement volontaire.
 
-Les 179 tests sont verts. Le préflight réel sous la capture
-`20260822-231240-g4-k1-control-calibration-ui-retry-safety-v1` a obtenu
-`PREFLIGHT_CALIBRATION_UI_RETRY_SAFETY_V1_OK` sur une K1 au repos, chauffes à
-zéro, Z accepté intact, chemin fermé et aucun profil transitoire. Le goal global
-de Thomas a autorisé la pose sans redemander un GO. Le même identifiant a obtenu
-`DEPLOY_CALIBRATION_UI_RETRY_SAFETY_V1_OK` puis deux
-`VALIDATE_CALIBRATION_UI_RETRY_SAFETY_V1_OK`. Seul `app.js` a été remplacé après
-backup exact, sans restart ni action physique. La route `4409` ayant été reprise
-par le cache Mainsail au rechargement, un tunnel temporaire neuf `4410` est prêt.
-La gate attend uniquement l'authentification humaine puis la preuve réelle des
-deux cases décochées avant reprise de la campagne.
+Thomas a autorisé cette gate jusqu'au vert sans redemander la même autorisation.
+La capture `20260823-164558-g4-k1-control-calibration-ui-retry-safety-v1` a
+obtenu le préflight, le déploiement et deux validations. Seul `app.js` a été
+remplacé après backup exact, sans restart. Le hash installé `3d3d53ea…`, le
+backup `33a20db2…`, les fichiers hors write-set, Klippy `ready`,
+`failed_components=[]`, `warnings=[]`, l'état au repos, le profil robuste, le Z,
+`6 × 6` Lagrange et les deux CFS sont conformes.
+
+La preuve navigateur sur les octets exacts installés a simulé `rolled_back`,
+`1 / 1`, avec `replace_existing=true` côté serveur. Les deux cases étaient
+décochées au premier rendu ; une coche volontaire du remplacement a survécu aux
+rafraîchissements, puis un rechargement frais a de nouveau décoché les deux
+cases. Aucun POST ou clic de calibration n'a eu lieu. Les 220 tests sont verts,
+avec 3 ignorés connus. La gate est close.
 
 ### Gate préparée — `G4-K1-CONTROL-CALIBRATION-UI-CAMPAIGN-V1`
 

@@ -2,17 +2,18 @@
 
 Last updated: 2026-08-23
 
-Les révisions sûres `PRTOUCH-BED-MESH-V2` et `MATRIX-V1` sont maintenant
-installées et validées. MATRIX-V1 a été close sous la capture
-`20260823-161103-g4-k1-control-calibration-ui-matrix-v1`, après correction de
-la garde terminale `rolled_back`. Le préflight, la pose, la validation intégrée
-et la validation indépendante sont verts. Le backup exact est conservé ; seul
-Moonraker a été redémarré. Klippy est `ready`, `failed_components=[]`,
-`warnings=[]`, la K1 est `standby` avec cibles zéro, le profil robuste et le Z
-accepté sont valides, `6 × 6` Lagrange est chargé et les deux CFS sont
-connectés. Aucune action physique n'a eu lieu. La prochaine gate séparée est
-`G4-K1-CONTROL-CALIBRATION-UI-RETRY-SAFETY-V1`; aucune calibration ne doit être
-lancée depuis l'écran avant la fermeture des deltas restants.
+Les révisions sûres `PRTOUCH-BED-MESH-V2`, `MATRIX-V1` et `RETRY-SAFETY-V1`
+sont maintenant installées et validées. RETRY-SAFETY-V1 a été close sous la
+capture `20260823-164558-g4-k1-control-calibration-ui-retry-safety-v1`. Seul
+`app.js` a changé après backup exact, sans restart. Le cas terminal réel
+`rolled_back`, `1 / 1` réinitialise désormais `replace_existing` et
+`plate_clear` à `false` une fois par phase, tout en conservant une réactivation
+volontaire. Klippy est `ready`, `failed_components=[]`, `warnings=[]`, la K1 est
+`standby` avec cibles zéro, le profil robuste et le Z accepté sont valides,
+`6 × 6` Lagrange est chargé et les deux CFS sont connectés. Aucune action
+physique n'a eu lieu. La prochaine gate séparée est
+`G4-K1-CONTROL-CALIBRATION-UI-PRTOUCH-PRESETS-V1`; aucune calibration ne doit
+être lancée depuis l'écran avant la fermeture des deltas restants.
 
 Le rendu Chrome des octets exactement identiques aux hashes distants confirme
 le titre de calibration, l'unique choix `6 × 6`, Lagrange, un passage et 36

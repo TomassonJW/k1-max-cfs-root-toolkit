@@ -8,7 +8,7 @@
     },
     {
       "path": "scripts/validate-k1-control-calibration-ui-campaign-v1.ps1",
-      "sha256": "5a390411f0f6777eb270e21d8e5d4e7559d8b5bc0957914ad339d1e826a45a60"
+      "sha256": "10fe9462712a70ace9c81cb1e904e172850c6cd3aba89d42ccaae1d38c82d1f4"
     },
     {
       "path": "packages/k1-control-v1/calibration-ui-matrix-v1/deployment-manifest.json",
@@ -16,7 +16,7 @@
     },
     {
       "path": "packages/k1-control-v1/calibration-ui-retry-safety-v1/deployment-manifest.json",
-      "sha256": "45d452f96d70ad83534be7a52ce794b862bdc7150f0645a42a3bede1427faad7"
+      "sha256": "37bdc87ff20d283e862505b70678afe4790845a517d1a191a8fc4565b570cbc8"
     },
     {
       "path": "packages/k1-control-v1/calibration-ui-prtouch-bed-mesh-v2/deployment-manifest.json",
@@ -24,7 +24,7 @@
     },
     {
       "path": "packages/k1-control-v1/calibration-ui-prtouch-presets-v1/deployment-manifest.json",
-      "sha256": "69fb18080f74dbe0bf776675250ab8f6587134ec3dac7663e0b7c4c30df8711b"
+      "sha256": "4833d397292929c964ee390dddcd90ca0c988ad06352ec36b4864cbdf322a74d"
     }
   ],
   "remote_file_installation": false,

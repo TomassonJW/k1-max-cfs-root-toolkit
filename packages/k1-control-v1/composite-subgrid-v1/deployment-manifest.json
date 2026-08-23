@@ -58,7 +58,7 @@
       },
       {
         "destination": "/usr/data/k1-control-v1/current/www/mainsail/k1-control/app.js",
-        "sha256": "67fe83aee144a2748d703b005fb337104c22e5760e2ae4dbc340306813c931bd"
+        "sha256": "3d3d53ead589e25c99d239de4415b4c35e96b3458c327f75b9f51f0ac43693ce"
       },
       {
         "destination": "/usr/data/k1-control-v1/current/www/mainsail/k1-control/styles.css",

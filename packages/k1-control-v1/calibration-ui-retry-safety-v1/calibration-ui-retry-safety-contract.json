@@ -1,10 +1,10 @@
 {
   "contract_id": "G4-K1-CONTROL-CALIBRATION-UI-RETRY-SAFETY-V1",
-  "scope": "static retry safety after an incomplete calibration attempt",
+  "scope": "static retry safety after any non-accepted single-mesh calibration end state",
   "dependency": "G4-K1-CONTROL-CALIBRATION-UI-MATRIX-V1 installed and validated",
   "reset_when": {
-    "phases": ["cancelled", "failed", "mesh_rejected"],
-    "mesh_index_less_than": "mesh_target_count"
+    "phases": ["cancelled", "failed", "mesh_rejected", "rolled_back"],
+    "single_mesh_rule": "terminal non-accepted phases reset even when mesh_index equals mesh_target_count"
   },
   "one_time_reset": {
     "replace_existing": false,

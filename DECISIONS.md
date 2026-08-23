@@ -892,3 +892,23 @@ backup exact, puis redémarré seulement Moonraker. Les fichiers hors write-set,
 l'état physique inactif, le profil robuste, le Z accepté, les deux CFS et les
 listes `failed_components=[]` / `warnings=[]` sont conformes. MATRIX-V1 est
 close ; cette autorisation ne couvre aucune calibration ni gate suivante.
+
+## D-051 — Une fin non acceptée du mesh unique réinitialise les confirmations
+
+Date: 2026-08-23
+
+Status: installé et validé sous la capture `20260823-164558-g4-k1-control-calibration-ui-retry-safety-v1`
+
+La règle historique de reprise comparait `mesh_index < mesh_target_count`, ce
+qui convenait au protocole de six passages. Après le passage au mesh quotidien
+unique, l'échec réel conserve `mesh_index=1` et `mesh_target_count=1` tout en
+finissant `rolled_back` sans mesh accepté. La comparaison numérique ne prouve
+donc plus qu'une tentative est sûre à reprendre.
+
+L'interface réinitialise désormais une fois `replace_existing=false` et
+`plate_clear=false` pour les phases terminales non acceptées `cancelled`,
+`failed`, `mesh_rejected` et `rolled_back`. La clé campagne + phase empêche de
+réappliquer ce reset pendant les rafraîchissements de la même page : l'opérateur
+peut encore recocher volontairement le remplacement. Un rechargement frais
+réapplique la sécurité. Cette décision ne change ni l'API, ni le core, ni un
+service, ni le comportement physique de la K1.
