@@ -6,8 +6,8 @@ These gates control evidence collection and changes affecting the printer. They 
 
 ## Reprise après le handoff du 23 août 2026
 
-Statut d'autorisation : **PRTOUCH-PRESETS-V1 close ; préflight CAMPAIGN-V1 en
-attente d'un GO frais accepté par la couche d'approbation**.
+Statut d'autorisation : **PRTOUCH-PRESETS-V1 close ; préflight CAMPAIGN-V1
+vert ; campagne physique opérateur non lancée**.
 
 BED-MESH-V2 est installée et validée sous la capture
 `20260823-151026-g4-k1-control-calibration-ui-prtouch-bed-mesh-v2`.
@@ -25,8 +25,9 @@ action physique. PRTOUCH-PRESETS-V1 est close sous la capture
 `20260823-165742-g4-k1-control-calibration-ui-prtouch-presets-v1` : les hashes
 sûrs étaient déjà installés, donc le déployeur idempotent n'a effectué aucune
 écriture distante, aucun backup et aucun restart. La prochaine gate unique est
-`G4-K1-CONTROL-CALIBRATION-UI-CAMPAIGN-V1`. Son préflight n'a pas encore joint
-la K1 ; COMPOSITE-MESH-SUBGRID-V1 reste fermée.
+`G4-K1-CONTROL-CALIBRATION-UI-CAMPAIGN-V1`. Son préflight est vert sous la
+capture `20260823-171803-g4-k1-control-calibration-ui-campaign-v1` ;
+COMPOSITE-MESH-SUBGRID-V1 reste fermée.
 
 ## G0 — Repository bootstrap
 
@@ -786,9 +787,12 @@ Les révisions corrigées de PRTOUCH-BED-MESH-V2, MATRIX-V1, RETRY-SAFETY-V1 et
 PRTOUCH-PRESETS-V1 sont maintenant installées et validées séparément. Le
 validateur CAMPAIGN-V1 a été renforcé hors imprimante pour contrôler le manifeste
 UI exact, `server/info`, le mesh chargé et les deux CFS ; ses tests sont verts.
-La couche d'approbation a toutefois refusé son préflight SSH faute d'un GO frais
-portant exactement le nom CAMPAIGN-V1. Aucun accès distant ni lancement depuis
-l'écran n'a suivi ce refus.
+Deux faux KO locaux ont d'abord comparé le core final au hash historique de
+BED-MESH-V2 puis demandé à PRESETS de couvrir `printer.cfg`. Le validateur
+corrigé contrôle la carte finale complète PRESETS et vérifie séparément le hash
+exact de `printer.cfg`. La capture
+`20260823-171803-g4-k1-control-calibration-ui-campaign-v1` a ensuite obtenu le
+préflight vert. Aucun lancement depuis l'écran n'a encore eu lieu.
 
 ### Gate exploratoire — `G4-K1-CONTROL-COMPOSITE-MESH-SUBGRID-V1`
 

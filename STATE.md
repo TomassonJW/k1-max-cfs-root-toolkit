@@ -12,10 +12,11 @@ Klippy est `ready`, `failed_components=[]`, `warnings=[]`, la K1 est `standby`
 avec cibles zéro, le profil robuste et le Z accepté sont valides, `6 × 6`
 Lagrange est chargé et les deux CFS sont connectés. Aucune action physique n'a
 eu lieu. La prochaine gate séparée est
-`G4-K1-CONTROL-CALIBRATION-UI-CAMPAIGN-V1`; son préflight distant n'a pas été
-exécuté, car la couche d'approbation a exigé un GO frais portant exactement ce
-nom malgré l'autorisation globale de Thomas. Aucune calibration ne doit être
-lancée depuis l'écran avant ce préflight.
+`G4-K1-CONTROL-CALIBRATION-UI-CAMPAIGN-V1`. Son préflight distant est vert sous
+la capture `20260823-171803-g4-k1-control-calibration-ui-campaign-v1`. La K1
+reste au repos, cibles zéro, avec l'UI finale exacte, le profil robuste, le Z
+accepté, `6 × 6` Lagrange et les deux CFS conformes. Aucune calibration n'a
+encore été lancée.
 
 Le rendu Chrome des octets exactement identiques aux hashes distants confirme
 le titre de calibration, l'unique choix `6 × 6`, Lagrange, un passage et 36
@@ -454,10 +455,10 @@ Au début de la prochaine session, annoncer explicitement à Thomas :
 
 La prochaine action sûre n'est plus un départ `9 × 9`. BED-MESH-V2, MATRIX-V1,
 RETRY-SAFETY-V1 et PRTOUCH-PRESETS-V1 sont installées et validées. La reprise
-attend le GO exact `GO G4-K1-CONTROL-CALIBRATION-UI-CAMPAIGN-V1` exigé par la
-couche d'approbation, puis son préflight distant frais. La seule action physique
-prévue ensuite est l'unique `6 × 6` Lagrange lancé par Thomas depuis l'écran ;
-Codex reste observateur. La preuve composite reste un incrément ultérieur.
+a obtenu son préflight distant frais. La seule action physique prévue est
+maintenant l'unique `6 × 6` Lagrange lancé par Thomas depuis le vrai écran
+authentifié ; Codex reste observateur. La preuve composite reste un incrément
+ultérieur.
 
 Le chemin borné `G4-K1-CONTROL-CALIBRATION-PATH-V1` ajoute ce qui manquait pour
 évaluer le premier Z sans console libre ni valeur cachée. Son premier préflight
@@ -701,10 +702,10 @@ retenu.
 
 Les tests hors imprimante sont verts : 220 réussites et 3 ignorés connus.
 PRTOUCH-BED-MESH-V2, MATRIX-V1, RETRY-SAFETY-V1 et PRTOUCH-PRESETS-V1 ont été
-validées séparément sur la K1. Le validateur CAMPAIGN-V1 renforcé est vert
-localement, mais sa tentative de préflight SSH a été refusée par la couche
-d'approbation avant toute connexion. CAMPAIGN-V1 reste donc la seule gate
-quotidienne non exécutée.
+validées séparément sur la K1. Après correction de deux faux KO locaux de chaîne
+de manifests, le validateur CAMPAIGN-V1 renforcé a obtenu
+`PREFLIGHT_CALIBRATION_UI_CAMPAIGN_V1_OK` sous la capture `20260823-171803`.
+CAMPAIGN-V1 reste la seule gate quotidienne non exécutée physiquement.
 
 The Orca cutover remains a later atomic gate. This runtime slice intentionally
 keeps the active Orca profile, `START_PRINT` and the legacy `+0.27 mm`
@@ -713,8 +714,8 @@ post-processor unchanged.
 Thomas explicitly rejected further sacrificial print campaigns on 2026-08-21.
 The V3 + PATHS-V1 observation remains useful coexistence evidence but no longer
 blocks offline product construction. L'autorité globale du Goal couvre la
-campagne de calibration dans la tâche active, mais la couche d'approbation
-réclame malgré tout son GO exact frais. Production et G5 restent fermées.
+campagne de calibration dans la tâche active et son préflight est désormais
+vert. Production et G5 restent fermées.
 
 Do not remove or disable the current Orca `+0.27 mm` post-processor. Its
 retirement remains atomic with the later proven machine/Orca replacement.

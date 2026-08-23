@@ -1,8 +1,29 @@
 # HANDOFF
 
-Date: 2026-08-23 17:06 +02:00
+Date: 2026-08-23 17:25 +02:00
 Phase: P4 / FIRST-CALIBRATION-V2 validée ; corrections UI sûres et prototype composite préparés hors imprimante ; production fermée
-Next operator: envoyer `GO G4-K1-CONTROL-CALIBRATION-UI-CAMPAIGN-V1` ; PRESETS-V1 est close et le préflight campagne n'a pas encore joint la K1
+Next operator: ouvrir Chrome, authentifier `http://localhost:4411/k1-control/`, puis lancer depuis l'écran l'unique campagne `6 × 6 / 1 mesh`
+
+## Préflight CAMPAIGN-V1 du 23 août 2026
+
+Thomas a reconfirmé que son autorisation globale couvre toutes les gates du
+goal. Le premier préflight a rencontré un faux KO local : le validateur
+comparait le core final installé au hash historique du delta BED-MESH-V2. Le
+second demandait à tort au manifeste final PRESETS de couvrir `printer.cfg`.
+Le contrôle corrigé utilise la carte finale PRESETS pour les sept destinations
+UI/Moonraker et vérifie séparément le hash exact de `printer.cfg`.
+
+La capture `20260823-171803-g4-k1-control-calibration-ui-campaign-v1` a ensuite
+obtenu `PREFLIGHT_CALIBRATION_UI_CAMPAIGN_V1_OK`. UI finale exacte, Klippy
+`ready`, `failed_components=[]`, `warnings=[]`, K1 au repos, cibles zéro,
+profil robuste, Z accepté, `6 × 6` Lagrange chargé et deux CFS sont conformes.
+Aucun chauffage, homing, mouvement, mesh ou changement Z n'a été lancé.
+
+Le tunnel temporaire neuf `localhost:4411` répond HTTP 401 comme attendu. Le
+navigateur intégré ne présente pas l'authentification HTTP et Chrome est fermé.
+La prochaine action humaine est d'ouvrir Chrome, de s'authentifier sur cette
+URL, puis de laisser Thomas seul déclencher les actions physiques depuis
+l'écran. Codex reste en observation et validation.
 
 ## Clôture PRTOUCH-PRESETS-V1 du 23 août 2026
 
@@ -17,10 +38,9 @@ la K1 est au repos avec cibles zéro, le profil robuste, le Z accepté, le mesh
 Le validateur CAMPAIGN-V1 a ensuite été corrigé hors imprimante pour épingler le
 manifeste UI sûr réel, vérifier `server/info`, le mesh chargé et les versions des
 deux CFS. Son plan, ses tests ciblés et la suite complète sont verts. La couche
-d'approbation a refusé le préflight SSH CAMPAIGN-V1 en exigeant un GO frais qui
-porte exactement ce nom malgré l'autorisation globale de Thomas. Le dossier de
-preuves campagne est donc vide et aucun accès distant, chauffage, homing,
-mouvement, mesure ou écriture Z n'a suivi.
+d'approbation avait d'abord refusé le préflight SSH CAMPAIGN-V1. Thomas a depuis
+reconfirmé son autorisation globale et le préflight corrigé est vert sous la
+capture `20260823-171803-g4-k1-control-calibration-ui-campaign-v1`.
 
 ## Clôture RETRY-SAFETY-V1 du 23 août 2026
 
@@ -948,12 +968,11 @@ La gate précédente est close avec `DEPLOY_CALIBRATION_PATH_V1_OK` et
 `VALIDATE_CALIBRATION_PATH_V1_OK` sous la capture
 `20260822-124207-g4-k1-control-calibration-path-v1`.
 
-Autorisation de reprise : Thomas a donné une autorisation globale, mais la
-couche d'approbation exige encore le GO exact CAMPAIGN-V1 ci-dessus avant toute
-connexion SSH. FIRST-CALIBRATION-V2, CALIBRATION-UI-V1 et les quatre deltas sûrs
-sont validés et clos. La prochaine mission unique est le préflight puis la
-campagne quotidienne `6 × 6 / 1 mesh`; la sous-grille composite et la bascule
-production restent des gates ultérieures séparées.
+Autorisation de reprise : Thomas a donné puis reconfirmé une autorisation
+globale. FIRST-CALIBRATION-V2, CALIBRATION-UI-V1 et les quatre deltas sûrs sont
+validés et clos ; le préflight CAMPAIGN-V1 est vert. La prochaine mission unique
+est la campagne quotidienne opérateur `6 × 6 / 1 mesh`; la sous-grille
+composite et la bascule production restent des gates ultérieures séparées.
 
 La bascule Orca reste une gate ultérieure unique : wrappers de travail côté
 machine, trois champs Orca et retrait du post-traitement doivent changer

@@ -25,9 +25,11 @@ deux validations. Les hashes sûrs étaient déjà présents : aucune écriture
 distante, aucun backup et aucun restart n'ont été nécessaires. Klippy, les
 listes d'échec et d'avertissement, le profil robuste, le Z accepté, le mesh
 `6 × 6` Lagrange et les deux CFS sont conformes. La prochaine mission unique
-est `G4-K1-CONTROL-CALIBRATION-UI-CAMPAIGN-V1`. Son préflight distant n'est pas
-encore exécuté : la couche d'approbation exige un GO frais portant exactement
-ce nom malgré l'autorisation globale donnée par Thomas.
+est `G4-K1-CONTROL-CALIBRATION-UI-CAMPAIGN-V1`. Son préflight distant est vert
+sous la capture `20260823-171803-g4-k1-control-calibration-ui-campaign-v1` :
+UI finale exacte, `printer.cfg`, Moonraker, profil, Z, mesh chargé et deux CFS
+sont conformes. La prochaine action est uniquement l'ouverture du vrai écran
+authentifié, puis l'unique campagne `6 × 6 / 1 mesh` lancée par Thomas.
 
 Thomas authorised V1, but the mandatory preflight proved that `logrotate` was
 absent. V1 is closed and must never be deployed. Thomas later authorised V2;
@@ -372,9 +374,10 @@ correctement et `git diff --check` est vert. Les corrections
 PRTOUCH-BED-MESH-V2, MATRIX-V1, RETRY-SAFETY-V1 et PRTOUCH-PRESETS-V1 ont
 ensuite été posées ou reconnues déjà présentes puis validées séparément, avec
 les backups et restarts strictement prévus et aucune action physique. La
-prochaine gate unique est CAMPAIGN-V1. Son préflight SSH a été refusé par la
-couche d'approbation faute d'un GO frais portant exactement son nom ; il ne
-faut ni contourner ce refus ni lancer la calibration avant ce préflight.
+prochaine gate unique est CAMPAIGN-V1. Son préflight SSH frais est vert sous la
+capture `20260823-171803-g4-k1-control-calibration-ui-campaign-v1`. Le vrai
+écran doit maintenant être ouvert dans un navigateur authentifié ; Thomas reste
+le seul opérateur des actions physiques de la campagne.
 
 Thomas demande que chaque prochaine reprise commence par un état explicite de
 l'autonomie, sans confondre le runtime installé avec une interface terminée :

@@ -163,43 +163,33 @@ function Assert-InstalledUi {
         [Parameter(Mandatory = $true)]$BedMeshManifest,
         [Parameter(Mandatory = $true)]$PresetManifest
     )
-    $bedMeshDestinations = @(
-        @($BedMeshManifest.files) + @($BedMeshManifest.unchanged.files) |
-            ForEach-Object { [string]$_.destination }
+    $printerConfigPath = '/usr/data/printer_data/config/printer.cfg'
+    $printerConfigEntries = @(
+        $Manifest.unchanged.files |
+            Where-Object { [string]$_.destination -ceq $printerConfigPath }
     )
-    $presetDestinations = @($PresetManifest.files | ForEach-Object { [string]$_.destination })
-    $supersededDestinations = @($bedMeshDestinations + $presetDestinations)
-    foreach ($file in $Manifest.files) {
-        if ([string]$file.destination -ceq [string]$RetryManifest.file.destination -or
-            $presetDestinations -ccontains [string]$file.destination) { continue }
-        if ((Get-RemoteSha256 ([string]$file.destination)) -cne ([string]$file.sha256)) {
-            throw "Payload UI distant inattendu : $($file.destination)"
+    if ($printerConfigEntries.Count -ne 1 -or
+        (Get-RemoteSha256 $printerConfigPath) -cne ([string]$printerConfigEntries[0].sha256)) {
+        throw 'printer.cfg distant différent de la base revue.'
+    }
+    $requiredDestinations = @(
+        @($BedMeshManifest.files) + @($BedMeshManifest.unchanged.files) +
+        @($Manifest.files) + @($Manifest.unchanged.files) +
+        @($RetryManifest.file) + @($RetryManifest.unchanged.files) |
+            ForEach-Object { [string]$_.destination } |
+            Where-Object { $_ -cne $printerConfigPath } |
+            Sort-Object -Unique
+    )
+    $finalFiles = @($PresetManifest.files) + @($PresetManifest.unchanged.files)
+    $finalDestinations = @($finalFiles | ForEach-Object { [string]$_.destination })
+    foreach ($destination in $requiredDestinations) {
+        if ($finalDestinations -cnotcontains $destination) {
+            throw "Le manifeste final PRESETS ne couvre pas la destination revue : $destination"
         }
     }
-    if ($presetDestinations -notcontains [string]$RetryManifest.file.destination -and
-        (Get-RemoteSha256 ([string]$RetryManifest.file.destination)) -cne ([string]$RetryManifest.file.sha256)) {
-        throw 'Correctif distant de sécurité de reprise inattendu.'
-    }
-    foreach ($file in $Manifest.unchanged.files) {
-        if ($supersededDestinations -ccontains [string]$file.destination) { continue }
+    foreach ($file in $finalFiles) {
         if ((Get-RemoteSha256 ([string]$file.destination)) -cne ([string]$file.sha256)) {
-            throw "Payload UI hors write-set inattendu : $($file.destination)"
-        }
-    }
-    foreach ($file in $RetryManifest.unchanged.files) {
-        if ($supersededDestinations -ccontains [string]$file.destination) { continue }
-        if ((Get-RemoteSha256 ([string]$file.destination)) -cne ([string]$file.sha256)) {
-            throw "Payload hors write-set RETRY-SAFETY inattendu : $($file.destination)"
-        }
-    }
-    foreach ($file in @($BedMeshManifest.files) + @($BedMeshManifest.unchanged.files)) {
-        if ((Get-RemoteSha256 ([string]$file.destination)) -cne ([string]$file.sha256)) {
-            throw "Payload adaptateur bed_mesh V2 distant inattendu : $($file.destination)"
-        }
-    }
-    foreach ($file in $PresetManifest.files) {
-        if ((Get-RemoteSha256 ([string]$file.destination)) -cne ([string]$file.sha256)) {
-            throw "Payload des choix prtouch distant inattendu : $($file.destination)"
+            throw "Payload final PRESETS distant inattendu : $($file.destination)"
         }
     }
     $serverInfoRaw = (Invoke-Remote "curl 'http://127.0.0.1:7125/server/info'") -join "`n"
