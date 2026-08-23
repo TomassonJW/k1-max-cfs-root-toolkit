@@ -11,10 +11,10 @@ const PHASES = {
   idle: ["Prêt à configurer", "Choisis le contexte puis confirme que le plateau est libre."],
   preflight: ["Préflight en cours", "L’identité, l’état au repos et les gardes sont vérifiés."],
   preparing: ["Préparation en cours", "Backup, chauffe, stabilisation, nettoyage et homing."],
-  measuring: ["Maillage en cours", "Six passages fixes ; aucun passage supplémentaire automatique."],
-  qualifying: ["Qualification en cours", "Comparaison des deux médianes indépendantes de trois."],
-  committing_mesh: ["Enregistrement du mesh", "Le candidat robuste est relu avant sa persistance."],
-  mesh_ready: ["Mesh robuste prêt", "Le premier Z peut maintenant être qualifié."],
+  measuring: ["Maillage en cours", "Un passage complet de 36 points physiques."],
+  qualifying: ["Contrôle en cours", "La matrice 6 × 6 est relue avant enregistrement."],
+  committing_mesh: ["Enregistrement du mesh", "Le mesh complet est relu avant sa persistance."],
+  mesh_ready: ["Mesh prêt", "Le premier Z peut maintenant être qualifié."],
   mesh_rejected: ["Mesh refusé", "La reproductibilité reste hors limites. Aucun candidat n’a été enregistré."],
   cancelling: ["Annulation demandée", "L’opération physique déjà engagée se termine, puis les chauffes seront coupées."],
   starting_z: ["Préparation du Z", "Chauffe, homing et chargement du mesh qualifié."],
@@ -93,8 +93,8 @@ function hydrateForm() {
     byId("bed-temp").value = String(config.bed_temp_c);
     byId("nozzle-temp").value = String(config.nozzle_temp_c);
     byId("soak-seconds").value = String(config.soak_seconds);
-    byId("matrix-size").value = String(config.x_count);
-    byId("algorithm").value = config.algorithm;
+    byId("matrix-size").value = "6";
+    byId("algorithm").value = "lagrange";
     byId("seed-offset").value = String(config.seed_offset_mm);
     byId("replace-existing").checked = Boolean(config.replace_existing);
   } else if (state?.accepted_z_valid && Number.isFinite(acceptedOffset)) {
@@ -107,8 +107,8 @@ function renderSequence() {
   const phase = state?.phase ?? "idle";
   const stages = [
     ["preflight", "Contexte et backup"],
-    ["measuring", "Six maillages"],
-    ["qualifying", "Qualification robuste"],
+    ["measuring", "Mesh 6 × 6"],
+    ["qualifying", "Contrôle de la matrice"],
     ["mesh_ready", "Mesh enregistré"],
     ["z_testing", "Paliers Z"],
     ["z_confirmed", "Jeu observé et remontée"],
@@ -128,20 +128,21 @@ function renderSequence() {
 function renderMesh() {
   const qualification = state?.qualification;
   const meshIndex = Number(state?.mesh_index ?? 0);
-  byId("mesh-index").textContent = `${meshIndex} / 6`;
-  byId("mesh-progress").style.width = `${Math.min(100, meshIndex / 6 * 100)}%`;
+  const targetCount = Number(state?.mesh_target_count ?? 1);
+  byId("mesh-index").textContent = `${meshIndex} / ${targetCount}`;
+  byId("mesh-progress").style.width = `${Math.min(100, meshIndex / targetCount * 100)}%`;
   byId("mesh-status").textContent = qualification
     ? qualification.accepted ? "Qualifié" : "Refusé"
     : meshIndex ? "Mesure" : "En attente";
   byId("mesh-status").classList.toggle("success", Boolean(qualification?.accepted));
   byId("mesh-status").classList.toggle("invalid", qualification?.accepted === false);
-  byId("mesh-mean").textContent = formatMm(qualification?.observed_mm?.mean_absolute);
-  byId("mesh-rms").textContent = formatMm(qualification?.observed_mm?.rms);
-  byId("mesh-maximum").textContent = formatMm(qualification?.observed_mm?.maximum);
+  byId("mesh-mean").textContent = "6 × 6";
+  byId("mesh-rms").textContent = "36";
+  byId("mesh-maximum").textContent = "PRTouch";
   if (qualification) {
     byId("mesh-explanation").textContent = qualification.accepted
-      ? "Les deux groupes indépendants respectent les trois limites. Le candidat robuste a été enregistré après relecture."
-      : "Au moins une limite est dépassée. Aucun septième passage et aucun enregistrement automatique.";
+      ? "Le mesh 6 × 6 complet a été relu et enregistré."
+      : "Le mesh est incomplet ou invalide. Aucun enregistrement automatique.";
   }
 }
 
@@ -199,11 +200,6 @@ function bind() {
     event.preventDefault();
     if (!event.currentTarget.reportValidity()) return;
     void post("/calibration/start", configFromForm());
-  });
-  byId("algorithm").addEventListener("change", () => {
-    if (byId("algorithm").value === "bicubic" && Number(byId("matrix-size").value) < 4) {
-      byId("matrix-size").value = "4";
-    }
   });
   byId("start-z").addEventListener("click", () => void post("/z/start", {
     plate_clear: byId("plate-clear").checked,

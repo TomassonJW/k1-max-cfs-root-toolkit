@@ -1,0 +1,58 @@
+{
+  "contract_id": "G4-K1-CONTROL-CALIBRATION-UI-PRTOUCH-BED-MESH-V2",
+  "status": "offline_review_candidate",
+  "observed_failure": {
+    "campaign_id": "20260823-004305-421-calibration-ui-v1",
+    "screen_code": "XS3002",
+    "klipper_error": "bed_mesh cannot exceed a probe_count of 6 when using lagrange interpolation; configured 9,9",
+    "mesh_measurements": 0,
+    "heater_targets_c": [0, 0],
+    "automatic_rollback": "6x6_lagrange_ready_z_minus_0_04_intact"
+  },
+  "observed_component_failure": {
+    "cause": "printer.cfg uses implicit lagrange and has no algorithm line",
+    "moonraker_failed_component": "k1_control_probe_count",
+    "physical_action": false
+  },
+  "observed_physical_limit": {
+    "campaign_id": "20260823-021858-540-calibration-ui-v1",
+    "requested_matrix": [9, 9],
+    "stopped_after_points": 36,
+    "exact_error": "prtouch_v2_wrapper.py IndexError: list index out of range",
+    "result": "automatic exact rollback, heaters off, 6x6 profile and accepted Z intact"
+  },
+  "deployment": {
+    "replaced_file": "/usr/data/k1-control-v1/current/moonraker/moonraker/moonraker/components/k1_control_probe_count.py",
+    "service_action": "restart /etc/init.d/S56k1_control_moonraker only",
+    "printer_cfg_changed_during_deployment": false,
+    "physical_action": false
+  },
+  "runtime": {
+    "backup_must_precede_change": true,
+    "change_before_heat": true,
+    "atomic_fields": ["bed_mesh.probe_count", "bed_mesh.algorithm"],
+    "loaded_pair_verified": true,
+    "component_load_verified_through_server_info": true,
+    "implicit_lagrange_preserved_exactly": true,
+    "safe_runtime_verified_after_restart": true,
+    "restore_pair_after_heaters_off": true,
+    "supported_pairs": [
+      {"probe_count": [6, 6], "algorithm": "lagrange"}
+    ],
+    "forbidden_pairs": [
+      {"probe_count": [3, 3], "algorithm": "lagrange"},
+      {"probe_count": [5, 5], "algorithm": "lagrange"},
+      {"probe_count": [9, 9], "algorithm": "lagrange"},
+      {"probe_count": [9, 9], "algorithm": "bicubic"},
+      {"probe_count": [11, 11], "algorithm": "lagrange"},
+      {"probe_count": [11, 11], "algorithm": "bicubic"},
+      {"probe_count": [15, 15], "algorithm": "lagrange"},
+      {"probe_count": [15, 15], "algorithm": "bicubic"}
+    ]
+  },
+  "rollback": {
+    "restore_exact_previous_component": true,
+    "restart_dedicated_moonraker_only": true,
+    "restore_printer_cfg_pair_from_active_campaign_backup_if_needed": true
+  }
+}

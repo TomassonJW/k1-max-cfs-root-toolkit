@@ -85,7 +85,8 @@ function Get-RemoteSha256 {
 
 function Assert-Package {
     $manifest = Get-Content -LiteralPath $ManifestPath -Raw | ConvertFrom-Json
-    if ($manifest.contract_id -cne $RequiredGate -or $manifest.status -cne 'offline_review_candidate') {
+    if ($manifest.contract_id -cne $RequiredGate -or
+        $manifest.status -cne 'corrected_after_exact_prtouch_runtime_limit_proof') {
         throw 'Manifeste CALIBRATION-UI-MATRIX-V1 inattendu.'
     }
     if ([string]$manifest.deployer.path -cne 'scripts/deploy-k1-control-calibration-ui-matrix-v1.ps1' -or
@@ -269,7 +270,7 @@ $manifest = Assert-Package
 if ($Action -eq 'Plan') {
     Write-Output "PLAN_CALIBRATION_UI_MATRIX_V1_OK gate=$RequiredGate"
     Write-Output 'Effet: backup exact, remplacement du core et de deux fichiers UI, restart Moonraker seulement.'
-    Write-Output 'Matrices: 6x6 Lagrange, 9x9/11x11/15x15 bicubique; aucun mesh lancé.'
+    Write-Output 'Matrice: 6x6 Lagrange uniquement; 9x9/11x11/15x15 refusées avant chauffe; aucun mesh lancé.'
     Write-Output 'Aucun chauffage, homing, mouvement, Z, extrusion, impression ou action CFS.'
     exit 0
 }

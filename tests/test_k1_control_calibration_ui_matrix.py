@@ -56,54 +56,48 @@ class CalibrationUiMatrixTests(unittest.TestCase):
             for row in range(size)
         ]
 
-    def test_supported_presets_validate_with_their_safe_algorithm(self):
-        for size, algorithm in ((6, "lagrange"), (9, "bicubic"), (11, "bicubic"), (15, "bicubic")):
-            with self.subTest(size=size):
-                value = self.core.validate_config(self.config(size, algorithm))
-                self.assertEqual(value["x_count"], size)
-                self.assertEqual(value["algorithm"], algorithm)
+    def test_only_proven_six_by_six_lagrange_validates(self):
+        value = self.core.validate_config(self.config(6, "lagrange"))
+        self.assertEqual(value["x_count"], 6)
+        self.assertEqual(value["algorithm"], "lagrange")
 
-    def test_lagrange_is_rejected_above_six(self):
-        for size in (9, 11, 15):
+    def test_all_unproven_matrix_sizes_are_rejected(self):
+        for size in (3, 4, 5, 9, 11, 15):
             with self.subTest(size=size):
-                with self.assertRaisesRegex(self.core.CalibrationError, "Lagrange est limité à 6"):
+                with self.assertRaisesRegex(self.core.CalibrationError, "36 points physiques"):
                     self.core.validate_config(self.config(size, "lagrange"))
 
-    def test_matrix_above_fifteen_is_rejected(self):
-        with self.assertRaisesRegex(self.core.CalibrationError, "3x3-15x15"):
-            self.core.validate_config(self.config(16, "bicubic"))
+    def test_bicubic_is_not_exposed_for_the_fixed_grid(self):
+        with self.assertRaisesRegex(self.core.CalibrationError, "Seul Lagrange"):
+            self.core.validate_config(self.config(6, "bicubic"))
 
-    def test_six_large_meshes_are_aggregated_without_dimension_loss(self):
-        size = 15
-        matrices = [self.matrix(size, delta) for delta in (-0.004, 0, 0.004, 0.010, 0.014, 0.018)]
-        result = self.core.aggregate_meshes(matrices, size, size)
+    def test_one_complete_mesh_is_accepted_without_dimension_loss(self):
+        size = 6
+        result = self.core.aggregate_meshes([self.matrix(size)], size, size)
         self.assertTrue(result["accepted"])
+        self.assertEqual(result["method"], "single_firmware_bounded_mesh")
         self.assertEqual(len(result["candidate_matrix"]), size)
         self.assertTrue(all(len(row) == size for row in result["candidate_matrix"]))
 
-    def test_static_page_exposes_all_product_presets(self):
+    def test_static_page_exposes_only_the_hardware_safe_grid(self):
         html = INDEX.read_text(encoding="utf-8")
-        for size, label in ((6, "Rapide"), (9, "Standard"), (11, "Précis"), (15, "Expert")):
-            with self.subTest(size=size):
-                self.assertIn(f'<option value="{size}"', html)
-                self.assertIn(label, html)
-        self.assertIn("requis au-delà de 6", html)
+        self.assertIn('<option value="6"', html)
+        for size in (3, 4, 5, 9, 11, 15):
+            self.assertNotIn(f'<option value="{size}"', html)
+        self.assertIn("36 points physiques", html)
 
-    def test_client_forces_bicubic_above_six(self):
+    def test_client_forces_the_proven_pair(self):
         javascript = APP.read_text(encoding="utf-8")
         self.assertIn("function syncMatrixAlgorithm()", javascript)
-        self.assertIn("const requiresBicubic = matrix > 6", javascript)
-        self.assertIn("lagrangeOption.disabled = requiresBicubic", javascript)
-        self.assertIn('algorithmField.value = "bicubic"', javascript)
+        self.assertIn('byId("matrix-size").value = "6"', javascript)
+        self.assertIn('byId("algorithm").value = "lagrange"', javascript)
         self.assertIn('addEventListener("change", syncMatrixAlgorithm)', javascript)
 
-    def test_contract_matches_the_product_levels(self):
+    def test_contract_records_the_observed_limit(self):
         contract = json.loads(CONTRACT.read_text(encoding="utf-8"))
-        self.assertEqual(contract["selectable_square_matrices"], [3, 4, 5, 6, 9, 11, 15])
-        self.assertEqual(
-            [(item["matrix"][0], item["algorithm"]) for item in contract["presets"].values()],
-            [(6, "lagrange"), (9, "bicubic"), (11, "bicubic"), (15, "bicubic")],
-        )
+        self.assertEqual(contract["selectable_square_matrices"], [6])
+        self.assertEqual(contract["rejected_square_matrices"], [9, 11, 15])
+        self.assertEqual(contract["observed_hardware_limit"]["physical_points"], 36)
 
     def test_deployment_manifest_pins_the_delta_and_rollback_base(self):
         manifest = json.loads(MANIFEST.read_text(encoding="utf-8"))

@@ -207,32 +207,21 @@ class CalibrationUiCoreTests(unittest.IsolatedAsyncioTestCase):
         )
         return orchestrator, backups
 
-    async def test_stable_six_mesh_campaign_commits_one_robust_profile(self):
-        matrices = [self.matrix(delta) for delta in (-0.004, 0, 0.004, 0.010, 0.014, 0.018)]
+    async def test_one_complete_mesh_campaign_commits_one_profile(self):
+        matrices = [self.matrix()]
         backend = FakeBackend(matrices)
         orchestrator, backups = self.make_orchestrator(backend)
         state = await orchestrator.run_mesh_campaign(self.config(), plate_clear=True)
         self.assertEqual(state["phase"], "mesh_ready")
         self.assertFalse(state["busy"])
-        self.assertEqual(sum(command.startswith("KCTRL_MESH_CALIBRATE") for command in backend.commands), 6)
+        self.assertEqual(sum(command.startswith("KCTRL_MESH_CALIBRATE") for command in backend.commands), 1)
         self.assertEqual(len(backend.update_calls), 1)
         self.assertIn("k1_p001_t055_r001_n06x06", backend.status["bed_mesh"]["profiles"])
         self.assertNotIn("K1_TRANSIENT", backend.status["bed_mesh"]["profiles"])
         self.assertEqual(len(backups.calls), 1)
 
-    async def test_divergent_batches_stop_without_update_or_seventh_mesh(self):
-        matrices = [self.matrix() for _ in range(3)] + [self.matrix(0.061) for _ in range(3)]
-        backend = FakeBackend(matrices)
-        orchestrator, _ = self.make_orchestrator(backend)
-        state = await orchestrator.run_mesh_campaign(self.config(), plate_clear=True)
-        self.assertEqual(state["phase"], "mesh_rejected")
-        self.assertEqual(len(backend.update_calls), 0)
-        self.assertEqual(sum(command.startswith("KCTRL_MESH_CALIBRATE") for command in backend.commands), 6)
-        self.assertEqual(backend.commands[-2:], ["BED_MESH_CLEAR", "TURN_OFF_HEATERS"])
-        self.assertEqual(backend.status["heater_bed"]["target"], 0)
-
     async def test_z_path_cannot_skip_and_requires_observed_gap(self):
-        backend = FakeBackend([self.matrix() for _ in range(6)])
+        backend = FakeBackend([self.matrix()])
         orchestrator, _ = self.make_orchestrator(backend)
         await orchestrator.run_mesh_campaign(self.config(), plate_clear=True)
         await orchestrator.begin_z(plate_clear=True, nozzle_clean=True)
@@ -249,32 +238,20 @@ class CalibrationUiCoreTests(unittest.IsolatedAsyncioTestCase):
         self.assertEqual(backend.status["gcode_macro KCTRL_STATE"]["accepted_z_valid"], 1)
 
     async def test_parameters_are_selectable_but_bounded(self):
-        selected = self.core.validate_config(self.config(soak_seconds=600, algorithm="bicubic"))
+        selected = self.core.validate_config(self.config(soak_seconds=600))
         self.assertEqual(selected["soak_seconds"], 600)
-        self.assertEqual(selected["algorithm"], "bicubic")
+        self.assertEqual(selected["algorithm"], "lagrange")
         with self.assertRaisesRegex(self.core.CalibrationError, "60-1200"):
             self.core.validate_config(self.config(soak_seconds=20))
-        selected_matrix = self.core.validate_config(self.config(x_count=5, y_count=5))
-        self.assertEqual((selected_matrix["x_count"], selected_matrix["y_count"]), (5, 5))
-        with self.assertRaisesRegex(self.core.CalibrationError, "3x3-6x6"):
+        with self.assertRaisesRegex(self.core.CalibrationError, "36 points physiques"):
+            self.core.validate_config(self.config(x_count=5, y_count=5))
+        with self.assertRaisesRegex(self.core.CalibrationError, "36 points physiques"):
             self.core.validate_config(self.config(x_count=7, y_count=7))
-
-    async def test_five_by_five_campaign_uses_selected_matrix(self):
-        matrices = [self.matrix(delta, size=5) for delta in (-0.004, 0, 0.004, 0.010, 0.014, 0.018)]
-        backend = FakeBackend(matrices)
-        orchestrator, _ = self.make_orchestrator(backend)
-        state = await orchestrator.run_mesh_campaign(
-            self.config(x_count=5, y_count=5), plate_clear=True
-        )
-        self.assertEqual(state["phase"], "mesh_ready")
-        self.assertIn("k1_p001_t055_r001_n05x05", backend.status["bed_mesh"]["profiles"])
-        self.assertTrue(all(
-            "X_COUNT=5 Y_COUNT=5" in command
-            for command in backend.commands if command.startswith("KCTRL_MESH_CALIBRATE")
-        ))
+        with self.assertRaisesRegex(self.core.CalibrationError, "Seul Lagrange"):
+            self.core.validate_config(self.config(algorithm="bicubic"))
 
     async def test_cancel_interrupts_soak_before_homing_and_turns_heaters_off(self):
-        backend = FakeBackend([self.matrix() for _ in range(6)])
+        backend = FakeBackend([self.matrix()])
         orchestrator, _ = self.make_orchestrator(backend)
         original_sleep = orchestrator._sleep
         cancelled = False
@@ -296,7 +273,7 @@ class CalibrationUiCoreTests(unittest.IsolatedAsyncioTestCase):
         self.assertEqual(backend.status["extruder"]["target"], 0)
 
     async def test_full_rollback_uses_only_current_campaign_backup(self):
-        backend = FakeBackend([self.matrix() for _ in range(6)])
+        backend = FakeBackend([self.matrix()])
         orchestrator, backups = self.make_orchestrator(backend)
         await orchestrator.run_mesh_campaign(self.config(), plate_clear=True)
         state = await orchestrator.rollback_campaign()

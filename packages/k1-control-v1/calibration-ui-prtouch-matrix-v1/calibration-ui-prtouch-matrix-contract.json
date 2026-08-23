@@ -1,0 +1,51 @@
+{
+  "contract_id": "G4-K1-CONTROL-CALIBRATION-UI-PRTOUCH-MATRIX-V1",
+  "status": "offline_review_candidate_v2_after_xs3002",
+  "cause": {
+    "observed_failure": "Le mesh ne contient pas le nombre de lignes attendu.",
+    "failed_level": [9, 9],
+    "usable_measurements": 0,
+    "loaded_probe_count": [6, 6],
+    "implementation": "Creality prtouch_v3 overrides BED_MESH_CALIBRATE and uses the loaded bed_mesh probe_count",
+    "second_observed_failure": "XS3002 because 9x9 was loaded with persistent lagrange before the dynamic bicubic argument could run",
+    "second_failure_physical_action": false,
+    "automatic_rollback_result": "6x6_lagrange_ready_heaters_zero_z_intact"
+  },
+  "deployment": {
+    "files_added": [
+      "/usr/data/k1-control-v1/current/moonraker/moonraker/moonraker/components/k1_control_probe_count.py"
+    ],
+    "files_replaced": [
+      "/usr/data/k1-control-v1/current/config/moonraker.conf"
+    ],
+    "service_action": "restart /etc/init.d/S56k1_control_moonraker only",
+    "printer_cfg_changed_during_deployment": false,
+    "physical_action": false
+  },
+  "runtime": {
+    "supported_probe_counts": [[3, 3], [5, 5], [6, 6], [9, 9], [11, 11], [15, 15]],
+    "product_levels": [[6, 6], [9, 9], [11, 11], [15, 15]],
+    "backup_must_precede_change": true,
+    "change_before_heat": true,
+    "changed_printer_cfg_fields": ["bed_mesh.probe_count", "bed_mesh.algorithm"],
+    "required_loaded_pairs": {
+      "quick": {"probe_count": [6, 6], "algorithm": "lagrange"},
+      "standard": {"probe_count": [9, 9], "algorithm": "bicubic"},
+      "precise": {"probe_count": [11, 11], "algorithm": "bicubic"},
+      "expert": {"probe_count": [15, 15], "algorithm": "bicubic"}
+    },
+    "atomic_replace": true,
+    "klipper_restart": true,
+    "loaded_value_verified": true,
+    "safe_runtime_verified_after_restart": true,
+    "restore_after_heaters_off": true,
+    "moonraker_restart_recovery_from_backup": true,
+    "forbidden_probe_count": [4, 4]
+  },
+  "rollback": {
+    "restore_exact_moonraker_conf": true,
+    "remove_component": true,
+    "restart_dedicated_moonraker_only": true,
+    "restore_probe_count_and_algorithm_from_active_campaign_backup_if_needed": true
+  }
+}

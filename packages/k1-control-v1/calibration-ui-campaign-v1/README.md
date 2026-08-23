@@ -1,10 +1,8 @@
 # CALIBRATION-UI-CAMPAIGN-V1
 
-Statut : protocole préparé hors imprimante. Le GO reçu avant la correction des
-matrices n'est pas consommé. Cette campagne physique n'est pas autorisée tant
-que `CALIBRATION-UI-MATRIX-V1` n'est pas posée, validée et rendue dans le vrai
-navigateur, puis que la gate exacte mise à jour
-`G4-K1-CONTROL-CALIBRATION-UI-CAMPAIGN-V1` n'a pas été approuvée.
+Statut : protocole corrigé après la preuve réelle de la limite PRTouch à 36
+points. L'autorisation de session reste ponctuelle ; le contrat persistant reste
+fermé par défaut.
 
 ## But
 
@@ -13,16 +11,13 @@ depuis l'écran K1 Control, sans console et sans commande Codex. Codex peut
 observer les états en lecture seule et réunir les preuves, mais ne clique pas et
 n'envoie aucune action de calibration à sa place.
 
-## Niveaux de matrice réellement couverts
+## Matrice réellement couverte
 
-L'interface corrigée expose quatre niveaux : `6 × 6` rapide en Lagrange, puis
-`9 × 9` standard, `11 × 11` précis et `15 × 15` expert en bicubique. Les quatre
-combinaisons passent déjà les contrôles du navigateur, du serveur et de
-l'agrégation de six matrices. La campagne physique qualifie maintenant chaque
-niveau avec exactement six meshes réels. Les niveaux standard, précis et expert
-s'arrêtent après la preuve du mesh et une annulation sûre depuis l'écran. Le
-niveau rapide termine ensuite le parcours Z complet : vingt-quatre meshes au
-total, jamais un septième passage sur un niveau.
+Le pilote propriétaire `prtouch_v2_wrapper.py` de la K1 a levé un `IndexError`
+exactement au point 37 d'une demande `9 × 9`. L'interface expose donc uniquement
+`6 × 6` en Lagrange. Une calibration normale mesure un seul mesh complet de 36
+points. Les six meshes de `FIRST-CALIBRATION-V2` restent la qualification
+scientifique initiale déjà validée, pas une routine quotidienne.
 
 ## Préconditions
 
@@ -39,30 +34,23 @@ total, jamais un septième passage sur un niveau.
 
 1. Vérifier `API connectée`, `PEI_TEXTURED_A`, `55 °C`, `140 °C`, `200 s` et le
    seed automatiquement repris à `−0,04 mm`.
-2. Sélectionner `9 × 9 — Standard`. Le bicubique doit être automatique et
-   Lagrange inaccessible. Ne pas cocher le remplacement, confirmer le plateau
-   libre et lancer exactement six mesures.
-3. À `Qualifié`, cliquer `Annuler la calibration`, vérifier les chauffes coupées,
-   puis laisser Codex capturer l'état qualifié et fermé en lecture seule. Refaire
-   exactement ce parcours en `11 × 11 — Précis`, puis en `15 × 15 — Expert`.
-4. Sélectionner enfin `6 × 6 — Rapide` et `Lagrange`, cocher le remplacement de
-   la référence existante, confirmer le plateau libre et lancer six mesures.
-   Aucun septième passage ni rerun automatique n'est permis à aucun niveau.
-5. Après qualification du `6 × 6`, même après fermeture/réouverture éventuelle
+2. Vérifier la matrice fixe `6 × 6` et `Lagrange`, cocher le remplacement de la
+   référence existante, confirmer le plateau libre et lancer un seul mesh.
+   Aucun deuxième passage ni rerun automatique n'est permis.
+3. Après contrôle du `6 × 6`, même après fermeture/réouverture éventuelle
    de la page, retrouver les paramètres. Reconfirmer plateau libre et buse propre.
-6. Commencer le Z à `5 mm`, puis franchir un par un les paliers `2`, `1`, `0,5`,
+4. Commencer le Z à `5 mm`, puis franchir un par un les paliers `2`, `1`, `0,5`,
    `0,3`, `0,2`, `0,15` et `0,1 mm`.
-7. Au dernier palier, utiliser la cale papier réelle d'environ `0,09 mm` et les
+5. Au dernier palier, utiliser la cale papier réelle d'environ `0,09 mm` et les
    seuls ajustements proposés par l'interface. Ne confirmer qu'après observation
    d'un jeu sûr et perceptible.
-8. Confirmer le jeu, vérifier la remontée, puis enregistrer le Z depuis l'écran.
+6. Confirmer le jeu, vérifier la remontée, puis enregistrer le Z depuis l'écran.
 
 ## OK final
 
 L'écran affiche `Calibration acceptée`, l'API reste connectée, la phase vaut
-`accepted`, les quatre groupes de six meshes sont qualifiés et chaque capture
-intermédiaire existe. Le contrôle indépendant doit confirmer les profils
-`n06x06`, `n09x09`, `n11x11` et `n15x15`, le stockage Z
+`accepted` et l'unique mesh complet est relu. Le contrôle indépendant doit
+confirmer le profil `n06x06`, le stockage Z
 `ok`, `accepted_z_valid=1`, la session et les mouvements bas désarmés, le chemin
 `committed`, `standby`, les deux cibles à zéro et deux CFS connectés.
 
@@ -71,16 +59,15 @@ intermédiaire existe. Le contrôle indépendant doit confirmer les profils
 Codex crée un seul identifiant
 `YYYYMMDD-HHMMSS-g4-k1-control-calibration-ui-campaign-v1` et son dossier privé
 ignoré par Git. Avec ce même identifiant, il exécute `Preflight`, puis
-`CaptureLevel -Level standard`, `precise`, `expert` et `quick` aux checkpoints
-décrits ci-dessus, enfin `Validate`. Ces actions ne contiennent aucune route
+`CaptureLevel -Level supported`, puis `Validate`. Ces actions ne contiennent aucune route
 G-code et ne font que relire les empreintes, l'API, l'état privé et Klipper.
 
 ## KO et retour sûr
 
 Au premier écart, Thomas utilise `Annuler la calibration` depuis l'écran et la
-gate s'arrête. Aucun niveau suivant n'est lancé. Aucun rerun automatique n'est
-accepté. Un profil déjà qualifié peut rester présent ; aucun profil refusé n'est
-persisté. Une intervention console ou Codex pour terminer la campagne invalide la preuve
+gate s'arrête. Aucun rerun automatique n'est accepté. Un profil déjà qualifié
+peut rester présent ; aucun profil refusé n'est persisté. Une intervention
+console ou Codex pour terminer la campagne invalide la preuve
 d'autonomie, même si l'état matériel final paraît correct.
 
 Le script local `scripts/validate-k1-control-calibration-ui-campaign-v1.ps1`

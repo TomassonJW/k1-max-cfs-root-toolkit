@@ -1,0 +1,128 @@
+# G4-K1-CONTROL-COMPOSITE-MESH-SUBGRID-V1
+
+Date : 2026-08-23
+
+Statut : préparé et testé hors imprimante ; non installé, non exécuté
+
+## But
+
+Qualifier la première hypothèse physique de l'ADR-013 sans ouvrir directement
+une campagne `11 × 11`. Le seul mouvement autorisé par cette gate est une
+sous-grille PRTouch décalée `5 × 5`, soit 25 contacts, aux positions :
+
+- X : `34, 92, 150, 208, 266 mm` ;
+- Y : `34, 92, 150, 208, 266 mm`.
+
+La grille est la partition impaire/impaire du futur `11 × 11`. Elle est carrée,
+reste onze contacts sous la limite prouvée de 36 et utilise le chemin dynamique
+`MESH_MIN`, `MESH_MAX`, `PROBE_COUNT` du `bed_mesh.py` exact capturé.
+
+## Ordre obligatoire
+
+Cette gate ne doit être posée qu'après les quatre révisions quotidiennes :
+
+1. PRTOUCH-BED-MESH-V2 corrigé ;
+2. core MATRIX-V1 limité à `6 × 6 / un mesh` ;
+3. RETRY-SAFETY-V1 corrigé ;
+4. validation idempotente PRTOUCH-PRESETS-V1, sans écriture si les hashes de
+   MATRIX + RETRY-SAFETY sont déjà les hashes finaux ;
+5. campagne écran quotidienne verte.
+
+Le composant composite n'est pas visible dans l'interface quotidienne. Son API
+exige l'identifiant exact de gate et `plate_clear=true`.
+
+## Pose sans action physique
+
+Write-set exact :
+
+- `moonraker.conf`, remplacé par une copie complète revue qui ajoute seulement
+  `[k1_control_composite_subgrid]` ;
+- `k1_control_composite_subgrid_core.py` ;
+- `k1_control_composite_subgrid.py` ;
+- les caches Python correspondants, générés puis contrôlés.
+
+La pose sauvegarde `moonraker.conf`, transfère par `scp -O`, compile les deux
+sources avec le Python Moonraker `3.8.2`, redémarre seulement le Moonraker dédié
+et exige `failed_components=[]`. Elle ne chauffe, ne home et ne déplace rien.
+
+Commandes revues :
+
+```powershell
+.\scripts\deploy-k1-control-composite-subgrid-v1.ps1 -Action Preflight
+.\scripts\deploy-k1-control-composite-subgrid-v1.ps1 -Action Deploy -Execute -Gate G4-K1-CONTROL-COMPOSITE-MESH-SUBGRID-V1
+.\scripts\deploy-k1-control-composite-subgrid-v1.ps1 -Action Validate
+```
+
+Le rollback restaure le `moonraker.conf` exact, retire uniquement les deux
+composants et leurs caches, puis redémarre le Moonraker dédié.
+
+## Exécution physique bornée
+
+Le pilote impose :
+
+- plaque `PEI_TEXTURED_A` ;
+- plateau `55 °C` ;
+- buse `140 °C` ;
+- stabilisation `200 s` ;
+- nettoyage stock plafonné à `180 °C` ;
+- un seul homing ;
+- `BED_MESH_CALIBRATE PROFILE=K1_COMPOSITE_ODD_ODD_05X05 MESH_MIN=34,34 MESH_MAX=266,266 PROBE_COUNT=5,5 ALGORITHM=lagrange`.
+
+Il refuse une impression active, une chauffe existante, un Z non accepté, un
+chemin Z armé, un profil temporaire ou l'absence de l'un des deux CFS. Un backup
+exact de `printer.cfg` et de l'état Z précède toute chauffe.
+
+La matrice doit contenir exactement 25 valeurs finies. Elle est conservée dans
+l'état privé avec son identifiant de session et les indices `1,3,5,7,9`.
+Aucun profil composite n'est persisté.
+
+Après la capture, le composant :
+
+1. coupe les chauffes ;
+2. recharge le profil robuste `6 × 6` ;
+3. retire le profil temporaire ;
+4. redémarre Klipper seulement à ce moment pour éliminer les changements de
+   session en attente ;
+5. recharge le profil robuste ;
+6. attend de façon bornée le runtime et les deux CFS ;
+7. remet explicitement le propriétaire thermique à `none`.
+
+Commande revue :
+
+```powershell
+.\scripts\run-k1-control-composite-subgrid-v1.ps1 -Action Run -Execute -Gate G4-K1-CONTROL-COMPOSITE-MESH-SUBGRID-V1
+```
+
+Le pilote publie un heartbeat toutes les quinze secondes. Après `1500 s`, il
+demande une annulation et rend un timeout, jamais un succès silencieux.
+
+## OK
+
+- 25 contacts, matrice `5 × 5` finie ;
+- aucune erreur PRTouch, Klipper ou MCU ;
+- aucun contact 26 ni rerun ;
+- `printer.cfg` identique ;
+- Z accepté et stockage `ok` identiques ;
+- profil temporaire absent ;
+- profil robuste `6 × 6` actif ;
+- chauffes à zéro ;
+- axes libérés par le restart final ;
+- deux CFS reconnectés ;
+- état composite `qualified`, preuves privées capturées.
+
+## KO
+
+Tout écart ci-dessus, un mouvement inattendu, un profil partiel, un changement
+de configuration ou l'impossibilité de restaurer l'état sûr ferme la gate. Il
+n'autorise ni une deuxième sous-grille ni la campagne `11 × 11`.
+
+## Validation hors imprimante
+
+- 14 tests ciblés verts ;
+- grammaire Python 3.8 vérifiée ;
+- parse PowerShell des deux pilotes vert ;
+- hashes du contrat, du déployeur, du pilote et des payloads épinglés ;
+- suite complète : 220 tests, 3 ignorés connus ;
+- trois tests de chaîne prouvent les transitions exactes BED-MESH-V2 → MATRIX
+  → RETRY-SAFETY → PRESETS → COMPOSITE et le caractère sans écriture de
+  PRESETS dans l'état final attendu.

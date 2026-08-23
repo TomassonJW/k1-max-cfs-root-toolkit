@@ -807,3 +807,49 @@ l'opérateur. Elles restent accessibles après rechargement et conditionnent
 ensemble le bouton de démarrage Z. Cette séparation permet une vraie reprise
 sans console tout en refusant de transformer une observation passée en fait
 physique courant.
+
+## D-048 — La limite PRTouch réelle fixe l'usage quotidien à un mesh `6 × 6`
+
+Date: 2026-08-23
+
+Status: accepté hors imprimante
+
+La campagne `20260823-021858-540-calibration-ui-v1` a atteint exactement
+`g29_cnt=36`, puis le wrapper Creality a levé `IndexError` avant le
+trente-septième point. Les trente-six tables usine par point confirment que les
+grandes matrices de l'ADR-010 dépassent la frontière physique du PRTouch exact.
+
+Le contournement communautaire par `pr_version: 1` et retrait des tables de
+compensation est rejeté : il change le mode du capteur, perd les corrections
+usine et comporte un retour de démarrage bloqué après coupure électrique. Aucun
+risque de ce type n'est acceptable pour gagner une résolution fictive.
+
+K1 Control expose donc uniquement `6 × 6` Lagrange et exécute un seul mesh par
+calibration quotidienne. Les six meshes de FIRST-CALIBRATION-V2 restent la
+qualification statistique initiale déjà réussie ; ils ne sont pas répétés à
+chaque usage. Le serveur et l'adaptateur refusent toute autre taille avant
+chauffe. Cette décision est détaillée dans l'ADR-012.
+
+## D-049 — La limite de 36 contacts ne limite pas le profil composite final
+
+Date: 2026-08-23
+
+Status: accepté hors imprimante ; amende D-048 pour le futur mode précision
+
+L'audit complémentaire distingue maintenant l'acquisition et le profil. Le
+PRTouch V2 exact reste strictement limité à 36 contacts par séquence. Les 36
+paires de seuils de la configuration exacte ont cependant toutes les mêmes
+valeurs, et six séquences successives ont déjà prouvé la remise à zéro du
+compteur entre deux maillages.
+
+Un mode précision peut donc être qualifié sans modifier `pr_version` ni retirer
+les tables : quatre sous-grilles bornées `6 × 6`, `5 × 6`, `6 × 5`, `5 × 5`
+dans la même chauffe et le même référencement, puis fusion de 121 mesures
+physiques en un profil `11 × 11` bicubique. Le prototype hors imprimante refuse
+toute rupture de session, tout restart, dépassement, trou, doublon ou valeur non
+finie.
+
+D-048 reste la règle du mode standard et de l'interface actuellement sûre : un
+seul `6 × 6`. Le composite est une mission séparée qui ne devient visible
+qu'après qualification physique, comparaison de première couche, coupure
+complète, reprise et preuve des deux CFS. La décision détaillée est l'ADR-013.

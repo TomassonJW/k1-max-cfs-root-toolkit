@@ -1,22 +1,26 @@
 {
   "contract_id": "G4-K1-CONTROL-CALIBRATION-UI-MATRIX-V1",
-  "status": "offline_review_candidate",
+  "status": "corrected_after_exact_prtouch_runtime_limit_proof",
   "printer_mutation_authorized": false,
   "dependency": {
     "gate": "G4-K1-CONTROL-CALIBRATION-UI-V1",
     "required_result": "installed_validated_and_browser_reload_proven"
   },
-  "selectable_square_matrices": [3, 4, 5, 6, 9, 11, 15],
+  "selectable_square_matrices": [6],
+  "rejected_square_matrices": [9, 11, 15],
+  "observed_hardware_limit": {
+    "physical_points": 36,
+    "maximum_safe_matrix": [6, 6],
+    "exact_failure": "prtouch_v2_wrapper.py IndexError after g29_cnt=36",
+    "unsafe_community_workaround_rejected": "changing pr_version and removing per-point hold tables"
+  },
   "presets": {
-    "quick": {"matrix": [6, 6], "algorithm": "lagrange"},
-    "standard": {"matrix": [9, 9], "algorithm": "bicubic"},
-    "precise": {"matrix": [11, 11], "algorithm": "bicubic"},
-    "expert": {"matrix": [15, 15], "algorithm": "bicubic"}
+    "supported": {"matrix": [6, 6], "algorithm": "lagrange", "measurements": 1}
   },
   "algorithm_rules": {
     "lagrange_max_points_per_axis": 6,
-    "larger_matrix_algorithm": "bicubic",
-    "ui_automatically_selects_bicubic_above_6": true,
+    "larger_physical_matrix": "forbidden_by_exact_prtouch_firmware",
+    "ui_exposes_unsupported_sizes": false,
     "server_rejects_incompatible_combinations": true
   },
   "write_set": [

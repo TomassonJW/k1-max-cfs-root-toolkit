@@ -1,21 +1,18 @@
 {
   "contract_id": "G4-K1-CONTROL-CALIBRATION-UI-CAMPAIGN-V1",
-  "status": "offline_review_candidate",
+  "status": "corrected_after_exact_prtouch_runtime_limit_proof",
   "printer_mutation_authorized": false,
   "dependency": {
     "gate": "G4-K1-CONTROL-CALIBRATION-UI-MATRIX-V1",
-    "required_result": "deployed_validated_and_rendered_in_browser_with_6_9_11_15_presets"
+    "required_result": "deployed_validated_and_rendered_in_browser_with_fixed_6x6_grid"
   },
   "matrix_capability": {
     "selectable_presets": [
-      {"name": "quick", "matrix": [6, 6], "interpolation": "lagrange"},
-      {"name": "standard", "matrix": [9, 9], "interpolation": "bicubic"},
-      {"name": "precise", "matrix": [11, 11], "interpolation": "bicubic"},
-      {"name": "expert", "matrix": [15, 15], "interpolation": "bicubic"}
+      {"name": "supported", "matrix": [6, 6], "interpolation": "lagrange"}
     ],
-    "offline_server_and_aggregation_proof": "required_for_all_presets",
-    "physical_proof": "six_real_meshes_at_every_preset",
-    "full_z_workflow_preset": "quick"
+    "physical_proof": "one_complete_36_point_mesh",
+    "hardware_limit": "prtouch_v2_wrapper fails at physical point 37",
+    "full_z_workflow_preset": "supported"
   },
   "common_operator_settings": {
     "plate": "PEI_TEXTURED_A",
@@ -29,34 +26,7 @@
   "physical_sequence": [
     {
       "order": 1,
-      "name": "standard",
-      "matrix": [9, 9],
-      "interpolation": "bicubic",
-      "replace_existing": false,
-      "expected_profile": "k1_p001_t055_r001_n09x09",
-      "finish": "cancel_from_ui_then_capture_closed_qualified_state"
-    },
-    {
-      "order": 2,
-      "name": "precise",
-      "matrix": [11, 11],
-      "interpolation": "bicubic",
-      "replace_existing": false,
-      "expected_profile": "k1_p001_t055_r001_n11x11",
-      "finish": "cancel_from_ui_then_capture_closed_qualified_state"
-    },
-    {
-      "order": 3,
-      "name": "expert",
-      "matrix": [15, 15],
-      "interpolation": "bicubic",
-      "replace_existing": false,
-      "expected_profile": "k1_p001_t055_r001_n15x15",
-      "finish": "cancel_from_ui_then_capture_closed_qualified_state"
-    },
-    {
-      "order": 4,
-      "name": "quick",
+      "name": "supported",
       "matrix": [6, 6],
       "interpolation": "lagrange",
       "replace_existing": true,
@@ -67,9 +37,7 @@
   "operator_only_actions": [
     "authenticate_in_the_calibration_browser_origin",
     "confirm_plate_and_clear_bed",
-    "run_each_reviewed_six_mesh_level_from_the_ui_in_order",
-    "cancel_standard_precise_and_expert_from_the_ui_after_mesh_qualification",
-    "capture_each_closed_qualified_mesh_level_read_only",
+    "run_the_single_reviewed_mesh_from_the_ui",
     "confirm_nozzle_clean_before_z",
     "advance_each_bounded_z_step_from_the_ui",
     "observe_the_real_gap_with_the_paper_gauge",
@@ -81,16 +49,10 @@
     "api_connected": true,
     "final_campaign_phase": "accepted",
     "campaign_busy": false,
-    "mesh_measurements_per_level": 6,
-    "total_mesh_measurements": 24,
-    "every_level_mesh_accepted": true,
+    "mesh_measurements": 1,
+    "physical_points": 36,
     "automatic_extra_measurement": false,
-    "profiles": [
-      "k1_p001_t055_r001_n06x06",
-      "k1_p001_t055_r001_n09x09",
-      "k1_p001_t055_r001_n11x11",
-      "k1_p001_t055_r001_n15x15"
-    ],
+    "profiles": ["k1_p001_t055_r001_n06x06"],
     "runtime_store_integrity": "ok",
     "runtime_accepted_z_valid": 1,
     "runtime_session_active": 0,
@@ -105,14 +67,14 @@
   "stop_conditions": [
     "unexpected_browser_application_or_http_error",
     "api_disconnected",
-    "mesh_rejected",
-    "seventh_mesh_requested_or_observed_at_any_level",
-    "level_order_or_algorithm_differs_from_the_reviewed_sequence",
+    "mesh_incomplete_or_rejected",
+    "second_mesh_requested_or_observed",
+    "matrix_or_algorithm_differs_from_6x6_lagrange",
     "unexpected_motion_or_extrusion",
     "heater_target_outside_reviewed_values",
     "runtime_or_path_guard_not_closed",
     "operator_cannot_observe_a_safe_gap"
   ],
-  "failure_action": "cancel_current_level_from_ui_and_stop_without_automatic_rerun",
+  "failure_action": "automatic_exact_restore_and_stop_without_rerun",
   "rerun_policy": "no_automatic_rerun"
 }

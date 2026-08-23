@@ -4,6 +4,23 @@ Progression is evidence-based. Passing a gate authorises only the next bounded p
 
 These gates control evidence collection and changes affecting the printer. They do not gate normal Git or GitHub operations: under D-010, Codex may complete branches, commits, pushes, pull requests, merges into `main` and cleanup without requesting another operator approval. Repository integration never expands the printer-side authority granted by a gate.
 
+## Reprise après le handoff du 23 août 2026
+
+Statut d'autorisation : **`ATTENDRE_GO`**.
+
+Thomas a arrêté la reprise avant le nouveau préflight SSH et demandé une tâche
+neuve. L'ancien Goal global reste `blocked` dans la tâche source et n'est pas
+une autorisation transférable. Aucune connexion distante, pose, chauffe,
+référence, mesure, écriture Z, relance de service ou autre mutation n'a été
+lancée après cette décision. L'état physique courant devra donc être vérifié
+frais avant toute exécution.
+
+La prochaine gate unique est
+`G4-K1-CONTROL-CALIBRATION-UI-PRTOUCH-BED-MESH-V2`. Elle doit être préflightée,
+autorisée exactement, posée et validée seule. MATRIX-V1, RETRY-SAFETY-V1,
+PRTOUCH-PRESETS-V1, CAMPAIGN-V1 et COMPOSITE-MESH-SUBGRID-V1 restent fermées
+pendant cet incrément.
+
 ## G0 — Repository bootstrap
 
 Status: **passed**
@@ -581,7 +598,7 @@ close.
 
 ### Gate exécutée — `G4-K1-CONTROL-CALIBRATION-UI-MATRIX-V1`
 
-Status: **passed and closed**
+Status: **pose historique validée ; hypothèse grandes matrices réfutée ; correction `6 × 6` en attente de GO renouvelé**
 
 Cette gate corrige l'écart entre le contrat produit et l'interface installée :
 les niveaux rapide `6 × 6`, standard `9 × 9`, précis `11 × 11` et expert
@@ -609,9 +626,32 @@ Le vrai rendu Chrome authentifié a confirmé les quatre niveaux. Les sélection
 a restauré `6 × 6` Lagrange, le seed `−0,04 mm` et les confirmations physiques
 décochées. La gate est close ; son GO ne couvre aucun rerun ni la campagne.
 
+### Gate corrective — `G4-K1-CONTROL-CALIBRATION-UI-RETRY-SAFETY-V1`
+
+Status: **ancienne révision déployée ; correction `1 mesh` en attente de GO renouvelé**
+
+Deux départs humains `9 × 9` ont prouvé que `replace_existing=true` restait
+collant après une annulation à `0/6`. Les deux tentatives ont été arrêtées avant
+toute mesure et l'état durable est intact. Cette gate remplace uniquement
+`app.js` après backup exact, sans restart. Une reprise interrompue avant six
+meshes remet une seule fois `replace_existing=false` et `plate_clear=false`;
+l'opérateur peut ensuite réactiver explicitement un remplacement volontaire.
+
+Les 179 tests sont verts. Le préflight réel sous la capture
+`20260822-231240-g4-k1-control-calibration-ui-retry-safety-v1` a obtenu
+`PREFLIGHT_CALIBRATION_UI_RETRY_SAFETY_V1_OK` sur une K1 au repos, chauffes à
+zéro, Z accepté intact, chemin fermé et aucun profil transitoire. Le goal global
+de Thomas a autorisé la pose sans redemander un GO. Le même identifiant a obtenu
+`DEPLOY_CALIBRATION_UI_RETRY_SAFETY_V1_OK` puis deux
+`VALIDATE_CALIBRATION_UI_RETRY_SAFETY_V1_OK`. Seul `app.js` a été remplacé après
+backup exact, sans restart ni action physique. La route `4409` ayant été reprise
+par le cache Mainsail au rechargement, un tunnel temporaire neuf `4410` est prêt.
+La gate attend uniquement l'authentification humaine puis la preuve réelle des
+deux cases décochées avant reprise de la campagne.
+
 ### Gate préparée — `G4-K1-CONTROL-CALIBRATION-UI-CAMPAIGN-V1`
 
-Status: **prête et préflight réel vert ; non autorisée**
+Status: **ancien protocole KO au point 37 ; protocole `6 × 6 / 1 mesh` préparé hors imprimante et en attente de GO renouvelé**
 
 Cette gate ne pose aucun fichier. Elle qualifie physiquement les quatre niveaux
 depuis l'écran avec `PEI_TEXTURED_A`, `55/140 °C` et `200 s` : `9 × 9`,
@@ -637,9 +677,144 @@ strictement en lecture seule a obtenu
 `PREFLIGHT_CALIBRATION_UI_CAMPAIGN_V1_OK` sous la capture
 `20260822-222450-g4-k1-control-calibration-ui-campaign-v1` : UI inactive, K1 au
 repos, cibles à zéro, Z accepté et profil rapide présents, profils `9/11/15`
-absents comme attendu. Le GO envoyé avant la correction de matrice n'est pas
-consommé, car le protocole a changé depuis. Un nouveau GO exact est nécessaire
-avant la première chauffe ou mesure de cette campagne.
+absents comme attendu. Le GO envoyé avant la correction de matrice n'a pas été
+consommé. Thomas a ensuite donné une autorité globale explicite dans le goal
+pour aller jusqu'au vert calibration sans redemander de GO. La campagne était
+alors autorisée. Le handoff du 23 août a fermé cette continuité : la tâche
+suivante repart en `ATTENDRE_GO` sur la seule gate PRTOUCH-BED-MESH-V2.
+
+Le tunnel `4410` a été rétabli avec un seul processus neuf et connecté ; les
+fichiers UI distants, dont l'empreinte exacte du correctif, sont présents. Un
+premier préflight a rejeté à tort l'état sûr `cancelled` laissé par les deux
+arrêts à `0/6`. Le validateur accepte maintenant seulement un départ `idle`
+sans backup ou une reprise `cancelled` strictement à zéro mesure avec backup ;
+toute annulation après le premier mesh reste refusée. Le test ciblé et le
+préflight réel sous la capture
+`20260822-233717-g4-k1-control-calibration-ui-campaign-v1` sont verts. La
+campagne attend maintenant le rendu humain des cases décochées, puis le départ
+écran `9 × 9`.
+
+Le départ écran a ensuite été conforme mais s'est arrêté proprement à `1/6`,
+sans matrice exploitable, avec `Le mesh ne contient pas le nombre de lignes
+attendu.` Les chauffes, le Z et le profil `6 × 6` ont été vérifiés sûrs. Le
+firmware exact prouve que le wrapper Creality `prtouch_v3` utilise le
+`probe_count` chargé depuis `[bed_mesh]` et non le paramètre dynamique amont.
+
+### Gate corrective — `G4-K1-CONTROL-CALIBRATION-UI-PRTOUCH-MATRIX-V1`
+
+Status: **installée et validée**
+
+Le composant séparé ne remplace ni le core UI ni le runtime Klipper. Sa pose
+ajoute un fichier, ajoute sa section au `moonraker.conf` dédié et redémarre
+seulement ce Moonraker, sans modifier `printer.cfg` ni lancer d'action physique.
+Pendant une future calibration, il commute atomiquement l'unique
+`[bed_mesh] probe_count` après le backup et avant la chauffe, redémarre Klipper,
+relit la valeur chargée et toutes les gardes, puis restaure la valeur précédente
+après `TURN_OFF_HEATERS`. Le préflight exact de la capture
+`20260823-001724-g4-k1-control-calibration-ui-prtouch-matrix-v1` a obtenu
+`PREFLIGHT_CALIBRATION_UI_PRTOUCH_MATRIX_V1_OK`,
+`DEPLOY_CALIBRATION_UI_PRTOUCH_MATRIX_V1_OK` et deux
+`VALIDATE_CALIBRATION_UI_PRTOUCH_MATRIX_V1_OK`. L'essai `9 × 9` vide a ensuite
+été restauré exactement ; le nouveau préflight de campagne est vert sous
+`20260823-002500-g4-k1-control-calibration-ui-campaign-v1`.
+
+### Gate corrective — `G4-K1-CONTROL-CALIBRATION-UI-PRTOUCH-PRESETS-V1`
+
+Status: **installée et validée**
+
+Ce delta statique retire le choix pair `4 × 4` que le parcours spiralé Creality
+refuse, conserve `3/5/6/9/11/15` et remplace le repli JavaScript par `5 × 5`.
+Il sauvegarde et remplace seulement `index.html` et `app.js`, sans restart ni
+action physique. Le premier transfert a rencontré un défaut local de guillemets
+dans la validation et a restauré automatiquement les deux fichiers exacts. La
+capture corrigée
+`20260823-003755-g4-k1-control-calibration-ui-prtouch-presets-v1` a ensuite
+obtenu le déploiement et deux validations vertes. La suite complète compte 191
+tests verts et 3 ignorés connus.
+
+Le second départ `9 × 9` a ensuite prouvé une seconde dépendance chargée au
+démarrage : avec `probe_count=9,9` mais `algorithm=lagrange`, Klipper a affiché
+XS3002 avant toute chauffe ou mesure. Le rollback automatique a restauré
+`6,6 + lagrange`, Klipper prêt, chauffes zéro, Z et profil rapide intacts.
+
+### Gate corrective — `G4-K1-CONTROL-CALIBRATION-UI-PRTOUCH-BED-MESH-V2`
+
+Status: **révision historique installée et validée ; révision sûre `6 × 6 / 1 mesh` préparée hors imprimante et en attente d'un GO frais**
+
+V2 remplace uniquement le composant prtouch V1 et redémarre le Moonraker dédié,
+sans modifier `printer.cfg` pendant la pose ni lancer d'action physique. Pendant
+la campagne, il commute atomiquement puis relit le couple
+`probe_count + algorithm` après le backup et avant la chauffe. Les niveaux
+`9/11/15` exigent `bicubic`; le niveau `6` revient à `lagrange`. Un échec restaure
+les deux valeurs ensemble. Le préflight réel a obtenu
+`PREFLIGHT_CALIBRATION_UI_PRTOUCH_BED_MESH_V2_OK` sur l'état XS3002 restauré à
+zéro mesh. La capture
+`20260823-005835-g4-k1-control-calibration-ui-prtouch-bed-mesh-v2` a d'abord
+obtenu des marqueurs verts insuffisants : le validateur ne contrôlait pas
+`failed_components`, et la K1 omet la ligne `algorithm` pour son `lagrange`
+implicite. Le composant avait donc échoué au chargement sans action physique.
+La révision corrigée préserve exactement cette forme implicite, ajoute
+`bicubic` seulement pendant les grandes matrices et valide le chargement réel.
+La capture `20260823-012755-g4-k1-control-calibration-ui-prtouch-bed-mesh-v2-r2`
+a obtenu le préflight, le déploiement et deux validations vertes ; Moonraker
+rapporte `failed_components=[]` et `warnings=[]`. Après rollback exact de la
+campagne XS3002, le préflight complet
+`20260823-013151-g4-k1-control-calibration-ui-campaign-v1` est vert.
+
+L'audit de chaîne hors imprimante montre maintenant que MATRIX-V1 puis
+RETRY-SAFETY-V1 produisent déjà exactement les deux hashes finaux de
+PRTOUCH-PRESETS-V1. Le déployeur PRESETS est donc idempotent : après ces deux
+lots il exécute la validation complète et écrit seulement sa preuve locale,
+sans backup, transfert ni remplacement distant. Le chemin historique de copie
+reste fermé sauf si les hashes de base et de sortie diffèrent réellement.
+
+Le départ suivant, campagne `20260823-021858-540-calibration-ui-v1`, a atteint
+exactement `g29_cnt=36` pendant son premier mesh `9 × 9`, puis le wrapper
+Creality a levé `IndexError: list index out of range` avant le point 37. La
+matrice incomplète a ensuite produit le message applicatif sur le nombre de
+lignes. Le rollback API a restauré `standby`, cibles zéro, axes non référencés,
+profil robuste `6 × 6`, stockage `ok` et Z accepté `−0,04 mm`. Aucun résultat de
+ce mesh n'est retenu.
+
+Cette preuve invalide `9/11/15` dans une seule séquence PRTouch. L'ADR-012 fixe
+le contrat standard à `6 × 6 + lagrange` et à un seul mesh. L'ADR-013 précise
+désormais que le profil final n'est pas borné à six : quatre sous-grilles de 36
+contacts maximum peuvent former 121 vraies mesures `11 × 11`, mais seulement
+après une qualification séparée dans la même chauffe et le même référencement.
+Les six meshes de FIRST-CALIBRATION-V2 restent une qualification initiale
+historique ; ils ne sont plus répétés par l'UI. Le contournement
+`pr_version: 1` avec retrait des tables usine reste rejeté.
+
+Les révisions corrigées de PRTOUCH-BED-MESH-V2, MATRIX-V1,
+RETRY-SAFETY-V1, PRTOUCH-PRESETS-V1 et CAMPAIGN-V1 sont prêtes hors imprimante.
+Le dernier essai de pose a été refusé par la barrière de sécurité parce que les
+payloads avaient changé après les GO précédents. Après la décision de handoff,
+la reprise n'enchaîne plus les cinq gates : elle commence uniquement par
+PRTOUCH-BED-MESH-V2, avec état réel frais et GO exact. Les quatre autres restent
+fermées jusqu'à la preuve de cette première pose. L'ancienne UI encore présente
+ne doit pas être relancée.
+
+### Gate exploratoire — `G4-K1-CONTROL-COMPOSITE-MESH-SUBGRID-V1`
+
+Status: **package d'acquisition `5 × 5` préparé et testé hors imprimante ; non
+installé et non exécuté**
+
+Cette gate future ne couvre qu'une sous-grille PRTouch décalée de 36 contacts
+maximum. Elle devra conserver le `pr_version: 2`, les 72 tables exactes, la
+commande stock et les deux CFS ; installer un composant séparé ; rester dans un
+seul référencement ; capturer chaque contact ; couper les chauffes ; puis
+restaurer automatiquement sans persister de profil composite. Son succès est
+obligatoire avant toute campagne quatre sous-grilles.
+
+Le fusionneur hors imprimante reste sous
+`packages/k1-control-v1/composite-mesh-v1`. Le paquet physique séparé
+`composite-subgrid-v1` impose maintenant une première grille impaire/impaire
+`5 × 5`, 25 contacts aux positions `34..266 mm`, puis chauffes zéro, nettoyage
+de la session et profil robuste restauré. Sa pose redémarre Moonraker seulement
+et son essai redémarre Klipper uniquement après la capture. Les 14 tests ciblés
+et la suite complète de 220 tests sont verts, avec 3 tests historiquement
+ignorés. Cette preuve valide le pilote hors imprimante ; elle ne prouve encore
+aucun mouvement PRTouch.
 
 ## G5 — V1 production baseline
 

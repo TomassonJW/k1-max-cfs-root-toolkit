@@ -1,0 +1,56 @@
+{
+  "contract_id": "G4-K1-CONTROL-CALIBRATION-UI-PRTOUCH-PRESETS-V1",
+  "status": "corrected_after_exact_prtouch_runtime_limit_proof",
+  "dependency": "G4-K1-CONTROL-CALIBRATION-UI-PRTOUCH-BED-MESH-V2 corrected payload deployed and validated",
+  "deployer": {
+    "path": "scripts/deploy-k1-control-calibration-ui-prtouch-presets-v1.ps1",
+    "sha256": "2cff023202347963364aec3d3683e585fb752e4f5b23915e4b15b98787831554"
+  },
+  "contract": {
+    "path": "calibration-ui-prtouch-presets-contract.json",
+    "sha256": "507d21febffae0ee5a22b7cd7d86899024d2f2e9c4ba005dbe15729744cc5fee"
+  },
+  "baseline": {
+    "index_html_sha256": "4892294d278497f2f4215564b3e70fcedb354fb880f306641a29a03042ad1abc",
+    "app_js_sha256": "67fe83aee144a2748d703b005fb337104c22e5760e2ae4dbc340306813c931bd"
+  },
+  "files": [
+    {
+      "source": "index.html",
+      "destination": "/usr/data/k1-control-v1/current/www/mainsail/k1-control/index.html",
+      "sha256": "4892294d278497f2f4215564b3e70fcedb354fb880f306641a29a03042ad1abc"
+    },
+    {
+      "source": "app.js",
+      "destination": "/usr/data/k1-control-v1/current/www/mainsail/k1-control/app.js",
+      "sha256": "67fe83aee144a2748d703b005fb337104c22e5760e2ae4dbc340306813c931bd"
+    }
+  ],
+  "unchanged": {
+    "files": [
+      {
+        "destination": "/usr/data/k1-control-v1/current/config/moonraker.conf",
+        "sha256": "9b451f9b864c798872f674688d1c3354f31ab5a03283cad1d7a224561308fcb1"
+      },
+      {
+        "destination": "/usr/data/k1-control-v1/current/moonraker/moonraker/moonraker/components/k1_control_probe_count.py",
+        "sha256": "8c8c4aaf20856be1880cea56badd2fe81bd488966eab0d55e7672f73eb1db7b0"
+      },
+      {
+        "destination": "/usr/data/k1-control-v1/current/moonraker/moonraker/moonraker/components/k1_control.py",
+        "sha256": "27c0734f149ea89a8ba0d5e17f7f65aecc95c1383c359662cb366a687bb7d303"
+      },
+      {
+        "destination": "/usr/data/k1-control-v1/current/moonraker/moonraker/moonraker/components/k1_control_calibration_core.py",
+        "sha256": "9a6a24195b504a82f88e3b7464c508eaf49f8450169578257c8fe98a5d5f4e97"
+      },
+      {
+        "destination": "/usr/data/k1-control-v1/current/www/mainsail/k1-control/styles.css",
+        "sha256": "a7c27fbcdc07f24b00b6d47cc1d9aa8570b9483bcf4dd3615419de579f9aaa12"
+      }
+    ]
+  },
+  "service_action": "none",
+  "printer_cfg_changed": false,
+  "calibration_action": false
+}

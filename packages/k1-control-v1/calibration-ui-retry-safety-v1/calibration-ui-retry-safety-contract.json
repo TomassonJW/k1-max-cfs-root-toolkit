@@ -1,0 +1,20 @@
+{
+  "contract_id": "G4-K1-CONTROL-CALIBRATION-UI-RETRY-SAFETY-V1",
+  "scope": "static retry safety after an incomplete calibration attempt",
+  "dependency": "G4-K1-CONTROL-CALIBRATION-UI-MATRIX-V1 installed and validated",
+  "reset_when": {
+    "phases": ["cancelled", "failed", "mesh_rejected"],
+    "mesh_index_less_than": "mesh_target_count"
+  },
+  "one_time_reset": {
+    "replace_existing": false,
+    "plate_clear": false
+  },
+  "operator_can_reenable_replace_explicitly": true,
+  "write_set": [
+    "/usr/data/k1-control-v1/current/www/mainsail/k1-control/app.js"
+  ],
+  "service_restart": false,
+  "calibration_action": false,
+  "rollback": "restore the exact backed-up app.js"
+}

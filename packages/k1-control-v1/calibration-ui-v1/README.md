@@ -13,10 +13,14 @@ Le lanceur poste ouvre cette route sous l'origine
 `127.0.0.1:4409` et de son service worker. Le déployeur fixe le dossier statique
 en `0755` et le validateur exige ce mode exact avant d'accepter la pose.
 
-Le composant exécute côté machine les six maillages fixes, conserve les
-matrices dans un état JSON atomique, compare deux médianes indépendantes de
-trois, charge le candidat robuste, le relit puis le persiste. Une fermeture du
-navigateur n'interrompt donc pas la sécurité du protocole. Un échec ou une
+Le composant exécute côté machine un mesh complet `6 × 6`, le conserve dans un
+état JSON atomique, le relit puis le persiste. Les six passages et les deux
+médianes indépendantes appartenaient au protocole exceptionnel de qualification
+initiale, déjà clos par `FIRST-CALIBRATION-V2`; ils ne sont pas répétés à chaque
+calibration normale. La campagne réelle du 23 août 2026 a prouvé que le pilote
+propriétaire Creality plante au point 37 d'une demande `9 × 9`, donc la grille
+physique reste fixée à 36 points. Une fermeture du navigateur n'interrompt donc
+pas la sécurité du protocole. Un échec ou une
 annulation coupe les chauffes. La chauffe et les 200 secondes de stabilisation
 sont découpées côté contrôleur pour accepter une annulation rapidement. Un
 homing, nettoyage ou mesh physique déjà commencé va seulement jusqu'à la fin de
