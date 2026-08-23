@@ -29,7 +29,7 @@ $BedMeshManifestPath = Join-Path $BedMeshPackage 'deployment-manifest.json'
 $PresetPackage = Join-Path $WorkspaceRoot 'packages\k1-control-v1\calibration-ui-prtouch-presets-v1'
 $PresetManifestPath = Join-Path $PresetPackage 'deployment-manifest.json'
 $CampaignContractPath = Join-Path $WorkspaceRoot 'packages\k1-control-v1\calibration-ui-campaign-v1\calibration-ui-campaign-contract.json'
-$ExpectedUiManifestHash = 'e43de6a5f34e35b0f375c22d0dcceaa09cc9eec063d8bfbe4b0869baae139149'
+$ExpectedUiManifestHash = 'c478c66e69733239508a262f8115754f1430add30af1e4333979a759732c8464'
 $ExpectedRetryManifestHash = '37bdc87ff20d283e862505b70678afe4790845a517d1a191a8fc4565b570cbc8'
 $ExpectedBedMeshManifestHash = '3357113e8b7da06fceeb6c2053197e6f9410fec58abc85e851c2984e196d7dec'
 $ExpectedPresetManifestHash = '332b4edc8047e38c9abf5af00df572abb089d5dbc7e352af876e78da41bc1dc3'
@@ -204,9 +204,12 @@ function Assert-InstalledUi {
     }
     $serverInfoRaw = (Invoke-Remote "curl 'http://127.0.0.1:7125/server/info'") -join "`n"
     $serverInfo = ($serverInfoRaw | ConvertFrom-Json).result
-    if (-not $serverInfo -or @($serverInfo.components) -notcontains 'k1_control_probe_count' -or
-        @($serverInfo.failed_components) -contains 'k1_control_probe_count') {
-        throw "L'adaptateur bed_mesh V2 n'est pas chargé proprement : $(@($serverInfo.warnings) -join ' | ')"
+    if (-not $serverInfo -or -not [bool]$serverInfo.klippy_connected -or
+        [string]$serverInfo.klippy_state -cne 'ready' -or
+        @($serverInfo.components) -notcontains 'k1_control' -or
+        @($serverInfo.components) -notcontains 'k1_control_probe_count' -or
+        @($serverInfo.failed_components).Count -ne 0 -or @($serverInfo.warnings).Count -ne 0) {
+        throw "Moonraker non sain : state=$($serverInfo.klippy_state) failed=$(@($serverInfo.failed_components) -join ',') warnings=$(@($serverInfo.warnings) -join ' | ')"
     }
     $mode = ((Invoke-Remote "stat -c '%a' '$RemoteUi'") | Select-Object -First 1).Trim()
     if ($mode -cne '755') {
@@ -229,7 +232,7 @@ function Get-PrivateCampaignState {
 }
 
 function Get-PrinterSnapshot {
-    $url = "http://127.0.0.1:7125/printer/objects/query?print_stats&extruder&heater_bed&bed_mesh&box&gcode_macro+KCTRL_STATE&k1_control_store&gcode_macro+KCTRL_CAL_PATH_STATE"
+    $url = "http://127.0.0.1:7125/printer/objects/query?print_stats&extruder&heater_bed&bed_mesh&configfile&box&gcode_macro+KCTRL_STATE&k1_control_store&gcode_macro+KCTRL_CAL_PATH_STATE"
     $raw = (Invoke-Remote "curl '$url'") -join "`n"
     $payload = $raw | ConvertFrom-Json
     if (-not $payload.result.status) {
@@ -242,7 +245,8 @@ function Assert-Cfs {
     param([Parameter(Mandatory = $true)]$Snapshot)
     foreach ($name in @('T1', 'T2')) {
         $unit = $Snapshot.box.$name
-        if (-not $unit -or $unit.state -cne 'connect' -or @($unit.material_type).Count -ne 4) {
+        if (-not $unit -or $unit.state -cne 'connect' -or $unit.version -cne '1.1.3' -or
+            @($unit.material_type).Count -ne 4) {
             throw "CFS $name inattendu ou déconnecté."
         }
     }
@@ -282,6 +286,11 @@ function Assert-SafeAcceptedMachine {
     }
     if ($Snapshot.bed_mesh.profiles.PSObject.Properties.Name -contains 'K1_TRANSIENT') {
         throw 'Un profil mesh transitoire est encore présent.'
+    }
+    $count = @($Snapshot.configfile.settings.bed_mesh.probe_count)
+    if ($count.Count -ne 2 -or [int]$count[0] -ne 6 -or [int]$count[1] -ne 6 -or
+        [string]$Snapshot.configfile.settings.bed_mesh.algorithm -cne 'lagrange') {
+        throw 'Configuration bed_mesh chargée autre que 6x6 Lagrange.'
     }
     Assert-Cfs $Snapshot
 }
