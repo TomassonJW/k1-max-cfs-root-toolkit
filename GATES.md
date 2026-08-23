@@ -4,6 +4,23 @@ Progression is evidence-based. Passing a gate authorises only the next bounded p
 
 These gates control evidence collection and changes affecting the printer. They do not gate normal Git or GitHub operations: under D-010, Codex may complete branches, commits, pushes, pull requests, merges into `main` and cleanup without requesting another operator approval. Repository integration never expands the printer-side authority granted by a gate.
 
+## Reprise après le handoff du 23 août 2026
+
+Statut d'autorisation : **`ATTENDRE_GO`**.
+
+Thomas a arrêté la reprise avant le nouveau préflight SSH et demandé une tâche
+neuve. L'ancien Goal global reste `blocked` dans la tâche source et n'est pas
+une autorisation transférable. Aucune connexion distante, pose, chauffe,
+référence, mesure, écriture Z, relance de service ou autre mutation n'a été
+lancée après cette décision. L'état physique courant devra donc être vérifié
+frais avant toute exécution.
+
+La prochaine gate unique est
+`G4-K1-CONTROL-CALIBRATION-UI-PRTOUCH-BED-MESH-V2`. Elle doit être préflightée,
+autorisée exactement, posée et validée seule. MATRIX-V1, RETRY-SAFETY-V1,
+PRTOUCH-PRESETS-V1, CAMPAIGN-V1 et COMPOSITE-MESH-SUBGRID-V1 restent fermées
+pendant cet incrément.
+
 ## G0 — Repository bootstrap
 
 Status: **passed**
@@ -662,8 +679,9 @@ strictement en lecture seule a obtenu
 repos, cibles à zéro, Z accepté et profil rapide présents, profils `9/11/15`
 absents comme attendu. Le GO envoyé avant la correction de matrice n'a pas été
 consommé. Thomas a ensuite donné une autorité globale explicite dans le goal
-pour aller jusqu'au vert calibration sans redemander de GO. La campagne est
-donc autorisée.
+pour aller jusqu'au vert calibration sans redemander de GO. La campagne était
+alors autorisée. Le handoff du 23 août a fermé cette continuité : la tâche
+suivante repart en `ATTENDRE_GO` sur la seule gate PRTOUCH-BED-MESH-V2.
 
 Le tunnel `4410` a été rétabli avec un seul processus neuf et connecté ; les
 fichiers UI distants, dont l'empreinte exacte du correctif, sont présents. Un
@@ -721,7 +739,7 @@ XS3002 avant toute chauffe ou mesure. Le rollback automatique a restauré
 
 ### Gate corrective — `G4-K1-CONTROL-CALIBRATION-UI-PRTOUCH-BED-MESH-V2`
 
-Status: **installée et validée**
+Status: **révision historique installée et validée ; révision sûre `6 × 6 / 1 mesh` préparée hors imprimante et en attente d'un GO frais**
 
 V2 remplace uniquement le composant prtouch V1 et redémarre le Moonraker dédié,
 sans modifier `printer.cfg` pendant la pose ni lancer d'action physique. Pendant
@@ -770,8 +788,11 @@ historique ; ils ne sont plus répétés par l'UI. Le contournement
 Les révisions corrigées de PRTOUCH-BED-MESH-V2, MATRIX-V1,
 RETRY-SAFETY-V1, PRTOUCH-PRESETS-V1 et CAMPAIGN-V1 sont prêtes hors imprimante.
 Le dernier essai de pose a été refusé par la barrière de sécurité parce que les
-payloads avaient changé après les GO précédents. Chacune exige donc son GO exact
-renouvelé. L'ancienne UI encore présente ne doit pas être relancée.
+payloads avaient changé après les GO précédents. Après la décision de handoff,
+la reprise n'enchaîne plus les cinq gates : elle commence uniquement par
+PRTOUCH-BED-MESH-V2, avec état réel frais et GO exact. Les quatre autres restent
+fermées jusqu'à la preuve de cette première pose. L'ancienne UI encore présente
+ne doit pas être relancée.
 
 ### Gate exploratoire — `G4-K1-CONTROL-COMPOSITE-MESH-SUBGRID-V1`
 

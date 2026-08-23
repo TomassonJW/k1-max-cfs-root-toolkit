@@ -1,8 +1,47 @@
 # HANDOFF
 
-Date: 2026-08-23
-Phase: P4 / FIRST-CALIBRATION-V2 validée ; audit haute confiance et prototype composite hors imprimante ; production fermée
-Next operator: K1 éteinte ; au prochain créneau, remettre d'abord l'UI sûre `6 × 6 / 1 mesh`, puis qualifier séparément une sous-grille composite bornée
+Date: 2026-08-23 14:17 +02:00
+Phase: P4 / FIRST-CALIBRATION-V2 validée ; corrections UI sûres et prototype composite préparés hors imprimante ; production fermée
+Next operator: `ATTENDRE_GO` ; commencer uniquement par la pose et la validation de `G4-K1-CONTROL-CALIBRATION-UI-PRTOUCH-BED-MESH-V2`
+
+## Décision de clôture de la session
+
+Thomas a interrompu la reprise avant le nouveau préflight SSH et demandé un
+handoff complet vers une tâche locale neuve. Cette décision remplace l'accord
+d'exécution donné juste avant pour l'alias SSH élevé : aucune commande SSH,
+aucune pose et aucune action physique n'ont été lancées après cette
+interruption. Aucun processus de mutation n'était en cours.
+
+La tâche suivante ne doit recevoir ni historique copié, ni fork, ni nouveau
+worktree, ni nouvelle branche, ni Goal implicite. L'ancien Goal reste bloqué
+dans la tâche source et ne constitue plus une autorisation d'exécution. La
+reprise est `ATTENDRE_GO` : relire les documents, vérifier Git et préparer le
+préflight est permis ; toute connexion nécessitant un accès élevé et toute
+mutation de la K1 attendent une instruction fraîche de Thomas.
+
+L'état physique courant n'a pas été revérifié pendant cette clôture. Le dernier
+état distant effectivement validé reste celui du rollback de la campagne au
+point 37 : `standby`, cibles zéro, axes non référencés, profil robuste
+`k1_p001_t055_r001_n06x06`, Z accepté `−0,04 mm`, stockage `ok` et deux CFS
+conformes. La K1 a été annoncée disponible et plateau libre plus tard, mais ce
+constat humain n'a pas été confirmé par un nouveau préflight. L'ancienne UI
+encore installée ne doit pas être relancée.
+
+## Vérifications de clôture
+
+- dépôt : `C:\Users\janko\Documents\ChatGPT\k1-max-cfs-root-toolkit` ;
+- branche de mission avant intégration :
+  `codex/g4-k1-control-calibration-ui-retry-safety-v1` ;
+- tête candidate avant ce commit de handoff :
+  `e3da05b31c256c736442f743cddf13a61184775b`, identique à la branche distante ;
+- PR GitHub : `#36`, dont les références distantes `head` et `merge` existent ;
+- suite locale : **OK**, 220 tests réussis, 3 ignorés connus ;
+- parse de tous les scripts PowerShell : **OK** ;
+- vérification réelle de la K1 pendant la clôture : **non exécutée**, par
+  décision de Thomas ;
+- client GitHub `gh` : **KO authentification** (`HTTP 401`) ; l'intégration Git
+  normale doit être tentée avec le transport Git déjà configuré, puis son état
+  distant vérifié sans transformer ce KO en succès.
 
 ## Message obligatoire au début de la prochaine session
 
@@ -720,10 +759,10 @@ automatiquement les deux fichiers exacts. Après correction, la capture
 `20260823-003755-g4-k1-control-calibration-ui-prtouch-presets-v1` a obtenu le
 déploiement et deux validations vertes, sans restart ni action physique. La
 suite complète compte 191 tests verts, 3 ignorés connus. Le préflight de reprise
-`20260823-002500-g4-k1-control-calibration-ui-campaign-v1` est vert. L'autorité
-globale du goal couvre toute la campagne ; le seul verrou courant est la
-confirmation physique fraîche du plateau libre avant le nouveau départ écran
-`9 × 9`.
+`20260823-002500-g4-k1-control-calibration-ui-campaign-v1` est vert. À ce stade
+historique, l'autorité globale du Goal couvrait encore la campagne et le seul
+verrou était la confirmation physique fraîche du plateau. Cette autorité n'est
+plus transférable après le handoff et aucun nouveau départ `9 × 9` n'est permis.
 
 Thomas a relancé le `9 × 9`. Le composant V1 a chargé `probe_count=9,9`, puis
 Klipper a refusé son démarrage avec XS3002 parce que l'algorithme persistant
@@ -794,13 +833,16 @@ La gate précédente est close avec `DEPLOY_CALIBRATION_PATH_V1_OK` et
 `VALIDATE_CALIBRATION_PATH_V1_OK` sous la capture
 `20260822-124207-g4-k1-control-calibration-path-v1`.
 
-Autorisation actuelle : **GOAL GLOBAL ACTIF POUR LA CORRECTION ET LA CAMPAGNE**.
-FIRST-CALIBRATION-V2, CALIBRATION-UI-V1 et CALIBRATION-UI-MATRIX-V1 sont
-validées et closes. Le GO matrice est consommé. Thomas a ensuite donné dans le
-goal une autorité globale explicite pour aller jusqu'au vert calibration sans
-redemander de GO. Elle couvre `CALIBRATION-UI-RETRY-SAFETY-V1`, puis la campagne
-écran revue. Elle ne couvre pas la bascule production, qui reste une gate plus
-tardive et séparée.
+Autorisation de reprise : **ATTENDRE_GO**. Le Goal global de la tâche source
+reste techniquement `blocked` et n'est pas transmis. FIRST-CALIBRATION-V2,
+CALIBRATION-UI-V1 et la pose historique CALIBRATION-UI-MATRIX-V1 sont validées
+et closes, mais les payloads sûrs ont changé depuis leurs anciennes
+autorisations. La prochaine mission unique est la pose puis la validation de
+`G4-K1-CONTROL-CALIBRATION-UI-PRTOUCH-BED-MESH-V2`, après préflight frais et GO
+exact. MATRIX-V1, RETRY-SAFETY-V1, PRESETS-V1, la campagne quotidienne
+`6 × 6 / 1 mesh` et la sous-grille composite restent différés et ne doivent pas
+être lancés dans le même incrément. La bascule production reste une gate
+ultérieure séparée.
 
 La bascule Orca reste une gate ultérieure unique : wrappers de travail côté
 machine, trois champs Orca et retrait du post-traitement doivent changer

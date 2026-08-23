@@ -11,8 +11,13 @@ La calibration UI réelle est actuellement **fermée à toute relance** : le
 premier mesh `9 × 9` de la campagne `20260823-021858-540-calibration-ui-v1` a
 atteint la limite PRTouch de trente-six contacts par séquence puis levé
 `IndexError` avant le point 37. Le rollback a restauré un état sûr et la K1 est
-maintenant éteinte. La base sûre reste `6 × 6` Lagrange avec un seul mesh
-standard. L'audit complémentaire de l'ADR-013 montre toutefois que cette limite
+restée sur son dernier état distant validé : `standby`, cibles zéro, axes non
+référencés, profil robuste et Z `−0,04 mm`. Son état physique courant n'a pas
+été revérifié pendant la clôture du 23 août ; Thomas l'a annoncée disponible et
+plateau libre, puis a interrompu la reprise avant tout nouveau préflight SSH.
+Aucune commande distante ou mutation n'a été lancée après cette interruption.
+La base sûre reste `6 × 6` Lagrange avec un seul mesh standard. L'audit
+complémentaire de l'ADR-013 montre toutefois que cette limite
 ne borne pas nécessairement la matrice finale : quatre sous-grilles de 36
 contacts maximum peuvent former 121 mesures physiques `11 × 11`, sans
 `pr_version: 1`, si elles restent dans la même chauffe et le même référencement.
@@ -428,11 +433,13 @@ Au début de la prochaine session, annoncer explicitement à Thomas :
 - l'écran réel est installé mais sa révision actuelle propose encore des
   matrices incompatibles ; ne pas le relancer avant la correction `6 × 6`.
 
-La prochaine action sûre n'est plus un départ `9 × 9`. Il faut renouveler les
-cinq gates PRTOUCH-BED-MESH-V2, MATRIX-V1, RETRY-SAFETY-V1,
-PRTOUCH-PRESETS-V1 et CAMPAIGN-V1, poser les quatre deltas dans cet ordre, puis
-prouver depuis l'écran un seul mesh `6 × 6` et le chemin Z complet. L'ancienne
-UI encore installée ne doit pas être relancée.
+La prochaine action sûre n'est plus un départ `9 × 9`. La reprise est
+`ATTENDRE_GO` et n'hérite pas du Goal global bloqué de la tâche source. Sa
+mission unique est d'obtenir un état réel frais puis de poser et valider
+uniquement `G4-K1-CONTROL-CALIBRATION-UI-PRTOUCH-BED-MESH-V2`, après son GO
+exact. MATRIX-V1, RETRY-SAFETY-V1, PRTOUCH-PRESETS-V1, CAMPAIGN-V1 et la preuve
+composite restent des incréments ultérieurs. L'ancienne UI encore installée ne
+doit pas être relancée.
 
 Le chemin borné `G4-K1-CONTROL-CALIBRATION-PATH-V1` ajoute ce qui manquait pour
 évaluer le premier Z sans console libre ni valeur cachée. Son premier préflight
@@ -677,8 +684,9 @@ retenu.
 Les tests hors imprimante sont verts : 196 réussites, 3 ignorés connus, parse
 PowerShell des deux scripts modifiés et `git diff --check` conformes. La
 barrière de sécurité a refusé le premier Deploy corrigé parce que les payloads
-avaient changé après les GO précédents. Les cinq GO exacts doivent être
-renouvelés ; aucune pose corrigée n'a eu lieu.
+avaient changé après les GO précédents. Aucune pose corrigée n'a eu lieu. La
+reprise après handoff commence seulement par PRTOUCH-BED-MESH-V2 et son GO exact ;
+les quatre autres gates restent fermées pendant cet incrément.
 
 The Orca cutover remains a later atomic gate. This runtime slice intentionally
 keeps the active Orca profile, `START_PRINT` and the legacy `+0.27 mm`
@@ -686,8 +694,9 @@ post-processor unchanged.
 
 Thomas explicitly rejected further sacrificial print campaigns on 2026-08-21.
 The V3 + PATHS-V1 observation remains useful coexistence evidence but no longer
-blocks offline product construction. L'autorité globale du goal couvre la
-campagne de calibration ; production et G5 restent fermées.
+blocks offline product construction. L'autorité globale du Goal a couvert la
+campagne de calibration dans la tâche source, mais elle n'est pas transférée
+après le handoff. Production et G5 restent fermées.
 
 Do not remove or disable the current Orca `+0.27 mm` post-processor. Its
 retirement remains atomic with the later proven machine/Orca replacement.

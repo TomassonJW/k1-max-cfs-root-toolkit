@@ -15,8 +15,15 @@ CALIBRATION-UI-V1 et ses correctifs historiques sont installés ; la campagne
 réelle `9 × 9` a ensuite prouvé la limite physique PRTouch à trente-six points
 par un `IndexError` au point 37 ; le rollback est vert ; la correction hors
 imprimante impose désormais `6 × 6` Lagrange et un seul mesh quotidien ; son
-déploiement et sa campagne écran attendent les cinq GO exacts renouvelés ;
+premier delta sûr PRTOUCH-BED-MESH-V2 attend une reprise `ATTENDRE_GO` ;
 production remains closed**.
+
+Thomas a clos la session le 23 août avant le nouveau préflight SSH. L'ancien
+Goal global reste `blocked` dans la tâche source et ne doit pas être transmis à
+une tâche neuve. Aucun accès élevé, aucune connexion distante et aucune mutation
+ne sont autorisés par ce handoff. La prochaine mission unique est le préflight,
+la pose et la validation de
+`G4-K1-CONTROL-CALIBRATION-UI-PRTOUCH-BED-MESH-V2`, uniquement après un GO frais.
 
 Thomas authorised V1, but the mandatory preflight proved that `logrotate` was
 absent. V1 is closed and must never be deployed. Thomas later authorised V2;
@@ -354,14 +361,15 @@ restent la qualification scientifique initiale déjà close. Le contournement
 communautaire par `pr_version: 1` et retrait des tables est rejeté à cause de la
 perte des compensations et d'un retour de démarrage bloqué après coupure.
 
-Les packages core, matrice, retry-safety, adaptateur, presets et campagne ont
-été corrigés hors imprimante. La suite locale compte 196 tests verts et 3
-ignorés connus ; les deux scripts PowerShell modifiés se parsèrent correctement
-et `git diff --check` est vert. Le dernier essai de pose a été refusé par la
-barrière de sécurité parce que les payloads avaient changé après les GO
-précédents. Aucun contournement n'est permis : il faut renouveler exactement les
-cinq gates PRTOUCH-BED-MESH-V2, MATRIX-V1, RETRY-SAFETY-V1,
-PRTOUCH-PRESETS-V1 et CAMPAIGN-V1 avant pose et preuve écran.
+Les packages core, matrice, retry-safety, adaptateur, presets, campagne et la
+preuve composite bornée ont été corrigés hors imprimante. La suite locale compte
+220 tests verts et 3 ignorés connus ; les scripts PowerShell se parsèrent
+correctement et `git diff --check` est vert. Le dernier essai de pose a été
+refusé par la barrière de sécurité parce que les payloads avaient changé après
+les GO précédents. Aucun contournement n'est permis. Après le handoff, ne pas
+enchaîner les cinq gates : commencer seulement par PRTOUCH-BED-MESH-V2 avec un
+préflight réel frais et son GO exact. MATRIX-V1, RETRY-SAFETY-V1,
+PRTOUCH-PRESETS-V1 et CAMPAIGN-V1 restent fermées pendant cet incrément.
 
 Thomas demande que chaque prochaine reprise commence par un état explicite de
 l'autonomie, sans confondre le runtime installé avec une interface terminée :
