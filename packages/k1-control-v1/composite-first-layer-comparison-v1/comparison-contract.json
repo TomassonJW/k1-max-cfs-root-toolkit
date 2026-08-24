@@ -1,0 +1,25 @@
+{
+  "schema": 1,
+  "gate": "G4-K1-CONTROL-COMPOSITE-FIRST-LAYER-COMPARISON-V1",
+  "source": {
+    "private_path": "inventory/raw/g3-inputs/_Cube_PLA_18m44s.gcode",
+    "sha256": "50b54577a4b8a76a0bb5fb2b48e915d1dc6ea9e5bb87aa1f32404c559a54f856",
+    "geometry_mm": [200, 200, 0.2],
+    "layers": 1,
+    "filament": "PLA Geeetech",
+    "tool": "T0",
+    "bed_temperature_c": 55,
+    "nozzle_temperature_c": 190,
+    "estimated_duration": "18m44s",
+    "estimated_filament_g": 9.91
+  },
+  "variants": [
+    {"order": 1, "id": "robust_6x6", "profile": "k1_p001_t055_r001_n06x06"},
+    {"order": 2, "id": "composite_11x11", "profile": "k1_p001_t055_r001_n11x11"}
+  ],
+  "only_semantic_difference": "BED_MESH_PROFILE LOAD after START_PRINT",
+  "legacy_start_z_offset_mm": 0.27,
+  "production_autonomy_claimed": false,
+  "ui_precision_unlock": "only_if_observable_first_layer_gain",
+  "fallback": "keep robust 6x6 active and precision UI hidden"
+}

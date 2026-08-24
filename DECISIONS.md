@@ -1049,3 +1049,20 @@ séparée peut composer, persister puis relire le profil `11 × 11` sans chauffe
 homing, mouvement ou mesure. Le profil robuste `6 × 6` est rechargé à la fin.
 L'exposition du mode Précision dans l'interface reste conditionnée par une
 comparaison de premières couches montrant un gain utile.
+
+## D-058 — La comparaison de première couche change uniquement le profil chargé
+
+Date: 2026-08-24
+
+Status: décision préparée hors imprimante
+
+La paire utilise le carré PLA Geeetech `200 × 200 × 0,20 mm` déjà qualifié sous
+G3, avec son empreinte exacte. Les deux G-code conservent le même T0, les mêmes
+températures, le même démarrage stock et l'ancien Z Orca `+0,27 mm`. Leur seule
+différence sémantique est la ligne `BED_MESH_PROFILE LOAD` placée après le
+retour de `START_PRINT`.
+
+Le passage robuste précède le composite. La seconde impression ne démarre pas
+avant photographie, repérage et retrait physique de la première. Après la
+comparaison, le profil robuste est rechargé. Ce protocole mesure seulement le
+gain relatif du mesh ; il ne valide aucun élément de l'autonomie production.
