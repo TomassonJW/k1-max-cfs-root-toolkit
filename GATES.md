@@ -32,6 +32,13 @@ tentatives de pose ont été refusées par la plateforme avant exécution. Aucun
 mutation NAVIGATION n'a donc eu lieu. COMPOSITE-MESH-SUBGRID-V1 reste non
 installée.
 
+La chaîne locale post-campagne est maintenant stricte : SUBGRID-V1 exige le
+hash `printer.cfg` contenant le mesh quotidien validé, puis les deux fichiers
+finaux de NAVIGATION-V1. Sa pose ne peut donc pas contourner la clôture UX. La
+recette complète `11 × 11` et le rendu en mémoire de son bloc Klipper sont
+testés hors imprimante, mais aucune campagne complète, persistance ou pose n'est
+préparée avant la qualification physique de l'unique sous-grille `5 × 5`.
+
 ## G0 — Repository bootstrap
 
 Status: **passed**

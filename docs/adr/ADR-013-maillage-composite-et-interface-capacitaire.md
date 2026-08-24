@@ -81,6 +81,20 @@ même plaque, les mêmes cibles thermiques, le même référencement des axes et
 aucun redémarrage Klipper entre elles. Cette contrainte évite d'introduire un
 décalage Z différent entre sous-grilles.
 
+### Précision d'implémentation hors imprimante
+
+L'endpoint Creality `update_mesh` ne change que `probed_matrix` dans le `ZMesh`
+déjà actif. Il ne recrée pas ses bornes, sa taille ou son algorithme. Il ne doit
+donc jamais recevoir directement la matrice `11 × 11` après le dernier passage
+`5 × 5`.
+
+Le candidat retenu prépare un bloc de profil Klipper complet uniquement après
+la fusion des 121 valeurs. Il exige le profil robuste `6 × 6` unique et
+l'absence du profil cible. Cette méthode reste hors imprimante : sa transaction
+atomique, son parse avec le Python exact, son restart après coupure des chauffes,
+sa relecture et son rollback bit à bit doivent encore être prouvés après la gate
+SUBGRID-V1. Cette précision n'autorise aucune écriture de `printer.cfg`.
+
 ### Backends futurs
 
 Une sonde Cartographer, Beacon ou Eddy pourra exposer un mode de scan rapide et

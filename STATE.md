@@ -25,7 +25,7 @@ profil transitoire absent, stockage Z `ok`, deux CFS connectés et
 Le delta `G4-K1-CONTROL-CALIBRATION-UI-NAVIGATION-V1` est préparé hors
 imprimante pour corriger les textes Z trompeurs et ajouter le lien Mainsail
 `/k1-control/` sur la même origine. Ses 12 tests ciblés, la suite complète de
-224 tests avec 3 ignorés, le parse PowerShell, `git diff --check` et son
+228 tests avec 3 ignorés, le parse PowerShell, `git diff --check` et son
 préflight SSH frais sont verts. La plateforme a refusé la pose avant exécution
 faute d'autorisation citant littéralement son nom : aucun backup, staging,
 transfert ou fichier distant n'a été créé. Il reste non déployé.
@@ -49,6 +49,15 @@ Le fusionneur hors imprimante est vert. Le composant séparé pour l'unique
 sous-grille décalée `5 × 5` est préparé avec pose, rollback, pilote borné et 14
 tests ciblés ; il n'est ni installé ni exécuté. Sa pose sans mouvement ne vient
 qu'après la clôture de NAVIGATION-V1.
+
+Le manifeste SUBGRID-V1 épingle désormais la vraie base quotidienne
+`printer.cfg` `e1f6cd6d…`, le `app.js` NAVIGATION final et son `navi.json` ; il
+refusera donc l'ancienne base comme une pose qui sauterait la clôture UX. Le
+prototype complet impose maintenant l'ordre, les bornes et les tailles exactes
+des quatre partitions. Son module de persistance prépare uniquement en mémoire
+le futur bloc `11 × 11` bicubique : aucun déployeur, orchestrateur complet ou
+fichier K1 n'est créé avant la preuve physique SUBGRID-V1. Voir
+`docs/21-g4-k1-control-composite-mesh-v1.md`.
 
 The repository baseline, stock acquisition, complete Orca/G-code intake and
 passive P1–P5/PETG trace are complete. Gate G3 is passed for offline design and

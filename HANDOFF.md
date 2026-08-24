@@ -1,6 +1,6 @@
 # HANDOFF
 
-Date: 2026-08-24 10:15 +02:00
+Date: 2026-08-24
 Phase: P4 / campagne quotidienne `6 × 6 / 1 mesh` validée ; NAVIGATION-V1 non déployée ; composite non installé ; production fermée
 Next operator: autoriser littéralement `G4-K1-CONTROL-CALIBRATION-UI-NAVIGATION-V1`, valider son rendu, puis poser sans mouvement COMPOSITE-MESH-SUBGRID-V1
 
@@ -36,6 +36,21 @@ bouton Mainsail vers `/k1-control/`. Ses tests, son manifeste, son rollback et
 son préflight SSH sont verts. La plateforme a refusé deux fois la pose avant
 création du processus car le nom exact n'était pas présent dans l'autorisation.
 Aucun backup, staging, transfert ou fichier distant NAVIGATION n'existe.
+
+Hors imprimante, SUBGRID-V1 a été réaligné sur cet ordre réel. Son manifeste
+épingle maintenant le `printer.cfg` quotidien `e1f6cd6d…`, le futur `app.js`
+NAVIGATION `001a31fe…` et le `navi.json` `3ad85cd1…`. Le préflight refusera donc
+l'ancienne base ou une pose qui sauterait NAVIGATION-V1. Les plans du déployeur
+et du pilote restent verts et n'ont contacté aucune machine.
+
+Le prototype complet COMPOSITE-MESH-V1 impose désormais les quatre recettes
+exactes `6 × 6`, `5 × 6`, `6 × 5`, `5 × 5` dans leur ordre physique. Le nouveau
+`render_profile.py` ne fait aucune écriture : il prépare en mémoire seulement
+un bloc Klipper `11 × 11` bicubique après 121 valeurs finies. L'endpoint
+Creality `update_mesh` ne suffit pas à changer la taille du `ZMesh` actif ; le
+futur mécanisme de persistance devra donc encore être validé avec le parseur
+exact après la preuve SUBGRID-V1. Aucun orchestrateur complet ni déployeur n'a
+été créé. Détails : `docs/21-g4-k1-control-composite-mesh-v1.md`.
 
 ## Préflight CAMPAIGN-V1 du 23 août 2026
 
@@ -219,12 +234,11 @@ encore installée ne doit pas être relancée.
 
 Dire clairement à Thomas, avant toute proposition d'exécution :
 
-- **l'autonomie calibration n'est pas encore atteinte** : l'essai `9 × 9` a
-  prouvé une limite de trente-six contacts par séquence PRTouch et l'interface
-  sûre `6 × 6 / 1 mesh` doit encore être reposée puis validée ; l'ADR-013 et le
-  prototype hors imprimante ouvrent ensuite un vrai mode précision composite
-  `11 × 11` en quatre sous-grilles, mais aucune acquisition composite n'est
-  encore installée ni qualifiée sur la K1 ;
+- **l'autonomie calibration n'est pas encore atteinte** : la campagne réelle
+  `6 × 6 / 1 mesh` a réussi sans console, mais le texte Z trompeur a encore
+  nécessité l'interprétation de Codex ; NAVIGATION-V1 doit être posée et son
+  rendu validé. L'ADR-013 ouvre ensuite un mode précision composite `11 × 11`,
+  mais aucune acquisition composite n'est installée ni qualifiée sur la K1 ;
 - **l'autonomie production n'est pas encore atteinte** : Orca, `START_PRINT`,
   l'ancien `+0,27 mm` et les températures CFS ne sont pas encore basculés vers
   le nouveau contrat ;
@@ -249,9 +263,11 @@ compteur repart à zéro entre séquences.
 
 Le prototype `packages/k1-control-v1/composite-mesh-v1/compose_mesh.py` fusionne
 quatre sous-grilles `6 × 6`, `5 × 6`, `6 × 5`, `5 × 5` en 121 positions réelles
-`11 × 11`. Il refuse plus de 36 contacts par passage, les sessions physiques
-différentes, un restart Klipper, les trous, doublons et valeurs non finies. La
-suite complète est verte : 203 tests, 3 ignorés connus.
+`11 × 11`. Son entrée stricte refuse aussi un ordre, une borne, une taille ou
+une interpolation différente. `render_profile.py` prépare en mémoire le bloc
+Klipper final sans écrire de fichier. Il refuse plus de 36 contacts par passage,
+les sessions physiques différentes, un restart Klipper, les trous, doublons et
+valeurs non finies. La suite complète est verte : 228 tests, 3 ignorés connus.
 
 Cette voie doit utiliser le moteur Bed Mesh standard de façon bornée sans
 remplacer la commande stock, sans `pr_version: 1` et sans restart entre les
@@ -265,15 +281,17 @@ imprimante. Il ne peut demander que la partition impaire/impaire `5 × 5`, 25
 contacts de `34` à `266 mm`, après gate exacte et confirmation du plateau. Sa
 pose ne redémarre que Moonraker ; son essai coupe les chauffes, recharge le
 profil robuste et redémarre Klipper uniquement après la capture pour nettoyer
-la session. Les 14 tests ciblés et la suite complète de 220 tests sont verts,
-avec 3 ignorés connus. Détails :
+la session. Les 14 tests ciblés et la suite complète de 228 tests sont verts,
+avec 3 ignorés connus. Son manifeste exige aussi la vraie base quotidienne et
+les sorties exactes de NAVIGATION-V1. Détails :
 `docs/20-g4-k1-control-composite-subgrid-v1.md`.
 
 Un test de chaîne supplémentaire rejoue les hashes distants attendus dans
-l'ordre BED-MESH-V2 → MATRIX → RETRY-SAFETY → PRESETS → COMPOSITE. Il prouve
-que chaque baseline correspond exactement à la sortie précédente. Il montre
-aussi que PRESETS est déjà produit bit pour bit par MATRIX + RETRY-SAFETY ; son
-déployeur rend donc un succès idempotent sans écriture distante dans cet état.
+l'ordre BED-MESH-V2 → MATRIX → RETRY-SAFETY → PRESETS → campagne quotidienne
+→ NAVIGATION → SUBGRID. Il prouve que chaque baseline correspond exactement à
+la sortie précédente. Il montre aussi que PRESETS est déjà produit bit pour bit
+par MATRIX + RETRY-SAFETY ; son déployeur rend donc un succès idempotent sans
+écriture distante dans cet état.
 
 Dans la reprise courante, le préflight final de campagne a joint la K1 et a
 refusé comme prévu l'ancien core encore installé. Le préflight individuel

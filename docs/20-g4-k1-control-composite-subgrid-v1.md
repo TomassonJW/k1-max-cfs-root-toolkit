@@ -5,6 +5,16 @@ Date : 2026-08-23
 Statut : campagne quotidienne préalable validée ; paquet préparé et testé hors
 imprimante ; non installé, non exécuté
 
+La base `printer.cfg` épinglée est désormais l'état exact après cette campagne
+quotidienne verte : `e1f6cd6dc92c9eea1e105f8c669f6d246753243535f09c7f9d92e2dfafebac14`.
+Elle diffère du backup précédent uniquement par les six lignes de points du
+profil robuste déjà validées. Le préflight refuse donc à la fois l'ancienne
+base et toute dérive ultérieure non revue.
+
+Le paquet dépend aussi explicitement de NAVIGATION-V1 : le `app.js` corrigé et
+le `navi.json` Mainsail doivent être présents avec leurs empreintes exactes.
+SUBGRID-V1 ne les remplace pas ; il vérifie seulement qu'ils restent inchangés.
+
 ## But
 
 Qualifier la première hypothèse physique de l'ADR-013 sans ouvrir directement

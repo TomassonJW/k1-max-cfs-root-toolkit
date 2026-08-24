@@ -320,6 +320,24 @@ class CompositeSubgridTests(unittest.IsolatedAsyncioTestCase):
             self.assertEqual(hashlib.sha256(source.read_bytes()).hexdigest(), item["sha256"])
         self.assertEqual(manifest["baseline"]["loaded_probe_count"], [6, 6])
         self.assertEqual(manifest["baseline"]["loaded_algorithm"], "lagrange")
+        self.assertEqual(
+            manifest["baseline"]["printer_cfg_sha256"],
+            "e1f6cd6dc92c9eea1e105f8c669f6d246753243535f09c7f9d92e2dfafebac14",
+        )
+        unchanged = {
+            item["destination"]: item["sha256"]
+            for item in manifest["unchanged"]["files"]
+        }
+        self.assertEqual(
+            unchanged[
+                "/usr/data/k1-control-v1/current/www/mainsail/k1-control/app.js"
+            ],
+            "001a31fe7357b0031bfbfa5f6856f8436315cf9640f5a61b2f6121766c985554",
+        )
+        self.assertEqual(
+            unchanged["/usr/data/printer_data/config/.theme/navi.json"],
+            "3ad85cd1fb6a61ef015e770b727238e51d76fe88b5947c59eaeb9f63b8271f74",
+        )
         self.assertFalse(manifest["full_composite_campaign"])
 
 

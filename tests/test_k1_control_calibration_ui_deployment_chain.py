@@ -23,6 +23,7 @@ class CalibrationUiDeploymentChainTests(unittest.TestCase):
         self.matrix = _load("calibration-ui-matrix-v1")
         self.retry = _load("calibration-ui-retry-safety-v1")
         self.presets = _load("calibration-ui-prtouch-presets-v1")
+        self.navigation = _load("calibration-ui-navigation-v1")
         self.composite = _load("composite-subgrid-v1")
 
     def test_every_payload_hash_matches_its_local_file(self):
@@ -30,6 +31,7 @@ class CalibrationUiDeploymentChainTests(unittest.TestCase):
             "calibration-ui-prtouch-bed-mesh-v2",
             "calibration-ui-matrix-v1",
             "calibration-ui-prtouch-presets-v1",
+            "calibration-ui-navigation-v1",
             "composite-subgrid-v1",
         )
         for package_name in package_names:
@@ -48,7 +50,7 @@ class CalibrationUiDeploymentChainTests(unittest.TestCase):
             self.retry["file"]["sha256"],
         )
 
-    def test_four_safe_steps_form_one_exact_remote_hash_chain(self):
+    def test_safe_steps_daily_campaign_and_navigation_form_one_exact_remote_hash_chain(self):
         remote = {}
         remote.update(_map(self.bedmesh["unchanged"]["files"]))
         remote["/usr/data/printer_data/config/printer.cfg"] = self.bedmesh[
@@ -92,8 +94,26 @@ class CalibrationUiDeploymentChainTests(unittest.TestCase):
         self.assertEqual(preset_output, preset_baseline)
         remote.update(preset_output)
 
+        printer_config = "/usr/data/printer_data/config/printer.cfg"
+        self.assertNotEqual(
+            remote[printer_config], self.composite["baseline"]["printer_cfg_sha256"]
+        )
+        remote[printer_config] = self.composite["baseline"]["printer_cfg_sha256"]
+
+        self.assertEqual(
+            remote[self.navigation["files"][0]["destination"]],
+            self.navigation["baseline"]["app_js_sha256"],
+        )
+        for path, expected in _map(self.navigation["unchanged"]["files"]).items():
+            self.assertEqual(remote[path], expected)
+        self.assertNotIn(self.navigation["files"][1]["destination"], remote)
+        remote.update(_map(self.navigation["files"]))
+
         for path, expected in _map(self.composite["unchanged"]["files"]).items():
             self.assertEqual(remote[path], expected)
+        self.assertEqual(
+            remote[printer_config], self.composite["baseline"]["printer_cfg_sha256"]
+        )
         config_path = self.composite["files"][0]["destination"]
         self.assertEqual(
             remote[config_path], self.composite["baseline"]["moonraker_conf_sha256"]

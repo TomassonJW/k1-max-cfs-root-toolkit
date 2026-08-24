@@ -15,7 +15,7 @@
   },
   "baseline": {
     "moonraker_conf_sha256": "9b451f9b864c798872f674688d1c3354f31ab5a03283cad1d7a224561308fcb1",
-    "printer_cfg_sha256": "36cfb7e71180268841ab5cedd31628c8d9953ba437c47662ced16df18bb1bacd",
+    "printer_cfg_sha256": "e1f6cd6dc92c9eea1e105f8c669f6d246753243535f09c7f9d92e2dfafebac14",
     "loaded_probe_count": [6, 6],
     "loaded_algorithm": "lagrange",
     "new_component_absent": true,
@@ -58,11 +58,15 @@
       },
       {
         "destination": "/usr/data/k1-control-v1/current/www/mainsail/k1-control/app.js",
-        "sha256": "3d3d53ead589e25c99d239de4415b4c35e96b3458c327f75b9f51f0ac43693ce"
+        "sha256": "001a31fe7357b0031bfbfa5f6856f8436315cf9640f5a61b2f6121766c985554"
       },
       {
         "destination": "/usr/data/k1-control-v1/current/www/mainsail/k1-control/styles.css",
         "sha256": "a7c27fbcdc07f24b00b6d47cc1d9aa8570b9483bcf4dd3615419de579f9aaa12"
+      },
+      {
+        "destination": "/usr/data/printer_data/config/.theme/navi.json",
+        "sha256": "3ad85cd1fb6a61ef015e770b727238e51d76fe88b5947c59eaeb9f63b8271f74"
       }
     ]
   },

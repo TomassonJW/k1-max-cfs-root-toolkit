@@ -26,7 +26,10 @@
     "remove_factory_hold_tables": false,
     "replace_stock_bed_mesh_command": false,
     "cfs_command_during_calibration": false,
-    "partial_profile_persistence": false
+    "partial_profile_persistence": false,
+    "exact_four_pass_recipe": true,
+    "profile_render_only": true,
+    "existing_11x11_profile_required_absent": true
   },
   "next_physical_gate": "G4-K1-CONTROL-COMPOSITE-MESH-SUBGRID-V1",
   "required_before_full_campaign": [
@@ -34,7 +37,12 @@
     "bounded standard handler call proven",
     "one shifted subgrid captured without restart",
     "automatic heater cutoff and exact rollback",
-    "stock 6x6 profile and accepted Z unchanged",
-    "two chained CFS healthy after full power cycle"
+    "stock 6x6 profile and accepted Z unchanged"
+  ],
+  "required_after_full_campaign": [
+    "121 unique physical contacts proven",
+    "11x11 bicubic profile loaded and independently validated",
+    "two chained CFS healthy after reviewed restart",
+    "full power cycle validation before UI exposure"
   ]
 }

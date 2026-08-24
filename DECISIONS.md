@@ -936,3 +936,25 @@ Cette règle a obtenu `CAPTURE_CALIBRATION_UI_LEVEL_OK level=supported` puis
 `VALIDATE_CALIBRATION_UI_CAMPAIGN_V1_OK`. Elle ne permet aucune nouvelle mesure,
 aucun deuxième passage et aucune modification de configuration hors du profil
 explicitement enregistré.
+
+## D-053 — Le profil composite doit être construit après les quatre captures
+
+Date: 2026-08-24
+
+Status: décision candidate hors imprimante ; aucune persistance autorisée
+
+Le `bed_mesh.py` Creality sait recalculer les points d'une acquisition depuis
+`MESH_MIN`, `MESH_MAX` et `PROBE_COUNT`. En revanche, son endpoint
+`update_mesh` remplace seulement la matrice observée du `ZMesh` actif. Il ne
+transforme pas le dernier profil `5 × 5` en un nouvel objet `11 × 11`.
+
+La campagne complète ne doit donc jamais injecter directement ses 121 valeurs
+dans ce profil actif. Elle compose d'abord les quatre partitions strictes en
+mémoire, coupe les chauffes, puis prépare un bloc Klipper complet avec ses
+paramètres `11 × 11`, bicubiques et `5..295 mm`. Le prototype refuse une recette
+différente, un profil cible déjà présent ou une base sans profil robuste unique.
+
+Cette décision décrit la forme du futur candidat, pas son autorisation. Aucun
+déployeur ni orchestrateur complet n'est créé avant la preuve physique
+SUBGRID-V1. La transaction de fichier, le parse Python exact, le restart, la
+relecture et le rollback bit à bit restent des gates obligatoires séparées.

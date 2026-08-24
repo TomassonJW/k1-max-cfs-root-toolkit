@@ -19,6 +19,45 @@ REQUIRED_CONTEXT_FIELDS = (
     "homing_epoch",
 )
 
+EXPECTED_11X11_LAYOUTS = (
+    {
+        "name": "even_even",
+        "x_indices": tuple(range(0, 11, 2)),
+        "y_indices": tuple(range(0, 11, 2)),
+        "mesh_min": (5.0, 5.0),
+        "mesh_max": (295.0, 295.0),
+        "probe_count": (6, 6),
+        "algorithm": "lagrange",
+    },
+    {
+        "name": "odd_even",
+        "x_indices": tuple(range(1, 11, 2)),
+        "y_indices": tuple(range(0, 11, 2)),
+        "mesh_min": (34.0, 5.0),
+        "mesh_max": (266.0, 295.0),
+        "probe_count": (5, 6),
+        "algorithm": "lagrange",
+    },
+    {
+        "name": "even_odd",
+        "x_indices": tuple(range(0, 11, 2)),
+        "y_indices": tuple(range(1, 11, 2)),
+        "mesh_min": (5.0, 34.0),
+        "mesh_max": (295.0, 266.0),
+        "probe_count": (6, 5),
+        "algorithm": "lagrange",
+    },
+    {
+        "name": "odd_odd",
+        "x_indices": tuple(range(1, 11, 2)),
+        "y_indices": tuple(range(1, 11, 2)),
+        "mesh_min": (34.0, 34.0),
+        "mesh_max": (266.0, 266.0),
+        "probe_count": (5, 5),
+        "algorithm": "lagrange",
+    },
+)
+
 
 def _positive_int(value: Any, label: str) -> int:
     if isinstance(value, bool):
@@ -173,12 +212,74 @@ def compose(document: dict[str, Any]) -> dict[str, Any]:
     }
 
 
+def _float_pair(value: Any, label: str) -> tuple[float, float]:
+    if not isinstance(value, list) or len(value) != 2:
+        raise ValueError(f"{label}: paire X/Y obligatoire")
+    return (
+        _finite_float(value[0], label),
+        _finite_float(value[1], label),
+    )
+
+
+def _int_pair(value: Any, label: str) -> tuple[int, int]:
+    if not isinstance(value, list) or len(value) != 2:
+        raise ValueError(f"{label}: paire X/Y obligatoire")
+    return (
+        _positive_int(value[0], label),
+        _positive_int(value[1], label),
+    )
+
+
+def compose_11x11(document: dict[str, Any]) -> dict[str, Any]:
+    """Validate the one reviewed physical recipe, then interlace its values."""
+
+    target = document.get("target")
+    passes = document.get("passes")
+    if not isinstance(target, dict) or not isinstance(passes, list):
+        raise ValueError("target et passes sont obligatoires")
+    if (
+        target.get("x_count") != 11
+        or target.get("y_count") != 11
+        or _float_pair(target.get("mesh_min"), "target.mesh_min") != (5.0, 5.0)
+        or _float_pair(target.get("mesh_max"), "target.mesh_max") != (295.0, 295.0)
+    ):
+        raise ValueError("la cible composite revue doit être exactement 11x11 de 5 à 295 mm")
+    if len(passes) != len(EXPECTED_11X11_LAYOUTS):
+        raise ValueError("exactement quatre sous-grilles revues sont obligatoires")
+
+    for pass_number, (item, expected) in enumerate(
+        zip(passes, EXPECTED_11X11_LAYOUTS), start=1
+    ):
+        if not isinstance(item, dict):
+            raise ValueError(f"passage {pass_number}: objet obligatoire")
+        actual = {
+            "name": item.get("name"),
+            "x_indices": tuple(_indices(item.get("x_indices"), 11, "x_indices")),
+            "y_indices": tuple(_indices(item.get("y_indices"), 11, "y_indices")),
+            "mesh_min": _float_pair(item.get("mesh_min"), "mesh_min"),
+            "mesh_max": _float_pair(item.get("mesh_max"), "mesh_max"),
+            "probe_count": _int_pair(item.get("probe_count"), "probe_count"),
+            "algorithm": str(item.get("algorithm", "")).lower(),
+        }
+        if actual != expected:
+            raise ValueError(
+                f"passage {pass_number}: recette physique {expected['name']} obligatoire"
+            )
+
+    result = compose(document)
+    if result["pass_count"] != 4 or result["physical_points"] != 121:
+        raise ValueError("la preuve composite doit contenir quatre passages et 121 contacts")
+    if result["mesh_params"]["algo"] != "bicubic":
+        raise ValueError("le profil composite final doit être bicubique")
+    return result
+
+
 def main() -> int:
     parser = argparse.ArgumentParser()
     parser.add_argument("manifest", type=Path)
     args = parser.parse_args()
     document = json.loads(args.manifest.read_text(encoding="utf-8-sig"))
-    result = compose(document)
+    result = compose_11x11(document)
     print(json.dumps(result, sort_keys=True, separators=(",", ":")))
     return 0
 
