@@ -1,1190 +1,488 @@
-# HANDOFF
-
-Date: 2026-08-24
-Phase: P4 / calibration quotidienne autonome ; composite `11 × 11` meilleur au centre mais KO aux bords ; production fermée
-Next operator: construire `MESH-EDITOR-OFFLINE-V1` sans toucher à la K1, puis préparer le motif de bord `5..295 mm`
-
-## Autorité de reprise actuelle
-
-Thomas a approuvé le 24 août 2026 qu'un Goal actif ou une mission clairement
-décrite couvre toutes les actions normalement nécessaires dans son périmètre.
-Aucun `GO` exact, nom de gate ou renouvellement d'autorisation ne doit lui être
-demandé. Les gates sont des contrôles techniques que Codex passe lui-même.
-Cette décision D-054 remplace les anciennes consignes `ATTENDRE_GO` pour les
-étapes déjà comprises dans la roadmap active. Une restriction explicite plus
-récente ou une donnée physique inconnue reste à respecter.
-
-## Résultat COMPOSITE-FIRST-LAYER-COMPARISON-V2
-
-Thomas a imprimé le passage composite avec le profil
-`k1_p001_t055_r001_n11x11` et a réappliqué le Z temporaire `−0,24 mm` après la
-reprise stock. La relecture distante pendant l'impression a confirmé le profil,
-`gcode_move.homing_origin.z=-0.24` et le Z persistant `−0,04 mm` intact.
-
-Les trois photos et le verdict humain montrent un gain clair sur une grande
-zone centrale, mais des défauts sévères dans plusieurs bandes de bord. La V2
-est close avec **gain partiel et KO de promotion UI**. Le profil physique reste
-conservé comme source ; le mode Précision reste caché et le même carré
-`260 × 260` ne doit pas être rejoué sans correction.
-
-Le banc local reproduit le `bed_mesh.py` exact. Le bicubique actif diffère de
-la surface directe de `0,009877883 mm` au maximum et le dépassement local ne
-vaut que `0,000689867 mm`. L'interpolation n'est pas la cause principale. Les
-priorités sont la stabilité des valeurs de bord, la tension PTFE/CFS, les quatre
-capteurs de charge, les biais résiduels de composition et la séparation du Z
-global.
-
-ADR-015 retient un éditeur K1 Control : profil source immuable, profil dérivé
-versionné, corrections locales à moyenne nulle, grille 2D, pas
-`0,005/0,010 mm`, historique et rollback. Le glisser 3D est repoussé ; la vue 3D
-reste une prévisualisation. La première gate est intégralement hors imprimante.
-
-ADR-016 arrête ensuite la trajectoire production : un seul
-`KCTRL_JOB_BEGIN`, chauffe plateau immédiate, référence grossière seulement si
-nécessaire, nettoyage contrôlé, référence Z finale, chargement mesh/Z, CFS à la
-température du filament, purge, pause normale distincte d'un changement et fin
-observable. L'ancien `+0,27 mm` n'est retiré qu'avec la bascule Orca atomique.
-
-L'état distant final après la fin de cette impression n'a pas été re-préflighté
-pendant l'audit documentaire. Ne pas présenter la K1 comme actuellement
-`standby` sans un contrôle frais.
-
-## KO COMPOSITE-FIRST-LAYER-COMPARISON-V1
-
-La V1 a conservé à tort l'ancien offset Orca `+0,27 mm`, environ `0,31 mm`
-au-dessus du Z accepté `−0,04 mm`. Le passage robuste a terminé mais Thomas a
-constaté que le filament touchait à peine la plaque. Le composite n'a pas été
-lancé. Les deux G-code et leurs miniatures ont été retirés de la K1. Le contrôle
-final confirme `printer.cfg` exact `f88d6b52…`, profil robuste actif, cibles
-zéro et axes libérés. V1 est close KO et ne doit jamais être rejouée.
-
-## Reprise NAVIGATION-V1 et correctif R2
-
-La capture `20260824-110936-g4-k1-control-calibration-ui-navigation-v1` a
-obtenu le préflight, la pose et deux validations SSH vertes. Aucun service n'a
-été redémarré et aucune commande physique n'a été envoyée. Le vrai Chrome
-authentifié a affiché le bouton `K1 Control`, mais son clic a rechargé Mainsail.
-La lecture ciblée du `sw.js` installé prouve un `NavigationRoute` vers
-`index.html`, avec une denylist commençant notamment par `/access`.
-
-R2 conserve le worker constructeur bit à bit. Elle remplace le lien par
-`/access-k1-control/` et crée seulement l'alias symbolique original
-`access-k1-control -> k1-control`. Le rollback restaure les deux fichiers V1 et
-retire l'alias. Les tests ciblés, les 232 tests complets, les plans, le parse
-PowerShell et `git diff --check` sont verts. D-054 couvre directement sa pose ;
-aucune phrase de Thomas n'est requise.
-
-La capture `20260824-112535-g4-k1-control-calibration-ui-navigation-v1-r2` a
-ensuite obtenu le préflight, la pose et deux validations SSH vertes. Chrome a
-rechargé Mainsail, lu le lien exact `/access-k1-control/`, cliqué ce bouton et
-rendu `K1 Control — calibration` sans nouvelle authentification. Le texte Z
-final est maintenant « Mesh 6 × 6 et Z enregistrés. La calibration est
-terminée. » Aucune confirmation physique n'a été activée et aucune calibration
-n'a été lancée. NAVIGATION-V1-R2 est close ; l'autonomie de calibration
-quotidienne standard est atteinte.
-
-## Pose sans mouvement SUBGRID-V1
-
-La capture `20260824-113026-g4-k1-control-composite-mesh-subgrid-v1` a obtenu
-`PREFLIGHT_COMPOSITE_SUBGRID_V1_OK`, `DEPLOY_COMPOSITE_SUBGRID_V1_OK`, puis une
-validation indépendante `VALIDATE_COMPOSITE_SUBGRID_V1_OK`. Le backup exact,
-les deux composants originaux et l'unique ajout à `moonraker.conf` sont
-conformes. Seul le Moonraker dédié a redémarré. Le composant termine `idle` ; la
-K1 est au repos, cibles zéro, profil robuste, Z accepté, interface R2 et deux CFS
-conformes. Aucun chauffage, homing, mouvement, mesh ou Z n'a été lancé.
-
-Thomas a confirmé le plateau libre et la plaque `PEI_TEXTURED_A`. La capture
-`20260824-113434-g4-k1-control-composite-mesh-subgrid-v1-run` a mesuré exactement
-25 contacts et conservé une matrice `5 × 5` finie. Le restart de nettoyage a
-ensuite rencontré une course Klipper ; la K1 a été remise au profil robuste sans
-nouvelle mesure.
-
-Le premier delta de reprise a révélé que l'état historique portait `schema: 1`
-alors que le stockage partagé exige `version: 1`. Le JSON et son backup avaient
-la même empreinte et la matrice était intacte. La révision R2 migre uniquement
-ce marqueur de façon atomique, attend les commandes après restart et permet une
-reprise d'un état `failed` complet. Sous la capture
-`20260824-121607-g4-k1-control-composite-mesh-subgrid-recovery-v1-r2`, la pose et
-deux validations sont vertes. La reprise logique a obtenu `phase=qualified`,
-puis `VALIDATE_RUN_COMPOSITE_SUBGRID_V1_OK`. Aucune seconde grille n'a été
-mesurée. Le profil robuste, le Z `−0,04 mm`, le stockage, les chauffes, les axes
-et les deux CFS sont conformes.
-
-## Qualification COMPOSITE-MESH-V1
-
-Le composant complet a été posé une première fois sous
-`20260824-123754-g4-k1-control-composite-mesh-v1`. Le premier passage `6 × 6`
-a réussi ; le second `5 × 6` a effectué 30 contacts puis
-`prtouch_v2_wrapper.bed_mesh_post_proc` a levé `IndexError`. Aucun profil cible
-n'a été écrit et le rollback a restauré la base exacte.
-
-R2 utilise quatre quadrants carrés `6 × 6`. La capture
-`20260824-131000-g4-k1-control-composite-mesh-v1-r2-run` contient les quatre
-matrices, `144/144` contacts et 121 positions uniques. La première fusion a
-refusé avant persistance l'écart brut maximal `0,147858 mm`. Les journaux
-Klipper prouvent un biais constant nord/sud du post-traitement propriétaire.
-L'ajustement revu applique seulement un décalage additif par quadrant, recentré
-à moyenne pondérée nulle. Il donne `0,043745029 mm` au pire et
-`0,013871331 mm` en moyenne sur les 21 positions communes.
-
-Le delta `G4-K1-CONTROL-COMPOSITE-MESH-RECOVERY-V1` a été posé et validé deux
-fois sous `20260824-155319-g4-k1-control-composite-mesh-recovery-v1`, sans
-chauffe, homing, mouvement ou mesure. La reprise logique a ensuite obtenu
-`RECOVER_COMPOSITE_MESH_V1_OK` et
-`VALIDATE_RUN_COMPOSITE_MESH_V1_OK`. Le profil persistant
-`k1_p001_t055_r001_n11x11` contient onze lignes de onze valeurs ; le profil
-robuste `k1_p001_t055_r001_n06x06` reste actif. État final : `standby`, cibles
-zéro, axes non référencés, Z `−0,04 mm`, stockage `ok` et deux CFS connectés.
-La prochaine gate compare de vraies premières couches ; l'UI Précision reste
-fermée jusqu'à un gain observable.
-
-## Clôture CAMPAIGN-V1 du 24 août 2026
-
-La capture privée
-`20260823-171803-g4-k1-control-calibration-ui-campaign-v1` contient désormais
-le préflight, le niveau `supported` et la validation finale. Thomas a lancé
-depuis `http://localhost:4409/k1-control/` l'unique mesh physique `6 × 6`
-Lagrange à `55/140 °C`, après `200 s`. Les 36 contacts ont été relus et
-qualifiés. Thomas a ensuite parcouru les huit paliers Z de `5 mm` à `0,1 mm`,
-confirmé le jeu final, laissé le seed à `−0,04 mm` et enregistré le Z. L'API
-termine en phase `accepted`, `mesh_index=1`, avec chemin Z `committed` et
-qualification `single_firmware_bounded_mesh`. Aucun rerun ou deuxième mesh n'a
-eu lieu.
-
-Le profil `k1_p001_t055_r001_n06x06` contient le nouveau mesh quotidien. Le
-premier contrôle final a rejeté à tort le hash complet de `printer.cfg`. Le diff
-avec le backup exact ne change que les six lignes contenant les 36 points sous
-ce profil. Le validateur épingle maintenant le hash du backup, refuse toute
-autre différence et compare chaque valeur persistée à la matrice privée
-acceptée. La reprise a obtenu
-`CAPTURE_CALIBRATION_UI_LEVEL_OK level=supported`, puis
-`VALIDATE_CALIBRATION_UI_CAMPAIGN_V1_OK`. L'état final est `standby`, cibles
-zéro, profil transitoire absent, stockage Z `ok`, deux CFS connectés et
-Moonraker sans échec ni avertissement.
-
-Le rendu réel a révélé un défaut UX résiduel : le texte « Qualifie d'abord le
-mesh robuste » restait affiché pendant `starting_z` et après `accepted`, bien
-que les actions et l'état serveur soient corrects. Le delta séparé
-`G4-K1-CONTROL-CALIBRATION-UI-NAVIGATION-V1` corrige ces textes et ajoute le
-bouton Mainsail vers `/k1-control/`. Ses tests, son manifeste, son rollback et
-son préflight SSH sont verts. La plateforme a refusé deux fois la pose avant
-création du processus car le nom exact n'était pas présent dans l'autorisation.
-Aucun backup, staging, transfert ou fichier distant NAVIGATION n'existe.
-
-Hors imprimante, SUBGRID-V1 a été réaligné sur cet ordre réel. Son manifeste
-épingle maintenant le `printer.cfg` quotidien `e1f6cd6d…`, le futur `app.js`
-NAVIGATION `001a31fe…` et le `navi.json` `3ad85cd1…`. Le préflight refusera donc
-l'ancienne base ou une pose qui sauterait NAVIGATION-V1. Les plans du déployeur
-et du pilote restent verts et n'ont contacté aucune machine.
-
-À ce stade historique, le prototype complet utilisait encore les recettes
-rectangulaires `6 × 6`, `5 × 6`, `6 × 5`, `5 × 5`. La preuve physique les a
-ensuite rejetées dans le post-traitement propriétaire. La recette retenue est
-désormais celle des quatre quadrants carrés `6 × 6` décrite dans la section
-« Qualification COMPOSITE-MESH-V1 » ci-dessus. Détails :
-`docs/21-g4-k1-control-composite-mesh-v1.md`.
-
-## Préflight CAMPAIGN-V1 du 23 août 2026
-
-Thomas a reconfirmé que son autorisation globale couvre toutes les gates du
-goal. Le premier préflight a rencontré un faux KO local : le validateur
-comparait le core final installé au hash historique du delta BED-MESH-V2. Le
-second demandait à tort au manifeste final PRESETS de couvrir `printer.cfg`.
-Le contrôle corrigé utilise la carte finale PRESETS pour les sept destinations
-UI/Moonraker et vérifie séparément le hash exact de `printer.cfg`.
-
-La capture `20260823-171803-g4-k1-control-calibration-ui-campaign-v1` a ensuite
-obtenu `PREFLIGHT_CALIBRATION_UI_CAMPAIGN_V1_OK`. UI finale exacte, Klippy
-`ready`, `failed_components=[]`, `warnings=[]`, K1 au repos, cibles zéro,
-profil robuste, Z accepté, `6 × 6` Lagrange chargé et deux CFS sont conformes.
-Aucun chauffage, homing, mouvement, mesh ou changement Z n'a été lancé.
-
-Le tunnel temporaire neuf `localhost:4411` répond HTTP 401 comme attendu. Le
-navigateur intégré ne présente pas l'authentification HTTP et Chrome est fermé.
-La prochaine action humaine est d'ouvrir Chrome, de s'authentifier sur cette
-URL, puis de laisser Thomas seul déclencher les actions physiques depuis
-l'écran. Codex reste en observation et validation.
-
-## Clôture PRTOUCH-PRESETS-V1 du 23 août 2026
-
-La capture `20260823-165742-g4-k1-control-calibration-ui-prtouch-presets-v1` a
-obtenu le préflight, le déploiement et deux validations vertes. Les hashes sûrs
-étaient déjà installés par les deltas précédents : le déployeur a conclu avec
-`already_present=true` et `remote_write=false`, sans backup, transfert, restart
-ou action physique. Klippy est `ready`, `failed_components=[]`, `warnings=[]`,
-la K1 est au repos avec cibles zéro, le profil robuste, le Z accepté, le mesh
-`6 × 6` Lagrange et les deux CFS conformes.
-
-Le validateur CAMPAIGN-V1 a ensuite été corrigé hors imprimante pour épingler le
-manifeste UI sûr réel, vérifier `server/info`, le mesh chargé et les versions des
-deux CFS. Son plan, ses tests ciblés et la suite complète sont verts. La couche
-d'approbation avait d'abord refusé le préflight SSH CAMPAIGN-V1. Thomas a depuis
-reconfirmé son autorisation globale et le préflight corrigé est vert sous la
-capture `20260823-171803-g4-k1-control-calibration-ui-campaign-v1`.
-
-## Clôture RETRY-SAFETY-V1 du 23 août 2026
-
-Thomas a autorisé `G4-K1-CONTROL-CALIBRATION-UI-RETRY-SAFETY-V1` jusqu'au vert,
-sans redemander la même autorisation. L'audit a trouvé que la règle historique
-`mesh_index < mesh_target_count` ne détectait plus un échec du protocole à un
-mesh : l'état réel est `rolled_back`, `1 / 1`. Le correctif réinitialise donc
-une seule fois les deux confirmations sur toute fin non acceptée `cancelled`,
-`failed`, `mesh_rejected` ou `rolled_back`.
-
-La capture `20260823-164558-g4-k1-control-calibration-ui-retry-safety-v1` a
-obtenu le préflight, `DEPLOY_CALIBRATION_UI_RETRY_SAFETY_V1_OK`, la validation
-intégrée puis une validation indépendante verte. Seul `app.js` a été remplacé,
-après backup exact, sans aucun restart. Le hash installé est `3d3d53ea…` et le
-backup MATRIX est `33a20db2…`. Le core, `index.html`, BED-MESH-V2 et
-`printer.cfg` sont inchangés. Klippy est `ready`, `failed_components=[]`,
-`warnings=[]`, la K1 est au repos, cibles zéro, runtime/Z/profil robuste,
-`6 × 6` Lagrange et deux CFS conformes.
-
-La preuve navigateur des octets exacts installés simule volontairement le cas
-`rolled_back`, `1 / 1`, avec `replace_existing=true` côté serveur. Le premier
-rendu force `replace_existing=false` et `plate_clear=false`; une coche
-volontaire reste active pendant les rafraîchissements de la même phase, puis un
-rechargement frais remet les deux cases à `false`. Aucun POST, clic de
-calibration ou effet imprimante n'a eu lieu. RETRY-SAFETY-V1 est close.
-
-## Clôture MATRIX-V1 du 23 août 2026
-
-Le GO persistant de Thomas a autorisé la correction des gardes nécessaires sans
-redemander le même GO. La capture
-`20260823-161103-g4-k1-control-calibration-ui-matrix-v1` a obtenu
-`PREFLIGHT_CALIBRATION_UI_MATRIX_V1_OK`,
-`DEPLOY_CALIBRATION_UI_MATRIX_V1_OK`, puis une seconde validation indépendante
-`VALIDATE_CALIBRATION_UI_MATRIX_V1_OK`.
-
-Le core et les deux fichiers statiques ont été remplacés après backup exact ;
-seul le Moonraker dédié a été redémarré. Les hashes installés sont
-`9a6a2419…`, `4892294d…` et `33a20db2…`. Les trois fichiers de rollback sont
-présents avec les hashes exacts de la baseline `12f7826f…`, `d764dcce…` et
-`ad43bf7c…`. Le composant BED-MESH-V2 `8c8c4aaf…` et `printer.cfg`
-`36cfb7e7…` sont inchangés.
-
-Le contrôle direct final confirme Klippy `ready`, `failed_components=[]` et
-`warnings=[]`. La validation complète confirme `standby`, cibles zéro, runtime
-fermé, Z accepté valide, profil `k1_p001_t055_r001_n06x06`, configuration
-chargée `6 × 6` Lagrange et deux CFS connectés. Aucun chauffage, homing,
-mouvement, mesh, extrusion, impression, commande CFS ou écriture Z n'a eu lieu.
-Le rollback n'a pas été exécuté car il annulerait la pose réussie ; son backup
-exact est vérifié et conservé. MATRIX-V1 est close. Ne pas lancer de calibration
-depuis l'écran avant les gates séparées suivantes.
-
-La dernière preuve navigateur a utilisé les octets locaux dont les trois hashes
-correspondent exactement aux fichiers installés. Chrome a rendu le titre
-`K1 Control — calibration`, la seule matrice `6 × 6 — maximum PRTouch fiable`,
-le seul algorithme Lagrange, `0 / 1` passage et 36 points. Aucun choix
-`9/11/15` n'est présent et aucun bouton n'a été actionné. Cette origine locale
-sans API a été utilisée parce que l'origine authentifiée `4409` restait
-interceptée par son ancien service worker Mainsail ; aucun cache navigateur n'a
-été supprimé. La preuve structurée privée est conservée dans la capture.
-
-## Reprise MATRIX-V1 du 23 août 2026
-
-`G4-K1-CONTROL-CALIBRATION-UI-PRTOUCH-BED-MESH-V2` a été posée et validée
-sous la capture
-`20260823-151026-g4-k1-control-calibration-ui-prtouch-bed-mesh-v2` : composant
-exact, `printer.cfg` inchangé, Moonraker prêt, `failed_components=[]`,
-`warnings=[]`, profil robuste et Z conservés, deux CFS connectés, aucune action
-physique.
-
-Thomas a ensuite donné le GO exact MATRIX-V1. La revue locale obligatoire a
-trouvé avant toute connexion deux restes de l'ancien contrat : le préflight
-essayait encore d'accepter `9/11/15`, désormais refusés par le core, et la
-validation cherchait d'anciens marqueurs statiques absents. Aucun SSH MATRIX,
-backup, transfert, restart ou effet distant n'a eu lieu.
-
-Le déployeur corrigé vérifie maintenant l'acceptation unique `6 × 6` Lagrange,
-le refus de `3/4/5/9/11/15` et de `6 × 6` bicubique, le composant BED-MESH-V2,
-`printer.cfg`, le profil robuste, le stockage Z, les deux CFS et
-`server/info` avec listes d'échec et d'avertissement vides. Son hash est
-`8491c09ddb96e440f7733ef9720280a0f77ec6a6193a093f00487cc922649b3f`.
-La suite complète passe 220 tests, avec 3 ignorés connus.
-
-Comme les commandes revues ont changé après le GO, aucune pose MATRIX n'est
-autorisée par ce GO. La prochaine instruction requise est de nouveau
-`GO G4-K1-CONTROL-CALIBRATION-UI-MATRIX-V1` sur le commit corrigé. L'ancienne
-UI ne doit toujours pas être relancée.
-
-Thomas a renouvelé ce GO sur le commit corrigé. Le préflight SSH réel s'est
-arrêté avant toute écriture parce que l'API expose la phase terminale sûre
-`rolled_back`, laissée par la restauration de campagne, alors que la garde
-MATRIX n'acceptait encore que `idle`, `accepted` et `cancelled`. Les autres
-gardes de la chaîne, le core et l'interface reconnaissent déjà `rolled_back`
-comme état fermé. Le déployeur MATRIX accepte désormais ce quatrième état
-uniquement si `busy=false`; aucune pose, aucun backup, aucun transfert et aucun
-restart n'ont eu lieu sous ce GO. Le script revu ayant de nouveau changé, la
-mission revient en `ATTENDRE_GO` pour le même GO exact sur le nouveau commit.
-
-## Décision de clôture de la session
-
-Thomas a interrompu la reprise avant le nouveau préflight SSH et demandé un
-handoff complet vers une tâche locale neuve. Cette décision remplace l'accord
-d'exécution donné juste avant pour l'alias SSH élevé : aucune commande SSH,
-aucune pose et aucune action physique n'ont été lancées après cette
-interruption. Aucun processus de mutation n'était en cours.
-
-Cette consigne était la règle de clôture de cette ancienne session. Elle est
-désormais remplacée par D-054 : la roadmap active constitue l'autorité
-d'exécution et Codex poursuit ses étapes dans l'ordre sans phrase littérale ni
-renouvellement de permission.
-
-L'état physique courant n'a pas été revérifié pendant cette clôture. Le dernier
-état distant effectivement validé reste celui du rollback de la campagne au
-point 37 : `standby`, cibles zéro, axes non référencés, profil robuste
-`k1_p001_t055_r001_n06x06`, Z accepté `−0,04 mm`, stockage `ok` et deux CFS
-conformes. La K1 a été annoncée disponible et plateau libre plus tard, mais ce
-constat humain n'a pas été confirmé par un nouveau préflight. L'ancienne UI
-encore installée ne doit pas être relancée.
-
-## Vérifications de clôture
-
-- dépôt : `C:\Users\janko\Documents\ChatGPT\k1-max-cfs-root-toolkit` ;
-- branche de mission intégrée :
-  `codex/g4-k1-control-calibration-ui-retry-safety-v1` ;
-- commit de handoff : `4a47aff162f88ddfa067d81d6b6607f5d20caa5d` ;
-- commit d'intégration vérifié sur `main` local et distant :
-  `4e4027e2a73b30dca69844c229712ec046150113` ;
-- PR GitHub : `#36` ; sa référence `head` reste lisible et sa référence `merge`
-  a disparu après l'intégration directe ;
-- branche de mission locale et distante : **supprimées après preuve
-  d'ascendance** ;
-- worktrees : un seul checkout principal, propre, sur `main` ;
-- suite locale : **OK**, 220 tests réussis, 3 ignorés connus ;
-- parse de tous les scripts PowerShell : **OK** ;
-- vérification réelle de la K1 pendant la clôture : **non exécutée**, par
-  décision de Thomas ;
-- client GitHub `gh` : **KO authentification** (`HTTP 401`) ; l'intégration a
-  néanmoins été réalisée par le transport Git configuré, puis vérifiée par SHA
-  local, SHA distant et ascendance.
-
-## Message obligatoire au début de la prochaine session
-
-Dire clairement à Thomas, avant toute proposition d'exécution :
-
-- **l'autonomie calibration quotidienne standard est atteinte** : la campagne
-  réelle `6 × 6 / 1 mesh` et le vrai rendu NAVIGATION-V1-R2 sont verts, sans
-  console ni nouvelle authentification. Le profil précision composite
-  `11 × 11` est techniquement qualifié et persistant, mais reste caché dans
-  l'UI jusqu'à une comparaison de premières couches montrant un gain utile ;
-- **l'autonomie production n'est pas encore atteinte** : Orca, `START_PRINT`,
-  l'ancien `+0,27 mm` et les températures CFS ne sont pas encore basculés vers
-  le nouveau contrat ;
-- le mesh robuste V2 et le Z `−0,04 mm` sont qualifiés, persistés et validés ;
-  FIRST-CALIBRATION-V2 est close et ne doit pas être rejouée ;
-- l'interface ne sera déclarée « nickel sans Codex » que lorsque Thomas pourra
-  choisir les paramètres, lancer, comprendre le statut, enregistrer, annuler et
-  restaurer depuis l'écran, puis imprimer normalement depuis Orca sans commande
-  manuelle ni correction cachée.
-
-Ne pas présenter Mainsail `v2.18.2`, la console ou les macros `KCTRL_*` comme
-l'interface quotidienne terminée.
-
-## Audit haute confiance après la panne au point 37
-
-L'analyse locale et en ligne est consignée dans
-`docs/19-audit-calibration-haute-confiance-k1-max-cfs.md` et l'ADR-013. La panne
-borne une séquence PRTouch V2 à 36 contacts ; elle ne borne pas le profil Bed
-Mesh que Klipper peut charger. Les 36 paires de seuils de cette machine sont
-toutes identiques et les six maillages FIRST-CALIBRATION-V2 prouvent que le
-compteur repart à zéro entre séquences.
-
-Le fusionneur `packages/k1-control-v1/composite-mesh-v1/compose_mesh.py` retient
-maintenant quatre quadrants carrés `6 × 6`, soit 144 contacts et 121 positions
-réelles `11 × 11`. Son entrée stricte refuse aussi un ordre, une borne, une
-taille ou une interpolation différente. Il n'autorise qu'un décalage additif
-constant par quadrant, recentré à moyenne pondérée nulle, et refuse un écart
-aligné supérieur à `0,05 mm`. La suite complète est verte : 250 tests,
-3 ignorés connus.
-
-Cette voie utilise le moteur Bed Mesh standard de façon bornée sans remplacer
-la commande stock, sans `pr_version: 1` et sans restart entre les quatre
-sous-grilles. Ces quatre acquisitions et leur persistance sont maintenant
-qualifiées. La prochaine gate compare de vraies premières couches, sans nouveau
-palpage. Le mode `15 × 15` stock reste refusé.
-
-Le package physique `composite-subgrid-v1` est désormais préparé hors
-imprimante. Il ne peut demander que la partition impaire/impaire `5 × 5`, 25
-contacts de `34` à `266 mm`, après gate exacte et confirmation du plateau. Sa
-pose ne redémarre que Moonraker ; son essai coupe les chauffes, recharge le
-profil robuste et redémarre Klipper uniquement après la capture pour nettoyer
-la session. Les 14 tests ciblés et la suite complète de 232 tests sont verts,
-avec 3 ignorés connus. Son manifeste exige aussi la vraie base quotidienne et
-les sorties exactes de NAVIGATION-V1. Détails :
-`docs/20-g4-k1-control-composite-subgrid-v1.md`.
-
-Un test de chaîne supplémentaire rejoue les hashes distants attendus dans
-l'ordre BED-MESH-V2 → MATRIX → RETRY-SAFETY → PRESETS → campagne quotidienne
-→ NAVIGATION → SUBGRID. Il prouve que chaque baseline correspond exactement à
-la sortie précédente. Il montre aussi que PRESETS est déjà produit bit pour bit
-par MATRIX + RETRY-SAFETY ; son déployeur rend donc un succès idempotent sans
-écriture distante dans cet état.
-
-Dans la reprise courante, le préflight final de campagne a joint la K1 et a
-refusé comme prévu l'ancien core encore installé. Le préflight individuel
-suivant n'a pas atteint la machine : le sandbox Windows exécute SSH sous
-`CodexSandboxOnline`, sans la configuration de `C:\Users\janko\.ssh`, puis la
-plateforme a refusé l'escalade parce qu'elle jugeait l'alias ambigu. Il faut une
-approbation technique explicite après cet avertissement pour rendre visible
-l'alias `k1max-root` déjà qualifié ; aucun contournement par adresse n'est
-autorisé.
-
-## CALIBRATION-PATH-V1 installé et validé
-
-Thomas a nommé `G4-K1-CONTROL-CALIBRATION-PATH-V1` sans préfixe `GO`. Cette
-instruction a sélectionné la préparation du lot ; elle n'a autorisé aucune
-connexion ni mutation de la K1.
-
-Le candidat ajoute un overlay séparé au runtime existant. Il impose une
-descente centrale `5 → 2 → 1 → 0,5 → 0,3 → 0,2 → 0,15 → 0,1 mm`, ajuste le Z
-seulement à la dernière hauteur, repositionne physiquement la buse à `0,1 mm`,
-exige une confirmation puis une remontée de `5 mm` avant acceptation ou
-annulation. Il n'a ni extrusion, ni chauffe, ni CFS, ni valeur Z par défaut.
-
-La pose revue ajoute seulement
-`/usr/data/printer_data/config/k1-control-calibration-path.cfg`, une inclusion
-après le runtime puis un `RESTART` hôte. Sa validation appelle uniquement une
-garde qui doit refuser et prouve que position, origine et cibles de chauffe ne
-changent pas. Le rollback préserve entièrement le runtime installé. Détails :
-`docs/17-g4-k1-control-calibration-path-v1.md` et ADR-005.
-
-Le déployeur reste en `Plan` par défaut et toute action distante exige
-`-Execute -Gate G4-K1-CONTROL-CALIBRATION-PATH-V1`. La pose n'est pas
-autorisée avant le GO exact `GO G4-K1-CONTROL-CALIBRATION-PATH-V1` portant sur
-le commit figé.
-
-Thomas a envoyé ce GO. Le premier préflight a échoué avant mutation parce que
-le candidat Base64 rendait la commande SSH trop longue pour Dropbear. Le
-transport du parse Jinja passe maintenant par stdin, sans fichier distant. Le
-préflight corrigé de la capture
-`20260822-113503-g4-k1-control-calibration-path-v1` est vert : machine exacte,
-`standby`, chauffes à zéro, runtime `ready=1`/`empty`, aucun Z accepté, overlay
-absent, deux CFS `1.1.3`, fondation et parse Jinja exact conformes. Les axes
-étaient référencés avant restart, état admis. Aucun backup, fichier, restart,
-G-code ou état distant n'a été créé ou modifié.
-
-La commande revue a changé après le GO consommé. Aucun `Deploy` n'a été lancé.
-La prochaine autorisation doit renouveler exactement
-`GO G4-K1-CONTROL-CALIBRATION-PATH-V1` sur le commit corrigé.
-
-Thomas a renouvelé ce GO. La capture
-`20260822-115608-g4-k1-control-calibration-path-v1` a obtenu un préflight frais
-vert, créé et vérifié le backup, posé l'overlay et envoyé le `RESTART`. La
-validation a toutefois interrogé le socket Klipper pendant sa transition et a
-déclenché le rollback. Les fichiers ont été restaurés immédiatement ; le chemin
-est resté un court moment chargé uniquement en mémoire car le `RESTART` du
-rollback avait rencontré le même socket indisponible.
-
-Après audit de cet état précis, l'action `Rollback` a été reprise sur le backup
-exact et a obtenu `ROLLBACK_CALIBRATION_PATH_V1_OK`. Le préflight final a obtenu
-`PREFLIGHT_CALIBRATION_PATH_V1_OK` : overlay absent, `printer.cfg` exact, axes
-non référencés, chauffes à zéro, runtime `ready=1`/`empty`, deux CFS et fondation
-conformes. Aucun mouvement, homing, chauffage, mesh ou état Z n'a eu lieu.
-
-Le déployeur attend maintenant de façon bornée que le socket réponde avant la
-lecture des objets après pose et avant le `RESTART` de rollback. Ce changement
-de commande consomme l'autorisation précédente : une nouvelle pose exige encore
-un GO exact renouvelé. Le préflight réel du déployeur corrigé est vert en
-lecture seule.
-
-Thomas a renouvelé une dernière fois le GO. La capture
-`20260822-124207-g4-k1-control-calibration-path-v1` a obtenu le préflight frais,
-`DEPLOY_CALIBRATION_PATH_V1_OK` puis
-`VALIDATE_CALIBRATION_PATH_V1_OK`. Les quatre empreintes sont exactes, l'overlay
-et son unique include sont retenus, le runtime reste `ready=1`/`empty`, les axes
-sont non référencés, les chauffes à zéro et les deux CFS sont connectés. La garde
-à vide a refusé sans changer position, origine Z ou cibles. Aucun chauffage,
-homing, mouvement, extrusion, mesh, réglage ou enregistrement Z n'a été exécuté.
-
-## Current state
-
-Thomas rejected `G4-ZSAFE-START-V1` before deployment. Son `+0,27 mm` fixe, son
-mesh `default` unique et son nettoyage manuel ne constituent pas un système
-pérenne. Ce nom ne peut plus recevoir de GO. Les artefacts restants sont marqués
-`rejected_never_deploy` et le macro échoue volontairement s'il est chargé.
-
-La cible active est un produit cohérent `K1-CONTROL-V1` :
-
-- interface quotidienne simple `K1 Control` ;
-- Mainsail comme vue experte candidate, sur Moonraker épinglé et sécurisé ;
-- réglage Z pendant une session de calibration, puis sauvegarde explicite ;
-- Z accepté conservé après fin/redémarrage et invalidé par une nouvelle
-  calibration de référence ;
-- meshes par plaque et plage thermique, plus mesh adaptatif par travail ;
-- ordre thermique/nettoyage/référence/mesh/Z/CFS/purge verrouillé ;
-- températures dynamiques respectées sur les deux CFS ;
-- profil Orca complet et versionné.
-
-Le système est conçu et testé comme un tout, puis sera posé par étapes pour
-garder un rollback simple. Aucun installateur communautaire n'est accepté tel
-quel. Le post-traitement Orca actuel reste inchangé jusqu'à preuve complète de
-son remplacement.
-
-Le prototype complet hors imprimante est maintenant vert. L'écran parle à un
-faux Moonraker sur `127.0.0.1` et ce faux service applique le moteur d'état
-Python. Les 17 scénarios obligatoires passent, dont le blocage d'une purge trop
-tôt, T0 vers T5 entre les deux CFS, l'invalidation Z et le rollback SHA-256.
-
-La fondation V3 + PATHS-V1 a maintenant terminé son observation retenue. Thomas
-a lancé manuellement l'impression normale à 12:48 et confirmé à la fin : qualité
-correcte, un seul PLA, aucune intervention. Le premier observateur local a été
-interrompu à 15:07 ; le journal persistant couvre le trou jusqu'à 18:43 sans
-arrêt Klipper/MCU, perte de communication, trace Python ou erreur interne. Le
-second observateur s'est fermé à 20:31:56 avec `exit_code=0`, puis la validation
-en lecture seule a rendu `VALIDATE_PATHS_V1_OK`.
-
-Le vrai adaptateur Moonraker reste fermé par défaut et reconnaît maintenant les
-seules commandes structurées du candidat Z/mesh. Les sources Klipper exactes
-`save_variables.py`, `gcode_macro.py`, `delayed_gcode.py` et `bed_mesh.py` ont
-été copiées en lecture seule et vérifiées dans une capture privée ignorée.
-
-Le runtime public `packages/k1-control-v1/z-mesh-runtime-v1/` ajoute une seule
-structure persistante Z avec valeur précédente et contexte, les sessions
-provisoires, l'invalidation, le préchauffage plateau/buse, le homing explicite,
-les matrices 3–25 avec interpolation compatible, le commit mesh séparé et la
-garde de mouvements bas. Il ne remplace pas `START_PRINT`, n'appelle aucun CFS
-et n'extrude pas. Il est installé depuis la capture finale du 2026-08-22. Le
-`save_variables.py` exact a été écarté ;
-le stockage original contrôle le schéma et la somme, écrit en `0600`, synchronise,
-remplace atomiquement et conserve une copie précédente sans restauration
-silencieuse.
-
-Thomas a envoyé le GO exact pour cette tranche. Le premier préflight s'est
-arrêté sans mutation : les appels Python qui recevaient des arguments omettaient
-le marqueur stdin `-`, donc Python cherchait un fichier nommé `0`. Les deux
-formes concernées sont corrigées et un test dédié les verrouille. Le second
-préflight, strictement en lecture seule, est vert sous la capture privée
-`20260821-212431-g4-k1-control-z-mesh-runtime-v1`. Il confirme la machine au
-repos, les chauffes à zéro, l'empreinte initiale, les cibles absentes, la
-fondation et les deux CFS. Les axes sont encore référencés et `Base` est le mesh
-transitoire actif, états admis avant le redémarrage hôte de la future pose.
-Aucun fichier distant, backup, G-code, commande Klipper ou service n'a été
-modifié. La commande revue ayant changé après le GO, le déploiement attend un GO
-exact renouvelé.
-
-Thomas a renouvelé ce GO. La capture
-`20260821-213732-g4-k1-control-z-mesh-runtime-v1` a passé son préflight et
-vérifié le backup, puis posé le runtime et redémarré l'hôte Klipper. La
-validation a refusé l'état neuf : `integrity=empty` suivait la branche invalide
-et laissait `ready=0`. La garde `K1_PRODUCTION_ASSERT_ARMED` n'a pas été appelée.
-
-Le rollback automatique a retiré le runtime, mais son contrôle immédiat a vu T1
-encore déconnecté. Le restart avait aussi normalisé seulement les espaces des
-blocs générés `bed_mesh default` et `auto_addr`. Une complétion bornée a restauré
-le backup exact sans autre restart. Le préflight final a confirmé le runtime
-absent, le hash initial, Klipper `standby`, les axes non homés, les chauffes à
-zéro, T1/T2 `1.1.3` et la fondation intacte. Aucun mouvement, chauffe, extrusion,
-ordre CFS, calibration, impression, firmware restart ou reboot n'a eu lieu. Le
-mesh transitoire `Base` a été perdu au restart ; `default` est de nouveau actif.
-
-Le candidat offline possède désormais une branche `empty` prête pour calibrer
-mais fermée à la production, une attente de stabilisation CFS de 60 secondes et
-une seconde restauration du backup exact après le restart de rollback. Son hash
-config est `3b0e5215d9bd58a343c57a681668ef1e466465980cceac3b1fd5944fec806f96`.
-La suite exécute 96 tests : 95 passent localement et les 17 templates, dont le
-rendu `empty`, passent sur le Python/Jinja exact de la K1.
-
-Thomas a renouvelé une nouvelle fois le GO exact. La capture
-`20260821-224828-g4-k1-control-z-mesh-runtime-v1` a passé son préflight et
-vérifié le backup. Le runtime a été chargé, mais son état `ready` est resté à
-zéro. Le journal a prouvé que le parseur G-code de cette K1 tronque
-`K1_CONTROL_LOAD_STATE` en `K1`, commande inconnue : un chiffre placé au milieu
-d'un nom étendu n'est pas accepté.
-
-Le rollback a retiré le runtime et l'inclusion. Un `CXSAVE_CONFIG` Creality
-tardif a ensuite normalisé les espaces des blocs générés. La comparaison locale
-n'a trouvé aucun changement de valeur. Une complétion bornée a restauré le
-backup exact sans restart, puis le préflight final a confirmé le runtime absent,
-le hash initial, `default`, `standby`, axes non homés, chauffes à zéro, T1/T2
-`1.1.3` et la fondation intacte. Aucun mouvement, homing, chauffe, extrusion,
-ordre CFS, calibration, impression, firmware restart ou reboot n'a eu lieu.
-
-Le candidat offline emploie désormais `KCTRL_*` dans le runtime, le stockage,
-l'adaptateur et les futurs contrats Orca. Un test rejoue le parseur exact. Le
-rollback attend la reconnexion CFS et une fenêtre silencieuse avant sa dernière
-restauration, puis revérifie le hash après trois secondes. Les hashes courants
-sont `1590b918dcdfe70e801c0be40fee4f19ab6b1e2dfa93936975b88aed5d4b1c79`
-et `696eabec936bd81300acb4e6882d141c1a9ce2494df3bd1f686ff4ee8cbb8ede` ;
-la suite locale passe `98/98` et l'environnement exact de la K1 retourne
-`K1_EXACT_RUNTIME_OK templates=17 commands=18` en mémoire.
-
-Thomas a renouvelé une troisième fois le GO exact. La capture
-`20260822-004338-g4-k1-control-z-mesh-runtime-v1` a passé le préflight, vérifié
-le backup et chargé les objets `KCTRL_*`. Le démarrage différé a bien exécuté
-`KCTRL_LOAD_STATE`, puis la première affectation texte a échoué avec
-`Unable to parse 'empty' as a literal`. Le parseur Creality applique
-`shlex.split` avant `ast.literal_eval` : `VALUE='empty'` perd ses guillemets et
-arrive comme nom Python nu.
-
-Le rollback automatique renforcé a retiré le runtime, attendu les deux CFS et
-la fenêtre silencieuse, puis restauré et revérifié le backup exact. Le préflight
-final confirme runtime absent, hash initial, `default`, `standby`, axes non
-homés, chauffes à zéro, T1/T2 `1.1.3` et fondation intacte. Aucun mouvement,
-homing, chauffe, extrusion, ordre CFS, calibration, impression, firmware
-restart ou reboot n'a eu lieu.
-
-Les 24 affectations texte utilisent désormais des littéraux protégés comme
-`VALUE='"empty"'`. Le déployeur sauvegarde aussi son dernier snapshot avant
-rollback si `ready` reste à zéro. Le hash config courant est
-`dd7fa02a8b7b9bd46850c90cf2a85afa71ce27cfa263c120ef4e9cca6b48c113` ; le
-module reste à
-`696eabec936bd81300acb4e6882d141c1a9ce2494df3bd1f686ff4ee8cbb8ede`.
-La suite exécute 99 tests : 98 passent, et le contrôle exact en mémoire retourne
-`K1_EXACT_RUNTIME_OK templates=17 commands=18 string_values=24`.
-
-Thomas a renouvelé le GO exact. La capture
-`20260822-011022-g4-k1-control-z-mesh-runtime-v1` a passé son préflight, vérifié
-le backup et terminé par `DEPLOY_Z_MESH_RUNTIME_V1_OK`. Le runtime a chargé
-l'état vide avec `ready=1`, puis `KCTRL_PRODUCTION_ASSERT_ARMED` a refusé comme
-prévu sans changement de position, origine Z ou cible de chauffe.
-
-La validation indépendante a d'abord vu une empreinte `printer.cfg` normalisée
-par le `CXSAVE_CONFIG` différé de Creality. Le diff complet des copies privées
-montre uniquement l'indentation des blocs générés `bed_mesh default` et
-`auto_addr`, sans changement de valeur, section ou inclusion. La comparaison
-normalisée obtient `PRINTER_CFG_NORMALIZED_EQUIVALENCE_OK`; le validateur épingle
-les deux empreintes exactes et ne réécrit pas la machine.
-
-La validation indépendante finale retourne
-`VALIDATE_Z_MESH_RUNTIME_V1_OK`. État retenu : runtime installé, une inclusion,
-`standby`, axes non homés, chauffes à zéro, `default`, T1/T2 `1.1.3`,
-`ready=1`, `integrity=empty`, `accepted_z_valid=0`,
-`block_reason=no_accepted_z`, `low_moves_armed=0` et fondation intacte. Aucun
-mouvement, homing, chauffe, extrusion, ordre CFS, calibration, impression,
-firmware restart, reboot ou rollback n'a eu lieu.
-La suite finale exécute 100 tests : 99 passent et le contrôle Jinja local
-ignoré reste couvert sur l'environnement exact de la K1.
-
-La pile est figée : Moonraker MIPS embarqué au commit
-`fccffa96c63ed77dc3953e18615e9fe9cd3d69ea`, nginx MIPS du même paquet et
-Mainsail `v2.18.2`. Les trois archives ont été réellement assemblées et vérifiées
-dans un bundle local temporaire. Aucun binaire communautaire n'est publié dans
-Git.
-
-Thomas a autorisé exactement `G4-K1-CONTROL-FOUNDATION-V1`. Son préflight réel
-a confirmé la bonne machine, `standby`, les chauffes à zéro, T1/T2 connectés,
-les ressources et l'absence des cibles. Il a ensuite détecté l'absence de
-`logrotate` et de `/etc/logrotate.d`, prérequis obligatoire de V1. La pose s'est
-arrêtée avant toute mutation ; V1 est définitivement fermée.
-
-Thomas a ensuite autorisé exactement `G4-K1-CONTROL-FOUNDATION-V2`. Les essais
-réels ont corrigé les écarts SCP/Dropbear, nginx/Buildroot, permissions,
-fournisseur Moonraker, arrêt de service et origine WebSocket. Mainsail a chargé
-le tableau de bord réel par tunnel, puis le test a prouvé que la version
-`v2.18.2` ne sait pas créer ni utiliser un compte Moonraker. V2 a été rollbackée
-et son nom est fermé. Aucun port LAN n'a été ouvert.
-
-Thomas a choisi `CHOIX AUTH — NGINX`. Le remplacement
-`G4-K1-CONTROL-FOUNDATION-V3` garde Moonraker en boucle locale et porte le compte
-sur nginx. Le module MIPS requis est prouvé hors imprimante. Le mot de passe est
-saisi deux fois en local, seul un hachage SSHA salé est transmis, les requêtes
-anonymes doivent recevoir `401`, et les identifiants sont retirés avant le proxy
-vers Moonraker. Les GO V3 renouvelés ont permis de corriger, avec rollback entre
-chaque KO, le transport stdin, les droits `root:www-data` du fichier et du
-dossier parent, puis la transition nginx vers l'écoute LAN. La capture finale
-`20260821-015722-g4-control-foundation-v3` est installée et validée. Thomas a
-créé puis vérifié son compte dans le vrai tableau de bord Mainsail. Moonraker
-reste sur `127.0.0.1:7125` et Mainsail authentifié écoute sur `0.0.0.0:4409`.
-Le raccourci `Ouvrir Mainsail K1 Max` sur le Bureau crée automatiquement le
-tunnel SSH sécurisé et ouvre Mainsail sans commande manuelle.
-
-Après connexion, Moonraker a affiché deux avertissements : son data path crée
-`/usr/data/k1-control-v1/state/config` et `state/gcodes`, alors que la pile
-Creality active utilise `/usr/data/printer_data/config` et
-`/usr/data/printer_data/gcodes`. Une inspection distante bornée et sans mutation
-a confirmé que les deux dossiers Moonraker sont présents et vides. Le code exact
-installé produit ces avertissements lorsque les chemins ne désignent pas les
-mêmes dossiers. La connexion Mainsail → Moonraker → Klipper fonctionne ; seule
-l'intégration du gestionnaire de fichiers est incomplète.
-
-Il ne faut pas appliquer la suggestion générique de modifier
-`[virtual_sdcard]`. La correction retenue devait garder les chemins Creality,
-relier les racines Moonraker selon la méthode officielle, rendre `config` non
-modifiable par l'API et traiter explicitement le pouvoir d'écriture restant sur
-`gcodes`. Le rapport public est dans
-`experiments/p4/20260821-moonraker-path-warnings-read-only-report.md`.
-
-Après revue du document 15, du déployeur et des tests, Thomas a renouvelé
-exactement `GO G4-K1-CONTROL-FOUNDATION-V3-PATHS-V1`. La capture
-`20260821-111001-g4-control-foundation-v3-paths-v1` a obtenu un préflight vert,
-sauvegardé l'état initial, posé les deux liens attendus et redémarré uniquement
-Moonraker. Le dernier message du wrapper local a été perdu après deux heartbeats ;
-Codex n'a pas relancé la mutation. Les preuves finales étaient présentes et une
-commande séparée en lecture seule a obtenu `VALIDATE_PATHS_V1_OK`.
-
-L'API expose maintenant `config=r` vers `/usr/data/printer_data/config` et
-`gcodes=rw` vers `/usr/data/printer_data/gcodes`. Moonraker ne rapporte aucun
-avertissement, Klipper est prêt et `standby`, les chauffes sont à zéro, les axes
-ne sont pas homés, les deux CFS `1.1.3` sont connectés, nginx et les interfaces
-Creality sont intacts. Aucun G-code, mouvement, chauffe, calibration, impression,
-redémarrage imprimante ou rollback n'a été exécuté.
-
-Le contrat, l'architecture et la comparaison des outils sont dans les documents
-10, 11, 13, 14 et ADR-004. Les essais V2 et les tentatives V3 en KO ont
-rollbacké uniquement les nouveaux chemins de fondation. La pose V3 finale
-conserve les deux services dédiés et les ports prévus. Aucun profil Orca actif
-ni comportement d'impression n'a été modifié.
-
-Une lecture distante bornée a relevé environ 209 Mio de RAM totale, 118 Mio
-disponibles, Python 3.8.2, 4,2 Gio libres et aucun port/processus Moonraker. La
-marge mémoire impose une pile minimale et un test de durée ; le rapport public
-anonymisé est dans `inventory/redacted/20260820-control-foundation-capacity/`.
-
-Un écran `K1 Control` sans dépendance, un moteur d'état Python pur, un faux
-Moonraker, le contrat Orca et la matrice exécutable sont présents sous
-`prototype/`, `orca/` et `tests/`. Les vues bureau/mobile et les actions
-calibration, sauvegarde, redémarrage et invalidation ont été vérifiées sans
-erreur JavaScript. La suite courante exécute 131 tests : 129 passent et deux
-contrôles Jinja locaux sont ignorés. Les 17 templates du runtime installé ont
-déjà passé le Python/Jinja exact de la K1. L'overlay installé a également passé
-son parse exact en mémoire avant toute écriture. Les noms de
-commandes des deux lots sont contrôlés contre le parseur Creality exact.
-
-## Preuves historiques utiles
-
-The private intake is ready under
-`inventory/raw/user-inputs/20260820-full-system-audit/`. Its instructions request
-an Orca printer-config bundle, existing 3MF projects and G-codes, exact custom
-G-code text, photos/notes and any already-held recovery artefact. Everything in
-that path is ignored by Git.
-
-Thomas has now supplied the active individual Orca profiles, the Z
-post-processor, five 3MF projects and six candidate G-codes. The two private
-capture batches contain 24 and 13 files respectively; every copy passed a local
-SHA-256 comparison and no source file was changed.
-
-Offline inspection selects P1-SINGLE, P2-FIVE-OBJECTS and
-P3-ONE-MERGED-OBJECT as the first bounded session. P2 and P3 share all 639
-recorded settings, estimated duration, material use and layer count; their
-useful difference is five separate objects versus one assembled object. Ironing
-is active on all three and does not invalidate the first-layer comparison.
-
-Thomas supplied a corrected `P5-CFS-ONE-CHANGE` containing one intended `T0` to
-`T1` transition. Its private copy and hashes are recorded; the first alternating
-version remains private evidence only.
-
-Passive session `20260820-154056-p123` is complete. It captured P1, P2, P3, P4,
-two P5 attempts and P1 PETG. The trace ended with all heater targets at zero;
-Codex stopped only the passive observer after Thomas confirmed completion.
-
-The decisive Z finding is runtime evidence, not an inference from the file. On
-P4, the visible Z stays at `0.00` through the stock startup and only becomes
-`+0.27 mm` when the post-processor executes afterward. The current workaround
-cannot protect the preceding purge. Live Z clicks call `Z_OFFSET_APPLY_PROBE`,
-but P3 and PETG both end by applying the exact inverse and preparing `0.000` for
-persistence. P1 PETG finished at `+0.38 mm`, `+0.11 mm` above its file baseline,
-before that value was erased.
-
-P2 and P3 share all 639 recorded settings and produced no reported visible
-difference between separate and assembled objects. One `+0.010 mm` live Z click
-occurred during P3, so this is not a fully untouched pair. It does not disprove
-the historical large shifts and gives no evidence that object count alone
-triggers them.
-
-The first P5 attempt had three pauses after a likely filament break and is
-excluded. The second completed without a pause. Its nozzle targets were
-`115 -> 220 -> 205 -> 220 -> 0 °C`: the startup override is confirmed, while
-the final `220 °C` cannot distinguish G-code from CFS ownership because both
-request the same value.
-
-The baseline acquisition, targeted source follow-up, physical session `20260819-185157-g3-aba` and separate `G4-SSH-KEY` deployment are complete. Thomas performed the prints and mechanical adjustments. Codex changed only root SSH access by adding one dedicated public key; no printer behaviour, service or configuration was changed. Raw captures remain local and ignored; only redacted inventories and conclusions are publishable.
-
-Passwordless SSH is now available through local alias `k1max-root`. It selects the dedicated ECDSA P-256 key and forbids password fallback. Two independent final connections passed. A future password prompt must be treated as a failure and diagnosed, not shown to Thomas as a normal step.
-
-Read-only session `20260819-215124-long` started from standby, captured one complete long production job and stopped automatically after the machine returned to standby. The observer used one persistent Klipper subscription and followed only new log data. It sent no print, movement, heating, calibration or configuration command.
-
-This session closed the pressure-advance observability gap: startup applied `0.044`, then the print file restored `0.03`, which remained active through the CFS refill and to the end. The CFS did not overwrite pressure advance during this refill.
-
-The automatic equivalent-PLA refill did overwrite temperature. Runout paused the print, selected another PLA slot and resumed in about 2 minutes 54 seconds. The resumed target returned to `220 °C` and stayed there until Thomas manually restored `190 °C`. Visible Z origin remained `+0.27 mm` throughout, with no live correction reported.
-
-The same defect occurs during startup. The job supplies `190 °C` for the first layer and later uses `195 °C`, but the first CFS tool operation reports that it cannot read the purge speed and falls back to a `220 °C` purge. The file only regains control after the CFS load and purge. Thomas judged the final part broadly correct; granular ironing remains a separate OrcaSlicer-tuning hypothesis.
-
-Read-only follow-up proved that the production file contains no temperature
-command at `220 °C`. The generic PLA entry used by the CFS stores `220 °C`, while
-per-slot state stores material type and colour but not a slot-specific
-temperature or pressure advance. During refill, stock `RESUME` restores
-`195 °C`, then the file reader replays the new physical tool and the compiled
-CFS module reapplies `220 °C` afterward.
-
-The static `G4-CFS-TEMP-PLA` candidate was rejected by Thomas before deployment.
-It hard-coded Geeetech PLA and `190/195 °C`, so it did not meet the production
-need. Its deployable files were removed from `main`; no printer file or service
-was changed.
-
-The accepted requirement is now explicit: while a print is active, G-code or
-Thomas owns nozzle temperature. Equivalent refill preserves the active target.
-An intentional material change receives the next tool's temperature from the
-G-code. The CFS database may not silently replace either value.
-
-Codex has permanent authority to complete all normal Git and GitHub operations for this repository, including push, pull-request management, fusion into `main` and cleanup, without requesting another `GO`. This authority does not replace the printer mutation gates.
-
-## Confirmed acquisition outcomes
-
-- firmware `2.3.5.34`, Buildroot 2020.02.1, Linux 4.4.94 MIPS;
-- manufacturing identity and runtime selector report S12 structure 0;
-- `/etc/ota_info` still reports S11 and is classified as inconsistent OTA metadata;
-- active configuration and four includes mapped;
-- CFS temperature value `Tn_extrude_temp: 220` identified;
-- active saved Z offset at zero and one transient historical `-0.025` identified;
-- startup, CFS, homing and levelling macro chains indexed;
-- readable `CX_*`, `CXSAVE_CONFIG`, `G28` and PR Touch implementations captured and mapped;
-- CFS `BOX_*` implementation identified as a compiled `box_wrapper` module;
-- `G28` confirmed to establish Z through five PR Touch samples, their median and `self_z_offset`;
-- persistent storage and large Klipper log footprint documented;
-- no remote write performed.
-
-## FIRST-CALIBRATION-V1 préparé hors imprimante
-
-Le candidat `G4-K1-CONTROL-FIRST-CALIBRATION-V1` est maintenant présent sous
-`packages/k1-control-v1/first-calibration-v1/`. Il n'installe aucun nouveau
-fichier : son pilote local orchestre seulement les commandes déjà installées,
-par checkpoints séparés.
-
-Le contexte est figé : `PEI_TEXTURED_A` ID `1`, plateau `55 °C`, buse `140 °C`,
-stabilisation `200 s`, nettoyage stock borné jusqu'à `180 °C`, homing après
-nettoyage, deux meshes `6 × 6` Lagrange sur `5–295 mm` et seuil absolu maximum
-`0,025 mm` sur les 36 points. Un KO s'arrête sans troisième mesh automatique.
-
-Le second mesh qualifié pourra être enregistré sous
-`k1_p001_t055_r001_n06x06`, puis la session Z partira du seed neutre explicite
-`0,0 mm` et suivra les paliers déjà installés. Chaque mouvement bas reste une
-action distincte. L'acceptation exige confirmation humaine et remontée de
-`5 mm`.
-
-Le mode `Plan` de `scripts/run-k1-control-first-calibration-v1.ps1` est purement
-local. Les actions distantes exigent le GO exact, la capture privée et les
-checkpoints précédents. `Cancel` ferme le Z provisoire et conserve le mesh ;
-`Rollback` restaure le `printer.cfg` exact et l'état Z vide tout en conservant
-le runtime et le chemin installés. Détails : document 18 et ADR-006.
-
-Thomas a ensuite envoyé le GO exact. La capture
-`20260822-140602-g4-k1-control-first-calibration-v1` a passé le préflight, créé
-et vérifié le backup, puis terminé la préparation et le premier mesh. Le second
-mesh a été exécuté une seule fois et sa qualification est KO : maximum
-`0,062125 mm`, moyenne `0,018049 mm`, seuil `0,025 mm` sur 36 points.
-
-L'arrêt prévu a coupé les chauffes. Aucun troisième mesh, profil persistant,
-session Z ou état Z n'a été produit. Un contrôle final en lecture seule a
-confirmé la base exacte, le profil cible absent, le stockage Z absent,
-`standby` et les cibles à zéro avant de signaler les axes `xyz` encore
-référencés. Le GO est consommé et ne couvre aucun rerun.
-
-## FIRST-CALIBRATION-V2 exécutée jusqu'à la gate physique finale
-
-L'analyse du module PR Touch exact et du journal privé a retrouvé 209 contacts
-pour 72 points. Les gros faux contacts sont filtrés, mais deux meshes bruts ne
-suffisent pas à prouver la répétabilité point par point. V2 ne modifie pas le
-constructeur : il impose exactement six meshes, deux groupes indépendants de
-trois réduits par médiane, puis trois limites simultanées : moyenne absolue
-`0,020 mm`, RMS `0,025 mm` et maximum `0,060 mm`. Il n'existe aucun septième
-passage automatique. Le candidat final est la médiane des six mesures et n'est
-chargé, relu puis persisté qu'après qualification.
-
-Thomas a ensuite envoyé le GO exact. La capture
-`20260822-160948-g4-k1-control-first-calibration-v2` a passé le préflight frais,
-créé et vérifié le backup, puis obtenu `PREPARE_FIRST_CALIBRATION_V2_OK` à
-`55/140 °C` avec `200 s`. Les six meshes ont été exécutés exactement une fois.
-La qualification est acceptée sur 36 points : moyenne absolue
-`0,010788694 mm`, RMS `0,013996452 mm` et maximum `0,034352 mm`.
-
-L'endpoint `update_mesh` a chargé et généré le profil robuste sans redémarrer
-Klipper, alors que le premier validateur attendait à tort la perte du homing.
-Le diff exact a prouvé que seule la section `K1_TRANSIENT` et ses 36 valeurs
-avaient été ajoutées. Une reprise bornée a vérifié le hash, le backup, les
-composants installés, l'état Z vide et la matrice avant d'envoyer la commande
-déjà revue `KCTRL_MESH_COMMIT`. Le profil final
-`k1_p001_t055_r001_n06x06` est conservé, le transitoire est absent et le diff
-final ne contient que cette section générée. Le pilote attend désormais le
-comportement réellement observé de `update_mesh`, avec un test de
-non-régression et une nouvelle empreinte dans le manifeste.
-
-Le chemin Z a d'abord été annulé sans observation, puis repris avec Thomas
-présent sans refaire les six meshes. Une pile de dix épaisseurs a évalué la cale
-papier à `0,09 mm`. Les pas provisoires ont trouvé une friction nette à
-`−0,05 mm`; le retour à `−0,04 mm` a rendu la cale libre, ce qui encadre le jeu
-visé de `0,10 mm`. Thomas a confirmé ce constat. La buse a été parquée avant le
-commit atomique. `ACCEPT_FIRST_CALIBRATION_V2_OK` a enregistré `−0,04 mm` puis
-coupé les chauffes.
-
-Le premier `Validate` a signalé un faux KO documentaire : le pilote cherchait
-`[bed_mesh ...]`, mais Klipper persiste réellement `#*# [bed_mesh ...]`. Le
-correctif local, son test et la nouvelle empreinte du manifeste ne changent
-aucune commande imprimante. La relance en lecture seule a obtenu
-`VALIDATE_FIRST_CALIBRATION_V2_OK`. État final : `standby`, cibles zéro,
-stockage `ok`, `accepted_z_valid=1`, `accepted_z_offset=-0,04`,
-`session_active=0`, chemin `committed` non armé, profil robuste présent, deux
-CFS et fondation conformes. La copie persistante de `printer.cfg` garde le hash
-`36cfb7e71180268841ab5cedd31628c8d9953ba437c47662ced16df18bb1bacd`.
-
-## CALIBRATION-UI-V1 préparée hors imprimante
-
-Le candidat séparé `G4-K1-CONTROL-CALIBRATION-UI-V1` ajoute hors imprimante un
-petit composant au Moonraker épinglé et une page statique `/k1-control/`. Les
-choix plaque, températures, stabilisation, matrice, interpolation et seed Z y
-sont réels. Le flux serveur survit à la fermeture du navigateur, exécute les six
-meshes, guide les paliers Z et expose enregistrer, annuler, restaurer le Z ou
-restaurer le backup complet. La stabilisation est annulable ; un homing,
-nettoyage ou mesh déjà engagé finit seulement son opération bornée avant arrêt.
-
-La pose UI future a un write-set exact : deux sources Python, deux caches
-`cpython-38`, trois fichiers statiques et `moonraker.conf`. Elle sauvegarde la
-configuration puis redémarre uniquement le Moonraker dédié. Elle ne lance
-aucune calibration. Son paquet, ADR-008, manifeste, déployeur et tests sont
-préparés. L'import exact sur la K1 reste dans le préflight de la pose.
-
-La revue après FIRST-CALIBRATION-V2 a trouvé deux incompatibilités avant pose :
-le chemin fermé réel est `committed`, pas seulement `idle`, et le `curl`
-Creality signale `-fsS` comme options invalides tout en renvoyant le corps. Le
-déployeur et le contrôleur n'acceptent désormais que `idle`, `committed` ou
-`cancelled`, avec `motion_armed=0`. Les lectures Moonraker utilisent `curl` sans
-ces options et `+` pour les espaces des macros. Le préflight compile et importe
-les deux sources en mémoire sous le Python Moonraker `3.8.2`, par stdin et sans
-fichier distant. Le déployeur lui-même est épinglé dans le manifeste.
-
-Le plan local et le préflight réel en lecture seule sont verts :
-`PLAN_CALIBRATION_UI_V1_OK` et `PREFLIGHT_CALIBRATION_UI_V1_OK`. Ils confirment
-la base Moonraker exacte, les nouveaux chemins absents, `standby`, cibles zéro,
-runtime fermé avec Z accepté et chemin `committed` non armé. Aucune pose,
-création distante ou relance de service n'a eu lieu.
-
-Thomas a ensuite donné le GO exact. La capture
-`20260822-192821-g4-k1-control-calibration-ui-v1` a passé le préflight et créé
-le backup exact. Le premier transfert s'est arrêté avant toute pose : OpenSSH
-Windows a demandé SFTP, absent du Dropbear Creality. Le rollback automatique a
-restauré le `moonraker.conf` exact, retiré tous les chemins candidats et
-redémarré seulement Moonraker. Le préflight final est vert ; le staging de cet
-essai est vide. Aucun chauffage, homing, mouvement, mesh ou Z n'a été exécuté.
-
-Le candidat corrigé force maintenant le protocole SCP historique avec `-O` et
-nettoie aussi le staging exact pendant un rollback. Le déployeur et son hash
-ayant changé après le GO consommé, cette version a repassé
-`PREFLIGHT_CALIBRATION_UI_V1_OK` en lecture seule. Elle doit recevoir un nouveau
-GO exact avant toute nouvelle pose.
-
-Thomas a renouvelé ce GO. La capture
-`20260822-202014-g4-k1-control-calibration-ui-v1` a obtenu le préflight, posé le
-paquet et passé ses validations par fichiers/API. La recette dans le vrai
-navigateur a cependant trouvé deux défauts non couverts par le validateur : le
-service worker Mainsail intercepte `/k1-control/` sur l'origine
-`127.0.0.1:4409`, et le dossier UI avait été créé en mode `0700`. Sur l'origine
-isolée `localhost:4409`, nginx a confirmé `Permission denied`. Le rollback exact
-a retiré l'UI et le composant, restauré la configuration puis obtenu
-`PREFLIGHT_CALIBRATION_UI_V1_OK`. Aucun chauffage, homing, mouvement, mesh ou Z
-n'a eu lieu.
-
-Le candidat corrigé hors imprimante crée et valide désormais le dossier UI en
-`0755`. Un lanceur dédié ouvre `http://localhost:4409/k1-control/` sur le même
-tunnel, ce qui isole la page du service worker Mainsail sans ajouter de port ni
-de service. Cette origine possède sa propre session navigateur : Thomas devra y
-saisir les mêmes identifiants une fois. Le déployeur et son empreinte ayant de
-nouveau changé après le GO consommé, toute nouvelle pose exige encore un GO
-exact renouvelé.
-
-L'audit du parcours complet après rechargement a ensuite trouvé deux blocages
-hors imprimante : le seed Z accepté n'était pas repris par le formulaire et la
-case « plateau libre » redevenait décochée mais inaccessible après les six
-meshes. Le composant expose maintenant le Z accepté ; le navigateur hydrate une
-fois le formulaire depuis l'état serveur et laisse les confirmations physiques
-accessibles. Le bouton Z exige simultanément « plateau libre » et « buse
-propre ». Le manifeste épingle les nouvelles empreintes.
-
-Le protocole séparé `G4-K1-CONTROL-CALIBRATION-UI-CAMPAIGN-V1` est préparé hors
-imprimante. Après une pose UI entièrement verte, Thomas devra réaliser depuis
-l'écran six meshes réels en `9 × 9`, `11 × 11`, `15 × 15`, puis six meshes et le
-parcours Z complet en `6 × 6`. Les trois premiers niveaux sont annulés depuis
-l'écran après qualification et capture en lecture seule. Aucun clic ou commande
-de calibration Codex, septième passage par niveau ou rerun automatique ne sera
-accepté. Le validateur expose `Plan`, `Preflight`, `CaptureLevel` et `Validate`;
-son plan local est vert avec
-`PLAN_CALIBRATION_UI_CAMPAIGN_V1_OK`.
-
-La préparation production a progressé sans toucher à la K1 : OrcaSlicer `2.4.2`
-sélectionne réellement la machine `Creality K1 Max (0.4 nozzle) - Copie` et le
-processus `0.20mm - SpeedClassics - MultiMaterials`. Leurs quatre fichiers sont
-capturés en privé avec empreintes. Le départ ancien, le changement vide et le
-post-traitement `--start-z-offset 0.27` sont donc prouvés sur l'état courant.
-L'objet live `box` expose `state` et `t_command`; le traceur passif les suit
-désormais sans collecter l'inventaire CFS. Le cœur du refill reste compilé : ne
-pas inventer de propriétaire de température ni ouvrir une bascule production
-avant preuve pendant une impression utile.
-
-## Next bounded mission
-
-`G4-K1-CONTROL-CALIBRATION-UI-MATRIX-V1` est installée sous la capture
-`20260822-222005-g4-k1-control-calibration-ui-matrix-v1`. Le préflight, le
-déploiement et deux validations indépendantes sont verts. Seuls trois fichiers
-ont été remplacés après backup exact et seul Moonraker a été redémarré. Le vrai
-rendu Chrome authentifié confirme `6/9/11/15`, le bicubique forcé et Lagrange
-désactivé au-delà de six. Le rechargement complet restaure `6 × 6` Lagrange, le
-seed `−0,04 mm` et les confirmations décochées. La gate est close et son GO est
-consommé.
-
-Le préflight réel en lecture seule de la campagne écran est vert sous la capture
-`20260822-222450-g4-k1-control-calibration-ui-campaign-v1`. L'UI est inactive,
-la K1 est au repos, les cibles sont à zéro, le Z accepté et le profil rapide
-sont présents, et les profils `9/11/15` sont absents comme attendu. La prochaine
-gate unique est `G4-K1-CONTROL-CALIBRATION-UI-CAMPAIGN-V1`; elle prouvera
-l'autonomie de calibration par vingt-quatre meshes et un parcours Z entièrement
-pilotés depuis l'écran.
-
-Le premier départ `9 × 9` a toutefois montré que la case de remplacement restait
-cochée après une annulation à `0/6`; une seconde reprise a répété le problème.
-Les deux tentatives ont été annulées avant toute mesure et l'état durable est
-intact. Le paquet correctif séparé
-`G4-K1-CONTROL-CALIBRATION-UI-RETRY-SAFETY-V1` ne remplace que `app.js`, sans
-restart. Il remet une seule fois remplacement et plateau libre à faux après une
-reprise incomplète. Ses 179 tests et son préflight réel sous la capture
-`20260822-231240-g4-k1-control-calibration-ui-retry-safety-v1` sont verts.
-L'autorité globale du goal a couvert sa pose sans nouveau GO. Le même identifiant
-a obtenu le déploiement et deux validations vertes. Seul `app.js` a été remplacé
-après backup exact, sans restart ni action physique. Le rechargement sur `4409`
-a affiché le cache Mainsail ; le tunnel temporaire propre `127.0.0.1:4410` était
-actif et attendait l'authentification humaine. L'action prévue à ce stade était
-le vrai rendu des deux cases décochées sur `4410`, puis la reprise `9 × 9`.
-
-Le tunnel `4410` a depuis été recréé avec un seul processus connecté et les
-empreintes distantes confirment que l'interface et le correctif existent. Le
-préflight de campagne bloquait toutefois à tort sur l'état sûr `cancelled`
-laissé à `0/6`. Le validateur accepte maintenant uniquement un `idle` neuf ou
-ce cas précis à zéro mesure avec backup ; il refuse une reprise après le premier
-mesh. Le test ciblé est vert et la capture
-`20260822-233717-g4-k1-control-calibration-ui-campaign-v1` a obtenu
-`PREFLIGHT_CALIBRATION_UI_CAMPAIGN_V1_OK`. Il reste à recharger `4410`, constater
-les deux confirmations décochées, puis lancer le niveau `9 × 9` depuis l'écran.
-
-Le lancement a été conforme (`9 × 9`, bicubique, remplacement faux). Après la
-chauffe, les `200 s`, le nettoyage et le homing, la première grille s'est
-arrêtée à `1/6` avec `Le mesh ne contient pas le nombre de lignes attendu.`
-Aucune matrice n'a été conservée. Les chauffes sont à zéro, le Z `−0,04 mm` et
-le profil `6 × 6` sont intacts. Le firmware exact montre que `prtouch_v3`
-utilise le `probe_count` chargé à `6,6` et ignore l'extension dynamique attendue.
-
-ADR-011 et `G4-K1-CONTROL-CALIBRATION-UI-PRTOUCH-MATRIX-V1` corrigent cette
-frontière sans contourner le capteur Creality : commutation atomique après
-backup et avant chauffe, restart Klipper vérifié, restauration après coupure
-des chauffes. La pose ajoute seulement le composant et sa section Moonraker,
-sans toucher `printer.cfg`. La capture
-`20260823-001724-g4-k1-control-calibration-ui-prtouch-matrix-v1` a obtenu le
-déploiement et deux validations vertes. L'essai vide est restauré exactement en
-phase `rolled_back`, avec le Z `−0,04 mm`, le profil `6 × 6`, le stockage et les
-chauffes conformes.
-
-Le delta statique `G4-K1-CONTROL-CALIBRATION-UI-PRTOUCH-PRESETS-V1` retire le
-choix `4 × 4` inexécutable et conserve `3/5/6/9/11/15`. Son premier transfert a
-rencontré un défaut de guillemets dans la validation locale puis a restauré
-automatiquement les deux fichiers exacts. Après correction, la capture
-`20260823-003755-g4-k1-control-calibration-ui-prtouch-presets-v1` a obtenu le
-déploiement et deux validations vertes, sans restart ni action physique. La
-suite complète compte 191 tests verts, 3 ignorés connus. Le préflight de reprise
-`20260823-002500-g4-k1-control-calibration-ui-campaign-v1` est vert. À ce stade
-historique, l'autorité globale du Goal couvrait encore la campagne et le seul
-verrou était la confirmation physique fraîche du plateau. Cette autorité n'est
-plus transférable après le handoff et aucun nouveau départ `9 × 9` n'est permis.
-
-Thomas a relancé le `9 × 9`. Le composant V1 a chargé `probe_count=9,9`, puis
-Klipper a refusé son démarrage avec XS3002 parce que l'algorithme persistant
-restait `lagrange`. Aucun chauffage, homing, mouvement ou mesh n'avait commencé.
-La garde de 120 s a déclenché le rollback automatique : `6,6 + lagrange`,
-Klipper prêt, cibles zéro, Z `−0,04 mm`, profil rapide, stockage et deux CFS
-intacts. La campagne `20260823-004305-421-calibration-ui-v1` est `failed` à
-`0/6` avec son backup disponible.
-
-Le paquet séparé
-`G4-K1-CONTROL-CALIBRATION-UI-PRTOUCH-BED-MESH-V2` remplace seulement le
-composant V1 et redémarre uniquement le Moonraker dédié. Son runtime commute et
-relit ensemble `probe_count + algorithm`, refuse `9/11/15 + lagrange`, puis
-restaure les deux valeurs après chauffes ou échec. La première pose a exposé une
-lacune du validateur : la K1 utilise `lagrange` implicitement sans ligne
-`algorithm`, ce qui avait placé le composant dans `failed_components` sans être
-détecté. Aucun chauffage, homing ou mouvement n'a eu lieu. La révision corrigée
-préserve exactement cette forme implicite et vérifie désormais `server/info`.
-La capture `20260823-012755-g4-k1-control-calibration-ui-prtouch-bed-mesh-v2-r2`
-a obtenu le préflight, le déploiement et deux validations vertes ;
-`failed_components=[]` et `warnings=[]`. La campagne XS3002 reste restaurée
-exactement et le préflight complet
-`20260823-013151-g4-k1-control-calibration-ui-campaign-v1` est vert. La prochaine
-action est uniquement le nouveau départ écran `9 × 9` avec confirmation fraîche
-du plateau libre.
-
-Ce départ a été exécuté sous la campagne
-`20260823-021858-540-calibration-ui-v1`. Le journal Klipper exact montre le
-premier mesh `9 × 9` atteindre `g29_cnt=36`, puis
-`prtouch_v2_wrapper.py:1889` lever `IndexError: list index out of range` avant le
-point physique 37. Le `1/6` affiché signifie que le contrôleur était dans son
-premier des six passages prévus ; il ne signifie pas qu'un mesh valide a été
-enregistré. L'erreur « nombre de lignes attendu » est la conséquence locale de
-la matrice incomplète.
-
-Le rollback API a obtenu la phase `rolled_back`. L'état final contrôlé est sûr :
-`standby`, chauffes demandées à zéro, axes non référencés, deux CFS conformes,
-profil robuste `k1_p001_t055_r001_n06x06`, Z accepté `−0,04 mm` et stockage
-`ok`. Le XS3002 `nozzle_mcu` visible pendant la restauration est survenu pendant
-le restart et Klipper a récupéré ; ce n'est pas la cause du point 37.
-
-La configuration usine officielle contient exactement trente-six tables par
-point. L'ADR-012 retire donc `9/11/15` au lieu de contourner le capteur. Le mode
-quotidien devient uniquement `6 × 6` Lagrange, avec un seul mesh puis le chemin
-Z. Les six meshes de FIRST-CALIBRATION-V2 restent la qualification statistique
-initiale déjà validée, pas une répétition quotidienne. Le workaround
-communautaire `pr_version: 1` avec retrait des tables est explicitement rejeté.
-
-Les familles de payloads ont été corrigées hors imprimante. Les quatre deltas
-sûrs PRTOUCH-BED-MESH-V2, MATRIX-V1, RETRY-SAFETY-V1 et PRTOUCH-PRESETS-V1 ont
-depuis été préflightés, posés ou reconnus déjà présents, puis validés séparément.
-La campagne quotidienne a ensuite réussi et la suite complète compte maintenant
-224 tests verts avec 3 ignorés connus. Le prochain write-set est uniquement
-NAVIGATION-V1, sans restart ni action physique. Après son vrai rendu, la
-prochaine gate physique séparée est COMPOSITE-MESH-SUBGRID-V1.
-
-La gate précédente est close avec `DEPLOY_CALIBRATION_PATH_V1_OK` et
-`VALIDATE_CALIBRATION_PATH_V1_OK` sous la capture
-`20260822-124207-g4-k1-control-calibration-path-v1`.
-
-Autorisation de reprise : Thomas a donné puis reconfirmé une autorisation
-globale pour les sept étapes de la roadmap. D-054 rend cette autorité
-indépendante d'une phrase littérale. FIRST-CALIBRATION-V2,
-CALIBRATION-UI-V1, les quatre deltas sûrs et CAMPAIGN-V1 sont validés et clos.
-NAVIGATION-V1 est préparée et peut être posée directement. La sous-grille
-composite et la bascule production restent des incréments ultérieurs de la
-roadmap, couverts lorsqu'ils sont atteints dans l'ordre prévu.
-
-La bascule Orca reste une gate ultérieure unique : wrappers de travail côté
-machine, trois champs Orca et retrait du post-traitement doivent changer
-ensemble, après validation de ce runtime.
-
-Le post-traitement PHP/Orca `+0,27 mm`, le Start G-code et le G-code de changement
-de filament restent strictement inchangés. Le GO V2 ne couvre ni la pose UI, ni
-la bascule Orca, ni G5.
-
-## Stop conditions
-
-Codex must stop without attempting a workaround if:
-
-- the target host is ambiguous;
-- root access fails;
-- a required action may write to the printer;
-- a command is not confidently read-only;
-- the machine is printing or calibrating before an unplanned operation; the already authorised passive observer may remain connected during the job;
-- a captured file contains secrets or unclear proprietary content;
-- the observed hardware or firmware contradicts the assumed target.
-
-The S11/S12 configuration-selection conflict is resolved in favour of S12 structure 0. Firmware recovery remains blocked until an exact image is matched despite the stale S11 OTA metadata.
-
-## Information to bring back for analysis
-
-- redacted manifest;
-- active configuration entry point and complete include graph;
-- macro names and paths for startup, homing, levelling and CFS operations;
-- process/service map;
-- mount and persistence map;
-- relevant redacted logs;
-- one G-code file that reproduced the bad first layer, kept private until reviewed;
-- ideally, two logs from identical G-code executions with different Z outcomes.
-- Orca `.orca_printer` export for the actual K1 Max profile;
-- exact custom start/end/layer/tool-change and Z workaround text;
-- existing representative 3MF/G-code for multi-object, hot-bed and CFS cases;
-- already-held recovery image/procedure reference.
-
-The first six items, readable extension sources, protocol, private inputs, one non-qualified A1/B/A2 trace and one complete long-production trace now exist. Compiled CFS internals remain opaque, but its refill temperature effect and the final active pressure advance have now been measured directly.
+# HANDOFF — reprise autonome `MESH-EDITOR-OFFLINE-V1`
+
+Date de passation : 2026-08-24 (Europe/Paris)
+Projet : `C:\Users\janko\Documents\ChatGPT\k1-max-cfs-root-toolkit`
+Tâche source Codex : `01a02ea1-9539-70e1-856e-d52846e91278`
+Branche cible : `main`
+Base Git avant le commit de passation : `5c7c4c00eee974f44f04f322c74bda99ca84927d`
+
+## État obligatoire à annoncer immédiatement à Thomas
+
+- **Autonomie calibration quotidienne standard : atteinte.**
+- **Autonomie du mode Précision/composite : non atteinte.** Le profil physique `11 × 11` est qualifié techniquement, mais son résultat en première couche reste mauvais aux bords ; le mode reste caché.
+- **Autonomie production : non atteinte.** Les séquences de départ, pause/reprise, CFS et fin ne sont pas encore remplacées ni validées.
+- Le profil robuste `k1_p001_t055_r001_n06x06` et le Z persistant accepté `−0,04 mm` sont qualifiés et doivent être conservés.
+- `FIRST-CALIBRATION-V2` est close et ne doit jamais être rejouée.
+- La comparaison V2 confirme un gain central du `11 × 11`, mais refuse sa promotion à cause des défauts de bord.
+- L’état physique actuel de la K1 n’est pas frais : aucun préflight SSH n’a été exécuté après la dernière comparaison V2.
+- Prochaine mission unique : `MESH-EDITOR-OFFLINE-V1`, entièrement hors imprimante et sans toucher à la K1 ; elle prépare, mais ne lance pas, le motif de bord `5..295 mm`.
+- Aucun `GO` exact ni identifiant de gate recopié n’est requis une fois que Thomas demande normalement de reprendre cette mission, conformément à D-054.
+
+Autorisation au moment de cette passation : `ATTENDRE_GO` au sens « ne pas démarrer automatiquement dans la nouvelle tâche ».
+
+Cette attente ne rétablit pas les anciens mots de passe littéraux : un simple « reprends », « continue » ou une mission/Goal actif suffit. Aucun Goal implicite ne doit être créé par la passation elle-même.
+
+## 1. But de cette passation
+
+Ce fichier est le point d’entrée canonique pour une tâche Codex neuve. Il
+remplace l’ancien `HANDOFF.md` accumulatif, devenu trop long et porteur de
+plusieurs anciennes « prochaines missions » désormais closes.
+
+La chronologie exhaustive reste disponible dans Git ainsi que dans
+[`STATE.md`](STATE.md), [`GATES.md`](GATES.md) et
+[`DECISIONS.md`](DECISIONS.md). La présente passation ne conserve que :
+
+- l’état utile et ses incertitudes ;
+- les résultats techniques encore actifs ;
+- les preuves privées à ne pas perdre ;
+- le périmètre exact du prochain incrément ;
+- les critères d’acceptation et les interdictions.
+
+## 2. Identité et état Git
+
+- Dépôt : `k1-max-cfs-root-toolkit`.
+- Remote : `https://github.com/TomassonJW/k1-max-cfs-root-toolkit.git`.
+- Branche de reprise : `main`.
+- Un seul worktree connu au moment de la passation : le worktree principal.
+- Branche distante étrangère à préserver :
+  `origin/agent/bootstrap-safety-baseline`.
+- Les répertoires ignorés `.codex-work/` et `inventory/raw/` contiennent des
+  preuves privées utiles. Ne pas les nettoyer globalement.
+
+À la reprise, vérifier avant toute modification :
+
+```powershell
+git status --short --branch
+git rev-parse HEAD main origin/main
+git worktree list --porcelain
+git status --ignored --short
+```
+
+Résultat attendu : `main` propre, `HEAD = main = origin/main`, un seul
+worktree principal. Le SHA exact du commit de passation est le `HEAD` trouvé à
+ce moment-là ; il ne peut pas être inscrit dans le commit qui le calcule.
+
+## 3. Ce qui est réellement qualifié
+
+### 3.1 Calibration quotidienne standard
+
+La calibration quotidienne standard est autonome depuis K1 Control :
+
+- plaque qualifiée : `PEI_TEXTURED_A` ;
+- campagne quotidienne : un seul mesh `6 × 6` Lagrange ;
+- profil robuste : `k1_p001_t055_r001_n06x06` ;
+- Z persistant accepté : `−0,04 mm` ;
+- navigation Mainsail vers `/k1-control/` validée dans le vrai navigateur ;
+- la limite physique du PRTouch propriétaire à 36 contacts est connue et
+  intégrée dans l’interface.
+
+Ne pas confondre cette autonomie quotidienne avec l’autonomie production.
+
+### 3.2 Source composite physique `11 × 11`
+
+Le profil `k1_p001_t055_r001_n11x11` provient de quatre sous-grilles carrées
+`6 × 6` :
+
+- 144 contacts physiques ;
+- 121 positions uniques ;
+- chevauchement brut maximal : `0,147858 mm` ;
+- alignement par biais additif constant de chaque quadrant ;
+- moyenne pondérée des biais remise à zéro ;
+- écart maximal après alignement : `0,04374502944942382 mm` ;
+- écart moyen après alignement : `0,013871331 mm` ;
+- aucun lissage local inventé et aucune nouvelle mesure lors de la reprise ;
+- empreinte de la matrice candidate :
+  `9d975c32512b840cf06c0b942af6e4713f7f69c62ce35e140c41941540153100`.
+
+Ce profil est une **source physique immuable**. La prochaine mission ne doit
+jamais écraser ses 121 valeurs. Toute correction crée un profil dérivé nommé,
+versionné et réversible.
+
+### 3.3 Comparaisons de première couche
+
+`G4-K1-CONTROL-COMPOSITE-FIRST-LAYER-COMPARISON-V1` est close KO :
+
+- l’ancien post-traitement Orca `--start-z-offset 0.27` était encore présent ;
+- il plaçait la couche environ `0,31 mm` au-dessus du Z accepté `−0,04 mm` ;
+- seul le passage robuste a été imprimé ;
+- le passage composite n’a pas été lancé ;
+- les G-code V1 ont été retirés de la K1 ;
+- V1 ne doit jamais être rejouée.
+
+La comparaison V2 a ensuite été exécutée avec le profil composite actif :
+
+- le Z persistant est resté `−0,04 mm` ;
+- le Z effectif temporaire trouvé par Thomas était `−0,24 mm` ;
+- une reprise stock a réécrit le Z effectif, puis Thomas a réappliqué
+  `−0,24 mm` pendant l’impression ;
+- `−0,24 mm` est une valeur temporaire de cette validation et **ne doit pas
+  être persistée automatiquement** ;
+- la grande zone centrale est nettement meilleure qu’avec le robuste ;
+- les bords et certaines zones proches des côtés restent très mauvais ;
+- verdict humain : gain réel, mais promotion du mode Précision refusée.
+
+Les trois photos finales de cette V2 sont conservées dans le répertoire privé
+ignoré :
+
+`inventory/raw/20260824-composite-first-layer-v2-photos/`
+
+Empreintes :
+
+| Fichier | SHA-256 |
+|---|---|
+| `1-Photo-1.jpg` | `d798a75cbc89a0d3a9efe1841b53a0d81275fe0387d47881710dc041854a2802` |
+| `2-Photo-2.jpg` | `775798e8ce253a52e7dd45218ecedcb2ab2163fc705e2c2f136a6ad4f02d706b` |
+| `3-Photo-3.jpg` | `51925c2565d6e3bcb61e4c3f661c7cb4bef58597a2cd5a23abfa7dbcccc2e4c5` |
+
+Ces fichiers sont des preuves privées : les lire localement si nécessaire,
+mais ne pas les ajouter à Git.
+
+## 4. Diagnostic technique acquis
+
+L’hypothèse « Lagrange ou bicubique déforme principalement les bords » a été
+testée sur le code Klipper exact de la K1 et n’explique pas le défaut observé.
+
+Mesures hors imprimante :
+
+- reproduction du profil robuste : erreur maximale `0,000000499 mm` ;
+- différence maximale bicubique/direct sur le composite : `0,009877883 mm` ;
+- différence maximale dans la couronne extérieure de 29 mm :
+  `0,009712808 mm` ;
+- overshoot local maximal : `0,000689867 mm`.
+
+Conclusion : l’interpolation est un effet secondaire, trop faible pour
+expliquer seule les défauts photographiés.
+
+Causes à traiter comme hypothèses, dans cet ordre :
+
+1. effort dépendant de la position du tube PTFE/CFS ou du faisceau sur la tête ;
+2. contraintes du plateau et des quatre cellules de charge ;
+3. résidu de biais entre quadrants composites ;
+4. effets globaux de Z effectif, débit, température ou séquence d’impression.
+
+La prochaine étape choisie par Thomas n’est pas de refaire immédiatement le
+palpage : elle consiste à construire l’éditeur sûr et à rendre les corrections
+locales traçables. La gate physique suivante devra ensuite distinguer erreur
+stable et influence mécanique/PTFE.
+
+## 5. État de la K1 : connu, observé et inconnu
+
+### Dernier état pleinement validé avant la comparaison V2
+
+- `standby` ;
+- cibles buse et plateau à zéro ;
+- axes non référencés ;
+- Z persistant `−0,04 mm`, stockage `ok` ;
+- profils robuste `6 × 6` et composite `11 × 11` présents ;
+- robuste rechargé ;
+- deux CFS connectés.
+
+### Observations pendant la comparaison V2
+
+- profil composite actif pendant l’impression ;
+- Z effectif temporaire `−0,24 mm` après correction humaine ;
+- Z persistant `−0,04 mm` intact.
+
+### Inconnues actuelles obligatoires
+
+Aucun préflight SSH frais n’a été exécuté après la fin de V2. Ne pas affirmer
+sans nouvelle preuve :
+
+- que la K1 est actuellement en `standby` ;
+- que les cibles sont à zéro ;
+- que les axes sont non référencés ;
+- quel profil est actuellement actif ;
+- que les deux CFS sont connectés ;
+- que le plateau est libre, propre ou porte encore la même plaque ;
+- que les G-code V2 ont été retirés du stockage distant.
+
+Cette incertitude ne bloque pas `MESH-EDITOR-OFFLINE-V1`, car cette mission
+n’a aucun besoin légitime de joindre la K1.
+
+## 6. Prochaine mission unique : `MESH-EDITOR-OFFLINE-V1`
+
+### 6.1 Objectif
+
+Construire et valider entièrement hors imprimante le modèle, le moteur et
+l’interface simulée qui permettront à Thomas de créer un profil mesh dérivé à
+partir du `11 × 11`, sans modifier la source et sans dépendre de Codex pour
+chaque ajustement futur.
+
+### 6.2 Livrables attendus
+
+Implémenter par petits incréments, probablement dans :
+
+`packages/k1-control-v1/mesh-editor-offline-v1/`
+
+Le paquet doit contenir au minimum :
+
+1. **Modèle de données immuable**
+
+   - référence explicite de la source physique ;
+   - profil dérivé versionné, par exemple suffixe `_tuned_v001` ;
+   - matrice source, deltas, matrice finale, métadonnées et état de
+     qualification séparés ;
+   - empreinte canonique reproductible ;
+   - orientation X/Y explicite et testée ;
+   - Z global totalement séparé des deltas du mesh.
+
+2. **Moteur de corrections pur et testable**
+
+   - sélection d’un point, d’une ligne, d’une colonne ou d’une petite région ;
+   - actions utilisateur `Rapprocher` et `Éloigner` ;
+   - pas `0,005 mm` et `0,010 mm` ;
+   - normalisation à moyenne pondérée nulle ;
+   - undo/redo, historique et rollback ;
+   - aucune mutation silencieuse de la matrice source ;
+   - aucune correction automatique ou lissage non demandé.
+
+3. **Gardes**
+
+   - avertissement lorsque la correction absolue dépasse `0,05 mm` ;
+   - refus au-delà de `0,10 mm` ;
+   - garde sur saut entre voisins au-delà de `0,08 mm` ;
+   - messages compréhensibles indiquant le point, le delta et la raison ;
+   - conventions de signe prouvées par les tests et affichées dans l’UI.
+
+4. **Interface hors ligne dans le style K1 Control**
+
+   - grille 2D orientée de 121 points ;
+   - affichage commutable `Source / Deltas / Final` ;
+   - sélection claire et clavier utilisable ;
+   - boutons `Rapprocher`, `Éloigner`, undo, redo, comparer, restaurer ;
+   - historique lisible ;
+   - aperçu 3D pour comprendre et sélectionner, mais **pas de glisser vertical
+     3D en V1** ;
+   - puissance avancée progressive, sans surcharger l’usage courant.
+
+5. **Fausse API et simulateur**
+
+   - aucun appel Moonraker réel ;
+   - états chargement, validation, erreur et restauration simulables ;
+   - contrat assez proche de la future API pour éviter une réécriture de l’UI ;
+   - tests du flux complet création → correction → undo/redo → export.
+
+6. **Export Klipper déterministe**
+
+   - bloc de profil complet de 121 valeurs ;
+   - `bicubic` et limites physiques `5..295` cohérentes avec la source ;
+   - format reconnu par le parseur exact ;
+   - résultat bit à bit identique pour une même entrée ;
+   - round-trip parse/export et rollback simulé ;
+   - aucun déploiement ou script distant dans cette mission.
+
+### 6.3 Source exacte des 121 valeurs
+
+Ordre de confiance :
+
+1. bloc composite dans le fichier privé :
+   `inventory/raw/20260824-155319-g4-k1-control-composite-mesh-recovery-v1-run/printer.cfg.composite` ;
+2. état privé associé :
+   `inventory/raw/20260824-155319-g4-k1-control-composite-mesh-recovery-v1-run/composite-mesh-state.json` ;
+3. manifeste public :
+   `packages/k1-control-v1/composite-mesh-v1/recovery-deployment-manifest.json` ;
+4. logique existante de composition et de rendu.
+
+Empreintes privées vérifiées :
+
+| Artefact | SHA-256 |
+|---|---|
+| `printer.cfg.composite` | `f88d6b52477592805384fca2b4d7abd00298deecd82227af2fa580085fe26fa2` |
+| `composite-mesh-state.json` | `09fe8333dd1708dc781091e367efef7220d8056d40dab7ffefee26e55de9d8eb` |
+| `final-printer-status.json` | `24490c6efc9f2d315a6772f62af20864d5ed8e492f92cb36076213cf7abbbc9e` |
+
+Extraire seulement la matrice et ses métadonnées nécessaires vers un fixture
+public nettoyé. Ne jamais committer le `printer.cfg` complet, les captures
+brutes, les identifiants, les journaux privés ou les photos.
+
+### 6.4 Tests obligatoires de sortie
+
+- tests mathématiques sur les 121 valeurs exactes ;
+- immutabilité bit à bit de la source ;
+- orientation des quatre coins et des axes ;
+- moyenne pondérée nulle après correction ;
+- gardes `0,05 / 0,10 / 0,08 mm` ;
+- undo/redo et historique déterministes ;
+- export Klipper bit à bit reproductible ;
+- round-trip parse/export ;
+- tests UI sur les actions et le vocabulaire ;
+- faux backend uniquement, sans URL ou transport K1 actif ;
+- suite projet complète verte ;
+- parse de tous les scripts PowerShell ;
+- `git diff --check` et revue du diff.
+
+### 6.5 Critères OK / KO
+
+**OK** seulement si :
+
+- la source composite est inchangée ;
+- un profil dérivé peut être créé, corrigé, annulé, rétabli et exporté ;
+- les 121 valeurs restent orientées correctement ;
+- les bornes refusent réellement les corrections dangereuses ;
+- la même entrée produit exactement le même export ;
+- l’UI fonctionne contre la fausse API ;
+- aucun code de cette gate ne contacte ou ne modifie la K1.
+
+**KO** notamment si :
+
+- la source est éditée en place ;
+- le Z global est mélangé au mesh ;
+- le sens `Rapprocher/Éloigner` n’est pas explicite et testé ;
+- une correction est lissée ou renormalisée sans trace ;
+- l’orientation est déduite visuellement sans fixture ;
+- l’export dépend d’un arrondi non déterministe ;
+- la mission ajoute déjà une pose K1, une impression ou une activation réelle.
+
+### 6.6 Arrêt obligatoire de l’incrément
+
+Arrêter la mission après la gate hors ligne verte. Ne pas, dans le même
+incrément :
+
+- joindre la K1 par SSH, tunnel, Moonraker ou API Creality ;
+- préparer ou exécuter un déploiement ;
+- créer ou lancer le motif physique de bord ;
+- activer un profil dérivé réel ;
+- exposer le mode Précision dans l’interface installée ;
+- toucher aux séquences de production, Orca, CFS, pause/reprise ou fin ;
+- persister `−0,24 mm`.
+
+## 7. Lecture obligatoire avant de coder
+
+Lire entièrement, dans cet ordre :
+
+1. [`AGENTS.md`](AGENTS.md)
+2. [`HANDOFF.md`](HANDOFF.md)
+3. [`STATE.md`](STATE.md)
+4. [`GATES.md`](GATES.md)
+5. [`DECISIONS.md`](DECISIONS.md)
+6. [`docs/23-audit-mesh-manuel-et-cycle-production-cfs.md`](docs/23-audit-mesh-manuel-et-cycle-production-cfs.md)
+7. [`docs/adr/ADR-015-profils-mesh-derives-et-corrections-locales.md`](docs/adr/ADR-015-profils-mesh-derives-et-corrections-locales.md)
+8. [`docs/adr/ADR-013-maillage-composite-et-interface-capacitaire.md`](docs/adr/ADR-013-maillage-composite-et-interface-capacitaire.md)
+9. [`docs/adr/ADR-016-cycle-production-orchestre-et-propriete-cfs.md`](docs/adr/ADR-016-cycle-production-orchestre-et-propriete-cfs.md), uniquement pour préserver la frontière de la future production
+10. [`docs/21-g4-k1-control-composite-mesh-v1.md`](docs/21-g4-k1-control-composite-mesh-v1.md)
+11. [`docs/10-systeme-pilotage-perenne.md`](docs/10-systeme-pilotage-perenne.md)
+12. [`packages/k1-control-v1/composite-first-layer-comparison-v2/RESULT.md`](packages/k1-control-v1/composite-first-layer-comparison-v2/RESULT.md)
+
+Puis relire le code source utile :
+
+- `packages/k1-control-v1/composite-mesh-v1/compose_mesh.py` ;
+- `packages/k1-control-v1/composite-mesh-v1/render_profile.py` ;
+- `packages/k1-control-v1/composite-mesh-v1/k1_control_composite_mesh_core.py` ;
+- `packages/k1-control-v1/composite-mesh-v1/composite-mesh-contract.json` ;
+- `packages/k1-control-v1/composite-mesh-v1/recovery-deployment-manifest.json` ;
+- `packages/k1-control-v1/calibration-ui-navigation-v1/app.js` ;
+- `packages/k1-control-v1/calibration-ui-prtouch-presets-v1/index.html` ;
+- `packages/k1-control-v1/calibration-ui-v1/www/styles.css` ;
+- `packages/k1-control-v1/calibration-ui-matrix-v1/k1_control_calibration_core.py` ;
+- `tests/test_k1_control_composite_mesh.py` ;
+- `tests/test_mesh_editor_and_lifecycle_contract.py` ;
+- les tests UI K1 Control déjà présents.
+
+Vérifier les chemins réels avec `rg --files` : ne pas inventer un fichier si
+son nom a évolué.
+
+## 8. Artefacts privés à préserver
+
+Ne jamais supprimer globalement `.codex-work/` ou `inventory/raw/`.
+
+Artefacts particulièrement utiles :
+
+- `inventory/raw/20260824-155319-g4-k1-control-composite-mesh-recovery-v1-run/` ;
+- `inventory/raw/20260824-171414-g4-k1-control-composite-first-layer-comparison-v2/` ;
+- `inventory/raw/20260824-183614-g4-k1-control-first-layer-z-validation-v1/` ;
+- `inventory/raw/20260824-composite-first-layer-v2-photos/` ;
+- `.codex-work/20260824-composite-first-layer-v2/` ;
+- `.codex-work/20260824-composite-first-layer-v2-retry/` ;
+- `.codex-work/extract_binary_strings.py` ;
+- `.codex-work/inspect-prtouch-v3.py` ;
+- `.codex-work/read-bed-mesh-config.ps1`.
+
+Ils restent ignorés par Git. Toute donnée publique nécessaire aux tests doit
+être minimisée, nettoyée et justifiée avant ajout.
+
+## 9. Roadmap après l’éditeur — ne pas anticiper
+
+Ordre mesh :
+
+1. `MESH-EDITOR-OFFLINE-V1` ;
+2. `MESH-EDGE-DIAGNOSTIC-V1` ;
+3. `MESH-DERIVED-PROFILE-V1` ;
+4. `MESH-TUNING-CAMPAIGN-V1` ;
+5. exposition éventuelle du mode Précision seulement après deux feuilles
+   complètes consécutives sans défaut grave, sans correction Z en direct et
+   avec rollback prouvé.
+
+La gate physique M2 utilisera plus tard :
+
+- plage utile `X/Y=5..295` ;
+- carte des 121 cellules ;
+- une seule petite région corrigée de `0,010 mm` ;
+- même plaque, filament, température, PTFE et Z effectif ;
+- présence de Thomas devant la machine ;
+- comparaison de répétabilité et d’influence PTFE ;
+- retour immédiat au robuste en cas de KO.
+
+Ordre production, strictement différé :
+
+1. `PRODUCTION-SEQUENCE-AUDIT-V2` ;
+2. `JOB-LIFECYCLE-OFFLINE-V1` ;
+3. `CLEAN-AND-REFERENCE-V1` ;
+4. `CFS-TEMP-OWNER-V1` ;
+5. `PAUSE-RESUME-SEMANTICS-V1` ;
+6. `END-SEQUENCE-V1` ;
+7. `ORCA-CUTOVER-V1` ;
+8. gate G5.
+
+Le retrait de l’ancien départ Orca et du `+0,27 mm` doit rester une seule
+transaction future, avec rollback. Aucun paquet mesh ne doit les modifier.
+
+## 10. Autorité, sécurité et communication
+
+- D-054 s’applique : une mission clairement demandée autorise ses actions
+  normales de bout en bout sans phrase littérale supplémentaire.
+- Une instruction plus récente comme `stop`, `lecture seule` ou `ne touche pas
+  à l’imprimante` prime toujours.
+- Les dialogues d’approbation techniques de la plateforme peuvent encore
+  apparaître ; ne pas les transformer en rituel projet.
+- Pour cette mission hors ligne, toute tentative de connexion K1 est hors
+  périmètre, même en lecture seule.
+- Ne jamais considérer un ancien état distant comme frais.
+- Ne jamais annoncer « mode Précision autonome » avant les gates physiques.
+- Ne jamais annoncer « production autonome » avant le cutover et G5.
+- Thomas veut à terme zéro intervention Codex pour les réglages ordinaires :
+  chaque pouvoir utile doit devenir une option d’interface testable, avec
+  rollback et mode avancé progressif.
+
+## 11. Démarrage recommandé dans la nouvelle tâche
+
+Quand Thomas demande de reprendre :
+
+1. annoncer les trois statuts d’autonomie du début de ce fichier ;
+2. confirmer que la mission est uniquement `MESH-EDITOR-OFFLINE-V1` ;
+3. lire intégralement les documents obligatoires ;
+4. vérifier Git et les artefacts privés, sans contacter la K1 ;
+5. présenter un plan court et les décisions d’UI encore structurantes ;
+6. implémenter le plus petit incrément utile ;
+7. tester, relire le diff et clôturer Git complètement ;
+8. s’arrêter après la gate hors ligne verte.
+
+Modèle conseillé : `gpt-5.6-sol`, raisonnement `high`, car la mission combine
+mathématiques, modèle de données, UI, tests de reproductibilité et forts risques
+d’orientation/signe. Option plus économique acceptable : `gpt-5.6-terra`,
+raisonnement `high`, avec davantage de risque de reprise lors de la validation
+croisée des 121 valeurs.
+
+## 12. Contrat de la nouvelle tâche Codex
+
+La nouvelle tâche doit être créée localement, dans ce dépôt, sans fork, sans
+worktree et sans branche automatique. Elle doit :
+
+- rester en attente après avoir chargé cette passation ;
+- ne créer aucun Goal implicite ;
+- ne contacter ni modifier la K1 ;
+- ne commencer qu’après une instruction normale de Thomas ;
+- reprendre directement depuis ce fichier, sans exiger l’historique oral de la
+  tâche source.
+
+La tâche source reste non archivée tant que Thomas ne demande pas explicitement
+son archivage.
