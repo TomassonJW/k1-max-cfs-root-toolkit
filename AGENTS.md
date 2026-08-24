@@ -69,6 +69,15 @@ mission unique est une comparaison contrôlée de premières couches `6 × 6`
 contre `11 × 11`. Le mode Précision ne devient pas visible dans l'UI avant un
 gain observable.
 
+La première comparaison de couche
+`G4-K1-CONTROL-COMPOSITE-FIRST-LAYER-COMPARISON-V1` est **close KO**. Elle a
+gardé à tort l'ancien offset Orca `+0,27 mm`, soit environ `0,31 mm` au-dessus du
+Z accepté `−0,04 mm`. Le passage robuste a terminé avec une couche trop haute ;
+le composite n'a pas été lancé. Les deux G-code et leurs miniatures ont été
+supprimés de la K1. `printer.cfg` conserve le hash exact `f88d6b52…`, le profil
+robuste est actif, les cibles sont à zéro et les axes libérés. Ne jamais rejouer
+V1. Un successeur doit d'abord prouver le Z absolu sur un motif court.
+
 Thomas authorised V1, but the mandatory preflight proved that `logrotate` was
 absent. V1 is closed and must never be deployed. Thomas later authorised V2;
 real attempts reached a working tunnel-only Mainsail, then proved that Mainsail

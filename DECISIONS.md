@@ -1054,7 +1054,7 @@ comparaison de premières couches montrant un gain utile.
 
 Date: 2026-08-24
 
-Status: décision préparée hors imprimante
+Status: décision rejetée par l'essai physique ; V1 close KO
 
 La paire utilise le carré PLA Geeetech `200 × 200 × 0,20 mm` déjà qualifié sous
 G3, avec son empreinte exacte. Les deux G-code conservent le même T0, les mêmes
@@ -1062,7 +1062,25 @@ températures, le même démarrage stock et l'ancien Z Orca `+0,27 mm`. Leur seu
 différence sémantique est la ligne `BED_MESH_PROFILE LOAD` placée après le
 retour de `START_PRINT`.
 
-Le passage robuste précède le composite. La seconde impression ne démarre pas
-avant photographie, repérage et retrait physique de la première. Après la
-comparaison, le profil robuste est rechargé. Ce protocole mesure seulement le
-gain relatif du mesh ; il ne valide aucun élément de l'autonomie production.
+Cette isolation était insuffisante : l'ancien `+0,27 mm` est environ `0,31 mm`
+au-dessus du Z accepté `−0,04 mm`. Le passage robuste a donc produit une couche
+trop haute et le composite n'a pas été lancé. Les fichiers distants sont
+supprimés. Une comparaison future doit d'abord qualifier son Z absolu sur un
+motif court ; l'égalité entre A et B ne compense jamais une valeur physique
+fausse.
+
+## D-059 — Une comparaison relative exige d'abord une première couche absolue valide
+
+Date: 2026-08-24
+
+Status: décision issue d'un KO physique
+
+Avant toute paire de profils, un motif court et borné doit prouver que le Z
+effectivement appliqué pendant l'extrusion correspond au Z accepté. Le contrôle
+doit relire `gcode_move.homing_origin` après `START_PRINT`, avant le premier
+mouvement de couche. Une ancienne correction Orca, même identique dans les deux
+variantes, ferme la gate si elle contredit le stockage Z qualifié.
+
+Le passage composite ne démarre jamais pour « voir quand même » après un défaut
+du passage robuste. Le profil robuste reste chargé et le protocole fautif est
+retiré de la K1 avant toute autre action physique.

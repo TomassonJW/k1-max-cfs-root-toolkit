@@ -60,6 +60,14 @@ précision composite est maintenant techniquement qualifié, mais il ne devient
 pas encore une autonomie utilisateur : son gain sur une vraie première couche
 doit être comparé au robuste `6 × 6` avant toute exposition dans l'écran.
 
+La première recette de comparaison V1 est **close KO**. Elle a conservé
+l'ancien offset Orca `+0,27 mm` alors que le Z accepté vaut `−0,04 mm`. Le
+passage robuste a donc produit une couche trop haute ; le composite n'a pas été
+lancé. Les deux fichiers distants ont été supprimés. L'état final conserve le
+hash `printer.cfg` exact `f88d6b52…`, le robuste actif, les cibles zéro et les
+axes libérés. Toute reprise doit préparer un successeur qui qualifie d'abord le
+Z absolu sur un motif court.
+
 L'ADR-013 montre que la limite PRTouch de 36 contacts par séquence ne borne pas
 nécessairement la matrice finale : quatre sous-grilles bornées peuvent former
 121 mesures physiques `11 × 11` dans la même chauffe et le même référencement.

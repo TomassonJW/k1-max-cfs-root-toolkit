@@ -2,7 +2,7 @@
 
 Date: 2026-08-24
 Phase: P4 / campagne quotidienne, NAVIGATION-V1-R2, sous-grille `5 × 5` et profil composite physique `11 × 11` qualifiés ; production fermée
-Next operator: préparer une comparaison de première couche `6 × 6` contre `11 × 11` ; ne pas exposer encore le mode précision dans l'UI
+Next operator: concevoir un successeur de comparaison qui prouve d'abord le Z absolu sur un motif court ; ne jamais rejouer COMPOSITE-FIRST-LAYER-COMPARISON-V1
 
 ## Autorité de reprise actuelle
 
@@ -13,6 +13,15 @@ demandé. Les gates sont des contrôles techniques que Codex passe lui-même.
 Cette décision D-054 remplace les anciennes consignes `ATTENDRE_GO` pour les
 étapes déjà comprises dans la roadmap active. Une restriction explicite plus
 récente ou une donnée physique inconnue reste à respecter.
+
+## KO COMPOSITE-FIRST-LAYER-COMPARISON-V1
+
+La V1 a conservé à tort l'ancien offset Orca `+0,27 mm`, environ `0,31 mm`
+au-dessus du Z accepté `−0,04 mm`. Le passage robuste a terminé mais Thomas a
+constaté que le filament touchait à peine la plaque. Le composite n'a pas été
+lancé. Les deux G-code et leurs miniatures ont été retirés de la K1. Le contrôle
+final confirme `printer.cfg` exact `f88d6b52…`, profil robuste actif, cibles
+zéro et axes libérés. V1 est close KO et ne doit jamais être rejouée.
 
 ## Reprise NAVIGATION-V1 et correctif R2
 

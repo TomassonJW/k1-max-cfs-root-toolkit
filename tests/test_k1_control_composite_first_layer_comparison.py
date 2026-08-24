@@ -36,10 +36,16 @@ class CompositeFirstLayerComparisonTests(unittest.TestCase):
     def setUp(self):
         self.module = load_module()
 
-    def test_outputs_differ_only_by_profile_load(self):
+    def test_v1_is_blocked_before_generating_outputs(self):
         source = source_payload("\r\n")
         digest = hashlib.sha256(source).hexdigest()
-        outputs = self.module.prepare_payloads(source, digest)
+        with self.assertRaisesRegex(ValueError, "close KO"):
+            self.module.prepare_payloads(source, digest)
+
+    def test_historical_transformation_differed_only_by_profile_load(self):
+        source = source_payload("\r\n")
+        text, newline = self.module._validate_source(source, hashlib.sha256(source).hexdigest())
+        outputs = self.module._prepare_historical_payloads(text, newline)
         robust = outputs["robust_6x6"].splitlines()
         composite = outputs["composite_11x11"].splitlines()
         differences = [i for i, pair in enumerate(zip(robust, composite)) if pair[0] != pair[1]]
@@ -58,7 +64,7 @@ class CompositeFirstLayerComparisonTests(unittest.TestCase):
         with self.assertRaisesRegex(ValueError, "déjà une commande Bed Mesh"):
             self.module.prepare_payloads(source, digest)
 
-    def test_writes_manifest_and_two_files(self):
+    def test_refuses_to_write_a_new_pair(self):
         source = source_payload()
         digest = hashlib.sha256(source).hexdigest()
         original = self.module.SOURCE_SHA256
@@ -68,11 +74,9 @@ class CompositeFirstLayerComparisonTests(unittest.TestCase):
                 root = Path(temporary)
                 source_path = root / "source.gcode"
                 source_path.write_bytes(source)
-                manifest = self.module.write_comparison(source_path, root / "output")
-                self.assertEqual(set(manifest["files"]), {"robust_6x6", "composite_11x11"})
-                for item in manifest["files"].values():
-                    payload = (root / "output" / item["name"]).read_bytes()
-                    self.assertEqual(hashlib.sha256(payload).hexdigest(), item["sha256"])
+                with self.assertRaisesRegex(ValueError, "close KO"):
+                    self.module.write_comparison(source_path, root / "output")
+                self.assertFalse((root / "output").exists())
         finally:
             self.module.SOURCE_SHA256 = original
 

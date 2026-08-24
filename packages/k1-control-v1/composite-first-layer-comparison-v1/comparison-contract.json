@@ -1,6 +1,8 @@
 {
   "schema": 1,
   "gate": "G4-K1-CONTROL-COMPOSITE-FIRST-LAYER-COMPARISON-V1",
+  "status": "closed_ko_do_not_run",
+  "failure": "legacy +0.27 mm session offset produced an invalid high first layer",
   "source": {
     "private_path": "inventory/raw/g3-inputs/_Cube_PLA_18m44s.gcode",
     "sha256": "50b54577a4b8a76a0bb5fb2b48e915d1dc6ea9e5bb87aa1f32404c559a54f856",
@@ -20,6 +22,6 @@
   "only_semantic_difference": "BED_MESH_PROFILE LOAD after START_PRINT",
   "legacy_start_z_offset_mm": 0.27,
   "production_autonomy_claimed": false,
-  "ui_precision_unlock": "only_if_observable_first_layer_gain",
+  "ui_precision_unlock": "blocked",
   "fallback": "keep robust 6x6 active and precision UI hidden"
 }

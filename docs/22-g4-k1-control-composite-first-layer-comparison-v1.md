@@ -2,7 +2,8 @@
 
 Date : 2026-08-24
 
-Statut : **paire préparée hors imprimante ; passage robuste en attente**
+Statut : **CLOSE KO — passage robuste physiquement invalide ; passage composite
+non lancé ; fichiers distants supprimés**
 
 ## Question unique
 
@@ -25,9 +26,11 @@ La comparaison réutilise le carré privé déjà qualifié pendant G3 :
 - environ `9,91 g` et `18 min 44 s` par passage ;
 - même plaque `PEI_TEXTURED_A`.
 
-Le fichier a déjà été imprimé physiquement. Son démarrage Orca historique et
-son `SET_GCODE_OFFSET Z=0.27` restent inchangés et identiques entre les deux
-passages. Cette gate ne prétend donc pas valider le Z de production.
+Le fichier avait déjà été imprimé physiquement avant l'acceptation du nouveau
+Z. Conserver son `SET_GCODE_OFFSET Z=0.27` a été une erreur : le Z accepté vaut
+`−0,04 mm`, soit un écart de `0,31 mm`. Une valeur identique entre A et B ne
+rend pas la comparaison valide quand les deux premières couches seraient trop
+hautes.
 
 ## Isolation de la variable
 
@@ -46,7 +49,19 @@ Empreintes :
 - robuste : `ffeb317c713c4a6390e5133b65fd930b2da46682256dd53fd0b48f4f372c95db` ;
 - composite : `39360643c1b14b3d578b9318ea2d3eb8f946a2d5de6a82428f189af7052afbe2`.
 
-## Déroulé borné
+## Résultat réel et rollback
+
+Le passage robuste a terminé, mais Thomas a constaté une couche largement trop
+haute : le filament touchait à peine la plaque. Le contrôle distant a confirmé
+`homing_origin Z=+0,27 mm`, le profil robuste exact et aucune erreur de maillage.
+Ce résultat est invalide et ne qualifie rien.
+
+Le passage composite n'a pas été lancé. Le dossier distant dédié, ses deux
+G-code et ses miniatures ont été supprimés. Le contrôle final confirme le hash
+exact `f88d6b52477592805384fca2b4d7abd00298deecd82227af2fa580085fe26fa2`,
+le profil robuste actif, les cibles à zéro et les axes libérés.
+
+## Déroulé historique rejeté
 
 1. Préflight frais : standby, chauffes à zéro, filament présent, deux CFS,
    profils exacts et configuration persistante conforme.
@@ -69,5 +84,7 @@ montrent une amélioration utile sur les zones où le `6 × 6` présente un déf
 Un résultat équivalent, ambigu ou moins bon ferme l'exposition UI, sans invalider
 le profil composite comme outil de diagnostic.
 
-Cette gate ne valide ni Orca, ni `START_PRINT`, ni le retrait du `+0,27 mm`, ni
+Cette gate est close KO et ne doit pas être rejouée. Son successeur devra
+d'abord prouver un Z absolu valide sur un motif court et borné, puis seulement
+préparer une paire `6 × 6 / 11 × 11`. Il ne valide ni Orca, ni `START_PRINT`, ni
 la propriété des températures CFS, ni l'autonomie production.

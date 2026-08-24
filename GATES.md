@@ -914,14 +914,17 @@ couches doit d'abord montrer un gain utile, sans nouveau palpage.
 
 ### Gate comparaison — `G4-K1-CONTROL-COMPOSITE-FIRST-LAYER-COMPARISON-V1`
 
-Status: **préparée hors imprimante ; passage robuste en attente**
+Status: **failed closed — Z `+0,27 mm` trop haut ; composite non lancé ;
+fichiers distants supprimés**
 
 La source privée est le carré mono-couche G3 de SHA-256
 `50b54577a4b8a76a0bb5fb2b48e915d1dc6ea9e5bb87aa1f32404c559a54f856`.
 Les deux sorties ne diffèrent que par le profil chargé après `START_PRINT`.
-L'ancien Z Orca reste identique ; cette gate ne peut donc conclure que sur le
-gain relatif du mesh. La seconde impression est séparée par une photographie,
-le repérage et le retrait physique de la première pièce.
+L'hypothèse de garder l'ancien Z Orca identique est rejetée. Le premier passage
+robuste a imprimé environ `0,31 mm` au-dessus du Z accepté et ne qualifie rien.
+Le passage composite n'a pas été lancé. La configuration persistante et le
+profil robuste sont intacts ; les deux G-code ont été retirés. Un successeur
+doit prouver d'abord un Z absolu correct sur un motif court.
 
 ## G5 — V1 production baseline
 

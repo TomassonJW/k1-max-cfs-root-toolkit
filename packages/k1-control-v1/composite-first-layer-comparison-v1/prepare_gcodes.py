@@ -17,6 +17,10 @@ LEGACY_Z_COMMAND = (
     "after START_PRINT"
 )
 MARKER = "; K1_CONTROL_COMPOSITE_FIRST_LAYER_COMPARISON_V1"
+BLOCKED_REASON = (
+    "COMPOSITE-FIRST-LAYER-COMPARISON-V1 est close KO: l'ancien offset Orca "
+    "+0,27 mm rend la première couche physiquement invalide."
+)
 PROFILES = {
     "robust_6x6": "k1_p001_t055_r001_n06x06",
     "composite_11x11": "k1_p001_t055_r001_n11x11",
@@ -74,6 +78,11 @@ def prepare_payloads(source: bytes, expected_sha256: Optional[str] = None) -> di
     if expected_sha256 is None:
         expected_sha256 = SOURCE_SHA256
     text, newline = _validate_source(source, expected_sha256)
+    raise ComparisonPreparationError(BLOCKED_REASON)
+
+
+def _prepare_historical_payloads(text: str, newline: str) -> dict[str, bytes]:
+    """Retained only to make the rejected V1 transformation reviewable in tests."""
     anchor = START_COMMAND + newline
     outputs: dict[str, bytes] = {}
     for key, profile in PROFILES.items():
