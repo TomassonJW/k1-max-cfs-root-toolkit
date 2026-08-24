@@ -1,8 +1,8 @@
 # HANDOFF
 
 Date: 2026-08-24
-Phase: P4 / campagne quotidienne `6 × 6 / 1 mesh` et NAVIGATION-V1-R2 validées ; autonomie quotidienne atteinte ; composite non installé ; production fermée
-Next operator: poser sans mouvement COMPOSITE-MESH-SUBGRID-V1, puis exécuter son unique sous-grille `5 × 5` lorsque le plateau libre est factuellement confirmé
+Phase: P4 / campagne quotidienne et NAVIGATION-V1-R2 validées ; autonomie quotidienne atteinte ; SUBGRID-V1 installée ; essai physique non exécuté ; production fermée
+Next operator: exécuter l'unique sous-grille `5 × 5` lorsque le plateau libre et la plaque `PEI_TEXTURED_A` sont factuellement confirmés
 
 ## Autorité de reprise actuelle
 
@@ -38,6 +38,21 @@ final est maintenant « Mesh 6 × 6 et Z enregistrés. La calibration est
 terminée. » Aucune confirmation physique n'a été activée et aucune calibration
 n'a été lancée. NAVIGATION-V1-R2 est close ; l'autonomie de calibration
 quotidienne standard est atteinte.
+
+## Pose sans mouvement SUBGRID-V1
+
+La capture `20260824-113026-g4-k1-control-composite-mesh-subgrid-v1` a obtenu
+`PREFLIGHT_COMPOSITE_SUBGRID_V1_OK`, `DEPLOY_COMPOSITE_SUBGRID_V1_OK`, puis une
+validation indépendante `VALIDATE_COMPOSITE_SUBGRID_V1_OK`. Le backup exact,
+les deux composants originaux et l'unique ajout à `moonraker.conf` sont
+conformes. Seul le Moonraker dédié a redémarré. Le composant termine `idle` ; la
+K1 est au repos, cibles zéro, profil robuste, Z accepté, interface R2 et deux CFS
+conformes. Aucun chauffage, homing, mouvement, mesh ou Z n'a été lancé.
+
+La prochaine action n'est pas une nouvelle permission : c'est l'essai physique
+déjà couvert par le Goal. Il ne peut toutefois déclarer `plate_clear=true`
+qu'après un constat humain frais que le plateau est réellement libre et que la
+plaque `PEI_TEXTURED_A` est en place.
 
 ## Clôture CAMPAIGN-V1 du 24 août 2026
 

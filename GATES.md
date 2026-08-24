@@ -16,7 +16,7 @@ confirmés avant l'action qui en dépend.
 ## Reprise après la campagne quotidienne du 24 août 2026
 
 Statut : **CAMPAIGN-V1 et NAVIGATION-V1-R2 validées ; autonomie quotidienne
-standard atteinte ; COMPOSITE-MESH-SUBGRID-V1 non installée**.
+standard atteinte ; COMPOSITE-MESH-SUBGRID-V1 installée mais essai `5 × 5` non exécuté**.
 
 BED-MESH-V2 est installée et validée sous la capture
 `20260823-151026-g4-k1-control-calibration-ui-prtouch-bed-mesh-v2`.
@@ -45,7 +45,11 @@ worker exact, sans modifier ce fichier constructeur. La capture
 `20260824-112535-g4-k1-control-calibration-ui-navigation-v1-r2` a ensuite obtenu
 le préflight, la pose et deux validations SSH vertes. Chrome a prouvé le clic
 Mainsail vers le vrai écran, sans nouvelle authentification, ainsi que le texte
-Z final corrigé. COMPOSITE-MESH-SUBGRID-V1 reste non installée.
+Z final corrigé. COMPOSITE-MESH-SUBGRID-V1 a ensuite obtenu le préflight, la
+pose et deux validations SSH sous
+`20260824-113026-g4-k1-control-composite-mesh-subgrid-v1`. Seul le Moonraker
+dédié a redémarré et aucune action physique n'a eu lieu. L'essai `5 × 5` reste
+séparé.
 
 La chaîne locale post-campagne est maintenant stricte : SUBGRID-V1 exige le
 hash `printer.cfg` contenant le mesh quotidien validé, puis les deux fichiers

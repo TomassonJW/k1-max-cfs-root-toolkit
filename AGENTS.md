@@ -18,7 +18,8 @@ imprimante impose désormais `6 × 6` Lagrange et un seul mesh quotidien ; les
 deltas sûrs PRTOUCH-BED-MESH-V2, MATRIX-V1, RETRY-SAFETY-V1 et
 PRTOUCH-PRESETS-V1 sont installés et validés ;
 la campagne quotidienne `6 × 6 / 1 mesh` et NAVIGATION-V1-R2 sont acceptées et
-validées ; le mode composite reste non déployé ; production remains closed**.
+validées ; SUBGRID-V1 est installée sans action physique mais son essai `5 × 5`
+reste non exécuté ; production remains closed**.
 
 La capture `20260823-165742-g4-k1-control-calibration-ui-prtouch-presets-v1` a
 clos PRTOUCH-PRESETS-V1 après un préflight frais, un déploiement idempotent et
@@ -40,9 +41,12 @@ crée l'alias original `access-k1-control -> k1-control` et repointe `navi.json`
 Sous la capture `20260824-112535-g4-k1-control-calibration-ui-navigation-v1-r2`,
 le préflight, la pose et deux validations SSH sont verts. Le vrai Chrome
 authentifié ouvre maintenant K1 Control depuis le bouton Mainsail, sans nouvelle
-authentification, et affiche le texte Z final corrigé. La prochaine gate
-physique est uniquement
-`G4-K1-CONTROL-COMPOSITE-MESH-SUBGRID-V1`.
+authentification, et affiche le texte Z final corrigé. SUBGRID-V1 a ensuite
+obtenu son préflight, sa pose et deux validations SSH sous la capture
+`20260824-113026-g4-k1-control-composite-mesh-subgrid-v1`. Seul le Moonraker
+dédié a redémarré ; aucune action physique n'a eu lieu. La prochaine action
+unique est son essai `5 × 5`, après confirmation factuelle d'un plateau libre
+et de la plaque `PEI_TEXTURED_A` en place.
 
 Thomas authorised V1, but the mandatory preflight proved that `logrotate` was
 absent. V1 is closed and must never be deployed. Thomas later authorised V2;

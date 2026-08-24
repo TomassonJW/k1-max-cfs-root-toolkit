@@ -49,7 +49,7 @@ Aucune nouvelle authentification ni action physique n'a eu lieu.
 ## Current phase
 
 **P4 — calibration quotidienne `6 × 6 / 1 mesh` et navigation UX R2 validées ;
-mode composite encore non déployé ; production volontairement bloquée**
+SUBGRID-V1 installée mais essai physique non exécuté ; production volontairement bloquée**
 
 La base sûre et réellement requalifiée reste `6 × 6` Lagrange avec un seul mesh
 standard. L'autonomie de calibration quotidienne standard est maintenant
@@ -61,9 +61,12 @@ L'ADR-013 montre que la limite PRTouch de 36 contacts par séquence ne borne pas
 nécessairement la matrice finale : quatre sous-grilles bornées peuvent former
 121 mesures physiques `11 × 11` dans la même chauffe et le même référencement.
 Le fusionneur hors imprimante est vert. Le composant séparé pour l'unique
-sous-grille décalée `5 × 5` est préparé avec pose, rollback, pilote borné et 14
-tests ciblés ; il n'est ni installé ni exécuté. Sa pose sans mouvement ne vient
-qu'après la clôture de NAVIGATION-V1.
+sous-grille décalée `5 × 5` a obtenu le préflight, la pose et deux validations
+SSH sous `20260824-113026-g4-k1-control-composite-mesh-subgrid-v1`. Seul le
+Moonraker dédié a redémarré ; aucune chauffe, référence, mouvement, mesure ou
+écriture Z n'a eu lieu. Le composant est `idle`. Son essai physique de 25
+contacts reste non exécuté et attend uniquement la confirmation factuelle du
+plateau libre avec `PEI_TEXTURED_A` en place.
 
 Le manifeste SUBGRID-V1 épingle désormais la vraie base quotidienne
 `printer.cfg` `e1f6cd6d…`, le `app.js` NAVIGATION final et son `navi.json` ; il
