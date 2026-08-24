@@ -336,8 +336,17 @@ class CompositeSubgridTests(unittest.IsolatedAsyncioTestCase):
         )
         self.assertEqual(
             unchanged["/usr/data/printer_data/config/.theme/navi.json"],
-            "3ad85cd1fb6a61ef015e770b727238e51d76fe88b5947c59eaeb9f63b8271f74",
+            "f1775f28967ef73baf205e1574c8ddc7e57e0d021e4b1778cb6ef8e06e9e9774",
         )
+        self.assertEqual(
+            manifest["required_static_alias"],
+            {
+                "destination": "/usr/data/k1-control-v1/current/www/mainsail/access-k1-control",
+                "target": "k1-control",
+            },
+        )
+        deployer_source = deployer.read_text(encoding="utf-8")
+        self.assertIn("test -L '$RemoteNavigationAlias'", deployer_source)
         self.assertFalse(manifest["full_composite_campaign"])
 
 

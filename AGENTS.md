@@ -17,8 +17,9 @@ par un `IndexError` au point 37 ; le rollback est vert ; la correction hors
 imprimante impose désormais `6 × 6` Lagrange et un seul mesh quotidien ; les
 deltas sûrs PRTOUCH-BED-MESH-V2, MATRIX-V1, RETRY-SAFETY-V1 et
 PRTOUCH-PRESETS-V1 sont installés et validés ;
-la campagne quotidienne `6 × 6 / 1 mesh` est acceptée et validée ; le delta UX
-NAVIGATION-V1 et le mode composite restent non déployés ; production remains
+la campagne quotidienne `6 × 6 / 1 mesh` est acceptée et validée ; le premier
+delta UX NAVIGATION-V1 est installé mais son lien a échoué au vrai rendu ; sa
+révision R2 et le mode composite restent non déployés ; production remains
 closed**.
 
 La capture `20260823-165742-g4-k1-control-calibration-ui-prtouch-presets-v1` a
@@ -34,11 +35,13 @@ mesh quotidien complet de 36 points, le parcours Z `5..0,1 mm`, l'acceptation
 les six lignes de points du profil mesuré et refuse toute autre différence de
 `printer.cfg` avec le backup exact.
 
-Le delta `G4-K1-CONTROL-CALIBRATION-UI-NAVIGATION-V1` corrige les textes Z
-trompeurs et ajoute le lien Mainsail vers `/k1-control/`. Il est préparé,
-testé et préflighté, mais non déployé : la couche d'approbation a refusé les
-deux appels avant exécution, donc aucun effet distant n'a eu lieu. Après sa
-pose et son rendu réel, la prochaine gate physique est uniquement
+Le delta `G4-K1-CONTROL-CALIBRATION-UI-NAVIGATION-V1` a été posé et validé côté
+SSH sans restart ni action physique. Le vrai navigateur a confirmé un KO
+produit : Mainsail affiche le bouton puis son service worker renvoie sa propre
+coque sur `/k1-control/`. La révision R2 garde le service worker constructeur
+intact, crée l'alias original `access-k1-control -> k1-control` sous un préfixe
+déjà exclu de sa route et repointe `navi.json`. Après sa pose et son rendu réel,
+la prochaine gate physique est uniquement
 `G4-K1-CONTROL-COMPOSITE-MESH-SUBGRID-V1`.
 
 Thomas authorised V1, but the mandatory preflight proved that `logrotate` was

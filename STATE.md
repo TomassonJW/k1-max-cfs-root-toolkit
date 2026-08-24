@@ -7,7 +7,7 @@ Goal actif ou une mission clairement décrite couvre désormais les actions
 normalement nécessaires dans son périmètre ; aucun identifiant de gate ni `GO`
 exact ne doit lui être redemandé. Les gates restent des preuves techniques
 internes. Cette décision couvre la poursuite de la roadmap active, en commençant
-par la pose sans action physique de NAVIGATION-V1. Les restrictions explicites
+par la correction sans action physique de NAVIGATION-V1. Les restrictions explicites
 plus récentes et les confirmations de faits physiques restent prioritaires.
 
 La campagne quotidienne `G4-K1-CONTROL-CALIBRATION-UI-CAMPAIGN-V1` est
@@ -30,18 +30,20 @@ la matrice privée acceptée. Il a obtenu
 profil transitoire absent, stockage Z `ok`, deux CFS connectés et
 `failed_components=[]` / `warnings=[]`.
 
-Le delta `G4-K1-CONTROL-CALIBRATION-UI-NAVIGATION-V1` est préparé hors
-imprimante pour corriger les textes Z trompeurs et ajouter le lien Mainsail
-`/k1-control/` sur la même origine. Ses 12 tests ciblés, la suite complète de
-232 tests avec 3 ignorés, le parse PowerShell, `git diff --check` et son
-préflight SSH frais sont verts. La plateforme a refusé la pose avant exécution
-selon son ancienne interprétation littérale : aucun backup, staging, transfert
-ou fichier distant n'a été créé. Il reste non déployé, mais D-054 couvre
-maintenant sa pose dans la roadmap active sans nouvelle phrase de Thomas.
+NAVIGATION-V1 a ensuite été posé sous la capture
+`20260824-110936-g4-k1-control-calibration-ui-navigation-v1`. Le préflight, la
+pose et la validation SSH indépendante sont verts ; seuls `app.js` et
+`.theme/navi.json` ont changé après backup, sans restart ni action physique.
+Le vrai navigateur a toutefois obtenu un KO : le bouton apparaît dans Mainsail,
+mais `/k1-control/` reste intercepté par le `NavigationRoute` du service worker
+et recharge Mainsail. La révision R2 est préparée et 232 tests sont verts. Elle
+ne modifie pas `sw.js` : elle ajoute seulement l'alias symbolique original
+`access-k1-control -> k1-control` et repointe le bouton vers le préfixe
+`/access-k1-control/`, déjà présent dans la denylist exacte du worker.
 
 ## Current phase
 
-**P4 — calibration quotidienne `6 × 6 / 1 mesh` validée ; navigation UX et
+**P4 — calibration quotidienne `6 × 6 / 1 mesh` validée ; navigation UX R2 et
 mode composite encore non déployés ; production volontairement bloquée**
 
 La base sûre et réellement requalifiée reste `6 × 6` Lagrange avec un seul mesh

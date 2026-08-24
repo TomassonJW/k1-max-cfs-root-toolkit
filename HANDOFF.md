@@ -1,8 +1,8 @@
 # HANDOFF
 
 Date: 2026-08-24
-Phase: P4 / campagne quotidienne `6 × 6 / 1 mesh` validée ; NAVIGATION-V1 non déployée ; composite non installé ; production fermée
-Next operator: poursuivre directement NAVIGATION-V1 sous l'autorité par objectif, valider son rendu, puis poser sans mouvement COMPOSITE-MESH-SUBGRID-V1
+Phase: P4 / campagne quotidienne `6 × 6 / 1 mesh` validée ; NAVIGATION-V1 posée mais rendu KO ; R2 préparée ; composite non installé ; production fermée
+Next operator: poser NAVIGATION-V1-R2 sous l'autorité par objectif, valider son rendu, puis poser sans mouvement COMPOSITE-MESH-SUBGRID-V1
 
 ## Autorité de reprise actuelle
 
@@ -13,6 +13,22 @@ demandé. Les gates sont des contrôles techniques que Codex passe lui-même.
 Cette décision D-054 remplace les anciennes consignes `ATTENDRE_GO` pour les
 étapes déjà comprises dans la roadmap active. Une restriction explicite plus
 récente ou une donnée physique inconnue reste à respecter.
+
+## Reprise NAVIGATION-V1 et correctif R2
+
+La capture `20260824-110936-g4-k1-control-calibration-ui-navigation-v1` a
+obtenu le préflight, la pose et deux validations SSH vertes. Aucun service n'a
+été redémarré et aucune commande physique n'a été envoyée. Le vrai Chrome
+authentifié a affiché le bouton `K1 Control`, mais son clic a rechargé Mainsail.
+La lecture ciblée du `sw.js` installé prouve un `NavigationRoute` vers
+`index.html`, avec une denylist commençant notamment par `/access`.
+
+R2 conserve le worker constructeur bit à bit. Elle remplace le lien par
+`/access-k1-control/` et crée seulement l'alias symbolique original
+`access-k1-control -> k1-control`. Le rollback restaure les deux fichiers V1 et
+retire l'alias. Les tests ciblés, les 232 tests complets, les plans, le parse
+PowerShell et `git diff --check` sont verts. D-054 couvre directement sa pose ;
+aucune phrase de Thomas n'est requise.
 
 ## Clôture CAMPAIGN-V1 du 24 août 2026
 

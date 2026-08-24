@@ -983,3 +983,21 @@ doit figurer dans l'objectif actif et une donnée physique inconnue ne peut pas
 donc rester nécessaire comme fait observable, jamais comme formule
 d'autorisation. Les dialogues techniques imposés par la plateforme ne peuvent
 pas être supprimés par le dépôt. Voir ADR-014.
+
+## D-055 — Le bouton Mainsail utilise un alias exclu du service worker
+
+Date: 2026-08-24
+
+Status: décision candidate après KO navigateur réel ; aucune action physique
+
+NAVIGATION-V1 a posé les bons octets et Mainsail a affiché son bouton, mais le
+clic vers `/k1-control/` a été intercepté par le `NavigationRoute` du service
+worker installé. Ce worker renvoie `index.html` pour les navigations, sauf une
+denylist dont le premier préfixe est `/access`.
+
+Modifier le worker généré est refusé. NAVIGATION-V1-R2 crée à la place l'alias
+symbolique original `access-k1-control -> k1-control` dans la racine statique et
+repointe `navi.json` vers `/access-k1-control/`. Le chemin échappe au worker,
+reste sur la même origine et réutilise l'authentification courante. La pose ne
+redémarre aucun service et le rollback restaure exactement V1 puis retire
+l'alias.

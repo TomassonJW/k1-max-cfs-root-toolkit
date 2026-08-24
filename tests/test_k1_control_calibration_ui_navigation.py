@@ -14,11 +14,11 @@ DEPLOYER = ROOT / "scripts" / "deploy-k1-control-calibration-ui-navigation-v1.ps
 
 
 class CalibrationUiNavigationTests(unittest.TestCase):
-    def test_manifest_pins_the_exact_two_file_write_set(self):
+    def test_manifest_pins_the_two_files_and_static_alias_write_set(self):
         manifest = json.loads(MANIFEST.read_text(encoding="utf-8"))
         self.assertEqual(
             manifest["contract_id"],
-            "G4-K1-CONTROL-CALIBRATION-UI-NAVIGATION-V1",
+            "G4-K1-CONTROL-CALIBRATION-UI-NAVIGATION-V1-R2",
         )
         self.assertEqual(
             [item["source"] for item in manifest["files"]],
@@ -27,6 +27,14 @@ class CalibrationUiNavigationTests(unittest.TestCase):
         self.assertEqual(manifest["service_action"], "none")
         self.assertFalse(manifest["printer_cfg_changed"])
         self.assertFalse(manifest["authentication_changed"])
+        self.assertEqual(
+            manifest["static_alias"],
+            {
+                "destination": "/usr/data/k1-control-v1/current/www/mainsail/access-k1-control",
+                "target": "k1-control",
+                "service_worker_vendor_file_changed": False,
+            },
+        )
         for item in manifest["files"]:
             path = PACKAGE / item["source"]
             self.assertEqual(hashlib.sha256(path.read_bytes()).hexdigest(), item["sha256"])
@@ -43,10 +51,12 @@ class CalibrationUiNavigationTests(unittest.TestCase):
         navigation = json.loads(NAVI.read_text(encoding="utf-8"))
         self.assertEqual(len(navigation), 1)
         self.assertEqual(navigation[0]["title"], "K1 Control")
-        self.assertEqual(navigation[0]["href"], "/k1-control/")
+        self.assertEqual(navigation[0]["href"], "/access-k1-control/")
         self.assertEqual(navigation[0]["target"], "_self")
         contract = json.loads(CONTRACT.read_text(encoding="utf-8"))
         self.assertFalse(contract["navigation"]["authentication_change"])
+        self.assertFalse(contract["navigation"]["vendor_service_worker_changed"])
+        self.assertTrue(navigation[0]["href"].startswith("/access"))
 
     def test_z_instructions_match_every_closed_or_active_phase(self):
         source = APP.read_text(encoding="utf-8")
@@ -61,9 +71,12 @@ class CalibrationUiNavigationTests(unittest.TestCase):
     def test_deployer_has_backup_rollback_and_no_physical_command(self):
         source = DEPLOYER.read_text(encoding="utf-8")
         self.assertIn("app.js.before", source)
+        self.assertIn("navi.json.before", source)
         self.assertIn("Assert-RemoteBaseline", source)
         self.assertIn("Assert-RemoteFinal", source)
-        self.assertIn("rm -f '$RemoteNavi'", source)
+        self.assertIn("ln -s 'k1-control' '$RemoteAlias.next'", source)
+        self.assertIn("rm -f '$RemoteAlias'", source)
+        self.assertNotIn("$RemoteRoot/current/www/mainsail/sw.js", source)
         self.assertIn("service_restart = $false", source)
         for forbidden in (
             "/printer/gcode/script",

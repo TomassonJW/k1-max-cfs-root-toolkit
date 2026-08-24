@@ -9,13 +9,14 @@ param(
 )
 
 $ErrorActionPreference = 'Stop'
-$RequiredGate = 'G4-K1-CONTROL-CALIBRATION-UI-NAVIGATION-V1'
+$RequiredGate = 'G4-K1-CONTROL-CALIBRATION-UI-NAVIGATION-V1-R2'
 $WorkspaceRoot = Split-Path -Parent $PSScriptRoot
 $PackageRoot = Join-Path $WorkspaceRoot 'packages\k1-control-v1\calibration-ui-navigation-v1'
 $ManifestPath = Join-Path $PackageRoot 'deployment-manifest.json'
 $ContractPath = Join-Path $PackageRoot 'calibration-ui-navigation-contract.json'
 $RemoteRoot = '/usr/data/k1-control-v1'
 $RemoteApp = "$RemoteRoot/current/www/mainsail/k1-control/app.js"
+$RemoteAlias = "$RemoteRoot/current/www/mainsail/access-k1-control"
 $RemoteTheme = '/usr/data/printer_data/config/.theme'
 $RemoteNavi = "$RemoteTheme/navi.json"
 $RemoteBackup = "$RemoteRoot/backups/$CaptureId-calibration-ui-navigation-v1"
@@ -99,6 +100,11 @@ function Assert-Package {
         [string]$manifest.files[1].source -cne 'navi.json' -or
         [string]$manifest.files[1].destination -cne $RemoteNavi) {
         throw 'Write-set UX inattendu.'
+    }
+    if ([string]$manifest.static_alias.destination -cne $RemoteAlias -or
+        [string]$manifest.static_alias.target -cne 'k1-control' -or
+        [bool]$manifest.static_alias.service_worker_vendor_file_changed) {
+        throw 'Alias statique UX inattendu.'
     }
     return $manifest
 }
@@ -194,14 +200,22 @@ function Get-RemoteNaviPresence {
     return ((Invoke-Remote "if test -e '$RemoteNavi'; then echo present; else echo absent; fi" | Select-Object -First 1).Trim())
 }
 
+function Get-RemoteAliasPresence {
+    return ((Invoke-Remote "if test -e '$RemoteAlias' || test -L '$RemoteAlias'; then echo present; else echo absent; fi" | Select-Object -First 1).Trim())
+}
+
 function Assert-RemoteBaseline {
     param([Parameter(Mandatory = $true)]$Manifest)
     if ((Get-RemoteSha256 $RemoteApp) -cne [string]$Manifest.baseline.app_js_sha256) {
         throw 'Empreinte distante app.js différente de la base revue.'
     }
-    if ((Get-RemoteNaviPresence) -cne 'absent') {
-        throw 'navi.json existe déjà hors du write-set revu.'
+    if ((Get-RemoteSha256 $RemoteNavi) -cne [string]$Manifest.baseline.navi_json_sha256) {
+        throw 'Empreinte distante navi.json différente de la base revue.'
     }
+    if ((Get-RemoteAliasPresence) -cne 'absent') {
+        throw 'Alias statique déjà présent hors de la base revue.'
+    }
+    [void](Invoke-Remote "test ! -e '$RemoteAlias.next' && test ! -L '$RemoteAlias.next'")
     Assert-UnchangedFiles $Manifest
 }
 
@@ -212,6 +226,12 @@ function Assert-RemoteFinal {
     }
     if ((Get-RemoteSha256 $RemoteNavi) -cne [string]$Manifest.files[1].sha256) {
         throw 'Empreinte distante navi.json finale inattendue.'
+    }
+    [void](Invoke-Remote "test -L '$RemoteAlias' && test `"`$(readlink '$RemoteAlias')`" = 'k1-control'")
+    if ((Get-RemoteSha256 "$RemoteAlias/index.html") -cne [string]$Manifest.unchanged.files[4].sha256 -or
+        (Get-RemoteSha256 "$RemoteAlias/styles.css") -cne [string]$Manifest.unchanged.files[5].sha256 -or
+        (Get-RemoteSha256 "$RemoteAlias/app.js") -cne [string]$Manifest.files[0].sha256) {
+        throw 'Alias statique K1 Control inattendu.'
     }
     [void](Invoke-Remote "test `"`$(stat -c '%a' '$RemoteTheme')`" = '755' && test `"`$(stat -c '%a' '$RemoteApp')`" = '644' && test `"`$(stat -c '%a' '$RemoteNavi')`" = '644'")
     Assert-UnchangedFiles $Manifest
@@ -224,11 +244,13 @@ function Remove-RemoteStaging {
 function Invoke-ExactRollback {
     $manifest = Assert-Package
     $appBackup = "$RemoteBackup/app.js.before"
-    [void](Invoke-Remote "test -f '$appBackup'")
-    if ((Get-RemoteSha256 $appBackup) -cne [string]$manifest.baseline.app_js_sha256) {
+    $naviBackup = "$RemoteBackup/navi.json.before"
+    [void](Invoke-Remote "test -f '$appBackup' && test -f '$naviBackup'")
+    if ((Get-RemoteSha256 $appBackup) -cne [string]$manifest.baseline.app_js_sha256 -or
+        (Get-RemoteSha256 $naviBackup) -cne [string]$manifest.baseline.navi_json_sha256) {
         throw 'Backup statique inattendu.'
     }
-    [void](Invoke-Remote "cp '$appBackup' '$RemoteApp.rollback-next' && chmod 0644 '$RemoteApp.rollback-next' && mv '$RemoteApp.rollback-next' '$RemoteApp' && rm -f '$RemoteNavi' && rmdir '$RemoteTheme' 2>/dev/null || true")
+    [void](Invoke-Remote "cp '$appBackup' '$RemoteApp.rollback-next' && cp '$naviBackup' '$RemoteNavi.rollback-next' && chmod 0644 '$RemoteApp.rollback-next' '$RemoteNavi.rollback-next' && mv '$RemoteApp.rollback-next' '$RemoteApp' && mv '$RemoteNavi.rollback-next' '$RemoteNavi' && rm -f '$RemoteAlias' '$RemoteAlias.next'")
     Remove-RemoteStaging
     Assert-RemoteBaseline $manifest
     [void](Assert-SafeState)
@@ -237,9 +259,9 @@ function Invoke-ExactRollback {
 $manifest = Assert-Package
 
 if ($Action -eq 'Plan') {
-    Write-Output "PLAN_CALIBRATION_UI_NAVIGATION_V1_OK gate=$RequiredGate"
-    Write-Output 'Remplace seulement app.js et crée .theme/navi.json après backup exact.'
-    Write-Output 'Ajoute K1 Control à la navigation Mainsail sur la même origine localhost:4409.'
+    Write-Output "PLAN_CALIBRATION_UI_NAVIGATION_V1_R2_OK gate=$RequiredGate"
+    Write-Output 'Conserve app.js, remplace .theme/navi.json et crée un alias statique après backup exact.'
+    Write-Output 'Contourne la route de navigation du service worker sans modifier le fichier constructeur.'
     Write-Output 'Corrige les textes starting_z, z_confirmed et accepted sans changer le contrôleur métier.'
     Write-Output 'Aucun chauffage, homing, mouvement, mesh, Z, extrusion, impression ou action CFS.'
     exit 0
@@ -248,35 +270,36 @@ if ($Action -eq 'Plan') {
 if ($Action -eq 'Preflight') {
     Assert-RemoteBaseline $manifest
     [void](Assert-SafeState)
-    Write-Output 'PREFLIGHT_CALIBRATION_UI_NAVIGATION_V1_OK'
+    Write-Output 'PREFLIGHT_CALIBRATION_UI_NAVIGATION_V1_R2_OK'
     exit 0
 }
 
 if ($Action -eq 'Validate') {
     Assert-RemoteFinal $manifest
     [void](Assert-SafeState)
-    Write-Output 'VALIDATE_CALIBRATION_UI_NAVIGATION_V1_OK'
+    Write-Output 'VALIDATE_CALIBRATION_UI_NAVIGATION_V1_R2_OK'
     exit 0
 }
 
 if ($Action -eq 'Rollback') {
     Assert-MutationGate
     Invoke-ExactRollback
-    Write-Output "ROLLBACK_CALIBRATION_UI_NAVIGATION_V1_OK capture=$CaptureId"
+    Write-Output "ROLLBACK_CALIBRATION_UI_NAVIGATION_V1_R2_OK capture=$CaptureId"
     exit 0
 }
 
 Assert-MutationGate
 if ((Get-RemoteSha256 $RemoteApp) -ceq [string]$manifest.files[0].sha256 -and
     (Get-RemoteNaviPresence) -ceq 'present' -and
-    (Get-RemoteSha256 $RemoteNavi) -ceq [string]$manifest.files[1].sha256) {
+    (Get-RemoteSha256 $RemoteNavi) -ceq [string]$manifest.files[1].sha256 -and
+    (Get-RemoteAliasPresence) -ceq 'present') {
     & $PSCommandPath -Action Validate -PrinterHost $PrinterHost -CaptureId $CaptureId
     New-Item -ItemType Directory -Path $LocalCapture -Force | Out-Null
     [pscustomobject]@{
         capture_id = $CaptureId
         gate = $RequiredGate
         action = 'Deploy'
-        result = 'DEPLOY_CALIBRATION_UI_NAVIGATION_V1_OK'
+        result = 'DEPLOY_CALIBRATION_UI_NAVIGATION_V1_R2_OK'
         already_present = $true
         remote_write = $false
         service_restart = $false
@@ -284,7 +307,7 @@ if ((Get-RemoteSha256 $RemoteApp) -ceq [string]$manifest.files[0].sha256 -and
         printer_motion = $false
         heater_command = $false
     } | ConvertTo-Json | Set-Content -LiteralPath (Join-Path $LocalCapture 'deploy-result.json') -Encoding UTF8
-    Write-Output "DEPLOY_CALIBRATION_UI_NAVIGATION_V1_OK capture=$CaptureId already_present=true remote_write=false"
+    Write-Output "DEPLOY_CALIBRATION_UI_NAVIGATION_V1_R2_OK capture=$CaptureId already_present=true remote_write=false"
     exit 0
 }
 
@@ -294,8 +317,9 @@ New-Item -ItemType Directory -Path $LocalCapture -Force | Out-Null
 
 try {
     [void](Invoke-Remote "mkdir -p '$RemoteBackup'")
-    [void](Invoke-Remote "cp '$RemoteApp' '$RemoteBackup/app.js.before'")
-    if ((Get-RemoteSha256 "$RemoteBackup/app.js.before") -cne [string]$manifest.baseline.app_js_sha256) {
+    [void](Invoke-Remote "cp '$RemoteApp' '$RemoteBackup/app.js.before' && cp '$RemoteNavi' '$RemoteBackup/navi.json.before'")
+    if ((Get-RemoteSha256 "$RemoteBackup/app.js.before") -cne [string]$manifest.baseline.app_js_sha256 -or
+        (Get-RemoteSha256 "$RemoteBackup/navi.json.before") -cne [string]$manifest.baseline.navi_json_sha256) {
         throw 'Backup statique non conforme.'
     }
     $MutationStarted = $true
@@ -306,20 +330,20 @@ try {
         (Get-RemoteSha256 "$RemoteStaging/navi.json") -cne [string]$manifest.files[1].sha256) {
         throw 'Transfert statique non conforme.'
     }
-    [void](Invoke-Remote "cp '$RemoteStaging/app.js' '$RemoteApp.next' && mkdir -p '$RemoteTheme' && cp '$RemoteStaging/navi.json' '$RemoteNavi.next' && chmod 0755 '$RemoteTheme' && chmod 0644 '$RemoteApp.next' '$RemoteNavi.next' && mv '$RemoteApp.next' '$RemoteApp' && mv '$RemoteNavi.next' '$RemoteNavi'")
+    [void](Invoke-Remote "cp '$RemoteStaging/app.js' '$RemoteApp.next' && mkdir -p '$RemoteTheme' && cp '$RemoteStaging/navi.json' '$RemoteNavi.next' && ln -s 'k1-control' '$RemoteAlias.next' && chmod 0755 '$RemoteTheme' && chmod 0644 '$RemoteApp.next' '$RemoteNavi.next' && mv '$RemoteApp.next' '$RemoteApp' && mv '$RemoteNavi.next' '$RemoteNavi' && mv '$RemoteAlias.next' '$RemoteAlias'")
     & $PSCommandPath -Action Validate -PrinterHost $PrinterHost -CaptureId $CaptureId
     Remove-RemoteStaging
     [pscustomobject]@{
         capture_id = $CaptureId
         gate = $RequiredGate
         action = 'Deploy'
-        result = 'DEPLOY_CALIBRATION_UI_NAVIGATION_V1_OK'
+        result = 'DEPLOY_CALIBRATION_UI_NAVIGATION_V1_R2_OK'
         service_restart = $false
         calibration_action = $false
         printer_motion = $false
         heater_command = $false
     } | ConvertTo-Json | Set-Content -LiteralPath (Join-Path $LocalCapture 'deploy-result.json') -Encoding UTF8
-    Write-Output "DEPLOY_CALIBRATION_UI_NAVIGATION_V1_OK capture=$CaptureId"
+    Write-Output "DEPLOY_CALIBRATION_UI_NAVIGATION_V1_R2_OK capture=$CaptureId"
 }
 catch {
     $failure = $_

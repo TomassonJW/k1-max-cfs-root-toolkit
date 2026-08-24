@@ -1,21 +1,25 @@
 {
-  "contract_id": "G4-K1-CONTROL-CALIBRATION-UI-NAVIGATION-V1",
-  "status": "prepared_after_successful_daily_campaign",
-  "purpose": "remove misleading Z instructions and add a same-origin Mainsail navigation entry to K1 Control",
+  "contract_id": "G4-K1-CONTROL-CALIBRATION-UI-NAVIGATION-V1-R2",
+  "status": "prepared_after_real_browser_router_failure",
+  "purpose": "keep the corrected Z instructions and bypass the exact Mainsail service-worker navigation fallback without modifying vendor files",
   "dependency": {
     "campaign_capture": "20260823-171803-g4-k1-control-calibration-ui-campaign-v1",
     "required_result": "VALIDATE_CALIBRATION_UI_CAMPAIGN_V1_OK"
   },
   "write_set": [
     "/usr/data/k1-control-v1/current/www/mainsail/k1-control/app.js",
-    "/usr/data/printer_data/config/.theme/navi.json"
+    "/usr/data/printer_data/config/.theme/navi.json",
+    "/usr/data/k1-control-v1/current/www/mainsail/access-k1-control"
   ],
   "navigation": {
     "title": "K1 Control",
-    "href": "/k1-control/",
+    "href": "/access-k1-control/",
     "target": "_self",
     "same_origin": "http://localhost:4409",
-    "authentication_change": false
+    "authentication_change": false,
+    "static_alias": "access-k1-control -> k1-control",
+    "service_worker_rule_observed": "denylist prefix /^/(access|api|printer|server|websocket)/",
+    "vendor_service_worker_changed": false
   },
   "z_messages": {
     "starting_z": "preparation_in_progress",
@@ -26,5 +30,5 @@
   "service_restart": "none",
   "printer_cfg_changed": false,
   "physical_action": false,
-  "rollback": "restore the exact app.js backup and remove the newly created navi.json"
+  "rollback": "restore the exact app.js and navi.json backups and remove the static alias"
 }

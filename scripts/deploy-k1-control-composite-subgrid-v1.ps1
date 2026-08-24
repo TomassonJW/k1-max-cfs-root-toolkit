@@ -22,6 +22,7 @@ $RemoteCore = "$RemoteComponents/k1_control_composite_subgrid_core.py"
 $RemoteComponent = "$RemoteComponents/k1_control_composite_subgrid.py"
 $RemoteState = "$RemoteRoot/state/k1-control-composite-subgrid.json"
 $RemotePrinterConfig = '/usr/data/printer_data/config/printer.cfg'
+$RemoteNavigationAlias = "$RemoteRoot/current/www/mainsail/access-k1-control"
 $MoonrakerService = '/etc/init.d/S56k1_control_moonraker'
 $RemoteBackup = "$RemoteRoot/backups/$CaptureId-composite-subgrid-v1"
 $RemoteStaging = "$RemoteRoot/tmp/$CaptureId-composite-subgrid-v1"
@@ -210,6 +211,11 @@ function Assert-Baseline {
             throw "Fichier requis inattendu : $($file.destination)"
         }
     }
+    if ([string]$Manifest.required_static_alias.destination -cne $RemoteNavigationAlias -or
+        [string]$Manifest.required_static_alias.target -cne 'k1-control') {
+        throw 'Contrat alias NAVIGATION-V1-R2 inattendu.'
+    }
+    [void](Invoke-Remote "test -L '$RemoteNavigationAlias' && test `"`$(readlink '$RemoteNavigationAlias')`" = 'k1-control'")
     foreach ($module in $Manifest.firmware_dependencies) {
         if ((Get-RemoteSha256 ([string]$module.path)) -cne [string]$module.sha256) {
             throw "Module firmware inattendu : $($module.path)"
@@ -257,6 +263,7 @@ function Assert-Installed {
             throw "Fichier hors write-set modifié : $($file.destination)"
         }
     }
+    [void](Invoke-Remote "test -L '$RemoteNavigationAlias' && test `"`$(readlink '$RemoteNavigationAlias')`" = 'k1-control'")
     if ((Get-RemoteSha256 $RemotePrinterConfig) -cne [string]$Manifest.baseline.printer_cfg_sha256) {
         throw 'La pose a modifié printer.cfg.'
     }

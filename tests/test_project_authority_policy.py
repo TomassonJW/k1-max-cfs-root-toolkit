@@ -19,7 +19,7 @@ class ProjectAuthorityPolicyTests(unittest.TestCase):
         handoff = (ROOT / "HANDOFF.md").read_text(encoding="utf-8")
         current_header = "\n".join(handoff.splitlines()[:25])
         self.assertNotIn("autoriser littéralement", current_header)
-        self.assertIn("poursuivre directement NAVIGATION-V1", current_header)
+        self.assertIn("poser NAVIGATION-V1-R2", current_header)
         self.assertIn("Aucun `GO` exact", current_header)
 
     def test_adr_and_decision_preserve_technical_safety_controls(self):

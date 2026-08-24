@@ -15,8 +15,8 @@ confirmés avant l'action qui en dépend.
 
 ## Reprise après la campagne quotidienne du 24 août 2026
 
-Statut : **CAMPAIGN-V1 validée ; NAVIGATION-V1 préparée et préflightée mais non
-déployée ; COMPOSITE-MESH-SUBGRID-V1 non installée**.
+Statut : **CAMPAIGN-V1 validée ; NAVIGATION-V1 posée mais rendu KO ; R2 prête
+hors imprimante ; COMPOSITE-MESH-SUBGRID-V1 non installée**.
 
 BED-MESH-V2 est installée et validée sous la capture
 `20260823-151026-g4-k1-control-calibration-ui-prtouch-bed-mesh-v2`.
@@ -36,10 +36,13 @@ sûrs étaient déjà installés, donc le déployeur idempotent n'a effectué au
 écriture distante, aucun backup et aucun restart. CAMPAIGN-V1 a ensuite réussi
 depuis l'écran et obtenu sa capture puis sa validation finale sous
 `20260823-171803-g4-k1-control-calibration-ui-campaign-v1`. Le delta UX
-NAVIGATION-V1 est localement vert et son préflight SSH est vert ; ses deux
-tentatives de pose ont été refusées par la plateforme avant exécution. Aucune
-mutation NAVIGATION n'a donc eu lieu. COMPOSITE-MESH-SUBGRID-V1 reste non
-installée.
+NAVIGATION-V1 a obtenu son préflight, sa pose et deux validations SSH vertes
+sous `20260824-110936-g4-k1-control-calibration-ui-navigation-v1`, sans restart
+ni action physique. Le vrai navigateur a ensuite prouvé que le bouton est
+affiché mais que le service worker Mainsail intercepte `/k1-control/`. R2 ajoute
+un alias statique original sous `/access-k1-control/`, préfixe déjà exclu par le
+worker exact, sans modifier ce fichier constructeur. COMPOSITE-MESH-SUBGRID-V1
+reste non installée.
 
 La chaîne locale post-campagne est maintenant stricte : SUBGRID-V1 exige le
 hash `printer.cfg` contenant le mesh quotidien validé, puis les deux fichiers

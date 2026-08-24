@@ -100,13 +100,27 @@ class CalibrationUiDeploymentChainTests(unittest.TestCase):
         )
         remote[printer_config] = self.composite["baseline"]["printer_cfg_sha256"]
 
+        # NAVIGATION-V1 a été réellement posé avant que la preuve navigateur
+        # montre le fallback du service worker. R2 part donc de ses deux
+        # sorties exactes et ajoute l'alias statique hors de cette carte de
+        # hashes de fichiers.
+        remote[self.navigation["files"][0]["destination"]] = (
+            self.navigation["baseline"]["app_js_sha256"]
+        )
+        remote[self.navigation["files"][1]["destination"]] = (
+            self.navigation["baseline"]["navi_json_sha256"]
+        )
+
         self.assertEqual(
             remote[self.navigation["files"][0]["destination"]],
             self.navigation["baseline"]["app_js_sha256"],
         )
         for path, expected in _map(self.navigation["unchanged"]["files"]).items():
             self.assertEqual(remote[path], expected)
-        self.assertNotIn(self.navigation["files"][1]["destination"], remote)
+        self.assertEqual(
+            remote[self.navigation["files"][1]["destination"]],
+            self.navigation["baseline"]["navi_json_sha256"],
+        )
         remote.update(_map(self.navigation["files"]))
 
         for path, expected in _map(self.composite["unchanged"]["files"]).items():
