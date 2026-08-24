@@ -912,3 +912,27 @@ réappliquer ce reset pendant les rafraîchissements de la même page : l'opéra
 peut encore recocher volontairement le remplacement. Un rechargement frais
 réapplique la sécurité. Cette décision ne change ni l'API, ni le core, ni un
 service, ni le comportement physique de la K1.
+
+## D-052 — La persistance du mesh quotidien autorise uniquement le bloc de points qualifié
+
+Date: 2026-08-24
+
+Status: campagne validée sous la capture `20260823-171803-g4-k1-control-calibration-ui-campaign-v1`
+
+La campagne quotidienne doit remplacer le contenu du profil
+`k1_p001_t055_r001_n06x06`. Exiger après acceptation le hash complet de
+`printer.cfg` pris avant la mesure transforme donc le résultat attendu en faux
+KO. À l'inverse, ignorer tout le fichier après campagne masquerait une mutation
+hors périmètre.
+
+Le validateur final exige désormais le backup exact dont le hash correspond à
+la base revue, compare le nombre et l'ordre des lignes, puis autorise des
+différences uniquement sur les six lignes de points du profil qualifié. Les 36
+valeurs persistées doivent correspondre à la matrice privée acceptée avec une
+tolérance de `0,000001 mm`. Toute autre différence, un autre chemin de backup,
+une matrice incomplète ou un profil ambigu reste un KO.
+
+Cette règle a obtenu `CAPTURE_CALIBRATION_UI_LEVEL_OK level=supported` puis
+`VALIDATE_CALIBRATION_UI_CAMPAIGN_V1_OK`. Elle ne permet aucune nouvelle mesure,
+aucun deuxième passage et aucune modification de configuration hors du profil
+explicitement enregistré.

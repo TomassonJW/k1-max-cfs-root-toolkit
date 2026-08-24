@@ -1,0 +1,61 @@
+{
+  "contract_id": "G4-K1-CONTROL-CALIBRATION-UI-NAVIGATION-V1",
+  "status": "prepared_after_successful_daily_campaign",
+  "dependency": "VALIDATE_CALIBRATION_UI_CAMPAIGN_V1_OK capture 20260823-171803-g4-k1-control-calibration-ui-campaign-v1",
+  "deployer": {
+    "path": "scripts/deploy-k1-control-calibration-ui-navigation-v1.ps1",
+    "sha256": "a10a274de2c405f7f30b8e1a0b59b4e4fb1571fb3eb2b91bdb11ecb0f404a830"
+  },
+  "contract": {
+    "path": "calibration-ui-navigation-contract.json",
+    "sha256": "95c4fead6e21785cda69b1ca5df6ac3e4d519c2a262c7d51cc393116cb887d2c"
+  },
+  "baseline": {
+    "app_js_sha256": "3d3d53ead589e25c99d239de4415b4c35e96b3458c327f75b9f51f0ac43693ce",
+    "navi_json_state": "absent"
+  },
+  "files": [
+    {
+      "source": "app.js",
+      "destination": "/usr/data/k1-control-v1/current/www/mainsail/k1-control/app.js",
+      "sha256": "001a31fe7357b0031bfbfa5f6856f8436315cf9640f5a61b2f6121766c985554"
+    },
+    {
+      "source": "navi.json",
+      "destination": "/usr/data/printer_data/config/.theme/navi.json",
+      "sha256": "3ad85cd1fb6a61ef015e770b727238e51d76fe88b5947c59eaeb9f63b8271f74"
+    }
+  ],
+  "unchanged": {
+    "files": [
+      {
+        "destination": "/usr/data/k1-control-v1/current/config/moonraker.conf",
+        "sha256": "9b451f9b864c798872f674688d1c3354f31ab5a03283cad1d7a224561308fcb1"
+      },
+      {
+        "destination": "/usr/data/k1-control-v1/current/moonraker/moonraker/moonraker/components/k1_control_probe_count.py",
+        "sha256": "8c8c4aaf20856be1880cea56badd2fe81bd488966eab0d55e7672f73eb1db7b0"
+      },
+      {
+        "destination": "/usr/data/k1-control-v1/current/moonraker/moonraker/moonraker/components/k1_control.py",
+        "sha256": "27c0734f149ea89a8ba0d5e17f7f65aecc95c1383c359662cb366a687bb7d303"
+      },
+      {
+        "destination": "/usr/data/k1-control-v1/current/moonraker/moonraker/moonraker/components/k1_control_calibration_core.py",
+        "sha256": "9a6a24195b504a82f88e3b7464c508eaf49f8450169578257c8fe98a5d5f4e97"
+      },
+      {
+        "destination": "/usr/data/k1-control-v1/current/www/mainsail/k1-control/index.html",
+        "sha256": "4892294d278497f2f4215564b3e70fcedb354fb880f306641a29a03042ad1abc"
+      },
+      {
+        "destination": "/usr/data/k1-control-v1/current/www/mainsail/k1-control/styles.css",
+        "sha256": "a7c27fbcdc07f24b00b6d47cc1d9aa8570b9483bcf4dd3615419de579f9aaa12"
+      }
+    ]
+  },
+  "service_action": "none",
+  "printer_cfg_changed": false,
+  "authentication_changed": false,
+  "calibration_action": false
+}

@@ -2,7 +2,8 @@
 
 Date : 2026-08-23
 
-Statut : préparé et testé hors imprimante ; non installé, non exécuté
+Statut : campagne quotidienne préalable validée ; paquet préparé et testé hors
+imprimante ; non installé, non exécuté
 
 ## But
 
@@ -26,7 +27,13 @@ Cette gate ne doit être posée qu'après les quatre révisions quotidiennes :
 3. RETRY-SAFETY-V1 corrigé ;
 4. validation idempotente PRTOUCH-PRESETS-V1, sans écriture si les hashes de
    MATRIX + RETRY-SAFETY sont déjà les hashes finaux ;
-5. campagne écran quotidienne verte.
+5. campagne écran quotidienne verte — obtenue sous la capture
+   `20260823-171803-g4-k1-control-calibration-ui-campaign-v1` avec
+   `VALIDATE_CALIBRATION_UI_CAMPAIGN_V1_OK`.
+
+Le delta UX NAVIGATION-V1 reste à poser et à rendre dans le vrai navigateur
+avant cette gate, afin de fermer le défaut de texte observé pendant le parcours
+Z. Cette dépendance d'interface ne modifie pas le protocole physique ci-dessous.
 
 Le composant composite n'est pas visible dans l'interface quotidienne. Son API
 exige l'identifiant exact de gate et `plate_clear=true`.

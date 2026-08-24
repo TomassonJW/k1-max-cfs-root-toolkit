@@ -4,10 +4,10 @@ Progression is evidence-based. Passing a gate authorises only the next bounded p
 
 These gates control evidence collection and changes affecting the printer. They do not gate normal Git or GitHub operations: under D-010, Codex may complete branches, commits, pushes, pull requests, merges into `main` and cleanup without requesting another operator approval. Repository integration never expands the printer-side authority granted by a gate.
 
-## Reprise après le handoff du 23 août 2026
+## Reprise après la campagne quotidienne du 24 août 2026
 
-Statut d'autorisation : **PRTOUCH-PRESETS-V1 close ; préflight CAMPAIGN-V1
-vert ; campagne physique opérateur non lancée**.
+Statut : **CAMPAIGN-V1 validée ; NAVIGATION-V1 préparée et préflightée mais non
+déployée ; COMPOSITE-MESH-SUBGRID-V1 non installée**.
 
 BED-MESH-V2 est installée et validée sous la capture
 `20260823-151026-g4-k1-control-calibration-ui-prtouch-bed-mesh-v2`.
@@ -24,10 +24,13 @@ RETRY-SAFETY-V1 est également close sous la capture
 action physique. PRTOUCH-PRESETS-V1 est close sous la capture
 `20260823-165742-g4-k1-control-calibration-ui-prtouch-presets-v1` : les hashes
 sûrs étaient déjà installés, donc le déployeur idempotent n'a effectué aucune
-écriture distante, aucun backup et aucun restart. La prochaine gate unique est
-`G4-K1-CONTROL-CALIBRATION-UI-CAMPAIGN-V1`. Son préflight est vert sous la
-capture `20260823-171803-g4-k1-control-calibration-ui-campaign-v1` ;
-COMPOSITE-MESH-SUBGRID-V1 reste fermée.
+écriture distante, aucun backup et aucun restart. CAMPAIGN-V1 a ensuite réussi
+depuis l'écran et obtenu sa capture puis sa validation finale sous
+`20260823-171803-g4-k1-control-calibration-ui-campaign-v1`. Le delta UX
+NAVIGATION-V1 est localement vert et son préflight SSH est vert ; ses deux
+tentatives de pose ont été refusées par la plateforme avant exécution. Aucune
+mutation NAVIGATION n'a donc eu lieu. COMPOSITE-MESH-SUBGRID-V1 reste non
+installée.
 
 ## G0 — Repository bootstrap
 
@@ -664,9 +667,9 @@ rafraîchissements, puis un rechargement frais a de nouveau décoché les deux
 cases. Aucun POST ou clic de calibration n'a eu lieu. Les 220 tests sont verts,
 avec 3 ignorés connus. La gate est close.
 
-### Gate préparée — `G4-K1-CONTROL-CALIBRATION-UI-CAMPAIGN-V1`
+### Gate validée — `G4-K1-CONTROL-CALIBRATION-UI-CAMPAIGN-V1`
 
-Status: **ancien protocole KO au point 37 ; protocole `6 × 6 / 1 mesh` préparé hors imprimante et en attente de GO renouvelé**
+Status: **`VALIDATE_CALIBRATION_UI_CAMPAIGN_V1_OK` ; un mesh `6 × 6`, chemin Z et acceptation persistés**
 
 Cette gate ne pose aucun fichier. La révision actuelle qualifie depuis l'écran
 un seul mesh physique `6 × 6` Lagrange avec `PEI_TEXTURED_A`, `55/140 °C` et
@@ -791,8 +794,43 @@ Deux faux KO locaux ont d'abord comparé le core final au hash historique de
 BED-MESH-V2 puis demandé à PRESETS de couvrir `printer.cfg`. Le validateur
 corrigé contrôle la carte finale complète PRESETS et vérifie séparément le hash
 exact de `printer.cfg`. La capture
-`20260823-171803-g4-k1-control-calibration-ui-campaign-v1` a ensuite obtenu le
-préflight vert. Aucun lancement depuis l'écran n'a encore eu lieu.
+`20260823-171803-g4-k1-control-calibration-ui-campaign-v1` a d'abord obtenu le
+préflight vert.
+
+Thomas a ensuite lancé depuis le vrai écran l'unique mesure `6 × 6`. Les 36
+contacts sont complets, la qualification est acceptée, les huit paliers Z
+`5/2/1/0,5/0,3/0,2/0,15/0,1 mm` ont été parcourus, le jeu final a été confirmé
+et le Z `−0,04 mm` enregistré. Aucun deuxième mesh ni rerun n'a eu lieu.
+
+Le premier `CaptureLevel` final a rencontré un faux KO : `printer.cfg` ne peut
+plus garder son hash de préflight puisque le profil robuste contient justement
+le nouveau mesh quotidien. Le diff exact avec le backup ne change que les six
+lignes de 36 points sous
+`#*# [bed_mesh k1_p001_t055_r001_n06x06]`. Le validateur corrigé épingle le
+backup, refuse tout autre changement et compare chaque valeur persistée à la
+matrice privée acceptée. Il a ensuite obtenu
+`CAPTURE_CALIBRATION_UI_LEVEL_OK level=supported` et
+`VALIDATE_CALIBRATION_UI_CAMPAIGN_V1_OK`. L'état final confirme `standby`,
+cibles zéro, chemin Z `committed`, stockage `ok`, profil transitoire absent,
+`6 × 6` Lagrange chargé, deux CFS et Moonraker sans échec ni avertissement.
+
+Le vrai écran a toutefois gardé le texte trompeur « Qualifie d'abord le mesh
+robuste » pendant la préparation Z et après acceptation. La campagne physique
+est valide, mais l'autonomie de compréhension sans Codex attend encore le delta
+statique NAVIGATION-V1 et sa validation navigateur.
+
+### Gate UX préparée — `G4-K1-CONTROL-CALIBRATION-UI-NAVIGATION-V1`
+
+Status: **paquet local, 224 tests et préflight SSH verts ; non déployé**
+
+Ce delta remplace seulement `app.js` et crée
+`/usr/data/printer_data/config/.theme/navi.json`. Il corrige les textes
+`starting_z`, `z_confirmed` et `accepted`, puis ajoute le lien Mainsail
+`K1 Control` vers `/k1-control/` sur la même origine. Il ne change ni nginx, ni
+l'authentification, ni Moonraker, ni Klipper et ne redémarre aucun service. Le
+rollback restaure le backup exact d'`app.js` et retire le nouveau fichier de
+navigation. Deux appels de pose ont été refusés avant création du processus par
+la couche d'approbation ; aucun effet distant n'est à restaurer.
 
 ### Gate exploratoire — `G4-K1-CONTROL-COMPOSITE-MESH-SUBGRID-V1`
 

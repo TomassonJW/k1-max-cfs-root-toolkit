@@ -1,8 +1,41 @@
 # HANDOFF
 
-Date: 2026-08-23 17:25 +02:00
-Phase: P4 / FIRST-CALIBRATION-V2 validée ; corrections UI sûres et prototype composite préparés hors imprimante ; production fermée
-Next operator: ouvrir Chrome, authentifier `http://localhost:4411/k1-control/`, puis lancer depuis l'écran l'unique campagne `6 × 6 / 1 mesh`
+Date: 2026-08-24 10:15 +02:00
+Phase: P4 / campagne quotidienne `6 × 6 / 1 mesh` validée ; NAVIGATION-V1 non déployée ; composite non installé ; production fermée
+Next operator: autoriser littéralement `G4-K1-CONTROL-CALIBRATION-UI-NAVIGATION-V1`, valider son rendu, puis poser sans mouvement COMPOSITE-MESH-SUBGRID-V1
+
+## Clôture CAMPAIGN-V1 du 24 août 2026
+
+La capture privée
+`20260823-171803-g4-k1-control-calibration-ui-campaign-v1` contient désormais
+le préflight, le niveau `supported` et la validation finale. Thomas a lancé
+depuis `http://localhost:4409/k1-control/` l'unique mesh physique `6 × 6`
+Lagrange à `55/140 °C`, après `200 s`. Les 36 contacts ont été relus et
+qualifiés. Thomas a ensuite parcouru les huit paliers Z de `5 mm` à `0,1 mm`,
+confirmé le jeu final, laissé le seed à `−0,04 mm` et enregistré le Z. L'API
+termine en phase `accepted`, `mesh_index=1`, avec chemin Z `committed` et
+qualification `single_firmware_bounded_mesh`. Aucun rerun ou deuxième mesh n'a
+eu lieu.
+
+Le profil `k1_p001_t055_r001_n06x06` contient le nouveau mesh quotidien. Le
+premier contrôle final a rejeté à tort le hash complet de `printer.cfg`. Le diff
+avec le backup exact ne change que les six lignes contenant les 36 points sous
+ce profil. Le validateur épingle maintenant le hash du backup, refuse toute
+autre différence et compare chaque valeur persistée à la matrice privée
+acceptée. La reprise a obtenu
+`CAPTURE_CALIBRATION_UI_LEVEL_OK level=supported`, puis
+`VALIDATE_CALIBRATION_UI_CAMPAIGN_V1_OK`. L'état final est `standby`, cibles
+zéro, profil transitoire absent, stockage Z `ok`, deux CFS connectés et
+Moonraker sans échec ni avertissement.
+
+Le rendu réel a révélé un défaut UX résiduel : le texte « Qualifie d'abord le
+mesh robuste » restait affiché pendant `starting_z` et après `accepted`, bien
+que les actions et l'état serveur soient corrects. Le delta séparé
+`G4-K1-CONTROL-CALIBRATION-UI-NAVIGATION-V1` corrige ces textes et ajoute le
+bouton Mainsail vers `/k1-control/`. Ses tests, son manifeste, son rollback et
+son préflight SSH sont verts. La plateforme a refusé deux fois la pose avant
+création du processus car le nom exact n'était pas présent dans l'autorisation.
+Aucun backup, staging, transfert ou fichier distant NAVIGATION n'existe.
 
 ## Préflight CAMPAIGN-V1 du 23 août 2026
 
@@ -953,26 +986,21 @@ communautaire `pr_version: 1` avec retrait des tables est explicitement rejeté.
 Les familles de payloads ont été corrigées hors imprimante. Les quatre deltas
 sûrs PRTOUCH-BED-MESH-V2, MATRIX-V1, RETRY-SAFETY-V1 et PRTOUCH-PRESETS-V1 ont
 depuis été préflightés, posés ou reconnus déjà présents, puis validés séparément.
-La suite complète compte maintenant 220 tests verts et 3 ignorés connus. La
-seule gate quotidienne restante est :
-
-```text
-GO G4-K1-CONTROL-CALIBRATION-UI-CAMPAIGN-V1
-```
-
-Après son préflight frais, Thomas lance depuis l'écran l'unique `6 × 6` et
-termine le chemin Z. Codex reste en observation et validation uniquement. La
-production et G5 restent hors périmètre.
+La campagne quotidienne a ensuite réussi et la suite complète compte maintenant
+224 tests verts avec 3 ignorés connus. Le prochain write-set est uniquement
+NAVIGATION-V1, sans restart ni action physique. Après son vrai rendu, la
+prochaine gate physique séparée est COMPOSITE-MESH-SUBGRID-V1.
 
 La gate précédente est close avec `DEPLOY_CALIBRATION_PATH_V1_OK` et
 `VALIDATE_CALIBRATION_PATH_V1_OK` sous la capture
 `20260822-124207-g4-k1-control-calibration-path-v1`.
 
 Autorisation de reprise : Thomas a donné puis reconfirmé une autorisation
-globale. FIRST-CALIBRATION-V2, CALIBRATION-UI-V1 et les quatre deltas sûrs sont
-validés et clos ; le préflight CAMPAIGN-V1 est vert. La prochaine mission unique
-est la campagne quotidienne opérateur `6 × 6 / 1 mesh`; la sous-grille
-composite et la bascule production restent des gates ultérieures séparées.
+globale pour les sept étapes de la roadmap. FIRST-CALIBRATION-V2,
+CALIBRATION-UI-V1, les quatre deltas sûrs et CAMPAIGN-V1 sont validés et clos.
+NAVIGATION-V1 est préparée mais sa pose attend encore l'autorisation littérale
+exigée par la plateforme. La sous-grille composite et la bascule production
+restent des gates ultérieures séparées.
 
 La bascule Orca reste une gate ultérieure unique : wrappers de travail côté
 machine, trois champs Orca et retrait du post-traitement doivent changer

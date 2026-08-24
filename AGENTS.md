@@ -17,19 +17,29 @@ par un `IndexError` au point 37 ; le rollback est vert ; la correction hors
 imprimante impose désormais `6 × 6` Lagrange et un seul mesh quotidien ; les
 deltas sûrs PRTOUCH-BED-MESH-V2, MATRIX-V1, RETRY-SAFETY-V1 et
 PRTOUCH-PRESETS-V1 sont installés et validés ;
-production remains closed**.
+la campagne quotidienne `6 × 6 / 1 mesh` est acceptée et validée ; le delta UX
+NAVIGATION-V1 et le mode composite restent non déployés ; production remains
+closed**.
 
 La capture `20260823-165742-g4-k1-control-calibration-ui-prtouch-presets-v1` a
 clos PRTOUCH-PRESETS-V1 après un préflight frais, un déploiement idempotent et
 deux validations. Les hashes sûrs étaient déjà présents : aucune écriture
 distante, aucun backup et aucun restart n'ont été nécessaires. Klippy, les
 listes d'échec et d'avertissement, le profil robuste, le Z accepté, le mesh
-`6 × 6` Lagrange et les deux CFS sont conformes. La prochaine mission unique
-est `G4-K1-CONTROL-CALIBRATION-UI-CAMPAIGN-V1`. Son préflight distant est vert
-sous la capture `20260823-171803-g4-k1-control-calibration-ui-campaign-v1` :
-UI finale exacte, `printer.cfg`, Moonraker, profil, Z, mesh chargé et deux CFS
-sont conformes. La prochaine action est uniquement l'ouverture du vrai écran
-authentifié, puis l'unique campagne `6 × 6 / 1 mesh` lancée par Thomas.
+`6 × 6` Lagrange et les deux CFS sont conformes. La capture
+`20260823-171803-g4-k1-control-calibration-ui-campaign-v1` a ensuite obtenu un
+mesh quotidien complet de 36 points, le parcours Z `5..0,1 mm`, l'acceptation
+à `−0,04 mm`, `CAPTURE_CALIBRATION_UI_LEVEL_OK` et
+`VALIDATE_CALIBRATION_UI_CAMPAIGN_V1_OK`. Le validateur final autorise seulement
+les six lignes de points du profil mesuré et refuse toute autre différence de
+`printer.cfg` avec le backup exact.
+
+Le delta `G4-K1-CONTROL-CALIBRATION-UI-NAVIGATION-V1` corrige les textes Z
+trompeurs et ajoute le lien Mainsail vers `/k1-control/`. Il est préparé,
+testé et préflighté, mais non déployé : la couche d'approbation a refusé les
+deux appels avant exécution, donc aucun effet distant n'a eu lieu. Après sa
+pose et son rendu réel, la prochaine gate physique est uniquement
+`G4-K1-CONTROL-COMPOSITE-MESH-SUBGRID-V1`.
 
 Thomas authorised V1, but the mandatory preflight proved that `logrotate` was
 absent. V1 is closed and must never be deployed. Thomas later authorised V2;
@@ -369,22 +379,24 @@ perte des compensations et d'un retour de démarrage bloqué après coupure.
 
 Les packages core, matrice, retry-safety, adaptateur, presets, campagne et la
 preuve composite bornée ont été corrigés hors imprimante. La suite locale compte
-220 tests verts et 3 ignorés connus ; les scripts PowerShell se parsèrent
+224 tests verts et 3 ignorés connus ; les scripts PowerShell se parsèrent
 correctement et `git diff --check` est vert. Les corrections
 PRTOUCH-BED-MESH-V2, MATRIX-V1, RETRY-SAFETY-V1 et PRTOUCH-PRESETS-V1 ont
 ensuite été posées ou reconnues déjà présentes puis validées séparément, avec
 les backups et restarts strictement prévus et aucune action physique. La
-prochaine gate unique est CAMPAIGN-V1. Son préflight SSH frais est vert sous la
-capture `20260823-171803-g4-k1-control-calibration-ui-campaign-v1`. Le vrai
-écran doit maintenant être ouvert dans un navigateur authentifié ; Thomas reste
-le seul opérateur des actions physiques de la campagne.
+campagne CAMPAIGN-V1 a ensuite réussi sous la capture
+`20260823-171803-g4-k1-control-calibration-ui-campaign-v1`, avec un mesh
+`6 × 6`, le parcours Z et la validation finale. NAVIGATION-V1 reste la prochaine
+pose sans mouvement ; COMPOSITE-MESH-SUBGRID-V1 vient seulement après son rendu
+réel.
 
 Thomas demande que chaque prochaine reprise commence par un état explicite de
 l'autonomie, sans confondre le runtime installé avec une interface terminée :
 
-- **autonomie calibration** : pas encore atteinte ; l'interface et son vrai
-  rendu sont validés, mais une campagne complète sans console ni assistance
-  Codex doit encore réussir ;
+- **autonomie calibration** : pas encore atteinte ; la campagne physique est
+  complète et valide, mais un texte d'état trompeur a encore nécessité une
+  traduction Codex. NAVIGATION-V1 et un rendu compréhensible sans assistance
+  doivent fermer ce dernier défaut ;
 - **autonomie production** : pas encore atteinte ; elle exige en plus la bascule
   atomique Orca/`START_PRINT`, le retrait prouvé du `+0,27 mm`, la propriété des
   températures CFS et la validation G5 sans intervention Codex.

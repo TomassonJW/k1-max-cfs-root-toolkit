@@ -74,7 +74,7 @@ et Mainsail `v2.18.2` épinglés, contrat Orca complet et
 
 ## P4 — Installation contrôlée du système de pilotage
 
-Status: **V3 + PATHS-V1 observés, runtime et chemin Z installés ; première calibration préparée hors imprimante**
+Status: **campagne quotidienne `6 × 6 / 1 mesh` validée ; correction UX et mode composite en cours ; production fermée**
 
 Le produit est posé par étapes techniques réversibles, mais Thomas reçoit un
 seul fonctionnement quotidien :
@@ -83,11 +83,14 @@ seul fonctionnement quotidien :
    rollbackée après preuve d'incompatibilité du compte Moonraker ; V3 conserve
    le syslog stock, place l'authentification compatible sur nginx et est
    installée avec compte vérifié et ouverture LAN contrôlée ;
-2. état et chemin de calibration Z installés ; candidat de première calibration
-   préparé par checkpoints, sans GO ni exécution ;
-3. mesh, nettoyage, démarrage et purge sûrs ;
-4. propriété dynamique des températures des deux CFS ;
-5. contrat Orca final et retrait prouvé de l'ancien post-traitement.
+2. état et chemin de calibration Z installés ; FIRST-CALIBRATION-V2 et campagne
+   quotidienne depuis l'écran validées ;
+3. correction UX finale, puis qualification progressive du mesh composite
+   `11 × 11` par sous-grille `5 × 5`, quatre acquisitions bornées et comparaison
+   de première couche ;
+4. mesh, nettoyage, démarrage et purge sûrs ;
+5. propriété dynamique des températures des deux CFS ;
+6. contrat Orca final et retrait prouvé de l'ancien post-traitement.
 
 Chaque pose a son backup, son diff, ses critères OK/KO et son rollback. Aucune
 pose suivante ne commence si l'écran, Creality Web/Print, le CFS ou Klipper

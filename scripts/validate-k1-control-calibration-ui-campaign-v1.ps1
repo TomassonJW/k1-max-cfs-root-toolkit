@@ -161,14 +161,18 @@ function Assert-InstalledUi {
         [Parameter(Mandatory = $true)]$Manifest,
         [Parameter(Mandatory = $true)]$RetryManifest,
         [Parameter(Mandatory = $true)]$BedMeshManifest,
-        [Parameter(Mandatory = $true)]$PresetManifest
+        [Parameter(Mandatory = $true)]$PresetManifest,
+        [switch]$AllowSavedMesh
     )
     $printerConfigPath = '/usr/data/printer_data/config/printer.cfg'
     $printerConfigEntries = @(
         $Manifest.unchanged.files |
             Where-Object { [string]$_.destination -ceq $printerConfigPath }
     )
-    if ($printerConfigEntries.Count -ne 1 -or
+    if ($printerConfigEntries.Count -ne 1) {
+        throw 'Le manifeste UI ne couvre pas exactement printer.cfg.'
+    }
+    if (-not $AllowSavedMesh -and
         (Get-RemoteSha256 $printerConfigPath) -cne ([string]$printerConfigEntries[0].sha256)) {
         throw 'printer.cfg distant différent de la base revue.'
     }
@@ -204,6 +208,92 @@ function Assert-InstalledUi {
     $mode = ((Invoke-Remote "stat -c '%a' '$RemoteUi'") | Select-Object -First 1).Trim()
     if ($mode -cne '755') {
         throw "Droits du dossier UI inattendus : $mode"
+    }
+}
+
+function Assert-CampaignPrinterConfig {
+    param(
+        [Parameter(Mandatory = $true)]$Manifest,
+        [Parameter(Mandatory = $true)]$PrivateState
+    )
+    $printerConfigPath = '/usr/data/printer_data/config/printer.cfg'
+    $printerConfigEntries = @(
+        $Manifest.unchanged.files |
+            Where-Object { [string]$_.destination -ceq $printerConfigPath }
+    )
+    if ($printerConfigEntries.Count -ne 1) {
+        throw 'Le manifeste UI ne couvre pas exactement printer.cfg.'
+    }
+    $expectedHash = [string]$printerConfigEntries[0].sha256
+    if (-not $PrivateState.backup -or
+        [string]$PrivateState.backup.printer_cfg_sha256 -cne $expectedHash) {
+        throw 'Le backup de campagne ne référence pas la base printer.cfg revue.'
+    }
+    $campaignId = [string]$PrivateState.campaign_id
+    $backupRoot = [string]$PrivateState.backup.root
+    $expectedRoot = "/usr/data/k1-control-v1/backups/calibration-ui-v1/$campaignId"
+    if ($campaignId -notmatch '^[0-9]{8}-[0-9]{6}-[0-9]{3}-calibration-ui-v1$' -or
+        $backupRoot -cne $expectedRoot) {
+        throw 'Chemin du backup de campagne inattendu.'
+    }
+    $backupPath = "$backupRoot/printer.cfg.before"
+    if ((Get-RemoteSha256 $backupPath) -cne $expectedHash) {
+        throw 'Le backup printer.cfg ne correspond pas à la base revue.'
+    }
+
+    $before = @(Invoke-Remote "cat '$backupPath'")
+    $current = @(Invoke-Remote "cat '$printerConfigPath'")
+    if ($before.Count -ne $current.Count) {
+        throw 'printer.cfg contient un nombre de lignes inattendu après campagne.'
+    }
+    $profile = $MeshProfiles[0]
+    $header = "#*# [bed_mesh $profile]"
+    $headerIndexes = @(0..($current.Count - 1) | Where-Object { $current[$_] -ceq $header })
+    if ($headerIndexes.Count -ne 1 -or $before[$headerIndexes[0]] -cne $header) {
+        throw 'Bloc du profil mesh qualifié absent ou ambigu dans printer.cfg.'
+    }
+    $headerIndex = [int]$headerIndexes[0]
+    $nextHeader = $current.Count
+    for ($index = $headerIndex + 1; $index -lt $current.Count; $index++) {
+        if ($current[$index] -match '^#\*# \[') {
+            $nextHeader = $index
+            break
+        }
+    }
+    $pointIndexes = @()
+    for ($index = $headerIndex + 1; $index -lt $nextHeader; $index++) {
+        if ($current[$index] -match '^#\*#\s+[-+]?(?:\d|\.)') {
+            $pointIndexes += $index
+        }
+    }
+    if ($pointIndexes.Count -ne 6) {
+        throw 'Le profil mesh persistant ne contient pas exactement six lignes de points.'
+    }
+    foreach ($index in 0..($current.Count - 1)) {
+        if ($before[$index] -cne $current[$index] -and $pointIndexes -notcontains $index) {
+            throw "printer.cfg a changé hors des points du profil qualifié à la ligne $($index + 1)."
+        }
+    }
+    $matrix = @($PrivateState.candidate_matrix)
+    if ($matrix.Count -ne 6) {
+        throw 'La matrice privée acceptée ne contient pas six lignes.'
+    }
+    $culture = [Globalization.CultureInfo]::InvariantCulture
+    for ($row = 0; $row -lt 6; $row++) {
+        $line = [string]$current[$pointIndexes[$row]]
+        $payload = ($line -replace '^#\*#\s+', '').Trim()
+        $values = @($payload.Split(',') | ForEach-Object {
+            [double]::Parse($_.Trim(), $culture)
+        })
+        $expectedValues = @($matrix[$row])
+        if ($values.Count -ne 6 -or $expectedValues.Count -ne 6) {
+            throw "Ligne mesh persistante incomplète : $($row + 1)."
+        }
+        for ($column = 0; $column -lt 6; $column++) {
+            if ([math]::Abs($values[$column] - [double]$expectedValues[$column]) -gt 0.000001) {
+                throw "Valeur mesh persistante différente de la mesure acceptée : ligne $($row + 1), colonne $($column + 1)."
+            }
+        }
     }
 }
 
@@ -345,7 +435,8 @@ if ($Action -eq 'Plan') {
 }
 
 [void](Assert-EvidenceDirectory)
-Assert-InstalledUi $reviewed.Manifest $reviewed.RetryManifest $reviewed.BedMeshManifest $reviewed.PresetManifest
+$allowSavedMesh = $Action -in @('CaptureLevel', 'Validate')
+Assert-InstalledUi $reviewed.Manifest $reviewed.RetryManifest $reviewed.BedMeshManifest $reviewed.PresetManifest -AllowSavedMesh:$allowSavedMesh
 $api = Get-ApiState
 $snapshot = Get-PrinterSnapshot
 
@@ -387,6 +478,7 @@ if ($Action -eq 'CaptureLevel') {
     Assert-ExactCampaignConfig $api $expected
     Assert-Qualification $api
     $privateState = Get-PrivateCampaignState
+    Assert-CampaignPrinterConfig $reviewed.Manifest $privateState
     if (@($privateState.meshes).Count -ne 1 -or $privateState.phase -cne $expectedPhase) {
         throw "État privé incomplet pour le niveau $Level."
     }
@@ -407,6 +499,7 @@ $supported = @($reviewed.Contract.physical_sequence | Where-Object { $_.name -ce
 Assert-ExactCampaignConfig $api $supported
 Assert-Qualification $api
 $privateState = Get-PrivateCampaignState
+Assert-CampaignPrinterConfig $reviewed.Manifest $privateState
 if (@($privateState.meshes).Count -ne 1 -or $privateState.phase -cne 'accepted') {
     throw 'État privé différent de la mesure acceptée.'
 }

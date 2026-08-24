@@ -1,50 +1,54 @@
 # STATE
 
-Last updated: 2026-08-23
+Last updated: 2026-08-24
 
-Les révisions sûres `PRTOUCH-BED-MESH-V2`, `MATRIX-V1`, `RETRY-SAFETY-V1` et
-`PRTOUCH-PRESETS-V1` sont maintenant installées et validées. PRESETS a été
-close sous la capture
-`20260823-165742-g4-k1-control-calibration-ui-prtouch-presets-v1`. Le
-déploiement était idempotent : les hashes sûrs étaient déjà présents, donc
-aucune écriture distante, aucun backup et aucun restart n'ont été nécessaires.
-Klippy est `ready`, `failed_components=[]`, `warnings=[]`, la K1 est `standby`
-avec cibles zéro, le profil robuste et le Z accepté sont valides, `6 × 6`
-Lagrange est chargé et les deux CFS sont connectés. Aucune action physique n'a
-eu lieu. La prochaine gate séparée est
-`G4-K1-CONTROL-CALIBRATION-UI-CAMPAIGN-V1`. Son préflight distant est vert sous
-la capture `20260823-171803-g4-k1-control-calibration-ui-campaign-v1`. La K1
-reste au repos, cibles zéro, avec l'UI finale exacte, le profil robuste, le Z
-accepté, `6 × 6` Lagrange et les deux CFS conformes. Aucune calibration n'a
-encore été lancée.
+La campagne quotidienne `G4-K1-CONTROL-CALIBRATION-UI-CAMPAIGN-V1` est
+maintenant réussie et validée sous la capture privée
+`20260823-171803-g4-k1-control-calibration-ui-campaign-v1`. Thomas a lancé
+depuis l'écran l'unique mesh `6 × 6` Lagrange à `55/140 °C` après `200 s`, puis
+a parcouru les huit paliers Z de `5 mm` à `0,1 mm`, confirmé le jeu et enregistré
+le Z. L'API termine en phase `accepted`, `mesh_index=1`, qualification
+`single_firmware_bounded_mesh`, chemin Z `committed` et Z accepté `−0,04 mm`.
 
-Le rendu Chrome des octets exactement identiques aux hashes distants confirme
-le titre de calibration, l'unique choix `6 × 6`, Lagrange, un passage et 36
-points. Aucun choix supérieur ni clic de calibration n'a été observé.
+Le profil `k1_p001_t055_r001_n06x06` contient désormais les 36 valeurs du mesh
+quotidien réellement mesuré. Le premier contrôle final a signalé un faux KO :
+il exigeait encore le hash complet de `printer.cfg` antérieur à la campagne.
+Le diff exact entre le backup et l'état final ne change que les six lignes de
+points de ce profil. Le validateur vérifie désormais le hash du backup revu,
+refuse tout changement hors de ces lignes et compare chaque valeur persistée à
+la matrice privée acceptée. Il a obtenu
+`CAPTURE_CALIBRATION_UI_LEVEL_OK level=supported` puis
+`VALIDATE_CALIBRATION_UI_CAMPAIGN_V1_OK`. La K1 termine `standby`, cibles zéro,
+profil transitoire absent, stockage Z `ok`, deux CFS connectés et
+`failed_components=[]` / `warnings=[]`.
+
+Le delta `G4-K1-CONTROL-CALIBRATION-UI-NAVIGATION-V1` est préparé hors
+imprimante pour corriger les textes Z trompeurs et ajouter le lien Mainsail
+`/k1-control/` sur la même origine. Ses 12 tests ciblés, la suite complète de
+224 tests avec 3 ignorés, le parse PowerShell, `git diff --check` et son
+préflight SSH frais sont verts. La plateforme a refusé la pose avant exécution
+faute d'autorisation citant littéralement son nom : aucun backup, staging,
+transfert ou fichier distant n'a été créé. Il reste non déployé.
 
 ## Current phase
 
-**P4 — fondation V3 + PATHS-V1, runtime Z/mesh, chemin borné et première
-calibration V2 installés et validés ; production volontairement bloquée**
+**P4 — calibration quotidienne `6 × 6 / 1 mesh` validée ; navigation UX et
+mode composite encore non déployés ; production volontairement bloquée**
 
-La calibration UI réelle est actuellement **fermée à toute relance** : le
-premier mesh `9 × 9` de la campagne `20260823-021858-540-calibration-ui-v1` a
-atteint la limite PRTouch de trente-six contacts par séquence puis levé
-`IndexError` avant le point 37. Le rollback a restauré un état sûr et la K1 est
-restée sur son dernier état distant validé : `standby`, cibles zéro, axes non
-référencés, profil robuste et Z `−0,04 mm`. Son état physique courant n'a pas
-été revérifié pendant la clôture du 23 août ; Thomas l'a annoncée disponible et
-plateau libre, puis a interrompu la reprise avant tout nouveau préflight SSH.
-Aucune commande distante ou mutation n'a été lancée après cette interruption.
-La base sûre reste `6 × 6` Lagrange avec un seul mesh standard. L'audit
-complémentaire de l'ADR-013 montre toutefois que cette limite
-ne borne pas nécessairement la matrice finale : quatre sous-grilles de 36
-contacts maximum peuvent former 121 mesures physiques `11 × 11`, sans
-`pr_version: 1`, si elles restent dans la même chauffe et le même référencement.
-Le fusionneur hors imprimante est vert. Un composant séparé pour une unique
-sous-grille décalée `5 × 5` est maintenant préparé avec pose, rollback, pilote
-borné et 14 tests ciblés ; il n'est ni installé ni exécuté et cette preuve
-logicielle n'autorise pas encore quatre sous-grilles.
+La base sûre et réellement requalifiée reste `6 × 6` Lagrange avec un seul mesh
+standard. L'autonomie calibration n'est pas encore déclarée : Thomas a terminé
+la campagne sans console, mais le message `Qualifie d'abord le mesh robuste`
+est resté affiché pendant `starting_z` et après `accepted`, ce qui a nécessité
+une traduction Codex. `NAVIGATION-V1` doit corriger ce défaut et son vrai rendu
+doit être validé avant de déclarer l'interface compréhensible seule.
+
+L'ADR-013 montre que la limite PRTouch de 36 contacts par séquence ne borne pas
+nécessairement la matrice finale : quatre sous-grilles bornées peuvent former
+121 mesures physiques `11 × 11` dans la même chauffe et le même référencement.
+Le fusionneur hors imprimante est vert. Le composant séparé pour l'unique
+sous-grille décalée `5 × 5` est préparé avec pose, rollback, pilote borné et 14
+tests ciblés ; il n'est ni installé ni exécuté. Sa pose sans mouvement ne vient
+qu'après la clôture de NAVIGATION-V1.
 
 The repository baseline, stock acquisition, complete Orca/G-code intake and
 passive P1–P5/PETG trace are complete. Gate G3 is passed for offline design and

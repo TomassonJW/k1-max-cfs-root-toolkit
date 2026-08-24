@@ -1,0 +1,30 @@
+{
+  "contract_id": "G4-K1-CONTROL-CALIBRATION-UI-NAVIGATION-V1",
+  "status": "prepared_after_successful_daily_campaign",
+  "purpose": "remove misleading Z instructions and add a same-origin Mainsail navigation entry to K1 Control",
+  "dependency": {
+    "campaign_capture": "20260823-171803-g4-k1-control-calibration-ui-campaign-v1",
+    "required_result": "VALIDATE_CALIBRATION_UI_CAMPAIGN_V1_OK"
+  },
+  "write_set": [
+    "/usr/data/k1-control-v1/current/www/mainsail/k1-control/app.js",
+    "/usr/data/printer_data/config/.theme/navi.json"
+  ],
+  "navigation": {
+    "title": "K1 Control",
+    "href": "/k1-control/",
+    "target": "_self",
+    "same_origin": "http://localhost:4409",
+    "authentication_change": false
+  },
+  "z_messages": {
+    "starting_z": "preparation_in_progress",
+    "z_confirmed": "ready_to_persist",
+    "accepted": "calibration_complete",
+    "misleading_mesh_prompt_after_qualification": false
+  },
+  "service_restart": "none",
+  "printer_cfg_changed": false,
+  "physical_action": false,
+  "rollback": "restore the exact app.js backup and remove the newly created navi.json"
+}
