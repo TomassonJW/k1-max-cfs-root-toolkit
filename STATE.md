@@ -48,17 +48,39 @@ Aucune nouvelle authentification ni action physique n'a eu lieu.
 
 ## Current phase
 
-**P4 — calibration quotidienne, navigation UX R2, sous-grille `5 × 5` et profil
-composite physique `11 × 11` qualifiés ; comparaison d'impression en attente ;
-production volontairement bloquée**
+**P4 — calibration quotidienne autonome ; composite physique `11 × 11`
+qualifié techniquement mais KO aux bords en première couche ; éditeur de profil
+dérivé à construire ; production volontairement bloquée**
 
 La base sûre et réellement requalifiée reste `6 × 6` Lagrange avec un seul mesh
 standard. L'autonomie de calibration quotidienne standard est maintenant
 atteinte : la campagne a réussi sans console et le vrai écran corrigé ouvre
 depuis Mainsail sans nouvelle authentification ni traduction Codex. Le mode
-précision composite est maintenant techniquement qualifié, mais il ne devient
-pas encore une autonomie utilisateur : son gain sur une vraie première couche
-doit être comparé au robuste `6 × 6` avant toute exposition dans l'écran.
+précision composite est techniquement qualifié, mais sa comparaison physique
+a refusé la promotion : il reste caché jusqu'à qualification d'un profil dérivé
+qui corrige les bords.
+
+La comparaison V2 a maintenant fourni ce verdict. Avec le Z temporaire
+`−0,24 mm` observé pendant l'impression, le composite améliore nettement la
+grande zone centrale, mais plusieurs bandes de bord sont beaucoup plus
+mauvaises. Il n'est donc pas promu dans l'interface. Le calcul exécuté avec le
+`bed_mesh.py` exact borne l'écart bicubique/direct à `0,009877883 mm` ;
+l'interpolation n'explique pas seule les défauts. Le profil physique
+`k1_p001_t055_r001_n11x11` reste une source immuable et le robuste reste le
+repli. L'état distant final après la fin de l'impression n'a pas été
+re-préflighté pendant cet audit.
+
+La prochaine mission est `MESH-EDITOR-OFFLINE-V1`, sans action imprimante. K1
+Control doit créer des profils dérivés versionnés, appliquer des corrections
+locales normalisées à moyenne nulle et proposer une grille 2D avec historique,
+bornes et rollback. Le premier essai physique ultérieur utilisera un motif
+`5..295 mm` peu consommateur et une seule petite correction de `0,010 mm`.
+
+Le cycle de production cible est désormais arrêté par ADR-016 : Orca enverra à
+terme un unique contrat `KCTRL_JOB_BEGIN`; K1 Control possédera chauffe,
+nettoyage, référence Z finale, mesh/Z, CFS, purge, pause, reprise et fin. Le cœur
+CFS compilé reste une frontière à tracer et la bascule Orca avec retrait du
+`+0,27 mm` reste fermée et atomique.
 
 La première recette de comparaison V1 est **close KO**. Elle a conservé
 l'ancien offset Orca `+0,27 mm` alors que le Z accepté vaut `−0,04 mm`. Le
@@ -573,12 +595,14 @@ persistant `#*# [bed_mesh ...]`. Le pilote cherchait sa forme non commentée. Le
 contrôle et son test ont été corrigés sans mutation imprimante ; la relance en
 lecture seule a obtenu `VALIDATE_FIRST_CALIBRATION_V2_OK`.
 
-`CALIBRATION-UI-V1` est également préparé hors imprimante. Il fournit un
+À ce stade historique, `CALIBRATION-UI-V1` était préparé hors imprimante. Il fournit un
 contrôleur Moonraker serveur et une page réelle avec choix de plaque,
 températures, stabilisation, matrice, interpolation, enregistrement, annulation
-et restaurations. Sa pose ne lancerait aucune calibration et redémarrerait
-Moonraker seulement. Elle n'est pas installée ni validée sur la machine ;
-l'autonomie calibration reste donc non atteinte.
+et restaurations. Sa pose ne devait lancer aucune calibration et devait
+redémarrer Moonraker seulement. Il n'était pas encore installé ni validé sur la
+machine ; l'autonomie calibration n'était donc pas encore atteinte à cette
+étape. La campagne écran close depuis a levé ce blocage pour le mode quotidien
+standard.
 
 La revue post-calibration a rendu le candidat compatible avec l'état final réel :
 les phases fermées admises sont `idle`, `committed` et `cancelled`; les lectures
@@ -858,8 +882,9 @@ retirement remains atomic with the later proven machine/Orca replacement.
 - The real `K1 Control` adapter and offline Z/mesh guards exist. START_PRINT,
   Orca and CFS integration remain intentionally absent until their atomic
   contracts and rollback are complete.
-- Calibration autonomy remains absent. The corrected interface and its browser
-  reload are validated, but one complete screen-only campaign remains unproven.
+- Standard daily calibration autonomy is reached. Advanced mesh autonomy is
+  still absent until K1 Control can regenerate the composite and create, edit,
+  qualify and roll back derived profiles without Codex.
 - Production autonomy remains absent until the atomic Orca/START_PRINT cutover,
   removal of the legacy `+0.27 mm`, CFS temperature ownership and G5 proof.
 

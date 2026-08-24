@@ -1,12 +1,15 @@
 # Fondation K1-CONTROL-V1
 
-Statut : **V3 installée et validée le 2026-08-21 ; huit heures d'observation requises**.
+Statut : **fondation V3, runtime Z/mesh, calibration quotidienne et navigation
+installés ; composite `11 × 11` retenu comme source mais mode Précision KO aux
+bords ; production fermée**.
 
-Cette première pose candidate ajoute une seule API Moonraker, une petite
+La fondation initiale ajoute une seule API Moonraker, une petite
 passerelle web dédiée au port `4409` et Mainsail comme interface experte. Elle
 ne remplace ni l'écran, ni Creality Web/Print, ni les deux CFS. Elle n'écrit
-dans aucun fichier constructeur. `K1 Control` reste un prototype local tant que
-son adaptateur réel et les macros métier ne sont pas prêts.
+dans aucun fichier constructeur. Les tranches de calibration sont désormais
+réelles et validées ; les séquences de production restent absentes jusqu'aux
+gates ADR-016.
 
 ## Versions figées
 

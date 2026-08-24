@@ -2,10 +2,11 @@
 
 Unofficial, evidence-driven tooling and documentation for taking controlled ownership of a rooted Creality K1 Max equipped with the classic K1 CFS upgrade and multiple CFS units.
 
-> **Status:** P4. V3, PATHS-V1, le runtime Z/mesh et le chemin borné du premier
-> Z sont installés et validés. Le runtime reste vide et fermé à la production.
-> `G4-K1-CONTROL-FIRST-CALIBRATION-V1` est préparé hors imprimante, mais aucun
-> GO ni aucune calibration n'ont eu lieu.
+> **Status:** P4. La calibration quotidienne `6 × 6`, le Z accepté `−0,04 mm`,
+> K1 Control et sa navigation Mainsail sont validés. Le composite physique
+> `11 × 11` améliore le centre mais échoue encore aux bords ; il reste caché.
+> La prochaine mission est l'éditeur de profils dérivés hors imprimante.
+> L'autonomie de production reste fermée.
 
 ## Target configuration
 
@@ -81,6 +82,11 @@ to the mission before any SSH session. The active product contract is defined in
 Le candidat de première calibration est décrit dans
 [`docs/18-g4-k1-control-first-calibration-v1.md`](docs/18-g4-k1-control-first-calibration-v1.md).
 Son nom seul ne vaut pas GO et son mode par défaut reste purement local.
+
+L'audit courant du mesh manuel et du cycle CFS est dans
+[`docs/23-audit-mesh-manuel-et-cycle-production-cfs.md`](docs/23-audit-mesh-manuel-et-cycle-production-cfs.md).
+Les architectures retenues sont ADR-015 pour les profils mesh dérivés et
+ADR-016 pour le cycle de production orchestré.
 
 ## Repository map
 

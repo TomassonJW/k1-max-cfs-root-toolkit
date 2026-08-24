@@ -19,9 +19,9 @@ class ProjectAuthorityPolicyTests(unittest.TestCase):
         handoff = (ROOT / "HANDOFF.md").read_text(encoding="utf-8")
         current_header = "\n".join(handoff.splitlines()[:25])
         self.assertNotIn("autoriser littéralement", current_header)
-        self.assertIn("concevoir un successeur de comparaison", current_header)
-        self.assertIn("prouve d'abord le Z absolu", current_header)
-        self.assertIn("ne jamais rejouer COMPOSITE-FIRST-LAYER-COMPARISON-V1", current_header)
+        self.assertIn("MESH-EDITOR-OFFLINE-V1", current_header)
+        self.assertIn("sans toucher à la K1", current_header)
+        self.assertIn("motif de bord `5..295 mm`", current_header)
         self.assertIn("Aucun `GO` exact", current_header)
 
     def test_adr_and_decision_preserve_technical_safety_controls(self):

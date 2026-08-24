@@ -1,8 +1,9 @@
 # 10 — Système de pilotage pérenne
 
-Date : 2026-08-22
+Date : 2026-08-24
 
-Statut : **fondation et runtime Z/mesh installés ; interfaces autonomes non atteintes**
+Statut : **autonomie de calibration quotidienne standard atteinte ; autonomie
+mesh Précision et autonomie production non atteintes**
 
 ## Décision claire
 
@@ -42,9 +43,11 @@ ou Codex. Deux sorties distinctes sont suivies :
   automatiquement cohérents, ancien `+0,27 mm` retiré, températures des deux
   CFS respectées et travaux ordinaires sans intervention Codex.
 
-État au 2026-08-22 : **aucun de ces deux seuils n'est encore atteint**. Mainsail
-`v2.18.2` et le runtime `KCTRL_*` sont installés, mais ils constituent la vue
-experte et le moteur, pas encore l'interface quotidienne autonome.
+État au 2026-08-24 : la calibration quotidienne standard `6 × 6`, le Z accepté
+et l'accès K1 Control depuis Mainsail sont autonomes. Le composite `11 × 11`
+améliore le centre mais échoue aux bords ; l'autonomie avancée exige encore un
+éditeur de profils dérivés depuis l'écran. La production reste fermée jusqu'au
+cycle ADR-016, à la propriété CFS et au cutover Orca.
 
 ### Écran quotidien `K1 Control`
 
@@ -58,6 +61,11 @@ L'écran principal doit montrer, sans console ni code :
 - outil et CFS concernés ;
 - boutons `Calibrer le Z`, `-0,01`, `-0,005`, `+0,005`, `+0,01`,
   `Enregistrer`, `Annuler` et `Restaurer la valeur précédente`.
+
+La section **Maillage > Ajustement local** ajoutera une grille 2D orientée,
+les valeurs source/delta/finale, les actions `Rapprocher` et `Éloigner`,
+l'historique des profils dérivés et le retour au robuste. Les mesures physiques
+sources ne sont jamais écrasées.
 
 Une impression normale ne doit demander aucun réglage à chaque fois. Thomas
 choisit ses profils dans Orca, envoie le travail et vérifie un état vert.
@@ -154,12 +162,14 @@ quantités de purge sont paramétrables. Les barrières de sécurité ne le sont
 L'ordre cible est :
 
 1. valider le contrat du travail, la plaque, les outils et la calibration ;
-2. stabiliser le plateau à la température demandée et préparer la buse à une
-   température de référence configurable ;
-3. faire la référence grossière nécessaire ;
-4. exécuter uniquement le chemin de nettoyage contrôlé et validé ;
-5. faire la référence Z finale sur buse propre ;
-6. charger ou mesurer le mesh correspondant à la plaque et à la température ;
+2. lancer immédiatement la chauffe du plateau, sans attendre ;
+3. faire la référence grossière uniquement si elle est nécessaire pour se
+   déplacer sans collision ;
+4. nettoyer la buse avec la recette et la température du matériau précédent ;
+5. attendre la cible plateau et une stabilité courte bornée, puis faire la
+   référence Z finale sur buse propre à la température de palpage ;
+6. charger le mesh correspondant à la plaque et à la température ; une nouvelle
+   mesure reste une calibration explicite, jamais une étape quotidienne cachée ;
 7. charger la correction Z acceptée, ou la valeur provisoire d'une session de
    calibration explicitement ouverte ;
 8. vérifier réellement référence, mesh et correction, puis seulement armer les

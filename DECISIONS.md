@@ -1084,3 +1084,73 @@ variantes, ferme la gate si elle contredit le stockage Z qualifié.
 Le passage composite ne démarre jamais pour « voir quand même » après un défaut
 du passage robuste. Le profil robuste reste chargé et le protocole fautif est
 retiré de la K1 avant toute autre action physique.
+
+## D-060 — Le composite `11 × 11` apporte un gain central mais échoue aux bords
+
+Date: 2026-08-24
+
+Status: décision issue de la comparaison physique V2 ; mode Précision toujours
+fermé
+
+La comparaison V2 a imprimé le profil composite avec un Z temporaire
+`−0,24 mm`, observé pendant l'extrusion et non persisté. Thomas constate une
+amélioration nette sur une grande zone centrale, mais plusieurs bandes de bord
+restent beaucoup plus mauvaises, avec plis, arrachements et défauts localisés.
+Le profil composite ne peut donc pas être promu dans l'interface quotidienne.
+
+Le calcul hors imprimante reproduit le `bed_mesh.py` exact. Le bicubique actif
+ne diffère d'une surface directe que de `0,009877883 mm` au maximum, dont
+`0,009712808 mm` dans la bande extérieure. L'interpolation est une contribution
+secondaire, pas la cause principale des défauts visibles. La différence locale
+de forme entre robuste et composite atteint environ `±0,087 mm` après retrait
+de la constante globale.
+
+Le profil physique `k1_p001_t055_r001_n11x11` est conservé comme source, le
+robuste reste le repli et le même motif V2 ne doit pas être rejoué sans
+correction. L'état distant final après la fin de l'impression n'a pas été
+re-préflighté pendant cette analyse.
+
+## D-061 — Les corrections locales créent un profil dérivé immuable et auditable
+
+Date: 2026-08-24
+
+Status: architecture retenue pour prototype hors imprimante
+
+K1 Control recevra un éditeur de grille `11 × 11`. Il ne modifiera jamais le
+profil physique source ni le Z accepté. Chaque correction produit un profil
+dérivé nommé et versionné, avec matrice source, deltas, matrice finale, contexte,
+résultat physique et rollback.
+
+La correction appliquée est normalisée à moyenne pondérée nulle afin de ne pas
+devenir un offset Z global via le `fade_target` moyen de Klipper. L'interface
+emploie `Rapprocher` et `Éloigner`, avec pas de `0,005/0,010 mm`, historique et
+bornes. La vue 3D sert à inspecter ; la V1 modifie les valeurs depuis une grille
+2D, pas par glisser-déposer imprécis.
+
+Mainsail `v2.18.2` reste intact : son code ne fournit que le rendu des matrices
+et les actions charger/renommer/supprimer. L'éditeur appartient à K1 Control.
+Une erreur non répétable ou dépendante de la tension du tube PTFE ferme la gate
+jusqu'à correction mécanique. Voir ADR-015.
+
+## D-062 — K1 Control possède le cycle de travail, pas seulement des correctifs autour de `START_PRINT`
+
+Date: 2026-08-24
+
+Status: architecture retenue pour simulation ; production fermée
+
+Le profil Orca final enverra un unique contrat `KCTRL_JOB_BEGIN`. Il ne cumulera
+plus `G28`, `Tn`, `START_PRINT` et un offset post-traité. K1 Control pilotera
+admission, chauffe du plateau lancée immédiatement, référence grossière
+conditionnelle, nettoyage, référence Z finale, chargement mesh/Z, chargement et
+purge CFS, amorçage, pause, reprise, changement, runout et fin.
+
+Une pause normale ne déclenche ni coupe, ni changement, ni purge par défaut.
+Le Z le plus récent ne peut pas être écrasé par un snapshot de reprise. Les
+températures CFS viennent du contrat du matériau et restent surveillées pendant
+toute la transition ; une réécriture tardive à `220 °C` ferme la phase au lieu
+d'être masquée par un `M104` envoyé après coup.
+
+Le cœur `box_wrapper` compilé n'est pas remplacé en bloc au premier incrément.
+Ses primitives sont orchestrées et vérifiées ; une primitive n'est remplacée
+que si les traces prouvent qu'elle empêche cette propriété. Le retrait de
+l'ancien `+0,27 mm` est atomique avec la bascule Orca finale. Voir ADR-016.

@@ -1,8 +1,8 @@
 # HANDOFF
 
 Date: 2026-08-24
-Phase: P4 / campagne quotidienne, NAVIGATION-V1-R2, sous-grille `5 × 5` et profil composite physique `11 × 11` qualifiés ; production fermée
-Next operator: concevoir un successeur de comparaison qui prouve d'abord le Z absolu sur un motif court ; ne jamais rejouer COMPOSITE-FIRST-LAYER-COMPARISON-V1
+Phase: P4 / calibration quotidienne autonome ; composite `11 × 11` meilleur au centre mais KO aux bords ; production fermée
+Next operator: construire `MESH-EDITOR-OFFLINE-V1` sans toucher à la K1, puis préparer le motif de bord `5..295 mm`
 
 ## Autorité de reprise actuelle
 
@@ -13,6 +13,41 @@ demandé. Les gates sont des contrôles techniques que Codex passe lui-même.
 Cette décision D-054 remplace les anciennes consignes `ATTENDRE_GO` pour les
 étapes déjà comprises dans la roadmap active. Une restriction explicite plus
 récente ou une donnée physique inconnue reste à respecter.
+
+## Résultat COMPOSITE-FIRST-LAYER-COMPARISON-V2
+
+Thomas a imprimé le passage composite avec le profil
+`k1_p001_t055_r001_n11x11` et a réappliqué le Z temporaire `−0,24 mm` après la
+reprise stock. La relecture distante pendant l'impression a confirmé le profil,
+`gcode_move.homing_origin.z=-0.24` et le Z persistant `−0,04 mm` intact.
+
+Les trois photos et le verdict humain montrent un gain clair sur une grande
+zone centrale, mais des défauts sévères dans plusieurs bandes de bord. La V2
+est close avec **gain partiel et KO de promotion UI**. Le profil physique reste
+conservé comme source ; le mode Précision reste caché et le même carré
+`260 × 260` ne doit pas être rejoué sans correction.
+
+Le banc local reproduit le `bed_mesh.py` exact. Le bicubique actif diffère de
+la surface directe de `0,009877883 mm` au maximum et le dépassement local ne
+vaut que `0,000689867 mm`. L'interpolation n'est pas la cause principale. Les
+priorités sont la stabilité des valeurs de bord, la tension PTFE/CFS, les quatre
+capteurs de charge, les biais résiduels de composition et la séparation du Z
+global.
+
+ADR-015 retient un éditeur K1 Control : profil source immuable, profil dérivé
+versionné, corrections locales à moyenne nulle, grille 2D, pas
+`0,005/0,010 mm`, historique et rollback. Le glisser 3D est repoussé ; la vue 3D
+reste une prévisualisation. La première gate est intégralement hors imprimante.
+
+ADR-016 arrête ensuite la trajectoire production : un seul
+`KCTRL_JOB_BEGIN`, chauffe plateau immédiate, référence grossière seulement si
+nécessaire, nettoyage contrôlé, référence Z finale, chargement mesh/Z, CFS à la
+température du filament, purge, pause normale distincte d'un changement et fin
+observable. L'ancien `+0,27 mm` n'est retiré qu'avec la bascule Orca atomique.
+
+L'état distant final après la fin de cette impression n'a pas été re-préflighté
+pendant l'audit documentaire. Ne pas présenter la K1 comme actuellement
+`standby` sans un contrôle frais.
 
 ## KO COMPOSITE-FIRST-LAYER-COMPARISON-V1
 

@@ -4,7 +4,12 @@ Date : 2026-08-24
 
 Statut : **qualifiée sur la K1 réelle** ; quatre quadrants carrés, `144/144`
 contacts, 121 positions uniques et profil persistant `11 × 11` validés ;
-comparaison de premières couches en attente
+comparaison V2 meilleure au centre mais KO aux bords
+
+Mise à jour V2 : le profil reste une source physique valide, mais il n'est pas
+promu en mode Précision. L'écart bicubique/direct ne dépasse pas
+`0,009877883 mm`; la suite est un profil dérivé corrigé localement, décrit dans
+ADR-015 et `docs/23-audit-mesh-manuel-et-cycle-production-cfs.md`.
 
 ## But
 

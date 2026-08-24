@@ -22,8 +22,9 @@ validées ; SUBGRID-V1 et sa reprise R2 sont installées, et l'essai physique
 `5 × 5` de 25 contacts est qualifié ; COMPOSITE-MESH-V1-R2 a capturé quatre
 quadrants carrés `6 × 6`, soit 144 contacts et 121 positions uniques ; la
 reprise logique a qualifié et persisté le profil `11 × 11` sans nouvelle
-mesure ; la comparaison de premières couches reste à faire avant toute
-exposition UI ; production remains closed**.
+mesure ; la comparaison V2 a prouvé un gain central mais un KO sévère aux
+bords ; le mode Précision reste caché et la prochaine mission est l'éditeur de
+profil dérivé hors imprimante ; production remains closed**.
 
 La capture `20260823-165742-g4-k1-control-calibration-ui-prtouch-presets-v1` a
 clos PRTOUCH-PRESETS-V1 après un préflight frais, un déploiement idempotent et
@@ -65,9 +66,9 @@ nouvelle mesure, puis persisté le profil `k1_p001_t055_r001_n11x11`. L'écart
 maximal aligné vaut `0,043745029 mm`, sous la limite `0,05 mm`. Le profil
 robuste `6 × 6` reste actif ; l'état final est `standby`, cibles zéro, axes non
 référencés, Z `−0,04 mm`, stockage `ok` et deux CFS connectés. La prochaine
-mission unique est une comparaison contrôlée de premières couches `6 × 6`
-contre `11 × 11`. Le mode Précision ne devient pas visible dans l'UI avant un
-gain observable.
+mission historique était une comparaison contrôlée de premières couches
+`6 × 6` contre `11 × 11`. Le mode Précision ne devient pas visible dans l'UI
+avant un gain observable sur toute la zone utile.
 
 La première comparaison de couche
 `G4-K1-CONTROL-COMPOSITE-FIRST-LAYER-COMPARISON-V1` est **close KO**. Elle a
@@ -77,6 +78,19 @@ le composite n'a pas été lancé. Les deux G-code et leurs miniatures ont été
 supprimés de la K1. `printer.cfg` conserve le hash exact `f88d6b52…`, le profil
 robuste est actif, les cibles sont à zéro et les axes libérés. Ne jamais rejouer
 V1. Un successeur doit d'abord prouver le Z absolu sur un motif court.
+
+La comparaison V2 a ensuite utilisé le profil composite et un Z temporaire
+`−0,24 mm`, observé pendant l'impression mais non persisté. Elle montre un gain
+clair sur une grande zone centrale et des défauts beaucoup plus graves dans
+plusieurs bandes de bord. Le calcul avec le `bed_mesh.py` exact borne l'écart
+bicubique/direct à `0,009877883 mm` : l'interpolation n'est pas la cause
+principale. V2 est close avec gain partiel et KO de promotion UI. Le profil
+physique reste une source immuable, le robuste reste le repli et le même motif
+ne doit pas être rejoué sans correction. La prochaine mission unique est
+`MESH-EDITOR-OFFLINE-V1`, sans connexion K1 : profil dérivé versionné,
+corrections locales à moyenne nulle, grille 2D, historique, bornes et rollback.
+L'état distant final après l'impression V2 n'a pas été re-préflighté pendant
+l'audit.
 
 Thomas authorised V1, but the mandatory preflight proved that `logrotate` was
 absent. V1 is closed and must never be deployed. Thomas later authorised V2;
@@ -425,8 +439,9 @@ campagne CAMPAIGN-V1 a ensuite réussi sous la capture
 `20260823-171803-g4-k1-control-calibration-ui-campaign-v1`, avec un mesh
 `6 × 6`, le parcours Z et la validation finale. NAVIGATION-V1-R2 est maintenant
 posée et validée dans le vrai navigateur ; le profil composite `11 × 11` est
-qualifié techniquement, mais son gain visuel reste à prouver avant exposition
-dans l'interface.
+qualifié techniquement. La comparaison V2 prouve un gain central mais refuse
+son exposition à cause de défauts de bord ; l'éditeur de profil dérivé reste à
+construire.
 
 Thomas demande que chaque prochaine reprise commence par un état explicite de
 l'autonomie, sans confondre le runtime installé avec une interface terminée :
@@ -434,8 +449,9 @@ l'autonomie, sans confondre le runtime installé avec une interface terminée :
 - **autonomie calibration quotidienne standard** : atteinte ; la campagne
   physique est complète et le vrai écran corrigé est compréhensible sans
   console ni traduction Codex. Le mode précision composite est techniquement
-  qualifié, mais reste caché tant que la comparaison de premières couches n'a
-  pas prouvé un gain utile ;
+  qualifié, mais reste caché après son KO de bord. L'autonomie avancée exige
+  encore la création, l'édition, la qualification et le rollback de profils
+  dérivés directement depuis K1 Control ;
 - **autonomie production** : pas encore atteinte ; elle exige en plus la bascule
   atomique Orca/`START_PRINT`, le retrait prouvé du `+0,27 mm`, la propriété des
   températures CFS et la validation G5 sans intervention Codex.

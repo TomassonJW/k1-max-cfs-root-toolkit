@@ -17,7 +17,8 @@ confirmés avant l'action qui en dépend.
 
 Statut : **CAMPAIGN-V1, NAVIGATION-V1-R2, la sous-grille `5 × 5` et le profil
 composite physique `11 × 11` validés ; autonomie quotidienne standard
-atteinte ; comparaison de premières couches en attente**.
+atteinte ; comparaison V2 meilleure au centre mais KO aux bords ; mode
+Précision fermé**.
 
 BED-MESH-V2 est installée et validée sous la capture
 `20260823-151026-g4-k1-control-calibration-ui-prtouch-bed-mesh-v2`.
@@ -62,7 +63,68 @@ finaux de NAVIGATION-V1. COMPOSITE-MESH-V1-R2 a ensuite capturé quatre quadrant
 carrés `6 × 6`, soit `144/144` contacts et 121 positions uniques. La reprise
 logique a qualifié puis persisté le profil `11 × 11`, tout en rechargeant le
 profil robuste `6 × 6`. L'interface Précision reste volontairement fermée
-jusqu'à la comparaison de premières couches.
+après la comparaison V2 : son gain central ne compense pas ses défauts de bord.
+
+## Gates suivantes après la comparaison V2
+
+### `MESH-EDITOR-OFFLINE-V1`
+
+Statut : **prochaine mission ; hors imprimante**.
+
+Critères :
+
+- profil physique `11 × 11` traité comme source immuable ;
+- profil dérivé versionné avec corrections à moyenne pondérée nulle ;
+- grille 2D orientée, pas `0,005/0,010 mm`, undo/redo et historique ;
+- source, deltas, matrice finale et surface calculée prévisualisables ;
+- bornes par point et entre voisins ;
+- export Klipper reproductible, parse exact et rollback simulé ;
+- aucun accès distant, chauffage, homing, mouvement ou écriture K1.
+
+Passer cette gate autorise seulement la préparation du motif physique suivant.
+
+### `MESH-EDGE-DIAGNOSTIC-V1`
+
+Statut : **non commencée**.
+
+Critères :
+
+- motif première couche borné à `X/Y=5..295`, avec cadre, cellules et repères ;
+- état K1 frais et présence humaine avant lancement ;
+- même plaque, filament, température, tube PTFE et Z effectif ;
+- une seule petite région corrigée de `0,010 mm` ;
+- sens `Rapprocher/Éloigner` prouvé sans dégrader le centre ;
+- répétabilité de bord et influence PTFE classées avant réglage général ;
+- arrêt, retrait du G-code et retour au robuste en cas de KO.
+
+### `MESH-DERIVED-PROFILE-V1`
+
+Statut : **non commencée**.
+
+Pose UI/API au repos uniquement. Elle crée un nouveau profil après backup,
+restart Klipper borné et relecture, puis recharge le robuste. Elle ne lance
+aucune impression. `failed_components=[]`, `warnings=[]`, source, Z et robuste
+intacts sont obligatoires.
+
+### `MESH-TUNING-CAMPAIGN-V1`
+
+Statut : **non commencée**.
+
+Le mode Précision n'est exposé qu'après deux feuilles complètes consécutives
+sans défaut grave, sans correction Z en direct et avec rollback prouvé. Sinon
+le profil dérivé est rejeté et le robuste reste l'unique mode quotidien.
+
+### Gates production
+
+L'ordre est : `PRODUCTION-SEQUENCE-AUDIT-V2`,
+`JOB-LIFECYCLE-OFFLINE-V1`, `CLEAN-AND-REFERENCE-V1`,
+`CFS-TEMP-OWNER-V1`, `PAUSE-RESUME-SEMANTICS-V1`,
+`END-SEQUENCE-V1`, puis `ORCA-CUTOVER-V1` et G5.
+
+Le cutover Orca retire le départ historique et le `+0,27 mm` dans une seule
+transaction. Aucun paquet précédent ne doit les retirer. Une pause normale doit
+être prouvée sans purge CFS et sans restauration d'un ancien Z. Les deux CFS
+sont qualifiés par incréments séparés.
 
 ## G0 — Repository bootstrap
 
@@ -577,18 +639,18 @@ ne home, ne bouge, ne mesure et n'écrit aucun Z.
 
 L'interface choisit plaque, températures, stabilisation, matrice,
 interpolation et seed ; elle orchestre côté serveur le protocole robuste, la
-descente Z, l'enregistrement, l'annulation et les deux restaurations. Une pose
-future exige son propre GO exact séparé après revue du commit. Même installée,
-elle ne pourra ouvrir l'autonomie calibration qu'après une campagne complète
-réussie depuis l'écran.
+descente Z, l'enregistrement, l'annulation et les deux restaurations. Sa pose
+devait rester une gate distincte de la campagne physique. Cette gate n'a ouvert
+l'autonomie calibration quotidienne qu'après la campagne complète depuis
+l'écran, désormais close et validée.
 
 La revue post-calibration accepte uniquement les phases de chemin fermées
 `idle`, `committed` et `cancelled`, corrige le transport du `curl` Creality et
 importe les deux sources en mémoire sous le Python Moonraker `3.8.2` exact avant
 toute mutation. Le déployeur est épinglé dans le manifeste. Le plan local et le
-préflight réel en lecture seule ont obtenu `PLAN_CALIBRATION_UI_V1_OK` et
-`PREFLIGHT_CALIBRATION_UI_V1_OK`. Les nouveaux chemins restent absents et aucun
-service n'a été relancé. La pose exige toujours le GO exact séparé.
+préflight réel en lecture seule avaient obtenu `PLAN_CALIBRATION_UI_V1_OK` et
+`PREFLIGHT_CALIBRATION_UI_V1_OK`. Les nouveaux chemins étaient alors absents et
+aucun service n'avait été relancé.
 
 Un premier GO exact a ensuite été consommé par la capture
 `20260822-192821-g4-k1-control-calibration-ui-v1`. Le préflight et le backup

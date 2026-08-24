@@ -1,0 +1,13 @@
+{
+  "schema": 1,
+  "gate": "G4-K1-CONTROL-FIRST-LAYER-Z-VALIDATION-V1",
+  "status": "prepared",
+  "source_sha256": "b93fff2eec8354376be7de55210ad592ea4feffb546abfa92f016cc7c6fde2d3",
+  "geometry_mm": [260, 260, 0.2],
+  "profile": "k1_p001_t055_r001_n06x06",
+  "accepted_z_source": "KCTRL_STATE.accepted_z_offset",
+  "expected_initial_z_mm": -0.04,
+  "explicit_gcode_z_offset": null,
+  "manual_live_adjustment": true,
+  "composite_launch": false
+}

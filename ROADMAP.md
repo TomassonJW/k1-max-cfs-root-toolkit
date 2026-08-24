@@ -74,7 +74,9 @@ et Mainsail `v2.18.2` épinglés, contrat Orca complet et
 
 ## P4 — Installation contrôlée du système de pilotage
 
-Status: **campagne quotidienne `6 × 6 / 1 mesh` validée ; correction UX et mode composite en cours ; production fermée**
+Status: **calibration quotidienne autonome ; composite `11 × 11` meilleur au
+centre mais KO aux bords ; éditeur de profil dérivé à construire ; production
+fermée**
 
 Le produit est posé par étapes techniques réversibles, mais Thomas reçoit un
 seul fonctionnement quotidien :
@@ -85,12 +87,26 @@ seul fonctionnement quotidien :
    installée avec compte vérifié et ouverture LAN contrôlée ;
 2. état et chemin de calibration Z installés ; FIRST-CALIBRATION-V2 et campagne
    quotidienne depuis l'écran validées ;
-3. correction UX finale, puis qualification progressive du mesh composite
-   `11 × 11` par sous-grille `5 × 5`, quatre acquisitions bornées et comparaison
-   de première couche ;
-4. mesh, nettoyage, démarrage et purge sûrs ;
-5. propriété dynamique des températures des deux CFS ;
-6. contrat Orca final et retrait prouvé de l'ancien post-traitement.
+3. profil composite `11 × 11` acquis et persisté ; sa comparaison V2 prouve un
+   gain central mais refuse sa promotion à cause des bords ;
+4. `MESH-EDITOR-OFFLINE-V1`, motif `5..295 mm`, profil dérivé et campagne de
+   réglage local depuis K1 Control, sans écraser les mesures sources ;
+5. audit puis machine d'états de production : démarrage, nettoyage, référence
+   finale, mesh, Z, pause, reprise et fin ;
+6. propriété dynamique des températures, chargements et purges des deux CFS ;
+7. contrat Orca final et retrait atomique prouvé de l'ancien post-traitement
+   `+0,27 mm`.
+
+Le prochain incrément est `MESH-EDITOR-OFFLINE-V1`. Il est entièrement hors
+imprimante : modèle de profil dérivé, corrections à moyenne nulle, grille 2D,
+prévisualisation, historique, limites et tests sur les 121 valeurs exactes. La
+première action physique ultérieure utilisera un motif de bord peu consommateur
+et ne changera qu'une petite région de `0,010 mm` pour prouver le sens.
+
+La seconde famille suit ADR-016 : un unique `KCTRL_JOB_BEGIN` remplacera à
+terme le cumul Orca `G28 + Tn + START_PRINT`. Une pause normale ne déclenchera
+plus la reprise CFS, et la température logique restera propriétaire pendant
+toute coupe, charge et purge.
 
 Chaque pose a son backup, son diff, ses critères OK/KO et son rollback. Aucune
 pose suivante ne commence si l'écran, Creality Web/Print, le CFS ou Klipper
@@ -106,6 +122,8 @@ Status: **not started**
 - live Z calibration saved once, retained after restart, then deliberately
   invalidated by a new reference calibration;
 - plate/temperature mesh selection and adaptive per-job mesh verified;
+- composite regeneration, local point correction, derived-profile versioning
+  and one-click fallback available through K1 Control without Codex;
 - same-material CFS changes;
 - cross-CFS change between CFS 1 and CFS 2;
 - at least one cross-material transition policy;
@@ -113,6 +131,8 @@ Status: **not started**
 - retained Creality compatibility where required;
 - measured startup-time improvement with no first-layer regression.
 - daily use through `K1 Control` without Codex or per-print file editing.
+- normal pause/resume proven without an implicit CFS purge and without losing
+  the latest effective Z.
 
 Exit: stable V1 baseline and tagged release.
 

@@ -1,0 +1,36 @@
+{
+  "schema": 3,
+  "gate": "G4-K1-CONTROL-COMPOSITE-FIRST-LAYER-COMPARISON-V2",
+  "status": "prepared",
+  "source": {
+    "private_path": "X:/A RANGER/BUREAU/3D Print/_Cube_PLA_30m3s.gcode",
+    "sha256": "b93fff2eec8354376be7de55210ad592ea4feffb546abfa92f016cc7c6fde2d3",
+    "geometry_mm": [260, 260, 0.2],
+    "layers": 1,
+    "filament": "PLA Geeetech",
+    "tool": "T0",
+    "bed_temperature_c": 55,
+    "nozzle_temperature_c": 190,
+    "explicit_gcode_z_offset": null
+  },
+  "accepted_z": {
+    "source": "KCTRL_STATE.accepted_z_offset",
+    "expected_mm": -0.04,
+    "verified_by": "KCTRL_PRODUCTION_ARM"
+  },
+  "interactive_retry": {
+    "pause_after_arm_before_extrusion": true,
+    "temporary_target_mm": -0.24,
+    "persist": false,
+    "resume_only_after_remote_verification": true
+  },
+  "variants": [
+    {"order": 1, "id": "robust_6x6", "profile": "k1_p001_t055_r001_n06x06"},
+    {"order": 2, "id": "composite_11x11", "profile": "k1_p001_t055_r001_n11x11"}
+  ],
+  "only_semantic_difference": "X_COUNT/Y_COUNT on one KCTRL_PRODUCTION_ARM line",
+  "production_autonomy_claimed": false,
+  "startup_sequence_qualified": false,
+  "ui_precision_unlock": "human_comparison_required",
+  "fallback": "keep robust 6x6 active and precision UI hidden"
+}
