@@ -65,11 +65,11 @@ logique a qualifié puis persisté le profil `11 × 11`, tout en rechargeant le
 profil robuste `6 × 6`. L'interface Précision reste volontairement fermée
 après la comparaison V2 : son gain central ne compense pas ses défauts de bord.
 
-## Gates suivantes après la comparaison V2
+## Gates suivantes après l'éditeur hors ligne
 
 ### `MESH-EDITOR-OFFLINE-V1`
 
-Statut : **prochaine mission ; hors imprimante**.
+Statut : **passée le 25 août 2026 ; aucune connexion ni mutation K1**.
 
 Critères :
 
@@ -81,11 +81,27 @@ Critères :
 - export Klipper reproductible, parse exact et rollback simulé ;
 - aucun accès distant, chauffage, homing, mouvement ou écriture K1.
 
+Preuves :
+
+- source publique nettoyée de 121 valeurs, empreinte canonique
+  `bee530fb9738773d1f2ccb63d47743e15776690f1bcdf92a3daac7661f0f50bf` ;
+- normalisation sur la surface bicubique exacte `31 × 31`, moyenne nulle ;
+- modèle source/demande/normalisation/final, empreinte et qualification séparés ;
+- gardes `0,05 / 0,10 / 0,08 mm`, sélection bornée et refus sans mutation ;
+- undo, redo, branche d'historique, restauration et exports déterministes ;
+- fausse API en mémoire et serveur lié uniquement à `127.0.0.1` ;
+- recette navigateur réelle : 121 cellules, actions, aperçu 3D exclusif et
+  erreur simulée sans mutation ;
+- 294 tests Python verts, 3 ignorés connus, et 5 tests JavaScript verts.
+
+Voir [`docs/24-mesh-editor-offline-v1.md`](docs/24-mesh-editor-offline-v1.md).
 Passer cette gate autorise seulement la préparation du motif physique suivant.
+Elle n'autorise pas automatiquement une impression, une pose ou l'exposition
+du mode Précision.
 
 ### `MESH-EDGE-DIAGNOSTIC-V1`
 
-Statut : **non commencée**.
+Statut : **prochaine mission ; non commencée**.
 
 Critères :
 

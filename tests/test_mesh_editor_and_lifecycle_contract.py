@@ -65,10 +65,16 @@ class MeshEditorAndLifecycleContractTests(unittest.TestCase):
         self.assertIn("Le retrait de l'ancien `+0,27 mm` est", self.lifecycle_adr)
         self.assertIn("atomique avec cette bascule", self.lifecycle_adr)
 
-    def test_next_gate_is_offline_and_precision_stays_hidden(self):
+    def test_editor_is_closed_next_gate_is_physical_and_precision_stays_hidden(self):
         gates = (ROOT / "GATES.md").read_text(encoding="utf-8")
         self.assertIn("### `MESH-EDITOR-OFFLINE-V1`", gates)
-        self.assertIn("Statut : **prochaine mission ; hors imprimante**", gates)
+        self.assertIn(
+            "Statut : **passée le 25 août 2026 ; aucune connexion ni mutation K1**",
+            gates,
+        )
+        self.assertIn("### `MESH-EDGE-DIAGNOSTIC-V1`", gates)
+        self.assertIn("Statut : **prochaine mission ; non commencée**", gates)
+        self.assertIn("Elle n'autorise pas automatiquement une impression", gates)
         self.assertIn("Le mode Précision n'est exposé qu'après deux feuilles", gates)
 
 

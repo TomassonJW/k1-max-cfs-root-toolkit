@@ -1154,3 +1154,27 @@ Le cœur `box_wrapper` compilé n'est pas remplacé en bloc au premier incrémen
 Ses primitives sont orchestrées et vérifiées ; une primitive n'est remplacée
 que si les traces prouvent qu'elle empêche cette propriété. Le retrait de
 l'ancien `+0,27 mm` est atomique avec la bascule Orca finale. Voir ADR-016.
+
+## D-063 — La moyenne d'un profil dérivé est celle de sa surface Klipper
+
+Date: 2026-08-25
+
+Status: implémentée et validée hors imprimante
+
+Une correction locale n'est pas recentrée par la simple moyenne des 121 points.
+Le moteur reconstruit la surface cardinale bicubique `31 × 31` correspondant
+au profil qualifié : `mesh_x_pps=2`, `mesh_y_pps=2`, `bicubic` et tension
+`0.2`. Il retire la moyenne arithmétique des 961 valeurs interpolées à toute
+la matrice de correction. Cette opération linéaire conserve la forme locale et
+empêche la correction de devenir un Z global par la moyenne de fade.
+
+Le profil physique `k1_p001_t055_r001_n11x11` reste immuable. Le dérivé
+`k1_p001_t055_r001_n11x11_tuned_v001` conserve séparément la demande brute,
+la correction normalisée, la matrice finale, l'historique, les gardes et la
+qualification. Le Z global est absent du modèle et un export qui tente de
+l'inclure est refusé.
+
+La V1 reste un laboratoire local : fausse API en mémoire, serveur lié seulement
+à `127.0.0.1`, export déterministe mais aucune pose, aucun transport K1 et
+aucune activation du mode Précision. Le passage de cette gate ouvre uniquement
+la préparation de `MESH-EDGE-DIAGNOSTIC-V1`.

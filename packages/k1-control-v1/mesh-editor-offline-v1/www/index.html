@@ -1,0 +1,176 @@
+<!doctype html>
+<html lang="fr">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>K1 Control — Éditeur de mesh hors ligne</title>
+    <link rel="stylesheet" href="./styles.css">
+  </head>
+  <body>
+    <header class="topbar">
+      <div>
+        <p class="eyebrow">K1 Control · laboratoire local</p>
+        <h1>Éditeur de profil dérivé</h1>
+        <p class="subtitle">Corrige le relief du profil composite sans toucher au Z global.</p>
+      </div>
+      <div class="mode-badge" aria-label="Mode strictement hors ligne">
+        <span class="mode-dot" aria-hidden="true"></span>
+        Simulation hors ligne
+      </div>
+    </header>
+
+    <main class="layout">
+      <section class="workspace-card" aria-labelledby="profile-title">
+        <div class="section-heading">
+          <div>
+            <p class="step-label">Profil de travail</p>
+            <h2 id="profile-title">Composite physique 11 × 11</h2>
+          </div>
+          <button id="create-profile" class="primary">Créer la dérivation v001</button>
+        </div>
+
+        <div id="empty-state" class="empty-state">
+          <p>La source physique reste immuable. Crée une copie dérivée avant toute correction.</p>
+        </div>
+
+        <div id="editor" hidden>
+          <nav class="view-tabs" aria-label="Vue de la grille">
+            <button data-view="source">Source</button>
+            <button data-view="delta">Deltas</button>
+            <button data-view="final" class="active" aria-current="page">Final</button>
+            <button data-view="surface">Surface 3D</button>
+          </nav>
+
+          <div class="orientation orientation-top">
+            <span>Arrière · Y 295</span>
+          </div>
+          <div class="mesh-stage">
+            <span class="side-label left">Gauche<br>X 5</span>
+            <div>
+              <div
+                id="mesh-grid"
+                class="mesh-grid"
+                role="grid"
+                aria-label="Grille de correction, arrière en haut et avant en bas"
+              ></div>
+              <canvas
+                id="surface"
+                class="surface"
+                width="920"
+                height="620"
+                aria-label="Aperçu tridimensionnel, sélection par clic uniquement"
+                hidden
+              ></canvas>
+            </div>
+            <span class="side-label right">Droite<br>X 295</span>
+          </div>
+          <div class="orientation orientation-bottom">
+            <span>Avant · Y 5</span>
+          </div>
+
+          <div class="legend">
+            <span>Plus bas</span>
+            <span class="gradient" aria-hidden="true"></span>
+            <span>Plus haut</span>
+          </div>
+        </div>
+      </section>
+
+      <aside class="control-column">
+        <section class="panel" aria-labelledby="correction-title">
+          <p class="step-label">Correction locale</p>
+          <h2 id="correction-title">Choisis où agir</h2>
+
+          <label for="selection-mode">Sélection</label>
+          <select id="selection-mode">
+            <option value="point">Un point</option>
+            <option value="row">Une ligne</option>
+            <option value="column">Une colonne</option>
+            <option value="region">Petite zone, 3 × 3 maximum</option>
+          </select>
+
+          <p id="selection-summary" class="selection-summary">Aucun point sélectionné</p>
+
+          <label for="step-mm">Pas</label>
+          <select id="step-mm">
+            <option value="0.005">0,005 mm</option>
+            <option value="0.010">0,010 mm</option>
+          </select>
+
+          <div class="correction-actions">
+            <button id="closer" class="closer">
+              <span>Rapprocher</span>
+              <small>delta négatif</small>
+            </button>
+            <button id="farther" class="farther">
+              <span>Éloigner</span>
+              <small>delta positif</small>
+            </button>
+          </div>
+          <p class="help">Ces actions modifient uniquement le mesh. Le Z global n’est jamais inclus.</p>
+        </section>
+
+        <section class="panel" aria-labelledby="history-title">
+          <div class="panel-title-row">
+            <div>
+              <p class="step-label">Traçabilité</p>
+              <h2 id="history-title">Historique</h2>
+            </div>
+            <span id="history-count" class="count">0</span>
+          </div>
+          <div class="button-row">
+            <button id="undo">Annuler</button>
+            <button id="redo">Rétablir</button>
+          </div>
+          <button id="compare" class="wide" aria-pressed="false">Comparer source et final</button>
+          <button id="restore" class="wide danger-soft">Restaurer la source</button>
+          <ol id="history-list" class="history-list"></ol>
+        </section>
+
+        <section class="panel" aria-labelledby="checks-title">
+          <p class="step-label">Contrôles automatiques</p>
+          <h2 id="checks-title">État du profil</h2>
+          <dl class="metrics">
+            <div>
+              <dt>Moyenne de surface</dt>
+              <dd id="mean-value">0,000000 mm</dd>
+            </div>
+            <div>
+              <dt>Delta maximal</dt>
+              <dd id="max-value">0,000000 mm</dd>
+            </div>
+          </dl>
+          <div id="warnings" class="notice success">Aucun avertissement.</div>
+        </section>
+
+        <section class="panel" aria-labelledby="export-title">
+          <p class="step-label">Livrable hors imprimante</p>
+          <h2 id="export-title">Exporter</h2>
+          <button id="export-json" class="wide">Profil versionné JSON</button>
+          <button id="export-klipper" class="wide">Bloc Klipper déterministe</button>
+          <p class="help">Un export n’installe rien et ne contacte aucun appareil.</p>
+        </section>
+
+        <details class="panel simulation-panel">
+          <summary>Scénarios de démonstration</summary>
+          <p class="help">Simule les états attendus du futur service.</p>
+          <div class="scenario-grid">
+            <button data-scenario="ready">Prêt</button>
+            <button data-scenario="loading">Chargement</button>
+            <button data-scenario="validation_error">Erreur de validation</button>
+            <button data-scenario="restored">Source restaurée</button>
+          </div>
+        </details>
+      </aside>
+    </main>
+
+    <footer class="statusbar">
+      <span id="connection-state">API simulée locale</span>
+      <span id="profile-state">Aucun profil dérivé</span>
+      <span>Déploiement indisponible</span>
+    </footer>
+
+    <div id="message" class="message" role="status" aria-live="polite"></div>
+    <script type="module" src="./app.mjs"></script>
+  </body>
+</html>

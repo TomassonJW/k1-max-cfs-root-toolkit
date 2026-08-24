@@ -1,6 +1,6 @@
 # STATE
 
-Last updated: 2026-08-24
+Last updated: 2026-08-25
 
 Thomas a approuvé le 24 août 2026 l'autorité par objectif définie par D-054. Un
 Goal actif ou une mission clairement décrite couvre désormais les actions
@@ -50,7 +50,8 @@ Aucune nouvelle authentification ni action physique n'a eu lieu.
 
 **P4 — calibration quotidienne autonome ; composite physique `11 × 11`
 qualifié techniquement mais KO aux bords en première couche ; éditeur de profil
-dérivé à construire ; production volontairement bloquée**
+dérivé hors ligne validé ; diagnostic physique des bords suivant ; production
+volontairement bloquée**
 
 La base sûre et réellement requalifiée reste `6 × 6` Lagrange avec un seul mesh
 standard. L'autonomie de calibration quotidienne standard est maintenant
@@ -70,11 +71,20 @@ l'interpolation n'explique pas seule les défauts. Le profil physique
 repli. L'état distant final après la fin de l'impression n'a pas été
 re-préflighté pendant cet audit.
 
-La prochaine mission est `MESH-EDITOR-OFFLINE-V1`, sans action imprimante. K1
-Control doit créer des profils dérivés versionnés, appliquer des corrections
-locales normalisées à moyenne nulle et proposer une grille 2D avec historique,
-bornes et rollback. Le premier essai physique ultérieur utilisera un motif
-`5..295 mm` peu consommateur et une seule petite correction de `0,010 mm`.
+`MESH-EDITOR-OFFLINE-V1` est maintenant close sans action imprimante. Le
+paquet local crée `k1_p001_t055_r001_n11x11_tuned_v001`, conserve séparément
+source, demande, correction normalisée et matrice finale, puis exporte un
+document canonique ou un bloc Klipper déterministe. La normalisation utilise
+la surface bicubique exacte `31 × 31` et remet sa moyenne à zéro. La grille
+orientée de 121 cellules, l'historique, les gardes, l'aperçu 3D et la fausse API
+ont été validés dans le vrai navigateur. Aucun transport K1 n'existe dans ce
+paquet.
+
+La prochaine mission unique est `MESH-EDGE-DIAGNOSTIC-V1`. Elle préparera
+puis, sous une autorité physique distincte et avec Thomas présent, utilisera un
+motif `5..295 mm` peu consommateur et une seule petite correction de
+`0,010 mm`. Elle doit d'abord obtenir un état K1 frais et une confirmation
+factuelle du plateau.
 
 Le cycle de production cible est désormais arrêté par ADR-016 : Orca enverra à
 terme un unique contrat `KCTRL_JOB_BEGIN`; K1 Control possédera chauffe,
@@ -533,17 +543,22 @@ commencent sur cet état final retenu.
 Au début de la prochaine session, annoncer explicitement à Thomas :
 
 - autonomie calibration quotidienne standard : **atteinte** ;
+- autonomie de création et d'édition **hors ligne** d'un profil dérivé :
+  **atteinte** ;
+- autonomie du mode Précision réellement installé : **non atteinte** ;
 - autonomie production : **non atteinte** ;
 - la sous-grille composite `5 × 5` est qualifiée avec 25 contacts ;
-- le profil précision `11 × 11` est techniquement qualifié et persistant, mais
-  son exposition utilisateur reste fermée jusqu'à la comparaison de premières
-  couches ;
+- le profil physique `11 × 11` reste une source immuable ; l'éditeur local
+  v001 est validé, mais son exposition utilisateur reste fermée jusqu'à la
+  qualification physique d'un profil dérivé ;
 - l'autonomie production reste non atteinte.
 
-La prochaine action sûre est de préparer puis exécuter une comparaison bornée
-de premières couches, à conditions identiques, entre le profil robuste `6 × 6`
-et le profil composite `11 × 11`. Aucun nouveau palpage n'est requis. Le mode
-Précision ne doit pas être exposé dans l'UI avant un gain observable.
+La prochaine action sûre est `MESH-EDGE-DIAGNOSTIC-V1` : préparer hors
+imprimante un motif de première couche borné à `X/Y=5..295`, puis obtenir un
+préflight K1 frais et la confirmation physique de Thomas avant l'unique essai.
+La gate doit prouver le sens d'une petite correction de `0,010 mm`, sa
+répétabilité aux bords et l'influence du PTFE sans dégrader le centre. Le mode
+Précision reste caché.
 
 Le chemin borné `G4-K1-CONTROL-CALIBRATION-PATH-V1` ajoute ce qui manquait pour
 évaluer le premier Z sans console libre ni valeur cachée. Son premier préflight

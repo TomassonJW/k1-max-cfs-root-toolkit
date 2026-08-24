@@ -2,7 +2,7 @@
 
 Statut : **fondation V3, runtime Z/mesh, calibration quotidienne et navigation
 installés ; composite `11 × 11` retenu comme source mais mode Précision KO aux
-bords ; production fermée**.
+bords ; éditeur dérivé hors ligne validé ; production fermée**.
 
 La fondation initiale ajoute une seule API Moonraker, une petite
 passerelle web dédiée au port `4409` et Mainsail comme interface experte. Elle
@@ -10,6 +10,19 @@ ne remplace ni l'écran, ni Creality Web/Print, ni les deux CFS. Elle n'écrit
 dans aucun fichier constructeur. Les tranches de calibration sont désormais
 réelles et validées ; les séquences de production restent absentes jusqu'aux
 gates ADR-016.
+
+## Éditeur de profil dérivé hors ligne
+
+Le paquet [`mesh-editor-offline-v1/`](mesh-editor-offline-v1/) crée en mémoire
+un profil dérivé versionné du composite physique `11 × 11`. Il fournit une
+grille orientée de 121 points, les actions `Rapprocher/Éloigner`, les pas
+`0,005/0,010 mm`, les gardes, l'historique, un aperçu 3D sans glisser vertical
+et deux exports déterministes.
+
+Sa moyenne est calculée sur la surface bicubique Klipper `31 × 31`, puis remise
+à zéro sans toucher au Z global. Le serveur de démonstration écoute seulement
+sur `127.0.0.1` et utilise une fausse API en mémoire. Ce paquet ne contient
+aucune pose K1 et ne rend pas encore visible le mode Précision réel.
 
 ## Versions figées
 

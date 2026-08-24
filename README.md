@@ -5,7 +5,8 @@ Unofficial, evidence-driven tooling and documentation for taking controlled owne
 > **Status:** P4. La calibration quotidienne `6 × 6`, le Z accepté `−0,04 mm`,
 > K1 Control et sa navigation Mainsail sont validés. Le composite physique
 > `11 × 11` améliore le centre mais échoue encore aux bords ; il reste caché.
-> La prochaine mission est l'éditeur de profils dérivés hors imprimante.
+> L'éditeur de profils dérivés hors imprimante est validé. La prochaine gate
+> est le diagnostic physique borné des bords ; aucun essai n'a encore démarré.
 > L'autonomie de production reste fermée.
 
 ## Target configuration
@@ -87,6 +88,8 @@ L'audit courant du mesh manuel et du cycle CFS est dans
 [`docs/23-audit-mesh-manuel-et-cycle-production-cfs.md`](docs/23-audit-mesh-manuel-et-cycle-production-cfs.md).
 Les architectures retenues sont ADR-015 pour les profils mesh dérivés et
 ADR-016 pour le cycle de production orchestré.
+Le résultat de l'éditeur local est dans
+[`docs/24-mesh-editor-offline-v1.md`](docs/24-mesh-editor-offline-v1.md).
 
 ## Repository map
 

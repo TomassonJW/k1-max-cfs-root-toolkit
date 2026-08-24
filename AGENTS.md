@@ -23,8 +23,9 @@ validées ; SUBGRID-V1 et sa reprise R2 sont installées, et l'essai physique
 quadrants carrés `6 × 6`, soit 144 contacts et 121 positions uniques ; la
 reprise logique a qualifié et persisté le profil `11 × 11` sans nouvelle
 mesure ; la comparaison V2 a prouvé un gain central mais un KO sévère aux
-bords ; le mode Précision reste caché et la prochaine mission est l'éditeur de
-profil dérivé hors imprimante ; production remains closed**.
+bords ; MESH-EDITOR-OFFLINE-V1 est validé sans connexion K1 ; le mode
+Précision reste caché et la prochaine mission est le diagnostic physique
+borné des bords ; production remains closed**.
 
 La capture `20260823-165742-g4-k1-control-calibration-ui-prtouch-presets-v1` a
 clos PRTOUCH-PRESETS-V1 après un préflight frais, un déploiement idempotent et
@@ -86,11 +87,13 @@ plusieurs bandes de bord. Le calcul avec le `bed_mesh.py` exact borne l'écart
 bicubique/direct à `0,009877883 mm` : l'interpolation n'est pas la cause
 principale. V2 est close avec gain partiel et KO de promotion UI. Le profil
 physique reste une source immuable, le robuste reste le repli et le même motif
-ne doit pas être rejoué sans correction. La prochaine mission unique est
-`MESH-EDITOR-OFFLINE-V1`, sans connexion K1 : profil dérivé versionné,
-corrections locales à moyenne nulle, grille 2D, historique, bornes et rollback.
-L'état distant final après l'impression V2 n'a pas été re-préflighté pendant
-l'audit.
+ne doit pas être rejoué sans correction. `MESH-EDITOR-OFFLINE-V1` est clos :
+profil dérivé versionné, correction normalisée sur la surface bicubique
+`31 × 31`, grille 2D, aperçu 3D, historique, gardes, rollback et exports
+déterministes sont validés contre une fausse API locale. Aucun transport K1
+n'existe dans le paquet. La prochaine mission unique est
+`MESH-EDGE-DIAGNOSTIC-V1`. L'état distant final après l'impression V2 n'a pas
+été re-préflighté pendant l'audit ni pendant la gate hors ligne.
 
 Thomas authorised V1, but the mandatory preflight proved that `logrotate` was
 absent. V1 is closed and must never be deployed. Thomas later authorised V2;
@@ -440,23 +443,27 @@ campagne CAMPAIGN-V1 a ensuite réussi sous la capture
 `6 × 6`, le parcours Z et la validation finale. NAVIGATION-V1-R2 est maintenant
 posée et validée dans le vrai navigateur ; le profil composite `11 × 11` est
 qualifié techniquement. La comparaison V2 prouve un gain central mais refuse
-son exposition à cause de défauts de bord ; l'éditeur de profil dérivé reste à
-construire.
+son exposition à cause de défauts de bord. L'éditeur de profil dérivé hors
+ligne est maintenant validé ; la qualification physique d'une correction
+locale reste à faire.
 
 Thomas demande que chaque prochaine reprise commence par un état explicite de
 l'autonomie, sans confondre le runtime installé avec une interface terminée :
 
 - **autonomie calibration quotidienne standard** : atteinte ; la campagne
   physique est complète et le vrai écran corrigé est compréhensible sans
-  console ni traduction Codex. Le mode précision composite est techniquement
-  qualifié, mais reste caché après son KO de bord. L'autonomie avancée exige
-  encore la création, l'édition, la qualification et le rollback de profils
-  dérivés directement depuis K1 Control ;
+  console ni traduction Codex ;
+- **autonomie d'édition hors ligne d'un profil dérivé** : atteinte ; création,
+  correction, historique, restauration et export sont utilisables dans le
+  laboratoire local ;
+- **autonomie du mode Précision installé** : pas encore atteinte ; le composite
+  reste caché après son KO de bord et exige encore diagnostic physique, pose,
+  qualification et rollback depuis K1 Control ;
 - **autonomie production** : pas encore atteinte ; elle exige en plus la bascule
   atomique Orca/`START_PRINT`, le retrait prouvé du `+0,27 mm`, la propriété des
   températures CFS et la validation G5 sans intervention Codex.
 
-Au début de la prochaine session, l'agent doit rappeler ces deux statuts,
+Au début de la prochaine session, l'agent doit rappeler ces quatre statuts,
 indiquer la prochaine gate unique et expliquer ce qu'elle rendra autonome. Il
 ne doit jamais annoncer « interface prête » sur la seule présence de Mainsail
 ou des macros `KCTRL_*`.

@@ -1,0 +1,71 @@
+{
+  "schema": "k1-control.mesh-editor.contract.v1",
+  "mission": "MESH-EDITOR-OFFLINE-V1",
+  "execution": {
+    "mode": "offline_only",
+    "bind_address": "127.0.0.1",
+    "persistent_storage": false,
+    "printer_connection": false,
+    "moonraker_connection": false,
+    "ssh_connection": false,
+    "deployment": false,
+    "global_z_write": false
+  },
+  "source": {
+    "id": "k1_p001_t055_r001_n11x11",
+    "immutable": true,
+    "rows": 11,
+    "columns": 11,
+    "row_order": "min_y_to_max_y",
+    "profile_file": "source-profile.json"
+  },
+  "derived_profile": {
+    "id": "k1_p001_t055_r001_n11x11_tuned_v001",
+    "version": 1,
+    "source_matrix_preserved": true,
+    "requested_delta_preserved": true,
+    "normalized_delta_preserved": true,
+    "final_matrix_preserved": true,
+    "qualification_preserved": true,
+    "global_z_included": false
+  },
+  "corrections": {
+    "directions": {
+      "closer": "negative_delta_mm",
+      "farther": "positive_delta_mm"
+    },
+    "steps_mm": ["0.005", "0.010"],
+    "selection_modes": ["point", "row", "column", "region"],
+    "max_region_rows": 3,
+    "max_region_columns": 3,
+    "normalization": "zero_arithmetic_mean_on_exact_31x31_bicubic_surface",
+    "warning_absolute_delta_mm": "0.050",
+    "refusal_absolute_delta_mm": "0.100",
+    "refusal_neighbor_jump_mm": "0.080"
+  },
+  "geometry": {
+    "min_x_mm": "5.0",
+    "max_x_mm": "295.0",
+    "min_y_mm": "5.0",
+    "max_y_mm": "295.0",
+    "mesh_x_pps": 2,
+    "mesh_y_pps": 2,
+    "algorithm": "bicubic",
+    "tension": "0.2",
+    "interpolated_rows": 31,
+    "interpolated_columns": 31
+  },
+  "export": {
+    "formats": ["canonical_json", "klipper_save_config_block"],
+    "deterministic": true,
+    "round_trip_required": true,
+    "klipper_decimal_places": 6,
+    "exported_weighted_mean_tolerance_mm": "0.000001"
+  },
+  "qualification": {
+    "offline_contract": "required",
+    "physical_test": "not_run",
+    "precision_ui_promotion": "blocked",
+    "production": "blocked"
+  }
+}
