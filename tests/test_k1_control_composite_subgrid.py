@@ -4,6 +4,7 @@ import hashlib
 import importlib.util
 import json
 import math
+import tempfile
 import unittest
 from pathlib import Path
 
@@ -88,7 +89,13 @@ class Clock:
 
 
 class Backend:
-    def __init__(self, fail_mesh=False, fail_command=None, final_delay_queries=0):
+    def __init__(
+        self,
+        fail_mesh=False,
+        fail_command=None,
+        final_delay_queries=0,
+        post_restart_not_ready_attempts=0,
+    ):
         self.status = _status()
         self.commands = []
         self.waits = []
@@ -97,6 +104,7 @@ class Backend:
         self.final_delay_queries = final_delay_queries
         self.remaining_final_delay = 0
         self.restarted = False
+        self.post_restart_not_ready_attempts = post_restart_not_ready_attempts
 
     async def query_status(self):
         if self.remaining_final_delay > 0:
@@ -111,6 +119,9 @@ class Backend:
 
     async def run_gcode(self, command, disconnect_ok=False):
         self.commands.append((command, disconnect_ok))
+        if self.restarted and self.post_restart_not_ready_attempts > 0:
+            self.post_restart_not_ready_attempts -= 1
+            raise RuntimeError("Printer is not ready")
         if command == self.fail_command:
             raise RuntimeError("synthetic command failure")
         if command == "M140 S55":
@@ -151,11 +162,18 @@ class Backend:
 
 
 class CompositeSubgridTests(unittest.IsolatedAsyncioTestCase):
-    def build(self, fail_mesh=False, fail_command=None, final_delay_queries=0):
+    def build(
+        self,
+        fail_mesh=False,
+        fail_command=None,
+        final_delay_queries=0,
+        post_restart_not_ready_attempts=0,
+    ):
         backend = Backend(
             fail_mesh=fail_mesh,
             fail_command=fail_command,
             final_delay_queries=final_delay_queries,
+            post_restart_not_ready_attempts=post_restart_not_ready_attempts,
         )
         store = Store()
         backups = Backups()
@@ -199,6 +217,82 @@ class CompositeSubgridTests(unittest.IsolatedAsyncioTestCase):
         self.assertEqual(result["phase"], "qualified")
         self.assertEqual(backend.remaining_final_delay, 0)
         self.assertEqual(backend.status["box"]["T2"]["state"], "connect")
+
+    async def test_post_restart_command_race_is_retried(self):
+        orchestrator, backend, _, _ = self.build(post_restart_not_ready_attempts=2)
+        result = await orchestrator.run(MODULE.GATE_ID, True)
+        self.assertEqual(result["phase"], "qualified")
+        robust_loads = [
+            command
+            for command, _ in backend.commands
+            if command == "BED_MESH_PROFILE LOAD=%s" % MODULE.ROBUST_PROFILE
+        ]
+        self.assertGreaterEqual(len(robust_loads), 4)
+        self.assertEqual(
+            backend.status["bed_mesh"]["profile_name"], MODULE.ROBUST_PROFILE
+        )
+
+    async def test_failed_complete_capture_is_qualified_after_bounded_recovery(self):
+        orchestrator, backend, store, _ = self.build()
+        orchestrator.state.update(
+            phase="failed",
+            busy=False,
+            matrix=_matrix(),
+            context={
+                "session_id": "physical-capture",
+                "plate_id": MODULE.PLATE_ID,
+                "bed_target_c": MODULE.BED_TARGET_C,
+                "nozzle_target_c": MODULE.NOZZLE_TARGET_C,
+                "homing_epoch": "physical-capture",
+                "klipper_restart_count": 0,
+                "x_indices": [1, 3, 5, 7, 9],
+                "y_indices": [1, 3, 5, 7, 9],
+            },
+            backup={
+                "printer_cfg_sha256": "a" * 64,
+                "z_state_present": True,
+                "z_state_sha256": "b" * 64,
+            },
+        )
+        backend.status["bed_mesh"]["profile_name"] = "default"
+        store.save(orchestrator.state)
+        result = await orchestrator.recover_interrupted()
+        self.assertEqual(result["phase"], "qualified")
+        self.assertFalse(result["busy"])
+        self.assertEqual(result["matrix"], _matrix())
+        self.assertEqual(
+            backend.status["bed_mesh"]["profile_name"], MODULE.ROBUST_PROFILE
+        )
+        self.assertNotIn("RESTART", [item[0] for item in backend.commands])
+
+    def test_default_state_uses_shared_store_version_marker(self):
+        state = MODULE.default_state()
+        self.assertEqual(state["version"], 1)
+        self.assertNotIn("schema", state)
+
+    def test_legacy_state_marker_is_migrated_without_changing_capture(self):
+        migration_path = PACKAGE / "migrate_composite_state.py"
+        spec = importlib.util.spec_from_file_location(
+            "migrate_composite_state", migration_path
+        )
+        migration = importlib.util.module_from_spec(spec)
+        assert spec.loader is not None
+        spec.loader.exec_module(migration)
+        legacy = {
+            "schema": 1,
+            "phase": "failed",
+            "matrix": _matrix(),
+            "context": {"x_indices": [1, 3, 5, 7, 9]},
+        }
+        with tempfile.TemporaryDirectory() as directory:
+            path = Path(directory) / "state.json"
+            path.write_text(json.dumps(legacy), encoding="utf-8")
+            migrated = migration.migrate(path)
+            persisted = json.loads(path.read_text(encoding="utf-8"))
+        self.assertEqual(migrated["version"], 1)
+        self.assertNotIn("schema", migrated)
+        self.assertEqual(persisted["matrix"], legacy["matrix"])
+        self.assertEqual(persisted["context"], legacy["context"])
 
     async def test_exact_gate_is_required(self):
         orchestrator, backend, _, _ = self.build()
@@ -290,6 +384,7 @@ class CompositeSubgridTests(unittest.IsolatedAsyncioTestCase):
         for name in (
             "k1_control_composite_subgrid_core.py",
             "k1_control_composite_subgrid.py",
+            "migrate_composite_state.py",
         ):
             source = (PACKAGE / name).read_text(encoding="utf-8")
             ast.parse(source, filename=name, feature_version=(3, 8))
@@ -348,6 +443,36 @@ class CompositeSubgridTests(unittest.IsolatedAsyncioTestCase):
         deployer_source = deployer.read_text(encoding="utf-8")
         self.assertIn("test -L '$RemoteNavigationAlias'", deployer_source)
         self.assertFalse(manifest["full_composite_campaign"])
+
+    def test_recovery_manifest_pins_exact_previous_and_repaired_revisions(self):
+        manifest = json.loads(
+            (PACKAGE / "recovery-deployment-manifest.json").read_text(
+                encoding="utf-8"
+            )
+        )
+        deployer = ROOT / manifest["deployer"]["path"]
+        self.assertEqual(
+            hashlib.sha256(deployer.read_bytes()).hexdigest(),
+            manifest["deployer"]["sha256"],
+        )
+        self.assertEqual(
+            manifest["baseline"]["core_sha256"],
+            "4f6e281b8cea57a19a76fcb47f936427ff786d4acb1d14e51d1656635fc0ebde",
+        )
+        self.assertEqual(
+            manifest["baseline"]["component_sha256"],
+            "f8951b755e8c2d65d3a8f750e05d99431ed430b7310067358915817e19cfe6bd",
+        )
+        for item in manifest["files"]:
+            source = PACKAGE / item["source"]
+            self.assertEqual(hashlib.sha256(source.read_bytes()).hexdigest(), item["sha256"])
+        migration = PACKAGE / manifest["state_migration"]["source"]
+        self.assertEqual(
+            hashlib.sha256(migration.read_bytes()).hexdigest(),
+            manifest["state_migration"]["sha256"],
+        )
+        self.assertFalse(manifest["physical_action"])
+        self.assertTrue(manifest["state_preserved"])
 
 
 if __name__ == "__main__":

@@ -48,8 +48,8 @@ Aucune nouvelle authentification ni action physique n'a eu lieu.
 
 ## Current phase
 
-**P4 — calibration quotidienne `6 × 6 / 1 mesh` et navigation UX R2 validées ;
-SUBGRID-V1 installée mais essai physique non exécuté ; production volontairement bloquée**
+**P4 — calibration quotidienne `6 × 6 / 1 mesh`, navigation UX R2 et première
+sous-grille composite `5 × 5` qualifiées ; production volontairement bloquée**
 
 La base sûre et réellement requalifiée reste `6 × 6` Lagrange avec un seul mesh
 standard. L'autonomie de calibration quotidienne standard est maintenant
@@ -61,12 +61,20 @@ L'ADR-013 montre que la limite PRTouch de 36 contacts par séquence ne borne pas
 nécessairement la matrice finale : quatre sous-grilles bornées peuvent former
 121 mesures physiques `11 × 11` dans la même chauffe et le même référencement.
 Le fusionneur hors imprimante est vert. Le composant séparé pour l'unique
-sous-grille décalée `5 × 5` a obtenu le préflight, la pose et deux validations
-SSH sous `20260824-113026-g4-k1-control-composite-mesh-subgrid-v1`. Seul le
-Moonraker dédié a redémarré ; aucune chauffe, référence, mouvement, mesure ou
-écriture Z n'a eu lieu. Le composant est `idle`. Son essai physique de 25
-contacts reste non exécuté et attend uniquement la confirmation factuelle du
-plateau libre avec `PEI_TEXTURED_A` en place.
+sous-grille décalée `5 × 5` a d'abord obtenu le préflight, la pose et deux
+validations SSH sous `20260824-113026-g4-k1-control-composite-mesh-subgrid-v1`.
+Thomas a ensuite confirmé le plateau libre et `PEI_TEXTURED_A`. La capture
+`20260824-113434-g4-k1-control-composite-mesh-subgrid-v1-run` contient exactement
+25 contacts et une matrice finie. La qualification a rencontré une course au
+restart Klipper, puis le premier delta de reprise a révélé le marqueur persistant
+historique `schema: 1` incompatible avec le stockage partagé `version: 1`.
+Aucune seconde mesure n'a été lancée. R2 a migré ce seul marqueur atomiquement,
+posé les deux composants corrigés et redémarré uniquement Moonraker sous
+`20260824-121607-g4-k1-control-composite-mesh-subgrid-recovery-v1-r2`. La reprise
+logique a qualifié la matrice existante et la validation indépendante a obtenu
+`VALIDATE_RUN_COMPOSITE_SUBGRID_V1_OK`. État final : `standby`, cibles zéro,
+axes non référencés, profil robuste actif, Z `−0,04 mm`, stockage `ok` et deux
+CFS connectés.
 
 Le manifeste SUBGRID-V1 épingle désormais la vraie base quotidienne
 `printer.cfg` `e1f6cd6d…`, le `app.js` NAVIGATION final et son `navi.json` ; il
@@ -481,15 +489,13 @@ Au début de la prochaine session, annoncer explicitement à Thomas :
 
 - autonomie calibration quotidienne standard : **atteinte** ;
 - autonomie production : **non atteinte** ;
-- l'écran réel et ses quatre deltas sûrs sont installés et validés ; ne pas
-  lancer de calibration avant le préflight CAMPAIGN-V1.
+- la sous-grille composite `5 × 5` est qualifiée avec 25 contacts ;
+- le mode précision `11 × 11` et l'autonomie production restent non atteints.
 
-La prochaine action sûre n'est plus un départ `9 × 9`. BED-MESH-V2, MATRIX-V1,
-RETRY-SAFETY-V1 et PRTOUCH-PRESETS-V1 sont installées et validées. La reprise
-a obtenu son préflight distant frais. La seule action physique prévue est
-maintenant l'unique `6 × 6` Lagrange lancé par Thomas depuis le vrai écran
-authentifié ; Codex reste observateur. La preuve composite reste un incrément
-ultérieur.
+La prochaine action sûre est hors imprimante : préparer et revoir l'orchestrateur
+complet des quatre partitions `6 × 6`, `5 × 6`, `6 × 5`, `5 × 5`, son unique
+chauffe/référencement, sa persistance `11 × 11` et son rollback exact. Aucun
+nouveau contact ne doit être lancé avec le pilote unitaire SUBGRID-V1.
 
 Le chemin borné `G4-K1-CONTROL-CALIBRATION-PATH-V1` ajoute ce qui manquait pour
 évaluer le premier Z sans console libre ni valeur cachée. Son premier préflight

@@ -3,17 +3,35 @@
 from __future__ import annotations
 
 import asyncio
+import json
 import logging
 from pathlib import Path
 from typing import TYPE_CHECKING, Any, Dict, Optional
 
 from ..common import RequestType, WebRequest
 from .k1_control import MoonrakerBackend
-from .k1_control_calibration_core import AtomicJsonStore, BackupManager
+from .k1_control_calibration_core import AtomicJsonStore, BackupManager, CalibrationError
 from .k1_control_composite_subgrid_core import CompositeSubgridOrchestrator
 
 if TYPE_CHECKING:
     from ..confighelper import ConfigHelper
+
+
+class CompositeStateStore(AtomicJsonStore):
+    def load(self) -> Dict[str, Any]:
+        if not self.path.exists():
+            return {}
+        value = json.loads(self.path.read_text(encoding="utf-8"))
+        if not isinstance(value, dict):
+            raise CalibrationError("État composite illisible.")
+        if value.get("version") == 1:
+            return value
+        if value.get("schema") == 1 and "version" not in value:
+            migrated = dict(value)
+            migrated.pop("schema", None)
+            migrated["version"] = 1
+            return migrated
+        raise CalibrationError("État composite illisible.")
 
 
 class K1ControlCompositeSubgrid:
@@ -37,7 +55,7 @@ class K1ControlCompositeSubgrid:
         ))
         self.orchestrator = CompositeSubgridOrchestrator(
             MoonrakerBackend(self.server),
-            AtomicJsonStore(state_path),
+            CompositeStateStore(state_path),
             BackupManager(printer_config, z_state, backup_root),
         )
         self.task: Optional[asyncio.Task[Any]] = None
@@ -105,6 +123,15 @@ class K1ControlCompositeSubgrid:
 
     async def _cancel(self, web_request: WebRequest) -> Dict[str, Any]:
         result = self.orchestrator.request_cancel()
+        if (
+            (self.task is None or self.task.done())
+            and self.orchestrator.state.get("phase") in ("failed", "interrupted")
+            and isinstance(self.orchestrator.state.get("backup"), dict)
+        ):
+            self.orchestrator._transition("recovering", busy=True)
+            self.task = asyncio.create_task(self._recover())
+            await asyncio.sleep(0)
+            result = self.orchestrator.public_state()
         self._notify()
         return result
 

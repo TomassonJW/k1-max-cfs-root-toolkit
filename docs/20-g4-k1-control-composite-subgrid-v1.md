@@ -2,10 +2,11 @@
 
 Date : 2026-08-23
 
-Statut : campagne quotidienne et navigation préalables validées ; paquet
-installé et validé sous
-`20260824-113026-g4-k1-control-composite-mesh-subgrid-v1` ; essai physique non
-exécuté
+Statut : **passé**. Paquet installé sous
+`20260824-113026-g4-k1-control-composite-mesh-subgrid-v1`, 25 contacts capturés
+sous `20260824-113434-g4-k1-control-composite-mesh-subgrid-v1-run`, reprise R2
+posée sous `20260824-121607-g4-k1-control-composite-mesh-subgrid-recovery-v1-r2`
+et validation indépendante verte.
 
 La base `printer.cfg` épinglée est désormais l'état exact après cette campagne
 quotidienne verte : `e1f6cd6dc92c9eea1e105f8c669f6d246753243535f09c7f9d92e2dfafebac14`.
@@ -135,13 +136,42 @@ Tout écart ci-dessus, un mouvement inattendu, un profil partiel, un changement
 de configuration ou l'impossibilité de restaurer l'état sûr ferme la gate. Il
 n'autorise ni une deuxième sous-grille ni la campagne `11 × 11`.
 
+## Résultat réel et reprise R2
+
+Thomas a confirmé le plateau libre et la plaque `PEI_TEXTURED_A`. Le pilote a
+chauffé à `55/140 °C`, stabilisé `200 s`, nettoyé, référencé puis obtenu les 25
+contacts attendus. La matrice `5 × 5` finie et son contexte exact ont été
+enregistrés avant le nettoyage final.
+
+Le premier restart de nettoyage a toutefois rencontré la fenêtre transitoire
+où Klipper répond aux lectures mais refuse encore une commande avec `Printer is
+not ready`. La restauration automatique a rencontré la même fenêtre. Les
+chauffes étaient déjà coupées ; la vérification indépendante a confirmé
+`standby`, axes non référencés, Z et stockage intacts, puis le profil robuste a
+été rechargé sans mouvement via le socket Klipper revu.
+
+Le premier déploiement du delta de reprise a ensuite révélé un second défaut :
+le composant écrivait `schema: 1`, mais `AtomicJsonStore` exige `version: 1` au
+redémarrage. Le fichier courant et son backup avaient la même empreinte et le
+JSON contenait toujours la matrice complète. R2 ajoute :
+
+- une migration atomique limitée au marqueur `schema` → `version` ;
+- un retry borné des commandes après restart ;
+- une reprise explicite d'un état `failed` contenant une capture complète ;
+- un rollback qui restaure l'ancienne révision dans un format chargeable.
+
+R2 a obtenu son préflight, sa pose, puis deux validations. La reprise logique a
+qualifié les 25 valeurs existantes sans nouveau contact. Le validateur final a
+obtenu `VALIDATE_RUN_COMPOSITE_SUBGRID_V1_OK`. L'état final est sûr et le profil
+temporaire est absent.
+
 ## Validation hors imprimante
 
-- 14 tests ciblés verts ;
+- 19 tests ciblés verts ;
 - grammaire Python 3.8 vérifiée ;
 - parse PowerShell des deux pilotes vert ;
 - hashes du contrat, du déployeur, du pilote et des payloads épinglés ;
-- suite complète : 220 tests, 3 ignorés connus ;
+- suite complète : 237 tests, 3 ignorés connus ;
 - trois tests de chaîne prouvent les transitions exactes BED-MESH-V2 → MATRIX
   → RETRY-SAFETY → PRESETS → COMPOSITE et le caractère sans écriture de
   PRESETS dans l'état final attendu.

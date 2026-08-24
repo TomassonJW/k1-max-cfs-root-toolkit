@@ -27,7 +27,7 @@ class CompositeSubgridError(RuntimeError):
 
 def default_state() -> Dict[str, Any]:
     return {
-        "schema": 1,
+        "version": 1,
         "phase": "idle",
         "busy": False,
         "campaign_id": None,
@@ -162,10 +162,39 @@ class CompositeSubgridOrchestrator:
             "SET_GCODE_VARIABLE MACRO=KCTRL_STATE VARIABLE=temperature_owner VALUE='\"none\"'",
         )
         for command in commands:
+            await self._run_gcode_when_ready(command)
+
+    async def _run_gcode_when_ready(
+        self, command: str, timeout: int = 120, disconnect_ok: bool = False
+    ) -> Any:
+        deadline = self._clock() + timeout
+        last_error = "Klipper non disponible"
+        while self._clock() < deadline:
             try:
-                await self.backend.run_gcode(command)
-            except Exception:
-                pass
+                return await self.backend.run_gcode(command, disconnect_ok=disconnect_ok)
+            except Exception as error:
+                last_error = str(error)
+            await self._sleep(1)
+        raise CompositeSubgridError(
+            "Commande de restauration non stabilisée : %s" % last_error
+        )
+
+    def _has_complete_capture(self) -> bool:
+        try:
+            validate_matrix(self.state.get("matrix"))
+        except (CompositeSubgridError, TypeError, ValueError):
+            return False
+        context = self.state.get("context")
+        if not isinstance(context, dict) or not isinstance(self.state.get("backup"), dict):
+            return False
+        return (
+            context.get("plate_id") == PLATE_ID
+            and int(context.get("bed_target_c", 0)) == BED_TARGET_C
+            and int(context.get("nozzle_target_c", 0)) == NOZZLE_TARGET_C
+            and int(context.get("klipper_restart_count", -1)) == 0
+            and context.get("x_indices") == [1, 3, 5, 7, 9]
+            and context.get("y_indices") == [1, 3, 5, 7, 9]
+        )
 
     async def _wait_final_state(self, timeout: int = 120) -> Dict[str, Any]:
         deadline = self._clock() + timeout
@@ -194,9 +223,15 @@ class CompositeSubgridOrchestrator:
             try:
                 await self.backend.run_gcode("RESTART", disconnect_ok=True)
                 await self.backend.wait_klippy_ready(120)
-                await self.backend.run_gcode("BED_MESH_PROFILE LOAD=%s" % ROBUST_PROFILE)
+                await self._run_gcode_when_ready(
+                    "BED_MESH_PROFILE LOAD=%s" % ROBUST_PROFILE
+                )
             finally:
                 await self._turn_off_heaters()
+        else:
+            await self._run_gcode_when_ready(
+                "BED_MESH_PROFILE LOAD=%s" % ROBUST_PROFILE
+            )
         await self._reset_runtime_flags()
 
     async def _preheat(self) -> None:
@@ -256,8 +291,22 @@ class CompositeSubgridOrchestrator:
                 last_error="Sous-grille interrompue avant toute action physique.",
             )
             return self.public_state()
-        restart_required = phase in ("measuring", "captured")
+        profiles = status.get("bed_mesh", {}).get("profiles", {})
+        restart_required = (
+            phase in ("measuring", "captured")
+            or TEMP_PROFILE in profiles
+            or bool(status.get("toolhead", {}).get("homed_axes"))
+        )
         await self._restore_after_capture(restart_required)
+        if self._has_complete_capture():
+            await self._wait_final_state()
+            self._transition(
+                "qualified",
+                busy=False,
+                cancel_requested=False,
+                last_error="Sous-grille capturée puis qualifiée après reprise bornée.",
+            )
+            return self.public_state()
         self._transition(
             "interrupted",
             busy=False,

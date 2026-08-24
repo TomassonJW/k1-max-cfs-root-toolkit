@@ -15,8 +15,8 @@ confirmés avant l'action qui en dépend.
 
 ## Reprise après la campagne quotidienne du 24 août 2026
 
-Statut : **CAMPAIGN-V1 et NAVIGATION-V1-R2 validées ; autonomie quotidienne
-standard atteinte ; COMPOSITE-MESH-SUBGRID-V1 installée mais essai `5 × 5` non exécuté**.
+Statut : **CAMPAIGN-V1, NAVIGATION-V1-R2 et la première sous-grille composite
+`5 × 5` validées ; autonomie quotidienne standard atteinte**.
 
 BED-MESH-V2 est installée et validée sous la capture
 `20260823-151026-g4-k1-control-calibration-ui-prtouch-bed-mesh-v2`.
@@ -48,8 +48,12 @@ Mainsail vers le vrai écran, sans nouvelle authentification, ainsi que le texte
 Z final corrigé. COMPOSITE-MESH-SUBGRID-V1 a ensuite obtenu le préflight, la
 pose et deux validations SSH sous
 `20260824-113026-g4-k1-control-composite-mesh-subgrid-v1`. Seul le Moonraker
-dédié a redémarré et aucune action physique n'a eu lieu. L'essai `5 × 5` reste
-séparé.
+dédié a redémarré et aucune action physique n'a eu lieu. L'essai séparé a ensuite
+capturé 25 contacts sous `20260824-113434-g4-k1-control-composite-mesh-subgrid-v1-run`.
+La course de reprise Klipper et le marqueur `schema/version` ont été corrigés
+sans deuxième mesure. La reprise R2 sous
+`20260824-121607-g4-k1-control-composite-mesh-subgrid-recovery-v1-r2` et la
+validation indépendante de la matrice existante sont vertes.
 
 La chaîne locale post-campagne est maintenant stricte : SUBGRID-V1 exige le
 hash `printer.cfg` contenant le mesh quotidien validé, puis les deux fichiers
@@ -859,8 +863,7 @@ Chrome sont verts. Le rollback exact vers V1 reste vérifié.
 
 ### Gate exploratoire — `G4-K1-CONTROL-COMPOSITE-MESH-SUBGRID-V1`
 
-Status: **package d'acquisition `5 × 5` préparé et testé hors imprimante ; non
-installé et non exécuté**
+Status: **passed — 25 contacts physiques et matrice `5 × 5` qualifiés**
 
 Cette gate future ne couvre qu'une sous-grille PRTouch décalée de 36 contacts
 maximum. Elle devra conserver le `pr_version: 2`, les 72 tables exactes, la
@@ -874,10 +877,11 @@ Le fusionneur hors imprimante reste sous
 `composite-subgrid-v1` impose maintenant une première grille impaire/impaire
 `5 × 5`, 25 contacts aux positions `34..266 mm`, puis chauffes zéro, nettoyage
 de la session et profil robuste restauré. Sa pose redémarre Moonraker seulement
-et son essai redémarre Klipper uniquement après la capture. Les 14 tests ciblés
-et la suite complète de 220 tests sont verts, avec 3 tests historiquement
-ignorés. Cette preuve valide le pilote hors imprimante ; elle ne prouve encore
-aucun mouvement PRTouch.
+et son essai redémarre Klipper uniquement après la capture. La campagne réelle
+a prouvé les 25 contacts. La reprise R2 corrige la course post-restart et migre
+atomiquement le marqueur d'état sans changer la matrice. La suite complète de
+237 tests est verte, avec 3 tests historiquement ignorés. Cette gate ne couvre
+pas encore les trois autres partitions ni la persistance finale `11 × 11`.
 
 ## G5 — V1 production baseline
 

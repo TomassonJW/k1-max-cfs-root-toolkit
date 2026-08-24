@@ -1001,3 +1001,23 @@ repointe `navi.json` vers `/access-k1-control/`. Le chemin échappe au worker,
 reste sur la même origine et réutilise l'authentification courante. La pose ne
 redémarre aucun service et le rollback restaure exactement V1 puis retire
 l'alias.
+
+## D-056 — Une capture composite complète survit aux courses de redémarrage
+
+Date: 2026-08-24
+
+Status: décision installée et validée sur la sous-grille physique `5 × 5`
+
+La matrice de 25 contacts était complète et validée avant le restart de
+nettoyage, mais Klipper a brièvement accepté les lectures tout en refusant les
+commandes. Une telle course ne justifie ni de perdre les mesures ni de refaire
+les contacts. Les commandes de restauration sont désormais retentées de façon
+bornée ; un état `failed` ne peut être requalifié que s'il contient la matrice
+`5 × 5`, le backup et le contexte exacts, puis seulement après retour du profil
+robuste et de toutes les gardes sûres.
+
+Le composant utilisait aussi `schema: 1` alors que le stockage partagé exige
+`version: 1`. La reprise migre uniquement ce marqueur par remplacement atomique,
+après backup exact, sans modifier la matrice ni son contexte. Le rollback garde
+un état chargeable par l'ancienne révision. Cette décision ne couvre aucune
+deuxième sous-grille ni la persistance `11 × 11`.

@@ -18,8 +18,8 @@ imprimante impose désormais `6 × 6` Lagrange et un seul mesh quotidien ; les
 deltas sûrs PRTOUCH-BED-MESH-V2, MATRIX-V1, RETRY-SAFETY-V1 et
 PRTOUCH-PRESETS-V1 sont installés et validés ;
 la campagne quotidienne `6 × 6 / 1 mesh` et NAVIGATION-V1-R2 sont acceptées et
-validées ; SUBGRID-V1 est installée sans action physique mais son essai `5 × 5`
-reste non exécuté ; production remains closed**.
+validées ; SUBGRID-V1 et sa reprise R2 sont installées, et l'essai physique
+`5 × 5` de 25 contacts est qualifié ; production remains closed**.
 
 La capture `20260823-165742-g4-k1-control-calibration-ui-prtouch-presets-v1` a
 clos PRTOUCH-PRESETS-V1 après un préflight frais, un déploiement idempotent et
@@ -44,9 +44,16 @@ authentifié ouvre maintenant K1 Control depuis le bouton Mainsail, sans nouvell
 authentification, et affiche le texte Z final corrigé. SUBGRID-V1 a ensuite
 obtenu son préflight, sa pose et deux validations SSH sous la capture
 `20260824-113026-g4-k1-control-composite-mesh-subgrid-v1`. Seul le Moonraker
-dédié a redémarré ; aucune action physique n'a eu lieu. La prochaine action
-unique est son essai `5 × 5`, après confirmation factuelle d'un plateau libre
-et de la plaque `PEI_TEXTURED_A` en place.
+dédié a redémarré ; aucune action physique n'a eu lieu. Thomas a ensuite confirmé
+le plateau libre et `PEI_TEXTURED_A`, puis la capture
+`20260824-113434-g4-k1-control-composite-mesh-subgrid-v1-run` a obtenu les 25
+contacts et une matrice finie. Deux défauts de reprise ont été corrigés sans
+nouvelle mesure : la course Klipper après restart et le marqueur persistant
+`schema` incompatible avec le stockage `version`. La reprise R2 est posée sous
+`20260824-121607-g4-k1-control-composite-mesh-subgrid-recovery-v1-r2`, puis
+`VALIDATE_RUN_COMPOSITE_SUBGRID_V1_OK` a qualifié la capture existante. La
+prochaine mission est la préparation revue de la campagne quatre sous-grilles ;
+elle ne doit pas être improvisée depuis le pilote unitaire.
 
 Thomas authorised V1, but the mandatory preflight proved that `logrotate` was
 absent. V1 is closed and must never be deployed. Thomas later authorised V2;

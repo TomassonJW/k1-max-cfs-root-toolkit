@@ -237,6 +237,28 @@ function Assert-Qualified {
     return @{ State = $state; Printer = $status }
 }
 
+function Assert-Restored {
+    $manifest = Assert-Installed
+    $state = Get-CompositeState
+    if ([bool]$state.busy -or @('cancelled', 'interrupted') -notcontains [string]$state.phase) {
+        throw "Restauration composite non close : phase=$($state.phase) busy=$($state.busy)"
+    }
+    $status = Get-PrinterStatus
+    Assert-SafePrinter $status
+    if ([string]$status.bed_mesh.profile_name -cne 'k1_p001_t055_r001_n06x06') {
+        throw "Le profil robuste 6x6 n'est pas actif après la restauration."
+    }
+    if ([string]$status.toolhead.homed_axes) {
+        throw "La restauration n'a pas libéré les axes."
+    }
+    if ((Get-RemoteSha256 $RemotePrinterConfig) -cne [string]$manifest.baseline.printer_cfg_sha256) {
+        throw 'printer.cfg a changé pendant la restauration.'
+    }
+    Save-Evidence 'recovered-composite-subgrid-state.json' $state
+    Save-Evidence 'recovered-printer-status.json' $status
+    return @{ State = $state; Printer = $status }
+}
+
 if ($Action -eq 'Plan') {
     Write-Output "PLAN_RUN_COMPOSITE_SUBGRID_V1_OK gate=$RequiredGate"
     Write-Output 'Run: PEI_TEXTURED_A, 55/140 C, 200 s, nettoyage, homing, une sous-grille 5x5 décalée.'
@@ -259,6 +281,15 @@ if ($Action -eq 'Validate') {
 if ($Action -eq 'Cancel') {
     Assert-MutationGate
     $state = Invoke-Cancel
+    if ([bool]$state.busy) {
+        $state = Wait-TerminalState
+    }
+    if ([string]$state.phase -eq 'qualified') {
+        [void](Assert-Qualified)
+    }
+    else {
+        [void](Assert-Restored)
+    }
     Write-Output "CANCEL_COMPOSITE_SUBGRID_V1_OK phase=$($state.phase)"
     exit 0
 }

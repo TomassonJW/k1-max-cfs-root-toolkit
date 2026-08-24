@@ -7,7 +7,7 @@
   },
   "runner": {
     "path": "scripts/run-k1-control-composite-subgrid-v1.ps1",
-    "sha256": "fde904f5227c69ef90c90041b7e34036e38fbba6cff3c2d763b49f4ad3da2017"
+    "sha256": "6ca89863978f04ea2f32298f8c48af0a683310f1f7e9ed88158195bc10a61dbf"
   },
   "contract": {
     "path": "composite-subgrid-contract.json",
@@ -30,12 +30,12 @@
     {
       "source": "k1_control_composite_subgrid_core.py",
       "destination": "/usr/data/k1-control-v1/current/moonraker/moonraker/moonraker/components/k1_control_composite_subgrid_core.py",
-      "sha256": "4f6e281b8cea57a19a76fcb47f936427ff786d4acb1d14e51d1656635fc0ebde"
+      "sha256": "aed9a505e9b97c09db0d02a1917f6400d1d2c68289bce2e9f571d9696f47941d"
     },
     {
       "source": "k1_control_composite_subgrid.py",
       "destination": "/usr/data/k1-control-v1/current/moonraker/moonraker/moonraker/components/k1_control_composite_subgrid.py",
-      "sha256": "f8951b755e8c2d65d3a8f750e05d99431ed430b7310067358915817e19cfe6bd"
+      "sha256": "40f29985f0600ffa2aad88e97153c7cae1082ad82aa0e3b1c3d002262f379ca9"
     }
   ],
   "unchanged": {

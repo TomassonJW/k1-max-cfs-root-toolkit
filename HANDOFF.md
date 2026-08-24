@@ -1,8 +1,8 @@
 # HANDOFF
 
 Date: 2026-08-24
-Phase: P4 / campagne quotidienne et NAVIGATION-V1-R2 validées ; autonomie quotidienne atteinte ; SUBGRID-V1 installée ; essai physique non exécuté ; production fermée
-Next operator: exécuter l'unique sous-grille `5 × 5` lorsque le plateau libre et la plaque `PEI_TEXTURED_A` sont factuellement confirmés
+Phase: P4 / campagne quotidienne, NAVIGATION-V1-R2 et sous-grille composite `5 × 5` qualifiées ; autonomie quotidienne atteinte ; production fermée
+Next operator: préparer hors imprimante la campagne quatre sous-grilles ; ne pas relancer le pilote unitaire
 
 ## Autorité de reprise actuelle
 
@@ -49,10 +49,22 @@ conformes. Seul le Moonraker dédié a redémarré. Le composant termine `idle` 
 K1 est au repos, cibles zéro, profil robuste, Z accepté, interface R2 et deux CFS
 conformes. Aucun chauffage, homing, mouvement, mesh ou Z n'a été lancé.
 
-La prochaine action n'est pas une nouvelle permission : c'est l'essai physique
-déjà couvert par le Goal. Il ne peut toutefois déclarer `plate_clear=true`
-qu'après un constat humain frais que le plateau est réellement libre et que la
-plaque `PEI_TEXTURED_A` est en place.
+Thomas a confirmé le plateau libre et la plaque `PEI_TEXTURED_A`. La capture
+`20260824-113434-g4-k1-control-composite-mesh-subgrid-v1-run` a mesuré exactement
+25 contacts et conservé une matrice `5 × 5` finie. Le restart de nettoyage a
+ensuite rencontré une course Klipper ; la K1 a été remise au profil robuste sans
+nouvelle mesure.
+
+Le premier delta de reprise a révélé que l'état historique portait `schema: 1`
+alors que le stockage partagé exige `version: 1`. Le JSON et son backup avaient
+la même empreinte et la matrice était intacte. La révision R2 migre uniquement
+ce marqueur de façon atomique, attend les commandes après restart et permet une
+reprise d'un état `failed` complet. Sous la capture
+`20260824-121607-g4-k1-control-composite-mesh-subgrid-recovery-v1-r2`, la pose et
+deux validations sont vertes. La reprise logique a obtenu `phase=qualified`,
+puis `VALIDATE_RUN_COMPOSITE_SUBGRID_V1_OK`. Aucune seconde grille n'a été
+mesurée. Le profil robuste, le Z `−0,04 mm`, le stockage, les chauffes, les axes
+et les deux CFS sont conformes.
 
 ## Clôture CAMPAIGN-V1 du 24 août 2026
 

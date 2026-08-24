@@ -1,0 +1,36 @@
+{
+  "contract_id": "G4-K1-CONTROL-COMPOSITE-MESH-SUBGRID-RECOVERY-V1",
+  "status": "offline_review_candidate",
+  "deployer": {
+    "path": "scripts/deploy-k1-control-composite-subgrid-recovery-v1.ps1",
+    "sha256": "add1b5bac58c7072c1c703eaa7d6e27af95895fc95ce9971e2a384dbcd6a0beb"
+  },
+  "baseline": {
+    "printer_cfg_sha256": "e1f6cd6dc92c9eea1e105f8c669f6d246753243535f09c7f9d92e2dfafebac14",
+    "moonraker_conf_sha256": "125b5415d740901e4210610001bb2b0c3ec0d2a55973e7d6596804e4868b5a12",
+    "core_sha256": "4f6e281b8cea57a19a76fcb47f936427ff786d4acb1d14e51d1656635fc0ebde",
+    "component_sha256": "f8951b755e8c2d65d3a8f750e05d99431ed430b7310067358915817e19cfe6bd"
+  },
+  "files": [
+    {
+      "source": "k1_control_composite_subgrid_core.py",
+      "destination": "/usr/data/k1-control-v1/current/moonraker/moonraker/moonraker/components/k1_control_composite_subgrid_core.py",
+      "sha256": "aed9a505e9b97c09db0d02a1917f6400d1d2c68289bce2e9f571d9696f47941d"
+    },
+    {
+      "source": "k1_control_composite_subgrid.py",
+      "destination": "/usr/data/k1-control-v1/current/moonraker/moonraker/moonraker/components/k1_control_composite_subgrid.py",
+      "sha256": "40f29985f0600ffa2aad88e97153c7cae1082ad82aa0e3b1c3d002262f379ca9"
+    }
+  ],
+  "state_migration": {
+    "source": "migrate_composite_state.py",
+    "sha256": "f4d000b4be0d83039af61d42ef403cc6e47f7275d50ac6b9b6e2cf2dc50e6630",
+    "legacy_marker": "schema",
+    "current_marker": "version"
+  },
+  "service_action": "restart /etc/init.d/S56k1_control_moonraker only",
+  "physical_action": false,
+  "printer_cfg_changed": false,
+  "state_preserved": true
+}
