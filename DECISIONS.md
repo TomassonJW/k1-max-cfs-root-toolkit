@@ -988,7 +988,7 @@ pas être supprimés par le dépôt. Voir ADR-014.
 
 Date: 2026-08-24
 
-Status: décision candidate après KO navigateur réel ; aucune action physique
+Status: décision acceptée et validée dans le vrai navigateur ; aucune action physique
 
 NAVIGATION-V1 a posé les bons octets et Mainsail a affiché son bouton, mais le
 clic vers `/k1-control/` a été intercepté par le `NavigationRoute` du service

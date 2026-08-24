@@ -1,8 +1,8 @@
 # HANDOFF
 
 Date: 2026-08-24
-Phase: P4 / campagne quotidienne `6 × 6 / 1 mesh` validée ; NAVIGATION-V1 posée mais rendu KO ; R2 préparée ; composite non installé ; production fermée
-Next operator: poser NAVIGATION-V1-R2 sous l'autorité par objectif, valider son rendu, puis poser sans mouvement COMPOSITE-MESH-SUBGRID-V1
+Phase: P4 / campagne quotidienne `6 × 6 / 1 mesh` et NAVIGATION-V1-R2 validées ; autonomie quotidienne atteinte ; composite non installé ; production fermée
+Next operator: poser sans mouvement COMPOSITE-MESH-SUBGRID-V1, puis exécuter son unique sous-grille `5 × 5` lorsque le plateau libre est factuellement confirmé
 
 ## Autorité de reprise actuelle
 
@@ -29,6 +29,15 @@ R2 conserve le worker constructeur bit à bit. Elle remplace le lien par
 retire l'alias. Les tests ciblés, les 232 tests complets, les plans, le parse
 PowerShell et `git diff --check` sont verts. D-054 couvre directement sa pose ;
 aucune phrase de Thomas n'est requise.
+
+La capture `20260824-112535-g4-k1-control-calibration-ui-navigation-v1-r2` a
+ensuite obtenu le préflight, la pose et deux validations SSH vertes. Chrome a
+rechargé Mainsail, lu le lien exact `/access-k1-control/`, cliqué ce bouton et
+rendu `K1 Control — calibration` sans nouvelle authentification. Le texte Z
+final est maintenant « Mesh 6 × 6 et Z enregistrés. La calibration est
+terminée. » Aucune confirmation physique n'a été activée et aucune calibration
+n'a été lancée. NAVIGATION-V1-R2 est close ; l'autonomie de calibration
+quotidienne standard est atteinte.
 
 ## Clôture CAMPAIGN-V1 du 24 août 2026
 
@@ -258,11 +267,11 @@ encore installée ne doit pas être relancée.
 
 Dire clairement à Thomas, avant toute proposition d'exécution :
 
-- **l'autonomie calibration n'est pas encore atteinte** : la campagne réelle
-  `6 × 6 / 1 mesh` a réussi sans console, mais le texte Z trompeur a encore
-  nécessité l'interprétation de Codex ; NAVIGATION-V1 doit être posée et son
-  rendu validé. L'ADR-013 ouvre ensuite un mode précision composite `11 × 11`,
-  mais aucune acquisition composite n'est installée ni qualifiée sur la K1 ;
+- **l'autonomie calibration quotidienne standard est atteinte** : la campagne
+  réelle `6 × 6 / 1 mesh` et le vrai rendu NAVIGATION-V1-R2 sont verts, sans
+  console ni nouvelle authentification. L'ADR-013 ouvre ensuite un mode
+  précision composite `11 × 11`, mais aucune acquisition composite n'est
+  installée ni qualifiée sur la K1 ;
 - **l'autonomie production n'est pas encore atteinte** : Orca, `START_PRINT`,
   l'ancien `+0,27 mm` et les températures CFS ne sont pas encore basculés vers
   le nouveau contrat ;

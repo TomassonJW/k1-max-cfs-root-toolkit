@@ -23,10 +23,17 @@ Mainsail est ouvert sur cette même origine, son service worker la contrôle et
 intercepte aussi `/k1-control/`. Un lien normal, même affiché correctement, ne
 peut pas forcer nginx à servir l'autre application.
 
-## Correctif R2 préparé
+## Correctif R2 validé
 
 R2 ne modifie pas le service worker constructeur. Elle ajoute dans la racine
 statique l'alias `access-k1-control -> k1-control` et change le lien Mainsail en
 `/access-k1-control/`. Le préfixe est déjà exclu par le worker exact. Le rollback
 restaure les deux fichiers de V1 et retire l'alias. Aucune action physique ni
 aucun restart n'est présent dans le paquet.
+
+La capture `20260824-112535-g4-k1-control-calibration-ui-navigation-v1-r2` a
+obtenu le préflight, la pose et deux validations SSH vertes. Chrome a rechargé
+Mainsail, confirmé le lien `/access-k1-control/`, puis rendu
+`K1 Control — calibration` après le clic. Le texte final corrigé est visible,
+sans nouvelle authentification, case physique cochée ou lancement de
+calibration.

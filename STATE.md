@@ -39,19 +39,23 @@ mais `/k1-control/` reste intercepté par le `NavigationRoute` du service worker
 et recharge Mainsail. La révision R2 est préparée et 232 tests sont verts. Elle
 ne modifie pas `sw.js` : elle ajoute seulement l'alias symbolique original
 `access-k1-control -> k1-control` et repointe le bouton vers le préfixe
-`/access-k1-control/`, déjà présent dans la denylist exacte du worker.
+`/access-k1-control/`, déjà présent dans la denylist exacte du worker. R2 a été
+posée et validée sous
+`20260824-112535-g4-k1-control-calibration-ui-navigation-v1-r2`. Le vrai Chrome
+authentifié confirme le bouton `K1 Control`, son lien exact, le rendu de la page
+et le texte « Mesh 6 × 6 et Z enregistrés. La calibration est terminée. »
+Aucune nouvelle authentification ni action physique n'a eu lieu.
 
 ## Current phase
 
-**P4 — calibration quotidienne `6 × 6 / 1 mesh` validée ; navigation UX R2 et
-mode composite encore non déployés ; production volontairement bloquée**
+**P4 — calibration quotidienne `6 × 6 / 1 mesh` et navigation UX R2 validées ;
+mode composite encore non déployé ; production volontairement bloquée**
 
 La base sûre et réellement requalifiée reste `6 × 6` Lagrange avec un seul mesh
-standard. L'autonomie calibration n'est pas encore déclarée : Thomas a terminé
-la campagne sans console, mais le message `Qualifie d'abord le mesh robuste`
-est resté affiché pendant `starting_z` et après `accepted`, ce qui a nécessité
-une traduction Codex. `NAVIGATION-V1` doit corriger ce défaut et son vrai rendu
-doit être validé avant de déclarer l'interface compréhensible seule.
+standard. L'autonomie de calibration quotidienne standard est maintenant
+atteinte : la campagne a réussi sans console et le vrai écran corrigé ouvre
+depuis Mainsail sans nouvelle authentification ni traduction Codex. Cette
+autonomie ne couvre pas encore le mode précision composite `11 × 11`.
 
 L'ADR-013 montre que la limite PRTouch de 36 contacts par séquence ne borne pas
 nécessairement la matrice finale : quatre sous-grilles bornées peuvent former
@@ -472,7 +476,7 @@ commencent sur cet état final retenu.
 
 Au début de la prochaine session, annoncer explicitement à Thomas :
 
-- autonomie calibration : **non atteinte** ;
+- autonomie calibration quotidienne standard : **atteinte** ;
 - autonomie production : **non atteinte** ;
 - l'écran réel et ses quatre deltas sûrs sont installés et validés ; ne pas
   lancer de calibration avant le préflight CAMPAIGN-V1.

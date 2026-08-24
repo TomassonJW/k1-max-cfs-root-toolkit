@@ -4,7 +4,7 @@ Date : 2026-08-22
 
 Statut : accepté après observation réelle
 
-Amendement du 24 août 2026 : l'origine isolée fonctionne tant que Mainsail
+Amendement validé le 24 août 2026 : l'origine isolée fonctionne tant que Mainsail
 reste sur `127.0.0.1`. Lorsque Mainsail est lui-même ouvert sur `localhost`, son
 worker contrôle aussi `/k1-control/`. NAVIGATION-V1-R2 utilise donc le chemin
 original `/access-k1-control/`, alias vers `k1-control`, car le worker exact

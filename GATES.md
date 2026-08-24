@@ -15,8 +15,8 @@ confirmés avant l'action qui en dépend.
 
 ## Reprise après la campagne quotidienne du 24 août 2026
 
-Statut : **CAMPAIGN-V1 validée ; NAVIGATION-V1 posée mais rendu KO ; R2 prête
-hors imprimante ; COMPOSITE-MESH-SUBGRID-V1 non installée**.
+Statut : **CAMPAIGN-V1 et NAVIGATION-V1-R2 validées ; autonomie quotidienne
+standard atteinte ; COMPOSITE-MESH-SUBGRID-V1 non installée**.
 
 BED-MESH-V2 est installée et validée sous la capture
 `20260823-151026-g4-k1-control-calibration-ui-prtouch-bed-mesh-v2`.
@@ -41,8 +41,11 @@ sous `20260824-110936-g4-k1-control-calibration-ui-navigation-v1`, sans restart
 ni action physique. Le vrai navigateur a ensuite prouvé que le bouton est
 affiché mais que le service worker Mainsail intercepte `/k1-control/`. R2 ajoute
 un alias statique original sous `/access-k1-control/`, préfixe déjà exclu par le
-worker exact, sans modifier ce fichier constructeur. COMPOSITE-MESH-SUBGRID-V1
-reste non installée.
+worker exact, sans modifier ce fichier constructeur. La capture
+`20260824-112535-g4-k1-control-calibration-ui-navigation-v1-r2` a ensuite obtenu
+le préflight, la pose et deux validations SSH vertes. Chrome a prouvé le clic
+Mainsail vers le vrai écran, sans nouvelle authentification, ainsi que le texte
+Z final corrigé. COMPOSITE-MESH-SUBGRID-V1 reste non installée.
 
 La chaîne locale post-campagne est maintenant stricte : SUBGRID-V1 exige le
 hash `printer.cfg` contenant le mesh quotidien validé, puis les deux fichiers
@@ -833,23 +836,22 @@ matrice privée acceptée. Il a ensuite obtenu
 cibles zéro, chemin Z `committed`, stockage `ok`, profil transitoire absent,
 `6 × 6` Lagrange chargé, deux CFS et Moonraker sans échec ni avertissement.
 
-Le vrai écran a toutefois gardé le texte trompeur « Qualifie d'abord le mesh
-robuste » pendant la préparation Z et après acceptation. La campagne physique
-est valide, mais l'autonomie de compréhension sans Codex attend encore le delta
-statique NAVIGATION-V1 et sa validation navigateur.
+Le vrai écran avait gardé le texte trompeur « Qualifie d'abord le mesh robuste »
+pendant la préparation Z et après acceptation. NAVIGATION-V1-R2 corrige
+maintenant ce texte et son vrai rendu est validé.
 
-### Gate UX préparée — `G4-K1-CONTROL-CALIBRATION-UI-NAVIGATION-V1`
+### Gate UX close — `G4-K1-CONTROL-CALIBRATION-UI-NAVIGATION-V1-R2`
 
-Status: **paquet local, 224 tests et préflight SSH verts ; non déployé**
+Status: **posée et validée côté SSH et dans le vrai Chrome ; aucune action
+physique**
 
-Ce delta remplace seulement `app.js` et crée
-`/usr/data/printer_data/config/.theme/navi.json`. Il corrige les textes
-`starting_z`, `z_confirmed` et `accepted`, puis ajoute le lien Mainsail
-`K1 Control` vers `/k1-control/` sur la même origine. Il ne change ni nginx, ni
-l'authentification, ni Moonraker, ni Klipper et ne redémarre aucun service. Le
-rollback restaure le backup exact d'`app.js` et retire le nouveau fichier de
-navigation. Deux appels de pose ont été refusés avant création du processus par
-la couche d'approbation ; aucun effet distant n'est à restaurer.
+Le premier delta a corrigé `app.js` et créé
+`/usr/data/printer_data/config/.theme/navi.json`. Son lien `/k1-control/` a été
+rejeté après un KO navigateur réel. R2 a conservé le worker constructeur, créé
+`access-k1-control -> k1-control` et repointé le lien vers
+`/access-k1-control/`. La capture
+`20260824-112535-g4-k1-control-calibration-ui-navigation-v1-r2` et le vrai rendu
+Chrome sont verts. Le rollback exact vers V1 reste vérifié.
 
 ### Gate exploratoire — `G4-K1-CONTROL-COMPOSITE-MESH-SUBGRID-V1`
 

@@ -17,10 +17,8 @@ par un `IndexError` au point 37 ; le rollback est vert ; la correction hors
 imprimante impose désormais `6 × 6` Lagrange et un seul mesh quotidien ; les
 deltas sûrs PRTOUCH-BED-MESH-V2, MATRIX-V1, RETRY-SAFETY-V1 et
 PRTOUCH-PRESETS-V1 sont installés et validés ;
-la campagne quotidienne `6 × 6 / 1 mesh` est acceptée et validée ; le premier
-delta UX NAVIGATION-V1 est installé mais son lien a échoué au vrai rendu ; sa
-révision R2 et le mode composite restent non déployés ; production remains
-closed**.
+la campagne quotidienne `6 × 6 / 1 mesh` et NAVIGATION-V1-R2 sont acceptées et
+validées ; le mode composite reste non déployé ; production remains closed**.
 
 La capture `20260823-165742-g4-k1-control-calibration-ui-prtouch-presets-v1` a
 clos PRTOUCH-PRESETS-V1 après un préflight frais, un déploiement idempotent et
@@ -35,13 +33,15 @@ mesh quotidien complet de 36 points, le parcours Z `5..0,1 mm`, l'acceptation
 les six lignes de points du profil mesuré et refuse toute autre différence de
 `printer.cfg` avec le backup exact.
 
-Le delta `G4-K1-CONTROL-CALIBRATION-UI-NAVIGATION-V1` a été posé et validé côté
-SSH sans restart ni action physique. Le vrai navigateur a confirmé un KO
-produit : Mainsail affiche le bouton puis son service worker renvoie sa propre
-coque sur `/k1-control/`. La révision R2 garde le service worker constructeur
-intact, crée l'alias original `access-k1-control -> k1-control` sous un préfixe
-déjà exclu de sa route et repointe `navi.json`. Après sa pose et son rendu réel,
-la prochaine gate physique est uniquement
+Le delta `G4-K1-CONTROL-CALIBRATION-UI-NAVIGATION-V1` a été posé sans restart ni
+action physique, puis son vrai rendu a montré que le service worker Mainsail
+interceptait `/k1-control/`. La révision R2 garde le worker constructeur intact,
+crée l'alias original `access-k1-control -> k1-control` et repointe `navi.json`.
+Sous la capture `20260824-112535-g4-k1-control-calibration-ui-navigation-v1-r2`,
+le préflight, la pose et deux validations SSH sont verts. Le vrai Chrome
+authentifié ouvre maintenant K1 Control depuis le bouton Mainsail, sans nouvelle
+authentification, et affiche le texte Z final corrigé. La prochaine gate
+physique est uniquement
 `G4-K1-CONTROL-COMPOSITE-MESH-SUBGRID-V1`.
 
 Thomas authorised V1, but the mandatory preflight proved that `logrotate` was
@@ -389,17 +389,17 @@ ensuite été posées ou reconnues déjà présentes puis validées séparément
 les backups et restarts strictement prévus et aucune action physique. La
 campagne CAMPAIGN-V1 a ensuite réussi sous la capture
 `20260823-171803-g4-k1-control-calibration-ui-campaign-v1`, avec un mesh
-`6 × 6`, le parcours Z et la validation finale. NAVIGATION-V1 reste la prochaine
-pose sans mouvement ; COMPOSITE-MESH-SUBGRID-V1 vient seulement après son rendu
-réel.
+`6 × 6`, le parcours Z et la validation finale. NAVIGATION-V1-R2 est maintenant
+posée et validée dans le vrai navigateur ; COMPOSITE-MESH-SUBGRID-V1 est la
+prochaine pose sans mouvement.
 
 Thomas demande que chaque prochaine reprise commence par un état explicite de
 l'autonomie, sans confondre le runtime installé avec une interface terminée :
 
-- **autonomie calibration** : pas encore atteinte ; la campagne physique est
-  complète et valide, mais un texte d'état trompeur a encore nécessité une
-  traduction Codex. NAVIGATION-V1 et un rendu compréhensible sans assistance
-  doivent fermer ce dernier défaut ;
+- **autonomie calibration quotidienne standard** : atteinte ; la campagne
+  physique est complète et le vrai écran corrigé est compréhensible sans
+  console ni traduction Codex. Le mode précision composite reste une capacité
+  supplémentaire non qualifiée ;
 - **autonomie production** : pas encore atteinte ; elle exige en plus la bascule
   atomique Orca/`START_PRINT`, le retrait prouvé du `+0,27 mm`, la propriété des
   températures CFS et la validation G5 sans intervention Codex.
