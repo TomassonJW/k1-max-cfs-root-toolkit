@@ -416,9 +416,32 @@ Authority order:
 
 When instructions conflict, fail closed and report the conflict.
 
+## Autorité par objectif — décision de Thomas du 24 août 2026
+
+Un Goal actif ou une mission clairement décrite autorise Codex à exécuter de
+bout en bout les actions normalement nécessaires dans ce périmètre. Aucune
+phrase `GO ...` exacte, aucun identifiant de gate recopié par Thomas et aucun
+renouvellement après une correction revue et testée ne sont requis. Une formule
+générale comme « tu as les autorisations » confirme le périmètre actif déjà
+décrit ; elle ne crée pas un périmètre futur ou implicite.
+
+Les identifiants `G4-*` restent des contrôles techniques internes. Codex les
+fournit aux scripts, vérifie l'état frais, le backup, les empreintes, le
+write-set, la validation et le rollback. Une action physique n'est couverte que
+si l'objectif actif la décrit ; une donnée non observable à distance, comme un
+plateau réellement libre, peut encore nécessiter une confirmation factuelle.
+
+Une instruction plus récente et plus restrictive comme « stop », « lecture
+seule » ou « ne touche pas à l'imprimante » prime. Les dialogues d'approbation
+imposés techniquement par la plateforme ne peuvent pas être supprimés par le
+dépôt. Cette section remplace les anciennes règles normatives `ATTENDRE_GO` ou
+de renouvellement littéral pour une étape déjà comprise dans l'objectif actif ;
+leurs mentions historiques restent seulement des faits sur les campagnes
+passées.
+
 ## Hard prohibitions during P0/P1
 
-Until Gate G4 is explicitly opened for a named change, an agent must not:
+Until a clear mission or active Goal covers a named change, an agent must not:
 
 - write, create, replace, rename or delete any file on the printer;
 - install or update a package, helper script, service, firmware or dependency;
@@ -494,7 +517,8 @@ A future mutation task requires all of the following:
 - reviewed diff;
 - validation command or physical test;
 - explicit rollback procedure;
-- explicit authorisation from Thomas for that named change;
+- a clear mission or active Goal covering that named change, without any
+  required literal phrase;
 - one change class at a time.
 
 Prefer original overlay files and wrappers over editing manufacturer files in place. Never combine root setup, helper installation, macro replacement, CFS changes and Z tuning into one deployment.

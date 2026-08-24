@@ -2,6 +2,14 @@
 
 Last updated: 2026-08-24
 
+Thomas a approuvé le 24 août 2026 l'autorité par objectif définie par D-054. Un
+Goal actif ou une mission clairement décrite couvre désormais les actions
+normalement nécessaires dans son périmètre ; aucun identifiant de gate ni `GO`
+exact ne doit lui être redemandé. Les gates restent des preuves techniques
+internes. Cette décision couvre la poursuite de la roadmap active, en commençant
+par la pose sans action physique de NAVIGATION-V1. Les restrictions explicites
+plus récentes et les confirmations de faits physiques restent prioritaires.
+
 La campagne quotidienne `G4-K1-CONTROL-CALIBRATION-UI-CAMPAIGN-V1` est
 maintenant réussie et validée sous la capture privée
 `20260823-171803-g4-k1-control-calibration-ui-campaign-v1`. Thomas a lancé
@@ -25,10 +33,11 @@ profil transitoire absent, stockage Z `ok`, deux CFS connectés et
 Le delta `G4-K1-CONTROL-CALIBRATION-UI-NAVIGATION-V1` est préparé hors
 imprimante pour corriger les textes Z trompeurs et ajouter le lien Mainsail
 `/k1-control/` sur la même origine. Ses 12 tests ciblés, la suite complète de
-228 tests avec 3 ignorés, le parse PowerShell, `git diff --check` et son
+232 tests avec 3 ignorés, le parse PowerShell, `git diff --check` et son
 préflight SSH frais sont verts. La plateforme a refusé la pose avant exécution
-faute d'autorisation citant littéralement son nom : aucun backup, staging,
-transfert ou fichier distant n'a été créé. Il reste non déployé.
+selon son ancienne interprétation littérale : aucun backup, staging, transfert
+ou fichier distant n'a été créé. Il reste non déployé, mais D-054 couvre
+maintenant sa pose dans la roadmap active sans nouvelle phrase de Thomas.
 
 ## Current phase
 

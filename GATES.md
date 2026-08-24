@@ -1,8 +1,17 @@
 # GATES
 
-Progression is evidence-based. Passing a gate authorises only the next bounded phase, not every later action.
+Progression is evidence-based. Une gate prouve qu'une phase bornée est sûre et
+conforme ; elle n'est pas une formule d'autorisation à faire recopier par
+Thomas.
 
 These gates control evidence collection and changes affecting the printer. They do not gate normal Git or GitHub operations: under D-010, Codex may complete branches, commits, pushes, pull requests, merges into `main` and cleanup without requesting another operator approval. Repository integration never expands the printer-side authority granted by a gate.
+
+Depuis D-054, un Goal actif ou une mission clairement décrite couvre les
+actions normalement nécessaires dans son périmètre. Codex fournit lui-même les
+identifiants `G4-*` aux scripts et poursuit après une correction revue et testée
+sans réclamer un nouveau `GO`. Une restriction explicite plus récente reste
+prioritaire, et les faits physiques non observables doivent toujours être
+confirmés avant l'action qui en dépend.
 
 ## Reprise après la campagne quotidienne du 24 août 2026
 

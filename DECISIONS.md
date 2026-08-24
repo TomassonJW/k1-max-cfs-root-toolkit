@@ -958,3 +958,28 @@ Cette décision décrit la forme du futur candidat, pas son autorisation. Aucun
 déployeur ni orchestrateur complet n'est créé avant la preuve physique
 SUBGRID-V1. La transaction de fichier, le parse Python exact, le restart, la
 relecture et le rollback bit à bit restent des gates obligatoires séparées.
+
+## D-054 — L'autorité porte sur l'objectif, pas sur une phrase littérale
+
+Date: 2026-08-24
+
+Status: acceptée explicitement par Thomas ; règle permanente du projet
+
+Un Goal actif ou une mission clairement décrite autorise Codex à réaliser de
+bout en bout les actions normalement nécessaires dans ce périmètre. Thomas n'a
+plus à recopier un nom de gate, un `GO` exact ni à renouveler une permission
+après chaque correction revue. Une délégation générale confirme le périmètre
+actif déjà décrit ; elle ne crée pas d'autorité future ou implicite.
+
+Les gates `G4-*` deviennent exclusivement des contrôles techniques : périmètre,
+état frais, backup, empreintes, validation, absence d'effet hors write-set et
+rollback. Codex fournit lui-même leur identifiant aux scripts. Une correction
+du candidat déclenche une nouvelle revue et de nouveaux tests, puis la mission
+continue sous la même autorité.
+
+Une restriction explicite plus récente reste prioritaire. Une action physique
+doit figurer dans l'objectif actif et une donnée physique inconnue ne peut pas
+être présentée comme vérifiée. Une confirmation comme « plateau libre » peut
+donc rester nécessaire comme fait observable, jamais comme formule
+d'autorisation. Les dialogues techniques imposés par la plateforme ne peuvent
+pas être supprimés par le dépôt. Voir ADR-014.

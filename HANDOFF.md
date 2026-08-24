@@ -2,7 +2,17 @@
 
 Date: 2026-08-24
 Phase: P4 / campagne quotidienne `6 × 6 / 1 mesh` validée ; NAVIGATION-V1 non déployée ; composite non installé ; production fermée
-Next operator: autoriser littéralement `G4-K1-CONTROL-CALIBRATION-UI-NAVIGATION-V1`, valider son rendu, puis poser sans mouvement COMPOSITE-MESH-SUBGRID-V1
+Next operator: poursuivre directement NAVIGATION-V1 sous l'autorité par objectif, valider son rendu, puis poser sans mouvement COMPOSITE-MESH-SUBGRID-V1
+
+## Autorité de reprise actuelle
+
+Thomas a approuvé le 24 août 2026 qu'un Goal actif ou une mission clairement
+décrite couvre toutes les actions normalement nécessaires dans son périmètre.
+Aucun `GO` exact, nom de gate ou renouvellement d'autorisation ne doit lui être
+demandé. Les gates sont des contrôles techniques que Codex passe lui-même.
+Cette décision D-054 remplace les anciennes consignes `ATTENDRE_GO` pour les
+étapes déjà comprises dans la roadmap active. Une restriction explicite plus
+récente ou une donnée physique inconnue reste à respecter.
 
 ## Clôture CAMPAIGN-V1 du 24 août 2026
 
@@ -194,12 +204,10 @@ d'exécution donné juste avant pour l'alias SSH élevé : aucune commande SSH,
 aucune pose et aucune action physique n'ont été lancées après cette
 interruption. Aucun processus de mutation n'était en cours.
 
-La tâche suivante ne doit recevoir ni historique copié, ni fork, ni nouveau
-worktree, ni nouvelle branche, ni Goal implicite. L'ancien Goal reste bloqué
-dans la tâche source et ne constitue plus une autorisation d'exécution. La
-reprise est `ATTENDRE_GO` : relire les documents, vérifier Git et préparer le
-préflight est permis ; toute connexion nécessitant un accès élevé et toute
-mutation de la K1 attendent une instruction fraîche de Thomas.
+Cette consigne était la règle de clôture de cette ancienne session. Elle est
+désormais remplacée par D-054 : la roadmap active constitue l'autorité
+d'exécution et Codex poursuit ses étapes dans l'ordre sans phrase littérale ni
+renouvellement de permission.
 
 L'état physique courant n'a pas été revérifié pendant cette clôture. Le dernier
 état distant effectivement validé reste celui du rollback de la campagne au
@@ -267,7 +275,7 @@ quatre sous-grilles `6 × 6`, `5 × 6`, `6 × 5`, `5 × 5` en 121 positions rée
 une interpolation différente. `render_profile.py` prépare en mémoire le bloc
 Klipper final sans écrire de fichier. Il refuse plus de 36 contacts par passage,
 les sessions physiques différentes, un restart Klipper, les trous, doublons et
-valeurs non finies. La suite complète est verte : 228 tests, 3 ignorés connus.
+valeurs non finies. La suite complète est verte : 232 tests, 3 ignorés connus.
 
 Cette voie doit utiliser le moteur Bed Mesh standard de façon bornée sans
 remplacer la commande stock, sans `pr_version: 1` et sans restart entre les
@@ -281,7 +289,7 @@ imprimante. Il ne peut demander que la partition impaire/impaire `5 × 5`, 25
 contacts de `34` à `266 mm`, après gate exacte et confirmation du plateau. Sa
 pose ne redémarre que Moonraker ; son essai coupe les chauffes, recharge le
 profil robuste et redémarre Klipper uniquement après la capture pour nettoyer
-la session. Les 14 tests ciblés et la suite complète de 228 tests sont verts,
+la session. Les 14 tests ciblés et la suite complète de 232 tests sont verts,
 avec 3 ignorés connus. Son manifeste exige aussi la vraie base quotidienne et
 les sorties exactes de NAVIGATION-V1. Détails :
 `docs/20-g4-k1-control-composite-subgrid-v1.md`.
@@ -1014,11 +1022,12 @@ La gate précédente est close avec `DEPLOY_CALIBRATION_PATH_V1_OK` et
 `20260822-124207-g4-k1-control-calibration-path-v1`.
 
 Autorisation de reprise : Thomas a donné puis reconfirmé une autorisation
-globale pour les sept étapes de la roadmap. FIRST-CALIBRATION-V2,
+globale pour les sept étapes de la roadmap. D-054 rend cette autorité
+indépendante d'une phrase littérale. FIRST-CALIBRATION-V2,
 CALIBRATION-UI-V1, les quatre deltas sûrs et CAMPAIGN-V1 sont validés et clos.
-NAVIGATION-V1 est préparée mais sa pose attend encore l'autorisation littérale
-exigée par la plateforme. La sous-grille composite et la bascule production
-restent des gates ultérieures séparées.
+NAVIGATION-V1 est préparée et peut être posée directement. La sous-grille
+composite et la bascule production restent des incréments ultérieurs de la
+roadmap, couverts lorsqu'ils sont atteints dans l'ordre prévu.
 
 La bascule Orca reste une gate ultérieure unique : wrappers de travail côté
 machine, trois champs Orca et retrait du post-traitement doivent changer
