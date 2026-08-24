@@ -2,14 +2,14 @@
 
 Date : 2026-08-24
 
-Statut : recette de fusion et rendu du profil testés hors imprimante ; campagne,
-pose et persistance non préparées tant que SUBGRID-V1 n'est pas qualifiée
-physiquement
+Statut : **qualifiée sur la K1 réelle** ; quatre quadrants carrés, `144/144`
+contacts, 121 positions uniques et profil persistant `11 × 11` validés ;
+comparaison de premières couches en attente
 
 ## But
 
-Construire un profil `k1_p001_t055_r001_n11x11` à partir de 121 contacts
-PRTouch réels, sans dépasser 36 contacts par séquence et sans redémarrer
+Construire un profil `k1_p001_t055_r001_n11x11` à partir de 121 positions
+PRTouch réelles, sans dépasser 36 contacts par séquence et sans redémarrer
 Klipper entre les quatre acquisitions.
 
 Cette gate reste séparée de l'installation SUBGRID-V1, de son essai `5 × 5`,
@@ -38,10 +38,19 @@ un seul homing précèdent les passages suivants :
 
 | Passage | X | Y | Matrice | Contacts |
 | --- | --- | --- | --- | ---: |
-| `even_even` | `5..295 mm` | `5..295 mm` | `6 × 6` Lagrange | 36 |
-| `odd_even` | `34..266 mm` | `5..295 mm` | `5 × 6` Lagrange | 30 |
-| `even_odd` | `5..295 mm` | `34..266 mm` | `6 × 5` Lagrange | 30 |
-| `odd_odd` | `34..266 mm` | `34..266 mm` | `5 × 5` Lagrange | 25 |
+| `north_west` | `5..150 mm` | `5..150 mm` | `6 × 6` Lagrange | 36 |
+| `north_east` | `150..295 mm` | `5..150 mm` | `6 × 6` Lagrange | 36 |
+| `south_west` | `5..150 mm` | `150..295 mm` | `6 × 6` Lagrange | 36 |
+| `south_east` | `150..295 mm` | `150..295 mm` | `6 × 6` Lagrange | 36 |
+
+Les quatre carrés produisent 144 contacts et 121 positions uniques. La ligne
+et la colonne centrales sont volontairement reprises : 23 contacts répétés sur
+21 positions. Ils sont moyennés et leur divergence maximale doit rester sous
+ou à `0,05 mm`.
+
+La fusion corrige uniquement un biais constant par quadrant, estimé par les
+positions communes. Les quatre corrections sont recentrées à moyenne pondérée
+nulle. Aucun ajustement local libre n'est autorisé.
 
 Les quatre passages gardent le même identifiant de campagne, la même référence
 XYZ et les mêmes cibles. La présence de `xyz` est revérifiée avant et après
@@ -58,17 +67,19 @@ recette exacte, dans cet ordre. La fusion refuse :
 - une borne, taille, interpolation ou liste d'indices différente ;
 - plus de 36 contacts dans un passage ;
 - un contexte physique différent ou un redémarrage déclaré ;
-- une valeur absente, dupliquée ou non finie.
+- une valeur absente ou non finie ;
+- une divergence de recouvrement supérieure à `0,05 mm`.
 
-Le seul résultat accepté contient quatre passages, 121 valeurs distinctes et
-les paramètres finaux `11 × 11`, `5..295 mm`, `mesh_pps=2`, bicubique.
+Le seul résultat accepté contient quatre passages carrés, 144 contacts, 121
+positions distinctes et les paramètres finaux `11 × 11`, `5..295 mm`,
+`mesh_pps=2`, bicubique.
 
 ## Pourquoi l'endpoint `update_mesh` ne suffit pas
 
 Le `bed_mesh.py` Creality expose bien `update_mesh`, mais cette méthode remplace
 uniquement `probed_matrix` dans le `ZMesh` déjà actif. Elle ne reconstruit pas
 ses paramètres `x_count`, `y_count`, bornes et algorithme. Injecter 121 valeurs
-après le dernier passage `5 × 5` créerait donc un profil incohérent.
+après le dernier passage créerait donc un profil incohérent.
 
 La persistance candidate est un bloc Klipper généré complet, préparé seulement
 après la fusion des 121 valeurs. `render_profile.py` exige :
@@ -90,14 +101,33 @@ redémarrera Klipper et rechargera le profil robuste.
 - recette stricte et fusion : tests ciblés verts ;
 - rendu en mémoire du bloc `11 × 11` : tests ciblés verts ;
 - absence de mutation dans ces deux modules : vérifiée par conception ;
-- parse Klipper exact du candidat : non exécuté ;
-- déployeur et orchestrateur de campagne : non créés ;
-- SUBGRID-V1 physique : non exécutée ;
-- campagne 121 contacts : non exécutée ;
-- profil composite sur la K1 : absent.
+- parse Klipper exact du candidat : vert au préflight réel ;
+- composant carré R2 installé et validé sans action physique ;
+- SUBGRID-V1 physique : qualifiée avec 25 contacts ;
+- campagne initiale : arrêtée après le premier `6 × 6` réussi ; le passage
+  rectangulaire `5 × 6` a atteint ses 30 contacts puis
+  `prtouch_v2_wrapper.bed_mesh_post_proc` a levé `IndexError` ;
+- rollback : vert, chauffes zéro, axes libérés, profil robuste actif, Z
+  `−0,04 mm`, stockage OK et deux CFS connectés ;
+- campagne carrée : quatre passages `6 × 6` et `144/144` contacts capturés ;
+  persistance refusée avant écriture sur l'écart brut des recouvrements ;
+- état final après refus : rollback vert, profil robuste actif, cibles zéro,
+  axes libérés, Z et deux CFS conformes ;
+- reprise logique exacte : candidat `121` positions, écart brut maximal
+  `0,147858 mm`, écart aligné maximal `0,043745029 mm`, moyenne alignée
+  `0,013871331 mm`, empreinte de matrice
+  `9d975c32512b840cf06c0b942af6e4713f7f69c62ce35e140c41941540153100` ;
+- reprise logique posée et validée deux fois sous
+  `20260824-155319-g4-k1-control-composite-mesh-recovery-v1` ;
+- profil `k1_p001_t055_r001_n11x11` persistant : présent et validé, onze lignes
+  de onze valeurs ;
+- profil robuste `k1_p001_t055_r001_n06x06` : toujours chargé après la reprise ;
+- état final : `standby`, cibles zéro, axes non référencés, Z `−0,04 mm`,
+  stockage `ok` et deux CFS connectés.
 
 ## Prochaine action sûre
 
-Clore NAVIGATION-V1, installer SUBGRID-V1, puis exécuter son unique essai
-`5 × 5` avec une confirmation fraîche de plateau libre. Aucun fichier de cette
-gate complète ne doit être posé avant cette preuve.
+Préparer et exécuter une comparaison bornée de premières couches entre le
+profil robuste `6 × 6` et le profil composite `11 × 11`, à matériau, plaque,
+températures et G-code identiques. Cette gate ne demande aucun nouveau palpage.
+Le mode Précision reste caché dans l'interface jusqu'à un gain observable.

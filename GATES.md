@@ -15,8 +15,9 @@ confirmés avant l'action qui en dépend.
 
 ## Reprise après la campagne quotidienne du 24 août 2026
 
-Statut : **CAMPAIGN-V1, NAVIGATION-V1-R2 et la première sous-grille composite
-`5 × 5` validées ; autonomie quotidienne standard atteinte**.
+Statut : **CAMPAIGN-V1, NAVIGATION-V1-R2, la sous-grille `5 × 5` et le profil
+composite physique `11 × 11` validés ; autonomie quotidienne standard
+atteinte ; comparaison de premières couches en attente**.
 
 BED-MESH-V2 est installée et validée sous la capture
 `20260823-151026-g4-k1-control-calibration-ui-prtouch-bed-mesh-v2`.
@@ -57,10 +58,11 @@ validation indépendante de la matrice existante sont vertes.
 
 La chaîne locale post-campagne est maintenant stricte : SUBGRID-V1 exige le
 hash `printer.cfg` contenant le mesh quotidien validé, puis les deux fichiers
-finaux de NAVIGATION-V1. Sa pose ne peut donc pas contourner la clôture UX. La
-recette complète `11 × 11` et le rendu en mémoire de son bloc Klipper sont
-testés hors imprimante, mais aucune campagne complète, persistance ou pose n'est
-préparée avant la qualification physique de l'unique sous-grille `5 × 5`.
+finaux de NAVIGATION-V1. COMPOSITE-MESH-V1-R2 a ensuite capturé quatre quadrants
+carrés `6 × 6`, soit `144/144` contacts et 121 positions uniques. La reprise
+logique a qualifié puis persisté le profil `11 × 11`, tout en rechargeant le
+profil robuste `6 × 6`. L'interface Précision reste volontairement fermée
+jusqu'à la comparaison de premières couches.
 
 ## G0 — Repository bootstrap
 
@@ -865,12 +867,10 @@ Chrome sont verts. Le rollback exact vers V1 reste vérifié.
 
 Status: **passed — 25 contacts physiques et matrice `5 × 5` qualifiés**
 
-Cette gate future ne couvre qu'une sous-grille PRTouch décalée de 36 contacts
-maximum. Elle devra conserver le `pr_version: 2`, les 72 tables exactes, la
-commande stock et les deux CFS ; installer un composant séparé ; rester dans un
-seul référencement ; capturer chaque contact ; couper les chauffes ; puis
-restaurer automatiquement sans persister de profil composite. Son succès est
-obligatoire avant toute campagne quatre sous-grilles.
+Cette gate historique ne couvre qu'une sous-grille PRTouch décalée de 36
+contacts maximum. Elle conserve le `pr_version: 2`, les 72 tables exactes, la
+commande stock et les deux CFS ; le profil composite complet est couvert par la
+gate suivante.
 
 Le fusionneur hors imprimante reste sous
 `packages/k1-control-v1/composite-mesh-v1`. Le paquet physique séparé
@@ -882,6 +882,35 @@ a prouvé les 25 contacts. La reprise R2 corrige la course post-restart et migre
 atomiquement le marqueur d'état sans changer la matrice. La suite complète de
 237 tests est verte, avec 3 tests historiquement ignorés. Cette gate ne couvre
 pas encore les trois autres partitions ni la persistance finale `11 × 11`.
+
+### Gate précision — `G4-K1-CONTROL-COMPOSITE-MESH-V1-R2`
+
+Status: **passed — 144 contacts, 121 positions et profil persistant `11 × 11`
+qualifiés**
+
+La première campagne complète a rejeté la recette rectangulaire après les 30
+contacts du deuxième passage, sans persistance, puis restauré la base exacte.
+R2 utilise quatre quadrants carrés `6 × 6` dans une seule chauffe et un seul
+référencement. La capture
+`20260824-131000-g4-k1-control-composite-mesh-v1-r2-run` contient les quatre
+matrices complètes. L'écart brut maximal des recouvrements, `0,147858 mm`,
+provenait d'un biais additif constant du post-traitement propriétaire. Le
+solveur retenu applique un seul décalage par quadrant, recentré à moyenne
+pondérée nulle, sans correction locale. L'écart aligné maximal est
+`0,043745029 mm` et la moyenne `0,013871331 mm`, sous la limite `0,05 mm`.
+
+Le delta `G4-K1-CONTROL-COMPOSITE-MESH-RECOVERY-V1` a été posé et validé deux
+fois sous `20260824-155319-g4-k1-control-composite-mesh-recovery-v1`, sans
+chauffe, homing, mouvement ni mesure. La reprise logique a obtenu
+`RECOVER_COMPOSITE_MESH_V1_OK` puis
+`VALIDATE_RUN_COMPOSITE_MESH_V1_OK`. Le profil
+`k1_p001_t055_r001_n11x11` est persistant avec onze lignes de onze valeurs ; le
+profil robuste `6 × 6` reste actif. État final : `standby`, cibles zéro, axes
+non référencés, Z `−0,04 mm`, stockage `ok`, deux CFS connectés.
+
+Cette gate ferme l'acquisition et la persistance composite. Elle n'ouvre pas
+encore le mode Précision dans l'UI : une comparaison contrôlée de premières
+couches doit d'abord montrer un gain utile, sans nouveau palpage.
 
 ## G5 — V1 production baseline
 

@@ -1,0 +1,53 @@
+{
+  "contract_id": "G4-K1-CONTROL-COMPOSITE-MESH-RECOVERY-V1",
+  "status": "offline_review_candidate",
+  "deployer": {
+    "path": "scripts/deploy-k1-control-composite-mesh-recovery-v1.ps1",
+    "sha256": "36b2990b3b9ce1cc6310ff99b56f84c61a97665863987e922eed3997ca76806a"
+  },
+  "runner": {
+    "path": "scripts/run-k1-control-composite-mesh-v1.ps1",
+    "sha256": "9606c0c1c4311dbb08402337f66a98d5a3d6dbab48f9d9693c1aa3b534393e44"
+  },
+  "validator": {
+    "path": "scripts/validate-k1-control-composite-mesh-recovery.py",
+    "sha256": "21bc18deaa13a05d9eea005cf64955519e8686db64c0023d2ffc44637d16b31a"
+  },
+  "contract": {
+    "path": "composite-mesh-contract.json",
+    "sha256": "6ca059070105840d92e1bf58b181601236d141e1d3d5ffc46aff59e114a9cc1b"
+  },
+  "baseline": {
+    "campaign_id": "20260824-151506-337-composite-mesh-v1",
+    "state_sha256": "7d6b45e6c3e623060bb979f741fe05605f9fbac443e49f8e9de28463926a5bdb",
+    "moonraker_conf_sha256": "950dc211e0b7cd8990a8bb131062f633cd9bddfdd75cc6168a10149356ed5761",
+    "printer_cfg_sha256": "e1f6cd6dc92c9eea1e105f8c669f6d246753243535f09c7f9d92e2dfafebac14",
+    "physical_contacts": 144,
+    "unique_physical_points": 121,
+    "raw_maximum_spread_mm": 0.147858,
+    "aligned_maximum_spread_mm": 0.04374502944942382,
+    "candidate_matrix_sha256": "9d975c32512b840cf06c0b942af6e4713f7f69c62ce35e140c41941540153100"
+  },
+  "files": [
+    {
+      "source": "k1_control_composite_mesh_core.py",
+      "destination": "/usr/data/k1-control-v1/current/moonraker/moonraker/moonraker/components/k1_control_composite_mesh_core.py",
+      "previous_sha256": "5ac696501cc9d61f43a6b5d61785c98f5ea39b69027409d43842ee3dd1bbd96c",
+      "sha256": "ab0caf8daa312c15f8434cef8773a6955b354b994f107d3a3167e258531d98df"
+    },
+    {
+      "source": "k1_control_composite_mesh.py",
+      "destination": "/usr/data/k1-control-v1/current/moonraker/moonraker/moonraker/components/k1_control_composite_mesh.py",
+      "previous_sha256": "7805bce6a876cf1d96356630ec5cd9bd41a2847774cbecd51171e60160d1c883",
+      "sha256": "07f592b6c512f61622bf3058debb84957b7f0acfad01b3b4e357d846b4bc019a"
+    },
+    {
+      "source": "compose_mesh.py",
+      "destination": "/usr/data/k1-control-v1/current/moonraker/moonraker/moonraker/components/k1_control_composite_mesh_compose.py",
+      "previous_sha256": "f8e90645f20e878b86a5e3592d8f92e6452013de403b7cbc623c016c52cac1fe",
+      "sha256": "7ea91b7b2e3969f1ac1ddce6fc5c5868b8733420da9d0b99414a8b52e2940df3"
+    }
+  ],
+  "deployment_effect": "restart dedicated Moonraker only; preserve exact retained state",
+  "recovery_effect": "no heat, homing, motion or probing; atomic printer.cfg profile persistence and one Klipper restart"
+}

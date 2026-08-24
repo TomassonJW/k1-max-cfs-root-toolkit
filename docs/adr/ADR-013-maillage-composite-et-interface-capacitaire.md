@@ -2,8 +2,8 @@
 
 Date : 2026-08-23
 
-Statut : candidat accepté hors imprimante ; amende l'ADR-012 sans autoriser de
-mutation
+Statut : **accepté et qualifié sur la K1 réelle** ; amende l'ADR-012 ;
+l'exposition UI reste conditionnée par la comparaison de premières couches
 
 ## Contexte
 
@@ -62,19 +62,38 @@ liste universelle de tailles.
 - **Standard** : un maillage physique `6 × 6` complet, 36 contacts, pour un
   changement de plaque, de température, de buse, de firmware, de position de
   machine ou après un défaut de première couche.
-- **Précision** : quatre sous-grilles dans une seule session chaude et un seul
-  référencement, puis fusion en une vraie matrice physique `11 × 11`
-  bicubique :
-  - indices X pairs × Y pairs : `6 × 6`, 36 points ;
-  - indices X impairs × Y pairs : `5 × 6`, 30 points ;
-  - indices X pairs × Y impairs : `6 × 5`, 30 points ;
-  - indices X impairs × Y impairs : `5 × 5`, 25 points.
+- **Précision** : quatre sous-grilles carrées `6 × 6` dans une seule session
+  chaude et un seul référencement, puis fusion en une vraie matrice physique
+  `11 × 11` bicubique : nord-ouest, nord-est, sud-ouest et sud-est. Les
+  quadrants partagent la ligne et la colonne centrales.
 - **Diagnostic** : répétitions statistiques uniquement lorsqu'un écart ou un
   événement le justifie ; jamais six passages par défaut.
 
 Pour une zone `5..295 mm`, le profil composite comporte des positions tous les
-`29 mm`. Chaque sous-grille reste à 36 contacts maximum. La fusion doit porter
-121 mesures distinctes, sans duplication ni interpolation cachée.
+`29 mm`. Chaque sous-grille reste à 36 contacts maximum. La fusion porte 144
+contacts et 121 positions distinctes. Les 23 contacts répétés couvrent 21
+positions de jonction ; ils sont moyennés et l'écart maximal admis entre leurs
+mesures est `0,05 mm`. Il n'y a aucune interpolation cachée entre les 121
+positions finales.
+
+Chaque quadrant peut recevoir un biais vertical constant différent du
+post-traitement propriétaire. La fusion estime donc un unique décalage additif
+par quadrant à partir des seules positions communes. Les quatre décalages sont
+recentrés pour garder une moyenne pondérée nulle, puis les valeurs communes
+sont moyennées. Aucun plan, courbe ou correction locale libre n'est ajusté :
+si l'écart résiduel maximal dépasse `0,05 mm`, le profil reste refusé.
+
+La recette initiale `6 × 6 + 5 × 6 + 6 × 5 + 5 × 5` est remplacée : l'essai
+réel du 24 août 2026 a prouvé que `prtouch_v2_wrapper.bed_mesh_post_proc` lève
+un `IndexError` après les 30 contacts d'une grille rectangulaire `5 × 6`.
+
+La campagne carrée réelle a ensuite prouvé les quatre séquences `6 × 6` et 144
+contacts. Les valeurs exposées par Klipper présentaient un écart brut maximal
+de `0,147858 mm` aux jonctions, cohérent avec un biais constant nord/sud du
+post-traitement. L'ajustement additif borné donne un écart maximal
+`0,043745029 mm` et moyen `0,013871331 mm`. Ces valeurs restent sous la garde
+`0,05 mm` et autorisent une reprise logique des mesures conservées, sans les
+rejouer physiquement.
 
 Les quatre acquisitions doivent partager le même identifiant de session, la
 même plaque, les mêmes cibles thermiques, le même référencement des axes et
@@ -104,7 +123,7 @@ tailles et durées. L'interface ne promet jamais une capacité absente.
 
 ## Pourquoi `11 × 11` et pas `15 × 15` sur le PRTouch stock
 
-Un `11 × 11` composite demande quatre séquences et environ 121 contacts. Un
+Un `11 × 11` composite demande quatre séquences carrées et 144 contacts. Un
 `15 × 15` exigerait au minimum neuf sous-grilles de `5 × 5`, soit 225 contacts.
 Les mesures réelles actuelles durent environ 4 min 20 à 4 min 30 par maillage
 `6 × 6`. Le mode `15 × 15` dépasserait donc raisonnablement quarante minutes de
@@ -141,8 +160,9 @@ La page doit afficher séparément :
 4. Une sous-grille décalée de 36 points maximum, avec arrêt, chauffes à zéro et
    rollback automatique sur toute divergence. La future campagne de quatre
    sous-grilles interdira tout restart avant la quatrième capture.
-5. Quatre sous-grilles complètes dans la même session ; preuve de 121 positions
-   uniques et profil final `11 × 11` bicubique.
+5. Quatre sous-grilles carrées complètes dans la même session ; preuve de 144
+   contacts, 121 positions uniques, recouvrements conformes et profil final
+   `11 × 11` bicubique.
 6. Comparaison du profil composite avec le robuste `6 × 6`, puis recette de
    première couche sur plusieurs zones.
 7. Coupure complète et redémarrage : écran, Klipper, profil, Z accepté et deux

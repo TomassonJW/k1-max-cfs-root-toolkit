@@ -1021,3 +1021,31 @@ Le composant utilisait aussi `schema: 1` alors que le stockage partagé exige
 après backup exact, sans modifier la matrice ni son contexte. Le rollback garde
 un état chargeable par l'ancienne révision. Cette décision ne couvre aucune
 deuxième sous-grille ni la persistance `11 × 11`.
+
+## D-057 — Le composite retenu utilise quatre carrés et un alignement additif borné
+
+Date: 2026-08-24
+
+Status: décision installée et qualifiée sur la K1 réelle
+
+La recette rectangulaire `6 × 6`, `5 × 6`, `6 × 5`, `5 × 5` est rejetée. Le
+wrapper propriétaire termine bien les 30 contacts d'un rectangle `5 × 6`, puis
+échoue dans son post-traitement. La recette retenue utilise quatre quadrants
+carrés `6 × 6`, chacun compatible avec le chemin PRTouch exact, dans une seule
+chauffe et un seul référencement. Elle produit 144 contacts et 121 positions
+uniques.
+
+Les positions communes ont révélé un biais presque constant propre à chaque
+quadrant, introduit par le post-traitement propriétaire : l'écart brut maximal
+était `0,147858 mm`. La fusion peut corriger uniquement un décalage additif par
+quadrant, estimé par moindres carrés sur les recouvrements et recentré à moyenne
+pondérée nulle. Elle ne peut appliquer ni pente, ni surface libre, ni correction
+point par point. Après cet alignement, l'écart maximal vaut `0,043745029 mm` et
+la moyenne `0,013871331 mm`, sous la limite revue de `0,05 mm`.
+
+La capture physique complète ne doit pas être rejouée quand ses 144 contacts,
+son contexte, son backup et ses empreintes sont intacts. Une reprise logique
+séparée peut composer, persister puis relire le profil `11 × 11` sans chauffe,
+homing, mouvement ou mesure. Le profil robuste `6 × 6` est rechargé à la fin.
+L'exposition du mode Précision dans l'interface reste conditionnée par une
+comparaison de premières couches montrant un gain utile.

@@ -1,0 +1,79 @@
+{
+  "contract_id": "G4-K1-CONTROL-COMPOSITE-MESH-V1",
+  "status": "deployment_candidate",
+  "deployer": {
+    "path": "scripts/deploy-k1-control-composite-mesh-v1.ps1",
+    "sha256": "c7055bf95e72ec5ebe937a7883fef9daf58891211d5b84500dfeec1b82d381e4"
+  },
+  "runner": {
+    "path": "scripts/run-k1-control-composite-mesh-v1.ps1",
+    "sha256": "9606c0c1c4311dbb08402337f66a98d5a3d6dbab48f9d9693c1aa3b534393e44"
+  },
+  "artifact_validator": {
+    "path": "scripts/validate-k1-control-composite-mesh-artifacts.py",
+    "sha256": "c9d592c06df84d326a818b669ccd14c22426af7ffc4c7c35d6c7b6c1c86c8626"
+  },
+  "contract": {
+    "path": "composite-mesh-contract.json",
+    "sha256": "6ca059070105840d92e1bf58b181601236d141e1d3d5ffc46aff59e114a9cc1b"
+  },
+  "baseline": {
+    "moonraker_conf_sha256": "125b5415d740901e4210610001bb2b0c3ec0d2a55973e7d6596804e4868b5a12",
+    "printer_cfg_sha256": "e1f6cd6dc92c9eea1e105f8c669f6d246753243535f09c7f9d92e2dfafebac14",
+    "subgrid_core_sha256": "aed9a505e9b97c09db0d02a1917f6400d1d2c68289bce2e9f571d9696f47941d",
+    "subgrid_component_sha256": "40f29985f0600ffa2aad88e97153c7cae1082ad82aa0e3b1c3d002262f379ca9",
+    "loaded_probe_count": [6, 6],
+    "loaded_algorithm": "lagrange",
+    "target_profile_absent": true,
+    "new_state_absent": true
+  },
+  "files": [
+    {
+      "source": "moonraker.conf",
+      "destination": "/usr/data/k1-control-v1/current/config/moonraker.conf",
+      "sha256": "950dc211e0b7cd8990a8bb131062f633cd9bddfdd75cc6168a10149356ed5761"
+    },
+    {
+      "source": "k1_control_composite_mesh_core.py",
+      "destination": "/usr/data/k1-control-v1/current/moonraker/moonraker/moonraker/components/k1_control_composite_mesh_core.py",
+      "sha256": "ab0caf8daa312c15f8434cef8773a6955b354b994f107d3a3167e258531d98df"
+    },
+    {
+      "source": "k1_control_composite_mesh.py",
+      "destination": "/usr/data/k1-control-v1/current/moonraker/moonraker/moonraker/components/k1_control_composite_mesh.py",
+      "sha256": "07f592b6c512f61622bf3058debb84957b7f0acfad01b3b4e357d846b4bc019a"
+    },
+    {
+      "source": "compose_mesh.py",
+      "destination": "/usr/data/k1-control-v1/current/moonraker/moonraker/moonraker/components/k1_control_composite_mesh_compose.py",
+      "sha256": "7ea91b7b2e3969f1ac1ddce6fc5c5868b8733420da9d0b99414a8b52e2940df3"
+    },
+    {
+      "source": "render_profile.py",
+      "destination": "/usr/data/k1-control-v1/current/moonraker/moonraker/moonraker/components/k1_control_composite_mesh_render.py",
+      "sha256": "cd79bcd34089c5f7667fb07466aef05184609951b64a8811965c3e8f0f1667fd"
+    }
+  ],
+  "firmware_dependencies": [
+    {
+      "path": "/usr/share/klipper/klippy/extras/prtouch_v2_wrapper.cpython-38-mipsel-linux-gnu.so",
+      "sha256": "2cbcbfed9b7e3d95a7b4956b5c94c3dc1fad59dcdb83381ddd1fc9283c0a16a6"
+    },
+    {
+      "path": "/usr/share/klipper/klippy/extras/prtouch_v3_wrapper.cpython-38-mipsel-linux-gnu.so",
+      "sha256": "0ecddc258b03c0508e4e92eb5acb9d5896194e20d4b32ba8ccf0b36d29e233b0"
+    },
+    {
+      "path": "/usr/share/klipper/klippy/extras/bed_mesh.py",
+      "sha256": "443d4a5945a9e30dbddbc7df9776fce18ff4378cf01e45c8515af692c88e2921"
+    },
+    {
+      "path": "/usr/share/klipper/klippy/configfile.py",
+      "sha256": "230f37d5c3d4ccb28daf4d698ac05fd2002d667de46a49daa21ff17dea3084af"
+    }
+  ],
+  "service_action": "restart /etc/init.d/S56k1_control_moonraker only during deployment",
+  "physical_campaign": "four square bounded passes, 144 contacts, 121 unique positions, one Klipper restart after heater cutoff",
+  "printer_cfg_changed_during_deployment": false,
+  "printer_cfg_changed_during_physical_campaign": true
+}

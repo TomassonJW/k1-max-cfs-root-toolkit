@@ -48,14 +48,17 @@ Aucune nouvelle authentification ni action physique n'a eu lieu.
 
 ## Current phase
 
-**P4 — calibration quotidienne `6 × 6 / 1 mesh`, navigation UX R2 et première
-sous-grille composite `5 × 5` qualifiées ; production volontairement bloquée**
+**P4 — calibration quotidienne, navigation UX R2, sous-grille `5 × 5` et profil
+composite physique `11 × 11` qualifiés ; comparaison d'impression en attente ;
+production volontairement bloquée**
 
 La base sûre et réellement requalifiée reste `6 × 6` Lagrange avec un seul mesh
 standard. L'autonomie de calibration quotidienne standard est maintenant
 atteinte : la campagne a réussi sans console et le vrai écran corrigé ouvre
-depuis Mainsail sans nouvelle authentification ni traduction Codex. Cette
-autonomie ne couvre pas encore le mode précision composite `11 × 11`.
+depuis Mainsail sans nouvelle authentification ni traduction Codex. Le mode
+précision composite est maintenant techniquement qualifié, mais il ne devient
+pas encore une autonomie utilisateur : son gain sur une vraie première couche
+doit être comparé au robuste `6 × 6` avant toute exposition dans l'écran.
 
 L'ADR-013 montre que la limite PRTouch de 36 contacts par séquence ne borne pas
 nécessairement la matrice finale : quatre sous-grilles bornées peuvent former
@@ -76,13 +79,25 @@ logique a qualifié la matrice existante et la validation indépendante a obtenu
 axes non référencés, profil robuste actif, Z `−0,04 mm`, stockage `ok` et deux
 CFS connectés.
 
-Le manifeste SUBGRID-V1 épingle désormais la vraie base quotidienne
-`printer.cfg` `e1f6cd6d…`, le `app.js` NAVIGATION final et son `navi.json` ; il
-refusera donc l'ancienne base comme une pose qui sauterait la clôture UX. Le
-prototype complet impose maintenant l'ordre, les bornes et les tailles exactes
-des quatre partitions. Son module de persistance prépare uniquement en mémoire
-le futur bloc `11 × 11` bicubique : aucun déployeur, orchestrateur complet ou
-fichier K1 n'est créé avant la preuve physique SUBGRID-V1. Voir
+La première recette complète a prouvé qu'une grille rectangulaire `5 × 6`
+déclenche elle aussi un `IndexError` propriétaire, après ses 30 contacts. Le
+rollback était vert. R2 a remplacé les rectangles par quatre carrés `6 × 6`
+recouvrant la ligne et la colonne centrales. La capture
+`20260824-131000-g4-k1-control-composite-mesh-v1-r2-run` a obtenu `144/144`
+contacts et 121 positions uniques. La fusion initiale a refusé un écart brut
+maximal `0,147858 mm` avant toute persistance ; le rollback a de nouveau laissé
+la K1 sûre.
+
+Les journaux exacts montrent un biais constant nord/sud ajouté par le
+post-traitement local PRTouch. Le delta de reprise posé sous
+`20260824-155319-g4-k1-control-composite-mesh-recovery-v1` conserve l'état exact
+et aligne un seul biais constant par carré, à moyenne pondérée nulle. L'écart
+résiduel maximal vaut `0,043745029 mm` et la moyenne `0,013871331 mm`. La reprise
+sans chauffe ni mouvement a persisté `k1_p001_t055_r001_n11x11`, relu sa matrice
+exacte, puis rechargé le profil robuste. La validation indépendante a obtenu
+`VALIDATE_RUN_COMPOSITE_MESH_V1_OK`. État final : `standby`, cibles zéro, axes
+non référencés, profil robuste actif, profils `6 × 6` et `11 × 11` persistants,
+Z `−0,04 mm`, stockage `ok` et deux CFS connectés. Voir
 `docs/21-g4-k1-control-composite-mesh-v1.md`.
 
 The repository baseline, stock acquisition, complete Orca/G-code intake and
@@ -490,12 +505,15 @@ Au début de la prochaine session, annoncer explicitement à Thomas :
 - autonomie calibration quotidienne standard : **atteinte** ;
 - autonomie production : **non atteinte** ;
 - la sous-grille composite `5 × 5` est qualifiée avec 25 contacts ;
-- le mode précision `11 × 11` et l'autonomie production restent non atteints.
+- le profil précision `11 × 11` est techniquement qualifié et persistant, mais
+  son exposition utilisateur reste fermée jusqu'à la comparaison de premières
+  couches ;
+- l'autonomie production reste non atteinte.
 
-La prochaine action sûre est hors imprimante : préparer et revoir l'orchestrateur
-complet des quatre partitions `6 × 6`, `5 × 6`, `6 × 5`, `5 × 5`, son unique
-chauffe/référencement, sa persistance `11 × 11` et son rollback exact. Aucun
-nouveau contact ne doit être lancé avec le pilote unitaire SUBGRID-V1.
+La prochaine action sûre est de préparer puis exécuter une comparaison bornée
+de premières couches, à conditions identiques, entre le profil robuste `6 × 6`
+et le profil composite `11 × 11`. Aucun nouveau palpage n'est requis. Le mode
+Précision ne doit pas être exposé dans l'UI avant un gain observable.
 
 Le chemin borné `G4-K1-CONTROL-CALIBRATION-PATH-V1` ajoute ce qui manquait pour
 évaluer le premier Z sans console libre ni valeur cachée. Son premier préflight

@@ -1,19 +1,24 @@
 {
   "id": "G4-K1-CONTROL-COMPOSITE-MESH-V1",
-  "status": "offline_prototype_only",
-  "printer_mutation_authorized": false,
+  "status": "deployment_candidate",
+  "printer_mutation_authorized": true,
   "target": {
     "matrix": "11x11",
     "physical_points": 121,
+    "physical_contacts": 144,
+    "duplicate_contacts": 23,
+    "overlap_positions": 21,
+    "maximum_overlap_spread_mm": 0.05,
+    "overlap_alignment": "one additive offset per square, zero weighted global mean",
     "algorithm": "bicubic",
     "mesh_min": [5, 5],
     "mesh_max": [295, 295]
   },
   "bounded_passes": [
-    {"name": "even_even", "shape": "6x6", "physical_points": 36},
-    {"name": "odd_even", "shape": "5x6", "physical_points": 30},
-    {"name": "even_odd", "shape": "6x5", "physical_points": 30},
-    {"name": "odd_odd", "shape": "5x5", "physical_points": 25}
+    {"name": "north_west", "shape": "6x6", "physical_points": 36, "bounds": [5, 5, 150, 150]},
+    {"name": "north_east", "shape": "6x6", "physical_points": 36, "bounds": [150, 5, 295, 150]},
+    {"name": "south_west", "shape": "6x6", "physical_points": 36, "bounds": [5, 150, 150, 295]},
+    {"name": "south_east", "shape": "6x6", "physical_points": 36, "bounds": [150, 150, 295, 295]}
   ],
   "hard_guards": {
     "maximum_contacts_per_pass": 36,
@@ -28,10 +33,15 @@
     "cfs_command_during_calibration": false,
     "partial_profile_persistence": false,
     "exact_four_pass_recipe": true,
-    "profile_render_only": true,
+    "overlap_graph_must_be_connected": true,
+    "constant_pass_bias_only": true,
+    "aligned_overlap_limit_mm": 0.05,
+    "profile_render_only": false,
+    "atomic_profile_persistence": true,
+    "single_klipper_restart_after_four_passes": true,
     "existing_11x11_profile_required_absent": true
   },
-  "next_physical_gate": "G4-K1-CONTROL-COMPOSITE-MESH-SUBGRID-V1",
+  "next_physical_gate": "G4-K1-CONTROL-COMPOSITE-MESH-V1",
   "required_before_full_campaign": [
     "offline fusion tests green",
     "bounded standard handler call proven",
@@ -40,7 +50,8 @@
     "stock 6x6 profile and accepted Z unchanged"
   ],
   "required_after_full_campaign": [
-    "121 unique physical contacts proven",
+    "144 contacts and 121 unique physical positions proven",
+    "21 overlap positions within 0.05 mm proven",
     "11x11 bicubic profile loaded and independently validated",
     "two chained CFS healthy after reviewed restart",
     "full power cycle validation before UI exposure"

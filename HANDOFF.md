@@ -1,8 +1,8 @@
 # HANDOFF
 
 Date: 2026-08-24
-Phase: P4 / campagne quotidienne, NAVIGATION-V1-R2 et sous-grille composite `5 × 5` qualifiées ; autonomie quotidienne atteinte ; production fermée
-Next operator: préparer hors imprimante la campagne quatre sous-grilles ; ne pas relancer le pilote unitaire
+Phase: P4 / campagne quotidienne, NAVIGATION-V1-R2, sous-grille `5 × 5` et profil composite physique `11 × 11` qualifiés ; production fermée
+Next operator: préparer une comparaison de première couche `6 × 6` contre `11 × 11` ; ne pas exposer encore le mode précision dans l'UI
 
 ## Autorité de reprise actuelle
 
@@ -66,6 +66,34 @@ puis `VALIDATE_RUN_COMPOSITE_SUBGRID_V1_OK`. Aucune seconde grille n'a été
 mesurée. Le profil robuste, le Z `−0,04 mm`, le stockage, les chauffes, les axes
 et les deux CFS sont conformes.
 
+## Qualification COMPOSITE-MESH-V1
+
+Le composant complet a été posé une première fois sous
+`20260824-123754-g4-k1-control-composite-mesh-v1`. Le premier passage `6 × 6`
+a réussi ; le second `5 × 6` a effectué 30 contacts puis
+`prtouch_v2_wrapper.bed_mesh_post_proc` a levé `IndexError`. Aucun profil cible
+n'a été écrit et le rollback a restauré la base exacte.
+
+R2 utilise quatre quadrants carrés `6 × 6`. La capture
+`20260824-131000-g4-k1-control-composite-mesh-v1-r2-run` contient les quatre
+matrices, `144/144` contacts et 121 positions uniques. La première fusion a
+refusé avant persistance l'écart brut maximal `0,147858 mm`. Les journaux
+Klipper prouvent un biais constant nord/sud du post-traitement propriétaire.
+L'ajustement revu applique seulement un décalage additif par quadrant, recentré
+à moyenne pondérée nulle. Il donne `0,043745029 mm` au pire et
+`0,013871331 mm` en moyenne sur les 21 positions communes.
+
+Le delta `G4-K1-CONTROL-COMPOSITE-MESH-RECOVERY-V1` a été posé et validé deux
+fois sous `20260824-155319-g4-k1-control-composite-mesh-recovery-v1`, sans
+chauffe, homing, mouvement ou mesure. La reprise logique a ensuite obtenu
+`RECOVER_COMPOSITE_MESH_V1_OK` et
+`VALIDATE_RUN_COMPOSITE_MESH_V1_OK`. Le profil persistant
+`k1_p001_t055_r001_n11x11` contient onze lignes de onze valeurs ; le profil
+robuste `k1_p001_t055_r001_n06x06` reste actif. État final : `standby`, cibles
+zéro, axes non référencés, Z `−0,04 mm`, stockage `ok` et deux CFS connectés.
+La prochaine gate compare de vraies premières couches ; l'UI Précision reste
+fermée jusqu'à un gain observable.
+
 ## Clôture CAMPAIGN-V1 du 24 août 2026
 
 La capture privée
@@ -105,14 +133,12 @@ NAVIGATION `001a31fe…` et le `navi.json` `3ad85cd1…`. Le préflight refusera
 l'ancienne base ou une pose qui sauterait NAVIGATION-V1. Les plans du déployeur
 et du pilote restent verts et n'ont contacté aucune machine.
 
-Le prototype complet COMPOSITE-MESH-V1 impose désormais les quatre recettes
-exactes `6 × 6`, `5 × 6`, `6 × 5`, `5 × 5` dans leur ordre physique. Le nouveau
-`render_profile.py` ne fait aucune écriture : il prépare en mémoire seulement
-un bloc Klipper `11 × 11` bicubique après 121 valeurs finies. L'endpoint
-Creality `update_mesh` ne suffit pas à changer la taille du `ZMesh` actif ; le
-futur mécanisme de persistance devra donc encore être validé avec le parseur
-exact après la preuve SUBGRID-V1. Aucun orchestrateur complet ni déployeur n'a
-été créé. Détails : `docs/21-g4-k1-control-composite-mesh-v1.md`.
+À ce stade historique, le prototype complet utilisait encore les recettes
+rectangulaires `6 × 6`, `5 × 6`, `6 × 5`, `5 × 5`. La preuve physique les a
+ensuite rejetées dans le post-traitement propriétaire. La recette retenue est
+désormais celle des quatre quadrants carrés `6 × 6` décrite dans la section
+« Qualification COMPOSITE-MESH-V1 » ci-dessus. Détails :
+`docs/21-g4-k1-control-composite-mesh-v1.md`.
 
 ## Préflight CAMPAIGN-V1 du 23 août 2026
 
@@ -296,9 +322,9 @@ Dire clairement à Thomas, avant toute proposition d'exécution :
 
 - **l'autonomie calibration quotidienne standard est atteinte** : la campagne
   réelle `6 × 6 / 1 mesh` et le vrai rendu NAVIGATION-V1-R2 sont verts, sans
-  console ni nouvelle authentification. L'ADR-013 ouvre ensuite un mode
-  précision composite `11 × 11`, mais aucune acquisition composite n'est
-  installée ni qualifiée sur la K1 ;
+  console ni nouvelle authentification. Le profil précision composite
+  `11 × 11` est techniquement qualifié et persistant, mais reste caché dans
+  l'UI jusqu'à une comparaison de premières couches montrant un gain utile ;
 - **l'autonomie production n'est pas encore atteinte** : Orca, `START_PRINT`,
   l'ancien `+0,27 mm` et les températures CFS ne sont pas encore basculés vers
   le nouveau contrat ;
@@ -321,20 +347,19 @@ Mesh que Klipper peut charger. Les 36 paires de seuils de cette machine sont
 toutes identiques et les six maillages FIRST-CALIBRATION-V2 prouvent que le
 compteur repart à zéro entre séquences.
 
-Le prototype `packages/k1-control-v1/composite-mesh-v1/compose_mesh.py` fusionne
-quatre sous-grilles `6 × 6`, `5 × 6`, `6 × 5`, `5 × 5` en 121 positions réelles
-`11 × 11`. Son entrée stricte refuse aussi un ordre, une borne, une taille ou
-une interpolation différente. `render_profile.py` prépare en mémoire le bloc
-Klipper final sans écrire de fichier. Il refuse plus de 36 contacts par passage,
-les sessions physiques différentes, un restart Klipper, les trous, doublons et
-valeurs non finies. La suite complète est verte : 232 tests, 3 ignorés connus.
+Le fusionneur `packages/k1-control-v1/composite-mesh-v1/compose_mesh.py` retient
+maintenant quatre quadrants carrés `6 × 6`, soit 144 contacts et 121 positions
+réelles `11 × 11`. Son entrée stricte refuse aussi un ordre, une borne, une
+taille ou une interpolation différente. Il n'autorise qu'un décalage additif
+constant par quadrant, recentré à moyenne pondérée nulle, et refuse un écart
+aligné supérieur à `0,05 mm`. La suite complète est verte : 250 tests,
+3 ignorés connus.
 
-Cette voie doit utiliser le moteur Bed Mesh standard de façon bornée sans
-remplacer la commande stock, sans `pr_version: 1` et sans restart entre les
-quatre sous-grilles. La prochaine gate physique de cette voie est une unique
-sous-grille décalée avec rollback automatique ; le profil complet n'est lancé
-qu'après cette preuve. Le mode `15 × 15` stock est refusé : neuf passages et
-plus de quarante minutes de palpage ne sont pas raisonnables sans gain prouvé.
+Cette voie utilise le moteur Bed Mesh standard de façon bornée sans remplacer
+la commande stock, sans `pr_version: 1` et sans restart entre les quatre
+sous-grilles. Ces quatre acquisitions et leur persistance sont maintenant
+qualifiées. La prochaine gate compare de vraies premières couches, sans nouveau
+palpage. Le mode `15 × 15` stock reste refusé.
 
 Le package physique `composite-subgrid-v1` est désormais préparé hors
 imprimante. Il ne peut demander que la partition impaire/impaire `5 × 5`, 25

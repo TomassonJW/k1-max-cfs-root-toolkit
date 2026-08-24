@@ -19,7 +19,11 @@ deltas sûrs PRTOUCH-BED-MESH-V2, MATRIX-V1, RETRY-SAFETY-V1 et
 PRTOUCH-PRESETS-V1 sont installés et validés ;
 la campagne quotidienne `6 × 6 / 1 mesh` et NAVIGATION-V1-R2 sont acceptées et
 validées ; SUBGRID-V1 et sa reprise R2 sont installées, et l'essai physique
-`5 × 5` de 25 contacts est qualifié ; production remains closed**.
+`5 × 5` de 25 contacts est qualifié ; COMPOSITE-MESH-V1-R2 a capturé quatre
+quadrants carrés `6 × 6`, soit 144 contacts et 121 positions uniques ; la
+reprise logique a qualifié et persisté le profil `11 × 11` sans nouvelle
+mesure ; la comparaison de premières couches reste à faire avant toute
+exposition UI ; production remains closed**.
 
 La capture `20260823-165742-g4-k1-control-calibration-ui-prtouch-presets-v1` a
 clos PRTOUCH-PRESETS-V1 après un préflight frais, un déploiement idempotent et
@@ -52,8 +56,18 @@ nouvelle mesure : la course Klipper après restart et le marqueur persistant
 `schema` incompatible avec le stockage `version`. La reprise R2 est posée sous
 `20260824-121607-g4-k1-control-composite-mesh-subgrid-recovery-v1-r2`, puis
 `VALIDATE_RUN_COMPOSITE_SUBGRID_V1_OK` a qualifié la capture existante. La
-prochaine mission est la préparation revue de la campagne quatre sous-grilles ;
-elle ne doit pas être improvisée depuis le pilote unitaire.
+capture privée `20260824-131000-g4-k1-control-composite-mesh-v1-r2-run` a
+ensuite obtenu quatre quadrants carrés `6 × 6`, `144/144` contacts et 121
+positions uniques. Le delta de reprise
+`20260824-155319-g4-k1-control-composite-mesh-recovery-v1` a aligné le biais
+additif constant du post-traitement propriétaire, sans déformation locale ni
+nouvelle mesure, puis persisté le profil `k1_p001_t055_r001_n11x11`. L'écart
+maximal aligné vaut `0,043745029 mm`, sous la limite `0,05 mm`. Le profil
+robuste `6 × 6` reste actif ; l'état final est `standby`, cibles zéro, axes non
+référencés, Z `−0,04 mm`, stockage `ok` et deux CFS connectés. La prochaine
+mission unique est une comparaison contrôlée de premières couches `6 × 6`
+contre `11 × 11`. Le mode Précision ne devient pas visible dans l'UI avant un
+gain observable.
 
 Thomas authorised V1, but the mandatory preflight proved that `logrotate` was
 absent. V1 is closed and must never be deployed. Thomas later authorised V2;
@@ -401,16 +415,18 @@ les backups et restarts strictement prévus et aucune action physique. La
 campagne CAMPAIGN-V1 a ensuite réussi sous la capture
 `20260823-171803-g4-k1-control-calibration-ui-campaign-v1`, avec un mesh
 `6 × 6`, le parcours Z et la validation finale. NAVIGATION-V1-R2 est maintenant
-posée et validée dans le vrai navigateur ; COMPOSITE-MESH-SUBGRID-V1 est la
-prochaine pose sans mouvement.
+posée et validée dans le vrai navigateur ; le profil composite `11 × 11` est
+qualifié techniquement, mais son gain visuel reste à prouver avant exposition
+dans l'interface.
 
 Thomas demande que chaque prochaine reprise commence par un état explicite de
 l'autonomie, sans confondre le runtime installé avec une interface terminée :
 
 - **autonomie calibration quotidienne standard** : atteinte ; la campagne
   physique est complète et le vrai écran corrigé est compréhensible sans
-  console ni traduction Codex. Le mode précision composite reste une capacité
-  supplémentaire non qualifiée ;
+  console ni traduction Codex. Le mode précision composite est techniquement
+  qualifié, mais reste caché tant que la comparaison de premières couches n'a
+  pas prouvé un gain utile ;
 - **autonomie production** : pas encore atteinte ; elle exige en plus la bascule
   atomique Orca/`START_PRINT`, le retrait prouvé du `+0,27 mm`, la propriété des
   températures CFS et la validation G5 sans intervention Codex.
