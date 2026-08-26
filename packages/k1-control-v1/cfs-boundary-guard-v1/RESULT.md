@@ -23,7 +23,8 @@ CFS et toute dérive Z/mesh ferment également la frontière.
 - 324 tests Python du dépôt sont verts ;
 - 3 tests historiques restent ignorés ;
 - `git diff --check` est vert ;
-- aucune connexion K1 réussie pendant la préparation ;
+- la connexion K1 canonique a été requalifiée en lecture seule après correction
+  de l'endpoint SSH local ;
 - aucune chauffe, mouvement, purge, impression, écriture distante ou restart.
 
 ## Portée

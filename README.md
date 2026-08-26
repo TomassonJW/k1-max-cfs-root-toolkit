@@ -96,6 +96,9 @@ Le résultat de l'éditeur local est dans
 [`docs/24-mesh-editor-offline-v1.md`](docs/24-mesh-editor-offline-v1.md).
 L'incident CFS et son verdict sont dans
 [`docs/27-incident-cfs-temperature-geometrie-v1.md`](docs/27-incident-cfs-temperature-geometrie-v1.md).
+Le routage stable de la K1 et la séparation entre endpoint local et Mainsail
+sont décrits dans
+[`docs/28-routage-reseau-k1-v1.md`](docs/28-routage-reseau-k1-v1.md).
 
 ## Repository map
 

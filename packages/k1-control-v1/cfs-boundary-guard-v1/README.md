@@ -9,10 +9,10 @@ Il ne se connecte pas à la K1, n'envoie aucun G-code et ne corrige jamais un Z
 
 Le passage réel du 26 août est volontairement refusé : la cible buse passe de
 `190` à `220 °C` et un `G28 X Y` apparaît dans la frontière CFS. Le plateau est
-resté à `0 °C` pendant ce passage. L'absence de dérive Z persistante n'a pas pu
-être requalifiée fraîchement après l'incident, car la K1 était ensuite
-injoignable en SSH ; le champ Z de cette fixture ne constitue donc pas une
-nouvelle preuve physique.
+resté à `0 °C` pendant ce passage. Deux essais directs ont d'abord visé une
+ancienne adresse DHCP ; la connexion canonique a ensuite requalifié l'état sûr
+persistant. Cela ne recrée pas le Z transitoire pendant l'incident : le champ Z
+de cette fixture ne constitue donc pas une nouvelle preuve physique.
 
 ## Ce que signifie un résultat vert
 

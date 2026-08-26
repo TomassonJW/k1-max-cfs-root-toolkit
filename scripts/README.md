@@ -69,7 +69,9 @@ rollbacke automatiquement sur KO. Il n'envoie aucun G-code de calibration.
 `Ouvrir-Mainsail-K1-Max.cmd`, à la racine du dépôt, se lance par double-clic.
 Il appelle `launch-control-dashboard.ps1`, réutilise le tunnel local s'il répond
 correctement ou en démarre un nouveau en arrière-plan, exige HTTP `401` avant
-d'ouvrir Mainsail et ne contient aucune adresse privée ni aucun secret.
+d'ouvrir Mainsail et ne contient aucune adresse privée ni aucun secret. Tous les
+lanceurs et scripts utilisent l'alias `k1max-root` ; son endpoint réel appartient
+à la configuration SSH locale et non au dépôt public.
 
 `Ouvrir-Calibration-K1-Max.cmd` réutilise exactement le même tunnel et la même
 authentification, mais ouvre `http://localhost:4409/k1-control/`. Cette origine

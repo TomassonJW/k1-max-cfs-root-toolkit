@@ -1275,3 +1275,21 @@ primitives étroites montrent qu'aucune route stock ne respecte ces invariants.
 
 Voir ADR-017, `docs/27-incident-cfs-temperature-geometrie-v1.md` et
 `packages/k1-control-v1/cfs-boundary-guard-v1/`.
+
+## D-067 — L'endpoint réseau privé reste derrière `k1max-root`
+
+Date: 2026-08-26
+
+Status: appliqué et validé localement ; aucune mutation K1
+
+Les scripts, les déployeurs et les lanceurs conservent un seul nom logique :
+`k1max-root`. Ils ne stockent jamais l'adresse privée de la K1. La réservation
+DHCP stable est portée par la configuration SSH locale ; `HostKeyAlias`
+conserve l'identité de clé déjà connue et `StrictHostKeyChecking` reste actif.
+
+Mainsail passe par le tunnel `127.0.0.1:4409:127.0.0.1:4409`. K1 Control utilise
+la même origine locale et `navi.json` un chemin relatif. Aucun de ces éléments
+ne dépend donc de l'adresse DHCP de la K1 et aucune modification distante n'est
+requise lors d'un changement d'endpoint local.
+
+Voir `docs/28-routage-reseau-k1-v1.md`.

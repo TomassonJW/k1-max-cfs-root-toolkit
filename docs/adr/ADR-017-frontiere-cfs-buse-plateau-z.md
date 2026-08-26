@@ -85,7 +85,8 @@ aucune primitive étroite ne respecte les six invariants.
 Avant tout nouvel essai physique :
 
 1. récupérer en lecture seule le journal complet de l'incident et le binaire
-   exact `box_wrapper` quand la K1 redevient joignable ;
+   exact `box_wrapper` par une mission séparée en lecture seule ; la
+   joignabilité n'est plus le blocage ;
 2. chercher hors imprimante les paramètres et écritures des primitives
    `BOX_EXTRUDE_MATERIAL`, `BOX_EXTRUDER_EXTRUDE` et
    `BOX_MATERIAL_FLUSH` ;

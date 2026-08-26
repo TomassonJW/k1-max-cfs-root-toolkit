@@ -1,4 +1,4 @@
-# HANDOFF — incident CFS audité ; primitive brute refusée
+# HANDOFF — incident CFS audité ; réseau K1 stabilisé
 
 Date de passation : 2026-08-26 (Europe/Paris)
 Projet : C:\Users\janko\Documents\ChatGPT\k1-max-cfs-root-toolkit
@@ -31,8 +31,8 @@ Branche de reprise : `main`
 - Le homing a ensuite été repris proprement. La position froide
   `X=185,5 / Y=305 / Z=30 mm` a été validée visuellement comme position de purge
   avec une marge suffisante.
-- Le dernier état connu est froid, cibles zéro, robuste chargé et tête à cette
-  position. Deux relectures SSH ultérieures ont expiré sans atteindre la K1.
+- Le lien `k1max-root` est requalifié sur la réservation fixe : `standby`,
+  cibles zéro, robuste et Z `−0,04 mm` conformes ; l'adresse reste hors Git.
 - `CFS-BOUNDARY-GUARD-V1` est validé hors imprimante. Il protège buse, plateau,
   Z accepté, origine Z, mesh et axes référencés, et refuse la trace réelle.
 - Statut technique actuel : **ATTENDRE_GO_PAQUET_REVU** avant toute nouvelle
@@ -68,6 +68,9 @@ Branche de reprise : `main`
 - 324 tests Python verts, 3 ignorés historiques.
 - Aucune écriture K1, chauffe, mouvement, purge ou impression pendant cette
   préparation hors imprimante.
+- Le routage réseau local est corrigé et vérifié. Mainsail, Moonraker, nginx,
+  les deux lanceurs et `navi.json` ne contiennent aucune adresse K1 en dur ;
+  aucune écriture distante ni aucun restart n'a été nécessaire.
 - Prochaine étape : récupérer en lecture seule le journal complet et le binaire
   exact `box_wrapper`, puis préparer un adaptateur étroit. Toute pose ou tout
   essai physique reste séparé.

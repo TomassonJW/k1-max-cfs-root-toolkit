@@ -855,16 +855,21 @@ faite sur le plateau. Thomas n'a constaté aucun dommage visible.
 
 La récupération a refait le homing proprement, contrôlé les butées X/Y et validé
 à froid la position stock de purge `X=185,5 / Y=305 / Z=30 mm`. Thomas a confirmé
-que `30 mm` est largement suffisant. Le dernier état connu avant la perte du lien
-SSH est froid, cibles zéro, robuste chargé et tête à cette position sûre.
+que `30 mm` est largement suffisant. Deux essais directs ont ensuite utilisé une
+ancienne adresse DHCP et ont faussement fait conclure à une perte du lien.
+
+La connexion canonique `k1max-root` a été requalifiée puis fixée localement sur
+la réservation DHCP stable, avec vérification stricte de clé conservée par
+`HostKeyAlias`. La relecture fraîche confirme `standby`, cibles zéro, robuste
+chargé, Z accepté `−0,04 mm`, axes `xyz` et tête à la position sûre. L'adresse
+privée reste dans la configuration locale ignorée ; elle n'est pas publiée.
 
 ADR-017 remplace le problème « température CFS » par une frontière complète à
 six invariants : buse, plateau, Z accepté, origine Z, mesh et axes référencés.
 Le paquet `CFS-BOUNDARY-GUARD-V1` est validé hors imprimante et refuse la trace
-réelle. Il n'autorise aucune pose ni action K1. Deux tentatives de relecture SSH
-fraîche ont ensuite expiré sans atteindre l'imprimante ; l'analyse continue donc
-sur les captures locales et marque explicitement le Z/mesh transitoire comme
-inconnu.
+réelle. Il n'autorise aucune pose ni action K1. La joignabilité courante est
+verte, mais le Z/mesh transitoire exact pendant l'incident reste inconnu : une
+relecture ultérieure de l'état sûr ne recrée pas cet état passé.
 
 Thomas explicitly rejected further sacrificial print campaigns on 2026-08-21.
 The V3 + PATHS-V1 observation remains useful coexistence evidence but no longer
