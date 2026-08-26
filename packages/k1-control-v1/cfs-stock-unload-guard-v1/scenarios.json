@@ -1,0 +1,76 @@
+{
+  "schema": 1,
+  "defaults": {
+    "expected_route": "T1A",
+    "initial": {
+      "print_state": "standby",
+      "box_state": "connect",
+      "connected_cfs_units": ["T1", "T2"],
+      "active_cfs_command": "",
+      "engaged_routes": ["T1A"],
+      "stock_unload_state": "idle",
+      "extruder_target_c": 0,
+      "bed_target_c": 0,
+      "toolhead_filament_present": true
+    }
+  },
+  "scenarios": [
+    {
+      "id": "success_segment_stays_in_head",
+      "after_stock": [
+        {"active_cfs_command":"RETRUDE_PROCESS","stock_unload_state":"running","extruder_target_c":220},
+        {"active_cfs_command":"","engaged_routes":[],"stock_unload_state":"completed","extruder_target_c":220}
+      ],
+      "after_cleanup": [{"engaged_routes":[],"stock_unload_state":"completed","extruder_target_c":0,"bed_target_c":0}],
+      "expected": ["OK", "stock_unload_guard_ok"]
+    },
+    {
+      "id": "http_ok_without_unload_effect",
+      "after_stock": [{"active_cfs_command":"RETRUDE_PROCESS","stock_unload_state":"running","extruder_target_c":220}],
+      "after_cleanup": [{"stock_unload_state":"running","extruder_target_c":0,"bed_target_c":0}],
+      "expected": ["KO", "stock_unload_timeout"]
+    },
+    {
+      "id": "http_ok_without_heater_effect",
+      "after_stock": [{"engaged_routes":[],"stock_unload_state":"completed","extruder_target_c":220,"bed_target_c":55}],
+      "after_cleanup": [{"engaged_routes":[],"stock_unload_state":"completed","extruder_target_c":220,"bed_target_c":55}],
+      "expected": ["KO", "heater_shutdown_effect_unproven"]
+    },
+    {
+      "id": "stock_transport_error_still_cleans_up",
+      "stock_error": "connection_lost_after_dispatch",
+      "after_cleanup": [{}],
+      "expected": ["KO", "stock_unload_transport_error:FakeApiError"]
+    },
+    {
+      "id": "cleanup_transport_error",
+      "after_stock": [{"engaged_routes":[],"stock_unload_state":"completed","extruder_target_c":220}],
+      "cleanup_error": "heater_command_lost",
+      "expected": ["KO", "heater_shutdown_error:FakeApiError"]
+    },
+    {
+      "id": "stock_reports_failure",
+      "after_stock": [{"stock_unload_state":"failed","extruder_target_c":220}],
+      "after_cleanup": [{"stock_unload_state":"failed","extruder_target_c":0,"bed_target_c":0}],
+      "expected": ["KO", "stock_unload_reported_failure"]
+    },
+    {
+      "id": "route_changes_to_other_slot",
+      "after_stock": [{"engaged_routes":["T1B"],"stock_unload_state":"completed","extruder_target_c":220}],
+      "after_cleanup": [{"engaged_routes":["T1B"],"stock_unload_state":"completed","extruder_target_c":0,"bed_target_c":0}],
+      "expected": ["KO", "engaged_route_changed_unexpectedly"]
+    },
+    {
+      "id": "cfs_disconnects",
+      "after_stock": [{"box_state":"disconnect","connected_cfs_units":["T1"],"stock_unload_state":"running","extruder_target_c":220}],
+      "after_cleanup": [{"box_state":"disconnect","connected_cfs_units":["T1"],"stock_unload_state":"running","extruder_target_c":0,"bed_target_c":0}],
+      "expected": ["KO", "cfs_disconnected_during_unload"]
+    },
+    {
+      "id": "printer_leaves_standby",
+      "after_stock": [{"print_state":"printing","stock_unload_state":"running","extruder_target_c":220,"bed_target_c":55}],
+      "after_cleanup": [{"print_state":"printing","stock_unload_state":"running","extruder_target_c":0,"bed_target_c":0}],
+      "expected": ["KO", "printer_left_standby"]
+    }
+  ]
+}

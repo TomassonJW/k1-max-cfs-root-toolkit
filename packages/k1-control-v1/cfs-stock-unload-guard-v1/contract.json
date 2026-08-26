@@ -1,0 +1,47 @@
+{
+  "contract_id": "K1-CONTROL-CFS-STOCK-UNLOAD-GUARD-V1",
+  "schema": 1,
+  "status": "offline_guard_closed_green",
+  "authority": "offline_only",
+  "printer_connection": false,
+  "printer_action": false,
+  "deployment_candidate": false,
+  "transport_candidate": false,
+  "stock_command": "BOX_QUIT_MATERIAL",
+  "cleanup_command": "TURN_OFF_HEATERS",
+  "preconditions": {
+    "print_state": "standby",
+    "box_state": "connect",
+    "connected_cfs_units": ["T1", "T2"],
+    "active_cfs_command": "",
+    "stock_unload_state": "idle",
+    "engaged_route": "exactly_one_and_matches_requested_route"
+  },
+  "success_requires": [
+    "stock_unload_state_completed",
+    "requested_route_cleared",
+    "active_cfs_command_cleared",
+    "extruder_target_zero_after_cleanup",
+    "bed_target_zero_after_cleanup",
+    "exactly_one_stock_command",
+    "exactly_one_cleanup_command"
+  ],
+  "safety_policy": {
+    "http_ok_is_effect_proof": false,
+    "automatic_stock_retry": false,
+    "cleanup_after_any_stock_attempt": true,
+    "cleanup_before_stock_attempt_on_preflight_refusal": false,
+    "reason_for_no_preflight_cleanup": "do_not_interrupt_an_existing_print_or_foreign_operation",
+    "cleanup_ack_is_effect_proof": false,
+    "toolhead_sensor_clear_required": false,
+    "toolhead_segment_message_required": true
+  },
+  "offline_verdict": "OK",
+  "next_gate": {
+    "candidate": "G4-K1-CONTROL-CFS-STOCK-UNLOAD-GUARD-LIVE-PREFLIGHT-V1",
+    "default_authority": "read_only_only",
+    "goal": "map_live_fields_and_validate_all_preconditions_without_running_unload",
+    "printer_connection_requires_fresh_exact_GO": true,
+    "physical_unload_authorized": false
+  }
+}

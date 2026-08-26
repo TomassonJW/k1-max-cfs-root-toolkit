@@ -254,6 +254,32 @@ courant : construire un petit contrôleur qui vérifie l'état, lance la command
 Creality, surveille sa vraie fin et coupe toujours les chauffes. Toute nouvelle
 connexion ou action K1 exigera un autre GO exact après revue.
 
+### `G4-K1-CONTROL-CFS-STOCK-UNLOAD-GUARD-V1`
+
+Statut : **close OK hors imprimante ; aucun transport ni candidat de pose ;
+production fermée**.
+
+Le garde refuse avant tout effet si la machine n'est pas `standby`, si les deux
+CFS ne sont pas confirmés, si une commande est déjà active ou si la route
+demandée n'est pas la seule route engagée. Un tel refus n'éteint pas les
+chauffes afin de ne pas interrompre une activité étrangère.
+
+Après une tentative unique de `BOX_QUIT_MATERIAL`, le succès exige la fin stock,
+la libération de la route et la commande CFS vide. Tous les chemins demandent
+ensuite une fois `TURN_OFF_HEATERS` et vérifient réellement les deux consignes à
+zéro. Aucun retry du retrait n'existe et un HTTP `ok` n'est jamais une preuve
+d'effet.
+
+La matrice hors imprimante obtient `9/9` et les tests ciblés couvrent aussi les
+refus sans commande. Aucun module réseau, série, SSH ou processus externe n'est
+importé.
+
+La prochaine gate possible est
+`G4-K1-CONTROL-CFS-STOCK-UNLOAD-GUARD-LIVE-PREFLIGHT-V1`. En langage courant :
+lire seulement la K1 pour vérifier la correspondance exacte de chaque état dont
+le garde a besoin. Aucun G-code, retrait, chauffe, pose ou restart ne sera
+autorisé par ce préflight. Un GO exact distinct est requis pour la connexion.
+
 ### Reprise physique `MESH-EDGE-DIAGNOSTIC-V1`
 
 Avant toute reprise physique restante : route filament fraîchement résolue,

@@ -1,202 +1,149 @@
-# HANDOFF — retrait officiel CFS qualifié, garde stock à construire
+# HANDOFF — garde hors imprimante du retrait officiel CFS
 
 Date de passation : 2026-08-27
 Projet : `C:\Users\janko\Documents\ChatGPT\k1-max-cfs-root-toolkit`
 Branche cible : `main`
-Mission terminée : `G4-K1-CONTROL-CFS-MINIMAL-OWNER-PASSIVE-CAPTURE-V1`
+Mission terminée : `G4-K1-CONTROL-CFS-STOCK-UNLOAD-GUARD-V1`
 
 ## État à annoncer immédiatement à Thomas
 
-- **Le retrait officiel du filament `T1A` a réussi.**
-- Le CFS 1 est passé du slot A chargé à aucun filament engagé.
-- La commande Creality a chauffé automatiquement la buse à `220 °C` pendant
-  son cycle : aucune chauffe manuelle préalable n'était nécessaire.
-- La commande constructeur a terminé en laissant la consigne à `220 °C`.
-  Codex a donc envoyé `TURN_OFF_HEATERS`, puis vérifié une consigne finale à
-  zéro. La buse était à `81,42 °C` et continuait de refroidir lors du dernier
-  relevé.
-- Le capteur de la tête reste occupé : le petit morceau situé après le cutter
-  est encore dans la tête. Le retrait CFS réussi ne signifie donc pas que la
-  buse est entièrement vide ou nettoyée.
-- Le cutter fait partie de la séquence officielle, mais aucun capteur dédié ne
-  permet de prouver séparément son mouvement physique.
-- La capture passive est **OK**. En revanche, le protocole série indépendant
-  reste **KO borné** et `callable_messages=[]` reste vide.
-- La voie la plus fiable à court terme est d'encadrer la commande officielle
-  Creality, pas d'imiter dès maintenant ses messages série internes.
-- L'autonomie production reste non atteinte et la production reste fermée.
+- **Le garde du retrait officiel est terminé et vert hors imprimante.**
+- Il n'a établi aucune connexion K1 et n'a lancé aucun retrait réel.
+- Il refuse sans effet une machine occupée, un CFS incomplet, une commande déjà
+  active ou une route ambiguë.
+- Après une tentative, il lance au maximum une fois `BOX_QUIT_MATERIAL`, exige
+  la vraie libération de la route et ne fait aucun retry automatique.
+- Il envoie ensuite une seule fois `TURN_OFF_HEATERS` et exige les deux
+  consignes réellement à zéro, même si le retrait a échoué.
+- Une réponse HTTP `ok` n'est jamais considérée seule comme une réussite.
+- Le segment situé après le cutter peut toujours rester présent dans la tête ;
+  le message opérateur l'indique explicitement.
+- Aucun transport, déployeur ou candidat de pose n'a été créé.
+- Le propriétaire série reste fermé avec `callable_messages=[]`.
+- La production reste fermée.
 - `MESH-EDGE-DIAGNOSTIC-V1` reste suspendue. Son rollback et son audit CFS
   n'autorisent aucune reprise : le profil diagnostic et quatre G-code sont absents.
 - `VALIDATE_MESH_EDGE_DIAGNOSTIC_V1_OK` reste son marqueur de fermeture valide.
 - Les quatre G-code ne doivent pas être recréés depuis ce handoff.
 - Toute future action physique exige une route fraîche et, si le plateau est
   concerné, la confirmation « plateau réellement libre ».
-- Aucun `GO` exact antérieur ne couvre une nouvelle connexion ou une nouvelle
-  action physique.
+- Aucun `GO` exact antérieur ne couvre une nouvelle connexion ou action K1.
 - Autorisation suivante : **ATTENDRE_GO**.
 
 ## État Git
 
 - SHA initial local et distant :
-  `3ab0f468ca6cfcf85bd388175bc2d12b06aa4c67`.
-- Commit principal de mission :
-  `bbb92a2dc0d1c51d5600355ae6092db38e17b1ab`.
-- Ce commit est publié sur `origin/main`.
+  `6fe0f0a0d4f2ef4aa2b703e0c184c8efd642b9f7`.
 - Branche de mission séparée : aucune.
 - Worktree de mission séparé : aucun.
 - Autre worktree observé : aucun.
-- Le SHA final de cette passation doit être lu après son propre commit et son
-  envoi.
-
-## Action réelle exécutée
-
-Le préflight en lecture seule a confirmé une K1 au repos, les chauffes demandées
-à zéro, deux CFS connectés et la route fraîche `T1A`.
-
-Codex a lancé une seule fois la commande officielle `BOX_QUIT_MATERIAL` par
-l'API Moonraker. Aucune trame série brute n'a été injectée. La macro installée
-sur la K1 enchaîne les opérations Creality de vérification, coupe, retrait et
-retour de la tête à la position de chargement.
-
-Le cycle a duré environ `105,88 s`. La capture contient deux demandes de retrait
-et leurs deux réponses de succès. Le capteur local du wrapper est ensuite passé
-à libre et l'état privé du CFS est passé de `T1A` à aucun filament engagé.
-
-## Point de sécurité thermique
-
-La séquence stock a porté automatiquement la consigne de buse à `220 °C`, mais
-ne l'a pas remise à zéro à sa fin.
-
-Une première tentative locale a envoyé par erreur `M104%20S0`. L'API HTTP a
-répondu `ok`, alors que le journal Klipper a montré `Unknown command:M104%20` :
-la chauffe n'avait donc pas été coupée. La vérification de l'effet réel a évité
-de prendre cette réponse HTTP pour un succès.
-
-Codex a alors envoyé la commande sans ambiguïté `TURN_OFF_HEATERS`. Le journal a
-confirmé sa fin et l'état final a confirmé les deux consignes à zéro.
-
-Décision importante : le prochain contrôleur devra toujours vérifier le résultat
-réel sur la machine, y compris après une réponse HTTP positive, et couper les
-chauffes même si le retrait échoue au milieu.
-
-## État final observé de la K1
-
-- impression : `standby` ;
-- consigne buse : `0 °C` ;
-- température buse au dernier relevé : `81,42 °C`, en refroidissement ;
-- consigne plateau : `0 °C` ;
-- axes : toujours référencés `xyz` ;
-- deux CFS : connectés ;
-- commande CFS en cours : aucune ;
-- route `T1A` : libérée ;
-- capteur de filament de la tête : encore occupé ;
-- `printer.cfg`, `gcode_macro.cfg` et `box.cfg` : empreintes inchangées.
-
-Les messages d'erreur et d'absence de réponse déjà présents en arrière-plan sur
-le bus CFS continuent avant, pendant et après le retrait. Aucun arrêt, traceback
-ou échec du retrait n'apparaît, mais ce bruit de fond devra être diagnostiqué à
-part : il n'est pas déclaré sans danger par défaut.
-
-## Preuves privées
-
-Session privée :
-`inventory/raw/20260827-001616-g4-k1-control-cfs-minimal-owner-passive-capture-v1`
-
-Les données brutes restent ignorées par Git. Seuls les faits utiles, les numéros
-de lignes et les empreintes sont publiés. Aucun identifiant matériel privé ni
-trame d'identité n'a été ajouté aux fichiers versionnés.
-
-Empreintes principales :
-
-- capture passive :
-  `995b94f92928d2f2d048f677b7183201b6b370cc70f6ccd34c70534b4cffcfe2` ;
-- état CFS avant :
-  `74bfaaae68ca7dc6f989bf4568ed97a761cb3ae9c85f132c376a65b0d8172d39` ;
-- état CFS après :
-  `94e8c905a79cf087c2c638b1112e3901cc38cdfcfd7bc353bb82920d554caf2b` ;
-- état final machine :
-  `626b612802835a115a68fcd013f91cfabfb7c0de39d67bde5e990f800d3ac7c1`.
+- Le commit de mission et le SHA final doivent être lus après le commit et
+  l'envoi de cette passation.
 
 ## Travail livré
 
-Le paquet
-`packages/k1-control-v1/cfs-minimal-owner-passive-capture-v1/` contient :
+Le nouveau paquet
+`packages/k1-control-v1/cfs-stock-unload-guard-v1/` contient :
 
-- `contract.json` : autorité, résultat et limites ;
-- `evidence-map.json` : carte des preuves privées sans données identifiantes ;
-- `verify_private_capture.py` : vérification déterministe de la capture privée ;
-- `README.md` et `RESULT.md` : utilisation et verdict ;
-- `NEXT-STOCK-UNLOAD-GUARD.md` : contrat de la prochaine étape hors imprimante.
+- `controller.py` : le garde indépendant du transport ;
+- `fake_api.py` : une fausse K1 déterministe sans réseau ;
+- `scenarios.json` et `run_scenarios.py` : neuf déroulés succès/panne ;
+- `contract.json` : autorité, préconditions, preuves de succès et limites ;
+- `README.md`, `RESULT.md` et `NEXT-LIVE-PREFLIGHT.md` : utilisation, résultat
+  et prochaine étape en langage courant.
 
-La décision est enregistrée dans :
+Le contrôleur attend seulement une API injectée capable de lire un état et
+d'envoyer une commande. Aucun module réseau, série, SSH ou de processus externe
+n'est présent dans le paquet.
 
-- `docs/34-capture-retrait-officiel-cfs-v1.md` ;
-- ADR-023 ;
-- D-073 ;
-- `design/job-lifecycle-contract-v1.json` ;
-- `AGENTS.md`, `STATE.md`, `GATES.md`, `ROADMAP.md` et les index du projet.
+## Décision de sécurité
+
+Avant le premier effet, un refus n'envoie aucune commande, y compris aucune
+coupure de chauffe : cela évite d'interrompre une impression ou une opération
+étrangère déjà active.
+
+Dès que le retrait a été tenté, même si le transport devient ambigu, le garde
+tente une fois la coupure globale des chauffes. Le succès final demande :
+
+1. fin stock observée ;
+2. route demandée libérée ;
+3. commande CFS active redevenue vide ;
+4. consignes buse et plateau à zéro ;
+5. exactement une commande de retrait et une commande de nettoyage.
+
+Un timeout ou une perte de transport produit un KO lisible et aucune relance.
+
+## Documentation et contrats
+
+- `docs/35-garde-retrait-officiel-cfs-v1.md` ;
+- ADR-024 ;
+- D-074 ;
+- section `cfs_stock_unload_guard` dans
+  `design/job-lifecycle-contract-v1.json` ;
+- `AGENTS.md`, `STATE.md`, `GATES.md`, `ROADMAP.md`, les index du paquet et des
+  tests alignés.
 
 ## Vérifications
 
-- vérificateur privé : `VERIFY_CFS_MINIMAL_OWNER_PASSIVE_CAPTURE_V1_OK` ;
-- tests ciblés : `15/15` verts ;
-- suite complète : `382` tests exécutés, `379` verts et `3` ignorés connus ;
-- contrôle des espaces et fins de lignes Git : OK ;
-- recherche d'identifiants privés connus dans les nouveaux fichiers : aucun
-  résultat ;
-- empreintes des trois configurations K1 avant/après : identiques.
+- matrice hors imprimante : `CFS_STOCK_UNLOAD_GUARD_V1_OK 9/9` ;
+- tests ciblés : `18/18` verts ;
+- suite complète : `400` tests exécutés, `397` verts et `3` ignorés connus ;
+- conflit de nom de fausse API découvert puis corrigé par des noms de modules
+  uniques ;
+- aucune connexion K1, requête réseau, chauffe, mouvement, retrait, restart ou
+  fichier distant ;
+- contrôle Git final à compléter après la passation.
 
 ## Limites et risques
 
-- Le morceau de filament après le cutter est toujours détecté dans la tête.
-- La coupe physique n'a pas sa propre preuve capteur.
-- La macro stock n'a pas coupé seule sa chauffe dans ce passage.
-- Une réponse HTTP `ok` ne prouve pas que le G-code a été compris.
-- Les slots B/C/D et le second CFS n'ont pas été retirés pendant cette mission.
-- Le protocole série complet, l'arrêt en faute, la reconnexion et l'exclusion du
-  propriétaire constructeur restent non qualifiés.
-- Aucun transport autonome, paquet installable ou changement de production n'a
-  été créé.
+- Les noms et le sens des champs live ne sont pas encore reliés à une vraie API
+  K1.
+- Le délai entre deux lectures sera la responsabilité du futur adaptateur ; la
+  simulation actuelle avance sans attendre réellement.
+- Les slots B/C/D et le second CFS ne sont pas physiquement qualifiés.
+- La coupe n'a toujours pas de preuve capteur indépendante.
+- Le segment après cutter peut rester dans la tête.
+- Chargement, purge, changement complet et reprise après reconnexion restent
+  hors périmètre.
+- Aucun comportement de production n'est autorisé.
 
 ## Prochaine mission unique
 
-### `G4-K1-CONTROL-CFS-STOCK-UNLOAD-GUARD-V1`
+### `G4-K1-CONTROL-CFS-STOCK-UNLOAD-GUARD-LIVE-PREFLIGHT-V1`
 
-En langage courant : construire d'abord, uniquement sur l'ordinateur, un petit
-contrôleur autour de la commande Creality existante. Il devra vérifier que la K1
-est au repos et que le bon slot est réellement engagé, lancer le retrait une
-seule fois, attendre la vraie libération du slot, détecter un faux succès HTTP,
-et remettre les chauffes à zéro même si une erreur survient.
+En langage courant : se connecter à la K1 uniquement pour lire son état et
+vérifier où se trouvent réellement les informations utilisées par le garde :
+machine au repos, deux CFS présents, commande inactive, slot engagé, fin stock
+et consignes de chauffe.
 
-Cette étape sert à rendre le retrait officiel reproductible et plus sûr sans
-réinventer le protocole interne du CFS. Elle sera testée contre une fausse API :
-elle ne se connectera pas à la K1 et ne déplacera aucun filament.
+Cette étape est utile pour éviter de brancher le garde sur un champ mal compris
+ou incomplet. Elle ne lancera aucun retrait, n'enverra aucun G-code, ne chauffera
+rien, ne déplacera rien et n'installera aucun fichier.
 
-Le futur GO exact de cette mission autorisera seulement la construction et les
-tests hors imprimante. Une connexion à la K1 ou un nouveau retrait réel
-demandera ensuite une autorisation distincte, après revue du contrôleur figé.
+Le prochain GO exact autorisera uniquement cette connexion en lecture seule.
+Il n'autorisera pas un retrait réel. Un futur essai du garde demandera encore
+une autorisation distincte après revue des données live.
 
-Critères de réussite hors imprimante :
+Critères de fin :
 
-1. refus si la machine n'est pas au repos ou si la route est ambiguë ;
-2. un seul lancement de `BOX_QUIT_MATERIAL` ;
-3. succès seulement si le slot est réellement libéré ;
-4. `TURN_OFF_HEATERS` exécuté dans tous les chemins de sortie ;
-5. faux `ok` HTTP détecté ;
-6. message clair indiquant que le segment dans la tête peut rester présent ;
-7. aucun accès réseau réel dans les tests.
+1. chaque champ requis possède une source K1 exacte et stable ;
+2. la route engagée se résout sans hypothèse de slot ;
+3. les états actif, terminé et en faute sont distinguables ;
+4. les deux consignes thermiques sont lisibles ;
+5. aucune commande ou écriture n'apparaît dans la capture ;
+6. l'adaptateur de lecture peut ensuite être figé hors imprimante.
 
 ## Modèle conseillé pour la reprise
 
-- Optimal : `gpt-5.6-sol`, raisonnement `high`, car le contrôleur devra gérer
-  sans ambiguïté la chauffe, les erreurs partielles et la différence entre une
-  réponse HTTP et un effet réellement observé.
-- Option économique : `gpt-5.6-terra`, raisonnement `high`, raisonnable pour la
-  construction hors imprimante ; compromis : davantage de risque de manquer un
-  cas de panne et de devoir reprendre la logique de sécurité.
+- Optimal : `gpt-5.6-sol`, raisonnement `high`, car les champs Creality sont peu
+  documentés et une mauvaise interprétation pourrait rendre la future sécurité
+  inefficace.
+- Option économique : `gpt-5.6-terra`, raisonnement `high`, acceptable pour la
+  capture en lecture seule ; compromis : davantage de risque de devoir reprendre
+  la correspondance des états avant l'essai réel.
 
 ## Autorisation de démarrage
 
-**ATTENDRE_GO.** La mission de capture est close. Rien dans cette passation
-n'autorise une nouvelle connexion à la K1, un autre cycle filament ou une pose
-sur l'imprimante.
+**ATTENDRE_GO.** La mission hors imprimante est close. Rien dans cette
+passation n'autorise une connexion K1, un G-code, un retrait, une chauffe, une
+pose ou un restart.

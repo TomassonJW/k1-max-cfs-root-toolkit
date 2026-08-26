@@ -90,6 +90,18 @@ mal encodée. Le prochain incrément préparera donc hors imprimante un garde
 autour de la macro stock, avec vérification de l'effet réel et arrêt garanti des
 chauffes. Le propriétaire série reste fermé et `callable_messages=[]`.
 
+## Garde hors imprimante du retrait officiel
+
+Le paquet [`cfs-stock-unload-guard-v1/`](cfs-stock-unload-guard-v1/) transforme
+la capture en contrôleur testable. Il vérifie l'état et la route avant effet,
+appelle au plus une fois `BOX_QUIT_MATERIAL`, exige la vraie libération du slot,
+puis demande et vérifie `TURN_OFF_HEATERS` dans tous les chemins post-tentative.
+
+Sa matrice synthétique couvre les faux succès HTTP et les principales pannes.
+Elle n'a aucun transport réel, ne se connecte pas à la K1 et n'autorise aucune
+pose. La prochaine étape est seulement une correspondance live en lecture seule
+des champs nécessaires au garde.
+
 ## Versions figées
 
 - Moonraker MIPS : paquet du Helper Script au commit

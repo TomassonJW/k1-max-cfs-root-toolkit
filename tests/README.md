@@ -67,6 +67,15 @@ fermeture persistante du protocole série :
 python -m unittest tests.test_cfs_minimal_owner_passive_capture_v1 -v
 ```
 
+Le garde hors imprimante du retrait officiel contrôle les refus avant effet,
+la tentative unique, la preuve de libération de route, les faux succès HTTP,
+l'absence de retry et l'arrêt thermique vérifié :
+
+```powershell
+python -m unittest tests.test_cfs_stock_unload_guard_v1 -v
+python packages\k1-control-v1\cfs-stock-unload-guard-v1\run_scenarios.py
+```
+
 La suite complète doit être lancée avec un dossier de découverte explicite :
 
 ```powershell

@@ -230,6 +230,25 @@
     "deployment_candidate": false,
     "next_design_branch": "offline_stock_unload_guard_before_any_new_printer_action"
   },
+  "cfs_stock_unload_guard": {
+    "candidate": "K1-CONTROL-CFS-STOCK-UNLOAD-GUARD-V1",
+    "status": "offline_guard_closed_green",
+    "contract": "packages/k1-control-v1/cfs-stock-unload-guard-v1/contract.json",
+    "stock_command": "BOX_QUIT_MATERIAL",
+    "cleanup_command": "TURN_OFF_HEATERS",
+    "http_ok_is_effect_proof": false,
+    "automatic_stock_retry": false,
+    "cleanup_after_any_stock_attempt": true,
+    "cleanup_before_stock_attempt_on_preflight_refusal": false,
+    "success_requires_route_clear": true,
+    "success_requires_stock_completion": true,
+    "success_requires_targets_zero": true,
+    "toolhead_segment_may_remain": true,
+    "printer_transport": false,
+    "deployment_candidate": false,
+    "physical_test_authorized": false,
+    "next_design_branch": "read_only_live_field_mapping_before_any_deployment_or_unload"
+  },
   "filament_state": {
     "states": [
       "absent_confirmed",

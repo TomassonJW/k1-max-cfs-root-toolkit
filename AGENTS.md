@@ -33,6 +33,8 @@ vide ; CFS-MINIMAL-OWNER-EVIDENCE-V1 ajoute une preuve historique exacte du
 retrait `T1A` mais reste close en KO borné, sans message appelable ;
 CFS-MINIMAL-OWNER-PASSIVE-CAPTURE-V1 qualifie un retrait stock réel `T1A`,
 révèle une cible `220 °C` laissée active et maintient le protocole série fermé ;
+CFS-STOCK-UNLOAD-GUARD-V1 encadre maintenant hors imprimante cette macro avec
+preuve d'effet, aucun retry et arrêt thermique vérifié ;
 production remains closed**.
 
 La capture `20260823-165742-g4-k1-control-calibration-ui-prtouch-presets-v1` a
@@ -169,6 +171,21 @@ inchangées et l'état final est `standby`, CFS connecté, cibles zéro. Aucun
 message série ne devient appelable. La prochaine branche proposée est
 `G4-K1-CONTROL-CFS-STOCK-UNLOAD-GUARD-V1`, hors imprimante seulement : encadrer
 la macro stock avec vérification d'état et arrêt garanti des chauffes.
+
+Thomas a ensuite donné le GO exact de cette gate hors imprimante.
+`G4-K1-CONTROL-CFS-STOCK-UNLOAD-GUARD-V1` est close OK sans connexion K1. Le
+garde refuse avant effet une machine occupée, un état CFS incomplet, une
+commande active ou une route ambiguë. Après une tentative unique de
+`BOX_QUIT_MATERIAL`, il exige la fin stock, le slot libéré et la commande CFS
+vide ; il demande ensuite une fois `TURN_OFF_HEATERS` et vérifie les deux cibles
+à zéro. Un HTTP `ok` ne suffit jamais et aucun retrait n'est relancé.
+
+Le paquet ne contient aucun transport ou candidat de pose. La prochaine branche
+proposée est
+`G4-K1-CONTROL-CFS-STOCK-UNLOAD-GUARD-LIVE-PREFLIGHT-V1` : lecture seule des
+champs réels nécessaires au garde, sans G-code, chauffe, mouvement, retrait ou
+fichier distant. Cette connexion exige un GO exact distinct ; un essai réel
+ultérieur restera une autre gate.
 
 Thomas authorised V1, but the mandatory preflight proved that `logrotate` was
 absent. V1 is closed and must never be deployed. Thomas later authorised V2;

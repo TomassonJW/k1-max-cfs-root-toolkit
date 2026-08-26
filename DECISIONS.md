@@ -1476,3 +1476,28 @@ reste `callable_messages=[]`.
 
 Voir ADR-023, `docs/34-capture-retrait-officiel-cfs-v1.md` et
 `packages/k1-control-v1/cfs-minimal-owner-passive-capture-v1/`.
+
+## D-074 — Le retrait stock exige une preuve d'effet et aucun retry automatique
+
+Date: 2026-08-27
+
+Status: garde close hors imprimante ; tests verts ; aucun transport ;
+production fermée
+
+`G4-K1-CONTROL-CFS-STOCK-UNLOAD-GUARD-V1` enveloppe la macro Creality sans
+reproduire le protocole série. Avant effet, elle refuse une machine occupée, un
+CFS incomplet, une commande active ou une route ambiguë sans envoyer aucun
+G-code.
+
+Après une tentative unique de `BOX_QUIT_MATERIAL`, une réponse HTTP positive ne
+suffit pas. Le succès exige la fin stock, la route libérée et la commande CFS
+vide. Tous les chemins post-tentative demandent une seule fois
+`TURN_OFF_HEATERS` et exigent ensuite les deux consignes à zéro. Aucun retrait
+n'est relancé automatiquement après timeout ou perte de transport.
+
+Le contrôleur et sa fausse API n'ont aucun transport réel. La prochaine gate
+peut seulement vérifier en lecture seule la correspondance des champs live sur
+la K1 ; elle demandera un GO exact distinct et n'autorisera aucun retrait.
+
+Voir ADR-024, `docs/35-garde-retrait-officiel-cfs-v1.md` et
+`packages/k1-control-v1/cfs-stock-unload-guard-v1/`.

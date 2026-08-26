@@ -948,6 +948,20 @@ La branche suivante proposée est
 courant : encadrer la commande Creality avec des vérifications avant/après et
 un arrêt systématique des chauffes, sans parler directement aux moteurs du CFS.
 
+`G4-K1-CONTROL-CFS-STOCK-UNLOAD-GUARD-V1` est maintenant close hors imprimante.
+Le contrôleur refuse sans effet une machine occupée, deux CFS non confirmés, une
+commande active ou une route ambiguë. Après une tentative unique de
+`BOX_QUIT_MATERIAL`, il exige la fin stock, la route libérée et la commande CFS
+vide, puis demande une fois `TURN_OFF_HEATERS` et vérifie les deux consignes à
+zéro. La réponse HTTP seule ne suffit jamais et aucun retry automatique
+n'existe. Le paquet n'a aucun transport K1 ni candidat de pose.
+
+La branche suivante proposée est
+`G4-K1-CONTROL-CFS-STOCK-UNLOAD-GUARD-LIVE-PREFLIGHT-V1`. En langage courant :
+se connecter uniquement pour lire les vrais champs de la K1 et vérifier qu'ils
+correspondent au contrat, sans envoyer de G-code, chauffer, retirer du filament
+ou installer un fichier. Cette connexion exige un nouveau GO exact.
+
 Thomas explicitly rejected further sacrificial print campaigns on 2026-08-21.
 The V3 + PATHS-V1 observation remains useful coexistence evidence but no longer
 blocks offline product construction. L'autorité globale du Goal couvre la
@@ -1000,9 +1014,11 @@ retirement remains atomic with the later proven machine/Orca replacement.
 - Toute nouvelle connexion ou répétition de
   `G4-K1-CONTROL-CFS-MINIMAL-OWNER-PASSIVE-CAPTURE-V1`, désormais close et
   consommée.
-- Toute connexion K1, pose ou nouvel essai physique de
-  `G4-K1-CONTROL-CFS-STOCK-UNLOAD-GUARD-V1` avant préparation hors imprimante,
-  revue et GO exact distinct.
+- Toute connexion K1, pose ou essai physique de
+  `G4-K1-CONTROL-CFS-STOCK-UNLOAD-GUARD-V1`, désormais clos hors imprimante.
+- Toute connexion de
+  `G4-K1-CONTROL-CFS-STOCK-UNLOAD-GUARD-LIVE-PREFLIGHT-V1` sans son GO exact ;
+  même autorisé, ce préflight restera en lecture seule et sans retrait.
 - Any import or change of Orca fields on the workstation profile.
 - `G4-ZSAFE-START-V1` forever: this rejected name cannot receive a GO.
 - Any future `K1-CONTROL-V1` deployment until a new exact G4 package exists and
