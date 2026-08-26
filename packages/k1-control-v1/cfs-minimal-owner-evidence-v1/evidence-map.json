@@ -1,0 +1,158 @@
+{
+  "schema": 1,
+  "status": "sanitized_map_of_local_and_public_static_evidence",
+  "privacy": {
+    "raw_logs_versioned": false,
+    "binary_versioned": false,
+    "serial_numbers_or_unique_ids_versioned": false,
+    "identity_response_payloads_versioned": false
+  },
+  "private_sources": {
+    "historical_log_prefix": {
+      "private_path": "inventory/raw/p4-control-foundation/20260821-1231-v3-paths-8h/klippy-after-observation.private.log",
+      "sha256": "d9bbfbfd17f02c85ad8ad9229c5dceca3c1e711de167979b4c52b0aef060eacc",
+      "size_bytes": 208582597,
+      "line_count": 1289672
+    },
+    "historical_log_superset": {
+      "private_path": "inventory/raw/20260821-224828-g4-k1-control-z-mesh-runtime-v1/klippy.log",
+      "sha256": "2ce08b915b64ef426fa8508e12c1bf624c08fb131674afa66ac4ca5d064d80bb",
+      "size_bytes": 254852617,
+      "line_count": 1590278,
+      "relationship": "contains_historical_log_prefix_byte_for_byte"
+    },
+    "box_wrapper_binary": {
+      "private_path": "inventory/raw/20260826-cfs-box-wrapper-read-only-audit-v1/box_wrapper.cpython-38-mipsel-linux-gnu.private.so",
+      "sha256": "af630c02ccdb51b57585114e5be2be7fcf91fdb10d88872eb6a0c65f048de777",
+      "handling": "hash_and_ELF_metadata_only_never_loaded_imported_or_executed",
+      "elf": {
+        "class": 32,
+        "endianness": "little",
+        "machine": 8,
+        "section_count": 26,
+        "dynamic_symbol_count": 189,
+        "target_method_symbols_exposed": 0
+      }
+    },
+    "stock_box_config": {
+      "private_path": "inventory/raw/g3-production/20260820-0815-cfs-temp-preflight/box.private.cfg",
+      "sha256": "e7a6b26df58a9fa8e49d3af6845f5a0937a790c8ef494b96ec72fd7392abc7a7",
+      "line_count": 106
+    }
+  },
+  "source_independence": {
+    "historical_log_prefix_is_exact_prefix_of_superset": true,
+    "independent_retract_runs": 1,
+    "reason": "same_timestamps_lines_and_bytes_must_not_be_double_counted"
+  },
+  "observed_retract_cycle": {
+    "high_level_start": {
+      "proof": "historical_log_prefix:1029159",
+      "sanitized_event": "box_retrude_material_stage_1"
+    },
+    "route_scope": {
+      "logical_route": "T1A",
+      "address": 1,
+      "slot": "A",
+      "numeric_slot": 1,
+      "basis": "frame_address_and_slot_plus_previously_qualified_T1A_mapping",
+      "fresh_route_proof_in_same_event": false
+    },
+    "buffer_trigger": {
+      "request": [1, 5, 255, 17, 1, 0],
+      "request_proof": "historical_log_prefix:1029260",
+      "timeout_seconds": 150,
+      "timeout_proof": "historical_log_prefix:1029261",
+      "response": [247, 1, 3, 0, 17, 202],
+      "response_proof": "historical_log_prefix:1029287-1029288",
+      "named_result_proof": "historical_log_prefix:1029290-1029291"
+    },
+    "material_trigger": {
+      "request": [1, 5, 255, 17, 1, 1],
+      "request_proof": "historical_log_prefix:1029390",
+      "timeout_seconds": 150,
+      "timeout_proof": "historical_log_prefix:1029391",
+      "response": [247, 1, 3, 0, 17, 202],
+      "response_proof": "historical_log_prefix:1029430-1029431",
+      "named_result_proof": "historical_log_prefix:1029433-1029434"
+    },
+    "local_sensor": {
+      "before": true,
+      "before_proof": "historical_log_prefix:1029258",
+      "after": false,
+      "after_proof": "historical_log_prefix:1029435"
+    },
+    "classification": "exact_historical_stock_observation_not_isolated_not_callable"
+  },
+  "integrity": {
+    "captured_response_trailer": 202,
+    "candidate_rule": "crc8_poly_0x07_initial_0_over_length_state_command_and_data",
+    "candidate_rule_result": 202,
+    "captured_response_matches_candidate_rule": true,
+    "request_side_full_wire_bytes_present_in_local_log": false,
+    "classification": "response_rule_cross_checked_request_transformation_still_unproven"
+  },
+  "stock_config_choreography": {
+    "load_with_material": [
+      "temperature_request",
+      "check_material",
+      "cut",
+      "retract",
+      "move_to_extrude_position",
+      "nozzle_clean",
+      "box_load",
+      "printer_extruder_load",
+      "purge",
+      "restore_position"
+    ],
+    "unload": [
+      "clear_error",
+      "check_material",
+      "cut",
+      "retract",
+      "move_to_box_extrude_position"
+    ],
+    "classification": "high_level_stock_order_only_no_isolated_serial_or_owner_contract"
+  },
+  "public_references": [
+    {
+      "name": "CrealityOfficial_K1_Series_Klipper_PR_13",
+      "url": "https://github.com/CrealityOfficial/K1_Series_Klipper/pull/13/files",
+      "observation": "compiled_box_wrapper_present_source_not_present_in_reviewed_tree",
+      "classification": "provenance_lead_not_exact_hash_or_source_proof"
+    },
+    {
+      "name": "CFSTool_protocol",
+      "url": "https://github.com/Lamar1007/CFSTool/blob/a20798036fca1417fa7ccb4c1c0ea1e8fffee87b/PROTOCOL.md",
+      "commit": "a20798036fca1417fa7ccb4c1c0ea1e8fffee87b",
+      "blob": "567dcca5e95fce3d8e16cff1cab8c01b28d7d816",
+      "use": "crc_candidate_and_modern_GET_VERSION_SN_0x14_cross_check",
+      "classification": "community_reverse_engineering_supporting_only"
+    },
+    {
+      "name": "K1_retrude_before_cut_reverse_engineering",
+      "url": "https://github.com/FrederickAlt/CREALITY-K1-AND-K1-MAX-CFS-RETRUDE-BEFORE-CUT-MOD/blob/083c5a5679d5f7d3f3cfff9a6303b6d224347c29/docs/serial-protocol.md",
+      "commit": "083c5a5679d5f7d3f3cfff9a6303b6d224347c29",
+      "blob": "38d2e4908a7b1745c85ce752fdcc4b027c635ecd",
+      "use": "semantic_cross_check_for_two_retract_triggers_and_150_second_timeout",
+      "exact_command_table_match": false,
+      "mismatch_examples": [
+        {"name": "SET_BOX_MODE", "public": 3, "local": 4},
+        {"name": "SET_PRE_LOADING", "public": 10, "local": 13},
+        {"name": "RETRUDE_PROCESS", "public": 14, "local": 17},
+        {"name": "GET_VERSION_SN", "public": 16, "local": 20}
+      ],
+      "classification": "different_protocol_variant_never_callable_proof"
+    }
+  ],
+  "bounded_unknowns_after_gate": [
+    "request_side_wire_envelope_and_crc_insertion_on_exact_stack",
+    "fresh_route_binding_during_retract_event",
+    "all_other_slots_and_second_CFS_effects",
+    "load_terminal_sensor_contract",
+    "cut_and_purge_isolation",
+    "abort_and_timeout_recovery",
+    "reconnect_resynchronization",
+    "exclusive_stock_owner_stop_ack_and_restore"
+  ]
+}

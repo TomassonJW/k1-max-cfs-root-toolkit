@@ -1,0 +1,61 @@
+{
+  "contract_id": "K1-CONTROL-CFS-MINIMAL-OWNER-EVIDENCE-V1",
+  "schema": 1,
+  "status": "closed_ko_bounded_retract_evidence_added",
+  "gate_verdict": "KO_BOUNDED",
+  "closure_reason": "one_exact_T1A_retract_cycle_is_now_evidenced_but_complete_cycle_and_stock_owner_exclusion_remain_unproven",
+  "printer_mutation_authorized": false,
+  "printer_connection_authorized": false,
+  "deployment_candidate": false,
+  "physical_test_authorized": false,
+  "transport": "absent",
+  "callable_messages": [],
+  "callable_operations": [],
+  "source_binary_policy": "hash_and_static_structure_only_never_load_import_or_execute",
+  "newly_qualified_observation": {
+    "operation": "stock_retract_T1A",
+    "scope": "one_historical_non_isolated_cycle",
+    "application_requests": [
+      [1, 5, 255, 17, 1, 0],
+      [1, 5, 255, 17, 1, 1]
+    ],
+    "matched_response": [247, 1, 3, 0, 17, 202],
+    "host_timeout_seconds": 150,
+    "local_sensor_transition": "present_to_clear",
+    "callable": false
+  },
+  "evidence_policy": {
+    "historical_duplicate_snapshots_count_as_independent_runs": false,
+    "public_reverse_engineering_is_exact_local_binary_proof": false,
+    "one_successful_stock_cycle_is_complete_protocol": false,
+    "unknown_means_blocked": true
+  },
+  "remaining_required_proofs": [
+    "request_side_full_wire_capture_and_integrity_transformation",
+    "isolated_load_effect_and_terminal_sensor_contract",
+    "isolated_cut_contract",
+    "isolated_purge_contract",
+    "stop_or_abort_semantics",
+    "safe_timeout_and_late_response_resynchronization",
+    "safe_reconnect_resynchronization",
+    "fresh_routes_for_slots_B_C_D_on_first_CFS",
+    "fresh_effect_routes_for_second_CFS",
+    "stock_owner_exclusion_acknowledgement_and_restore"
+  ],
+  "offline_isolation": {
+    "network_used_for_public_read_only_research": true,
+    "printer_transport": false,
+    "ssh": false,
+    "serial": false,
+    "gcode": false,
+    "binary_loading": false,
+    "heater_or_motion_side_effect": false
+  },
+  "next_gate": {
+    "candidate": "G4-K1-CONTROL-CFS-MINIMAL-OWNER-PASSIVE-CAPTURE-V1",
+    "default_authority": "review_only_no_printer_contact",
+    "printer_connection_requires_fresh_explicit_authority": true,
+    "physical_action_requires_separate_reviewed_gate": true,
+    "automatic_start": false
+  }
+}

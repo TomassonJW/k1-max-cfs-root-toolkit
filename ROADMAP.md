@@ -109,7 +109,11 @@ seul fonctionnement quotidien :
 9. protocole minimal cartographié hors imprimante puis fermé en KO borné : une
    seule route d'effet `T1A`, aucune liste appelable ; acquisition des preuves
    manquantes avant toute implémentation ou qualification physique ;
-10. contrat Orca final et retrait atomique prouvé de l'ancien post-traitement
+10. gate de preuve supplémentaire close en KO borné : le retrait stock `T1A`
+    est maintenant relié à deux requêtes, deux réponses et au capteur local,
+    mais l'exclusion stock et le cycle complet restent manquants ; protocole de
+    capture passive préparé sans l'autoriser ;
+11. contrat Orca final et retrait atomique prouvé de l'ancien post-traitement
    `+0,27 mm`.
 
 Le rollback exact de `MESH-EDGE-DIAGNOSTIC-V1` et sa validation finale sont

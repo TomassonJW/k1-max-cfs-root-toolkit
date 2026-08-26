@@ -61,6 +61,20 @@ trames et exclusion du propriétaire constructeur restent non prouvés. La gate
 est donc close en KO borné avec `callable_messages=[]`. Ses 25 scénarios verts
 prouvent le blocage sûr, pas un protocole déployable.
 
+## Preuves supplémentaires du propriétaire minimal
+
+Le paquet
+[`cfs-minimal-owner-evidence-v1/`](cfs-minimal-owner-evidence-v1/) retrouve dans
+un ancien journal un retrait constructeur `T1A` exact : deux requêtes
+`RETRUDE_PROCESS`, deux réponses réussies, timeout hôte de 150 secondes et
+capteur local devenu libre. Il prouve aussi que les deux journaux concernés sont
+deux instantanés du même passage, pas deux essais.
+
+Cette avancée ne lève ni l'exclusion du propriétaire stock, ni les autres routes,
+ni la coupe, la purge ou les reprises après faute. La gate reste close en KO
+borné avec `callable_messages=[]`. Le paquet prépare seulement le protocole
+d'une future capture passive, qui exige une revue et un GO exact distincts.
+
 ## Versions figées
 
 - Moonraker MIPS : paquet du Helper Script au commit

@@ -1413,3 +1413,36 @@ Toute connexion à la K1 ou action filament exigera une autorité fraîche.
 
 Voir ADR-021, `docs/32-protocole-proprietaire-filament-minimal-cfs-v1.md` et
 `packages/k1-control-v1/cfs-minimal-owner-protocol-v1/`.
+
+## D-072 — La preuve de retrait enrichit le dossier sans ouvrir la surface appelable
+
+Date: 2026-08-26
+
+Status: gate de preuve close hors imprimante ; avancée partielle ; production
+fermée
+
+`G4-K1-CONTROL-CFS-MINIMAL-OWNER-EVIDENCE-V1` trouve dans un ancien journal un
+cycle constructeur de retrait sur le chemin `T1A`. Deux requêtes locales
+`0x11`, vers le tampon puis le capteur matière, reçoivent chacune une réponse
+d'état zéro avec un timeout hôte de 150 secondes. Le capteur local passe de
+présent à libre.
+
+Les deux fichiers qui portent ces lignes ne comptent pas comme deux essais : le
+premier est le préfixe exact du second. Une règle CRC-8 publique redonne l'octet
+final de la réponse capturée, mais la requête complète sur le fil reste absente.
+
+La rétroanalyse publique la plus détaillée utilise une table de commandes
+différente de la capture locale. Elle reste un appui sémantique, jamais une
+preuve de trame pour ce binaire.
+
+La liste reste `callable_messages=[]`. La prise exclusive et la restitution du
+propriétaire stock, les autres slots, le second CFS, la coupe, la purge et les
+reprises après faute ne sont pas qualifiés. Aucun transport ni paquet de pose
+n'est créé.
+
+La prochaine gate possible est une capture passive revue séparément. Elle ne
+peut ni se connecter ni démarrer sans le GO exact
+`GO G4-K1-CONTROL-CFS-MINIMAL-OWNER-PASSIVE-CAPTURE-V1`.
+
+Voir ADR-022, `docs/33-preuves-proprietaire-filament-minimal-cfs-v1.md` et
+`packages/k1-control-v1/cfs-minimal-owner-evidence-v1/`.

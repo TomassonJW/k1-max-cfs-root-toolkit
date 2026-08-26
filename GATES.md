@@ -207,6 +207,29 @@ Une mission `G4-K1-CONTROL-CFS-MINIMAL-OWNER-EVIDENCE-V1` peut seulement
 préparer hors imprimante l'acquisition des preuves manquantes. Toute connexion
 ou action physique demandera une autorité fraîche distincte.
 
+### `G4-K1-CONTROL-CFS-MINIMAL-OWNER-EVIDENCE-V1`
+
+Statut : **close en KO borné hors imprimante ; retrait `T1A` observé ; liste
+appelable vide ; production fermée**.
+
+Un ancien journal apporte deux requêtes `RETRUDE_PROCESS` sur l'adresse 1 et le
+slot A, leurs deux réponses d'état zéro, un timeout hôte de 150 secondes et le
+passage du capteur local de présent à libre. Le journal court est le préfixe
+exact du journal long : une seule observation physique est comptée.
+
+Le CRC-8 public au polynôme `0x07` redonne l'octet final de la réponse capturée,
+mais la requête complète sur le fil reste absente. La source publique détaillée
+du retrait utilise en outre une autre table de commandes et n'est pas une preuve
+du binaire local.
+
+L'exclusion du propriétaire stock, B/C/D, le second CFS, coupe, purge, arrêt et
+reprises après faute restent non prouvés. `callable_messages=[]`, aucun
+transport et aucun candidat de pose.
+
+Le protocole d'une future capture passive est préparé mais non autorisé. Il
+exige une revue puis le GO exact distinct
+`GO G4-K1-CONTROL-CFS-MINIMAL-OWNER-PASSIVE-CAPTURE-V1`.
+
 ### Reprise physique `MESH-EDGE-DIAGNOSTIC-V1`
 
 Avant toute reprise physique restante : route filament fraîchement résolue,

@@ -914,6 +914,19 @@ les doublons, pertes, réponses tardives, reconnexions et routes périmées. Ce
 vert qualifie le refus, pas un protocole matériel. Aucune connexion K1, aucun
 transport et aucun candidat de pose n'ont été créés.
 
+`G4-K1-CONTROL-CFS-MINIMAL-OWNER-EVIDENCE-V1` est ensuite close en KO borné
+hors imprimante avec une avancée : un ancien journal contient le retrait stock
+`T1A`, ses deux requêtes `0x11`, deux réponses réussies, le timeout de 150
+secondes et le capteur local passant de présent à libre. Le journal court étant
+le préfixe exact du journal long, une seule observation est comptée.
+
+Le CRC-8 public au polynôme `0x07` correspond à la réponse capturée. La requête
+complète sur le fil, l'exclusion du propriétaire constructeur, B/C/D, le second
+CFS, coupe, purge, arrêt et reprises après faute restent manquants. La source
+publique détaillée utilise une autre table de commandes et n'est pas une preuve
+du binaire local. La liste appelable reste vide et le protocole de capture
+passive préparé n'est pas autorisé à s'exécuter.
+
 Thomas explicitly rejected further sacrificial print campaigns on 2026-08-21.
 The V3 + PATHS-V1 observation remains useful coexistence evidence but no longer
 blocks offline product construction. L'autorité globale du Goal couvre la
@@ -960,6 +973,12 @@ retirement remains atomic with the later proven machine/Orca replacement.
 - Toute utilisation d'une trame de
   `G4-K1-CONTROL-CFS-MINIMAL-OWNER-PROTOCOL-V1` : sa liste appelable est vide
   et sa gate est close en KO borné.
+- Toute utilisation des trames observées par
+  `G4-K1-CONTROL-CFS-MINIMAL-OWNER-EVIDENCE-V1` : elles restent historiques,
+  non isolées et non appelables.
+- Toute connexion ou capture sous
+  `G4-K1-CONTROL-CFS-MINIMAL-OWNER-PASSIVE-CAPTURE-V1` sans revue puis GO exact
+  distinct.
 - Any import or change of Orca fields on the workstation profile.
 - `G4-ZSAFE-START-V1` forever: this rejected name cannot receive a GO.
 - Any future `K1-CONTROL-V1` deployment until a new exact G4 package exists and
@@ -977,7 +996,8 @@ retirement remains atomic with the later proven machine/Orca replacement.
   mais l'identité du profil actif n'est plus un blocage.
 - The PETG G-code has no matching `P1-PETG.3mf` in the intake.
 - Recovery artefacts and procedure have not been matched locally to the exact revision.
-- The core `BOX_*` state machine is compiled and its readable source is not present on the machine.
+- The core `BOX_*` state machine is compiled and no readable source matched to
+  the exact local binary has been found.
 - The literal registration of `ACCURATE_HOME_Z` was not found in readable Python, although the underlying `G28` and PR Touch path is mapped.
 - Parts of `ACCURATE_HOME_Z` remain non-observable, although pressure advance ownership is now measured.
 - The corrected P5 cannot distinguish temperature ownership after its change

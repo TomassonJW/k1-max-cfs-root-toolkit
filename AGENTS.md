@@ -29,7 +29,9 @@ après un passage sans débit ; le contrat complet du cycle filament est figé
 hors imprimante ; CFS-DYNAMIC-TEMP-ROUTING-V1 est clos avec 25 scénarios verts
 et un propriétaire minimal choisi sans transport ;
 CFS-MINIMAL-OWNER-PROTOCOL-V1 est clos en KO borné avec une liste appelable
-vide ; production remains closed**.
+vide ; CFS-MINIMAL-OWNER-EVIDENCE-V1 ajoute une preuve historique exacte du
+retrait `T1A` mais reste close en KO borné, sans message appelable ; production
+remains closed**.
 
 La capture `20260823-165742-g4-k1-control-calibration-ui-prtouch-presets-v1` a
 clos PRTOUCH-PRESETS-V1 après un préflight frais, un déploiement idempotent et
@@ -138,6 +140,19 @@ transport n'existe et les `25/25` scénarios qualifient seulement le refus sûr.
 La branche canonique suivante est
 `G4-K1-CONTROL-CFS-MINIMAL-OWNER-EVIDENCE-V1`, hors imprimante par défaut ;
 toute connexion ou action physique exige une autorité fraîche distincte.
+
+Cette gate de preuve est maintenant close hors imprimante. Un ancien journal
+contient les deux requêtes locales `RETRUDE_PROCESS` de `T1A`, leurs réponses
+d'état zéro, un timeout de 150 secondes et le passage du capteur local de
+présent à libre. Le journal court est le préfixe exact du journal long : une
+seule observation est comptée. Le CRC-8 public au polynôme `0x07` correspond à
+la réponse capturée, mais la requête complète sur le fil reste absente. La
+source publique de retrait utilise une autre table de commandes et ne peut pas
+être substituée au binaire local. L'exclusion du propriétaire stock, B/C/D, le
+second CFS, coupe, purge, arrêt et reprises après faute restent non prouvés.
+`callable_messages=[]`, aucun transport ni candidat de pose. La prochaine gate
+possible est `G4-K1-CONTROL-CFS-MINIMAL-OWNER-PASSIVE-CAPTURE-V1`, qui exige
+une revue et un GO exact distincts avant toute connexion ou action physique.
 
 Thomas authorised V1, but the mandatory preflight proved that `logrotate` was
 absent. V1 is closed and must never be deployed. Thomas later authorised V2;

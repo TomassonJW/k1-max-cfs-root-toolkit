@@ -190,7 +190,24 @@
     "printer_transport": false,
     "deployment_candidate": false,
     "physical_test_authorized": false,
-    "next_design_branch": "minimal_owner_evidence_only_with_fresh_authority_for_any_printer_contact"
+    "next_design_branch": "closed_by_cfs_minimal_owner_evidence_v1"
+  },
+  "cfs_minimal_owner_evidence": {
+    "candidate": "K1-CONTROL-CFS-MINIMAL-OWNER-EVIDENCE-V1",
+    "status": "closed_ko_bounded_retract_evidence_added",
+    "gate_verdict": "KO_BOUNDED",
+    "contract": "packages/k1-control-v1/cfs-minimal-owner-evidence-v1/contract.json",
+    "evidence_map": "packages/k1-control-v1/cfs-minimal-owner-evidence-v1/evidence-map.json",
+    "new_exact_observation": "historical_stock_T1A_retract_buffer_then_material_with_local_sensor_clear",
+    "independent_retract_runs": 1,
+    "response_crc8_poly_0x07_cross_check": true,
+    "request_side_full_wire_capture": false,
+    "stock_owner_exclusion": false,
+    "callable_messages": [],
+    "printer_transport": false,
+    "deployment_candidate": false,
+    "physical_test_authorized": false,
+    "next_design_branch": "passive_capture_requires_separate_review_and_exact_GO"
   },
   "filament_state": {
     "states": [

@@ -51,6 +51,14 @@ python -m unittest tests.test_orca_control_contract -v
 python -m prototype.scenario_matrix
 ```
 
+La gate de preuves du propriétaire minimal CFS contrôle la nouvelle séquence de
+retrait, le non-double-comptage des journaux, le CRC de réponse et la fermeture
+de toute surface appelable :
+
+```powershell
+python -m unittest tests.test_cfs_minimal_owner_evidence_v1 -v
+```
+
 La suite complète doit être lancée avec un dossier de découverte explicite :
 
 ```powershell
