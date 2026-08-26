@@ -87,11 +87,11 @@ minimal n'avait ni résolution d'outil CFS, ni chargement, ni purge. La mention
 `T0` venait de Codex et n'est pas un fait fourni par Thomas. Ce passage ne prouve
 ni une buse bouchée ni le comportement du mesh.
 
-Au dernier état observé, le robuste est actif, les cibles sont à zéro et les
-axes sont libérés, mais le profil diagnostic temporaire et les quatre G-code
-restent à retirer. Cet état distant n'est pas rafraîchi dans la mission
-documentaire actuelle. La prochaine action physique est exclusivement le
-rollback exact et la validation finale ; aucun nouveau motif ne part avant une
+La capture `20260826-090956-mesh-edge-diagnostic-v1` a maintenant obtenu le
+rollback exact et `VALIDATE_MESH_EDGE_DIAGNOSTIC_V1_OK`. Le profil diagnostic
+et les quatre G-code sont absents, la base `printer.cfg` exacte est restaurée,
+le robuste est actif, les cibles sont à zéro, les axes sont libérés, le runtime
+Z est sûr et les deux CFS sont connectés. Aucun nouveau motif ne part avant une
 route filament résolue et une purge visible fraîche.
 
 Le cycle de production cible est désormais figé par ADR-016,
@@ -566,11 +566,11 @@ Au début de la prochaine session, annoncer explicitement à Thomas :
   qualification physique d'un profil dérivé ;
 - l'autonomie production reste non atteinte.
 
-La prochaine action sûre de `MESH-EDGE-DIAGNOSTIC-V1` est le rollback de la
-tentative invalide : restaurer `printer.cfg` depuis le backup exact, retirer le
-profil diagnostic et les quatre G-code, recharger le robuste, couper les cibles,
-libérer les axes et exécuter la validation finale. Ne pas relancer un motif dans
-la même action.
+Le rollback de la tentative invalide est clos sous la capture
+`20260826-090956-mesh-edge-diagnostic-v1`. La restauration exacte, le retrait
+du profil diagnostic et des quatre G-code, le retour au robuste, les cibles
+zéro, les axes libérés et la validation finale sont verts. Aucun motif n'a été
+relancé.
 
 La reprise ultérieure doit repasser hors imprimante, ne supposer aucun `T0`,
 résoudre l'outil logique vers le CFS/slot réel et exiger une purge visiblement

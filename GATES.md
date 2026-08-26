@@ -110,9 +110,13 @@ ne chargeait pas le filament et n'exigeait aucune purge visible. La mention
 `T0` était une hypothèse de Codex et n'est pas retenue comme fait. Ce passage ne
 qualifie ni le mesh ni une buse bouchée.
 
-Avant toute reprise physique : rollback exact du profil temporaire et des quatre
-G-code, validation de la base sûre, route filament fraîchement résolue et purge
-réellement visible. Un capteur de présence seul ne suffit pas.
+Le rollback exact est maintenant clos sous la capture
+`20260826-090956-mesh-edge-diagnostic-v1`. Il a restauré la base, retiré le
+profil temporaire et les quatre G-code, rechargé le robuste et obtenu
+`VALIDATE_MESH_EDGE_DIAGNOSTIC_V1_OK`. Aucun motif n'a été relancé.
+
+Avant toute reprise physique restante : route filament fraîchement résolue et
+purge réellement visible. Un capteur de présence seul ne suffit pas.
 
 Critères :
 

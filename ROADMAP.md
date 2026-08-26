@@ -102,10 +102,10 @@ seul fonctionnement quotidien :
 8. contrat Orca final et retrait atomique prouvé de l'ancien post-traitement
    `+0,27 mm`.
 
-Le prochain acte physique autorisable n'est pas un nouveau motif : c'est le
-rollback exact de `MESH-EDGE-DIAGNOSTIC-V1`, puis une validation finale en
-lecture seule. La reprise du motif restera interdite tant que la route du
-filament et une purge réellement visible ne sont pas prouvées.
+Le rollback exact de `MESH-EDGE-DIAGNOSTIC-V1` et sa validation finale sont
+verts. Aucun acte physique suivant n'est automatiquement autorisé. La reprise
+du motif reste interdite tant que la route du filament et une purge réellement
+visible ne sont pas prouvées depuis un état frais.
 
 La seconde famille suit ADR-016 et le contrat V1 figé : un unique
 `KCTRL_JOB_BEGIN` remplacera à terme le cumul Orca `G28 + Tn + START_PRINT`.

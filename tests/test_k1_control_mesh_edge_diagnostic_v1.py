@@ -96,6 +96,20 @@ class MeshEdgeDiagnosticV1Tests(unittest.TestCase):
         self.assertTrue(contract["source_gcode"]["hardcoded_physical_tool_forbidden"])
         self.assertTrue(contract["physical_rules"]["fresh_visible_purge_flow_required_before_each_variant"])
         self.assertTrue(contract["physical_rules"]["sensor_only_flow_proof_forbidden"])
+        self.assertTrue(contract["rollback"]["completed"])
+        self.assertEqual(
+            contract["rollback"]["capture_id"],
+            "20260826-090956-mesh-edge-diagnostic-v1",
+        )
+        self.assertFalse(contract["rollback"]["new_pattern_started"])
+
+    def test_result_records_exact_rollback_and_final_validation(self):
+        result = (PACKAGE / "RESULT.md").read_text(encoding="utf-8")
+        self.assertIn("WAIT_COMPLETE_MESH_EDGE_DIAGNOSTIC_V1_OK", result)
+        self.assertIn("ROLLBACK_MESH_EDGE_DIAGNOSTIC_V1_OK", result)
+        self.assertIn("VALIDATE_MESH_EDGE_DIAGNOSTIC_V1_OK", result)
+        self.assertIn("Aucun homing, mouvement, chauffage, extrusion", result)
+        self.assertIn("quatre G-code temporaires absents", result)
 
     def test_prepare_rejects_wrong_source_hash(self):
         with self.assertRaisesRegex(ValueError, "empreinte revue"):

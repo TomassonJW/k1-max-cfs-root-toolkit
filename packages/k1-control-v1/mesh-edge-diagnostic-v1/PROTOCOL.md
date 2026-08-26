@@ -11,9 +11,10 @@ aucun filament. Il ne prouve pas une buse bouchée : le G-code minimal n'appelai
 aucune sélection CFS, aucun chargement et aucune purge. La mention `T0` de la
 première révision était une hypothèse de Codex, pas un fait fourni par Thomas.
 
-Avant toute nouvelle action physique, exécuter le rollback exact, retirer le
-profil diagnostic et les quatre G-code, revalider la base sûre, puis repasser
-la gate hors imprimante corrigée. Aucun motif ne doit être relancé directement.
+Le rollback exact est désormais clos et la base sûre revalidée sous la capture
+`20260826-090956-mesh-edge-diagnostic-v1` ; voir `RESULT.md`. Avant toute
+nouvelle action physique, repasser la gate hors imprimante corrigée. Aucun motif
+ne doit être relancé directement.
 
 ## Avant toute extrusion
 

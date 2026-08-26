@@ -17,11 +17,12 @@ Branche de reprise : `codex/mesh-edge-diagnostic-v1`
 - L’éditeur local v001 est validé et le mode Précision reste caché.
 - MESH-EDGE-DIAGNOSTIC-V1 est en cours mais suspendue après un passage source
   sans dépôt de filament. Ce passage ne qualifie ni la buse ni le mesh.
-- Au dernier état observé, le robuste est actif, les cibles sont à zéro et les
-  axes sont libérés ; le profil diagnostic temporaire et les quatre G-code
-  restent toutefois à retirer par rollback exact. Cet état peut être périmé.
-- La prochaine action physique unique est ce rollback puis la validation finale,
-  sans nouveau motif.
+- La capture `20260826-090956-mesh-edge-diagnostic-v1` a obtenu le rollback et
+  `VALIDATE_MESH_EDGE_DIAGNOSTIC_V1_OK` : profil diagnostic et quatre G-code
+  absents, base exacte, robuste actif, cibles zéro, axes libérés, runtime Z sûr
+  et deux CFS connectés.
+- Aucun nouveau motif n’est autorisé sans reprise explicite, route CFS/slot
+  fraîchement résolue et purge réellement visible.
 - Aucun `GO` exact ni identifiant de gate recopié n’est requis ; une demande
   normale de Thomas suffit, conformément à D-054.
 - La présence de Thomas et le plateau réellement libre restent des faits à
@@ -161,6 +162,11 @@ Le passage n'est pas une preuve de buse bouchée : les commandes d'extrusion ont
 été envoyées sans preuve que du filament atteignait l'extrudeur ou la buse. La
 gate physique est suspendue.
 
+Le rollback de la tentative est désormais clos. La capture
+`20260826-090956-mesh-edge-diagnostic-v1` a obtenu
+`ROLLBACK_MESH_EDGE_DIAGNOSTIC_V1_OK` puis
+`VALIDATE_MESH_EDGE_DIAGNOSTIC_V1_OK`, sans nouveau motif.
+
 ### Objectif
 
 Prouver physiquement, avec un motif borné et peu consommateur :
@@ -189,17 +195,15 @@ encore autonome le mode Précision.
 ### Ordre recommandé
 
 1. Lire les documents d’autorité et vérifier Git.
-2. Retrouver la capture privée exacte de la tentative et son backup.
-3. Exécuter exclusivement `Rollback`, puis `FinalValidate` ; ne pas relancer de
-   motif dans la même reprise.
-4. Vérifier réellement profil diagnostic absent, quatre G-code absents, robuste
-   actif, cibles zéro et axes libérés.
-5. Repasser ensuite le protocole corrigé et ses tests hors imprimante.
-6. Obtenir un nouveau préflight K1 frais.
-7. Demander à Thomas les faits non observables : présence, plateau libre,
+2. Lire `RESULT.md` et ne pas répéter le rollback déjà clos.
+3. Repasser le protocole corrigé et ses tests hors imprimante.
+4. Auditer en lecture seule le mapping outil logique/CFS/slot et les capteurs
+   exacts ; ne pas transformer une présence capteur en preuve de débit.
+5. Obtenir un nouveau préflight K1 frais.
+6. Demander à Thomas les faits non observables : présence, plateau libre,
    plaque, route filament et purge réellement visible.
-8. Exécuter une seule comparaison bornée et arrêter au premier KO.
-9. Recharger le robuste, couper les cibles, retirer les G-code et valider l’état
+7. Exécuter une seule comparaison bornée et arrêter au premier KO.
+8. Recharger le robuste, couper les cibles, retirer les G-code et valider l’état
    final avant toute conclusion.
 
 ### Critères OK
@@ -232,9 +236,10 @@ Précision dans la même mission.
 9. docs/25-contrat-cycle-impression-nettoyage-cfs-v1.md
 10. docs/adr/ADR-016-cycle-production-orchestre-et-propriete-cfs.md
 11. design/job-lifecycle-contract-v1.json
-12. packages/k1-control-v1/mesh-edge-diagnostic-v1/PROTOCOL.md
-13. packages/k1-control-v1/composite-first-layer-comparison-v2/RESULT.md
-14. packages/k1-control-v1/mesh-editor-offline-v1/README.md
+12. packages/k1-control-v1/mesh-edge-diagnostic-v1/RESULT.md
+13. packages/k1-control-v1/mesh-edge-diagnostic-v1/PROTOCOL.md
+14. packages/k1-control-v1/composite-first-layer-comparison-v2/RESULT.md
+15. packages/k1-control-v1/mesh-editor-offline-v1/README.md
 
 Relire aussi les sources et tests du paquet hors ligne avant de réutiliser son
 contrat ou ses signes.

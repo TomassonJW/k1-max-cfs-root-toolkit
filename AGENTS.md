@@ -102,10 +102,12 @@ déplacé la tête sans déposer de filament. Le G-code minimal ne résolvait au
 outil CFS, ne chargeait pas et ne purgeait pas. La mention `T0` était une
 hypothèse de Codex, pas un fait fourni par Thomas. Ce passage ne qualifie ni la
 buse ni le mesh. Au dernier état observé, le robuste est actif, les cibles sont
-à zéro et les axes sont libérés, mais le profil diagnostic temporaire et les
-quatre G-code doivent encore être retirés par rollback exact. Aucun nouveau
-motif n'est permis avant ce rollback, une route CFS/slot fraîchement résolue et
-une purge réellement visible.
+à zéro et les axes sont libérés. La capture
+`20260826-090956-mesh-edge-diagnostic-v1` a ensuite obtenu le rollback exact et
+`VALIDATE_MESH_EDGE_DIAGNOSTIC_V1_OK` : base `printer.cfg` exacte, profil
+diagnostic et quatre G-code absents, robuste actif, runtime Z sûr et deux CFS
+connectés. Aucun nouveau motif n'est permis avant une route CFS/slot fraîchement
+résolue et une purge réellement visible.
 
 Le 26 août 2026, Thomas a figé le contrat complet de nettoyage autonome,
 démarrage, filament, changement, runout, pause, reprise et fin. Les autorités

@@ -10,8 +10,9 @@ que Thomas ait fourni ce fait. Ce passage ne qualifie ni le mesh ni la buse.
 
 Le paquet ne doit plus lancer de motif sans confirmation fraîche de la route
 filament et d'une purge réellement visible. Un capteur de présence seul ne
-prouve pas le débit. La reprise physique exige d'abord le rollback exact du
-profil temporaire et des quatre G-code, puis une nouvelle gate hors imprimante.
+prouve pas le débit. Le rollback exact du profil temporaire et des quatre G-code
+est maintenant clos et validé ; voir `RESULT.md`. Toute nouvelle reprise doit
+d'abord repasser hors imprimante.
 
 Ce paquet prépare une comparaison physique bornée entre le profil composite
 source et un profil diagnostic dérivé. La géométrie couvre `X/Y=5..295 mm` avec

@@ -371,10 +371,11 @@ un chargement ou une purge. L'hypothèse documentaire `T0` n'était pas un fait
 fourni par Thomas et ne prouvait rien sur l'état physique.
 
 Ce passage ne constitue ni une impression, ni une preuve de buse bouchée, ni une
-qualification de mesh. La gate physique reste suspendue. Avant toute reprise :
+qualification de mesh. Le rollback exact et sa validation finale sont verts
+sous la capture `20260826-090956-mesh-edge-diagnostic-v1`. La gate physique
+reste suspendue. Avant toute reprise :
 
-1. restaurer la base exacte, retirer le profil temporaire et les quatre G-code,
-   puis valider l'état final ;
+1. ne pas répéter le rollback déjà clos et partir de la base sûre validée ;
 2. conserver l'absence de `T0` supposé ;
 3. exiger une route filament explicitement confirmée ;
 4. exiger une purge visible fraîche avant chaque motif ;

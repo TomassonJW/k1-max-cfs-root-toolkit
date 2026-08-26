@@ -1214,8 +1214,9 @@ défaut jusqu'à qualification physique de la recette automatique.
 Le premier motif de `MESH-EDGE-DIAGNOSTIC-V1` est classé invalide : il a chauffé
 et bougé sans déposer de filament parce que le chemin minimal ne résolvait ni
 outil CFS, ni chargement, ni purge. Il ne prouve ni une buse bouchée ni le mesh.
-La gate est suspendue jusqu'au rollback exact, à l'absence de `T0` supposé et à
-une purge visible fraîche.
+Le rollback exact et sa validation finale sont maintenant verts sous la capture
+`20260826-090956-mesh-edge-diagnostic-v1`. La gate reste suspendue jusqu'à une
+reprise sans `T0` supposé, avec route filament résolue et purge visible fraîche.
 
 Voir `docs/25-contrat-cycle-impression-nettoyage-cfs-v1.md`,
 `design/job-lifecycle-contract-v1.json` et ADR-016.

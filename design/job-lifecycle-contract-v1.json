@@ -296,6 +296,7 @@
   ],
   "deployment": {
     "active_physical_gate": "MESH-EDGE-DIAGNOSTIC-V1 suspended after invalid no-flow source passage",
+    "active_physical_gate_rollback": "validated under capture 20260826-090956-mesh-edge-diagnostic-v1; temporary profile and four gcodes absent",
     "daily_calibration": "6x6 Lagrange one-mesh campaign validated and autonomous",
     "precision_mode": "hidden; edge diagnostic and derived profile qualification incomplete",
     "production_cutover": "not implemented; job lifecycle, sensor mapping, CFS temperature owner and Orca cutover remain absent",

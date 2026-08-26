@@ -2,6 +2,12 @@
   "schema": 1,
   "gate": "MESH-EDGE-DIAGNOSTIC-V1",
   "status": "physical_run_suspended_after_no_flow",
+  "rollback": {
+    "capture_id": "20260826-090956-mesh-edge-diagnostic-v1",
+    "completed": true,
+    "final_validation": "VALIDATE_MESH_EDGE_DIAGNOSTIC_V1_OK",
+    "new_pattern_started": false
+  },
   "source_gcode": {
     "sha256": "b93fff2eec8354376be7de55210ad592ea4feffb546abfa92f016cc7c6fde2d3",
     "filament": "PLA Geeetech",

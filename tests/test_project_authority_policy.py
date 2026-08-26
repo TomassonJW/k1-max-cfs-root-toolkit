@@ -21,11 +21,12 @@ class ProjectAuthorityPolicyTests(unittest.TestCase):
         self.assertNotIn("autoriser littéralement", current_header)
         self.assertIn("MESH-EDITOR-OFFLINE-V1", current_header)
         self.assertIn("MESH-EDGE-DIAGNOSTIC-V1", current_header)
-        self.assertIn("profil diagnostic temporaire", current_header)
+        self.assertIn("profil diagnostic et quatre G-code", current_header)
         self.assertIn("quatre G-code", current_header)
         self.assertIn("Aucun `GO` exact", current_header)
         self.assertIn("plateau réellement libre", current_header)
         self.assertIn("rollback", current_header)
+        self.assertIn("VALIDATE_MESH_EDGE_DIAGNOSTIC_V1_OK", current_header)
 
     def test_adr_and_decision_preserve_technical_safety_controls(self):
         adr = (
