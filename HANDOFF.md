@@ -1,188 +1,242 @@
-# HANDOFF — protocole minimal du propriétaire filament CFS à cartographier hors imprimante
+# HANDOFF — audit CFS minimal clos en KO borné ; preuves suivantes à préparer
 
-Date de passation : 2026-08-26 21:58 +02:00
+Date de passation : 2026-08-26 22:35 +02:00
 Projet : `C:\Users\janko\Documents\ChatGPT\k1-max-cfs-root-toolkit`
 Branche cible : `main`
+Mission terminée : `G4-K1-CONTROL-CFS-MINIMAL-OWNER-PROTOCOL-V1`
 
 ## État à annoncer immédiatement à Thomas
 
 - **Autonomie calibration quotidienne standard : atteinte.**
 - **Autonomie de création et d'édition hors ligne d'un profil dérivé : atteinte.**
 - **Autonomie du mode Précision réellement installé : non atteinte.**
-- **Autonomie production : non atteinte.**
-- `G4-K1-CONTROL-CFS-DYNAMIC-TEMP-ROUTING-V1` est close hors imprimante :
-  architecture choisie, contrat exécutable et matrice `25/25` verte.
-- Le choix est `minimal_separate_filament_owner`, mais il reste une conception :
-  aucun protocole série appelable, aucun transport K1 et aucun candidat de pose.
-- Le robuste `k1_p001_t055_r001_n06x06` et le Z accepté `−0,04 mm` restent la
-  dernière base sûre connue. Ils n'ont pas été revérifiés sur la K1 pendant la
-  mission close.
-- `MESH-EDGE-DIAGNOSTIC-V1` reste suspendue ; le mode Précision reste caché.
-- **Production fermée.** Le vert local ne vaut ni pose, ni essai physique, ni
-  validation de débit, capteur, cutter ou coexistence avec le firmware stock.
-- Autorisation de démarrage de la prochaine mission : **ATTENDRE_GO**. Une
-  demande normale et non ambiguë de Thomas autorise seulement le travail hors
-  imprimante décrit ci-dessous. Aucun ancien GO n'autorise une connexion K1.
+- **Autonomie production : non atteinte. Production fermée.**
+- L'audit CFS de protocole minimal est clos en **KO borné** : les preuves
+  disponibles ne suffisent pas à construire un propriétaire filament sûr.
+- `callable_messages=[]`, aucun transport, aucun déployeur et aucun candidat de
+  pose n'ont été créés.
+- Aucune connexion K1, même en lecture seule, n'a eu lieu pendant la mission.
+- Le module MIPS a été haché et inspecté par ses chaînes ; il n'a été ni chargé,
+  ni importé, ni exécuté.
+- `MESH-EDGE-DIAGNOSTIC-V1` reste suspendue. Son rollback exact est vert : le
+  profil diagnostic et quatre G-code sont absents, le robuste reste la base.
+- `VALIDATE_MESH_EDGE_DIAGNOSTIC_V1_OK` reste la dernière validation de cette
+  fermeture ; les quatre G-code ne doivent pas être recréés depuis ce handoff.
+- Avant toute future action physique : plateau réellement libre confirmé par
+  Thomas, route fraîche et purge visible dans une gate revue.
+- Aucun `GO` exact antérieur n'autorise la prochaine mission, une connexion K1,
+  une capture physique ou la reprise du diagnostic de bord.
+- Autorisation de démarrage suivante : **ATTENDRE_GO**. Lire et vérifier est
+  permis ; ne modifier aucun fichier avant une nouvelle demande non ambiguë.
 
-## Mission close
+## État Git vérifié
 
-### `G4-K1-CONTROL-CFS-DYNAMIC-TEMP-ROUTING-V1`
+- SHA de départ : `49c5314e948a43785e6fae83eab405f0c8499766`.
+- Commit de mission : `1fd5ab56cf9d95f541eb567d5fe259ebf45ba0ff`.
+- Commit de mission publié sur `origin/main` : oui, vérifié par `ls-remote`.
+- Branche cible locale avant le commit de cette passation : `main` au même SHA.
+- Branche cible distante avant le commit de cette passation : `origin/main` au
+  même SHA.
+- Divergence observée avant la passation : `0/0`.
+- Checkout cible : propre avant l'édition de ce fichier.
+- Branche de mission séparée : aucune ; le travail a été intégré directement
+  dans `main` conformément à l'autorité Git du projet.
+- Worktree de mission séparé : aucun.
+- Autres worktrees : aucun ; `git worktree list --porcelain` ne montre que le
+  checkout principal.
+- Le commit qui contient ce fichier est le commit documentaire de passation ;
+  son SHA final doit être lu par `git log -1 --format=%H`.
 
-Les preuves privées exactes placent la résolution stock dans
-`BoxAction.get_material_target_temp`, après lecture de la matière et avant la
-première cible thermique observable du chargement. Dans l'incident, le chemin
-stock a résolu `220 °C`, porté réellement la buse à `220 °C`, puis conservé un
-paramètre de purge `190`. Le même chemin a aussi possédé de la géométrie.
+## Résultat concret
 
-Quatre voies ont été comparées :
+La gate cherchait le plus petit protocole permettant au propriétaire filament
+minimal de l'ADR-020 de charger, retirer, couper, purger, s'arrêter et se
+resynchroniser sur deux CFS, sans température ni géométrie cachée et sans
+collision avec le propriétaire constructeur.
 
-1. la base matière statique reste un inventaire et un filet de sécurité ;
-2. une réaffirmation après `T` reste une défense trop tardive ;
-3. l'interception étroite de `get_material_target_temp` est refusée sans point
-   d'extension stable et sans séparation de la géométrie ;
-4. seul un propriétaire filament minimal séparé satisfait tout le contrat.
+Le verdict honnête est **KO borné**. La cartographie établit :
 
-Le ticket thermique retenu arrive avant le premier effet filament. Il lie le
-travail, la phase, l'opération, l'outil logique, une preuve de route CFS/slot
-fraîche et consommable une fois, la cible de buse, la cible séparée du plateau
-et les six invariants. Les températures de retrait, chargement et purge sont
-distinctes. Refill et runout équivalents conservent la dernière cible explicite.
-Une pause normale n'appelle aucun CFS.
+- requêtes observées : `0x04`, `0x05`, `0x08`, `0x0a`, `0x0d`, `0x0f`,
+  `0x10`, `0x14` ;
+- forme visible d'une requête : adresse, longueur, `0xff`, commande, payload ;
+- forme visible d'une réponse : `0xf7`, adresse, longueur, état, commande,
+  payload ou terminaison ;
+- clé d'attente visible : `(adresse, commande)` ;
+- identifiant de transaction : non observé ;
+- adresses interrogées : 1 et 2 ;
+- seule route d'action : `T1A`, adresse 1, slot A, numéro 1 ;
+- seul effet filament visible : séquence `EXTRUDE_PROCESS` sur l'adresse 1 ;
+- états vus sur cette séquence : `OK` et `EXTRUDE_ERR8`.
 
-Toute cible cachée, route absente ou périmée, commande thermique ou géométrique
-du CFS, preuve de débit absente ou dérive Z/mesh coupe les deux cibles et bloque
-la reprise. Le Z n'est jamais restauré à l'aveugle.
+Ne sont pas prouvés :
 
-### Livrables canoniques
+- l'intégrité ou le checksum complet des trames ;
+- retrait ou rétraction ;
+- coupe isolée ;
+- purge isolée ;
+- arrêt ou annulation du propriétaire minimal ;
+- slots B/C/D ;
+- effets filament sur le second CFS ;
+- distinction complète réponse/événement hors attente active ;
+- resynchronisation sûre après perte ou reconnexion ;
+- prise exclusive puis restitution au propriétaire stock.
 
-- `docs/31-routage-dynamique-temperatures-cfs-v1.md`
-- `docs/adr/ADR-020-proprietaire-filament-minimal-et-ticket-thermique.md`
-- `packages/k1-control-v1/cfs-dynamic-temp-routing-v1/contract.json`
-- `packages/k1-control-v1/cfs-dynamic-temp-routing-v1/architecture-options.json`
-- `packages/k1-control-v1/cfs-dynamic-temp-routing-v1/simulator.py`
-- `packages/k1-control-v1/cfs-dynamic-temp-routing-v1/scenarios.json`
-- `packages/k1-control-v1/cfs-dynamic-temp-routing-v1/RESULT.md`
-- `packages/k1-control-v1/cfs-dynamic-temp-routing-v1/FUTURE-DEPLOYMENT-PLAN.md`
-- `tests/test_cfs_dynamic_temp_routing_v1.py`
+Les chaînes Cython contiennent les noms de retrait, moteur de connexion et
+`extrude2`, mais aucun nom ne devient une trame. Deux lignes `box heart process
+not enable` ne prouvent pas l'exclusion du propriétaire constructeur.
 
-### Vérifications obtenues
+## Travail livré
 
-- simulateur déterministe : **25/25** scénarios ;
-- suite Python complète : **350 tests verts**, dont 3 ignorés déjà connus ;
-- `git diff --check` et `git diff --cached --check` : **verts** ;
-- transport réseau, SSH, série, G-code ou K1 dans le paquet : **absent** ;
-- connexion K1 pendant la mission : **non exécutée**, par interdiction ;
-- pose, restart, chauffe, homing, mouvement, commande CFS, purge et impression :
-  **non exécutés** ;
-- validation physique et production : **non exécutées**.
+### Paquet exécutable hors ligne
 
-## État Git de la mission close
+`packages/k1-control-v1/cfs-minimal-owner-protocol-v1/` contient :
 
-- checkout : `C:\Users\janko\Documents\ChatGPT\k1-max-cfs-root-toolkit` ;
-- branche : `main` ;
-- `HEAD` et `origin/main` observés au départ :
-  `ecad754b78ead0370a37af3888364c5e627656a6` ;
-- commit de mission : `1602867be97b2ac0bc58dee2a7aa9889c35f403d` ;
-- autre worktree observé au départ : aucun ;
-- branche ou worktree de mission séparé : aucun.
+- `contract.json` : gate KO, liste appelable vide et règles de blocage ;
+- `evidence-map.json` : carte nettoyée, hashes et lignes exactes ;
+- `verify_private_evidence.py` : lecture statique, hashes, trames et absences ;
+- `emulator.py` : automate déterministe sans réseau, série, SSH ou G-code ;
+- `scenarios.json` : 25 cas de corrélation et de refus ;
+- `README.md`, `RESULT.md` et `FUTURE-EVIDENCE-PLAN.md`.
 
-La session de passation doit commiter ce fichier, pousser `main`, vérifier
-`HEAD == origin/main`, vérifier l'unique worktree et laisser le checkout propre.
-À la reprise, relire l'état réel ; ne pas traiter ces SHA comme une preuve
-éternelle.
+L'émulateur refuse les doublons sur une clé en attente, met la clé en
+quarantaine après timeout, ne transforme jamais une réponse tardive ou un
+événement non corrélé en acquittement, et invalide routes et attentes lors
+d'une reconnexion. Une révision de mapping rend aussi l'ancienne route caduque.
+
+### Contrat et décisions
+
+- `docs/32-protocole-proprietaire-filament-minimal-cfs-v1.md` ;
+- ADR-021 ;
+- D-071 ;
+- nouvelle section `cfs_minimal_owner_protocol` dans
+  `design/job-lifecycle-contract-v1.json` ;
+- `AGENTS.md`, `STATE.md`, `GATES.md`, `ROADMAP.md`, les contrats CFS et les
+  index du paquet alignés.
+
+### Tests
+
+- `tests/test_cfs_minimal_owner_protocol_v1.py` ajoute 12 tests ;
+- la matrice interne compte 25 scénarios déterministes ;
+- les tests vérifient aussi l'absence d'import réseau, série, processus ou
+  chargeur binaire.
+
+## Vérifications
+
+### Preuves automatiques
+
+- `verify_private_evidence.py` : **OK**.
+  - quatre SHA-256 exacts ;
+  - journal complet : `1 342 535` lignes ;
+  - fenêtre d'incident : `12 800` lignes ;
+  - chaînes statiques : `4 922` lignes ;
+  - huit commandes sortantes classées ;
+  - `EXTRUDE_PROCESS` vu seulement à l'adresse 1 ;
+  - seule route d'action : `T1A` ;
+  - aucune donnée d'identité privée émise par le vérificateur.
+- `emulator.py` : **OK**, `25/25`.
+- tests ciblés : **OK**, `12/12`.
+- suite complète : **OK**, `362` tests exécutés, `359` verts et `3` ignorés
+  connus pour dépendances ou sandbox locaux.
+- `git diff --check` et `git diff --cached --check` du commit mission : **OK**.
+
+### Git
+
+- commit mission créé : **OK** ;
+- push de `main` : **OK** ;
+- égalité locale/distante du commit mission : **OK** ;
+- commit et push de la présente passation : à vérifier après sa création.
+
+### Gates humaines ou matérielles
+
+- connexion K1 : **non exécutée, interdite dans cette mission** ;
+- trame série réelle : **non exécutée** ;
+- filament, cutter, purge, chauffe, mouvement ou impression : **non exécutés** ;
+- exclusion du propriétaire stock : **non validée** ;
+- mode Précision installé : **non validé** ;
+- production : **fermée**.
+
+## Fichiers privés
+
+Le vérificateur dépend localement de :
+
+`inventory/raw/20260826-cfs-box-wrapper-read-only-audit-v1/`
+
+Ce dossier reste ignoré et hors Git. Il contient le module MIPS, les chaînes et
+deux journaux. Ne jamais publier leurs identifiants uniques ou payloads
+d'identité. Les seuls éléments versionnés sont les hashes, les lignes, les
+trames non identifiantes nécessaires et les conclusions bornées.
+
+Le script temporaire `.codex-work/analyze_cfs_protocol_evidence.py` n'appartenait
+pas au livrable et a été supprimé avant la clôture finale.
+
+## Limites et risques
+
+- Un journal prouve ce qui s'est produit, pas toutes les variantes possibles.
+- Les noms Cython ne définissent ni identifiant de commande ni payload.
+- Sans identifiant de transaction, une réponse tardive reste dangereuse.
+- La symétrie entre slots ou unités ne peut pas être supposée.
+- Un heartbeat arrêté n'est pas un verrou exclusif.
+- La bonne architecture cible de l'ADR-020 n'a toujours aucun protocole
+  d'exécution qualifié.
+- Le robuste et le Z accepté n'ont pas été revérifiés sur la K1 pendant cette
+  mission, puisque toute connexion était hors périmètre.
 
 ## Prochaine mission unique
 
-### `G4-K1-CONTROL-CFS-MINIMAL-OWNER-PROTOCOL-V1`
+### `G4-K1-CONTROL-CFS-MINIMAL-OWNER-EVIDENCE-V1`
 
-Cartographier hors imprimante le plus petit protocole nécessaire au propriétaire
-filament retenu, uniquement depuis les preuves privées déjà capturées. Ne jamais
-inventer une trame, un accusé, un état capteur ou une règle de coexistence.
+Résultat attendu : acquérir ou préparer les preuves exactes manquantes, sans
+inventer de trame et sans modifier la liste appelable tant que le cycle minimal
+complet et l'exclusion du propriétaire stock ne sont pas démontrés.
 
-### Travail à faire
+Autorité par défaut après un futur GO : **hors imprimante seulement**.
 
-1. Vérifier `main`, la propreté et les SHA local/distant.
-2. Relire les contrats et résultats obligatoires ci-dessous.
-3. Inventorier statiquement les messages déjà prouvés : adressage CFS, slot,
-   avance, retrait, cutter, capteurs, états et accusés.
-4. Distinguer clairement requête, réponse, événement, timeout et état inconnu.
-5. Définir une liste minimale appelable ; toute trame incomplète ou ambiguë
-   reste refusée.
-6. Définir l'exclusion stricte entre propriétaire minimal et propriétaire
-   stock : jamais deux propriétaires actifs sur la même frontière.
-7. Modéliser doublon, réponse tardive, perte, reconnexion, changement de révision
-   de route et deux CFS chaînés.
-8. Construire un émulateur déterministe sans transport réel et des scénarios
-   positifs/négatifs.
-9. Fermer la mission OK seulement si chaque message appelable est relié à une
-   preuve exacte ; sinon fermer KO borné en listant les preuves manquantes.
+Ordre recommandé :
 
-### Interdits
+1. vérifier `main`, `origin/main`, le worktree et les quatre hashes privés ;
+2. relire HANDOFF, ADR-020, ADR-021, D-070, D-071, docs 31/32 et le nouveau
+   paquet ;
+3. chercher d'abord une source lisible ou une spécification correspondant
+   exactement au binaire capturé ;
+4. inventorier uniquement les autres preuves statiques déjà locales ;
+5. si elles restent insuffisantes, produire un protocole de capture passive
+   séparé, revu et borné, sans l'exécuter ;
+6. garder `callable_messages=[]` tant que chaque effet nécessaire n'a pas sa
+   requête, sa réponse ou son événement, ses erreurs, son timeout, sa reprise et
+   son exclusion stock exacts ;
+7. fermer la mission OK seulement avec preuves complètes, sinon fermer un
+   nouveau KO borné et lister ce qui manque.
 
-- aucune connexion K1, même en lecture seule ;
-- ne jamais exécuter, importer ou charger le module MIPS/Cython ; l'analyse
-  statique des octets déjà capturés est permise ;
-- aucune commande série réelle, SSH, G-code, chauffe, homing, mouvement, cutter,
-  avance, retrait, purge, restart ou impression ;
-- aucune réécriture de `material_database.json` ;
-- aucun remplacement ou appel global de `box_wrapper` ;
-- aucun transport, déployeur, write-set distant ou paquet installable dans cette
-  mission ;
-- ne pas reprendre `MESH-EDGE-DIAGNOSTIC-V1` ;
-- ne jamais publier ni nettoyer globalement `inventory/raw/`, qui reste privé ;
-- aucun ancien GO ne devient une autorisation physique.
+Interdits :
 
-### Critères de fin
+- aucune connexion K1, SSH, série, G-code ou API sans autorité fraîche qui la
+  nomme explicitement ;
+- aucune chauffe, homing, coupe, avance, retrait, purge, restart ou impression ;
+- ne jamais charger, importer ou exécuter le `.so` MIPS ;
+- aucun transport, déployeur, write-set ou paquet installable ;
+- aucun numéro de série, identifiant unique ou payload privé dans Git ;
+- ne pas reprendre `MESH-EDGE-DIAGNOSTIC-V1`.
 
-- sous-ensemble minimal versionné et traçable jusqu'aux preuves privées ;
-- adresse CFS et slot explicites, sans `T0` physique supposé ;
-- requêtes, réponses, événements et accusés séparés ;
-- timeout, doublon, retard, reconnexion et état inconnu arrêtent sûrement ;
-- exclusion du propriétaire stock modélisée et testée ;
-- les deux CFS et les changements de route sont couverts ;
-- aucune trame inconnue n'est appelable par défaut ;
-- émulateur sans réseau, série, SSH, G-code ou K1 ;
-- tests, diff, documentation et nouveau handoff verts ;
-- aucune validation physique ou possibilité de déploiement revendiquée.
+Critère de fin : la provenance de chaque conclusion est exacte, les inconnues
+restent bloquées, les tests sont déterministes, le diff est relu et Git est
+intégré proprement. Une future capture réelle formera une gate différente.
 
-## Lecture obligatoire à la reprise
+## Horizons différés
 
-1. `AGENTS.md`, `HANDOFF.md`, `STATE.md`, `GATES.md`
-2. `DECISIONS.md`, D-064 à D-070
-3. `docs/25-contrat-cycle-impression-nettoyage-cfs-v1.md`
-4. `design/job-lifecycle-contract-v1.json`
-5. `docs/27-incident-cfs-temperature-geometrie-v1.md`
-6. `docs/29-audit-box-wrapper-et-adaptateur-cfs-v1.md`
-7. `docs/30-audit-routage-temperatures-cfs-v1.md`
-8. `docs/31-routage-dynamique-temperatures-cfs-v1.md`
-9. ADR-016 à ADR-020 sous `docs/adr/`
-10. `packages/k1-control-v1/cfs-boundary-guard-v1/RESULT.md`
-11. `packages/k1-control-v1/cfs-box-wrapper-audit-v1/RESULT.md`
-12. `packages/k1-control-v1/cfs-dynamic-temp-routing-v1/README.md`
-13. `packages/k1-control-v1/cfs-dynamic-temp-routing-v1/RESULT.md`
-14. `packages/k1-control-v1/cfs-dynamic-temp-routing-v1/contract.json`
+Après preuves complètes seulement : protocole V2 appelable, transport séparé,
+qualification physique incrémentale, intégration du ticket thermique, bascule
+Orca atomique, puis G5. Aucun de ces horizons n'est ouvert par cette passation.
 
-Les preuves privées utiles restent sous
-`inventory/raw/20260826-cfs-box-wrapper-read-only-audit-v1/`. Les lire seulement
-si elles existent localement ; ne pas les ajouter à Git.
+## Modèle conseillé pour la reprise
 
-## Autorisation et suites différées
+- Optimal : `gpt-5.6-sol`, raisonnement `high`. Le travail mélange grands
+  journaux, protocole partiellement observable, sécurité matérielle et preuves
+  négatives ; une erreur de déduction coûterait plus qu'un passage approfondi.
+- Option économique : `gpt-5.6-terra`, raisonnement `high`, acceptable pour un
+  inventaire statique étroit ; compromis : davantage de risque de manquer une
+  ambiguïté de corrélation ou de devoir reprendre la synthèse.
 
-État : **ATTENDRE_GO**. La politique Git globale couvre la clôture normale de la
-future mission en préservant tout travail étranger. Elle ne couvre aucune action
-sur la K1.
+## Autorisation de démarrage
 
-Après une cartographie protocolaire réellement verte seulement : préparer une
-gate séparée de pose inactive, puis une gate physique bornée avec présence de
-Thomas et plateau libre. La reprise du diagnostic de bord, le mode Précision et
-la production restent des horizons distincts.
-
-## Modèle conseillé
-
-- optimal : `gpt-5.6-sol`, raisonnement `max` ;
-- justification : preuves binaires partielles, protocole propriétaire, deux CFS
-  et nombreux cas d'échec à distinguer sans inventer de comportement ;
-- option économique : `gpt-5.6-sol`, raisonnement `high`, avec un risque plus
-  élevé de manquer un accusé, une course de reconnexion ou une concurrence avec
-  le propriétaire stock ;
-- un modèle plus léger augmenterait le risque de faux vert et de reprise.
+**ATTENDRE_GO.** Aucun nouveau Goal, aucune nouvelle tâche et aucune action sur
+la K1 ne sont créés par cette passation.
