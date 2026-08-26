@@ -1351,3 +1351,35 @@ La prochaine mission est
 pose ou action physique formera une gate ultérieure avec autorisation fraîche.
 
 Voir ADR-019 et `docs/30-audit-routage-temperatures-cfs-v1.md`.
+
+## D-070 — Le routage dynamique utilise un ticket thermique et un propriétaire minimal
+
+Date: 2026-08-26
+
+Status: conception et simulation closes hors imprimante ; transport, pose et
+production fermés
+
+La mission `G4-K1-CONTROL-CFS-DYNAMIC-TEMP-ROUTING-V1` compare quatre voies.
+La base matière reste un filet statique ; une réaffirmation après `T` reste une
+défense tardive ; l'interception de `get_material_target_temp` est refusée faute
+de point d'extension stable et parce que le chemin stock conserve la géométrie.
+
+Le choix de conception est `minimal_separate_filament_owner`. Chaque frontière
+reçoit avant son premier effet un ticket immuable avec travail, phase,
+opération, outil logique, route CFS/slot fraîche, cible buse, cible plateau et
+snapshot des six invariants. Une preuve de route n'est utilisable qu'une fois et
+une reconnexion invalide sa révision.
+
+Le contrat expose désormais séparément retrait, chargement et purge. Refill et
+runout équivalents conservent la dernière cible explicite ; une pause normale
+n'appelle aucun CFS. Toute cible cachée, route absente ou incohérente, commande
+thermique/géométrique CFS, preuve de débit manquante ou dérive Z/mesh coupe les
+deux cibles et bloque la reprise sans restauration Z aveugle.
+
+Le paquet hors ligne obtient `25/25` scénarios. Il ne contient aucun transport
+K1, script de pose ou température matière codée dans le moteur ; il n'est pas
+un candidat de déploiement. La prochaine mission unique est la cartographie
+hors imprimante du protocole minimal.
+
+Voir ADR-020, `docs/31-routage-dynamique-temperatures-cfs-v1.md` et
+`packages/k1-control-v1/cfs-dynamic-temp-routing-v1/`.

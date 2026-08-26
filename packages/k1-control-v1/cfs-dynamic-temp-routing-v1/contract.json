@@ -1,0 +1,139 @@
+{
+  "contract_id": "K1-CONTROL-CFS-DYNAMIC-TEMP-ROUTING-V1",
+  "schema": 1,
+  "status": "offline_complete_production_closed",
+  "printer_mutation_authorized": false,
+  "deployment_candidate": false,
+  "transport": "absent",
+  "selected_architecture": "minimal_separate_filament_owner",
+  "temperature_authority": {
+    "primary": "versioned_job_contract_or_latest_explicit_operator_target",
+    "material_database": "static_safety_net_and_inventory_only",
+    "post_tool_reassertion": "defense_only_never_retroactive_success",
+    "cfs": "never_temperature_owner"
+  },
+  "required_job_fields": [
+    "contract_version",
+    "job_id",
+    "bed_first_c",
+    "bed_normal_c",
+    "tools",
+    "transitions"
+  ],
+  "required_tool_fields": [
+    "material_id",
+    "nozzle_first_c",
+    "nozzle_normal_c",
+    "material_min_c",
+    "material_max_c"
+  ],
+  "required_transition_fields": [
+    "unload_c",
+    "load_c",
+    "purge_c"
+  ],
+  "route_proof": {
+    "required_fields": [
+      "proof_id",
+      "logical_tool",
+      "cfs_unit",
+      "slot",
+      "material_id",
+      "mapping_revision"
+    ],
+    "allowed_cfs_units": ["CFS1", "CFS2"],
+    "allowed_slots": ["A", "B", "C", "D"],
+    "freshness": "one unused proof for the current mapping revision and boundary",
+    "hardcoded_physical_tool_forbidden": true
+  },
+  "operations": {
+    "initial_load": {
+      "nozzle_source": "incoming_tool_current_print_phase",
+      "route_role": "incoming",
+      "requires_visible_flow": true
+    },
+    "keep_engaged_proof_purge": {
+      "nozzle_source": "active_explicit_target",
+      "route_role": "active",
+      "requires_visible_flow": true
+    },
+    "intentional_unload": {
+      "nozzle_source": "transition_unload_target",
+      "route_role": "outgoing",
+      "requires_visible_flow": false
+    },
+    "intentional_load": {
+      "nozzle_source": "transition_load_target",
+      "route_role": "incoming",
+      "requires_visible_flow": false
+    },
+    "transition_purge": {
+      "nozzle_source": "transition_purge_target",
+      "route_role": "incoming",
+      "requires_visible_flow": true
+    },
+    "equivalent_refill": {
+      "nozzle_source": "active_explicit_target",
+      "route_role": "active",
+      "requires_visible_flow": true
+    },
+    "runout_equivalent": {
+      "nozzle_source": "active_explicit_target",
+      "route_role": "active",
+      "requires_visible_flow": true
+    },
+    "resume_reprime": {
+      "nozzle_source": "active_explicit_target",
+      "route_role": "active",
+      "requires_visible_flow": true
+    }
+  },
+  "boundary_order": [
+    "resolve_phase_target",
+    "validate_transition_bounds",
+    "verify_fresh_route",
+    "capture_six_invariants",
+    "arm_nozzle_and_preserve_bed",
+    "verify_targets_before_first_effect",
+    "execute_one_filament_effect",
+    "verify_targets_route_and_invariants",
+    "require_visible_flow_when_declared",
+    "close_boundary"
+  ],
+  "six_invariants": [
+    "nozzle_target_c",
+    "bed_target_c",
+    "accepted_z_offset_mm",
+    "homing_origin_z_mm",
+    "mesh_profile",
+    "homed_axes"
+  ],
+  "forbidden_inside_boundary": [
+    "cfs_nozzle_command",
+    "cfs_bed_command",
+    "homing",
+    "z_offset_mutation",
+    "mesh_clear_or_load",
+    "route_remap"
+  ],
+  "fail_safe": {
+    "thermal_or_contract_failure": [
+      "set_nozzle_target_zero",
+      "set_bed_target_zero",
+      "block_resume"
+    ],
+    "geometry_failure": [
+      "block_resume",
+      "do_not_restore_z_automatically"
+    ],
+    "unknown_or_stale_route": "stop_before_first_filament_effect",
+    "late_reassertion": "cannot_change_failed_boundary_to_success"
+  },
+  "offline_isolation": {
+    "network": false,
+    "printer_transport": false,
+    "ssh": false,
+    "gcode": false,
+    "heater_or_motion_side_effect": false
+  }
+}

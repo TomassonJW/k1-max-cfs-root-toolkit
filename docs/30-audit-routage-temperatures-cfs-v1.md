@@ -134,3 +134,14 @@ un contrat, un simulateur, des tests d'échec et un plan de rollback relu.
 Aucune connexion K1, écriture distante, chauffe, homing, mouvement, commande
 CFS, purge ou impression n'appartient à cette mission. Une pose ou un essai
 physique formera une gate ultérieure, avec autorisation fraîche.
+
+## Résultat de la mission suivante
+
+`G4-K1-CONTROL-CFS-DYNAMIC-TEMP-ROUTING-V1` est close hors imprimante. La
+comparaison retient `minimal_separate_filament_owner`, avec un ticket thermique
+par phase et une route fraîche consommable une fois. La matrice locale obtient
+`25/25` sans transport K1. Voir ADR-020 et
+`docs/31-routage-dynamique-temperatures-cfs-v1.md`.
+
+Cette clôture n'ouvre aucune pose ni validation physique. La suite canonique est
+la cartographie hors imprimante du protocole minimal.

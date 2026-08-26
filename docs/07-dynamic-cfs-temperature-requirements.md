@@ -1,9 +1,9 @@
 # 07 — Propriété dynamique de la température CFS
 
 Date : 2026-08-20
-Statut : exigences acceptées ; précisées par le contrat figé et par l'incident
-réel du 26 août 2026 ; garde hors imprimante préparée, propriétaire réel encore
-à prouver
+Statut : exigences acceptées ; garde et routage hors imprimante validés ;
+propriétaire minimal choisi sans transport ; propriétaire réel encore à poser
+et à qualifier physiquement
 
 Référence canonique actuelle :
 [`docs/25-contrat-cycle-impression-nettoyage-cfs-v1.md`](25-contrat-cycle-impression-nettoyage-cfs-v1.md).
@@ -159,3 +159,16 @@ et simultanément :
 Le prochain candidat G4 ne sera préparé qu'après cette démonstration. Il ne doit
 contenir ni température de filament codée en dur, ni profil Geeetech obligatoire,
 ni comportement particulier réservé au PLA.
+
+## Résultat de la mission de routage
+
+`G4-K1-CONTROL-CFS-DYNAMIC-TEMP-ROUTING-V1` ferme cette comparaison hors
+imprimante. La base matière reste un filet statique, la réaffirmation post-`T`
+une défense et l'interception du resolver compilé est refusée faute de point
+d'extension et de séparation géométrique démontrés.
+
+ADR-020 choisit un ticket thermique et
+`minimal_separate_filament_owner`. Le paquet local obtient `25/25` scénarios et
+ne contient aucun transport K1. La prochaine mission porte uniquement sur la
+cartographie hors imprimante du protocole minimal ; aucune pose ni validation
+physique n'est ouverte.

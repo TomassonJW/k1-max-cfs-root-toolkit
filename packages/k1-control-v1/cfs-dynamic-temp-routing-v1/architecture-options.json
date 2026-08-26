@@ -1,0 +1,77 @@
+{
+  "schema": 1,
+  "decision": "minimal_separate_filament_owner",
+  "deployment_candidate": false,
+  "required_capabilities": [
+    "target_before_first_effect",
+    "phase_complete",
+    "bed_separate",
+    "geometry_separate",
+    "fresh_route",
+    "two_cfs"
+  ],
+  "options": [
+    {
+      "id": "static_material_database",
+      "decision": "safety_net_only",
+      "capabilities": {
+        "target_before_first_effect": true,
+        "phase_complete": false,
+        "bed_separate": false,
+        "geometry_separate": false,
+        "fresh_route": false,
+        "two_cfs": false
+      },
+      "deployable_now": false,
+      "reason": "one shared material value cannot own first layer, normal, bed and transition phases"
+    },
+    {
+      "id": "post_tool_reassertion",
+      "decision": "defense_only",
+      "capabilities": {
+        "target_before_first_effect": false,
+        "phase_complete": true,
+        "bed_separate": true,
+        "geometry_separate": false,
+        "fresh_route": true,
+        "two_cfs": true
+      },
+      "deployable_now": false,
+      "reason": "a command after T cannot repair an earlier load or purge"
+    },
+    {
+      "id": "narrow_get_material_target_temp_interception",
+      "decision": "rejected_without_stable_seam",
+      "capabilities": {
+        "target_before_first_effect": true,
+        "phase_complete": true,
+        "bed_separate": true,
+        "geometry_separate": false,
+        "fresh_route": true,
+        "two_cfs": true
+      },
+      "deployable_now": false,
+      "reason": "the exact Cython module exposes no proven interception seam and the stock load path still owns geometry"
+    },
+    {
+      "id": "minimal_separate_filament_owner",
+      "decision": "selected_design_only",
+      "capabilities": {
+        "target_before_first_effect": true,
+        "phase_complete": true,
+        "bed_separate": true,
+        "geometry_separate": true,
+        "fresh_route": true,
+        "two_cfs": true
+      },
+      "deployable_now": false,
+      "reason": "only a separate bounded owner can receive a phase ticket before transport while leaving bed and geometry outside the CFS boundary"
+    }
+  ],
+  "blocking_unknowns": [
+    "minimal serial command set not yet statically mapped",
+    "exclusive coexistence with the stock CFS owner not yet proven",
+    "sensor and cutter acknowledgements not yet qualified per phase",
+    "no physical boundary has been run with the selected owner"
+  ]
+}

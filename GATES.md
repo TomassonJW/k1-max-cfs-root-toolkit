@@ -161,6 +161,28 @@ La suite est encore hors imprimante : préparer un propriétaire filament minima
 séparé, ou obtenir une preuve statique plus forte d'une primitive étroite. Les
 commandes brutes du 26 août ne doivent pas être rejouées.
 
+### `G4-K1-CONTROL-CFS-DYNAMIC-TEMP-ROUTING-V1`
+
+Statut : **passée hors imprimante ; architecture choisie ; aucun transport ni
+candidat de pose ; production fermée**.
+
+Le paquet compare base matière, réaffirmation post-`T`, interception de
+`get_material_target_temp` et propriétaire minimal séparé. Seule la dernière
+voie reçoit la cible avant le premier effet tout en gardant plateau et géométrie
+hors du CFS. Elle reste un choix de conception : le protocole série et
+l'exclusion du propriétaire stock ne sont pas encore qualifiés.
+
+Le contrat impose une preuve de route fraîche consommable une fois, une cible
+par phase, les températures distinctes de retrait/chargement/purge et les six
+invariants inchangés. La matrice locale obtient `25/25` sur les deux CFS,
+first/normal, filament engagé, chargement, changement, refill, runout,
+pause/reprise, annulation et arrêts sûrs. Aucun accès K1, G-code, chauffe,
+mouvement, commande CFS, purge, restart ou fichier distant n'a été produit.
+
+Passer cette gate autorise seulement la mission hors imprimante suivante :
+`G4-K1-CONTROL-CFS-MINIMAL-OWNER-PROTOCOL-V1`. Elle n'ouvre ni pose, ni essai
+physique, ni reprise de `MESH-EDGE-DIAGNOSTIC-V1`.
+
 Avant toute reprise physique restante : route filament fraîchement résolue,
 position de purge sûre et primitive qualifiée par les six invariants. Une purge
 visible et un capteur de présence ne suffisent pas si température ou géométrie

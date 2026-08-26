@@ -1,0 +1,338 @@
+{
+  "schema": 1,
+  "jobs": {
+    "dual_material": {
+      "contract_version": 1,
+      "job_id": "fixture.dual-material",
+      "bed_first_c": 60,
+      "bed_normal_c": 55,
+      "tools": {
+        "T3": {
+          "material_id": "MAT_A",
+          "nozzle_first_c": 205,
+          "nozzle_normal_c": 200,
+          "material_min_c": 180,
+          "material_max_c": 230
+        },
+        "T6": {
+          "material_id": "MAT_B",
+          "nozzle_first_c": 240,
+          "nozzle_normal_c": 235,
+          "material_min_c": 220,
+          "material_max_c": 260
+        }
+      },
+      "transitions": {
+        "T3->T6": {"unload_c": 200, "load_c": 235, "purge_c": 225},
+        "T6->T3": {"unload_c": 235, "load_c": 200, "purge_c": 225}
+      }
+    },
+    "missing_load_target": {
+      "contract_version": 1,
+      "job_id": "fixture.missing-load",
+      "bed_first_c": 60,
+      "bed_normal_c": 55,
+      "tools": {
+        "T3": {"material_id": "MAT_A", "nozzle_first_c": 205, "nozzle_normal_c": 200, "material_min_c": 180, "material_max_c": 230},
+        "T6": {"material_id": "MAT_B", "nozzle_first_c": 240, "nozzle_normal_c": 235, "material_min_c": 220, "material_max_c": 260}
+      },
+      "transitions": {
+        "T3->T6": {"unload_c": 200, "purge_c": 225}
+      }
+    },
+    "incompatible_purge": {
+      "contract_version": 1,
+      "job_id": "fixture.incompatible-purge",
+      "bed_first_c": 60,
+      "bed_normal_c": 55,
+      "tools": {
+        "T3": {"material_id": "MAT_A", "nozzle_first_c": 205, "nozzle_normal_c": 200, "material_min_c": 180, "material_max_c": 230},
+        "T6": {"material_id": "MAT_B", "nozzle_first_c": 240, "nozzle_normal_c": 235, "material_min_c": 220, "material_max_c": 260}
+      },
+      "transitions": {
+        "T3->T6": {"unload_c": 200, "load_c": 235, "purge_c": 235}
+      }
+    }
+  },
+  "initial_states": {
+    "absent_first": {
+      "phase": "first_layer",
+      "mapping_revision": 7,
+      "filament_state": "absent_confirmed",
+      "engaged_tool": null,
+      "nozzle_target_c": 0,
+      "bed_target_c": 60,
+      "target_owner": "job_contract",
+      "protected": {"accepted_z_offset_mm": -0.04, "homing_origin_z_mm": 0, "mesh_profile": "ROBUST_MESH", "homed_axes": "xyz"}
+    },
+    "engaged_a_first": {
+      "phase": "first_layer",
+      "mapping_revision": 7,
+      "filament_state": "engaged_known",
+      "engaged_tool": "T3",
+      "nozzle_target_c": 205,
+      "bed_target_c": 60,
+      "target_owner": "job_contract",
+      "protected": {"accepted_z_offset_mm": -0.04, "homing_origin_z_mm": 0, "mesh_profile": "ROBUST_MESH", "homed_axes": "xyz"}
+    },
+    "engaged_a_normal": {
+      "phase": "normal",
+      "mapping_revision": 7,
+      "filament_state": "engaged_known",
+      "engaged_tool": "T3",
+      "nozzle_target_c": 200,
+      "bed_target_c": 55,
+      "target_owner": "job_contract",
+      "protected": {"accepted_z_offset_mm": -0.04, "homing_origin_z_mm": 0, "mesh_profile": "ROBUST_MESH", "homed_axes": "xyz"}
+    },
+    "engaged_b_normal": {
+      "phase": "normal",
+      "mapping_revision": 7,
+      "filament_state": "engaged_known",
+      "engaged_tool": "T6",
+      "nozzle_target_c": 235,
+      "bed_target_c": 55,
+      "target_owner": "job_contract",
+      "protected": {"accepted_z_offset_mm": -0.04, "homing_origin_z_mm": 0, "mesh_profile": "ROBUST_MESH", "homed_axes": "xyz"}
+    },
+    "incomplete_protected": {
+      "phase": "normal",
+      "mapping_revision": 7,
+      "filament_state": "engaged_known",
+      "engaged_tool": "T3",
+      "nozzle_target_c": 200,
+      "bed_target_c": 55,
+      "target_owner": "job_contract",
+      "protected": {"accepted_z_offset_mm": -0.04, "homing_origin_z_mm": null, "mesh_profile": "ROBUST_MESH", "homed_axes": "xyz"}
+    }
+  },
+  "scenarios": [
+    {
+      "id": "first_layer_then_normal_targets",
+      "job": "dual_material",
+      "initial_state": "engaged_a_first",
+      "events": [
+        {"kind": "cfs_boundary", "operation": "keep_engaged_proof_purge", "route": {"proof_id": "p-first", "logical_tool": "T3", "cfs_unit": "CFS1", "slot": "A", "material_id": "MAT_A", "mapping_revision": 7}, "observed": {"target_armed_before_first_effect": true, "nozzle_target_before_first_effect_c": 205, "bed_target_during_boundary_c": 60, "cfs_nozzle_command": false, "cfs_bed_command": false, "geometry_command": false, "flow_proven": true, "protected_after": {"accepted_z_offset_mm": -0.04, "homing_origin_z_mm": 0, "mesh_profile": "ROBUST_MESH", "homed_axes": "xyz"}}},
+        {"kind": "set_phase", "phase": "normal"}
+      ],
+      "expected": {"verdict": "pass_offline", "effects": 1, "engaged_tool": "T3", "nozzle_target_c": 200, "bed_target_c": 55}
+    },
+    {
+      "id": "initial_load_on_cfs1",
+      "job": "dual_material",
+      "initial_state": "absent_first",
+      "events": [
+        {"kind": "cfs_boundary", "operation": "initial_load", "incoming_tool": "T3", "route": {"proof_id": "p-load-cfs1", "logical_tool": "T3", "cfs_unit": "CFS1", "slot": "A", "material_id": "MAT_A", "mapping_revision": 7}, "observed": {"target_armed_before_first_effect": true, "nozzle_target_before_first_effect_c": 205, "bed_target_during_boundary_c": 60, "cfs_nozzle_command": false, "cfs_bed_command": false, "geometry_command": false, "flow_proven": true, "protected_after": {"accepted_z_offset_mm": -0.04, "homing_origin_z_mm": 0, "mesh_profile": "ROBUST_MESH", "homed_axes": "xyz"}}}
+      ],
+      "expected": {"verdict": "pass_offline", "effects": 1, "engaged_tool": "T3", "nozzle_target_c": 205, "bed_target_c": 60}
+    },
+    {
+      "id": "initial_load_on_cfs2",
+      "job": "dual_material",
+      "initial_state": "absent_first",
+      "events": [
+        {"kind": "cfs_boundary", "operation": "initial_load", "incoming_tool": "T6", "route": {"proof_id": "p-load-cfs2", "logical_tool": "T6", "cfs_unit": "CFS2", "slot": "C", "material_id": "MAT_B", "mapping_revision": 7}, "observed": {"target_armed_before_first_effect": true, "nozzle_target_before_first_effect_c": 240, "bed_target_during_boundary_c": 60, "cfs_nozzle_command": false, "cfs_bed_command": false, "geometry_command": false, "flow_proven": true, "protected_after": {"accepted_z_offset_mm": -0.04, "homing_origin_z_mm": 0, "mesh_profile": "ROBUST_MESH", "homed_axes": "xyz"}}}
+      ],
+      "expected": {"verdict": "pass_offline", "effects": 1, "engaged_tool": "T6", "nozzle_target_c": 240, "bed_target_c": 60}
+    },
+    {
+      "id": "already_engaged_is_kept",
+      "job": "dual_material",
+      "initial_state": "engaged_a_normal",
+      "events": [
+        {"kind": "cfs_boundary", "operation": "keep_engaged_proof_purge", "route": {"proof_id": "p-keep", "logical_tool": "T3", "cfs_unit": "CFS1", "slot": "A", "material_id": "MAT_A", "mapping_revision": 7}, "observed": {"target_armed_before_first_effect": true, "nozzle_target_before_first_effect_c": 200, "bed_target_during_boundary_c": 55, "cfs_nozzle_command": false, "cfs_bed_command": false, "geometry_command": false, "flow_proven": true, "protected_after": {"accepted_z_offset_mm": -0.04, "homing_origin_z_mm": 0, "mesh_profile": "ROBUST_MESH", "homed_axes": "xyz"}}}
+      ],
+      "expected": {"verdict": "pass_offline", "effects": 1, "cut_count": 0, "unload_count": 0, "engaged_tool": "T3"}
+    },
+    {
+      "id": "cross_material_cfs1_to_cfs2",
+      "job": "dual_material",
+      "initial_state": "engaged_a_normal",
+      "events": [
+        {"kind": "cfs_boundary", "operation": "intentional_unload", "outgoing_tool": "T3", "incoming_tool": "T6", "route": {"proof_id": "p-out-a", "logical_tool": "T3", "cfs_unit": "CFS1", "slot": "A", "material_id": "MAT_A", "mapping_revision": 7}, "observed": {"target_armed_before_first_effect": true, "nozzle_target_before_first_effect_c": 200, "bed_target_during_boundary_c": 55, "cfs_nozzle_command": false, "cfs_bed_command": false, "geometry_command": false, "flow_proven": false, "protected_after": {"accepted_z_offset_mm": -0.04, "homing_origin_z_mm": 0, "mesh_profile": "ROBUST_MESH", "homed_axes": "xyz"}}},
+        {"kind": "cfs_boundary", "operation": "intentional_load", "outgoing_tool": "T3", "incoming_tool": "T6", "route": {"proof_id": "p-in-b", "logical_tool": "T6", "cfs_unit": "CFS2", "slot": "C", "material_id": "MAT_B", "mapping_revision": 7}, "observed": {"target_armed_before_first_effect": true, "nozzle_target_before_first_effect_c": 235, "bed_target_during_boundary_c": 55, "cfs_nozzle_command": false, "cfs_bed_command": false, "geometry_command": false, "flow_proven": false, "protected_after": {"accepted_z_offset_mm": -0.04, "homing_origin_z_mm": 0, "mesh_profile": "ROBUST_MESH", "homed_axes": "xyz"}}},
+        {"kind": "cfs_boundary", "operation": "transition_purge", "outgoing_tool": "T3", "incoming_tool": "T6", "route": {"proof_id": "p-purge-b", "logical_tool": "T6", "cfs_unit": "CFS2", "slot": "C", "material_id": "MAT_B", "mapping_revision": 7}, "observed": {"target_armed_before_first_effect": true, "nozzle_target_before_first_effect_c": 225, "bed_target_during_boundary_c": 55, "cfs_nozzle_command": false, "cfs_bed_command": false, "geometry_command": false, "flow_proven": true, "protected_after": {"accepted_z_offset_mm": -0.04, "homing_origin_z_mm": 0, "mesh_profile": "ROBUST_MESH", "homed_axes": "xyz"}}},
+        {"kind": "set_phase", "phase": "normal"}
+      ],
+      "expected": {"verdict": "pass_offline", "effects": 3, "cut_count": 1, "unload_count": 1, "engaged_tool": "T6", "nozzle_target_c": 235, "bed_target_c": 55}
+    },
+    {
+      "id": "cross_material_cfs2_to_cfs1",
+      "job": "dual_material",
+      "initial_state": "engaged_b_normal",
+      "events": [
+        {"kind": "cfs_boundary", "operation": "intentional_unload", "outgoing_tool": "T6", "incoming_tool": "T3", "route": {"proof_id": "p-out-b", "logical_tool": "T6", "cfs_unit": "CFS2", "slot": "C", "material_id": "MAT_B", "mapping_revision": 7}, "observed": {"target_armed_before_first_effect": true, "nozzle_target_before_first_effect_c": 235, "bed_target_during_boundary_c": 55, "cfs_nozzle_command": false, "cfs_bed_command": false, "geometry_command": false, "flow_proven": false, "protected_after": {"accepted_z_offset_mm": -0.04, "homing_origin_z_mm": 0, "mesh_profile": "ROBUST_MESH", "homed_axes": "xyz"}}},
+        {"kind": "cfs_boundary", "operation": "intentional_load", "outgoing_tool": "T6", "incoming_tool": "T3", "route": {"proof_id": "p-in-a", "logical_tool": "T3", "cfs_unit": "CFS1", "slot": "A", "material_id": "MAT_A", "mapping_revision": 7}, "observed": {"target_armed_before_first_effect": true, "nozzle_target_before_first_effect_c": 200, "bed_target_during_boundary_c": 55, "cfs_nozzle_command": false, "cfs_bed_command": false, "geometry_command": false, "flow_proven": false, "protected_after": {"accepted_z_offset_mm": -0.04, "homing_origin_z_mm": 0, "mesh_profile": "ROBUST_MESH", "homed_axes": "xyz"}}},
+        {"kind": "cfs_boundary", "operation": "transition_purge", "outgoing_tool": "T6", "incoming_tool": "T3", "route": {"proof_id": "p-purge-a", "logical_tool": "T3", "cfs_unit": "CFS1", "slot": "A", "material_id": "MAT_A", "mapping_revision": 7}, "observed": {"target_armed_before_first_effect": true, "nozzle_target_before_first_effect_c": 225, "bed_target_during_boundary_c": 55, "cfs_nozzle_command": false, "cfs_bed_command": false, "geometry_command": false, "flow_proven": true, "protected_after": {"accepted_z_offset_mm": -0.04, "homing_origin_z_mm": 0, "mesh_profile": "ROBUST_MESH", "homed_axes": "xyz"}}},
+        {"kind": "set_phase", "phase": "normal"}
+      ],
+      "expected": {"verdict": "pass_offline", "effects": 3, "cut_count": 1, "unload_count": 1, "engaged_tool": "T3", "nozzle_target_c": 200, "bed_target_c": 55}
+    },
+    {
+      "id": "equivalent_refill_preserves_operator_target",
+      "job": "dual_material",
+      "initial_state": "engaged_a_normal",
+      "events": [
+        {"kind": "operator_target", "target_c": 198},
+        {"kind": "cfs_boundary", "operation": "equivalent_refill", "route": {"proof_id": "p-refill", "logical_tool": "T3", "cfs_unit": "CFS1", "slot": "B", "material_id": "MAT_A", "mapping_revision": 7}, "observed": {"target_armed_before_first_effect": true, "nozzle_target_before_first_effect_c": 198, "bed_target_during_boundary_c": 55, "cfs_nozzle_command": false, "cfs_bed_command": false, "geometry_command": false, "flow_proven": true, "protected_after": {"accepted_z_offset_mm": -0.04, "homing_origin_z_mm": 0, "mesh_profile": "ROBUST_MESH", "homed_axes": "xyz"}}}
+      ],
+      "expected": {"verdict": "pass_offline", "effects": 1, "engaged_tool": "T3", "nozzle_target_c": 198, "bed_target_c": 55}
+    },
+    {
+      "id": "runout_cross_cfs_preserves_active_target",
+      "job": "dual_material",
+      "initial_state": "engaged_a_normal",
+      "events": [
+        {"kind": "cfs_boundary", "operation": "runout_equivalent", "route": {"proof_id": "p-runout-cfs2", "logical_tool": "T3", "cfs_unit": "CFS2", "slot": "D", "material_id": "MAT_A", "mapping_revision": 7}, "observed": {"target_armed_before_first_effect": true, "nozzle_target_before_first_effect_c": 200, "bed_target_during_boundary_c": 55, "cfs_nozzle_command": false, "cfs_bed_command": false, "geometry_command": false, "flow_proven": true, "protected_after": {"accepted_z_offset_mm": -0.04, "homing_origin_z_mm": 0, "mesh_profile": "ROBUST_MESH", "homed_axes": "xyz"}}}
+      ],
+      "expected": {"verdict": "pass_offline", "effects": 1, "engaged_tool": "T3", "nozzle_target_c": 200}
+    },
+    {
+      "id": "normal_pause_resume_has_no_cfs_effect",
+      "job": "dual_material",
+      "initial_state": "engaged_a_normal",
+      "events": [{"kind": "pause"}, {"kind": "resume"}],
+      "expected": {"verdict": "pass_offline", "effects": 0, "engaged_tool": "T3", "nozzle_target_c": 200, "bed_target_c": 55}
+    },
+    {
+      "id": "resume_reprime_is_explicit",
+      "job": "dual_material",
+      "initial_state": "engaged_a_normal",
+      "events": [
+        {"kind": "pause"},
+        {"kind": "resume"},
+        {"kind": "cfs_boundary", "operation": "resume_reprime", "route": {"proof_id": "p-reprime", "logical_tool": "T3", "cfs_unit": "CFS1", "slot": "A", "material_id": "MAT_A", "mapping_revision": 7}, "observed": {"target_armed_before_first_effect": true, "nozzle_target_before_first_effect_c": 200, "bed_target_during_boundary_c": 55, "cfs_nozzle_command": false, "cfs_bed_command": false, "geometry_command": false, "flow_proven": true, "protected_after": {"accepted_z_offset_mm": -0.04, "homing_origin_z_mm": 0, "mesh_profile": "ROBUST_MESH", "homed_axes": "xyz"}}}
+      ],
+      "expected": {"verdict": "pass_offline", "effects": 1, "engaged_tool": "T3", "nozzle_target_c": 200}
+    },
+    {
+      "id": "explicit_cancel_cuts_both_targets",
+      "job": "dual_material",
+      "initial_state": "engaged_a_first",
+      "events": [{"kind": "cancel"}],
+      "expected": {"verdict": "cancelled_safe", "effects": 0, "nozzle_target_c": 0, "bed_target_c": 0, "resume_armed": false}
+    },
+    {
+      "id": "hidden_target_before_effect_blocks",
+      "job": "dual_material",
+      "initial_state": "absent_first",
+      "events": [
+        {"kind": "cfs_boundary", "operation": "initial_load", "incoming_tool": "T3", "route": {"proof_id": "p-hidden", "logical_tool": "T3", "cfs_unit": "CFS1", "slot": "A", "material_id": "MAT_A", "mapping_revision": 7}, "observed": {"target_armed_before_first_effect": true, "nozzle_target_before_first_effect_c": 220, "bed_target_during_boundary_c": 60, "cfs_nozzle_command": false, "cfs_bed_command": false, "geometry_command": false, "flow_proven": true, "protected_after": {"accepted_z_offset_mm": -0.04, "homing_origin_z_mm": 0, "mesh_profile": "ROBUST_MESH", "homed_axes": "xyz"}}}
+      ],
+      "expected": {"verdict": "blocked_safe", "reason_code": "nozzle_target_before_effect_mismatch", "effects": 0, "nozzle_target_c": 0, "bed_target_c": 0, "resume_armed": false}
+    },
+    {
+      "id": "post_tool_reassertion_cannot_repair_purge",
+      "job": "dual_material",
+      "initial_state": "absent_first",
+      "events": [
+        {"kind": "cfs_boundary", "operation": "initial_load", "incoming_tool": "T3", "post_boundary_target_c": 205, "route": {"proof_id": "p-late", "logical_tool": "T3", "cfs_unit": "CFS1", "slot": "A", "material_id": "MAT_A", "mapping_revision": 7}, "observed": {"target_armed_before_first_effect": true, "nozzle_target_before_first_effect_c": 220, "bed_target_during_boundary_c": 60, "cfs_nozzle_command": false, "cfs_bed_command": false, "geometry_command": false, "flow_proven": true, "protected_after": {"accepted_z_offset_mm": -0.04, "homing_origin_z_mm": 0, "mesh_profile": "ROBUST_MESH", "homed_axes": "xyz"}}}
+      ],
+      "expected": {"verdict": "blocked_safe", "reason_code": "nozzle_target_before_effect_mismatch", "effects": 0, "nozzle_target_c": 0, "bed_target_c": 0}
+    },
+    {
+      "id": "cfs_bed_write_blocks",
+      "job": "dual_material",
+      "initial_state": "engaged_a_normal",
+      "events": [
+        {"kind": "cfs_boundary", "operation": "keep_engaged_proof_purge", "route": {"proof_id": "p-bed-write", "logical_tool": "T3", "cfs_unit": "CFS1", "slot": "A", "material_id": "MAT_A", "mapping_revision": 7}, "observed": {"target_armed_before_first_effect": true, "nozzle_target_before_first_effect_c": 200, "bed_target_during_boundary_c": 55, "cfs_nozzle_command": false, "cfs_bed_command": true, "geometry_command": false, "flow_proven": true, "protected_after": {"accepted_z_offset_mm": -0.04, "homing_origin_z_mm": 0, "mesh_profile": "ROBUST_MESH", "homed_axes": "xyz"}}}
+      ],
+      "expected": {"verdict": "blocked_safe", "reason_code": "cfs_bed_command", "effects": 0, "nozzle_target_c": 0, "bed_target_c": 0}
+    },
+    {
+      "id": "geometry_change_blocks_without_blind_z_restore",
+      "job": "dual_material",
+      "initial_state": "engaged_a_normal",
+      "events": [
+        {"kind": "cfs_boundary", "operation": "keep_engaged_proof_purge", "route": {"proof_id": "p-geometry", "logical_tool": "T3", "cfs_unit": "CFS1", "slot": "A", "material_id": "MAT_A", "mapping_revision": 7}, "observed": {"target_armed_before_first_effect": true, "nozzle_target_before_first_effect_c": 200, "bed_target_during_boundary_c": 55, "cfs_nozzle_command": false, "cfs_bed_command": false, "geometry_command": true, "flow_proven": true, "protected_after": {"accepted_z_offset_mm": -0.04, "homing_origin_z_mm": 0, "mesh_profile": "ROBUST_MESH", "homed_axes": "xy"}}}
+      ],
+      "expected": {"verdict": "blocked_safe", "reason_code": "forbidden_geometry_command", "effects": 0, "nozzle_target_c": 0, "bed_target_c": 0, "resume_armed": false}
+    },
+    {
+      "id": "unknown_route_blocks_before_effect",
+      "job": "dual_material",
+      "initial_state": "absent_first",
+      "events": [
+        {"kind": "cfs_boundary", "operation": "initial_load", "incoming_tool": "T3", "observed": {"target_armed_before_first_effect": true, "nozzle_target_before_first_effect_c": 205, "bed_target_during_boundary_c": 60, "cfs_nozzle_command": false, "cfs_bed_command": false, "geometry_command": false, "flow_proven": true, "protected_after": {"accepted_z_offset_mm": -0.04, "homing_origin_z_mm": 0, "mesh_profile": "ROBUST_MESH", "homed_axes": "xyz"}}}
+      ],
+      "expected": {"verdict": "blocked_safe", "reason_code": "route_missing", "effects": 0, "nozzle_target_c": 0, "bed_target_c": 0}
+    },
+    {
+      "id": "route_is_stale_after_cfs_reconnect",
+      "job": "dual_material",
+      "initial_state": "engaged_a_normal",
+      "events": [
+        {"kind": "reconnect_cfs"},
+        {"kind": "cfs_boundary", "operation": "keep_engaged_proof_purge", "route": {"proof_id": "p-stale", "logical_tool": "T3", "cfs_unit": "CFS1", "slot": "A", "material_id": "MAT_A", "mapping_revision": 7}, "observed": {"target_armed_before_first_effect": true, "nozzle_target_before_first_effect_c": 200, "bed_target_during_boundary_c": 55, "cfs_nozzle_command": false, "cfs_bed_command": false, "geometry_command": false, "flow_proven": true, "protected_after": {"accepted_z_offset_mm": -0.04, "homing_origin_z_mm": 0, "mesh_profile": "ROBUST_MESH", "homed_axes": "xyz"}}}
+      ],
+      "expected": {"verdict": "blocked_safe", "reason_code": "route_stale", "effects": 0, "nozzle_target_c": 0, "bed_target_c": 0}
+    },
+    {
+      "id": "route_proof_cannot_be_reused",
+      "job": "dual_material",
+      "initial_state": "engaged_a_normal",
+      "events": [
+        {"kind": "cfs_boundary", "operation": "keep_engaged_proof_purge", "route": {"proof_id": "p-once", "logical_tool": "T3", "cfs_unit": "CFS1", "slot": "A", "material_id": "MAT_A", "mapping_revision": 7}, "observed": {"target_armed_before_first_effect": true, "nozzle_target_before_first_effect_c": 200, "bed_target_during_boundary_c": 55, "cfs_nozzle_command": false, "cfs_bed_command": false, "geometry_command": false, "flow_proven": true, "protected_after": {"accepted_z_offset_mm": -0.04, "homing_origin_z_mm": 0, "mesh_profile": "ROBUST_MESH", "homed_axes": "xyz"}}},
+        {"kind": "cfs_boundary", "operation": "keep_engaged_proof_purge", "route": {"proof_id": "p-once", "logical_tool": "T3", "cfs_unit": "CFS1", "slot": "A", "material_id": "MAT_A", "mapping_revision": 7}, "observed": {"target_armed_before_first_effect": true, "nozzle_target_before_first_effect_c": 200, "bed_target_during_boundary_c": 55, "cfs_nozzle_command": false, "cfs_bed_command": false, "geometry_command": false, "flow_proven": true, "protected_after": {"accepted_z_offset_mm": -0.04, "homing_origin_z_mm": 0, "mesh_profile": "ROBUST_MESH", "homed_axes": "xyz"}}}
+      ],
+      "expected": {"verdict": "blocked_safe", "reason_code": "route_proof_reused", "effects": 1, "nozzle_target_c": 0, "bed_target_c": 0}
+    },
+    {
+      "id": "missing_load_temperature_blocks_contract",
+      "job": "missing_load_target",
+      "initial_state": "engaged_a_normal",
+      "events": [],
+      "expected": {"verdict": "blocked_safe", "reason_code": "job_contract_invalid", "effects": 0, "nozzle_target_c": 0, "bed_target_c": 0}
+    },
+    {
+      "id": "incompatible_transition_temperature_blocks_contract",
+      "job": "incompatible_purge",
+      "initial_state": "engaged_a_normal",
+      "events": [],
+      "expected": {"verdict": "blocked_safe", "reason_code": "transition_target_out_of_bounds", "effects": 0, "nozzle_target_c": 0, "bed_target_c": 0}
+    },
+    {
+      "id": "missing_protected_evidence_blocks",
+      "job": "dual_material",
+      "initial_state": "incomplete_protected",
+      "events": [],
+      "expected": {"verdict": "blocked_safe", "reason_code": "protected_state_incomplete", "effects": 0, "nozzle_target_c": 0, "bed_target_c": 0}
+    },
+    {
+      "id": "cfs_nozzle_command_is_forbidden_even_if_equal",
+      "job": "dual_material",
+      "initial_state": "engaged_a_normal",
+      "events": [
+        {"kind": "cfs_boundary", "operation": "keep_engaged_proof_purge", "route": {"proof_id": "p-nozzle-write", "logical_tool": "T3", "cfs_unit": "CFS1", "slot": "A", "material_id": "MAT_A", "mapping_revision": 7}, "observed": {"target_armed_before_first_effect": true, "nozzle_target_before_first_effect_c": 200, "bed_target_during_boundary_c": 55, "cfs_nozzle_command": true, "cfs_bed_command": false, "geometry_command": false, "flow_proven": true, "protected_after": {"accepted_z_offset_mm": -0.04, "homing_origin_z_mm": 0, "mesh_profile": "ROBUST_MESH", "homed_axes": "xyz"}}}
+      ],
+      "expected": {"verdict": "blocked_safe", "reason_code": "cfs_nozzle_command", "effects": 0, "nozzle_target_c": 0, "bed_target_c": 0}
+    },
+    {
+      "id": "visible_flow_is_required",
+      "job": "dual_material",
+      "initial_state": "engaged_a_normal",
+      "events": [
+        {"kind": "cfs_boundary", "operation": "keep_engaged_proof_purge", "route": {"proof_id": "p-no-flow", "logical_tool": "T3", "cfs_unit": "CFS1", "slot": "A", "material_id": "MAT_A", "mapping_revision": 7}, "observed": {"target_armed_before_first_effect": true, "nozzle_target_before_first_effect_c": 200, "bed_target_during_boundary_c": 55, "cfs_nozzle_command": false, "cfs_bed_command": false, "geometry_command": false, "flow_proven": false, "protected_after": {"accepted_z_offset_mm": -0.04, "homing_origin_z_mm": 0, "mesh_profile": "ROBUST_MESH", "homed_axes": "xyz"}}}
+      ],
+      "expected": {"verdict": "blocked_safe", "reason_code": "flow_not_proven", "effects": 0, "nozzle_target_c": 0, "bed_target_c": 0}
+    },
+    {
+      "id": "material_database_value_is_not_dynamic_owner",
+      "job": "dual_material",
+      "initial_state": "absent_first",
+      "events": [
+        {"kind": "cfs_boundary", "operation": "initial_load", "incoming_tool": "T3", "material_database_target_c": 220, "route": {"proof_id": "p-db-fallback", "logical_tool": "T3", "cfs_unit": "CFS1", "slot": "A", "material_id": "MAT_A", "mapping_revision": 7}, "observed": {"target_armed_before_first_effect": true, "nozzle_target_before_first_effect_c": 205, "bed_target_during_boundary_c": 60, "cfs_nozzle_command": false, "cfs_bed_command": false, "geometry_command": false, "flow_proven": true, "protected_after": {"accepted_z_offset_mm": -0.04, "homing_origin_z_mm": 0, "mesh_profile": "ROBUST_MESH", "homed_axes": "xyz"}}}
+      ],
+      "expected": {"verdict": "pass_offline", "effects": 1, "engaged_tool": "T3", "nozzle_target_c": 205, "bed_target_c": 60}
+    },
+    {
+      "id": "route_material_mismatch_blocks",
+      "job": "dual_material",
+      "initial_state": "absent_first",
+      "events": [
+        {"kind": "cfs_boundary", "operation": "initial_load", "incoming_tool": "T3", "route": {"proof_id": "p-wrong-material", "logical_tool": "T3", "cfs_unit": "CFS1", "slot": "A", "material_id": "MAT_B", "mapping_revision": 7}, "observed": {"target_armed_before_first_effect": true, "nozzle_target_before_first_effect_c": 205, "bed_target_during_boundary_c": 60, "cfs_nozzle_command": false, "cfs_bed_command": false, "geometry_command": false, "flow_proven": true, "protected_after": {"accepted_z_offset_mm": -0.04, "homing_origin_z_mm": 0, "mesh_profile": "ROBUST_MESH", "homed_axes": "xyz"}}}
+      ],
+      "expected": {"verdict": "blocked_safe", "reason_code": "route_material_mismatch", "effects": 0, "nozzle_target_c": 0, "bed_target_c": 0}
+    }
+  ]
+}

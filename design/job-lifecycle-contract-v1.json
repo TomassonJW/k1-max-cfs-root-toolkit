@@ -66,6 +66,7 @@
     "equivalent_refill": "preserve_active_target",
     "intentional_tool_change": {
       "outgoing_unload": "previous_accepted_material_temperature",
+      "incoming_load": "explicit_job_contract_target_for_incoming_material",
       "transition_purge": "explicit_job_contract_target_compatible_with_both_materials",
       "incoming_print": "next_tool_gcode_target"
     },
@@ -136,6 +137,30 @@
     "deployment_candidate": false,
     "physical_test_authorized": false,
     "next_design_branch": "minimal_separate_filament_owner_if_no_stock_primitive_can_be_proven"
+  },
+  "cfs_dynamic_temperature_routing": {
+    "candidate": "K1-CONTROL-CFS-DYNAMIC-TEMP-ROUTING-V1",
+    "status": "offline_complete_production_closed",
+    "selected_architecture": "minimal_separate_filament_owner",
+    "contract": "packages/k1-control-v1/cfs-dynamic-temp-routing-v1/contract.json",
+    "temperature_ticket_requires": [
+      "job_id",
+      "phase",
+      "operation",
+      "logical_tool",
+      "fresh_route_proof",
+      "nozzle_target_c",
+      "bed_target_c",
+      "six_invariant_snapshot"
+    ],
+    "material_database_role": "static_safety_net_and_inventory_only",
+    "post_tool_reassertion_role": "defense_only_never_retroactive_success",
+    "narrow_get_material_target_temp_interception": "rejected_without_stable_seam_and_geometry_separation",
+    "route_proof_reusable": false,
+    "printer_transport": false,
+    "deployment_candidate": false,
+    "physical_test_authorized": false,
+    "next_design_branch": "minimal_owner_protocol_mapping_offline"
   },
   "filament_state": {
     "states": [
@@ -229,6 +254,7 @@
       "tool_first_layer_targets_c",
       "tool_normal_targets_c",
       "transition_unload_targets_c",
+      "transition_load_targets_c",
       "transition_purge_targets_c",
       "transition_purge_volumes_mm3",
       "mesh_profile_request",
@@ -347,14 +373,19 @@
     {"id": "cfs_late_220_rewrite", "expected": "phase_fails_before_resume"},
     {"id": "orca_contract_version_mismatch", "expected": "job_rejected_before_machine_hazard"},
     {"id": "cancel_and_reboot_each_phase", "expected": "safe_recovery_without_implicit_full_cycle"},
-    {"id": "deployment_slice_rollback", "expected": "previous_known_state_restored_with_matching_hashes"}
+    {"id": "deployment_slice_rollback", "expected": "previous_known_state_restored_with_matching_hashes"},
+    {"id": "cfs_route_freshness", "expected": "stale_unknown_or_reused_route_blocks_before_first_filament_effect"},
+    {"id": "cfs_first_and_normal_targets", "expected": "nozzle_and_bed_first_layer_targets_remain_distinct_from_normal_targets"},
+    {"id": "cfs_transition_load_target", "expected": "unload_load_purge_and_incoming_print_targets_are_all_explicit"},
+    {"id": "cfs_no_transport_offline_matrix", "expected": "two_cfs_pause_resume_runout_cancel_and_fail_safe_paths_are_deterministic_without_printer_transport"}
   ],
   "deployment": {
     "active_physical_gate": "MESH-EDGE-DIAGNOSTIC-V1 suspended after invalid no-flow source passage",
     "active_physical_gate_rollback": "validated under capture 20260826-090956-mesh-edge-diagnostic-v1; temporary profile and four gcodes absent",
     "daily_calibration": "6x6 Lagrange one-mesh campaign validated and autonomous",
     "precision_mode": "hidden; edge diagnostic and derived profile qualification incomplete",
-    "production_cutover": "not implemented; job lifecycle, sensor mapping, CFS temperature owner and Orca cutover remain absent",
+    "cfs_dynamic_temperature_routing": "offline contract and simulator complete; minimal separate owner selected; serial transport and deployment absent",
+    "production_cutover": "not implemented; serial owner, physical CFS qualification, sensor mapping and Orca cutover remain absent",
     "offline_prototype_required_before_physical_gate": true,
     "rollback_required_per_slice": true
   }

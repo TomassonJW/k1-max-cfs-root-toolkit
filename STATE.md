@@ -51,9 +51,10 @@ Aucune nouvelle authentification ni action physique n'a eu lieu.
 **P4 — calibration quotidienne autonome ; composite physique `11 × 11`
 qualifié techniquement mais KO aux bords en première couche ; éditeur de profil
 dérivé hors ligne validé ; binaire CFS et incident exact audités ; adaptateur
-stock fermé sans primitive qualifiée ; diagnostic physique des bords suspendu ;
-contrat de cycle production figé hors imprimante ; production volontairement
-bloquée**
+stock fermé sans primitive qualifiée ; routage thermique dynamique simulé et
+propriétaire minimal choisi sans transport ; diagnostic physique des bords
+suspendu ; contrat de cycle production figé hors imprimante ; production
+volontairement bloquée**
 
 La base sûre et réellement requalifiée reste `6 × 6` Lagrange avec un seul mesh
 standard. L'autonomie de calibration quotidienne standard est maintenant
@@ -883,9 +884,22 @@ ordre CFS, restart ou fichier distant n'a été produit pendant l'audit.
 ADR-018 ferme l'adaptateur stock. `BOX_EXTRUDE_MATERIAL` est refusée ;
 `BOX_EXTRUDER_EXTRUDE` et `BOX_MATERIAL_FLUSH` restent non qualifiées faute de
 preuve isolée. Le contrat hors imprimante conserve une liste de primitives
-appelables vide et `deployment_candidate=false`. La prochaine branche sûre est
-la préparation hors imprimante d'un propriétaire filament minimal séparé ou une
-preuve statique plus forte ; aucune pose ni reprise physique n'est ouverte.
+appelables vide et `deployment_candidate=false`.
+
+`G4-K1-CONTROL-CFS-DYNAMIC-TEMP-ROUTING-V1` est maintenant close hors
+imprimante. La base matière reste un filet statique, la réaffirmation post-`T`
+une défense et l'interception de `get_material_target_temp` est refusée faute de
+point d'extension stable et de séparation géométrique. ADR-020 choisit
+`minimal_separate_filament_owner` avec un ticket par phase, une route fraîche
+consommable une fois, des cibles distinctes de retrait/chargement/purge et les
+six invariants inchangés. Le simulateur obtient `25/25` sur les deux CFS,
+first/normal, filament engagé, chargement, changement, refill, runout,
+pause/reprise, annulation et arrêts sûrs.
+
+Ce résultat ne contient aucun transport K1 et reste
+`deployment_candidate=false`. La prochaine branche sûre est
+`G4-K1-CONTROL-CFS-MINIMAL-OWNER-PROTOCOL-V1`, toujours hors imprimante. Aucune
+pose ni reprise physique n'est ouverte.
 
 Thomas explicitly rejected further sacrificial print campaigns on 2026-08-21.
 The V3 + PATHS-V1 observation remains useful coexistence evidence but no longer
@@ -927,6 +941,9 @@ retirement remains atomic with the later proven machine/Orca replacement.
 - Macro or configuration modification.
 - Z, mesh, temperature or CFS tuning.
 - Any static material-specific CFS temperature candidate.
+- Toute pose, tout transport K1 ou tout essai physique issu de
+  `G4-K1-CONTROL-CFS-DYNAMIC-TEMP-ROUTING-V1`, qui reste une conception hors
+  ligne non déployable.
 - Any import or change of Orca fields on the workstation profile.
 - `G4-ZSAFE-START-V1` forever: this rejected name cannot receive a GO.
 - Any future `K1-CONTROL-V1` deployment until a new exact G4 package exists and

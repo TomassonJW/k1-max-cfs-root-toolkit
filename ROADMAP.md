@@ -77,8 +77,9 @@ et Mainsail `v2.18.2` épinglés, contrat Orca complet et
 Status: **calibration quotidienne autonome ; composite `11 × 11` meilleur au
 centre mais KO aux bords ; éditeur hors imprimante validé ; diagnostic de bord
 suspendu ; débit CFS prouvé mais séquence brute refusée ; binaire et journal
-exacts audités ; adaptateur stock fermé sans primitive qualifiée ; production
-fermée**
+exacts audités ; adaptateur stock fermé sans primitive qualifiée ; routage
+thermique dynamique simulé et propriétaire minimal choisi sans
+transport ; production fermée**
 
 Le produit est posé par étapes techniques réversibles, mais Thomas reçoit un
 seul fonctionnement quotidien :
@@ -102,10 +103,12 @@ seul fonctionnement quotidien :
    `CFS-BOX-WRAPPER-AUDIT-V1` a ensuite confirmé le `220 °C` et la géométrie
    internes ; aucune primitive stock n'est qualifiée et l'adaptateur reste
    fail-closed ;
-8. préparation hors imprimante d'un propriétaire filament minimal, puis
-   implémentation progressive de la propriété dynamique des températures,
-   chargements et purges des deux CFS ;
-9. contrat Orca final et retrait atomique prouvé de l'ancien post-traitement
+8. `CFS-DYNAMIC-TEMP-ROUTING-V1` close hors imprimante : ticket par phase,
+   route fraîche, deux CFS et 25 scénarios verts ; propriétaire filament minimal
+   choisi, mais protocole et transport encore absents ;
+9. cartographie hors imprimante du protocole minimal, puis implémentation
+   progressive et physiquement qualifiée des chargements et purges des deux CFS ;
+10. contrat Orca final et retrait atomique prouvé de l'ancien post-traitement
    `+0,27 mm`.
 
 Le rollback exact de `MESH-EDGE-DIAGNOSTIC-V1` et sa validation finale sont

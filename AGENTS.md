@@ -26,7 +26,8 @@ mesure ; la comparaison V2 a prouvé un gain central mais un KO sévère aux
 bords ; MESH-EDITOR-OFFLINE-V1 est validé sans connexion K1 ; le mode
 Précision reste caché ; le diagnostic physique borné des bords est suspendu
 après un passage sans débit ; le contrat complet du cycle filament est figé
-hors imprimante ; production remains closed**.
+hors imprimante ; CFS-DYNAMIC-TEMP-ROUTING-V1 est clos avec 25 scénarios verts
+et un propriétaire minimal choisi sans transport ; production remains closed**.
 
 La capture `20260823-165742-g4-k1-control-calibration-ui-prtouch-presets-v1` a
 clos PRTOUCH-PRESETS-V1 après un préflight frais, un déploiement idempotent et
@@ -118,6 +119,15 @@ qualification physique. Le retrait devient le bouton séparé `Désengager et
 nettoyer`. Aucun `T0`, capteur de débit, palpage de brosse ou delta thermique
 universel ne peut être supposé. Ce gel est hors imprimante et n'autorise aucune
 production.
+
+`G4-K1-CONTROL-CFS-DYNAMIC-TEMP-ROUTING-V1` est désormais close hors
+imprimante. ADR-020 choisit `minimal_separate_filament_owner` : ticket par
+phase, cible avant le premier effet, route CFS/slot fraîche et consommable une
+fois, températures distinctes de retrait/chargement/purge et six invariants
+inchangés. La matrice obtient `25/25`. Le paquet n'a aucun transport K1,
+`deployment_candidate=false` et n'autorise ni pose ni reprise physique. La
+prochaine mission canonique est
+`G4-K1-CONTROL-CFS-MINIMAL-OWNER-PROTOCOL-V1`, toujours hors imprimante.
 
 Thomas authorised V1, but the mandatory preflight proved that `logrotate` was
 absent. V1 is closed and must never be deployed. Thomas later authorised V2;

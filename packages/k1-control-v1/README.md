@@ -2,7 +2,8 @@
 
 Statut : **fondation V3, runtime Z/mesh, calibration quotidienne et navigation
 installés ; composite `11 × 11` retenu comme source mais mode Précision KO aux
-bords ; éditeur dérivé hors ligne validé ; production fermée**.
+bords ; éditeur dérivé hors ligne validé ; routage thermique CFS simulé et
+propriétaire minimal choisi sans transport ; production fermée**.
 
 La fondation initiale ajoute une seule API Moonraker, une petite
 passerelle web dédiée au port `4409` et Mainsail comme interface experte. Elle
@@ -33,6 +34,18 @@ thermique `220 °C` et la géométrie malgré une purge demandée à `190 °C`.
 
 Son adaptateur est volontairement fermé : aucune primitive stock n'est
 qualifiée, aucune pose n'est préparée et la production reste bloquée.
+
+## Routage dynamique des températures CFS
+
+Le paquet
+[`cfs-dynamic-temp-routing-v1/`](cfs-dynamic-temp-routing-v1/) compare les
+quatre voies possibles et choisit un propriétaire filament minimal séparé. Son
+ticket lie la phase, la route fraîche, la buse, le plateau et les six invariants
+avant le premier effet filament.
+
+Sa matrice hors ligne obtient `25/25` sur deux CFS, first/normal, chargement,
+changement, refill, runout, pause/reprise, annulation et arrêts sûrs. Il ne
+contient aucun transport K1 ni candidat de pose ; la production reste fermée.
 
 ## Versions figées
 

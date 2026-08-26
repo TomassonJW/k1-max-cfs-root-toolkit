@@ -64,3 +64,11 @@ températures de plateau de première couche et normales.
   pause/reprise et filament déjà engagé ;
 - un résultat hors ligne vert n'autorise ni pose ni essai physique ;
 - `MESH-EDGE-DIAGNOSTIC-V1` et la production restent fermés.
+
+## Résultat de la mission canonique
+
+La mission est close par ADR-020. La base matière reste un filet statique,
+la réaffirmation post-`T` une défense et l'interception étroite est refusée sans
+point d'extension et séparation géométrique prouvés. Le choix hors ligne est un
+ticket thermique servi par `minimal_separate_filament_owner` ; son simulateur
+obtient `25/25`, sans transport ni candidat de pose.

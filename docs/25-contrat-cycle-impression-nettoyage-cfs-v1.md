@@ -405,6 +405,12 @@ reste suspendue. Avant toute reprise :
 
 Une seule famille d'action physique est qualifiée par incrément.
 
+État au 26 août 2026 : `G4-K1-CONTROL-CFS-DYNAMIC-TEMP-ROUTING-V1` a fermé
+hors imprimante le contrat thermique préparatoire de l'étape 5. Le propriétaire
+minimal séparé est choisi et 25 scénarios sont verts, mais le protocole, le
+transport, la pose et la qualification physique de `CFS-TEMP-OWNER-V1` restent
+absents.
+
 ## 16. Références
 
 - [ADR-016 — cycle de production orchestré](adr/ADR-016-cycle-production-orchestre-et-propriete-cfs.md)
