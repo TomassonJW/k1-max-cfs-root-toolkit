@@ -82,6 +82,35 @@
       "universal_minus_30_or_100_release_temperature"
     ]
   },
+  "cfs_boundary_guard": {
+    "candidate": "K1-CONTROL-CFS-BOUNDARY-GUARD-V1",
+    "status": "offline_candidate_production_closed",
+    "protects": [
+      "nozzle_target_c",
+      "bed_target_c",
+      "accepted_z_offset_mm",
+      "homing_origin_z_mm",
+      "mesh_profile",
+      "homed_axes"
+    ],
+    "forbidden_inside_boundary": [
+      "nozzle_command_inside_boundary",
+      "bed_command_inside_boundary",
+      "homing",
+      "z_offset_mutation",
+      "mesh_clear_or_load"
+    ],
+    "late_correction_is_not_ownership": true,
+    "geometry_failure": "stop_without_blind_z_restore",
+    "thermal_failure": "abort_cfs_set_both_heater_targets_zero_and_block_resume",
+    "incident_20260826": {
+      "requested_nozzle_target_c": 190,
+      "observed_hidden_nozzle_target_c": 220,
+      "observed_bed_target_c": 0,
+      "observed_unexpected_homing": "xy",
+      "z_mesh_during_boundary": "not_freshly_qualified"
+    }
+  },
   "filament_state": {
     "states": [
       "absent_confirmed",

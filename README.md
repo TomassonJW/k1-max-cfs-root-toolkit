@@ -5,9 +5,11 @@ Unofficial, evidence-driven tooling and documentation for taking controlled owne
 > **Status:** P4. La calibration quotidienne `6 × 6`, le Z accepté `−0,04 mm`,
 > K1 Control et sa navigation Mainsail sont validés. Le composite physique
 > `11 × 11` améliore le centre mais échoue encore aux bords ; il reste caché.
-> L'éditeur de profils dérivés hors imprimante est validé. La prochaine gate
-> est le diagnostic physique borné des bords ; aucun essai n'a encore démarré.
-> L'autonomie de production reste fermée.
+> L'éditeur de profils dérivés hors imprimante est validé. Le diagnostic de bord
+> reste suspendu. Une purge CFS a prouvé le débit, mais aussi une cible cachée à
+> `220 °C` et un homing X/Y imprévu ; la séquence brute est refusée. Le garde de
+> frontière buse/plateau/Z est validé hors imprimante. L'autonomie de production
+> reste fermée.
 
 ## Target configuration
 
@@ -29,6 +31,7 @@ The repository must not generalize findings to every K1/K1 Max/CFS revision unti
 - automatic calibration can invalidate an otherwise correct first-layer adjustment;
 - startup sequences are long, opaque and sometimes redundant;
 - CFS filament-change sequences can override requested nozzle temperatures;
+- CFS boundaries may also interfere with bed targets, homing, Z or mesh state;
 - slicer G-code alone cannot reliably control later firmware macros;
 - configuration changes need to survive reboot and remain recoverable.
 
@@ -87,9 +90,12 @@ Son nom seul ne vaut pas GO et son mode par défaut reste purement local.
 L'audit courant du mesh manuel et du cycle CFS est dans
 [`docs/23-audit-mesh-manuel-et-cycle-production-cfs.md`](docs/23-audit-mesh-manuel-et-cycle-production-cfs.md).
 Les architectures retenues sont ADR-015 pour les profils mesh dérivés et
-ADR-016 pour le cycle de production orchestré.
+ADR-016 pour le cycle de production orchestré. ADR-017 protège chaque frontière
+CFS sur la buse, le plateau, le Z, le mesh et le homing.
 Le résultat de l'éditeur local est dans
 [`docs/24-mesh-editor-offline-v1.md`](docs/24-mesh-editor-offline-v1.md).
+L'incident CFS et son verdict sont dans
+[`docs/27-incident-cfs-temperature-geometrie-v1.md`](docs/27-incident-cfs-temperature-geometrie-v1.md).
 
 ## Repository map
 

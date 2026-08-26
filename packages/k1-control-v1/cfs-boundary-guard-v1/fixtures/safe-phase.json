@@ -1,0 +1,38 @@
+{
+  "trace_id": "offline-safe-phase",
+  "phase": "equivalent_refill",
+  "fixture_status": "synthetic invariant test; does not qualify the stock primitive",
+  "expected": {
+    "nozzle_target_c": 205,
+    "bed_target_c": 60,
+    "accepted_z_offset_mm": -0.04,
+    "homing_origin_z_mm": -0.04,
+    "mesh_profile": "k1_p001_t055_r001_n06x06",
+    "homed_axes": "xyz"
+  },
+  "events": [
+    {
+      "kind": "snapshot",
+      "nozzle_target_c": 205,
+      "bed_target_c": 60,
+      "accepted_z_offset_mm": -0.04,
+      "homing_origin_z_mm": -0.04,
+      "mesh_profile": "k1_p001_t055_r001_n06x06",
+      "homed_axes": "xyz"
+    },
+    {
+      "kind": "gcode",
+      "owner": "cfs",
+      "command": "BOX_EXTRUDE_MATERIAL TNN=T1A"
+    },
+    {
+      "kind": "snapshot",
+      "nozzle_target_c": 205,
+      "bed_target_c": 60,
+      "accepted_z_offset_mm": -0.04,
+      "homing_origin_z_mm": -0.04,
+      "mesh_profile": "k1_p001_t055_r001_n06x06",
+      "homed_axes": "xyz"
+    }
+  ]
+}

@@ -1,0 +1,38 @@
+{
+  "trace_id": "20260826-physical-cfs-insert-purge-v1",
+  "phase": "manual_visible_purge",
+  "evidence_status": "mixed: exact thermal and G-code observations; Z and mesh during the boundary remain unknown",
+  "expected": {
+    "nozzle_target_c": 190,
+    "bed_target_c": 0,
+    "accepted_z_offset_mm": -0.04,
+    "homing_origin_z_mm": -0.04,
+    "mesh_profile": "k1_p001_t055_r001_n06x06",
+    "homed_axes": ""
+  },
+  "events": [
+    {
+      "kind": "snapshot",
+      "nozzle_target_c": 190,
+      "bed_target_c": 0,
+      "accepted_z_offset_mm": null,
+      "homing_origin_z_mm": null,
+      "mesh_profile": null,
+      "homed_axes": ""
+    },
+    {
+      "kind": "gcode",
+      "owner": "cfs",
+      "command": "G28 X Y"
+    },
+    {
+      "kind": "snapshot",
+      "nozzle_target_c": 220,
+      "bed_target_c": 0,
+      "accepted_z_offset_mm": null,
+      "homing_origin_z_mm": null,
+      "mesh_profile": null,
+      "homed_axes": "xy"
+    }
+  ]
+}

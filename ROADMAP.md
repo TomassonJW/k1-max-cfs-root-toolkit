@@ -76,8 +76,8 @@ et Mainsail `v2.18.2` épinglés, contrat Orca complet et
 
 Status: **calibration quotidienne autonome ; composite `11 × 11` meilleur au
 centre mais KO aux bords ; éditeur hors imprimante validé ; diagnostic de bord
-suspendu après un passage sans débit ; contrat complet du cycle d'impression
-figé hors imprimante ; production fermée**
+suspendu ; débit CFS prouvé mais séquence brute refusée pour `220 °C` et homing
+X/Y ; garde buse/plateau/Z validé hors imprimante ; production fermée**
 
 Le produit est posé par étapes techniques réversibles, mais Thomas reçoit un
 seul fonctionnement quotidien :
@@ -92,14 +92,17 @@ seul fonctionnement quotidien :
    gain central mais refuse sa promotion à cause des bords ;
 4. `MESH-EDITOR-OFFLINE-V1` validé hors imprimante, avec profil source immuable,
    profil dérivé versionné, historique et rollback ;
-5. `MESH-EDGE-DIAGNOSTIC-V1` suspendu après un premier passage sans débit : il
-   faut d'abord retirer les artefacts temporaires, résoudre la route CFS réelle
-   et prouver une purge visible sans supposer `T0` ;
+5. `MESH-EDGE-DIAGNOSTIC-V1` suspendu : la route `CFS1/A` et une purge visible
+   ont été prouvées pour un passage, mais la séquence a imposé `220 °C`, homé
+   X/Y et tenté la purge avec le plateau trop haut ;
 6. contrat complet du cycle figé hors imprimante : états filament, nettoyage,
    référence finale, sélection du mesh, Z, changements, pause, reprise et fin ;
-7. implémentation progressive de la propriété dynamique des températures,
+7. `CFS-BOUNDARY-GUARD-V1` validé hors imprimante sur six invariants ; prochaine
+   étape en lecture seule : binaire exact, journal complet et qualification des
+   primitives avant tout adaptateur ;
+8. implémentation progressive de la propriété dynamique des températures,
    chargements et purges des deux CFS ;
-8. contrat Orca final et retrait atomique prouvé de l'ancien post-traitement
+9. contrat Orca final et retrait atomique prouvé de l'ancien post-traitement
    `+0,27 mm`.
 
 Le rollback exact de `MESH-EDGE-DIAGNOSTIC-V1` et sa validation finale sont

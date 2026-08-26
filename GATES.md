@@ -122,9 +122,33 @@ empreintes avant/après sont identiques. Le verdict filament est toutefois
 débit à la buse non prouvés. L'audit réussit ; le préflight physique reste
 bloqué en sécurité.
 
-Avant toute reprise physique restante : route filament fraîchement résolue et
-purge réellement visible sous un nouveau GO. Un capteur de présence seul ne
-suffit pas.
+Thomas a ensuite résolu explicitement `CFS1 / slot A`, Geeetech PLA noir, et la
+purge visible a prouvé le débit pour ce passage. La séquence reste **KO** : elle
+a imposé `220 °C` malgré la demande `190 °C`, référencé X/Y et tenté la purge
+alors que le plateau n'était pas descendu. Aucun dommage visible n'a été
+constaté. Après récupération, `X=185,5 / Y=305 / Z=30 mm` a été validé à froid
+par Thomas comme position de purge avec une marge suffisante.
+
+### `CFS-BOUNDARY-GUARD-V1`
+
+Statut : **candidat hors imprimante validé ; primitive brute refusée ; aucune
+pose ni reprise physique autorisée**.
+
+Le garde protège simultanément cible buse, cible plateau, Z accepté, origine Z,
+profil mesh et axes référencés. Sa fixture réelle refuse l'incident pour cible
+buse cachée, homing interdit et changement des axes référencés. Les champs
+Z/mesh non capturés pendant la frontière restent inconnus. Les fixtures
+séparées refusent aussi une dérive plateau ou Z et interdisent toute restauration
+Z automatique.
+
+La suite exige d'abord la récupération en lecture seule du binaire exact
+`box_wrapper` et du journal complet, puis un adaptateur étroit figé. Les
+commandes brutes du 26 août ne doivent pas être rejouées.
+
+Avant toute reprise physique restante : route filament fraîchement résolue,
+position de purge sûre et primitive qualifiée par les six invariants. Une purge
+visible et un capteur de présence ne suffisent pas si température ou géométrie
+dérivent.
 
 Critères :
 

@@ -1247,3 +1247,31 @@ obtenir une petite purge réellement visible. Aucun `T0` n'est supposé.
 Voir `docs/26-audit-cfs-lecture-seule-v1.md`,
 `design/cfs-read-only-preflight-v1.json` et
 `packages/k1-control-v1/cfs-read-only-audit-v1/RESULT.md`.
+
+## D-066 — Une frontière CFS protège aussi le plateau et le Z
+
+Date: 2026-08-26
+
+Status: garde V1 validée hors imprimante ; séquence brute refusée ; production
+fermée
+
+Le passage physique vers `CFS1 / A` a prouvé la route et le débit pour ce moment,
+mais il a aussi prouvé que les primitives brutes ne respectent pas le contrat :
+la demande `190 °C` a été remplacée par `220 °C` et un homing X/Y a été lancé.
+Le plateau est resté à cible zéro pendant cet incident, sans que cela donne au
+CFS le droit de le commander. Aucun dommage visible n'a été constaté par Thomas.
+
+Une frontière CFS protège désormais six états ensemble : cible buse, cible
+plateau, Z accepté, origine Z courante, profil mesh et axes référencés. Le
+positionnement de purge appartient au pilote de mouvement avant la frontière ;
+la hauteur stock `Z=30 mm` a été validée à froid par Thomas. Aucun homing, offset
+ou changement de mesh n'est permis dans la phase filament.
+
+Une correction tardive de température est refusée comme architecture : elle ne
+rend pas correcte une purge déjà commencée. Une différence Z bloque sans
+restauration automatique de l'ancienne valeur. Le cœur `box_wrapper` ne sera
+remplacé que si l'analyse hors imprimante du binaire et la qualification de
+primitives étroites montrent qu'aucune route stock ne respecte ces invariants.
+
+Voir ADR-017, `docs/27-incident-cfs-temperature-geometrie-v1.md` et
+`packages/k1-control-v1/cfs-boundary-guard-v1/`.

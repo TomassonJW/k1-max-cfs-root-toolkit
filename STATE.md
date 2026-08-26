@@ -846,6 +846,26 @@ The Orca cutover remains a later atomic gate. This runtime slice intentionally
 keeps the active Orca profile, `START_PRINT` and the legacy `+0.27 mm`
 post-processor unchanged.
 
+Le 26 août, Thomas a ensuite choisi explicitement `CFS1 / slot A`, Geeetech PLA
+noir. Une première commande sans engagement CFS n'a produit aucun débit. La
+séquence CFS suivante a engagé le filament et obtenu une purge visible, mais
+elle a imposé `220 °C` malgré une demande `190 °C`, puis référencé X/Y. Le
+plateau, resté haut, a bloqué la zone du mécanisme arrière et la purge s'est
+faite sur le plateau. Thomas n'a constaté aucun dommage visible.
+
+La récupération a refait le homing proprement, contrôlé les butées X/Y et validé
+à froid la position stock de purge `X=185,5 / Y=305 / Z=30 mm`. Thomas a confirmé
+que `30 mm` est largement suffisant. Le dernier état connu avant la perte du lien
+SSH est froid, cibles zéro, robuste chargé et tête à cette position sûre.
+
+ADR-017 remplace le problème « température CFS » par une frontière complète à
+six invariants : buse, plateau, Z accepté, origine Z, mesh et axes référencés.
+Le paquet `CFS-BOUNDARY-GUARD-V1` est validé hors imprimante et refuse la trace
+réelle. Il n'autorise aucune pose ni action K1. Deux tentatives de relecture SSH
+fraîche ont ensuite expiré sans atteindre l'imprimante ; l'analyse continue donc
+sur les captures locales et marque explicitement le Z/mesh transitoire comme
+inconnu.
+
 Thomas explicitly rejected further sacrificial print campaigns on 2026-08-21.
 The V3 + PATHS-V1 observation remains useful coexistence evidence but no longer
 blocks offline product construction. L'autorité globale du Goal couvre la
@@ -890,6 +910,7 @@ retirement remains atomic with the later proven machine/Orca replacement.
 - `G4-ZSAFE-START-V1` forever: this rejected name cannot receive a GO.
 - Any future `K1-CONTROL-V1` deployment until a new exact G4 package exists and
   receives its own explicit approval.
+- Toute réutilisation des commandes brutes de la purge CFS du 26 août.
 
 ## Current blockers
 
@@ -918,10 +939,11 @@ retirement remains atomic with the later proven machine/Orca replacement.
   profile is retained without `K1_TRANSIENT`, and FIRST-CALIBRATION-V2 is closed.
 - Every reference-changing Creality calibration path must be detected or
   wrapped so that an old accepted Z cannot survive a real recalibration.
-- The compiled `BOX_*` owner may contain a late temperature write that no macro
-  can intercept. The live object exposes `box.state` and `box.t_command`; the
-  passive trace now records them. A useful production transition must decide
-  whether a small replacement owner is required.
+- The compiled `BOX_*` owner contains or triggers a temperature write that the
+  command `BOX_MATERIAL_FLUSH TEMP=190` did not prevent: `220 °C` was observed.
+  The same boundary triggered X/Y homing. The next read-only step is acquisition
+  and offline inspection of the exact binary before deciding whether a narrow
+  adapter or a small replacement owner is required.
 - The pinned Moonraker/Mainsail package and its file-manager roots completed the
   retained coexistence observation and the final read-only validation.
 - The historical transient Mainsail `Base` mesh is no longer current;

@@ -1,4 +1,4 @@
-# HANDOFF — audit CFS clos ; reprise physique toujours suspendue
+# HANDOFF — incident CFS audité ; primitive brute refusée
 
 Date de passation : 2026-08-26 (Europe/Paris)
 Projet : C:\Users\janko\Documents\ChatGPT\k1-max-cfs-root-toolkit
@@ -15,19 +15,30 @@ Branche de reprise : `main`
   restent la base sûre.
 - Le composite physique k1_p001_t055_r001_n11x11 reste une source immuable.
 - L’éditeur local v001 est validé et le mode Précision reste caché.
-- MESH-EDGE-DIAGNOSTIC-V1 est en cours mais suspendue après un passage source
-  sans dépôt de filament. Ce passage ne qualifie ni la buse ni le mesh.
+- MESH-EDGE-DIAGNOSTIC-V1 reste suspendue. Le débit a ensuite été prouvé sur une
+  purge séparée, mais la séquence utilisée est refusée pour température et
+  géométrie.
 - La capture `20260826-090956-mesh-edge-diagnostic-v1` a obtenu le rollback et
   `VALIDATE_MESH_EDGE_DIAGNOSTIC_V1_OK` : profil diagnostic et quatre G-code
   absents, base exacte, robuste actif, cibles zéro, axes libérés, runtime Z sûr
   et deux CFS connectés.
 - L'audit CFS strictement en lecture seule est clos OK sous la capture privée
   `20260826-final-cfs-read-only-audit-v1`.
-- La K1 observe une présence de filament, mais aucune route courante
-  outil/CFS/slot ni aucun débit à la buse : état sûr `engaged_unknown`.
-- Statut actuel : **ATTENDRE_GO** avant toute action physique sur la K1.
-- Aucun nouveau motif n’est autorisé sans reprise explicite, route CFS/slot
-  fraîchement résolue et purge réellement visible.
+- Thomas a explicitement choisi `CFS1 / slot A`, Geeetech PLA noir. La purge a
+  prouvé cette route et le débit pour ce passage seulement.
+- La séquence a imposé `220 °C` malgré la demande `190 °C`, référencé X/Y et
+  tenté de purger avec le plateau trop haut. Aucun dommage visible selon Thomas.
+- Le homing a ensuite été repris proprement. La position froide
+  `X=185,5 / Y=305 / Z=30 mm` a été validée visuellement comme position de purge
+  avec une marge suffisante.
+- Le dernier état connu est froid, cibles zéro, robuste chargé et tête à cette
+  position. Deux relectures SSH ultérieures ont expiré sans atteindre la K1.
+- `CFS-BOUNDARY-GUARD-V1` est validé hors imprimante. Il protège buse, plateau,
+  Z accepté, origine Z, mesh et axes référencés, et refuse la trace réelle.
+- Statut technique actuel : **ATTENDRE_GO_PAQUET_REVU** avant toute nouvelle
+  action physique ou pose sur la K1. Ce marqueur interne n'impose aucune phrase
+  littérale à Thomas ; une demande normale et non ambiguë suffit selon D-054.
+- Aucun nouveau motif n’est autorisé avec les commandes brutes du 26 août.
 - Aucun `GO` exact ni identifiant de gate recopié n’est requis ; une demande
   normale de Thomas suffit, conformément à D-054.
 - La présence de Thomas et le plateau réellement libre restent des faits à
@@ -35,7 +46,7 @@ Branche de reprise : `main`
 - Le contrat complet de nettoyage, impression, filament, changement et fin est
   figé hors imprimante. Il n’est pas implémenté et n’ouvre pas la production.
 
-## Clôture vérifiée de la mission
+## Clôture vérifiée de la mission précédente
 
 - Mission livrée : audit CFS exact en lecture seule, contrat de préflight,
   analyseur déterministe et verdict `engaged_unknown`.
@@ -46,6 +57,20 @@ Branche de reprise : `main`
 - Gate humaine : aucune validation de mesh, de buse ou de débit ; aucun passage
   imprimé exploitable.
 - Prochaine autorisation : `ATTENDRE_GO_PHYSIQUE` avant toute action K1.
+
+## Mission courante close hors imprimante
+
+- Incident documenté dans `docs/27-incident-cfs-temperature-geometrie-v1.md`.
+- Décision d'architecture figée dans ADR-017 et D-066.
+- Contrat machine étendu aux six invariants CFS.
+- Paquet local `packages/k1-control-v1/cfs-boundary-guard-v1/` avec fixture
+  réelle, fixture synthétique et évaluation déterministe.
+- 324 tests Python verts, 3 ignorés historiques.
+- Aucune écriture K1, chauffe, mouvement, purge ou impression pendant cette
+  préparation hors imprimante.
+- Prochaine étape : récupérer en lecture seule le journal complet et le binaire
+  exact `box_wrapper`, puis préparer un adaptateur étroit. Toute pose ou tout
+  essai physique reste séparé.
 
 ## 1. Résultat de la mission close précédente
 
@@ -205,6 +230,9 @@ Autorisation de démarrage : **ATTENDRE_GO_PHYSIQUE**.
 15. packages/k1-control-v1/mesh-editor-offline-v1/README.md
 16. docs/26-audit-cfs-lecture-seule-v1.md
 17. packages/k1-control-v1/cfs-read-only-audit-v1/RESULT.md
+18. docs/27-incident-cfs-temperature-geometrie-v1.md
+19. docs/adr/ADR-017-frontiere-cfs-buse-plateau-z.md
+20. packages/k1-control-v1/cfs-boundary-guard-v1/RESULT.md
 
 Relire aussi les sources et tests du paquet hors ligne avant de réutiliser son
 contrat ou ses signes.
@@ -225,12 +253,16 @@ les worktrees étrangers et les preuves ignorées.
 
 ## 10. Roadmap non autorisée par cette passation
 
-Après l'audit CFS désormais clos :
+Après l'incident CFS désormais audité :
 
-1. reprise physique bornée de MESH-EDGE-DIAGNOSTIC-V1 sous un nouveau GO ;
-2. MESH-DERIVED-PROFILE-V1 ;
-3. MESH-TUNING-CAMPAIGN-V1 ;
-4. exposition éventuelle du mode Précision après deux feuilles complètes
+1. récupération en lecture seule du journal complet et du binaire exact
+   `box_wrapper` ;
+2. qualification hors imprimante des primitives et préparation d'un adaptateur
+   étroit ou d'un propriétaire minimal ;
+3. revue complète du paquet avant toute pose ou reprise physique ;
+4. reprise bornée de MESH-EDGE-DIAGNOSTIC-V1 seulement avec les six invariants ;
+5. MESH-DERIVED-PROFILE-V1 puis MESH-TUNING-CAMPAIGN-V1 ;
+6. exposition éventuelle du mode Précision après deux feuilles complètes
    consécutives sans défaut grave et avec rollback prouvé.
 
 La production reste séparée. Son contrat fonctionnel est désormais figé, mais
@@ -241,16 +273,15 @@ G5.
 
 ## 11. Modèle conseillé
 
-La prochaine étape commence par une gate humaine : Thomas doit être devant la
-K1 et confirmer le matériau, le CFS/slot choisi et le plateau libre. Aucun agent
-n'est nécessaire pour cette confirmation seule.
+La prochaine étape est d'abord une analyse en lecture seule du binaire compilé
+et du journal exact ; elle ne demande aucune manipulation humaine de la K1.
 
-Pour préparer puis encadrer la future reprise physique :
+Pour cette analyse puis la préparation de l'adaptateur :
 
 - choix optimal : gpt-5.6-sol, raisonnement high ;
-- justification : résolution dynamique de route CFS, sécurité matérielle et
-  arrêt immédiat si la purge n'est pas visible ;
+- justification : rétro-analyse bornée d'un module Cython/MIPS, attribution des
+  écritures thermiques et géométriques, puis design de rollback sûr ;
 - option économique acceptable : gpt-5.6-terra, raisonnement high, avec plus de
-  risque de reprise sur les états propriétaires et le rollback ;
-- un modèle plus léger augmente le risque de confondre inventaire de slot,
-  présence capteur et filament réellement arrivé à la buse.
+  risque de reprise sur les chemins cachés et les preuves négatives ;
+- un modèle plus léger augmente le risque de conclure trop tôt qu'un paramètre
+  `TEMP` visible couvre aussi le plateau, le homing et le Z.

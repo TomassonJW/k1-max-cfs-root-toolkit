@@ -1,0 +1,35 @@
+{
+  "contract_id": "K1-CONTROL-CFS-BOUNDARY-GUARD-V1",
+  "schema": 1,
+  "status": "offline_candidate_production_closed",
+  "printer_mutation_authorized": false,
+  "allowed_phases": [
+    "initial_load",
+    "manual_visible_purge",
+    "equivalent_refill",
+    "intentional_tool_change",
+    "manual_disengage"
+  ],
+  "protected_state": {
+    "nozzle_target_c": "exact explicit phase target",
+    "bed_target_c": "exact job or operator target",
+    "accepted_z_offset_mm": "unchanged",
+    "homing_origin_z_mm": "unchanged",
+    "mesh_profile": "unchanged",
+    "homed_axes": "unchanged"
+  },
+  "forbidden_inside_boundary": [
+    "any nozzle command inside the CFS boundary",
+    "any bed command inside the CFS boundary",
+    "homing",
+    "SET_GCODE_OFFSET",
+    "Z_OFFSET_APPLY_PROBE",
+    "BED_MESH_CLEAR",
+    "BED_MESH_PROFILE"
+  ],
+  "failure_policy": {
+    "thermal": "abort CFS, set nozzle and bed targets to zero, block resume",
+    "geometry": "stop, never restore Z blindly, block resume",
+    "missing_evidence": "inconclusive and block"
+  }
+}
