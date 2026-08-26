@@ -897,9 +897,22 @@ first/normal, filament engagé, chargement, changement, refill, runout,
 pause/reprise, annulation et arrêts sûrs.
 
 Ce résultat ne contient aucun transport K1 et reste
-`deployment_candidate=false`. La prochaine branche sûre est
-`G4-K1-CONTROL-CFS-MINIMAL-OWNER-PROTOCOL-V1`, toujours hors imprimante. Aucune
-pose ni reprise physique n'est ouverte.
+`deployment_candidate=false`. Il a ouvert uniquement la branche hors imprimante
+`G4-K1-CONTROL-CFS-MINIMAL-OWNER-PROTOCOL-V1`. Aucune pose ni reprise physique
+n'a été ouverte.
+
+`G4-K1-CONTROL-CFS-MINIMAL-OWNER-PROTOCOL-V1` est maintenant close en KO
+borné hors imprimante. Les quatre sources privées gardent leurs empreintes et
+le binaire n'a été ni chargé, ni importé, ni exécuté. La carte nettoyée montre
+des requêtes sur les adresses 1 et 2, mais une seule route d'effet `T1A` sur
+l'adresse 1, slot A.
+
+Retrait, coupe, purge isolée, B/C/D, effets sur le second CFS, intégrité de
+trame, resynchronisation et exclusion du propriétaire stock restent non
+prouvés. La liste appelable est vide. L'émulateur obtient `25/25` en bloquant
+les doublons, pertes, réponses tardives, reconnexions et routes périmées. Ce
+vert qualifie le refus, pas un protocole matériel. Aucune connexion K1, aucun
+transport et aucun candidat de pose n'ont été créés.
 
 Thomas explicitly rejected further sacrificial print campaigns on 2026-08-21.
 The V3 + PATHS-V1 observation remains useful coexistence evidence but no longer
@@ -944,6 +957,9 @@ retirement remains atomic with the later proven machine/Orca replacement.
 - Toute pose, tout transport K1 ou tout essai physique issu de
   `G4-K1-CONTROL-CFS-DYNAMIC-TEMP-ROUTING-V1`, qui reste une conception hors
   ligne non déployable.
+- Toute utilisation d'une trame de
+  `G4-K1-CONTROL-CFS-MINIMAL-OWNER-PROTOCOL-V1` : sa liste appelable est vide
+  et sa gate est close en KO borné.
 - Any import or change of Orca fields on the workstation profile.
 - `G4-ZSAFE-START-V1` forever: this rejected name cannot receive a GO.
 - Any future `K1-CONTROL-V1` deployment until a new exact G4 package exists and
@@ -981,9 +997,9 @@ retirement remains atomic with the later proven machine/Orca replacement.
   wrapped so that an old accepted Z cannot survive a real recalibration.
 - The compiled `BOX_*` owner contains or triggers a temperature write that the
   command `BOX_MATERIAL_FLUSH TEMP=190` did not prevent: `220 °C` was observed.
-  The same boundary triggered X/Y homing. The next read-only step is acquisition
-  and offline inspection of the exact binary before deciding whether a narrow
-  adapter or a small replacement owner is required.
+  The same boundary triggered X/Y homing. The exact binary and logs have now
+  been inspected statically, but the protocol still lacks unload, cut, isolated
+  purge, second-CFS effects, frame integrity and stock-owner exclusion proof.
 - The pinned Moonraker/Mainsail package and its file-manager roots completed the
   retained coexistence observation and the final read-only validation.
 - The historical transient Mainsail `Base` mesh is no longer current;

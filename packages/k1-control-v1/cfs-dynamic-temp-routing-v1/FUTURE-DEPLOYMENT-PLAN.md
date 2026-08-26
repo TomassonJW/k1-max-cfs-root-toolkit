@@ -76,5 +76,7 @@ après un KO physique :
 8. produire un marqueur final de rollback seulement après deux validations
    indépendantes.
 
-Ce plan n'est pas une recette exécutable. La prochaine mission canonique est
-`G4-K1-CONTROL-CFS-MINIMAL-OWNER-PROTOCOL-V1`, toujours hors imprimante.
+Ce plan n'est pas une recette exécutable. La mission suivante
+`G4-K1-CONTROL-CFS-MINIMAL-OWNER-PROTOCOL-V1` a fermé sa cartographie en KO
+borné avec une liste appelable vide. Une future acquisition de preuves reste
+hors imprimante par défaut et ne rend pas ce plan exécutable.

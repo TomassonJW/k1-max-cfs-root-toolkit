@@ -2,8 +2,9 @@
 
 Statut : **fondation V3, runtime Z/mesh, calibration quotidienne et navigation
 installés ; composite `11 × 11` retenu comme source mais mode Précision KO aux
-bords ; éditeur dérivé hors ligne validé ; routage thermique CFS simulé et
-propriétaire minimal choisi sans transport ; production fermée**.
+bords ; éditeur dérivé hors ligne validé ; routage thermique CFS simulé ;
+protocole du propriétaire minimal fermé en KO borné sans transport ; production
+fermée**.
 
 La fondation initiale ajoute une seule API Moonraker, une petite
 passerelle web dédiée au port `4409` et Mainsail comme interface experte. Elle
@@ -46,6 +47,19 @@ avant le premier effet filament.
 Sa matrice hors ligne obtient `25/25` sur deux CFS, first/normal, chargement,
 changement, refill, runout, pause/reprise, annulation et arrêts sûrs. Il ne
 contient aucun transport K1 ni candidat de pose ; la production reste fermée.
+
+## Protocole du propriétaire filament minimal
+
+Le paquet
+[`cfs-minimal-owner-protocol-v1/`](cfs-minimal-owner-protocol-v1/) relie les
+trames visibles aux empreintes et lignes exactes des captures privées, puis
+teste les ambiguïtés hors ligne. Il confirme les requêtes d'état sur deux
+adresses, mais seulement une route d'effet `T1A` sur le premier CFS.
+
+Retrait, coupe, purge isolée, slots B/C/D, effets du second CFS, intégrité des
+trames et exclusion du propriétaire constructeur restent non prouvés. La gate
+est donc close en KO borné avec `callable_messages=[]`. Ses 25 scénarios verts
+prouvent le blocage sûr, pas un protocole déployable.
 
 ## Versions figées
 

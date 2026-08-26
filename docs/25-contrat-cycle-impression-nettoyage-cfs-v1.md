@@ -407,13 +407,19 @@ Une seule famille d'action physique est qualifiée par incrément.
 
 État au 26 août 2026 : `G4-K1-CONTROL-CFS-DYNAMIC-TEMP-ROUTING-V1` a fermé
 hors imprimante le contrat thermique préparatoire de l'étape 5. Le propriétaire
-minimal séparé est choisi et 25 scénarios sont verts, mais le protocole, le
-transport, la pose et la qualification physique de `CFS-TEMP-OWNER-V1` restent
-absents.
+minimal séparé est choisi et 25 scénarios thermiques sont verts.
+
+La gate suivante `G4-K1-CONTROL-CFS-MINIMAL-OWNER-PROTOCOL-V1` est close en
+KO borné : les captures prouvent deux adresses de requête et seulement une
+route d'effet `T1A`. Retrait, coupe, purge isolée, autres slots, effets du
+second CFS, intégrité de trame et exclusion du propriétaire stock ne sont pas
+qualifiés. La liste appelable, le transport, la pose et la qualification
+physique de `CFS-TEMP-OWNER-V1` restent donc absents.
 
 ## 16. Références
 
 - [ADR-016 — cycle de production orchestré](adr/ADR-016-cycle-production-orchestre-et-propriete-cfs.md)
+- [ADR-021 — protocole minimal fermé en KO borné](adr/ADR-021-fermer-le-protocole-minimal-cfs-en-ko-borne.md)
 - [Audit mesh et cycle CFS](23-audit-mesh-manuel-et-cycle-production-cfs.md)
 - [Klipper — capteurs filament](https://www.klipper3d.org/Config_Reference.html#filament-sensors)
 - [Klipper — profils bed mesh](https://www.klipper3d.org/Bed_Mesh.html#profiles)

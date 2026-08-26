@@ -179,9 +179,35 @@ first/normal, filament engagé, chargement, changement, refill, runout,
 pause/reprise, annulation et arrêts sûrs. Aucun accès K1, G-code, chauffe,
 mouvement, commande CFS, purge, restart ou fichier distant n'a été produit.
 
-Passer cette gate autorise seulement la mission hors imprimante suivante :
-`G4-K1-CONTROL-CFS-MINIMAL-OWNER-PROTOCOL-V1`. Elle n'ouvre ni pose, ni essai
-physique, ni reprise de `MESH-EDGE-DIAGNOSTIC-V1`.
+Cette gate a autorisé seulement la cartographie hors imprimante suivante. Elle
+n'a ouvert ni pose, ni essai physique, ni reprise de
+`MESH-EDGE-DIAGNOSTIC-V1`.
+
+### `G4-K1-CONTROL-CFS-MINIMAL-OWNER-PROTOCOL-V1`
+
+Statut : **close en KO borné hors imprimante ; liste appelable vide ; aucun
+transport ; production fermée**.
+
+Les quatre captures privées gardent leurs empreintes exactes. Deux adresses
+sont observées pour les requêtes d'état, mais la seule route d'effet est `T1A`,
+adresse 1, slot A. Les symboles de retrait et de moteur existent dans les
+chaînes statiques sans trame attribuable dans le journal complet.
+
+La règle d'intégrité, le retrait, la coupe et la purge isolés, B/C/D, les effets
+sur le second CFS, la resynchronisation après timeout/reconnexion et l'exclusion
+du propriétaire stock restent non prouvés. Le heartbeat désactivé pendant deux
+instants n'est pas une preuve d'exclusion.
+
+Le paquet hors ligne obtient `25/25` scénarios de refus sûr : doublon, perte,
+réponse tardive, événement non corrélé, reconnexion, révision de route et deux
+clés CFS. Le vert qualifie le blocage, pas les messages. `callable_messages=[]`,
+`deployment_candidate=false` et aucune connexion K1 n'a eu lieu.
+
+Une mission `G4-K1-CONTROL-CFS-MINIMAL-OWNER-EVIDENCE-V1` peut seulement
+préparer hors imprimante l'acquisition des preuves manquantes. Toute connexion
+ou action physique demandera une autorité fraîche distincte.
+
+### Reprise physique `MESH-EDGE-DIAGNOSTIC-V1`
 
 Avant toute reprise physique restante : route filament fraîchement résolue,
 position de purge sûre et primitive qualifiée par les six invariants. Une purge

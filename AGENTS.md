@@ -27,7 +27,9 @@ bords ; MESH-EDITOR-OFFLINE-V1 est validé sans connexion K1 ; le mode
 Précision reste caché ; le diagnostic physique borné des bords est suspendu
 après un passage sans débit ; le contrat complet du cycle filament est figé
 hors imprimante ; CFS-DYNAMIC-TEMP-ROUTING-V1 est clos avec 25 scénarios verts
-et un propriétaire minimal choisi sans transport ; production remains closed**.
+et un propriétaire minimal choisi sans transport ;
+CFS-MINIMAL-OWNER-PROTOCOL-V1 est clos en KO borné avec une liste appelable
+vide ; production remains closed**.
 
 La capture `20260823-165742-g4-k1-control-calibration-ui-prtouch-presets-v1` a
 clos PRTOUCH-PRESETS-V1 après un préflight frais, un déploiement idempotent et
@@ -126,8 +128,16 @@ phase, cible avant le premier effet, route CFS/slot fraîche et consommable une
 fois, températures distinctes de retrait/chargement/purge et six invariants
 inchangés. La matrice obtient `25/25`. Le paquet n'a aucun transport K1,
 `deployment_candidate=false` et n'autorise ni pose ni reprise physique. La
-prochaine mission canonique est
-`G4-K1-CONTROL-CFS-MINIMAL-OWNER-PROTOCOL-V1`, toujours hors imprimante.
+mission suivante `G4-K1-CONTROL-CFS-MINIMAL-OWNER-PROTOCOL-V1` a ensuite
+cartographié les captures privées sans connexion K1. Elle est close en KO
+borné : deux adresses répondent aux requêtes d'état, mais la seule route
+d'effet est `T1A`, adresse 1, slot A. Retrait, coupe, purge isolée, B/C/D,
+effets sur le second CFS, intégrité de trame, resynchronisation et exclusion du
+propriétaire stock restent non prouvés. La liste appelable est vide, aucun
+transport n'existe et les `25/25` scénarios qualifient seulement le refus sûr.
+La branche canonique suivante est
+`G4-K1-CONTROL-CFS-MINIMAL-OWNER-EVIDENCE-V1`, hors imprimante par défaut ;
+toute connexion ou action physique exige une autorité fraîche distincte.
 
 Thomas authorised V1, but the mandatory preflight proved that `logrotate` was
 absent. V1 is closed and must never be deployed. Thomas later authorised V2;

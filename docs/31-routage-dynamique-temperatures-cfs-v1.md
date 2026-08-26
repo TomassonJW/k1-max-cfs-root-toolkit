@@ -147,14 +147,18 @@ Le paquet
 La matrice obtient `25/25`. Le simulateur utilise seulement la bibliothèque
 standard et ne possède aucun transport réseau, SSH, série, G-code ou K1.
 
-## Ce qui reste à faire
+## Suite du protocole
 
-Le contrat ne prouve pas encore les trames série, les accusés capteur/cutter,
-l'exclusion du propriétaire stock ni la coexistence des deux CFS. La prochaine
-mission unique est
-`G4-K1-CONTROL-CFS-MINIMAL-OWNER-PROTOCOL-V1`, toujours hors imprimante.
+`G4-K1-CONTROL-CFS-MINIMAL-OWNER-PROTOCOL-V1` a ensuite cartographié les
+captures privées sans connexion K1 et s'est fermé en **KO borné**. Deux adresses
+sont visibles pour les requêtes d'état, mais la seule route d'effet observée
+est `T1A`, adresse 1, slot A. Les trames de retrait, coupe et purge isolés, les
+slots B/C/D, les effets sur le second CFS, l'intégrité de trame et l'exclusion
+du propriétaire stock restent non prouvés.
 
-Une future pose ne pourra être préparée qu'après ce protocole fermé. Elle aura
-son propre write-set, ses hashes, son backup, son rollback, ses critères OK/KO
-et une autorisation fraîche. `MESH-EDGE-DIAGNOSTIC-V1` et la production restent
-fermés.
+La liste appelable est donc vide et aucun transport ou paquet de pose n'est
+préparé. Une branche de preuve ultérieure exigera une autorité fraîche avant
+toute connexion ou action physique. `MESH-EDGE-DIAGNOSTIC-V1` et la production
+restent fermés.
+
+Voir `docs/32-protocole-proprietaire-filament-minimal-cfs-v1.md` et ADR-021.

@@ -1,0 +1,100 @@
+{
+  "contract_id": "K1-CONTROL-CFS-MINIMAL-OWNER-PROTOCOL-V1",
+  "schema": 1,
+  "status": "closed_ko_bounded_evidence_incomplete",
+  "gate_verdict": "KO_BOUNDED",
+  "closure_reason": "captured_evidence_does_not_prove_a_safe_complete_filament_owner_protocol",
+  "printer_mutation_authorized": false,
+  "printer_connection_authorized": false,
+  "deployment_candidate": false,
+  "physical_test_authorized": false,
+  "transport": "absent",
+  "callable_messages": [],
+  "callable_operations": [],
+  "source_binary_policy": "hash_and_static_strings_only_never_load_import_or_execute",
+  "evidence_policy": {
+    "callable_requires": [
+      "exact_request_frame",
+      "exact_response_or_event_semantics",
+      "timeout_and_late_response_semantics",
+      "frame_integrity_rule",
+      "fresh_route_for_all_required_units_and_slots",
+      "exclusive_ownership_against_stock_owner",
+      "isolated_effect_without_temperature_or_geometry_ownership"
+    ],
+    "method_name_alone_is_proof": false,
+    "single_incident_is_complete_protocol": false,
+    "unknown_means_blocked": true
+  },
+  "required_owner_operations": {
+    "query_presence_and_route": "partial_observation_only",
+    "load": "one_T1A_stock_sequence_observed_but_not_isolated_or_callable",
+    "unload_or_retract": "request_frame_absent",
+    "cut": "isolated_request_frame_absent",
+    "purge": "isolated_request_frame_absent",
+    "stop_or_abort": "semantics_incomplete",
+    "recover_after_timeout": "no_safe_resynchronization_proven",
+    "recover_after_reconnect": "route_must_be_invalidated_but_requalification_protocol_absent"
+  },
+  "correlation_contract": {
+    "observed_key": [
+      "address",
+      "command"
+    ],
+    "transaction_identifier": "not_observed",
+    "one_pending_request_per_key": true,
+    "duplicate_policy": "block",
+    "timeout_policy": "quarantine_key",
+    "late_response_policy": "never_promote_to_ack",
+    "unmatched_response_policy": "classify_as_uncorrelated_event_never_ack",
+    "reconnect_policy": "invalidate_pending_and_routes",
+    "safe_resynchronization": "not_proven"
+  },
+  "route_contract": {
+    "observed_action_routes": [
+      "T1A"
+    ],
+    "observed_query_addresses": [
+      1,
+      2
+    ],
+    "required_slots_per_cfs": [
+      "A",
+      "B",
+      "C",
+      "D"
+    ],
+    "second_cfs_effect_route": "not_observed",
+    "route_revision_change": "invalidates_existing_observation",
+    "reconnect": "invalidates_existing_observation",
+    "captured_route_is_production_proof": false
+  },
+  "ownership_contract": {
+    "stock_owner_exclusion_mechanism": "not_observed",
+    "heart_process_disabled_log_is_exclusive_ownership_proof": false,
+    "coexistence_allowed": false,
+    "minimal_owner_can_arm": false
+  },
+  "offline_isolation": {
+    "network": false,
+    "printer_transport": false,
+    "ssh": false,
+    "serial": false,
+    "gcode": false,
+    "binary_loading": false,
+    "heater_or_motion_side_effect": false
+  },
+  "closure_checks": {
+    "every_callable_message_has_exact_proof": true,
+    "explanation": "vacuously_true_because_callable_messages_is_empty",
+    "unknowns_are_explicit": true,
+    "emulator_is_fail_closed": true,
+    "raw_private_identifiers_published": false
+  },
+  "next_gate": {
+    "candidate": "G4-K1-CONTROL-CFS-MINIMAL-OWNER-EVIDENCE-V1",
+    "default_authority": "offline_preparation_only",
+    "printer_connection_requires_fresh_explicit_authority": true,
+    "physical_action_requires_separate_reviewed_gate": true
+  }
+}

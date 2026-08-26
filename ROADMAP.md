@@ -105,9 +105,10 @@ seul fonctionnement quotidien :
    fail-closed ;
 8. `CFS-DYNAMIC-TEMP-ROUTING-V1` close hors imprimante : ticket par phase,
    route fraîche, deux CFS et 25 scénarios verts ; propriétaire filament minimal
-   choisi, mais protocole et transport encore absents ;
-9. cartographie hors imprimante du protocole minimal, puis implémentation
-   progressive et physiquement qualifiée des chargements et purges des deux CFS ;
+   choisi, mais protocole d'exécution et transport encore absents ;
+9. protocole minimal cartographié hors imprimante puis fermé en KO borné : une
+   seule route d'effet `T1A`, aucune liste appelable ; acquisition des preuves
+   manquantes avant toute implémentation ou qualification physique ;
 10. contrat Orca final et retrait atomique prouvé de l'ancien post-traitement
    `+0,27 mm`.
 

@@ -1,0 +1,338 @@
+{
+  "schema": 1,
+  "status": "sanitized_map_of_private_captured_evidence",
+  "privacy": {
+    "raw_logs_versioned": false,
+    "binary_versioned": false,
+    "serial_numbers_or_unique_ids_versioned": false,
+    "response_payloads_with_identity_data_versioned": false
+  },
+  "sources": {
+    "box_wrapper_binary": {
+      "private_path": "inventory/raw/20260826-cfs-box-wrapper-read-only-audit-v1/box_wrapper.cpython-38-mipsel-linux-gnu.private.so",
+      "sha256": "af630c02ccdb51b57585114e5be2be7fcf91fdb10d88872eb6a0c65f048de777",
+      "handling": "hash_only_never_loaded_imported_or_executed"
+    },
+    "static_strings": {
+      "private_path": "inventory/raw/20260826-cfs-box-wrapper-read-only-audit-v1/box-wrapper.strings.private.txt",
+      "sha256": "a937c5348aebd083e9bd9cdc0b672c0f7fd94c9c6fe6a2f7d8a67d7e117cb79e",
+      "line_count": 4922
+    },
+    "incident_log": {
+      "private_path": "inventory/raw/20260826-cfs-box-wrapper-read-only-audit-v1/klippy.incident-1525-1531.private.log",
+      "sha256": "2bf09d01dbffaf0323237a336bc69c6b21ac54e841bc246c4b8f577c55e4ea6e",
+      "line_count": 12800
+    },
+    "full_log": {
+      "private_path": "inventory/raw/20260826-cfs-box-wrapper-read-only-audit-v1/klippy.full.private.log",
+      "sha256": "b02d486f7c475e47407b21c70f7bda76ff6c66baca246d71f541f3f820a4759d",
+      "line_count": 1342535,
+      "incident_absolute_lines": [
+        846405,
+        859204
+      ]
+    }
+  },
+  "envelope": {
+    "request": {
+      "observed_shape": [
+        "address",
+        "length_equal_total_minus_one",
+        "0xff",
+        "command",
+        "payload"
+      ],
+      "proof": "full_log:855014"
+    },
+    "response": {
+      "observed_shape": [
+        "0xf7",
+        "address",
+        "length_equal_total_minus_three",
+        "state",
+        "command",
+        "payload_or_trailer"
+      ],
+      "proof": "full_log:855046-855049"
+    },
+    "observed_pending_key": "address_plus_command",
+    "pending_key_proof": "incident_log:8616",
+    "transaction_identifier": "not_observed",
+    "integrity_or_checksum": "unknown",
+    "retry_rule": "observed_but_not_safe_to_reimplement_from_one_incident"
+  },
+  "observed_request_frames": [
+    {
+      "evidence_id": "req-set-box-mode-addr1-10",
+      "command": 4,
+      "name": "SET_BOX_MODE",
+      "address": 1,
+      "frame": [1, 5, 255, 4, 1, 0],
+      "classification": "mutating_unqualified",
+      "proof": "full_log:855409"
+    },
+    {
+      "evidence_id": "req-get-buffer-state-addr1",
+      "command": 5,
+      "name": "GET_BUFFER_STATE",
+      "address": 1,
+      "frame": [1, 3, 255, 5],
+      "classification": "query_observed_not_callable",
+      "proof": "full_log:855389"
+    },
+    {
+      "evidence_id": "req-get-filament-sensor-addr1",
+      "command": 8,
+      "name": "GET_FILAMENT_SENSOR_STATE",
+      "address": 1,
+      "frame": [1, 4, 255, 8, 0],
+      "classification": "query_observed_not_callable",
+      "proof": "full_log:5088"
+    },
+    {
+      "evidence_id": "req-get-filament-sensor-addr2",
+      "command": 8,
+      "name": "GET_FILAMENT_SENSOR_STATE",
+      "address": 2,
+      "frame": [2, 4, 255, 8, 0],
+      "classification": "query_observed_not_callable",
+      "proof": "full_log:5221"
+    },
+    {
+      "evidence_id": "req-get-box-state-addr1",
+      "command": 10,
+      "name": "GET_BOX_STATE",
+      "address": 1,
+      "frame": [1, 3, 255, 10],
+      "classification": "query_observed_not_callable",
+      "proof": "full_log:4960"
+    },
+    {
+      "evidence_id": "req-get-box-state-addr2",
+      "command": 10,
+      "name": "GET_BOX_STATE",
+      "address": 2,
+      "frame": [2, 3, 255, 10],
+      "classification": "query_observed_not_callable",
+      "proof": "full_log:5104"
+    },
+    {
+      "evidence_id": "req-set-pre-loading-addr1",
+      "command": 13,
+      "name": "SET_PRE_LOADING",
+      "address": 1,
+      "frame": [1, 5, 255, 13, 15, 1],
+      "classification": "mutating_unqualified",
+      "proof": "full_log:5073"
+    },
+    {
+      "evidence_id": "req-set-pre-loading-addr2",
+      "command": 13,
+      "name": "SET_PRE_LOADING",
+      "address": 2,
+      "frame": [2, 5, 255, 13, 15, 1],
+      "classification": "mutating_unqualified",
+      "proof": "full_log:5206"
+    },
+    {
+      "evidence_id": "req-tighten-enable-addr1",
+      "command": 15,
+      "name": "TIGHTEN_UP_ENABLE",
+      "address": 1,
+      "frame": [1, 4, 255, 15, 1],
+      "classification": "mutating_unqualified",
+      "proof": "full_log:853231"
+    },
+    {
+      "evidence_id": "req-tighten-enable-addr2",
+      "command": 15,
+      "name": "TIGHTEN_UP_ENABLE",
+      "address": 2,
+      "frame": [2, 4, 255, 15, 1],
+      "classification": "mutating_unqualified",
+      "proof": "full_log:853245"
+    },
+    {
+      "evidence_id": "req-tighten-disable-addr1",
+      "command": 15,
+      "name": "TIGHTEN_UP_ENABLE",
+      "address": 1,
+      "frame": [1, 4, 255, 15, 0],
+      "classification": "mutating_unqualified",
+      "proof": "full_log:855425"
+    },
+    {
+      "evidence_id": "req-tighten-disable-addr2",
+      "command": 15,
+      "name": "TIGHTEN_UP_ENABLE",
+      "address": 2,
+      "frame": [2, 4, 255, 15, 0],
+      "classification": "mutating_unqualified",
+      "proof": "full_log:855441"
+    },
+    {
+      "evidence_id": "req-extrude-addr1-slot1-stage0",
+      "command": 16,
+      "name": "EXTRUDE_PROCESS",
+      "address": 1,
+      "frame": [1, 6, 255, 16, 1, 0, 0],
+      "classification": "filament_effect_unqualified",
+      "proof": "full_log:855014"
+    },
+    {
+      "evidence_id": "req-extrude-addr1-slot1-stage4",
+      "command": 16,
+      "name": "EXTRUDE_PROCESS",
+      "address": 1,
+      "frame": [1, 6, 255, 16, 1, 4, 0],
+      "classification": "filament_effect_unqualified",
+      "proof": "full_log:855056"
+    },
+    {
+      "evidence_id": "req-extrude-addr1-slot1-stage5",
+      "command": 16,
+      "name": "EXTRUDE_PROCESS",
+      "address": 1,
+      "frame": [1, 6, 255, 16, 1, 5, 0],
+      "classification": "filament_effect_unqualified",
+      "proof": "full_log:855100"
+    },
+    {
+      "evidence_id": "req-extrude-addr1-slot1-stage6",
+      "command": 16,
+      "name": "EXTRUDE_PROCESS",
+      "address": 1,
+      "frame": [1, 6, 255, 16, 1, 6, 0],
+      "classification": "filament_effect_unqualified",
+      "proof": "full_log:855339"
+    },
+    {
+      "evidence_id": "req-get-version-addr1",
+      "command": 20,
+      "name": "GET_VERSION_SN",
+      "address": 1,
+      "frame": [1, 3, 255, 20],
+      "classification": "identity_query_observed_payload_private",
+      "proof": "full_log:5033"
+    },
+    {
+      "evidence_id": "req-get-version-addr2",
+      "command": 20,
+      "name": "GET_VERSION_SN",
+      "address": 2,
+      "frame": [2, 3, 255, 20],
+      "classification": "identity_query_observed_payload_private",
+      "proof": "full_log:5190"
+    }
+  ],
+  "observed_response_frames": [
+    {
+      "evidence_id": "resp-extrude-addr1-stage0-ok",
+      "command": 16,
+      "address": 1,
+      "state": 0,
+      "frame": [247, 1, 4, 0, 16, 0, 15],
+      "classification": "matched_ok_response_observed",
+      "proof": "full_log:855046-855049"
+    },
+    {
+      "evidence_id": "resp-extrude-addr1-stage7-ok",
+      "command": 16,
+      "address": 1,
+      "state": 0,
+      "frame": [247, 1, 3, 0, 16, 205],
+      "classification": "matched_ok_response_observed",
+      "proof": "full_log:855351-855354"
+    },
+    {
+      "evidence_id": "resp-extrude-addr1-error12",
+      "command": 16,
+      "address": 1,
+      "state": 12,
+      "frame": [247, 1, 7, 12, 16, 196, 191, 33, 239, 173],
+      "classification": "matched_error_response_observed",
+      "proof": "full_log:855270-855275"
+    }
+  ],
+  "observed_route_actions": [
+    {
+      "evidence_id": "route-action-T1A",
+      "logical_tool": "T1A",
+      "address": 1,
+      "slot": "A",
+      "numeric_slot": 1,
+      "proofs": [
+        "incident_log:6805-6807",
+        "incident_log:8950-8953",
+        "full_log:853209-853211",
+        "full_log:855354-855357"
+      ],
+      "scope": "one_stock_load_incident_only"
+    }
+  ],
+  "method_name_only": [
+    {
+      "symbol": "communication_retrude_process",
+      "strings_lines": [2721, 2722, 3340, 3385],
+      "request_frame_in_full_log": false
+    },
+    {
+      "symbol": "communication_ctrl_connection_motor_action",
+      "strings_lines": [2719, 2720, 3118, 3239],
+      "request_frame_in_full_log": false
+    },
+    {
+      "symbol": "communication_extrude2_process",
+      "strings_lines": [2699, 2700, 3238, 3353],
+      "request_frame_in_full_log": false
+    },
+    {
+      "symbol": "cut_material",
+      "strings_lines": [],
+      "request_frame_in_full_log": false,
+      "note": "cut_sensor_and_high_level_name_do_not_identify_a_serial_frame"
+    }
+  ],
+  "absence_queries": [
+    {
+      "claim": "no_named_retrude_motor_extrude2_or_cut_response_in_full_log",
+      "scope": "full_log:1-1342535",
+      "search": "cmd: (RETRUDE_PROCESS|CTRL_CONNECTION_MOTOR_ACTION|EXTRUDE2_PROCESS|CUT_MATERIAL)",
+      "matches": 0
+    },
+    {
+      "claim": "no_extrude_process_request_for_address_2",
+      "scope": "full_log:1-1342535",
+      "parsed_command": 16,
+      "observed_addresses": [1]
+    },
+    {
+      "claim": "no_action_route_other_than_T1A",
+      "scope": "full_log:1-1342535",
+      "observed_action_routes": ["T1A"]
+    }
+  ],
+  "ownership": {
+    "stock_owner_exclusion": "not_proven",
+    "heartbeat_disabled_lines": [
+      "incident_log:8738",
+      "incident_log:8886"
+    ],
+    "heartbeat_disabled_is_owner_exclusion": false,
+    "reason": "no public exclusive token stop handshake lifecycle or coexistence proof was captured"
+  },
+  "bounded_unknowns": [
+    "frame_integrity_or_checksum_algorithm",
+    "complete_response_payload_semantics",
+    "event_vs_response_rules_outside_observed_pending_key",
+    "safe_timeout_resynchronization",
+    "safe_reconnect_resynchronization",
+    "retract_or_unload_request_frames",
+    "isolated_cut_request_frame",
+    "isolated_purge_request_frame",
+    "stop_or_abort_semantics",
+    "slots_B_C_D_effect_frames",
+    "second_CFS_effect_frames",
+    "stock_owner_exclusion_and_restore_protocol"
+  ]
+}

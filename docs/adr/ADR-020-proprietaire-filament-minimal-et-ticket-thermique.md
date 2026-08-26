@@ -66,9 +66,9 @@ reprises.
 - les six invariants d'ADR-017 restent inchangés ;
 - le vert hors ligne ne vaut ni pose ni validation physique.
 
-## Prochaine décision attendue
+## Décision suivante
 
-La mission `G4-K1-CONTROL-CFS-MINIMAL-OWNER-PROTOCOL-V1` devra cartographier
-hors imprimante le sous-ensemble série minimal, ses accusés et son exclusion
-mutuelle avec le propriétaire stock. Aucun message inconnu ne deviendra
-appelable par défaut.
+La mission `G4-K1-CONTROL-CFS-MINIMAL-OWNER-PROTOCOL-V1` a cartographié les
+captures existantes et s'est close en KO borné. Une seule route d'effet `T1A`
+est prouvée ; l'exclusion du propriétaire stock et les opérations nécessaires
+au cycle complet ne le sont pas. ADR-021 garde donc la liste appelable vide.

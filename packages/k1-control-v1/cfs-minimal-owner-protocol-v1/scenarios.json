@@ -1,0 +1,574 @@
+{
+  "schema": 1,
+  "purpose": "deterministic_fail_closed_replay_without_transport",
+  "scenarios": [
+    {
+      "id": "exact_T1A_route_is_observation_only",
+      "steps": [
+        {
+          "action": "observe_route",
+          "evidence_id": "route-action-T1A",
+          "logical_tool": "T1A",
+          "address": 1,
+          "slot": "A",
+          "numeric_slot": 1
+        }
+      ],
+      "expect": {
+        "verdict": "pass_offline",
+        "last_code": "route_observed_evidence_only",
+        "routes": {
+          "T1A": {
+            "address": 1,
+            "slot": "A",
+            "mapping_revision": 1
+          }
+        }
+      }
+    },
+    {
+      "id": "T1B_route_is_not_in_evidence",
+      "steps": [
+        {
+          "action": "observe_route",
+          "evidence_id": "route-action-T1A",
+          "logical_tool": "T1B",
+          "address": 1,
+          "slot": "B",
+          "numeric_slot": 2
+        }
+      ],
+      "expect": {
+        "verdict": "blocked_safe",
+        "last_code": "route_not_tied_to_exact_evidence"
+      }
+    },
+    {
+      "id": "T2A_effect_route_is_not_in_evidence",
+      "steps": [
+        {
+          "action": "observe_route",
+          "evidence_id": "route-action-T1A",
+          "logical_tool": "T2A",
+          "address": 2,
+          "slot": "A",
+          "numeric_slot": 1
+        }
+      ],
+      "expect": {
+        "verdict": "blocked_safe",
+        "last_code": "route_not_tied_to_exact_evidence"
+      }
+    },
+    {
+      "id": "exact_observed_request_and_OK_response_correlate_offline",
+      "steps": [
+        {
+          "action": "replay_request",
+          "evidence_id": "req-extrude-addr1-slot1-stage0",
+          "frame": [1, 6, 255, 16, 1, 0, 0],
+          "request_id": "r1"
+        },
+        {
+          "action": "receive_response",
+          "evidence_id": "resp-extrude-addr1-stage0-ok",
+          "frame": [247, 1, 4, 0, 16, 0, 15]
+        }
+      ],
+      "expect": {
+        "verdict": "pass_offline",
+        "last_code": "offline_response_matched",
+        "pending_count": 0,
+        "quarantined_count": 0
+      }
+    },
+    {
+      "id": "observed_error_state_blocks_and_quarantines",
+      "steps": [
+        {
+          "action": "replay_request",
+          "evidence_id": "req-extrude-addr1-slot1-stage5",
+          "frame": [1, 6, 255, 16, 1, 5, 0],
+          "request_id": "r-error"
+        },
+        {
+          "action": "receive_response",
+          "evidence_id": "resp-extrude-addr1-error12",
+          "frame": [247, 1, 7, 12, 16, 196, 191, 33, 239, 173]
+        }
+      ],
+      "expect": {
+        "verdict": "blocked_safe",
+        "last_code": "device_error_state",
+        "pending_count": 0,
+        "quarantined_count": 1
+      }
+    },
+    {
+      "id": "duplicate_pending_request_is_blocked",
+      "steps": [
+        {
+          "action": "replay_request",
+          "evidence_id": "req-extrude-addr1-slot1-stage0",
+          "frame": [1, 6, 255, 16, 1, 0, 0],
+          "request_id": "r-first"
+        },
+        {
+          "action": "replay_request",
+          "evidence_id": "req-extrude-addr1-slot1-stage0",
+          "frame": [1, 6, 255, 16, 1, 0, 0],
+          "request_id": "r-duplicate"
+        }
+      ],
+      "expect": {
+        "verdict": "blocked_safe",
+        "last_code": "duplicate_pending_key",
+        "pending_count": 1
+      }
+    },
+    {
+      "id": "lost_response_times_out_and_quarantines_key",
+      "steps": [
+        {
+          "action": "replay_request",
+          "evidence_id": "req-extrude-addr1-slot1-stage0",
+          "frame": [1, 6, 255, 16, 1, 0, 0],
+          "request_id": "r-lost",
+          "timeout_ms": 100
+        },
+        {
+          "action": "advance",
+          "milliseconds": 101
+        }
+      ],
+      "expect": {
+        "verdict": "blocked_safe",
+        "last_code": "response_timeout",
+        "pending_count": 0,
+        "quarantined_count": 1
+      }
+    },
+    {
+      "id": "late_response_after_timeout_is_never_an_ack",
+      "steps": [
+        {
+          "action": "replay_request",
+          "evidence_id": "req-extrude-addr1-slot1-stage0",
+          "frame": [1, 6, 255, 16, 1, 0, 0],
+          "request_id": "r-late",
+          "timeout_ms": 100
+        },
+        {
+          "action": "advance",
+          "milliseconds": 101
+        },
+        {
+          "action": "receive_response",
+          "evidence_id": "resp-extrude-addr1-stage0-ok",
+          "frame": [247, 1, 4, 0, 16, 0, 15]
+        }
+      ],
+      "expect": {
+        "verdict": "blocked_safe",
+        "last_code": "late_response_quarantined",
+        "quarantined_count": 1
+      }
+    },
+    {
+      "id": "reconnect_invalidates_pending_request",
+      "steps": [
+        {
+          "action": "replay_request",
+          "evidence_id": "req-extrude-addr1-slot1-stage0",
+          "frame": [1, 6, 255, 16, 1, 0, 0],
+          "request_id": "r-reconnect"
+        },
+        {
+          "action": "reconnect"
+        }
+      ],
+      "expect": {
+        "verdict": "pass_offline",
+        "last_code": "reconnect_invalidates_pending_and_routes",
+        "pending_count": 0,
+        "quarantined_count": 1,
+        "connection_generation": 2,
+        "mapping_revision": 2
+      }
+    },
+    {
+      "id": "response_from_before_reconnect_stays_quarantined",
+      "steps": [
+        {
+          "action": "replay_request",
+          "evidence_id": "req-extrude-addr1-slot1-stage0",
+          "frame": [1, 6, 255, 16, 1, 0, 0],
+          "request_id": "r-old"
+        },
+        {
+          "action": "reconnect"
+        },
+        {
+          "action": "receive_response",
+          "evidence_id": "resp-extrude-addr1-stage0-ok",
+          "frame": [247, 1, 4, 0, 16, 0, 15]
+        }
+      ],
+      "expect": {
+        "verdict": "blocked_safe",
+        "last_code": "late_response_quarantined",
+        "connection_generation": 2
+      }
+    },
+    {
+      "id": "unmatched_observed_response_is_event_not_ack",
+      "steps": [
+        {
+          "action": "replay_request",
+          "evidence_id": "req-get-box-state-addr1",
+          "frame": [1, 3, 255, 10],
+          "request_id": "r-query"
+        },
+        {
+          "action": "receive_response",
+          "evidence_id": "resp-extrude-addr1-stage0-ok",
+          "frame": [247, 1, 4, 0, 16, 0, 15]
+        }
+      ],
+      "expect": {
+        "verdict": "blocked_safe",
+        "last_code": "uncorrelated_event_not_ack",
+        "pending_count": 1
+      }
+    },
+    {
+      "id": "altered_request_frame_is_rejected",
+      "steps": [
+        {
+          "action": "replay_request",
+          "evidence_id": "req-extrude-addr1-slot1-stage0",
+          "frame": [1, 6, 255, 16, 2, 0, 0],
+          "request_id": "r-altered"
+        }
+      ],
+      "expect": {
+        "verdict": "blocked_safe",
+        "last_code": "request_not_tied_to_exact_evidence",
+        "pending_count": 0
+      }
+    },
+    {
+      "id": "unknown_request_evidence_is_rejected",
+      "steps": [
+        {
+          "action": "replay_request",
+          "evidence_id": "req-retrude-invented",
+          "frame": [1, 4, 255, 17, 1],
+          "request_id": "r-invented"
+        }
+      ],
+      "expect": {
+        "verdict": "blocked_safe",
+        "last_code": "request_not_tied_to_exact_evidence"
+      }
+    },
+    {
+      "id": "altered_response_frame_is_rejected",
+      "steps": [
+        {
+          "action": "replay_request",
+          "evidence_id": "req-extrude-addr1-slot1-stage0",
+          "frame": [1, 6, 255, 16, 1, 0, 0],
+          "request_id": "r-response"
+        },
+        {
+          "action": "receive_response",
+          "evidence_id": "resp-extrude-addr1-stage0-ok",
+          "frame": [247, 1, 4, 0, 16, 1, 15]
+        }
+      ],
+      "expect": {
+        "verdict": "blocked_safe",
+        "last_code": "response_not_tied_to_exact_evidence",
+        "pending_count": 1
+      }
+    },
+    {
+      "id": "retrude_symbol_does_not_make_a_callable_frame",
+      "steps": [
+        {
+          "action": "classify_method",
+          "symbol": "communication_retrude_process"
+        }
+      ],
+      "expect": {
+        "verdict": "blocked_safe",
+        "last_code": "method_name_only_not_callable"
+      }
+    },
+    {
+      "id": "connection_motor_symbol_does_not_make_a_callable_frame",
+      "steps": [
+        {
+          "action": "classify_method",
+          "symbol": "communication_ctrl_connection_motor_action"
+        }
+      ],
+      "expect": {
+        "verdict": "blocked_safe",
+        "last_code": "method_name_only_not_callable"
+      }
+    },
+    {
+      "id": "cut_name_does_not_make_a_callable_frame",
+      "steps": [
+        {
+          "action": "classify_method",
+          "symbol": "cut_material"
+        }
+      ],
+      "expect": {
+        "verdict": "blocked_safe",
+        "last_code": "method_name_only_not_callable"
+      }
+    },
+    {
+      "id": "extrude2_symbol_does_not_make_a_callable_frame",
+      "steps": [
+        {
+          "action": "classify_method",
+          "symbol": "communication_extrude2_process"
+        }
+      ],
+      "expect": {
+        "verdict": "blocked_safe",
+        "last_code": "method_name_only_not_callable"
+      }
+    },
+    {
+      "id": "two_chained_CFS_query_keys_can_coexist_offline",
+      "steps": [
+        {
+          "action": "replay_request",
+          "evidence_id": "req-get-box-state-addr1",
+          "frame": [1, 3, 255, 10],
+          "request_id": "r-cfs1"
+        },
+        {
+          "action": "replay_request",
+          "evidence_id": "req-get-box-state-addr2",
+          "frame": [2, 3, 255, 10],
+          "request_id": "r-cfs2"
+        }
+      ],
+      "expect": {
+        "verdict": "pass_offline",
+        "last_code": "offline_request_registered",
+        "pending_count": 2
+      }
+    },
+    {
+      "id": "duplicate_query_on_second_CFS_is_blocked",
+      "steps": [
+        {
+          "action": "replay_request",
+          "evidence_id": "req-get-box-state-addr2",
+          "frame": [2, 3, 255, 10],
+          "request_id": "r-cfs2-first"
+        },
+        {
+          "action": "replay_request",
+          "evidence_id": "req-get-box-state-addr2",
+          "frame": [2, 3, 255, 10],
+          "request_id": "r-cfs2-duplicate"
+        }
+      ],
+      "expect": {
+        "verdict": "blocked_safe",
+        "last_code": "duplicate_pending_key",
+        "pending_count": 1
+      }
+    },
+    {
+      "id": "loss_on_CFS1_does_not_complete_CFS2_request",
+      "steps": [
+        {
+          "action": "replay_request",
+          "evidence_id": "req-get-box-state-addr1",
+          "frame": [1, 3, 255, 10],
+          "request_id": "r-short",
+          "timeout_ms": 100
+        },
+        {
+          "action": "replay_request",
+          "evidence_id": "req-get-box-state-addr2",
+          "frame": [2, 3, 255, 10],
+          "request_id": "r-long",
+          "timeout_ms": 1000
+        },
+        {
+          "action": "advance",
+          "milliseconds": 101
+        }
+      ],
+      "expect": {
+        "verdict": "blocked_safe",
+        "last_code": "response_timeout",
+        "pending_count": 1,
+        "quarantined_count": 1
+      }
+    },
+    {
+      "id": "route_revision_change_blocks_old_T1A_observation",
+      "steps": [
+        {
+          "action": "observe_route",
+          "evidence_id": "route-action-T1A",
+          "logical_tool": "T1A",
+          "address": 1,
+          "slot": "A",
+          "numeric_slot": 1
+        },
+        {
+          "action": "revise_route"
+        },
+        {
+          "action": "evaluate_effect",
+          "command": 16,
+          "logical_tool": "T1A"
+        }
+      ],
+      "expect": {
+        "verdict": "blocked_safe",
+        "last_code": "effect_blocked_safe",
+        "mapping_revision": 2,
+        "trace": [
+          {
+            "code": "route_observed_evidence_only",
+            "at_ms": 0,
+            "logical_tool": "T1A",
+            "address": 1,
+            "slot": "A"
+          },
+          {
+            "code": "route_revision_changed",
+            "at_ms": 0,
+            "mapping_revision": 2
+          },
+          {
+            "code": "effect_blocked_safe",
+            "at_ms": 0,
+            "command": 16,
+            "logical_tool": "T1A",
+            "blockers": [
+              "transport_absent",
+              "command_not_in_callable_allowlist",
+              "frame_integrity_rule_unqualified",
+              "stock_owner_exclusion_unproven",
+              "route_revision_stale"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "id": "reconnect_blocks_old_route_and_old_connection",
+      "steps": [
+        {
+          "action": "observe_route",
+          "evidence_id": "route-action-T1A",
+          "logical_tool": "T1A",
+          "address": 1,
+          "slot": "A",
+          "numeric_slot": 1
+        },
+        {
+          "action": "reconnect"
+        },
+        {
+          "action": "evaluate_effect",
+          "command": 16,
+          "logical_tool": "T1A"
+        }
+      ],
+      "expect": {
+        "verdict": "blocked_safe",
+        "last_code": "effect_blocked_safe",
+        "connection_generation": 2,
+        "mapping_revision": 2
+      }
+    },
+    {
+      "id": "effect_on_missing_second_CFS_route_is_blocked",
+      "steps": [
+        {
+          "action": "evaluate_effect",
+          "command": 16,
+          "logical_tool": "T2A"
+        }
+      ],
+      "expect": {
+        "verdict": "blocked_safe",
+        "last_code": "effect_blocked_safe",
+        "trace": [
+          {
+            "code": "effect_blocked_safe",
+            "at_ms": 0,
+            "command": 16,
+            "logical_tool": "T2A",
+            "blockers": [
+              "transport_absent",
+              "command_not_in_callable_allowlist",
+              "frame_integrity_rule_unqualified",
+              "stock_owner_exclusion_unproven",
+              "route_missing"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "id": "observed_query_is_still_not_callable",
+      "steps": [
+        {
+          "action": "observe_route",
+          "evidence_id": "route-action-T1A",
+          "logical_tool": "T1A",
+          "address": 1,
+          "slot": "A",
+          "numeric_slot": 1
+        },
+        {
+          "action": "evaluate_effect",
+          "command": 10,
+          "logical_tool": "T1A"
+        }
+      ],
+      "expect": {
+        "verdict": "blocked_safe",
+        "last_code": "effect_blocked_safe",
+        "trace": [
+          {
+            "code": "route_observed_evidence_only",
+            "at_ms": 0,
+            "logical_tool": "T1A",
+            "address": 1,
+            "slot": "A"
+          },
+          {
+            "code": "effect_blocked_safe",
+            "at_ms": 0,
+            "command": 10,
+            "logical_tool": "T1A",
+            "blockers": [
+              "transport_absent",
+              "command_not_in_callable_allowlist",
+              "frame_integrity_rule_unqualified",
+              "stock_owner_exclusion_unproven"
+            ]
+          }
+        ]
+      }
+    }
+  ]
+}

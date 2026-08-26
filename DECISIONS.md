@@ -1383,3 +1383,33 @@ hors imprimante du protocole minimal.
 
 Voir ADR-020, `docs/31-routage-dynamique-temperatures-cfs-v1.md` et
 `packages/k1-control-v1/cfs-dynamic-temp-routing-v1/`.
+
+## D-071 — Le protocole minimal CFS ferme en KO borné avec une liste vide
+
+Date: 2026-08-26
+
+Status: gate close hors imprimante ; preuves insuffisantes ; production fermée
+
+`G4-K1-CONTROL-CFS-MINIMAL-OWNER-PROTOCOL-V1` ne déduit aucune trame depuis un
+nom Cython ou une symétrie de slot. Les quatre captures privées sont épinglées
+par empreinte et restent hors Git ; leur carte publique retire les identifiants
+matériels.
+
+Le journal prouve des requêtes sur les adresses 1 et 2 et une seule route
+d'effet `T1A`, adresse 1, slot A. Il ne prouve ni retrait, ni coupe ou purge
+isolée, ni B/C/D, ni effet sur le second CFS. La règle d'intégrité, la
+resynchronisation et l'exclusion du propriétaire constructeur sont également
+inconnues. Deux mentions d'un heartbeat désactivé ne constituent pas un contrat
+d'exclusion et de restitution.
+
+La décision est donc `gate_verdict=KO_BOUNDED`, `callable_messages=[]`, aucun
+transport et aucun candidat de pose. Un émulateur hors ligne met en quarantaine
+les clés `(adresse, commande)` après timeout, refuse les doublons et invalide
+les routes après reconnexion ou changement de mapping. Sa matrice `25/25`
+prouve le refus sûr, pas une capacité matérielle.
+
+La branche suivante peut seulement acquérir ou préparer les preuves manquantes.
+Toute connexion à la K1 ou action filament exigera une autorité fraîche.
+
+Voir ADR-021, `docs/32-protocole-proprietaire-filament-minimal-cfs-v1.md` et
+`packages/k1-control-v1/cfs-minimal-owner-protocol-v1/`.

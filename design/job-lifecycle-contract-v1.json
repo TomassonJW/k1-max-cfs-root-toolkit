@@ -160,7 +160,37 @@
     "printer_transport": false,
     "deployment_candidate": false,
     "physical_test_authorized": false,
-    "next_design_branch": "minimal_owner_protocol_mapping_offline"
+    "next_design_branch": "closed_by_cfs_minimal_owner_protocol_v1"
+  },
+  "cfs_minimal_owner_protocol": {
+    "candidate": "K1-CONTROL-CFS-MINIMAL-OWNER-PROTOCOL-V1",
+    "status": "closed_ko_bounded_evidence_incomplete",
+    "gate_verdict": "KO_BOUNDED",
+    "contract": "packages/k1-control-v1/cfs-minimal-owner-protocol-v1/contract.json",
+    "evidence_map": "packages/k1-control-v1/cfs-minimal-owner-protocol-v1/evidence-map.json",
+    "observed_query_addresses": [
+      1,
+      2
+    ],
+    "observed_action_routes": [
+      "T1A"
+    ],
+    "callable_messages": [],
+    "missing_required_proofs": [
+      "frame_integrity_rule",
+      "unload_or_retract",
+      "isolated_cut",
+      "isolated_purge",
+      "stop_or_abort",
+      "slots_B_C_D",
+      "second_CFS_effects",
+      "timeout_and_reconnect_resynchronization",
+      "stock_owner_exclusion_and_restore"
+    ],
+    "printer_transport": false,
+    "deployment_candidate": false,
+    "physical_test_authorized": false,
+    "next_design_branch": "minimal_owner_evidence_only_with_fresh_authority_for_any_printer_contact"
   },
   "filament_state": {
     "states": [
