@@ -141,8 +141,24 @@ Z/mesh non capturés pendant la frontière restent inconnus. Les fixtures
 séparées refusent aussi une dérive plateau ou Z et interdisent toute restauration
 Z automatique.
 
-La suite exige d'abord la récupération en lecture seule du binaire exact
-`box_wrapper` et du journal complet, puis un adaptateur étroit figé. Les
+La récupération en lecture seule du binaire exact `box_wrapper` et du journal
+complet est maintenant close. L'empreinte correspond au manifeste et la
+chronologie attribue au chemin de chargement le `220 °C` et la géométrie
+interne. `BOX_EXTRUDE_MATERIAL` est refusée ; `BOX_EXTRUDER_EXTRUDE` et
+`BOX_MATERIAL_FLUSH` restent non qualifiées faute de frontière isolée.
+
+### `CFS-BOX-WRAPPER-AUDIT-V1`
+
+Statut : **audit exact OK ; adaptateur étroit fermé ; aucune pose ni reprise
+physique autorisée**.
+
+Le contrat local vérifie l'identité ELF 32 bits MIPS du module sans le charger,
+les chaînes thermiques et géométriques, puis l'ordre des marqueurs du journal.
+Son résultat attendu est un refus sûr : la liste des primitives appelables est
+vide et `deployment_candidate=false`.
+
+La suite est encore hors imprimante : préparer un propriétaire filament minimal
+séparé, ou obtenir une preuve statique plus forte d'une primitive étroite. Les
 commandes brutes du 26 août ne doivent pas être rejouées.
 
 Avant toute reprise physique restante : route filament fraîchement résolue,

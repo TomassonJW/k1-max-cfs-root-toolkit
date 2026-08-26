@@ -1,0 +1,59 @@
+{
+  "contract_id": "K1-CONTROL-CFS-BOX-WRAPPER-AUDIT-V1",
+  "schema": 1,
+  "status": "offline_audit_production_closed",
+  "expected_binary": {
+    "sha256": "af630c02ccdb51b57585114e5be2be7fcf91fdb10d88872eb6a0c65f048de777",
+    "elf_class": 1,
+    "endianness": "little",
+    "machine": 8,
+    "type": 3
+  },
+  "required_binary_strings": {
+    "public_commands": [
+      "BOX_EXTRUDE_MATERIAL",
+      "BOX_EXTRUDER_EXTRUDE",
+      "BOX_MATERIAL_FLUSH"
+    ],
+    "temperature_ownership": [
+      "Tn_extrude_temp",
+      "get next material temp: %d",
+      "flush_temp: %d",
+      "M109 S%.2f",
+      "M104 S%.2f",
+      "M104 S%d",
+      "M104 S0"
+    ],
+    "geometry_ownership": [
+      "G28 X Y",
+      "safe_pos_y",
+      "extrude_pos_z",
+      "BED_MESH_CLEAR"
+    ]
+  },
+  "incident_markers": {
+    "request": "BOX_EXTRUDE_MATERIAL TNN=T1A",
+    "geometry_unhomed": "x_axes is NULL",
+    "geometry_move": "FORCE_MOVE stepper_z distance=3.000",
+    "material_temperature": "get next material temp: 220",
+    "computed_flush_temperature": "flush_temp: 220",
+    "observed_nozzle_target": "extruder: target=220",
+    "requested_flush_temperature": "extrude = 10, velocity: [120], temp: 190.0",
+    "safe_position": "self.boxcfg.safe_pos_y: 291.5",
+    "script_finished": "method:gcode/script,finished",
+    "heat_shutdown": "method:gcode/script,received {'script': 'TURN_OFF_HEATERS'",
+    "robust_profile_reloaded": "BED_MESH_PROFILE LOAD=k1_p001_t055_r001_n06x06"
+  },
+  "primitive_policy": {
+    "BOX_EXTRUDE_MATERIAL": "blocked_observed_temperature_and_geometry_owner",
+    "BOX_EXTRUDER_EXTRUDE": "unqualified_not_isolated",
+    "BOX_MATERIAL_FLUSH": "unqualified_not_isolated"
+  },
+  "adapter_policy": {
+    "callable_stock_primitives": [],
+    "deployment_candidate": false,
+    "printer_mutation_authorized": false,
+    "physical_test_authorized": false,
+    "fallback": "prepare_minimal_separate_owner_or_isolated_primitive_proof"
+  }
+}

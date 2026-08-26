@@ -24,6 +24,16 @@ Sa moyenne est calculée sur la surface bicubique Klipper `31 × 31`, puis remis
 sur `127.0.0.1` et utilise une fausse API en mémoire. Ce paquet ne contient
 aucune pose K1 et ne rend pas encore visible le mode Précision réel.
 
+## Audit de la frontière CFS
+
+Le paquet [`cfs-box-wrapper-audit-v1/`](cfs-box-wrapper-audit-v1/) vérifie hors
+imprimante l'identité du module compilé et la chronologie exacte de l'incident
+du 26 août. Il confirme que le chemin de chargement stock possède la cible
+thermique `220 °C` et la géométrie malgré une purge demandée à `190 °C`.
+
+Son adaptateur est volontairement fermé : aucune primitive stock n'est
+qualifiée, aucune pose n'est préparée et la production reste bloquée.
+
 ## Versions figées
 
 - Moonraker MIPS : paquet du Helper Script au commit

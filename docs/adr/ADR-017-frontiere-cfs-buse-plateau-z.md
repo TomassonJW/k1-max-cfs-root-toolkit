@@ -100,3 +100,10 @@ Avant tout nouvel essai physique :
 
 Aucune étape de cette ADR n'autorise actuellement chauffe, mouvement, purge,
 restart, modification de configuration ou impression.
+
+## Résultat de la gate
+
+L'audit demandé est clos par ADR-018. `BOX_EXTRUDE_MATERIAL` est refusée sur
+preuve thermique et géométrique ; les deux primitives suivantes restent non
+qualifiées faute de frontière isolée. L'adaptateur étroit existe donc comme
+contrat fail-closed sans primitive appelable, pas comme paquet de pose.

@@ -99,6 +99,9 @@ L'incident CFS et son verdict sont dans
 Le routage stable de la K1 et la séparation entre endpoint local et Mainsail
 sont décrits dans
 [`docs/28-routage-reseau-k1-v1.md`](docs/28-routage-reseau-k1-v1.md).
+L'audit exact du binaire CFS, du journal de l'incident et le contrat
+d'adaptateur fermé sont décrits dans
+[`docs/29-audit-box-wrapper-et-adaptateur-cfs-v1.md`](docs/29-audit-box-wrapper-et-adaptateur-cfs-v1.md).
 
 ## Repository map
 

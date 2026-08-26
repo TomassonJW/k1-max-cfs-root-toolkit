@@ -62,3 +62,8 @@ en restant dangereux ou thermiquement faux.
 Le prototype hors imprimante se trouve dans
 `packages/k1-control-v1/cfs-boundary-guard-v1/`. Son verdict sur la trace de
 l'incident est `block_driver_primitive`.
+
+L'audit complet du journal et du binaire est maintenant clos dans
+`docs/29-audit-box-wrapper-et-adaptateur-cfs-v1.md`. Il confirme l'origine du
+`220 °C` et ferme l'adaptateur stock : aucune des trois primitives n'est
+actuellement autorisée.

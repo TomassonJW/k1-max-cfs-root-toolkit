@@ -1,0 +1,51 @@
+{
+  "adapter_id": "K1-CONTROL-CFS-NARROW-ADAPTER-CANDIDATE-V1",
+  "schema": 1,
+  "status": "offline_fail_closed_no_primitive_selected",
+  "deployment_candidate": false,
+  "printer_mutation_authorized": false,
+  "physical_test_authorized": false,
+  "protected_state": [
+    "nozzle_target_c",
+    "bed_target_c",
+    "accepted_z_offset_mm",
+    "homing_origin_z_mm",
+    "mesh_profile",
+    "homed_axes"
+  ],
+  "ownership": {
+    "motion_before_boundary": "k1_control_motion_owner",
+    "nozzle_target": "k1_control_thermal_owner",
+    "bed_target": "k1_control_thermal_owner",
+    "filament_transport_inside_boundary": "unassigned_until_primitive_qualified"
+  },
+  "cold_geometry_candidate": {
+    "x_mm": 185.5,
+    "y_mm": 305.0,
+    "z_mm": 30.0,
+    "qualification": "human_confirmed_clearance_at_cold_only",
+    "authorizes_motion": false
+  },
+  "callable_stock_primitives": [],
+  "rejected_or_unqualified": {
+    "BOX_EXTRUDE_MATERIAL": "rejected_observed_temperature_and_geometry_owner",
+    "BOX_EXTRUDER_EXTRUDE": "unqualified_not_isolated",
+    "BOX_MATERIAL_FLUSH": "unqualified_not_isolated"
+  },
+  "required_sequence": [
+    "capture_all_six_invariants",
+    "prepare_geometry_outside_cfs_boundary",
+    "set_and_stabilize_explicit_nozzle_and_bed_targets",
+    "recheck_all_six_invariants",
+    "call_only_a_separately_qualified_filament_primitive",
+    "monitor_all_six_invariants_for_the_complete_call",
+    "verify_visible_flow_and_all_six_invariants_before_exit"
+  ],
+  "failure_policy": {
+    "missing_evidence": "block",
+    "thermal_change": "abort_set_both_targets_zero_and_block_resume",
+    "geometry_change": "stop_without_blind_z_restore_and_block_resume",
+    "flow_not_visible": "block_resume_and_do_not_start_pattern"
+  },
+  "next_design_branch": "minimal_separate_filament_owner_if_no_stock_primitive_can_be_proven"
+}

@@ -1293,3 +1293,31 @@ ne dépend donc de l'adresse DHCP de la K1 et aucune modification distante n'est
 requise lors d'un changement d'endpoint local.
 
 Voir `docs/28-routage-reseau-k1-v1.md`.
+
+## D-068 — Aucune primitive stock n'entre encore dans l'adaptateur CFS
+
+Date: 2026-08-26
+
+Status: audit exact clos en lecture seule ; adaptateur fail-closed ; production
+fermée
+
+Le binaire `box_wrapper` capturé correspond exactement à l'empreinte historique.
+Il expose une surface thermique et géométrique comprenant notamment la
+température matière, des commandes `M109/M104`, `G28 X Y`, la position sûre et
+`BED_MESH_CLEAR`. Le journal complet de l'incident prouve que le chemin de
+chargement a choisi `220 °C` et déclenché sa géométrie avant la purge de 10 mm,
+alors même que celle-ci conservait son paramètre `TEMP=190`.
+
+`BOX_EXTRUDE_MATERIAL` est donc refusée. `BOX_EXTRUDER_EXTRUDE` et
+`BOX_MATERIAL_FLUSH` ne sont pas déclarées sûres : le passage les appelait dans
+le même script sans snapshot complet entre les commandes. L'adaptateur étroit
+V1 conserve une liste de primitives appelables vide et n'est pas un candidat de
+pose.
+
+La branche suivante est la préparation hors imprimante d'un propriétaire
+filament minimal séparé, sauf si une preuve statique plus forte qualifie une
+primitive étroite. Remplacer tout `box_wrapper`, corriger la température après
+coup ou lancer un nouvel essai physique sont refusés dans cette gate.
+
+Voir ADR-018, `docs/29-audit-box-wrapper-et-adaptateur-cfs-v1.md` et
+`packages/k1-control-v1/cfs-box-wrapper-audit-v1/`.

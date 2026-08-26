@@ -111,6 +111,32 @@
       "z_mesh_during_boundary": "not_freshly_qualified"
     }
   },
+  "cfs_box_wrapper_audit": {
+    "candidate": "K1-CONTROL-CFS-BOX-WRAPPER-AUDIT-V1",
+    "status": "offline_audit_complete_no_stock_primitive_qualified",
+    "exact_binary_sha256": "af630c02ccdb51b57585114e5be2be7fcf91fdb10d88872eb6a0c65f048de777",
+    "observed": {
+      "requested_nozzle_target_c": 190,
+      "material_selected_nozzle_target_c": 220,
+      "purge_parameter_c": 190,
+      "actual_nozzle_target_during_purge_c": 220,
+      "geometry_owned_inside_load_path": true,
+      "bed_target_during_incident_c": 0
+    },
+    "primitive_verdicts": {
+      "BOX_EXTRUDE_MATERIAL": "blocked_observed_temperature_and_geometry_owner",
+      "BOX_EXTRUDER_EXTRUDE": "unqualified_not_isolated",
+      "BOX_MATERIAL_FLUSH": "unqualified_not_isolated"
+    }
+  },
+  "cfs_narrow_adapter": {
+    "candidate": "K1-CONTROL-CFS-NARROW-ADAPTER-CANDIDATE-V1",
+    "status": "offline_fail_closed_no_primitive_selected",
+    "callable_stock_primitives": [],
+    "deployment_candidate": false,
+    "physical_test_authorized": false,
+    "next_design_branch": "minimal_separate_filament_owner_if_no_stock_primitive_can_be_proven"
+  },
   "filament_state": {
     "states": [
       "absent_confirmed",

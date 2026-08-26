@@ -1,0 +1,14 @@
+1e3a5c get next material temp: %d
+1e4eec BOX_EXTRUDER_EXTRUDE
+1e4ed4 BOX_EXTRUDE_MATERIAL
+1e562c BOX_MATERIAL_FLUSH
+1e64a8 Tn_extrude_temp
+1e6934 BED_MESH_CLEAR
+1e6b88 extrude_pos_z
+1e7018 flush_temp: %d
+1e76fc safe_pos_y
+1e79c8 G28 X Y
+1e7c8c M109 S%.2f
+1e7c98 M104 S%.2f
+1e802c M104 S%d
+1e82c4 M104 S0

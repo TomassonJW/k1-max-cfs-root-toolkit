@@ -50,9 +50,10 @@ Aucune nouvelle authentification ni action physique n'a eu lieu.
 
 **P4 — calibration quotidienne autonome ; composite physique `11 × 11`
 qualifié techniquement mais KO aux bords en première couche ; éditeur de profil
-dérivé hors ligne validé ; audit CFS en lecture seule clos avec état
-`engaged_unknown` ; diagnostic physique des bords suspendu ; contrat de cycle
-production figé hors imprimante ; production volontairement bloquée**
+dérivé hors ligne validé ; binaire CFS et incident exact audités ; adaptateur
+stock fermé sans primitive qualifiée ; diagnostic physique des bords suspendu ;
+contrat de cycle production figé hors imprimante ; production volontairement
+bloquée**
 
 La base sûre et réellement requalifiée reste `6 × 6` Lagrange avec un seul mesh
 standard. L'autonomie de calibration quotidienne standard est maintenant
@@ -871,6 +872,21 @@ réelle. Il n'autorise aucune pose ni action K1. La joignabilité courante est
 verte, mais le Z/mesh transitoire exact pendant l'incident reste inconnu : une
 relecture ultérieure de l'état sûr ne recrée pas cet état passé.
 
+`CFS-BOX-WRAPPER-AUDIT-V1` est maintenant clos en lecture seule. Le binaire
+capturé correspond à l'empreinte historique et son en-tête confirme un module
+partagé ELF 32 bits MIPS little-endian. La fenêtre exacte de 12 800 lignes
+prouve l'ordre : géométrie interne, choix matière `220 °C`, cible réelle
+`220 °C`, puis purge qui conserve encore son argument `190 °C`. Le plateau est
+resté à cible zéro pendant ce passage précis. Aucun G-code, mouvement, chauffage,
+ordre CFS, restart ou fichier distant n'a été produit pendant l'audit.
+
+ADR-018 ferme l'adaptateur stock. `BOX_EXTRUDE_MATERIAL` est refusée ;
+`BOX_EXTRUDER_EXTRUDE` et `BOX_MATERIAL_FLUSH` restent non qualifiées faute de
+preuve isolée. Le contrat hors imprimante conserve une liste de primitives
+appelables vide et `deployment_candidate=false`. La prochaine branche sûre est
+la préparation hors imprimante d'un propriétaire filament minimal séparé ou une
+preuve statique plus forte ; aucune pose ni reprise physique n'est ouverte.
+
 Thomas explicitly rejected further sacrificial print campaigns on 2026-08-21.
 The V3 + PATHS-V1 observation remains useful coexistence evidence but no longer
 blocks offline product construction. L'autorité globale du Goal couvre la
@@ -916,6 +932,8 @@ retirement remains atomic with the later proven machine/Orca replacement.
 - Any future `K1-CONTROL-V1` deployment until a new exact G4 package exists and
   receives its own explicit approval.
 - Toute réutilisation des commandes brutes de la purge CFS du 26 août.
+- Toute pose ou tout essai du candidat d'adaptateur CFS tant que sa liste de
+  primitives appelables reste vide.
 
 ## Current blockers
 

@@ -1,4 +1,4 @@
-# HANDOFF — incident CFS audité ; réseau K1 stabilisé
+# HANDOFF — `box_wrapper` audité ; adaptateur CFS stock fermé
 
 Date de passation : 2026-08-26 (Europe/Paris)
 Projet : C:\Users\janko\Documents\ChatGPT\k1-max-cfs-root-toolkit
@@ -35,9 +35,14 @@ Branche de reprise : `main`
   cibles zéro, robuste et Z `−0,04 mm` conformes ; l'adresse reste hors Git.
 - `CFS-BOUNDARY-GUARD-V1` est validé hors imprimante. Il protège buse, plateau,
   Z accepté, origine Z, mesh et axes référencés, et refuse la trace réelle.
-- Statut technique actuel : **ATTENDRE_GO_PAQUET_REVU** avant toute nouvelle
-  action physique ou pose sur la K1. Ce marqueur interne n'impose aucune phrase
-  littérale à Thomas ; une demande normale et non ambiguë suffit selon D-054.
+- `CFS-BOX-WRAPPER-AUDIT-V1` est clos en lecture seule ; binaire exact et journal capturés sans écriture distante.
+- Le chargement choisit `220 °C` et possède la géométrie, tandis que la purge conserve son paramètre visible `190 °C`.
+- `BOX_EXTRUDE_MATERIAL` est refusée ; les deux primitives suivantes restent non qualifiées faute de preuve isolée.
+- Adaptateur fermé : **ATTENDRE_GO_PAQUET_REVU** avant toute pose ; `deployment_candidate=false`.
+- Aucun `GO` exact n'est requis hors imprimante ; le plateau réellement libre reste à confirmer avant toute future action physique.
+- Prochaine mission : **HORS_IMPRIMANTE_PROPRIETAIRE_CFS_MINIMAL**. Ce
+  marqueur interne n'impose aucune phrase littérale à Thomas ; une demande
+  normale et non ambiguë suffit selon D-054.
 - Aucun nouveau motif n’est autorisé avec les commandes brutes du 26 août.
 - Aucun `GO` exact ni identifiant de gate recopié n’est requis ; une demande
   normale de Thomas suffit, conformément à D-054.
@@ -58,7 +63,7 @@ Branche de reprise : `main`
   imprimé exploitable.
 - Prochaine autorisation : `ATTENDRE_GO_PHYSIQUE` avant toute action K1.
 
-## Mission courante close hors imprimante
+## Mission courante close en lecture seule et hors imprimante
 
 - Incident documenté dans `docs/27-incident-cfs-temperature-geometrie-v1.md`.
 - Décision d'architecture figée dans ADR-017 et D-066.
@@ -71,9 +76,18 @@ Branche de reprise : `main`
 - Le routage réseau local est corrigé et vérifié. Mainsail, Moonraker, nginx,
   les deux lanceurs et `navi.json` ne contiennent aucune adresse K1 en dur ;
   aucune écriture distante ni aucun restart n'a été nécessaire.
-- Prochaine étape : récupérer en lecture seule le journal complet et le binaire
-  exact `box_wrapper`, puis préparer un adaptateur étroit. Toute pose ou tout
-  essai physique reste séparé.
+- Capture privée exacte :
+  `inventory/raw/20260826-cfs-box-wrapper-read-only-audit-v1` ; binaire, préfixe
+  du journal, fenêtre de 12 800 lignes, chaînes et empreintes restent ignorés.
+- Paquet public nettoyé :
+  `packages/k1-control-v1/cfs-box-wrapper-audit-v1/`.
+- Rapport : `docs/29-audit-box-wrapper-et-adaptateur-cfs-v1.md` ; décision :
+  ADR-018 et D-068.
+- Le binaire est ELF 32 bits MIPS little-endian et son SHA-256 correspond au
+  manifeste historique. Il n'a été ni chargé ni exécuté localement.
+- Prochaine étape : préparer hors imprimante un propriétaire filament minimal
+  séparé, ou une preuve statique plus forte d'une primitive étroite. Toute pose
+  ou tout essai physique reste une mission séparée.
 
 ## 1. Résultat de la mission close précédente
 
@@ -236,6 +250,9 @@ Autorisation de démarrage : **ATTENDRE_GO_PHYSIQUE**.
 18. docs/27-incident-cfs-temperature-geometrie-v1.md
 19. docs/adr/ADR-017-frontiere-cfs-buse-plateau-z.md
 20. packages/k1-control-v1/cfs-boundary-guard-v1/RESULT.md
+21. docs/29-audit-box-wrapper-et-adaptateur-cfs-v1.md
+22. docs/adr/ADR-018-adaptateur-cfs-ferme-et-proprietaire-minimal.md
+23. packages/k1-control-v1/cfs-box-wrapper-audit-v1/RESULT.md
 
 Relire aussi les sources et tests du paquet hors ligne avant de réutiliser son
 contrat ou ses signes.
@@ -256,16 +273,14 @@ les worktrees étrangers et les preuves ignorées.
 
 ## 10. Roadmap non autorisée par cette passation
 
-Après l'incident CFS désormais audité :
+Après l'audit exact de l'incident CFS :
 
-1. récupération en lecture seule du journal complet et du binaire exact
-   `box_wrapper` ;
-2. qualification hors imprimante des primitives et préparation d'un adaptateur
-   étroit ou d'un propriétaire minimal ;
-3. revue complète du paquet avant toute pose ou reprise physique ;
-4. reprise bornée de MESH-EDGE-DIAGNOSTIC-V1 seulement avec les six invariants ;
-5. MESH-DERIVED-PROFILE-V1 puis MESH-TUNING-CAMPAIGN-V1 ;
-6. exposition éventuelle du mode Précision après deux feuilles complètes
+1. préparation hors imprimante d'un propriétaire filament minimal séparé, avec
+   protocole borné, simulation, six invariants et aucun transport K1 ;
+2. revue complète du paquet avant toute pose ou reprise physique ;
+3. reprise bornée de MESH-EDGE-DIAGNOSTIC-V1 seulement avec les six invariants ;
+4. MESH-DERIVED-PROFILE-V1 puis MESH-TUNING-CAMPAIGN-V1 ;
+5. exposition éventuelle du mode Précision après deux feuilles complètes
    consécutives sans défaut grave et avec rollback prouvé.
 
 La production reste séparée. Son contrat fonctionnel est désormais figé, mais
@@ -276,15 +291,15 @@ G5.
 
 ## 11. Modèle conseillé
 
-La prochaine étape est d'abord une analyse en lecture seule du binaire compilé
-et du journal exact ; elle ne demande aucune manipulation humaine de la K1.
+La prochaine étape est la conception hors imprimante du propriétaire filament
+minimal ; elle ne demande aucune manipulation humaine de la K1.
 
-Pour cette analyse puis la préparation de l'adaptateur :
+Pour cette conception et son simulateur :
 
 - choix optimal : gpt-5.6-sol, raisonnement high ;
-- justification : rétro-analyse bornée d'un module Cython/MIPS, attribution des
-  écritures thermiques et géométriques, puis design de rollback sûr ;
+- justification : protocole multi-CFS, machine à états, six invariants,
+  simulation d'erreurs et rollback sûr sans reprendre tout le module stock ;
 - option économique acceptable : gpt-5.6-terra, raisonnement high, avec plus de
   risque de reprise sur les chemins cachés et les preuves négatives ;
-- un modèle plus léger augmente le risque de conclure trop tôt qu'un paramètre
-  `TEMP` visible couvre aussi le plateau, le homing et le Z.
+- un modèle plus léger augmente le risque d'omettre un chemin de refill, de
+  reprise ou une condition de sécurité du protocole série.
