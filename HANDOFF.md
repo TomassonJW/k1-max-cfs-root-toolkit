@@ -1,4 +1,4 @@
-# HANDOFF — audit CFS avant reprise de MESH-EDGE-DIAGNOSTIC-V1
+# HANDOFF — audit CFS clos ; reprise physique toujours suspendue
 
 Date de passation : 2026-08-26 (Europe/Paris)
 Projet : C:\Users\janko\Documents\ChatGPT\k1-max-cfs-root-toolkit
@@ -21,6 +21,11 @@ Branche de reprise : `main`
   `VALIDATE_MESH_EDGE_DIAGNOSTIC_V1_OK` : profil diagnostic et quatre G-code
   absents, base exacte, robuste actif, cibles zéro, axes libérés, runtime Z sûr
   et deux CFS connectés.
+- L'audit CFS strictement en lecture seule est clos OK sous la capture privée
+  `20260826-final-cfs-read-only-audit-v1`.
+- La K1 observe une présence de filament, mais aucune route courante
+  outil/CFS/slot ni aucun débit à la buse : état sûr `engaged_unknown`.
+- Statut actuel : **ATTENDRE_GO** avant toute action physique sur la K1.
 - Aucun nouveau motif n’est autorisé sans reprise explicite, route CFS/slot
   fraîchement résolue et purge réellement visible.
 - Aucun `GO` exact ni identifiant de gate recopié n’est requis ; une demande
@@ -32,16 +37,15 @@ Branche de reprise : `main`
 
 ## Clôture vérifiée de la mission
 
-- Mission livrée : contrat du cycle filament figé, passage source sans débit
-  classé invalide, rollback exact exécuté et état final K1 validé.
-- Commits de mission intégrés dans `main` : `1dde204` et `05bf3a0`.
+- Mission livrée : audit CFS exact en lecture seule, contrat de préflight,
+  analyseur déterministe et verdict `engaged_unknown`.
 - Capture privée de preuve :
-  `inventory/raw/20260826-090956-mesh-edge-diagnostic-v1`.
-- Artefacts de génération privés : `.codex-work/mesh-edge-diagnostic-v1` ; ils
-  restent ignorés et ne sont pas publiés sur GitHub.
-- Gate humaine : aucune validation de mesh ni de buse ; aucun passage imprimé
-  exploitable.
-- Prochaine autorisation : `ATTENDRE_GO` dans la future session.
+  `inventory/raw/20260826-final-cfs-read-only-audit-v1`.
+- Les captures privées restent ignorées et ne sont pas publiées sur GitHub ;
+  aucun nouvel artefact de génération n'est requis pour cet audit.
+- Gate humaine : aucune validation de mesh, de buse ou de débit ; aucun passage
+  imprimé exploitable.
+- Prochaine autorisation : `ATTENDRE_GO_PHYSIQUE` avant toute action K1.
 
 ## 1. Résultat de la mission close précédente
 
@@ -150,78 +154,37 @@ inconnus sans Thomas ou nouvelle observation : filament physiquement engagé,
 identité réelle de la bobine, route jusqu'à la buse, débit, plaque présente,
 propreté et liberté du plateau.
 
-## 7. Prochaine mission unique : audit CFS en lecture seule pour MESH-EDGE-DIAGNOSTIC-V1
+## 7. Audit CFS clos et prochaine gate physique
 
-Autorisation de démarrage : **ATTENDRE_GO**.
+L'audit `CFS-READ-ONLY-AUDIT-V1` est clos OK. Son rapport public est
+`docs/26-audit-cfs-lecture-seule-v1.md` et son résultat opérationnel est dans
+`packages/k1-control-v1/cfs-read-only-audit-v1/RESULT.md`.
 
-### Incident du premier passage
+### Verdict exact
 
-La préparation et le motif source ont été exécutés, mais aucun filament n'a été
-déposé. Le motif minimal avait retiré `Tn/START_PRINT` sans remplacer la
-résolution d'outil, le chargement ou la purge CFS. La mention `T0` du protocole
-était une invention de Codex, pas un fait fourni par Thomas.
+- `filament_sensor` est activé et détecte une présence ;
+- `filament_sensor_2` est désactivé et ne détecte rien ;
+- leur association logicielle et leurs broches sont connues, mais pas leur
+  emplacement physique exact ;
+- les CFS `T1` et `T2` sont connectés ;
+- `box.t_command` est vide et les données persistantes courantes ne contiennent
+  aucune route `tnn_map`, `last_cmd` ou `last_tnn` exploitable ;
+- l'historique prouve que le mapping outil logique vers slot physique est
+  dynamique ;
+- aucune purge visible n'a eu lieu pendant cet audit.
 
-Le passage n'est pas une preuve de buse bouchée : les commandes d'extrusion ont
-été envoyées sans preuve que du filament atteignait l'extrudeur ou la buse. La
-gate physique est suspendue.
+Le classement sûr est `engaged_unknown`. La présence est prouvée, mais
+l'identité, la route courante et le débit ne le sont pas.
 
-Le rollback de la tentative est désormais clos. La capture
-`20260826-090956-mesh-edge-diagnostic-v1` a obtenu
-`ROLLBACK_MESH_EDGE_DIAGNOSTIC_V1_OK` puis
-`VALIDATE_MESH_EDGE_DIAGNOSTIC_V1_OK`, sans nouveau motif.
+### Prochaine action interdite sans nouveau GO
 
-### Objectif
+Ne pas chauffer, référencer, déplacer, charger, couper, retirer, purger ou
+imprimer. Ne pas supposer `T0` ni un autre outil. La future gate physique doit
+d'abord obtenir de Thomas le matériau et le slot réellement choisis, résoudre
+la route fraîche sur la K1, puis exiger une petite purge visible avant tout
+motif.
 
-Établir sans mouvement ni chauffe ce que la K1 exacte sait réellement sur :
-
-- le mapping outil logique, CFS et slot physique ;
-- les deux objets `filament_switch_sensor` et leur état utile ;
-- l'état persistant du dernier filament ;
-- les limites entre présence capteur, identité, route jusqu'à l'extrudeur et
-  débit réel à la buse ;
-- la manière sûre d'obtenir ensuite une petite purge visible avant un motif.
-
-La sortie est un contrat de préflight et des preuves en lecture seule. Elle
-n'autorise pas encore une impression ni le mode Précision.
-
-### Contraintes
-
-- lecture seule sur la K1 et les deux CFS ;
-- aucun chauffage, homing, mouvement, chargement, retrait, coupe, purge ou
-  impression ;
-- aucun `T0` ou autre outil physique supposé ;
-- ne jamais transformer un capteur de présence en preuve d'identité ou de
-  débit ;
-- préserver la base sûre validée par la capture de rollback ;
-- aucune exposition UI du mode Précision.
-
-### Ordre recommandé
-
-1. Lire les documents d’autorité et vérifier Git.
-2. Lire `RESULT.md` et ne pas répéter le rollback déjà clos.
-3. Obtenir un préflight K1 frais strictement en lecture seule.
-4. Inventorier les objets Moonraker/Klipper/CFS disponibles, leurs valeurs et
-   leurs transitions déjà présentes dans les journaux, sans les provoquer.
-5. Distinguer faits exacts, hypothèses et informations encore humaines.
-6. Produire le contrat de préflight filament et les scénarios hors imprimante.
-7. Mettre à jour le paquet et ses tests sans lancer de motif.
-
-### Critères OK
-
-- chaque objet et valeur observés sont sourcés par la K1 exacte ;
-- les deux capteurs sont nommés sans inventer leur rôle physique ;
-- le mapping outil/CFS/slot a un niveau de confiance explicite ;
-- les états `engaged_known`, `engaged_unknown`, `absent_confirmed` et `fault`
-  ont des règles de décision testables ;
-- la purge visible reste une preuve séparée ;
-- la K1 est relue inchangée et sûre en fin d'audit ;
-- aucun paquet physique n'est posé.
-
-### Arrêt obligatoire
-
-Ne pas lancer le motif de bord, charger ou purger un filament, installer un
-profil dérivé, lancer une campagne complète ou exposer le mode Précision dans
-la même mission.
+Autorisation de démarrage : **ATTENDRE_GO_PHYSIQUE**.
 
 ## 8. Lecture obligatoire à la reprise
 
@@ -240,6 +203,8 @@ la même mission.
 13. packages/k1-control-v1/mesh-edge-diagnostic-v1/PROTOCOL.md
 14. packages/k1-control-v1/composite-first-layer-comparison-v2/RESULT.md
 15. packages/k1-control-v1/mesh-editor-offline-v1/README.md
+16. docs/26-audit-cfs-lecture-seule-v1.md
+17. packages/k1-control-v1/cfs-read-only-audit-v1/RESULT.md
 
 Relire aussi les sources et tests du paquet hors ligne avant de réutiliser son
 contrat ou ses signes.
@@ -260,7 +225,7 @@ les worktrees étrangers et les preuves ignorées.
 
 ## 10. Roadmap non autorisée par cette passation
 
-Après l'audit CFS en lecture seule seulement :
+Après l'audit CFS désormais clos :
 
 1. reprise physique bornée de MESH-EDGE-DIAGNOSTIC-V1 sous un nouveau GO ;
 2. MESH-DERIVED-PROFILE-V1 ;
@@ -276,16 +241,16 @@ G5.
 
 ## 11. Modèle conseillé
 
-Pour l'audit CFS en lecture seule :
+La prochaine étape commence par une gate humaine : Thomas doit être devant la
+K1 et confirmer le matériau, le CFS/slot choisi et le plateau libre. Aucun agent
+n'est nécessaire pour cette confirmation seule.
+
+Pour préparer puis encadrer la future reprise physique :
 
 - choix optimal : gpt-5.6-sol, raisonnement high ;
-- justification : croisement de l'état Moonraker/Klipper, des deux CFS, des
-  journaux et du contrat filament sans provoquer de transition physique ;
+- justification : résolution dynamique de route CFS, sécurité matérielle et
+  arrêt immédiat si la purge n'est pas visible ;
 - option économique acceptable : gpt-5.6-terra, raisonnement high, avec plus de
-  risque de reprise sur la distinction capteur, identité, route et débit ;
-- un modèle léger augmenterait le risque de transformer une présence logique
-  en certitude physique.
-
-Thomas n'a pas besoin d'être devant la K1 pour cet audit strictement en lecture
-seule. Sa confirmation redevient obligatoire avant une future purge ou
-impression.
+  risque de reprise sur les états propriétaires et le rollback ;
+- un modèle plus léger augmente le risque de confondre inventaire de slot,
+  présence capteur et filament réellement arrivé à la buse.

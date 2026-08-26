@@ -1,0 +1,74 @@
+{
+  "contract_id": "K1-CONTROL-CFS-READ-ONLY-PREFLIGHT-V1",
+  "schema": 1,
+  "status": "read_only_audit",
+  "printer_mutation_authorized": false,
+  "physical_action_authorized": false,
+  "evidence_layers": [
+    "sensor_presence",
+    "identity",
+    "route",
+    "nozzle_flow"
+  ],
+  "nozzle_flow_proof": "separate_visible_purge",
+  "filament_states": {
+    "absent_confirmed": {
+      "requires": [
+        "all_qualified_presence_sensors_report_absent",
+        "box_reports_no_active_transition",
+        "no_persisted_engaged_route_conflicts"
+      ],
+      "action": "allow_load_only"
+    },
+    "engaged_known": {
+      "requires": [
+        "qualified_presence_sensor_reports_present",
+        "logical_tool_to_cfs_slot_mapping_is_fresh",
+        "persisted_identity_matches_the_fresh_mapping",
+        "last_transition_completed_without_fault"
+      ],
+      "action": "keep_or_change_by_contract"
+    },
+    "engaged_unknown": {
+      "requires": [
+        "presence_is_observed",
+        "identity_or_route_is_missing_or_stale"
+      ],
+      "action": "block"
+    },
+    "transitioning": {
+      "requires": [
+        "box_or_cfs_reports_an_active_cut_retract_load_or_purge_phase",
+        "the_transition_has_a_bounded_owner_and_deadline"
+      ],
+      "action": "continue_same_transition_only"
+    },
+    "fault": {
+      "requires": [
+        "sensor_contradiction_or_timeout_or_cfs_fault_or_missing_visible_flow"
+      ],
+      "action": "stop_safe"
+    }
+  },
+  "future_physical_gate": {
+    "requires": [
+      "engaged_known",
+      "material_temperature_contract_confirmed",
+      "fresh_visible_purge_succeeds_before_print"
+    ],
+    "authorized_by_this_contract": false
+  },
+  "hard_stops": [
+    "no_gcode",
+    "no_heat",
+    "no_homing",
+    "no_motion",
+    "no_cut",
+    "no_load",
+    "no_unload",
+    "no_purge",
+    "no_print",
+    "no_restart",
+    "no_remote_write"
+  ]
+}

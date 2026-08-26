@@ -1,6 +1,6 @@
 # STATE
 
-Last updated: 2026-08-25
+Last updated: 2026-08-26
 
 Thomas a approuvé le 24 août 2026 l'autorité par objectif définie par D-054. Un
 Goal actif ou une mission clairement décrite couvre désormais les actions
@@ -50,9 +50,9 @@ Aucune nouvelle authentification ni action physique n'a eu lieu.
 
 **P4 — calibration quotidienne autonome ; composite physique `11 × 11`
 qualifié techniquement mais KO aux bords en première couche ; éditeur de profil
-dérivé hors ligne validé ; diagnostic physique des bords en cours mais suspendu
-après un passage sans débit ; contrat de cycle production figé hors imprimante ;
-production volontairement bloquée**
+dérivé hors ligne validé ; audit CFS en lecture seule clos avec état
+`engaged_unknown` ; diagnostic physique des bords suspendu ; contrat de cycle
+production figé hors imprimante ; production volontairement bloquée**
 
 La base sûre et réellement requalifiée reste `6 × 6` Lagrange avec un seul mesh
 standard. L'autonomie de calibration quotidienne standard est maintenant
@@ -93,6 +93,21 @@ et les quatre G-code sont absents, la base `printer.cfg` exacte est restaurée,
 le robuste est actif, les cibles sont à zéro, les axes sont libérés, le runtime
 Z est sûr et les deux CFS sont connectés. Aucun nouveau motif ne part avant une
 route filament résolue et une purge visible fraîche.
+
+`CFS-READ-ONLY-AUDIT-V1` est ensuite clos OK sous la capture privée
+`20260826-final-cfs-read-only-audit-v1`. Les empreintes des cinq fichiers
+surveillés sont identiques avant et après la collecte. La K1 est restée
+`standby`, cibles zéro, axes libérés, robuste actif, Z `−0,04 mm`, stockage
+`ok`, mouvements bas désarmés et deux CFS connectés. Aucun G-code, chauffage,
+mouvement, chargement, coupe, purge, restart ou fichier distant n'a été produit.
+
+L'état filament courant est `engaged_unknown` : `filament_sensor` détecte une
+présence, mais `box.t_command` est vide et les données persistantes courantes
+n'établissent ni outil logique, ni CFS/slot physique actif. L'inventaire des
+slots ne prouve pas l'identité du filament engagé. L'historique confirme que le
+mapping logique peut être remappé. Aucun débit à la buse n'est prouvé. La
+reprise physique reste donc bloquée jusqu'à un nouveau GO, une route résolue et
+une purge visible.
 
 Le cycle de production cible est désormais figé par ADR-016,
 `docs/25-contrat-cycle-impression-nettoyage-cfs-v1.md` et

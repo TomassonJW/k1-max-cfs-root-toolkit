@@ -115,8 +115,16 @@ Le rollback exact est maintenant clos sous la capture
 profil temporaire et les quatre G-code, rechargé le robuste et obtenu
 `VALIDATE_MESH_EDGE_DIAGNOSTIC_V1_OK`. Aucun motif n'a été relancé.
 
+Le prérequis séparé `CFS-READ-ONLY-AUDIT-V1` est clos **OK** sous la capture
+privée `20260826-final-cfs-read-only-audit-v1`. La K1 est relue sûre et les
+empreintes avant/après sont identiques. Le verdict filament est toutefois
+`engaged_unknown` : présence observée, mais identité, route outil/CFS/slot et
+débit à la buse non prouvés. L'audit réussit ; le préflight physique reste
+bloqué en sécurité.
+
 Avant toute reprise physique restante : route filament fraîchement résolue et
-purge réellement visible. Un capteur de présence seul ne suffit pas.
+purge réellement visible sous un nouveau GO. Un capteur de présence seul ne
+suffit pas.
 
 Critères :
 

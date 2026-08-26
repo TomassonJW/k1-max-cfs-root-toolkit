@@ -1220,3 +1220,30 @@ reprise sans `T0` supposé, avec route filament résolue et purge visible fraîc
 
 Voir `docs/25-contrat-cycle-impression-nettoyage-cfs-v1.md`,
 `design/job-lifecycle-contract-v1.json` et ADR-016.
+
+## D-065 — Une présence CFS sans route courante est `engaged_unknown`
+
+Date: 2026-08-26
+
+Status: audit en lecture seule validé ; action physique bloquée
+
+La K1 expose deux objets `filament_switch_sensor`. Le premier est activé et
+détecte une présence sur `!PC15`. Le second est désactivé, vaut faux, utilise
+`^!nozzle_mcu:PA10` et est référencé par `box.cfg`. Ces associations logicielles
+n'autorisent pas à inventer leur emplacement physique ni à transformer la
+valeur du second capteur désactivé en preuve d'absence.
+
+Les fiches matière `T1/T2` et `A..D` sont un inventaire déclaré. Les journaux
+prouvent qu'un outil logique peut être remappé vers un autre slot physique. Au
+moment de la capture, `box.t_command` est vide et `tn_data.json` ne conserve
+aucune route courante `tnn_map`, `last_cmd` ou `last_tnn`. Une ancienne route
+du journal ne peut donc pas être réutilisée comme route active.
+
+L'état observé est `engaged_unknown` : présence oui, identité non résolue,
+route non résolue et débit non prouvé. La reprise s'arrête avant toute
+extrusion. Seule une future gate physique distincte peut résoudre la route et
+obtenir une petite purge réellement visible. Aucun `T0` n'est supposé.
+
+Voir `docs/26-audit-cfs-lecture-seule-v1.md`,
+`design/cfs-read-only-preflight-v1.json` et
+`packages/k1-control-v1/cfs-read-only-audit-v1/RESULT.md`.
