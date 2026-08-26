@@ -1321,3 +1321,33 @@ coup ou lancer un nouvel essai physique sont refusés dans cette gate.
 
 Voir ADR-018, `docs/29-audit-box-wrapper-et-adaptateur-cfs-v1.md` et
 `packages/k1-control-v1/cfs-box-wrapper-audit-v1/`.
+
+## D-069 — Les températures d'impression appartiennent à la phase du travail
+
+Date: 2026-08-26
+
+Status: recherche hors imprimante close ; conception suivante autorisée hors
+K1 seulement ; production fermée
+
+La température `220 °C` de l'incident a été résolue depuis le type matière du
+slot et sa base locale. Inscrire une autre valeur dans cette base peut donc
+modifier un palier de buse, mais ne porte ni la distinction première
+couche/régime normal, ni les deux températures du plateau, ni la géométrie de
+purge.
+
+Le contrat du travail devient la source principale de
+`NOZZLE_FIRST`, `NOZZLE_NORMAL`, `BED_FIRST` et `BED_NORMAL`. Chaque frontière
+CFS doit recevoir la cible de buse de sa phase et préserver séparément celle du
+plateau. Une réaffirmation après `T` reste une défense, pas la preuve qu'une
+purge antérieure était correcte.
+
+La base matière CFS reste un filet de sécurité statique. Sa réécriture
+dynamique par travail est refusée sans preuve de relecture à chaud, d'isolation
+par slot, de rollback et d'absence d'effet sur les deux CFS, le refill et la
+reprise.
+
+La prochaine mission est
+`G4-K1-CONTROL-CFS-DYNAMIC-TEMP-ROUTING-V1`, strictement hors imprimante. Toute
+pose ou action physique formera une gate ultérieure avec autorisation fraîche.
+
+Voir ADR-019 et `docs/30-audit-routage-temperatures-cfs-v1.md`.

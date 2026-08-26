@@ -1,305 +1,183 @@
-# HANDOFF — `box_wrapper` audité ; adaptateur CFS stock fermé
+# HANDOFF — routage dynamique des températures CFS à concevoir hors imprimante
 
-Date de passation : 2026-08-26 (Europe/Paris)
-Projet : C:\Users\janko\Documents\ChatGPT\k1-max-cfs-root-toolkit
-Branche de reprise : `main`
+Date de passation : 2026-08-26 21:14 +02:00
+Projet : `C:\Users\janko\Documents\ChatGPT\k1-max-cfs-root-toolkit`
+Branche cible : `main`
 
 ## État à annoncer immédiatement à Thomas
 
 - **Autonomie calibration quotidienne standard : atteinte.**
-- **Autonomie de création et d’édition hors ligne d’un profil dérivé :
-  atteinte.**
+- **Autonomie de création et d'édition hors ligne d'un profil dérivé : atteinte.**
 - **Autonomie du mode Précision réellement installé : non atteinte.**
 - **Autonomie production : non atteinte.**
-- Le robuste k1_p001_t055_r001_n06x06 et le Z persistant accepté −0,04 mm
-  restent la base sûre.
-- Le composite physique k1_p001_t055_r001_n11x11 reste une source immuable.
-- L’éditeur local v001 est validé et le mode Précision reste caché.
-- MESH-EDGE-DIAGNOSTIC-V1 reste suspendue. Le débit a ensuite été prouvé sur une
-  purge séparée, mais la séquence utilisée est refusée pour température et
-  géométrie.
-- La capture `20260826-090956-mesh-edge-diagnostic-v1` a obtenu le rollback et
+- Le robuste `k1_p001_t055_r001_n06x06` et le Z accepté `−0,04 mm` restent la
+  base sûre connue.
+- `MESH-EDGE-DIAGNOSTIC-V1` reste suspendue. Son rollback est validé par
   `VALIDATE_MESH_EDGE_DIAGNOSTIC_V1_OK` : profil diagnostic et quatre G-code
-  absents, base exacte, robuste actif, cibles zéro, axes libérés, runtime Z sûr
-  et deux CFS connectés.
-- L'audit CFS strictement en lecture seule est clos OK sous la capture privée
-  `20260826-final-cfs-read-only-audit-v1`.
-- Thomas a explicitement choisi `CFS1 / slot A`, Geeetech PLA noir. La purge a
-  prouvé cette route et le débit pour ce passage seulement.
-- La séquence a imposé `220 °C` malgré la demande `190 °C`, référencé X/Y et
-  tenté de purger avec le plateau trop haut. Aucun dommage visible selon Thomas.
-- Le homing a ensuite été repris proprement. La position froide
-  `X=185,5 / Y=305 / Z=30 mm` a été validée visuellement comme position de purge
-  avec une marge suffisante.
-- Le lien `k1max-root` est requalifié sur la réservation fixe : `standby`,
-  cibles zéro, robuste et Z `−0,04 mm` conformes ; l'adresse reste hors Git.
-- `CFS-BOUNDARY-GUARD-V1` est validé hors imprimante. Il protège buse, plateau,
-  Z accepté, origine Z, mesh et axes référencés, et refuse la trace réelle.
-- `CFS-BOX-WRAPPER-AUDIT-V1` est clos en lecture seule ; binaire exact et journal capturés sans écriture distante.
-- Le chargement choisit `220 °C` et possède la géométrie, tandis que la purge conserve son paramètre visible `190 °C`.
-- `BOX_EXTRUDE_MATERIAL` est refusée ; les deux primitives suivantes restent non qualifiées faute de preuve isolée.
-- Adaptateur fermé : **ATTENDRE_GO_PAQUET_REVU** avant toute pose ; `deployment_candidate=false`.
-- Aucun `GO` exact n'est requis hors imprimante ; le plateau réellement libre reste à confirmer avant toute future action physique.
-- Prochaine mission : **HORS_IMPRIMANTE_PROPRIETAIRE_CFS_MINIMAL**. Ce
-  marqueur interne n'impose aucune phrase littérale à Thomas ; une demande
-  normale et non ambiguë suffit selon D-054.
-- Aucun nouveau motif n’est autorisé avec les commandes brutes du 26 août.
-- Aucun `GO` exact ni identifiant de gate recopié n’est requis ; une demande
-  normale de Thomas suffit, conformément à D-054.
-- La présence de Thomas et le plateau réellement libre restent des faits à
-  confirmer juste avant toute action physique.
-- Le contrat complet de nettoyage, impression, filament, changement et fin est
-  figé hors imprimante. Il n’est pas implémenté et n’ouvre pas la production.
+  absents, robuste actif, cibles zéro et axes libérés lors de cette capture.
+- L'audit CFS en lecture seule est clos. La route ponctuelle
+  `CFS1 / slot A / Geeetech PLA noir` et le débit ont été prouvés par une purge,
+  mais la séquence brute est refusée : `220 °C` imposés, homing X/Y caché et
+  purge tentée avec le plateau trop haut.
+- Aucun dommage visible n'a été constaté par Thomas. Le homing a été repris et
+  la position froide `X=185,5 / Y=305 / Z=30 mm` a été validée visuellement.
+- `CFS-BOUNDARY-GUARD-V1` et l'audit exact de `box_wrapper` sont clos hors
+  imprimante. Aucune primitive stock n'est qualifiée pour un adaptateur.
+- Une fiche matière CFS ne porte qu'un palier de buse : elle ne résout pas
+  première couche, régime normal, plateau et géométrie comme un contrat unique.
+- Autorisation de démarrage : **ATTENDRE_GO** pour la prochaine mission. Une
+  demande normale et non ambiguë suffit pour le travail hors imprimante.
+  Aucun `GO` exact hérité n'autorise une action K1.
+- Avant toute future action physique, confirmer la présence de Thomas et le
+  plateau réellement libre.
 
-## Clôture vérifiée de la mission précédente
+## Mission close
 
-- Mission livrée : audit CFS exact en lecture seule, contrat de préflight,
-  analyseur déterministe et verdict `engaged_unknown`.
-- Capture privée de preuve :
-  `inventory/raw/20260826-final-cfs-read-only-audit-v1`.
-- Les captures privées restent ignorées et ne sont pas publiées sur GitHub ;
-  aucun nouvel artefact de génération n'est requis pour cet audit.
-- Gate humaine : aucune validation de mesh, de buse ou de débit ; aucun passage
-  imprimé exploitable.
-- Prochaine autorisation : `ATTENDRE_GO_PHYSIQUE` avant toute action K1.
+Le type matière du slot est résolu dans
+`creality/userdata/box/material_database.json`. Sa valeur
+`nozzle_temperature` devient la cible réelle du chargement, ici `220 °C`. Le
+même chemin possède aussi des mouvements et le homing X/Y.
 
-## Mission courante close en lecture seule et hors imprimante
+Écrire une autre température dans la matière peut corriger un seul palier de
+buse. Ce n'est pas une solution complète : une impression doit distinguer buse
+et plateau de première couche et de régime normal, puis conserver la bonne
+cible pendant changement, refill, runout et reprise.
 
-- Incident documenté dans `docs/27-incident-cfs-temperature-geometrie-v1.md`.
-- Décision d'architecture figée dans ADR-017 et D-066.
-- Contrat machine étendu aux six invariants CFS.
-- Paquet local `packages/k1-control-v1/cfs-boundary-guard-v1/` avec fixture
-  réelle, fixture synthétique et évaluation déterministe.
-- 324 tests Python verts, 3 ignorés historiques.
-- Aucune écriture K1, chauffe, mouvement, purge ou impression pendant cette
-  préparation hors imprimante.
-- Le routage réseau local est corrigé et vérifié. Mainsail, Moonraker, nginx,
-  les deux lanceurs et `navi.json` ne contiennent aucune adresse K1 en dur ;
-  aucune écriture distante ni aucun restart n'a été nécessaire.
-- Capture privée exacte :
-  `inventory/raw/20260826-cfs-box-wrapper-read-only-audit-v1` ; binaire, préfixe
-  du journal, fenêtre de 12 800 lignes, chaînes et empreintes restent ignorés.
-- Paquet public nettoyé :
-  `packages/k1-control-v1/cfs-box-wrapper-audit-v1/`.
-- Rapport : `docs/29-audit-box-wrapper-et-adaptateur-cfs-v1.md` ; décision :
-  ADR-018 et D-068.
-- Le binaire est ELF 32 bits MIPS little-endian et son SHA-256 correspond au
-  manifeste historique. Il n'a été ni chargé ni exécuté localement.
-- Prochaine étape : préparer hors imprimante un propriétaire filament minimal
-  séparé, ou une preuve statique plus forte d'une primitive étroite. Toute pose
-  ou tout essai physique reste une mission séparée.
+La décision retenue est de router les températures par phase du travail. La
+base matière reste un filet de sécurité statique, pas une base globale réécrite
+avant chaque impression. Une réaffirmation `M104` après `T` reste une défense,
+pas une preuve qu'une purge précédente était correcte.
 
-## 1. Résultat de la mission close précédente
+### Fichiers canoniques
 
-MESH-EDITOR-OFFLINE-V1 est close OK. Elle est restée entièrement hors
-imprimante :
+- `docs/25-contrat-cycle-impression-nettoyage-cfs-v1.md`
+- `design/job-lifecycle-contract-v1.json`
+- `docs/27-incident-cfs-temperature-geometrie-v1.md`
+- `docs/29-audit-box-wrapper-et-adaptateur-cfs-v1.md`
+- `docs/30-audit-routage-temperatures-cfs-v1.md`
+- ADR-016 à ADR-019 sous `docs/adr/`
+- `DECISIONS.md`, D-064 à D-069
 
-- aucun SSH, tunnel, Moonraker ou appel Creality ;
-- aucun chauffage, homing, mouvement, palpage ou G-code ;
-- aucune écriture de printer.cfg ou du Z ;
-- aucune pose et aucune exposition du mode Précision.
+### Hors périmètre confirmé
 
-Le paquet est dans :
+- aucune connexion, lecture ou écriture K1 pendant la recherche finale ;
+- aucune chauffe, homing, mouvement, commande CFS, purge ou impression ;
+- aucune modification OrcaSlicer, Mainsail, Moonraker, nginx ou firmware ;
+- aucun paquet installable et aucune production autorisée ;
+- aucune nouvelle tâche Codex créée par cette passation.
 
-packages/k1-control-v1/mesh-editor-offline-v1/
+## État Git à la préparation
 
-Le rapport canonique est :
+- checkout : `C:\Users\janko\Documents\ChatGPT\k1-max-cfs-root-toolkit` ;
+- branche : `main` ;
+- `HEAD` de départ : `92a63bbbc959a3d722f41387f5e98c7fc0c89510` ;
+- `origin/main` observé au départ : même SHA ;
+- autre worktree : aucun ; branche/worktree de mission séparé : aucun.
 
-docs/24-mesh-editor-offline-v1.md
+La session de passation doit livrer son commit sur `main`, vérifier
+`HEAD == origin/main` et laisser le checkout propre. À la reprise, relire le SHA
+final avec `git rev-parse HEAD`.
 
-## 2. Pouvoirs désormais disponibles hors ligne
+## Vérifications obtenues
 
-L’interface locale permet de :
+- audit local du binaire exact et de la trace : **OK** ;
+- documentation officielle Creality et profil officiel : **OK** ;
+- recoupements communautaires utilisés comme indices, pas comme preuve K1 :
+  **OK** ;
+- action K1 pendant cette mission : **non exécutée**, par interdiction ;
+- validation physique du futur routage : **non exécutée**, aucun candidat ;
+- validation production : **non exécutée**, production fermée.
 
-- créer k1_p001_t055_r001_n11x11_tuned_v001 à partir de la source physique ;
-- sélectionner un point, une ligne, une colonne ou une zone de 3 × 3 maximum ;
-- appliquer Rapprocher, delta négatif, ou Éloigner, delta positif ;
-- utiliser un pas de 0,005 mm ou 0,010 mm ;
-- consulter Source, Deltas, Final et un aperçu 3D ;
-- annuler, rétablir, comparer et restaurer la source ;
-- simuler chargement, refus de validation et restauration ;
-- exporter un document JSON versionné ou un bloc Klipper déterministe.
+## Prochaine mission unique
 
-La source, la correction demandée, la correction normalisée et la matrice
-finale restent distinctes. Le Z global est absent du modèle.
+### `G4-K1-CONTROL-CFS-DYNAMIC-TEMP-ROUTING-V1`
 
-## 3. Définition mathématique retenue
+Concevoir et tester hors imprimante le contrat qui donne au CFS la température
+de buse exacte de la phase courante, tout en gardant plateau et géométrie sous
+des propriétaires séparés et surveillés.
 
-Le moteur reproduit la surface bicubique cardinale 31 × 31 du profil Klipper
-11 × 11, avec mesh_x_pps=2, mesh_y_pps=2 et tension 0,2.
+Le contrat doit exposer au minimum `NOZZLE_FIRST`, `NOZZLE_NORMAL`,
+`BED_FIRST`, `BED_NORMAL`, les températures de retrait/chargement/purge, la
+phase courante et la route CFS/slot fraîchement résolue.
 
-Il retire à toute correction demandée la moyenne arithmétique des 961 valeurs
-interpolées. La forme locale est conservée et la moyenne utilisée par le fade
-Klipper reste nulle. La tolérance interne est 0,000000000001 mm. Après export
-Klipper à six décimales, la tolérance est 0,000001 mm.
+### Travail à faire
 
-Gardes :
+1. Relire les documents obligatoires et vérifier `main`.
+2. Cartographier le point où `get_material_target_temp` fournit la cible, sans
+   lancer le binaire ni contacter la K1.
+3. Comparer base matière statique, réaffirmation post-`T`, interception étroite
+   de la résolution thermique et propriétaire série minimal.
+4. Choisir la plus petite surface capable de fixer la cible **avant** tout
+   chargement ou purge.
+5. Étendre le contrat du travail et construire un simulateur déterministe.
+6. Tester outil déjà engagé, chargement, changement, deux CFS, refill, runout,
+   pause/reprise, annulation et coupure thermique.
+7. Produire un paquet de conception et un plan futur de pose/backup/rollback ;
+   ne pas exécuter ce plan.
 
-- avertissement si la correction normalisée dépasse 0,050 mm en valeur absolue ;
-- refus au-delà de 0,100 mm ;
-- refus si deux voisins diffèrent de plus de 0,080 mm ;
-- un refus ne modifie ni l’état ni l’historique ;
-- aucun lissage ou réglage automatique n’est permis.
+### Interdits
 
-## 4. Source publique et preuves privées
+- aucune connexion K1, même en lecture seule, dans cette première mission ;
+- aucune réécriture dynamique de `material_database.json` sur la K1 ;
+- aucun appel aux primitives stock refusées ou non qualifiées ;
+- ne pas considérer un `M104` tardif comme réussite de la purge ;
+- ne pas confier plateau, homing, X/Y, mesh ou Z au CFS ;
+- ne pas reprendre `MESH-EDGE-DIAGNOSTIC-V1` ;
+- aucun candidat de pose tant que les tests hors ligne ne ferment pas les
+  chemins ;
+- aucun ancien GO ne devient une autorisation physique.
 
-La fixture publique nettoyée contient les 121 valeurs persistées du bloc
-composite, dans l’ordre Y 5 vers Y 295 et X 5 vers X 295.
+### Critères de fin
 
-Empreinte canonique de la matrice publique à six décimales :
+- aucune température matière codée en dur dans le chemin du travail ;
+- première couche et régime normal distincts pour buse et plateau ;
+- chaque frontière reçoit une cible explicite avant son premier effet ;
+- la base matière est un filet de sécurité, pas le propriétaire dynamique ;
+- absence, incohérence ou route inconnue provoque un arrêt sûr ;
+- deux CFS, refill, runout et pause/reprise sont testés ;
+- les six invariants d'ADR-017 restent inchangés ;
+- aucun transport K1 n'existe dans le paquet hors ligne ;
+- tests, diff et documentation sont verts ;
+- le résultat n'est pas présenté comme physiquement validé.
 
-bee530fb9738773d1f2ccb63d47743e15776690f1bcdf92a3daac7661f0f50bf
+### Autorisation et Git
 
-Empreintes privées vérifiées avant l’extraction :
+État : **ATTENDRE_GO**. Une future demande normale de Thomas autorise seulement
+l'analyse et l'implémentation hors imprimante. La politique Git globale couvre
+la clôture sur `main` en préservant tout travail étranger.
 
-| Artefact | SHA-256 |
-|---|---|
-| printer.cfg.composite | f88d6b52477592805384fca2b4d7abd00298deecd82227af2fa580085fe26fa2 |
-| composite-mesh-state.json | 09fe8333dd1708dc781091e367efef7220d8056d40dab7ffefee26e55de9d8eb |
-| final-printer-status.json | 24490c6efc9f2d315a6772f62af20864d5ed8e492f92cb36076213cf7abbc9e |
+Toute connexion K1, pose, restart, chauffe, homing, mouvement, commande CFS ou
+purge appartient à une mission ultérieure avec autorisation fraîche après revue
+des fichiers, commandes, backup, rollback et critères OK/KO.
 
-Les preuves privées restent ignorées. Ne jamais nettoyer globalement
-inventory/raw/ ou .codex-work/.
+## Lecture obligatoire à la reprise
 
-## 5. Validation obtenue
+1. `AGENTS.md`, `HANDOFF.md`, `STATE.md`, `GATES.md`
+2. `DECISIONS.md`, D-064 à D-069
+3. `docs/25-contrat-cycle-impression-nettoyage-cfs-v1.md`
+4. `design/job-lifecycle-contract-v1.json`
+5. `docs/27-incident-cfs-temperature-geometrie-v1.md`
+6. `docs/29-audit-box-wrapper-et-adaptateur-cfs-v1.md`
+7. `docs/30-audit-routage-temperatures-cfs-v1.md`
+8. ADR-016, ADR-017, ADR-018 et ADR-019
+9. `packages/k1-control-v1/cfs-boundary-guard-v1/RESULT.md`
+10. `packages/k1-control-v1/cfs-box-wrapper-audit-v1/RESULT.md`
 
-- 311 tests Python du dépôt verts, 3 ignorés connus ;
-- parse des scripts PowerShell vert ;
-- `git diff --check` vert ;
-- `WAIT_COMPLETE_MESH_EDGE_DIAGNOSTIC_V1_OK` avant restauration ;
-- `ROLLBACK_MESH_EDGE_DIAGNOSTIC_V1_OK` ;
-- `VALIDATE_MESH_EDGE_DIAGNOSTIC_V1_OK` ;
-- contrat humain et contrat JSON cohérents ;
-- branche de mission poussée puis intégrée par fast-forward dans `main`.
+Les captures `inventory/raw/` sont privées et ignorées. Ne jamais les nettoyer
+globalement ni les publier.
 
-Le serveur local de recette a été arrêté. Aucun processus de démonstration ne
-doit rester ouvert.
+## Suites différées
 
-## 6. État physique connu et inconnu
+Après fermeture hors ligne de la mission seulement : revue d'un candidat de
+pose, gate physique thermique/géométrique, reprise éventuelle de
+`MESH-EDGE-DIAGNOSTIC-V1`, puis qualification du mode Précision. La production
+reste séparée.
 
-État validé après le rollback de la capture
-`20260826-090956-mesh-edge-diagnostic-v1` :
+## Modèle conseillé
 
-- standby ;
-- cibles à zéro ;
-- axes non référencés ;
-- Z persistant −0,04 mm, stockage ok ;
-- profils robuste et composite présents ;
-- robuste rechargé ;
-- profil diagnostic absent ;
-- quatre G-code temporaires absents ;
-- base `printer.cfg` exacte ;
-- deux CFS connectés.
-
-Cet état est une capture ponctuelle, pas une promesse permanente. Restent
-inconnus sans Thomas ou nouvelle observation : filament physiquement engagé,
-identité réelle de la bobine, route jusqu'à la buse, débit, plaque présente,
-propreté et liberté du plateau.
-
-## 7. Audit CFS clos et prochaine gate physique
-
-L'audit `CFS-READ-ONLY-AUDIT-V1` est clos OK. Son rapport public est
-`docs/26-audit-cfs-lecture-seule-v1.md` et son résultat opérationnel est dans
-`packages/k1-control-v1/cfs-read-only-audit-v1/RESULT.md`.
-
-### Verdict exact
-
-- `filament_sensor` est activé et détecte une présence ;
-- `filament_sensor_2` est désactivé et ne détecte rien ;
-- leur association logicielle et leurs broches sont connues, mais pas leur
-  emplacement physique exact ;
-- les CFS `T1` et `T2` sont connectés ;
-- `box.t_command` est vide et les données persistantes courantes ne contiennent
-  aucune route `tnn_map`, `last_cmd` ou `last_tnn` exploitable ;
-- l'historique prouve que le mapping outil logique vers slot physique est
-  dynamique ;
-- aucune purge visible n'a eu lieu pendant cet audit.
-
-Le classement sûr est `engaged_unknown`. La présence est prouvée, mais
-l'identité, la route courante et le débit ne le sont pas.
-
-### Prochaine action interdite sans nouveau GO
-
-Ne pas chauffer, référencer, déplacer, charger, couper, retirer, purger ou
-imprimer. Ne pas supposer `T0` ni un autre outil. La future gate physique doit
-d'abord obtenir de Thomas le matériau et le slot réellement choisis, résoudre
-la route fraîche sur la K1, puis exiger une petite purge visible avant tout
-motif.
-
-Autorisation de démarrage : **ATTENDRE_GO_PHYSIQUE**.
-
-## 8. Lecture obligatoire à la reprise
-
-1. AGENTS.md
-2. HANDOFF.md
-3. STATE.md
-4. GATES.md
-5. DECISIONS.md
-6. docs/24-mesh-editor-offline-v1.md
-7. docs/adr/ADR-015-profils-mesh-derives-et-corrections-locales.md
-8. docs/23-audit-mesh-manuel-et-cycle-production-cfs.md
-9. docs/25-contrat-cycle-impression-nettoyage-cfs-v1.md
-10. docs/adr/ADR-016-cycle-production-orchestre-et-propriete-cfs.md
-11. design/job-lifecycle-contract-v1.json
-12. packages/k1-control-v1/mesh-edge-diagnostic-v1/RESULT.md
-13. packages/k1-control-v1/mesh-edge-diagnostic-v1/PROTOCOL.md
-14. packages/k1-control-v1/composite-first-layer-comparison-v2/RESULT.md
-15. packages/k1-control-v1/mesh-editor-offline-v1/README.md
-16. docs/26-audit-cfs-lecture-seule-v1.md
-17. packages/k1-control-v1/cfs-read-only-audit-v1/RESULT.md
-18. docs/27-incident-cfs-temperature-geometrie-v1.md
-19. docs/adr/ADR-017-frontiere-cfs-buse-plateau-z.md
-20. packages/k1-control-v1/cfs-boundary-guard-v1/RESULT.md
-21. docs/29-audit-box-wrapper-et-adaptateur-cfs-v1.md
-22. docs/adr/ADR-018-adaptateur-cfs-ferme-et-proprietaire-minimal.md
-23. packages/k1-control-v1/cfs-box-wrapper-audit-v1/RESULT.md
-
-Relire aussi les sources et tests du paquet hors ligne avant de réutiliser son
-contrat ou ses signes.
-
-## 9. Autorité et sécurité
-
-D-054 reste l’autorité : une mission clairement demandée couvre ses actions
-normales sans réclamer une phrase GO littérale. Une restriction plus récente
-prime toujours.
-
-Une mission physique autorisée ne transforme pas un fait non observable en
-certitude. La liberté du plateau, la présence de Thomas et la plaque réelle
-doivent encore être confirmées au moment utile.
-
-L’autorisation Git globale couvre la branche, le commit, le push, la PR,
-l’intégration dans main et le nettoyage. Préserver les changements étrangers,
-les worktrees étrangers et les preuves ignorées.
-
-## 10. Roadmap non autorisée par cette passation
-
-Après l'audit exact de l'incident CFS :
-
-1. préparation hors imprimante d'un propriétaire filament minimal séparé, avec
-   protocole borné, simulation, six invariants et aucun transport K1 ;
-2. revue complète du paquet avant toute pose ou reprise physique ;
-3. reprise bornée de MESH-EDGE-DIAGNOSTIC-V1 seulement avec les six invariants ;
-4. MESH-DERIVED-PROFILE-V1 puis MESH-TUNING-CAMPAIGN-V1 ;
-5. exposition éventuelle du mode Précision après deux feuilles complètes
-   consécutives sans défaut grave et avec rollback prouvé.
-
-La production reste séparée. Son contrat fonctionnel est désormais figé, mais
-les implémentations restent absentes : audit V2, simulation du cycle, mouvement
-de nettoyage à froid, référence, propriété des températures CFS, changement et
-runout, pause/reprise, fin avec conservation engagée, bascule Orca atomique et
-G5.
-
-## 11. Modèle conseillé
-
-La prochaine étape est la conception hors imprimante du propriétaire filament
-minimal ; elle ne demande aucune manipulation humaine de la K1.
-
-Pour cette conception et son simulateur :
-
-- choix optimal : gpt-5.6-sol, raisonnement high ;
-- justification : protocole multi-CFS, machine à états, six invariants,
-  simulation d'erreurs et rollback sûr sans reprendre tout le module stock ;
-- option économique acceptable : gpt-5.6-terra, raisonnement high, avec plus de
-  risque de reprise sur les chemins cachés et les preuves négatives ;
-- un modèle plus léger augmente le risque d'omettre un chemin de refill, de
-  reprise ou une condition de sécurité du protocole série.
+- optimal : `gpt-5.6-sol`, raisonnement `max` ;
+- justification : firmware compilé, thermique caché, deux CFS et nombreux
+  chemins de reprise à fermer avant toute pose ;
+- option économique : `gpt-5.6-sol`, raisonnement `high`, avec plus de risque
+  d'omettre un chemin refill/pause ou une interaction thermique/géométrique ;
+- un modèle plus léger n'est pas conseillé pour cette décision d'architecture.
