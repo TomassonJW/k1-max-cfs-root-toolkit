@@ -50,8 +50,9 @@ Aucune nouvelle authentification ni action physique n'a eu lieu.
 
 **P4 — calibration quotidienne autonome ; composite physique `11 × 11`
 qualifié techniquement mais KO aux bords en première couche ; éditeur de profil
-dérivé hors ligne validé ; diagnostic physique des bords suivant ; production
-volontairement bloquée**
+dérivé hors ligne validé ; diagnostic physique des bords en cours mais suspendu
+après un passage sans débit ; contrat de cycle production figé hors imprimante ;
+production volontairement bloquée**
 
 La base sûre et réellement requalifiée reste `6 × 6` Lagrange avec un seul mesh
 standard. L'autonomie de calibration quotidienne standard est maintenant
@@ -80,17 +81,28 @@ orientée de 121 cellules, l'historique, les gardes, l'aperçu 3D et la fausse A
 ont été validés dans le vrai navigateur. Aucun transport K1 n'existe dans ce
 paquet.
 
-La prochaine mission unique est `MESH-EDGE-DIAGNOSTIC-V1`. Elle préparera
-puis, sous une autorité physique distincte et avec Thomas présent, utilisera un
-motif `5..295 mm` peu consommateur et une seule petite correction de
-`0,010 mm`. Elle doit d'abord obtenir un état K1 frais et une confirmation
-factuelle du plateau.
+La mission active reste `MESH-EDGE-DIAGNOSTIC-V1`, mais son premier motif source
+est invalide : la tête a bougé et chauffé sans déposer de filament. Le G-code
+minimal n'avait ni résolution d'outil CFS, ni chargement, ni purge. La mention
+`T0` venait de Codex et n'est pas un fait fourni par Thomas. Ce passage ne prouve
+ni une buse bouchée ni le comportement du mesh.
 
-Le cycle de production cible est désormais arrêté par ADR-016 : Orca enverra à
-terme un unique contrat `KCTRL_JOB_BEGIN`; K1 Control possédera chauffe,
-nettoyage, référence Z finale, mesh/Z, CFS, purge, pause, reprise et fin. Le cœur
-CFS compilé reste une frontière à tracer et la bascule Orca avec retrait du
-`+0,27 mm` reste fermée et atomique.
+Au dernier état observé, le robuste est actif, les cibles sont à zéro et les
+axes sont libérés, mais le profil diagnostic temporaire et les quatre G-code
+restent à retirer. Cet état distant n'est pas rafraîchi dans la mission
+documentaire actuelle. La prochaine action physique est exclusivement le
+rollback exact et la validation finale ; aucun nouveau motif ne part avant une
+route filament résolue et une purge visible fraîche.
+
+Le cycle de production cible est désormais figé par ADR-016,
+`docs/25-contrat-cycle-impression-nettoyage-cfs-v1.md` et
+`design/job-lifecycle-contract-v1.json`. Orca enverra à terme un unique contrat
+`KCTRL_JOB_BEGIN`; K1 Control possédera chauffe, nettoyage, référence Z finale,
+mesh/Z, état filament, CFS, purge avec preuve de débit, pause, changement,
+runout, reprise et fin. Le bon filament déjà engagé est conservé. Le retrait de
+fin devient l'action séparée `Désengager et nettoyer`. Le cœur CFS compilé reste
+une frontière à tracer et la bascule Orca avec retrait du `+0,27 mm` reste
+fermée et atomique.
 
 La première recette de comparaison V1 est **close KO**. Elle a conservé
 l'ancien offset Orca `+0,27 mm` alors que le Z accepté vaut `−0,04 mm`. Le
@@ -534,9 +546,10 @@ commencent sur cet état final retenu.
   deployment because it hard-coded Geeetech PLA and `190/195 °C`.
 - Its deployable patch, helper, OrcaSlicer contract, deployment procedure and
   dedicated test were removed from `main`; the rejected ADR remains as history.
-- The accepted requirement is dynamic: G-code or Thomas owns the temperature
-  during a print, equivalent refill preserves the active target, and intentional
-  material changes receive the next tool's target from G-code.
+- The accepted requirement is dynamic: G-code or Thomas owns every explicit
+  phase temperature, equivalent refill preserves the active target, and a true
+  material change distinguishes old-material unload, declared transition purge
+  and next-tool print targets. The CFS never chooses a hidden fallback.
 
 ## Next safe action
 
@@ -553,12 +566,17 @@ Au début de la prochaine session, annoncer explicitement à Thomas :
   qualification physique d'un profil dérivé ;
 - l'autonomie production reste non atteinte.
 
-La prochaine action sûre est `MESH-EDGE-DIAGNOSTIC-V1` : préparer hors
-imprimante un motif de première couche borné à `X/Y=5..295`, puis obtenir un
-préflight K1 frais et la confirmation physique de Thomas avant l'unique essai.
-La gate doit prouver le sens d'une petite correction de `0,010 mm`, sa
-répétabilité aux bords et l'influence du PTFE sans dégrader le centre. Le mode
-Précision reste caché.
+La prochaine action sûre de `MESH-EDGE-DIAGNOSTIC-V1` est le rollback de la
+tentative invalide : restaurer `printer.cfg` depuis le backup exact, retirer le
+profil diagnostic et les quatre G-code, recharger le robuste, couper les cibles,
+libérer les axes et exécuter la validation finale. Ne pas relancer un motif dans
+la même action.
+
+La reprise ultérieure doit repasser hors imprimante, ne supposer aucun `T0`,
+résoudre l'outil logique vers le CFS/slot réel et exiger une purge visiblement
+réussie avant chaque variante. La gate doit ensuite seulement prouver le sens
+d'une petite correction de `0,010 mm`, sa répétabilité aux bords et l'influence
+du PTFE sans dégrader le centre. Le mode Précision reste caché.
 
 Le chemin borné `G4-K1-CONTROL-CALIBRATION-PATH-V1` ajoute ce qui manquait pour
 évaluer le premier Z sans console libre ni valeur cachée. Son premier préflight

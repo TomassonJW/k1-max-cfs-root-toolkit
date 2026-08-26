@@ -123,9 +123,10 @@ les changements normaux de marque, de matériau, de profil et de température.
 
 La décision qui la remplace est fonctionnelle : pendant une impression, le
 G-code ou la dernière modification explicite de Thomas est l'unique source de
-vérité. Un remplacement équivalent conserve la cible active ; un vrai changement
-reçoit la cible du prochain outil depuis le G-code. La base générique CFS ne doit
-jamais écraser ces valeurs.
+vérité. Un remplacement équivalent conserve la cible active. D-064 précise
+ensuite le vrai changement de matière en trois phases explicites : retrait de
+l'ancien, purge de transition et cible du prochain outil. La base générique CFS
+ne doit jamais écraser ces valeurs.
 
 Les fichiers déployables du candidat et son test ont été retirés de `main`. Son
 ADR reste comme historique d'une option refusée. Aucun G4 ne porte son nom.
@@ -1178,3 +1179,43 @@ La V1 reste un laboratoire local : fausse API en mémoire, serveur lié seulemen
 à `127.0.0.1`, export déterministe mais aucune pose, aucun transport K1 et
 aucune activation du mode Précision. Le passage de cette gate ouvre uniquement
 la préparation de `MESH-EDGE-DIAGNOSTIC-V1`.
+
+## D-064 — Le cycle filament est un contrat explicite et conserve le bon filament engagé
+
+Date: 2026-08-26
+
+Status: contrat V1 figé hors imprimante ; production fermée
+
+K1 Control possède toutes les phases du travail, mais aucune température cachée.
+Le plateau et la buse suivent le contrat G-code ou la dernière action explicite
+de Thomas. Un changement entre matières distingue la température de retrait de
+l'ancien filament, la température de purge de transition et la température du
+nouveau segment. Ces valeurs sont déclarées et bornées ; le CFS ne choisit
+jamais son `220 °C` comme repli.
+
+L'état filament n'est pas un booléen. Il distingue absence confirmée, engagement
+connu, engagement inconnu, transition et défaut. Les capteurs prouvent seulement
+une présence à leur emplacement ; l'identité et le débit exigent mapping
+CFS/slot, historique accepté et purge réellement visible. Aucun `T0` n'est
+supposé.
+
+Le bon filament déjà engagé reste engagé au démarrage et, sous réserve de
+qualification physique, à la fin. Il reçoit seulement une petite purge de
+preuve. Le retrait devient l'action séparée `Désengager et nettoyer`, avec la
+recette de l'ancien matériau et sans réchauffage différé sans présence humaine.
+
+Le nettoyage autonome effectue référence grossière, chauffe au-dessus du
+réceptacle, mouvements de brosse bornés, remontée et cibles zéro. La hauteur de
+brosse est calibrée humainement à froid ; aucune palpation automatique de la
+brosse ni température universelle `+10/+20`, `−30` ou `100 °C` n'est retenue.
+Une calibration Z/mesh de métrologie garde le nettoyage manuel comme choix par
+défaut jusqu'à qualification physique de la recette automatique.
+
+Le premier motif de `MESH-EDGE-DIAGNOSTIC-V1` est classé invalide : il a chauffé
+et bougé sans déposer de filament parce que le chemin minimal ne résolvait ni
+outil CFS, ni chargement, ni purge. Il ne prouve ni une buse bouchée ni le mesh.
+La gate est suspendue jusqu'au rollback exact, à l'absence de `T0` supposé et à
+une purge visible fraîche.
+
+Voir `docs/25-contrat-cycle-impression-nettoyage-cfs-v1.md`,
+`design/job-lifecycle-contract-v1.json` et ADR-016.

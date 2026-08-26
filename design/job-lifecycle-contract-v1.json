@@ -1,0 +1,305 @@
+{
+  "contract_id": "K1-CONTROL-JOB-LIFECYCLE-V1",
+  "schema": 1,
+  "status": "frozen_offline_production_closed",
+  "printer_mutation_authorized": false,
+  "canonical_document": "docs/25-contrat-cycle-impression-nettoyage-cfs-v1.md",
+  "target": {
+    "printer": "Creality K1 Max S12 structure 0",
+    "firmware": "2.3.5.34",
+    "cfs_count": 2,
+    "cfs_ui_version": "1.1.3",
+    "stock_screen_retained": true,
+    "stock_cfs_retained_until_a_primitive_is_proven_uncontrollable": true
+  },
+  "interfaces": {
+    "daily": "K1 Control",
+    "expert_candidate": "Mainsail",
+    "standalone_actions": [
+      "Clean nozzle",
+      "Disengage and clean",
+      "Pause normally",
+      "Re-prime before resume"
+    ]
+  },
+  "z": {
+    "source": "accepted_calibration_record",
+    "numeric_default_mm": null,
+    "latest_explicit_adjustment_wins": true,
+    "implicit_commit_on_print_end": false,
+    "legacy_hidden_offset_forbidden": true
+  },
+  "mesh": {
+    "profile_key": [
+      "plate_id",
+      "bed_temperature_band_c",
+      "probe_reference_revision",
+      "nozzle_id",
+      "nozzle_diameter_mm"
+    ],
+    "selection": "explicit_exact_or_physically_qualified_temperature_band",
+    "load_order": "after_every_homing_or_macro_that_may_clear_or_replace_mesh",
+    "verify_after_load": true,
+    "standard_safe_profile": "k1_p001_t055_r001_n06x06",
+    "standard_probe_count": [6, 6],
+    "standard_algorithm": "lagrange",
+    "daily_measurement_count": 1,
+    "precision": {
+      "physical_source": "k1_p001_t055_r001_n11x11",
+      "source_immutable": true,
+      "derived_profiles_versioned": true,
+      "ui_hidden": true,
+      "promotion_requires_edge_gate": true
+    },
+    "per_job_adaptive_mesh": "forbidden_until_separate_qualification",
+    "forbidden": [
+      "silent_nearest_profile_selection",
+      "unqualified_profile_interpolation",
+      "load_before_a_macro_that_clears_mesh"
+    ]
+  },
+  "temperature": {
+    "print_owner": "gcode_or_explicit_operator_change",
+    "bed_owner": "job_contract_or_explicit_operator_change",
+    "phase_owner": "versioned_job_contract_or_explicit_standalone_recipe",
+    "initial_load": "initial_tool_first_layer_gcode_target",
+    "equivalent_refill": "preserve_active_target",
+    "intentional_tool_change": {
+      "outgoing_unload": "previous_accepted_material_temperature",
+      "transition_purge": "explicit_job_contract_target_compatible_with_both_materials",
+      "incoming_print": "next_tool_gcode_target"
+    },
+    "standalone_cleaning": "previous_material_versioned_recipe",
+    "probe": "qualified_probe_recipe",
+    "unknown_transition": "block_before_cut_load_or_extrusion",
+    "verification": "compare_expected_and_actual_before_during_and_after_every_cfs_boundary",
+    "forbidden": [
+      "generic_material_database_override",
+      "fixed_material_temperature",
+      "silent_cfs_target_change",
+      "hidden_220_celsius_fallback",
+      "universal_plus_10_or_plus_20_cleaning_delta",
+      "universal_minus_30_or_100_release_temperature"
+    ]
+  },
+  "filament_state": {
+    "states": [
+      "absent_confirmed",
+      "engaged_known",
+      "engaged_unknown",
+      "transitioning",
+      "fault"
+    ],
+    "accepted_identity_evidence": [
+      "last_successful_transition_record",
+      "logical_tool_to_cfs_slot_mapping",
+      "rfid_or_explicit_manual_spool_identity",
+      "sensor_signature_before_and_after_transition",
+      "fresh_visible_purge_flow"
+    ],
+    "presence_sensor_proves": "filament_at_the_sensor_only",
+    "presence_sensor_does_not_prove": [
+      "material_identity",
+      "color_identity",
+      "route_to_nozzle",
+      "nozzle_flow",
+      "nozzle_not_clogged"
+    ],
+    "exact_machine_observation": {
+      "objects": [
+        "filament_switch_sensor filament_sensor",
+        "filament_switch_sensor filament_sensor_2"
+      ],
+      "mapping_status": "unqualified",
+      "second_sensor_has_been_observed_disabled": true
+    },
+    "persisted_record": [
+      "logical_tool",
+      "cfs_unit",
+      "physical_slot",
+      "declared_material",
+      "brand",
+      "color",
+      "identity_source",
+      "last_explicit_nozzle_temperature_c",
+      "sensor_signature",
+      "last_visible_purge_result",
+      "timestamp",
+      "job_id",
+      "confidence",
+      "engagement_state"
+    ],
+    "hardcoded_physical_tool_forbidden": true,
+    "unknown_or_contradictory": "block_and_display_safe_choices"
+  },
+  "standalone_nozzle_cleaning": {
+    "requires": [
+      "printer_not_printing",
+      "no_calibration_active",
+      "cfs_not_transitioning",
+      "clear_bed_confirmation",
+      "known_previous_material_recipe_or_human_confirmation"
+    ],
+    "sequence": [
+      "snapshot_machine_state",
+      "home_xy_and_coarse_z_only_if_needed",
+      "park_safely_over_waste_chute",
+      "heat_to_explicit_previous_material_cleaning_target",
+      "wait_in_bounded_temperature_window",
+      "approach_brush_at_safe_z",
+      "descend_to_versioned_human_calibrated_brush_plane",
+      "run_bounded_x_y_diagonal_strokes",
+      "lift_before_leaving_brush",
+      "park_and_set_nozzle_target_zero",
+      "restore_motion_limits_and_report_actual_temperature",
+      "record_result"
+    ],
+    "brush_position_calibration": "human_cold_slow_and_versioned",
+    "brush_z_probe": "forbidden_until_a_real_sensor_path_is_proven",
+    "cooling_wipe": "absent_from_v1_until_material_specific_physical_qualification",
+    "extrusion": "forbidden",
+    "filament_change": "forbidden"
+  },
+  "job_contract": {
+    "entry_point": "KCTRL_JOB_BEGIN",
+    "logical_tool_only": true,
+    "required_fields": [
+      "contract_version",
+      "job_id",
+      "plate_id",
+      "bed_first_layer_target_c",
+      "bed_normal_target_c",
+      "initial_logical_tool",
+      "tool_material_identities",
+      "tool_first_layer_targets_c",
+      "tool_normal_targets_c",
+      "transition_unload_targets_c",
+      "transition_purge_targets_c",
+      "transition_purge_volumes_mm3",
+      "mesh_profile_request",
+      "end_policy"
+    ],
+    "forbidden_entry_points": [
+      "standalone_G28",
+      "standalone_Tn",
+      "START_PRINT",
+      "legacy_hidden_z_postprocessor"
+    ],
+    "changed_atomically": [
+      "machine_start_gcode",
+      "machine_end_gcode",
+      "tool_change_gcode",
+      "printer_side_contract"
+    ]
+  },
+  "start_sequence": [
+    {"id": "validate_job_contract", "kind": "guard", "sets": ["contract_valid"]},
+    {"id": "reconcile_filament_state", "kind": "guard", "requires": ["contract_valid"], "sets": ["filament_state_classified"]},
+    {"id": "start_bed_heating", "kind": "thermal", "requires": ["contract_valid", "filament_state_classified"], "sets": ["bed_heating"]},
+    {"id": "rough_reference", "kind": "controlled_probe_path", "requires": ["bed_heating"], "sets": ["rough_reference"]},
+    {"id": "controlled_nozzle_clean", "kind": "controlled_cleaning_path", "requires": ["rough_reference"], "sets": ["nozzle_clean"]},
+    {"id": "wait_bed_and_probe_temperature", "kind": "thermal", "requires": ["nozzle_clean", "bed_heating"], "sets": ["thermal_reference_ready"]},
+    {"id": "final_z_reference", "kind": "controlled_probe_path", "requires": ["nozzle_clean", "thermal_reference_ready"], "sets": ["final_reference"]},
+    {"id": "resolve_mesh_policy", "kind": "mesh", "requires": ["final_reference"], "sets": ["mesh_ready"]},
+    {"id": "resolve_effective_z", "kind": "z_state", "requires": ["final_reference", "mesh_ready"], "sets": ["effective_z_ready"]},
+    {"id": "arm_production_low_moves", "kind": "guard", "requires": ["final_reference", "mesh_ready", "effective_z_ready"], "sets": ["production_low_moves_armed"]},
+    {"id": "resolve_initial_filament", "kind": "cfs", "requires": ["production_low_moves_armed", "filament_state_classified"], "hazard": "cut_load_or_extrusion", "branches": ["keep_correct", "change_wrong", "load_absent", "unknown"], "sets_on_success": ["initial_filament_ready"]},
+    {"id": "purge_to_chute_and_verify_flow", "kind": "purge", "requires": ["production_low_moves_armed", "initial_filament_ready"], "hazard": "extrusion_or_low_production_move", "sets": ["flow_proven"]},
+    {"id": "prime_line", "kind": "prime", "requires": ["production_low_moves_armed", "flow_proven"], "hazard": "extrusion_or_low_production_move", "sets": ["pressure_primed"]},
+    {"id": "print_model", "kind": "print", "requires": ["production_low_moves_armed", "flow_proven", "pressure_primed"], "hazard": "extrusion_or_low_production_move"},
+    {"id": "end_and_record_filament", "kind": "end", "requires": ["contract_valid"], "sets": ["job_closed"]},
+    {"id": "end_without_calibration_commit", "kind": "guard", "requires": ["job_closed"]}
+  ],
+  "initial_filament_branches": {
+    "keep_correct": ["do_not_cut", "do_not_unload", "small_visible_purge"],
+    "change_wrong": ["old_explicit_unload_temperature", "cut_and_verify", "load_resolved_tool", "explicit_transition_purge", "return_to_new_gcode_target"],
+    "load_absent": ["load_resolved_tool", "verify_sensors", "visible_purge"],
+    "unknown": ["block", "display_evidence", "offer_confirm_remove_or_cancel"]
+  },
+  "mid_print_change": {
+    "no_homing": true,
+    "snapshot": [
+      "xyz_and_resume_position",
+      "absolute_relative_modes",
+      "extruder_e_state",
+      "mesh_and_effective_z",
+      "temperatures",
+      "fans",
+      "speed_and_flow_overrides",
+      "pressure_advance",
+      "logical_tool_cfs_slot_and_sensors"
+    ],
+    "safe_path": "bounded_z_lift_and_collision_free_route_around_current_part",
+    "rear_purge_role": "remove_previous_material",
+    "slicer_prime_tower_role": "stabilize_pressure_and_wipe_before_model",
+    "resume_requires": [
+      "next_segment_temperature",
+      "expected_mesh_and_z",
+      "expected_tool_and_sensor_state",
+      "flow_proven",
+      "safe_return_path"
+    ]
+  },
+  "pause_and_runout": {
+    "normal_pause": "park_without_cut_load_or_purge_by_default",
+    "optional_reprime": "explicit_user_choice",
+    "equivalent_runout": "preserve_active_temperature_after_equivalence_proof",
+    "unknown_runout_phase": "block_without_replaying_full_cycle"
+  },
+  "end_policy": {
+    "default_candidate": "keep_correct_filament_engaged",
+    "default_requires_physical_qualification": true,
+    "automatic_cut_and_unload_by_habit": false,
+    "persist_last_filament_record": true,
+    "manual_action": "Disengage and clean",
+    "manual_action_uses_previous_material_explicit_temperature": true,
+    "unattended_delayed_reheat": false,
+    "final_state": [
+      "heater_targets_zero",
+      "cfs_not_transitioning",
+      "filament_state_engaged_known_none_or_explicitly_unknown",
+      "mesh_and_z_persistence_unchanged",
+      "no_resume_armed"
+    ]
+  },
+  "calibration_policy": {
+    "contact_z_or_mesh": "manual_clean_default_no_load_or_purge_during_measurement",
+    "contact_z_or_mesh_filament": "unload_recommended_if_no_ooze_cannot_otherwise_be_proven",
+    "flow_temperature_retraction_pressure_advance": "resolved_filament_required",
+    "resonance": "no_automatic_filament_change",
+    "brush": "cold_no_extrusion_before_any_hot_recipe"
+  },
+  "required_offline_scenarios": [
+    {"id": "mesh_reference_match", "expected": "matching_qualified_profile_loaded_after_final_reference"},
+    {"id": "mesh_reference_mismatch", "expected": "job_blocked_without_silent_nearest_profile"},
+    {"id": "clean_unknown_previous_material", "expected": "cleaning_blocked_or_human_recipe_explicitly_selected"},
+    {"id": "clean_brush_z_not_probed", "expected": "versioned_human_calibration_used"},
+    {"id": "start_correct_filament_engaged", "expected": "no_cut_no_unload_small_visible_purge"},
+    {"id": "start_wrong_filament_engaged", "expected": "old_unload_then_explicit_transition_then_new_target"},
+    {"id": "start_no_filament", "expected": "resolved_tool_loaded_and_visible_purge_required"},
+    {"id": "start_unknown_filament_identity", "expected": "job_blocked_before_motion_or_heat"},
+    {"id": "sensor_present_no_nozzle_flow", "expected": "fault_possible_clog_never_print"},
+    {"id": "sensor_disagreement", "expected": "fault_and_safe_choices_displayed"},
+    {"id": "equivalent_refill", "expected": "active_gcode_target_preserved"},
+    {"id": "intentional_same_material_color_change", "expected": "explicit_target_preserved_purge_volume_from_contract"},
+    {"id": "intentional_cross_material_change", "expected": "old_unload_transition_purge_and_new_target_all_explicit"},
+    {"id": "cross_cfs_change", "expected": "mapping_and_temperature_proven_across_two_cfs"},
+    {"id": "pause_normal", "expected": "no_cut_no_load_no_purge_by_default"},
+    {"id": "resume_with_optional_reprime", "expected": "latest_z_and_full_job_state_preserved"},
+    {"id": "tall_part_blocks_rear_path", "expected": "tool_change_blocked_without_collision"},
+    {"id": "end_keep_engaged", "expected": "no_cut_last_filament_recorded_targets_zero"},
+    {"id": "manual_disengage_and_clean", "expected": "previous_material_recipe_used_and_final_state_safe"},
+    {"id": "cfs_late_220_rewrite", "expected": "phase_fails_before_resume"},
+    {"id": "orca_contract_version_mismatch", "expected": "job_rejected_before_machine_hazard"},
+    {"id": "cancel_and_reboot_each_phase", "expected": "safe_recovery_without_implicit_full_cycle"},
+    {"id": "deployment_slice_rollback", "expected": "previous_known_state_restored_with_matching_hashes"}
+  ],
+  "deployment": {
+    "active_physical_gate": "MESH-EDGE-DIAGNOSTIC-V1 suspended after invalid no-flow source passage",
+    "daily_calibration": "6x6 Lagrange one-mesh campaign validated and autonomous",
+    "precision_mode": "hidden; edge diagnostic and derived profile qualification incomplete",
+    "production_cutover": "not implemented; job lifecycle, sensor mapping, CFS temperature owner and Orca cutover remain absent",
+    "offline_prototype_required_before_physical_gate": true,
+    "rollback_required_per_slice": true
+  }
+}

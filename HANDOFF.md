@@ -1,8 +1,8 @@
-# HANDOFF — reprise autonome MESH-EDGE-DIAGNOSTIC-V1
+# HANDOFF — reprise autonome MESH-EDGE-DIAGNOSTIC-V1 suspendue
 
-Date de passation : 2026-08-25 (Europe/Paris)
+Date de passation : 2026-08-26 (Europe/Paris)
 Projet : C:\Users\janko\Documents\ChatGPT\k1-max-cfs-root-toolkit
-Branche de reprise : main après clôture Git de MESH-EDITOR-OFFLINE-V1
+Branche de reprise : `codex/mesh-edge-diagnostic-v1`
 
 ## État à annoncer immédiatement à Thomas
 
@@ -14,17 +14,22 @@ Branche de reprise : main après clôture Git de MESH-EDITOR-OFFLINE-V1
 - Le robuste k1_p001_t055_r001_n06x06 et le Z persistant accepté −0,04 mm
   restent la base sûre.
 - Le composite physique k1_p001_t055_r001_n11x11 reste une source immuable.
-- L’éditeur local v001 est validé, mais aucun profil dérivé n’est installé sur
-  la K1 et le mode Précision reste caché.
-- La prochaine mission unique est MESH-EDGE-DIAGNOSTIC-V1.
+- L’éditeur local v001 est validé et le mode Précision reste caché.
+- MESH-EDGE-DIAGNOSTIC-V1 est en cours mais suspendue après un passage source
+  sans dépôt de filament. Ce passage ne qualifie ni la buse ni le mesh.
+- Au dernier état observé, le robuste est actif, les cibles sont à zéro et les
+  axes sont libérés ; le profil diagnostic temporaire et les quatre G-code
+  restent toutefois à retirer par rollback exact. Cet état peut être périmé.
+- La prochaine action physique unique est ce rollback puis la validation finale,
+  sans nouveau motif.
 - Aucun `GO` exact ni identifiant de gate recopié n’est requis ; une demande
   normale de Thomas suffit, conformément à D-054.
 - La présence de Thomas et le plateau réellement libre restent des faits à
   confirmer juste avant toute action physique.
-- L’état K1 n’est pas frais : aucun préflight distant n’a été exécuté dans la
-  mission hors ligne.
+- Le contrat complet de nettoyage, impression, filament, changement et fin est
+  figé hors imprimante. Il n’est pas implémenté et n’ouvre pas la production.
 
-## 1. Résultat de la mission close
+## 1. Résultat de la mission close précédente
 
 MESH-EDITOR-OFFLINE-V1 est close OK. Elle est restée entièrement hors
 imprimante :
@@ -145,6 +150,17 @@ Après V2, aucun préflight frais n’a été exécuté. Ne pas affirmer sans pr
 
 ## 7. Prochaine mission unique : MESH-EDGE-DIAGNOSTIC-V1
 
+### Incident du premier passage
+
+La préparation et le motif source ont été exécutés, mais aucun filament n'a été
+déposé. Le motif minimal avait retiré `Tn/START_PRINT` sans remplacer la
+résolution d'outil, le chargement ou la purge CFS. La mention `T0` du protocole
+était une invention de Codex, pas un fait fourni par Thomas.
+
+Le passage n'est pas une preuve de buse bouchée : les commandes d'extrusion ont
+été envoyées sans preuve que du filament atteignait l'extrudeur ou la buse. La
+gate physique est suspendue.
+
 ### Objectif
 
 Prouver physiquement, avec un motif borné et peu consommateur :
@@ -160,7 +176,10 @@ encore autonome le mode Précision.
 ### Contraintes
 
 - motif limité à X/Y 5..295 mm avec cadre, cellules et repères ;
-- même plaque, filament, températures, tube PTFE et Z effectif entre variantes ;
+- même plaque, filament réellement résolu, températures, tube PTFE et Z effectif
+  entre variantes ;
+- aucun `T0` ou autre outil physique supposé ;
+- route CFS/slot confirmée et purge réellement visible avant chaque motif ;
 - une seule petite région corrigée de 0,010 mm ;
 - aucun réglage global Z en direct pour masquer un défaut ;
 - aucune répétition longue automatique ;
@@ -170,19 +189,23 @@ encore autonome le mode Précision.
 ### Ordre recommandé
 
 1. Lire les documents d’autorité et vérifier Git.
-2. Auditer hors imprimante le protocole physique, le motif et le budget matière.
-3. Figer les variantes, les empreintes, les critères humains et le rollback.
-4. Tester entièrement le paquet de diagnostic hors imprimante.
-5. Seulement ensuite, obtenir un préflight K1 frais.
-6. Demander à Thomas les faits non observables : présence, plateau libre,
-   plaque et filament réellement chargés.
-7. Exécuter une seule comparaison bornée et arrêter au premier KO.
-8. Recharger le robuste, couper les cibles, retirer les G-code et valider l’état
+2. Retrouver la capture privée exacte de la tentative et son backup.
+3. Exécuter exclusivement `Rollback`, puis `FinalValidate` ; ne pas relancer de
+   motif dans la même reprise.
+4. Vérifier réellement profil diagnostic absent, quatre G-code absents, robuste
+   actif, cibles zéro et axes libérés.
+5. Repasser ensuite le protocole corrigé et ses tests hors imprimante.
+6. Obtenir un nouveau préflight K1 frais.
+7. Demander à Thomas les faits non observables : présence, plateau libre,
+   plaque, route filament et purge réellement visible.
+8. Exécuter une seule comparaison bornée et arrêter au premier KO.
+9. Recharger le robuste, couper les cibles, retirer les G-code et valider l’état
    final avant toute conclusion.
 
 ### Critères OK
 
 - Z absolu et profil actif prouvés avant extrusion ;
+- outil physique non supposé, route CFS/slot prouvée et purge visible ;
 - motif identique hors unique correction locale ;
 - sens Rapprocher/Éloigner confirmé ;
 - défaut de bord répétable ou causalité PTFE clairement classée ;
@@ -206,8 +229,12 @@ Précision dans la même mission.
 6. docs/24-mesh-editor-offline-v1.md
 7. docs/adr/ADR-015-profils-mesh-derives-et-corrections-locales.md
 8. docs/23-audit-mesh-manuel-et-cycle-production-cfs.md
-9. packages/k1-control-v1/composite-first-layer-comparison-v2/RESULT.md
-10. packages/k1-control-v1/mesh-editor-offline-v1/README.md
+9. docs/25-contrat-cycle-impression-nettoyage-cfs-v1.md
+10. docs/adr/ADR-016-cycle-production-orchestre-et-propriete-cfs.md
+11. design/job-lifecycle-contract-v1.json
+12. packages/k1-control-v1/mesh-edge-diagnostic-v1/PROTOCOL.md
+13. packages/k1-control-v1/composite-first-layer-comparison-v2/RESULT.md
+14. packages/k1-control-v1/mesh-editor-offline-v1/README.md
 
 Relire aussi les sources et tests du paquet hors ligne avant de réutiliser son
 contrat ou ses signes.
@@ -235,8 +262,11 @@ Après MESH-EDGE-DIAGNOSTIC-V1 seulement :
 3. exposition éventuelle du mode Précision après deux feuilles complètes
    consécutives sans défaut grave et avec rollback prouvé.
 
-La production reste séparée : audit V2, simulation du cycle, propriété des
-températures CFS, pause/reprise, fin, bascule Orca atomique et G5.
+La production reste séparée. Son contrat fonctionnel est désormais figé, mais
+les implémentations restent absentes : audit V2, simulation du cycle, mouvement
+de nettoyage à froid, référence, propriété des températures CFS, changement et
+runout, pause/reprise, fin avec conservation engagée, bascule Orca atomique et
+G5.
 
 ## 11. Modèle conseillé
 
@@ -244,7 +274,8 @@ Pour MESH-EDGE-DIAGNOSTIC-V1 :
 
 - choix optimal : gpt-5.6-sol, raisonnement high ;
 - justification : preuve physique sur matériel de production, état distant
-  potentiellement périmé, protocole comparatif, arrêt et rollback obligatoires ;
+  potentiellement périmé, rollback exact prioritaire, protocole comparatif,
+  état filament et preuve de débit désormais obligatoires ;
 - option économique acceptable : gpt-5.6-terra, raisonnement high, avec plus de
   risque de reprise sur le croisement G-code, état machine et preuve humaine ;
 - un modèle léger augmenterait le risque de confondre défaut de protocole,

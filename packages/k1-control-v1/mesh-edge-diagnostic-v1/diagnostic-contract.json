@@ -1,0 +1,60 @@
+{
+  "schema": 1,
+  "gate": "MESH-EDGE-DIAGNOSTIC-V1",
+  "status": "physical_run_suspended_after_no_flow",
+  "source_gcode": {
+    "sha256": "b93fff2eec8354376be7de55210ad592ea4feffb546abfa92f016cc7c6fde2d3",
+    "filament": "PLA Geeetech",
+    "logical_tool": null,
+    "tool_resolution": "fresh_cfs_state_and_job_contract",
+    "hardcoded_physical_tool_forbidden": true,
+    "bed_temperature_c": 55,
+    "nozzle_temperature_c": 190,
+    "layer_height_mm": 0.2,
+    "explicit_gcode_z_offset": null
+  },
+  "profiles": {
+    "safe_fallback": "k1_p001_t055_r001_n06x06",
+    "immutable_source": "k1_p001_t055_r001_n11x11",
+    "diagnostic_derived": "k1_p001_t055_r001_n11x11_tuned_v001"
+  },
+  "correction": {
+    "mode": "point",
+    "row": 9,
+    "column": 1,
+    "x_mm": 34,
+    "y_mm": 266,
+    "direction": "farther",
+    "label": "Éloigner",
+    "requested_delta_mm": 0.01,
+    "reason": "zone arrière-gauche surcomprimée sur V2 et plus grand écart local composite/robuste calculé"
+  },
+  "pattern": {
+    "min_x_mm": 5,
+    "max_x_mm": 295,
+    "min_y_mm": 5,
+    "max_y_mm": 295,
+    "grid_points": 121,
+    "frame_loops": 3,
+    "center_reference": true,
+    "edge_reference_bands": true
+  },
+  "physical_rules": {
+    "single_comparison": true,
+    "same_plate_filament_temperatures_ptfe_and_effective_z": true,
+    "live_global_z_adjustment_forbidden": true,
+    "stop_on_first_ko": true,
+    "human_presence_required": true,
+    "clear_bed_confirmation_required_before_each_variant": true,
+    "filament_route_confirmation_required_before_each_variant": true,
+    "fresh_visible_purge_flow_required_before_each_variant": true,
+    "sensor_only_flow_proof_forbidden": true
+  },
+  "final_state": {
+    "derived_profile_absent": true,
+    "safe_fallback_loaded": true,
+    "heater_targets_zero": true,
+    "diagnostic_gcodes_absent": true,
+    "precision_ui_hidden": true
+  }
+}

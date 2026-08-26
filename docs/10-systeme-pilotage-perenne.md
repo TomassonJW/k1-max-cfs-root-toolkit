@@ -292,9 +292,11 @@ Avant le premier déploiement, le prototype complet doit démontrer :
 - sauvegarde, diff, contrôle des empreintes et rollback de chaque pose ;
 - coexistence avec l'écran, Creality Web/Print et les deux CFS.
 
-Le contrat exécutable correspondant est dans
-`design/production-control-contract.json` et ses contrôles dans
-`tests/test_production_control_contract.py`.
+Ce premier contrat est conservé comme historique dans
+`design/production-control-contract.json`. Le contrat canonique figé le
+26 août 2026 est `design/job-lifecycle-contract-v1.json`, avec le détail humain
+dans `docs/25-contrat-cycle-impression-nettoyage-cfs-v1.md` et ses contrôles
+dans `tests/test_production_control_contract.py`.
 
 Le premier écran local et le moteur d'état pur sont présents sous `prototype/`.
 Ils utilisent uniquement des données synthétiques et ne connaissent aucune

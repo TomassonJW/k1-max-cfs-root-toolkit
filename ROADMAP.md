@@ -75,8 +75,9 @@ et Mainsail `v2.18.2` épinglés, contrat Orca complet et
 ## P4 — Installation contrôlée du système de pilotage
 
 Status: **calibration quotidienne autonome ; composite `11 × 11` meilleur au
-centre mais KO aux bords ; éditeur de profil dérivé à construire ; production
-fermée**
+centre mais KO aux bords ; éditeur hors imprimante validé ; diagnostic de bord
+suspendu après un passage sans débit ; contrat complet du cycle d'impression
+figé hors imprimante ; production fermée**
 
 Le produit est posé par étapes techniques réversibles, mais Thomas reçoit un
 seul fonctionnement quotidien :
@@ -89,24 +90,31 @@ seul fonctionnement quotidien :
    quotidienne depuis l'écran validées ;
 3. profil composite `11 × 11` acquis et persisté ; sa comparaison V2 prouve un
    gain central mais refuse sa promotion à cause des bords ;
-4. `MESH-EDITOR-OFFLINE-V1`, motif `5..295 mm`, profil dérivé et campagne de
-   réglage local depuis K1 Control, sans écraser les mesures sources ;
-5. audit puis machine d'états de production : démarrage, nettoyage, référence
-   finale, mesh, Z, pause, reprise et fin ;
-6. propriété dynamique des températures, chargements et purges des deux CFS ;
-7. contrat Orca final et retrait atomique prouvé de l'ancien post-traitement
+4. `MESH-EDITOR-OFFLINE-V1` validé hors imprimante, avec profil source immuable,
+   profil dérivé versionné, historique et rollback ;
+5. `MESH-EDGE-DIAGNOSTIC-V1` suspendu après un premier passage sans débit : il
+   faut d'abord retirer les artefacts temporaires, résoudre la route CFS réelle
+   et prouver une purge visible sans supposer `T0` ;
+6. contrat complet du cycle figé hors imprimante : états filament, nettoyage,
+   référence finale, sélection du mesh, Z, changements, pause, reprise et fin ;
+7. implémentation progressive de la propriété dynamique des températures,
+   chargements et purges des deux CFS ;
+8. contrat Orca final et retrait atomique prouvé de l'ancien post-traitement
    `+0,27 mm`.
 
-Le prochain incrément est `MESH-EDITOR-OFFLINE-V1`. Il est entièrement hors
-imprimante : modèle de profil dérivé, corrections à moyenne nulle, grille 2D,
-prévisualisation, historique, limites et tests sur les 121 valeurs exactes. La
-première action physique ultérieure utilisera un motif de bord peu consommateur
-et ne changera qu'une petite région de `0,010 mm` pour prouver le sens.
+Le prochain acte physique autorisable n'est pas un nouveau motif : c'est le
+rollback exact de `MESH-EDGE-DIAGNOSTIC-V1`, puis une validation finale en
+lecture seule. La reprise du motif restera interdite tant que la route du
+filament et une purge réellement visible ne sont pas prouvées.
 
-La seconde famille suit ADR-016 : un unique `KCTRL_JOB_BEGIN` remplacera à
-terme le cumul Orca `G28 + Tn + START_PRINT`. Une pause normale ne déclenchera
-plus la reprise CFS, et la température logique restera propriétaire pendant
-toute coupe, charge et purge.
+La seconde famille suit ADR-016 et le contrat V1 figé : un unique
+`KCTRL_JOB_BEGIN` remplacera à terme le cumul Orca `G28 + Tn + START_PRINT`.
+Il résoudra l'outil logique depuis l'état CFS frais, sans slot physique codé en
+dur. Le bon filament déjà engagé restera engagé, chaque départ obtiendra une
+purge visible, une pause normale ne déclenchera pas une reprise CFS et les
+températures du G-code seront appliquées séparément aux phases ancien filament,
+transition et nouveau filament. La fin normale gardera le filament engagé ; un
+bouton distinct réalisera le désengagement et le nettoyage à la demande.
 
 Chaque pose a son backup, son diff, ses critères OK/KO et son rollback. Aucune
 pose suivante ne commence si l'écran, Creality Web/Print, le CFS ou Klipper
@@ -121,7 +129,8 @@ Status: **not started**
 - cold boot and three consecutive prints on a known plate without manual Z correction;
 - live Z calibration saved once, retained after restart, then deliberately
   invalidated by a new reference calibration;
-- plate/temperature mesh selection and adaptive per-job mesh verified;
+- plate/temperature mesh selection verified; no adaptive per-job mesh before
+  a separately qualified gate;
 - composite regeneration, local point correction, derived-profile versioning
   and one-click fallback available through K1 Control without Codex;
 - same-material CFS changes;

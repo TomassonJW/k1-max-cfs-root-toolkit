@@ -291,6 +291,13 @@ remplacement monolithique sans ces preuves.
 
 ## Séquence cible
 
+Cette section historique a été précisée et figée le 26 août 2026 dans
+[`docs/25-contrat-cycle-impression-nettoyage-cfs-v1.md`](25-contrat-cycle-impression-nettoyage-cfs-v1.md).
+Le contrat détaillé ajoute notamment : absence de `T0` supposé, état filament à
+cinq valeurs, conservation du bon filament engagé, purge visible obligatoire,
+températures distinctes de retrait/transition/reprise, calibration humaine de
+la brosse et bouton séparé `Désengager et nettoyer`.
+
 1. Orca envoie un seul `KCTRL_JOB_BEGIN` avec plateau, buse, outil, plaque,
    mesh et matériau.
 2. K1 Control vérifie l'état et lance immédiatement la chauffe plateau.

@@ -69,8 +69,10 @@ morcelé que Thomas devrait régler manuellement à chaque impression.
 
 ## Validation attendue
 
-Le contrat machine de référence est
-`design/production-control-contract.json`. Le prototype doit passer les tests
-statiques, le simulateur de séquence, la matrice Z/mesh/température/CFS, les
-tests de version Orca et un scénario de rollback complet avant toute demande de
-mutation.
+Le contrat historique de cette décision est
+`design/production-control-contract.json`. Il est désormais remplacé pour le
+cycle de travail par `design/job-lifecycle-contract-v1.json` et
+`docs/25-contrat-cycle-impression-nettoyage-cfs-v1.md`. Le prototype doit passer
+les tests statiques, le simulateur de séquence, la matrice
+Z/mesh/température/CFS, les tests de version Orca et un scénario de rollback
+complet avant toute demande de mutation.

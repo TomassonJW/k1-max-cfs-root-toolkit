@@ -101,7 +101,18 @@ du mode Précision.
 
 ### `MESH-EDGE-DIAGNOSTIC-V1`
 
-Statut : **prochaine mission ; non commencée**.
+Statut : **en cours ; passage source sans débit invalide et suite physique
+suspendue**.
+
+Le premier motif a chauffé, déplacé la tête et envoyé des commandes d'extrusion,
+mais aucun filament n'a été déposé. Le chemin minimal ne résolvait pas le CFS,
+ne chargeait pas le filament et n'exigeait aucune purge visible. La mention
+`T0` était une hypothèse de Codex et n'est pas retenue comme fait. Ce passage ne
+qualifie ni le mesh ni une buse bouchée.
+
+Avant toute reprise physique : rollback exact du profil temporaire et des quatre
+G-code, validation de la base sûre, route filament fraîchement résolue et purge
+réellement visible. Un capteur de présence seul ne suffit pas.
 
 Critères :
 
@@ -112,6 +123,8 @@ Critères :
 - sens `Rapprocher/Éloigner` prouvé sans dégrader le centre ;
 - répétabilité de bord et influence PTFE classées avant réglage général ;
 - arrêt, retrait du G-code et retour au robuste en cas de KO.
+- aucun outil physique supposé ; mapping CFS/slot observé avant chaque variante ;
+- purge visible fraîche obligatoire avant chaque motif.
 
 ### `MESH-DERIVED-PROFILE-V1`
 
@@ -132,15 +145,26 @@ le profil dérivé est rejeté et le robuste reste l'unique mode quotidien.
 
 ### Gates production
 
+Le contrat fonctionnel V1 est figé hors imprimante dans
+`docs/25-contrat-cycle-impression-nettoyage-cfs-v1.md` et
+`design/job-lifecycle-contract-v1.json`. Cela n'installe aucun propriétaire de
+cycle et n'ouvre pas la production.
+
 L'ordre est : `PRODUCTION-SEQUENCE-AUDIT-V2`,
-`JOB-LIFECYCLE-OFFLINE-V1`, `CLEAN-AND-REFERENCE-V1`,
-`CFS-TEMP-OWNER-V1`, `PAUSE-RESUME-SEMANTICS-V1`,
+`JOB-LIFECYCLE-OFFLINE-V1`, `CLEAN-MOTION-V1`,
+`CLEAN-AND-REFERENCE-V1`, `CFS-TEMP-OWNER-V1`,
+`TOOL-CHANGE-AND-RUNOUT-V1`, `PAUSE-RESUME-SEMANTICS-V1`,
 `END-SEQUENCE-V1`, puis `ORCA-CUTOVER-V1` et G5.
 
 Le cutover Orca retire le départ historique et le `+0,27 mm` dans une seule
 transaction. Aucun paquet précédent ne doit les retirer. Une pause normale doit
 être prouvée sans purge CFS et sans restauration d'un ancien Z. Les deux CFS
 sont qualifiés par incréments séparés.
+
+La cible de fin conserve par défaut le bon filament engagé, sous réserve de sa
+qualification physique. Le retrait devient l'action séparée `Désengager et
+nettoyer`. Toute impression exige une purge visible, même si les capteurs
+indiquent déjà une présence.
 
 ## G0 — Repository bootstrap
 
@@ -1017,7 +1041,8 @@ Required:
 - configuration survives reboot;
 - a saved live Z calibration survives print end and reboot, while a new
   reference calibration invalidates it;
-- plate/temperature mesh selection and per-job adaptive mesh behave as declared;
+- plate/temperature/nozzle mesh selection behaves as declared ; aucun mesh
+  adaptatif par travail n'est autorisé sans qualification séparée ;
 - rollback has been tested or safely simulated;
 - repository state matches the deployed state;
 - normal jobs need no Codex intervention or per-print manual file edit;

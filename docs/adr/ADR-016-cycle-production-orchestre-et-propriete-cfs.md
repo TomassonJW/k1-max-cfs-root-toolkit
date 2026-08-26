@@ -1,9 +1,9 @@
 # ADR-016 — Cycle de production orchestré et propriété des températures CFS
 
-Date : 2026-08-24
+Date : 2026-08-24 ; contrat détaillé figé le 2026-08-26
 
-Statut : architecture retenue pour simulation hors imprimante ; production
-toujours fermée
+Statut : **décision et contrat V1 figés hors imprimante ; implémentation et
+production toujours fermées**
 
 ## Contexte
 
@@ -43,13 +43,23 @@ Le premier contrat Orca cible est :
 
 ```text
 KCTRL_JOB_BEGIN
-  BED=<température première couche>
-  NOZZLE=<température première couche>
-  TOOL=<outil initial>
+  CONTRACT_VERSION=<version>
   PLATE=<identité plaque>
+  BED_FIRST=<température première couche>
+  BED_NORMAL=<température normale>
+  TOOL=<outil logique initial>
+  NOZZLE_FIRST=<température première couche par outil>
+  NOZZLE_NORMAL=<température normale par outil>
   MESH=<mode standard ou précision>
   MATERIAL=<identité ou unknown>
+  TRANSITIONS=<retrait, purge et volume explicitement déclarés>
+  END_POLICY=<keep_engaged ou unload_explicit>
 ```
+
+`TOOL` est un outil logique. Le mapping réel vers un CFS et un slot est résolu
+à partir de l'état observé ; `T0` n'est jamais supposé. Les températures de
+retrait et de purge font partie du contrat visible. Le CFS ne calcule ni ne
+choisit une valeur de repli.
 
 Orca n'envoie alors ni `G28`, ni `Tn`, ni `START_PRINT`, ni correction Z
 post-traitée en dehors de ce contrat. Le retrait de l'ancien `+0,27 mm` est
@@ -77,8 +87,14 @@ enregistre les cibles, le profil, le Z, l'outil, les capteurs et l'état de
 rollback.
 
 Toute ambiguïté ferme le démarrage. `MATERIAL=unknown` n'autorise pas un `220 °C`
-silencieux : l'interface doit demander ou utiliser un profil par défaut affiché
-et explicitement choisi.
+silencieux : l'interface demande une confirmation ou un profil explicitement
+choisi. Une présence capteur ne prouve ni l'identité de la matière ni son
+écoulement à travers la buse.
+
+L'état filament possède cinq valeurs : `absent_confirmed`, `engaged_known`,
+`engaged_unknown`, `transitioning` et `fault`. Après une reconnexion CFS, une
+intervention manuelle ou des capteurs contradictoires, l'ancien mapping ne
+redevient pas certain sans preuve fraîche.
 
 ### 2. Chauffe du plateau immédiatement
 
@@ -104,14 +120,19 @@ Le cycle ne doit jamais faire trois homings Z par habitude.
 
 La température de nettoyage est dérivée du **filament précédemment présent**,
 enregistré à la fin du travail précédent, et non du nouvel outil seulement. Le
-profil matériau définit une température de nettoyage bornée, typiquement
-quelques degrés au-dessus de sa température de travail, avec un plafond
-explicite pour protéger la plaque et la brosse.
+profil matériau définit une température minimale, une cible, un plafond, une
+durée maximale et une température de palpage. Aucun `+10 °C`, `+20 °C`,
+`−30 °C` ou `100 °C` universel n'est retenu.
 
-Le mouvement de brosse devient une recette K1 Control : plusieurs allers-retours
-courts et rapides dans les coordonnées validées, avec limites X/Y/Z,
-accélération et vitesse restaurées après coup. La recette est d'abord testée à
-froid et loin du plateau, puis avec extrusion absente, avant tout essai chaud.
+Le mouvement de brosse devient une recette K1 Control : chauffe au-dessus du
+réceptacle, approche à hauteur sûre, plusieurs allers-retours courts dans les
+coordonnées validées, remontée avant la sortie, puis restauration de
+l'accélération et de la vitesse. La recette est d'abord testée à froid et loin
+du plateau, puis avec extrusion absente, avant tout essai chaud.
+
+La hauteur de brosse est calibrée humainement à froid. Aucun capteur de hauteur
+de brosse n'est actuellement prouvé ; le PRTouch ne doit pas enfoncer la buse
+dans une brosse arrière supposée transmettre sa force au plateau.
 
 Si le dernier matériau est inconnu, le système n'invente pas une température :
 il utilise une recette `unknown` affichée ou demande une confirmation.
@@ -134,14 +155,20 @@ pas au contrat.
 
 ### 6. Chargement et purge CFS à la bonne température
 
-K1 Control possède une cible logique par outil et par phase. Avant toute poussée
-vers la buse, il impose la cible du filament entrant, attend la fenêtre
-thermique et vérifie le capteur de filament.
+K1 Control possède une cible logique par outil et par phase. Si le bon filament
+est déjà engagé, il ne le coupe ni ne le retire. Si le filament est absent, il
+le charge. S'il est incorrect, il retire l'ancien à sa cible explicite, puis
+charge et purge le nouveau à la cible de transition déclarée. Une identité
+inconnue bloque la phase.
 
 Le cycle CFS est décomposé en états observables : outil courant, coupe,
 retrait, position de chargement, avance, détection, purge et sortie de zone.
 Chaque étape possède un délai maximal et un critère capteur. Une commande
 acceptée par Klipper ne vaut pas preuve de réussite mécanique.
+
+Une purge a lieu dans tous les cas, avec un volume adapté. Elle n'est réussie
+qu'après preuve d'une transition CFS terminée et d'un débit réellement visible.
+Un capteur d'insertion seul n'est pas une preuve de buse non bouchée.
 
 Si une primitive stock contient déjà sa propre purge, K1 Control n'en ajoute
 pas une seconde. Si le module compilé réécrit tardivement la cible, la gate
@@ -176,8 +203,14 @@ un snapshot antérieur ne peut pas le remplacer silencieusement.
 ### Changement de filament voulu
 
 `KCTRL_TOOL_CHANGE` exécute coupe, retrait, chargement et purge avec la cible du
-nouveau filament. Il conserve l'identité du travail et la position de reprise,
-mais ne se fait pas passer pour une pause ordinaire.
+nouveau filament ou la cible de transition explicitement déclarée. Il conserve
+l'identité du travail, la position, les modes E, le mesh, le Z, les ventilateurs,
+les vitesses, le débit et la pression d'avance. Il calcule une levée et une
+trajectoire arrière qui ne traversent pas la pièce, sans refaire de homing.
+
+La purge arrière chasse l'ancien matériau ; la tour de purge prévue par le
+slicer stabilise ensuite la pression. L'une ne remplace pas silencieusement
+l'autre.
 
 ### Fin de filament et recharge automatique
 
@@ -193,17 +226,21 @@ compatibles avec cet état.
 
 ## Fin d'impression cible
 
-La fin conserve d'abord le chemin mécanique sûr déjà observé : park, coupe,
-retrait du filament et rembobinage, avec vérification des capteurs et du slot.
-La séquence exacte du cutter stock doit être tracée avant toute substitution,
-car elle peut effectuer un homing, vider le mesh ou modifier temporairement
+La politique cible par défaut est de conserver engagé le filament correct :
+park, rétraction finale qualifiée, enregistrement de l'outil, du CFS, du slot,
+de la matière, de la température et des capteurs, puis chauffes zéro. Cette
+politique reste à qualifier sur le CFS exact ; elle ne réutilise pas le cutter
+par habitude.
+
+Le retrait devient une action séparée **Désengager et nettoyer**. Elle utilise
+la température explicite de l'ancien matériau, coupe, retire, vérifie le
+rembobinage, puis lance éventuellement une recette de nettoyage qualifiée. La
+séquence exacte du cutter stock doit être tracée avant toute substitution, car
+elle peut effectuer un homing, vider le mesh ou modifier temporairement
 l'accélération.
 
-Après retrait confirmé, une recette de nettoyage de fin peut utiliser la chaleur
-résiduelle du matériau sortant et la brosse accessible, puis couper la buse et
-le plateau. Elle reste optionnelle tant que son efficacité n'est pas prouvée.
-Le système enregistre le dernier matériau et sa température de nettoyage pour
-le prochain démarrage.
+Aucun réchauffage différé sans présence humaine n'est planifié plusieurs heures
+après le travail.
 
 La désactivation des moteurs clôt le travail. L'état final doit être explicite :
 chauffes zéro, CFS inactif, outil connu ou `none`, profil et Z persistants
@@ -216,12 +253,14 @@ Le cycle minimal est :
 ```text
 idle
   -> admitted
+  -> filament_reconciled
   -> bed_heating
   -> coarse_reference (si nécessaire)
   -> nozzle_cleaning
   -> final_reference
   -> mesh_and_z_armed
   -> cfs_loading
+  -> purge_verified
   -> priming
   -> printing
   -> ending
@@ -241,6 +280,8 @@ délai, effets autorisés, preuve attendue et rollback.
 - appeler une primitive CFS complète puis refaire sa coupe ou sa purge ;
 - utiliser `220 °C` comme valeur universelle ou comme repli invisible ;
 - croire qu'une commande CFS terminée prouve la position du filament ;
+- croire qu'un capteur filament prouve l'identité ou le débit en sortie ;
+- supposer `T0` ou un slot physique sans résolution fraîche ;
 - ignorer les écritures de température retardées du module compilé ;
 - perdre le mapping `CFS/slot` entre les deux unités après reconnexion ;
 - lancer un mouvement de brosse rapide avant validation géométrique à froid ;
@@ -251,23 +292,27 @@ délai, effets autorisés, preuve attendue et rollback.
 
 ## Stratégie de réalisation
 
-1. **AUDIT-CYCLE-V2** : traces passives et scénarios contrôlés du démarrage,
+1. **PRODUCTION-SEQUENCE-AUDIT-V2** : traces passives et scénarios contrôlés du démarrage,
    d'une pause normale, d'un changement, d'un runout et de la fin ; aucun
    remplacement.
-2. **LIFECYCLE-OFFLINE-V1** : machine d'états simulée, fausses horloges,
+2. **JOB-LIFECYCLE-OFFLINE-V1** : machine d'états simulée, fausses horloges,
    capteurs et retards de température injectés.
 3. **CLEAN-MOTION-V1** : géométrie et mouvements de brosse validés à froid,
    sans chauffe ni extrusion.
-4. **START-REFERENCE-V1** : chauffe plateau, référence grossière conditionnelle,
+4. **CLEAN-AND-REFERENCE-V1** : chauffe plateau, référence grossière conditionnelle,
    nettoyage et référence finale, sans CFS ni impression.
 5. **CFS-TEMP-OWNER-V1** : un seul chemin de chargement/purge avec température
-   dynamique, d'abord sur CFS 1 puis CFS 2.
-6. **PAUSE-SEMANTICS-V1** : pause normale sans purge, reprise avec Z conservé,
+   explicite, filament correct conservé, absent chargé et incorrect remplacé,
+   d'abord sur CFS 1 puis CFS 2.
+6. **TOOL-CHANGE-AND-RUNOUT-V1** : changement voulu, remplacement équivalent,
+   changement de matière et trajet sûr autour d'une pièce.
+7. **PAUSE-RESUME-SEMANTICS-V1** : pause normale sans purge, reprise avec Z conservé,
    puis reprise avec réamorçage volontaire.
-7. **END-SEQUENCE-V1** : cutter, retrait, rembobinage et nettoyage de fin.
-8. **ORCA-CUTOVER-V1** : bascule atomique du profil sélectionné, suppression de
+8. **END-SEQUENCE-V1** : conservation engagée par défaut, puis bouton de
+   retrait, rembobinage et nettoyage.
+9. **ORCA-CUTOVER-V1** : bascule atomique du profil sélectionné, suppression de
    l'ancien départ et du `+0,27 mm`, avec export et rollback exacts.
-9. **G5** : trois impressions, changements/refill sur les deux CFS, pause,
+10. **G5** : trois impressions, changements/refill sur les deux CFS, pause,
    reprise, annulation et démarrage quotidien sans Codex.
 
 Une seule famille d'action physique est testée par incrément. Une correction
@@ -303,6 +348,7 @@ attend la cible et une stabilité bornée mesurée.
 
 ## Références
 
+- [Contrat V1 détaillé — nettoyage, impression et CFS](../25-contrat-cycle-impression-nettoyage-cfs-v1.md)
 - [Klipper — recommandations de G-code slicer](https://github.com/Klipper3d/klipper/blob/master/docs/Slicers.md)
 - [Moonraker — API imprimante](https://moonraker.readthedocs.io/en/latest/external_api/printer/)
 - [CrealityPrint — profil officiel K1 CFS](https://github.com/CrealityOfficial/CrealityPrint/blob/master/resources/profiles/Creality/machine/Creality%20K1_CFS-C%200.4%20nozzle.json)

@@ -1,7 +1,11 @@
 # 07 — Propriété dynamique de la température CFS
 
 Date : 2026-08-20
-Statut : exigences acceptées ; architecture et code encore à prouver
+Statut : exigences acceptées ; précisées par le contrat figé du 26 août 2026 ;
+architecture et code encore à prouver
+
+Référence canonique actuelle :
+[`docs/25-contrat-cycle-impression-nettoyage-cfs-v1.md`](25-contrat-cycle-impression-nettoyage-cfs-v1.md).
 
 ## Objectif
 
@@ -21,7 +25,8 @@ fixe et aucune liste fermée de matériaux autorisés.
 | Chargement au début du travail | température de première couche fournie par le G-code |
 | Passage aux couches normales | dernière température demandée par le G-code |
 | Bobine épuisée, remplacement par une bobine équivalente | cible active juste avant la pause |
-| Vrai changement de filament ou de matériau | température du prochain outil fournie par le G-code |
+| Changement de couleur avec matière équivalente | cible du prochain outil fournie par le G-code |
+| Changement entre matières différentes | retrait de l'ancien, purge de transition et cible du prochain outil, tous explicitement fournis ou validés par le contrat |
 | Réglage manuel pendant l'impression | dernière cible demandée par Thomas |
 | Chargement manuel hors impression | température explicitement choisie pour cette opération ; le contrat d'impression ne s'applique pas |
 
@@ -34,13 +39,15 @@ Le fichier doit pouvoir exprimer sans valeur codée en dur dans la machine :
 
 - la température de première couche ;
 - la température normale de chaque filament logique ;
-- la température du prochain filament lors d'un vrai changement ;
+- les températures de retrait, purge de transition et prochain filament lors
+  d'un vrai changement de matière ;
 - les modifications `M104` et `M109` décidées par le profil ou par Thomas.
 
 Pour un remplacement automatique par une bobine équivalente, aucun nouveau
 paramètre de matériau n'est nécessaire : la machine conserve simplement la cible
-active. Pour un vrai changement, l'opération CFS doit recevoir explicitement la
-cible du prochain outil avant toute chauffe ou purge.
+active. Pour un vrai changement de matière, l'opération CFS reçoit explicitement
+la cible de retrait de l'ancien filament, la cible de purge compatible et la
+cible du prochain outil. Ces valeurs appartiennent au contrat, pas au CFS.
 
 Si une vraie transition n'a aucune température exploitable, la solution doit
 s'arrêter avant l'extrusion et expliquer la donnée manquante. Elle ne doit pas
@@ -85,7 +92,7 @@ si l'analyse prouve qu'aucun chemin interne important ne la contourne.
 
 - conserver les fonctions matérielles et la correspondance des deux CFS ;
 - empêcher le pilote de consulter sa température générique pendant un travail ;
-- lui fournir la cible courante ou celle du prochain outil ;
+- lui fournir la cible explicite de chaque phase courante ;
 - garder un mode manuel séparé hors impression.
 
 Cette voie est plus profonde mais devient nécessaire si le module compilé
@@ -112,7 +119,7 @@ et une simulation locale.
 
 L'architecture choisie doit démontrer, pour chaque chemin de la matrice :
 
-`température active observée = dernière température explicite du G-code ou de Thomas`
+`température active observée = cible explicite de la phase du contrat ou dernière cible explicite de Thomas`
 
 Le prochain candidat G4 ne sera préparé qu'après cette démonstration. Il ne doit
 contenir ni température de filament codée en dur, ni profil Geeetech obligatoire,

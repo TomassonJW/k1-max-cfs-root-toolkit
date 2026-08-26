@@ -24,8 +24,9 @@ quadrants carrés `6 × 6`, soit 144 contacts et 121 positions uniques ; la
 reprise logique a qualifié et persisté le profil `11 × 11` sans nouvelle
 mesure ; la comparaison V2 a prouvé un gain central mais un KO sévère aux
 bords ; MESH-EDITOR-OFFLINE-V1 est validé sans connexion K1 ; le mode
-Précision reste caché et la prochaine mission est le diagnostic physique
-borné des bords ; production remains closed**.
+Précision reste caché ; le diagnostic physique borné des bords est suspendu
+après un passage sans débit ; le contrat complet du cycle filament est figé
+hors imprimante ; production remains closed**.
 
 La capture `20260823-165742-g4-k1-control-calibration-ui-prtouch-presets-v1` a
 clos PRTOUCH-PRESETS-V1 après un préflight frais, un déploiement idempotent et
@@ -91,9 +92,30 @@ ne doit pas être rejoué sans correction. `MESH-EDITOR-OFFLINE-V1` est clos :
 profil dérivé versionné, correction normalisée sur la surface bicubique
 `31 × 31`, grille 2D, aperçu 3D, historique, gardes, rollback et exports
 déterministes sont validés contre une fausse API locale. Aucun transport K1
-n'existe dans le paquet. La prochaine mission unique est
-`MESH-EDGE-DIAGNOSTIC-V1`. L'état distant final après l'impression V2 n'a pas
-été re-préflighté pendant l'audit ni pendant la gate hors ligne.
+n'existe dans le paquet. La mission physique suivante avait été
+`MESH-EDGE-DIAGNOSTIC-V1` ; elle est maintenant suspendue après son premier
+passage invalide sans débit. L'état distant final après l'impression V2 n'avait
+pas été re-préflighté pendant l'audit ni pendant la gate hors ligne.
+
+Le premier passage source de `MESH-EDGE-DIAGNOSTIC-V1` a ensuite chauffé et
+déplacé la tête sans déposer de filament. Le G-code minimal ne résolvait aucun
+outil CFS, ne chargeait pas et ne purgeait pas. La mention `T0` était une
+hypothèse de Codex, pas un fait fourni par Thomas. Ce passage ne qualifie ni la
+buse ni le mesh. Au dernier état observé, le robuste est actif, les cibles sont
+à zéro et les axes sont libérés, mais le profil diagnostic temporaire et les
+quatre G-code doivent encore être retirés par rollback exact. Aucun nouveau
+motif n'est permis avant ce rollback, une route CFS/slot fraîchement résolue et
+une purge réellement visible.
+
+Le 26 août 2026, Thomas a figé le contrat complet de nettoyage autonome,
+démarrage, filament, changement, runout, pause, reprise et fin. Les autorités
+canoniques sont `docs/25-contrat-cycle-impression-nettoyage-cfs-v1.md`,
+`design/job-lifecycle-contract-v1.json`, ADR-016 et D-064. Le bon filament déjà
+engagé doit être conservé ; la fin cible le conserve aussi sous réserve de
+qualification physique. Le retrait devient le bouton séparé `Désengager et
+nettoyer`. Aucun `T0`, capteur de débit, palpage de brosse ou delta thermique
+universel ne peut être supposé. Ce gel est hors imprimante et n'autorise aucune
+production.
 
 Thomas authorised V1, but the mandatory preflight proved that `logrotate` was
 absent. V1 is closed and must never be deployed. Thomas later authorised V2;

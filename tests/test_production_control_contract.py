@@ -4,7 +4,8 @@ from pathlib import Path
 
 
 ROOT = Path(__file__).resolve().parents[1]
-CONTRACT_PATH = ROOT / "design" / "production-control-contract.json"
+CONTRACT_PATH = ROOT / "design" / "job-lifecycle-contract-v1.json"
+LEGACY_CONTRACT_PATH = ROOT / "design" / "production-control-contract.json"
 REJECTED_ZSAFE_PATH = ROOT / "overrides" / "g4-zsafe-start" / "sequence-contract.json"
 
 
@@ -12,7 +13,7 @@ class ProductionControlContractTests(unittest.TestCase):
     @classmethod
     def setUpClass(cls) -> None:
         cls.contract = json.loads(CONTRACT_PATH.read_text(encoding="utf-8"))
-        cls.sequence = cls.contract["sequence"]
+        cls.sequence = cls.contract["start_sequence"]
 
     def stage(self, stage_id: str) -> dict:
         return next(stage for stage in self.sequence if stage["id"] == stage_id)
@@ -20,138 +21,159 @@ class ProductionControlContractTests(unittest.TestCase):
     def position(self, stage_id: str) -> int:
         return next(index for index, stage in enumerate(self.sequence) if stage["id"] == stage_id)
 
-    def test_contract_never_authorizes_printer_mutation(self) -> None:
-        self.assertEqual(
-            self.contract["status"],
-            "calibration_ui_v1_validated_campaign_pending",
-        )
+    def test_contract_is_frozen_offline_and_never_authorizes_printer_mutation(self) -> None:
+        self.assertEqual(self.contract["status"], "frozen_offline_production_closed")
         self.assertFalse(self.contract["printer_mutation_authorized"])
+        self.assertIn("production_cutover", self.contract["deployment"])
+        self.assertIn("not implemented", self.contract["deployment"]["production_cutover"])
+
+    def test_legacy_contract_points_to_the_frozen_contract(self) -> None:
+        legacy = json.loads(LEGACY_CONTRACT_PATH.read_text(encoding="utf-8"))
         self.assertEqual(
-            self.contract["deployment"]["active_g4_candidate"],
-            "G4-K1-CONTROL-CALIBRATION-UI-CAMPAIGN-V1",
+            legacy["status"],
+            "superseded_by_job_lifecycle_v1_frozen_offline",
         )
-        self.assertIn("-0.04 mm", self.contract["deployment"]["z_mesh_runtime"])
-        self.assertIn("validated and closed", self.contract["deployment"]["first_calibration_gate"])
-        self.assertIn("browser-only", self.contract["deployment"]["calibration_ui_campaign"])
-        self.assertIn("remain absent", self.contract["deployment"]["production_cutover"])
+        self.assertEqual(legacy["superseded_by"], "design/job-lifecycle-contract-v1.json")
 
-    def test_z_has_no_hidden_numeric_default(self) -> None:
-        z = self.contract["z_calibration"]
+    def test_z_has_no_hidden_numeric_default_or_implicit_commit(self) -> None:
+        z = self.contract["z"]
         self.assertIsNone(z["numeric_default_mm"])
-        self.assertEqual(z["production_source"], "accepted_calibration_record")
-        self.assertIn("universal_fixed_offset", z["forbidden"])
-
-    def test_z_commit_is_explicit_and_not_print_end(self) -> None:
-        z = self.contract["z_calibration"]
-        self.assertEqual(z["commit"]["mode"], "explicit_user_action")
-        self.assertEqual(z["commit"]["command"], "KCTRL_Z_COMMIT")
-        self.assertIn("implicit_commit_on_print_end", z["forbidden"])
+        self.assertEqual(z["source"], "accepted_calibration_record")
+        self.assertFalse(z["implicit_commit_on_print_end"])
+        self.assertTrue(z["legacy_hidden_offset_forbidden"])
         self.assertEqual(self.sequence[-1]["id"], "end_without_calibration_commit")
 
-    def test_z_survives_restart_but_calibration_invalidates_it(self) -> None:
-        z = self.contract["z_calibration"]
-        self.assertIn("printer_restart", z["survives"])
-        self.assertIn("power_cycle", z["survives"])
-        self.assertIn("probe_reference_calibration", z["invalidated_by"])
-        self.assertIn("system_calibration_affecting_z", z["invalidated_by"])
-        self.assertNotIn("printer_restart", z["invalidated_by"])
-
-    def test_mesh_is_keyed_by_plate_temperature_and_reference(self) -> None:
-        key = self.contract["mesh"]["reference_profile_key"]
+    def test_mesh_key_includes_plate_temperature_probe_and_nozzle(self) -> None:
         self.assertEqual(
-            key,
-            ["plate_id", "bed_temperature_band_c", "probe_reference_revision"],
+            self.contract["mesh"]["profile_key"],
+            [
+                "plate_id",
+                "bed_temperature_band_c",
+                "probe_reference_revision",
+                "nozzle_id",
+                "nozzle_diameter_mm",
+            ],
         )
-        self.assertFalse(self.contract["mesh"]["adaptive"]["persist_after_job"])
-        self.assertFalse(self.contract["mesh"]["adaptive"]["reuse_for_other_job"])
+        self.assertEqual(self.contract["mesh"]["standard_probe_count"], [6, 6])
+        self.assertEqual(self.contract["mesh"]["standard_algorithm"], "lagrange")
+        self.assertTrue(self.contract["mesh"]["precision"]["ui_hidden"])
+        self.assertIn("silent_nearest_profile_selection", self.contract["mesh"]["forbidden"])
+
+    def test_filament_state_is_not_reduced_to_a_switch(self) -> None:
+        state = self.contract["filament_state"]
+        self.assertEqual(
+            set(state["states"]),
+            {"absent_confirmed", "engaged_known", "engaged_unknown", "transitioning", "fault"},
+        )
+        self.assertIn("nozzle_flow", state["presence_sensor_does_not_prove"])
+        self.assertIn("nozzle_not_clogged", state["presence_sensor_does_not_prove"])
+        self.assertTrue(state["hardcoded_physical_tool_forbidden"])
+        self.assertEqual(state["exact_machine_observation"]["mapping_status"], "unqualified")
+
+    def test_temperature_owner_is_explicit_for_every_phase(self) -> None:
+        temperature = self.contract["temperature"]
+        self.assertEqual(temperature["print_owner"], "gcode_or_explicit_operator_change")
+        self.assertEqual(temperature["equivalent_refill"], "preserve_active_target")
+        change = temperature["intentional_tool_change"]
+        self.assertEqual(change["outgoing_unload"], "previous_accepted_material_temperature")
+        self.assertIn("explicit_job_contract", change["transition_purge"])
+        self.assertEqual(change["incoming_print"], "next_tool_gcode_target")
+        self.assertIn("hidden_220_celsius_fallback", temperature["forbidden"])
+        self.assertIn("universal_plus_10_or_plus_20_cleaning_delta", temperature["forbidden"])
+
+    def test_cleaning_uses_coarse_reference_and_never_probes_brush_z(self) -> None:
+        cleaning = self.contract["standalone_nozzle_cleaning"]
+        self.assertIn("home_xy_and_coarse_z_only_if_needed", cleaning["sequence"])
+        self.assertIn("park_safely_over_waste_chute", cleaning["sequence"])
+        self.assertIn("descend_to_versioned_human_calibrated_brush_plane", cleaning["sequence"])
+        self.assertEqual(
+            cleaning["brush_z_probe"],
+            "forbidden_until_a_real_sensor_path_is_proven",
+        )
+        self.assertEqual(cleaning["cooling_wipe"], "absent_from_v1_until_material_specific_physical_qualification")
+        self.assertEqual(cleaning["extrusion"], "forbidden")
 
     def test_final_reference_mesh_and_z_precede_production_arm(self) -> None:
         arm = self.position("arm_production_low_moves")
         for stage_id in ("final_z_reference", "resolve_mesh_policy", "resolve_effective_z"):
             self.assertLess(self.position(stage_id), arm)
 
-    def test_every_production_hazard_requires_the_closed_gate_output(self) -> None:
+    def test_no_production_hazard_occurs_before_arm_and_flow_proof_precedes_print(self) -> None:
+        arm = self.position("arm_production_low_moves")
         hazards = [stage for stage in self.sequence if stage.get("hazard")]
-        self.assertGreaterEqual(len(hazards), 3)
+        self.assertGreaterEqual(len(hazards), 4)
         for stage in hazards:
             self.assertIn("production_low_moves_armed", stage.get("requires", []), stage["id"])
+            self.assertGreater(self.position(stage["id"]), arm)
+        self.assertLess(self.position("purge_to_chute_and_verify_flow"), self.position("prime_line"))
+        self.assertLess(self.position("prime_line"), self.position("print_model"))
 
-    def test_only_controlled_probe_or_cleaning_paths_exist_before_arm(self) -> None:
-        arm = self.position("arm_production_low_moves")
-        allowed_low_kinds = {"controlled_probe_path", "controlled_cleaning_path"}
-        pre_arm_low_paths = [
-            stage for stage in self.sequence[:arm]
-            if stage["kind"] in allowed_low_kinds
-        ]
+    def test_initial_filament_branches_keep_change_load_or_block(self) -> None:
+        branches = self.contract["initial_filament_branches"]
+        self.assertEqual(branches["keep_correct"][:2], ["do_not_cut", "do_not_unload"])
+        self.assertIn("visible_purge", branches["load_absent"])
+        self.assertIn("explicit_transition_purge", branches["change_wrong"])
+        self.assertIn("block", branches["unknown"])
+        self.assertIn("unknown", self.stage("resolve_initial_filament")["branches"])
+        self.assertIn("initial_filament_ready", self.stage("purge_to_chute_and_verify_flow")["requires"])
+
+    def test_mid_print_change_preserves_full_state_and_forbids_homing(self) -> None:
+        change = self.contract["mid_print_change"]
+        self.assertTrue(change["no_homing"])
+        self.assertIn("mesh_and_effective_z", change["snapshot"])
+        self.assertIn("pressure_advance", change["snapshot"])
+        self.assertIn("collision_free_route", change["safe_path"])
+        self.assertEqual(change["rear_purge_role"], "remove_previous_material")
+        self.assertIn("stabilize_pressure", change["slicer_prime_tower_role"])
+
+    def test_end_keeps_correct_filament_and_exposes_manual_unload(self) -> None:
+        end = self.contract["end_policy"]
+        self.assertEqual(end["default_candidate"], "keep_correct_filament_engaged")
+        self.assertTrue(end["default_requires_physical_qualification"])
+        self.assertFalse(end["automatic_cut_and_unload_by_habit"])
+        self.assertEqual(end["manual_action"], "Disengage and clean")
+        self.assertFalse(end["unattended_delayed_reheat"])
+        self.assertIn("filament_state_engaged_known_none_or_explicitly_unknown", end["final_state"])
+
+    def test_calibration_policy_distinguishes_contact_and_extrusion_work(self) -> None:
+        policy = self.contract["calibration_policy"]
+        self.assertIn("manual_clean_default", policy["contact_z_or_mesh"])
+        self.assertIn("unload_recommended", policy["contact_z_or_mesh_filament"])
+        self.assertEqual(policy["flow_temperature_retraction_pressure_advance"], "resolved_filament_required")
+        self.assertIn("cold_no_extrusion", policy["brush"])
+
+    def test_job_contract_is_atomic_and_never_assumes_a_physical_tool(self) -> None:
+        job = self.contract["job_contract"]
+        self.assertEqual(job["entry_point"], "KCTRL_JOB_BEGIN")
+        self.assertTrue(job["logical_tool_only"])
+        self.assertIn("transition_purge_targets_c", job["required_fields"])
+        self.assertIn("standalone_Tn", job["forbidden_entry_points"])
         self.assertEqual(
-            [stage["id"] for stage in pre_arm_low_paths],
-            ["rough_reference", "controlled_nozzle_clean", "final_z_reference"],
-        )
-        self.assertNotIn(
-            "hazard",
-            self.stage("controlled_nozzle_clean"),
-            "the cleaning path is controlled, not a production purge",
+            set(job["changed_atomically"]),
+            {"machine_start_gcode", "machine_end_gcode", "tool_change_gcode", "printer_side_contract"},
         )
 
-    def test_temperature_owner_is_dynamic_across_cfs_paths(self) -> None:
-        temperature = self.contract["temperature"]
-        self.assertEqual(temperature["print_owner"], "gcode_or_explicit_operator_change")
-        self.assertEqual(temperature["equivalent_refill"], "preserve_active_target")
-        self.assertEqual(temperature["intentional_tool_change"], "next_tool_gcode_target")
-        self.assertIn("fixed_material_temperature", temperature["forbidden"])
-
-    def test_orca_and_printer_contract_change_together(self) -> None:
-        orca = self.contract["orca_contract"]
-        self.assertTrue(orca["versioned"])
-        self.assertEqual(
-            set(orca["changed_atomically"]),
-            {
-                "machine_start_gcode",
-                "machine_end_gcode",
-                "tool_change_gcode",
-                "printer_side_contract",
-            },
-        )
-        self.assertFalse(orca["legacy_z_postprocessor_removed_before_replacement_proven"])
-
-    def test_daily_and_expert_interfaces_are_both_present(self) -> None:
-        interfaces = self.contract["interfaces"]
-        self.assertEqual(interfaces["daily"], "K1 Control")
-        self.assertEqual(interfaces["expert_candidate"], "Mainsail")
-        self.assertTrue(interfaces["creality_interfaces_retained"])
-
-    def test_required_offline_matrix_covers_z_mesh_two_cfs_orca_and_rollback(self) -> None:
-        scenario_ids = {
-            scenario["id"] for scenario in self.contract["required_offline_scenarios"]
+    def test_offline_matrix_covers_every_new_failure_boundary(self) -> None:
+        scenario_ids = {scenario["id"] for scenario in self.contract["required_offline_scenarios"]}
+        required = {
+            "clean_brush_z_not_probed",
+            "start_correct_filament_engaged",
+            "start_wrong_filament_engaged",
+            "start_no_filament",
+            "start_unknown_filament_identity",
+            "sensor_present_no_nozzle_flow",
+            "intentional_cross_material_change",
+            "cross_cfs_change",
+            "pause_normal",
+            "tall_part_blocks_rear_path",
+            "end_keep_engaged",
+            "manual_disengage_and_clean",
+            "cfs_late_220_rewrite",
+            "cancel_and_reboot_each_phase",
+            "deployment_slice_rollback",
         }
-        self.assertEqual(
-            scenario_ids,
-            {
-                "z_live_adjust_then_commit",
-                "z_cancel_calibration",
-                "z_print_end_and_restart",
-                "z_new_reference_calibration",
-                "mesh_reference_plate_temperature_match",
-                "mesh_reference_mismatch",
-                "mesh_adaptive_job",
-                "safe_start_sequence",
-                "cfs_initial_load",
-                "cfs_equivalent_refill",
-                "cfs_intentional_tool_change",
-                "cfs_cross_unit_change",
-                "pause_resume",
-                "cancel_and_end",
-                "explicit_operator_temperature_change",
-                "orca_contract_version_mismatch",
-                "deployment_slice_rollback",
-            },
-        )
-        cross_cfs = next(
-            scenario
-            for scenario in self.contract["required_offline_scenarios"]
-            if scenario["id"] == "cfs_cross_unit_change"
-        )
-        self.assertIn("two_cfs", cross_cfs["expected"])
+        self.assertTrue(required.issubset(scenario_ids))
+        self.assertGreaterEqual(len(scenario_ids), 20)
 
     def test_old_fixed_z_package_is_explicitly_rejected(self) -> None:
         rejected = json.loads(REJECTED_ZSAFE_PATH.read_text(encoding="utf-8"))

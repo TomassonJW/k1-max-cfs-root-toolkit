@@ -23,6 +23,9 @@ class MeshEditorAndLifecycleContractTests(unittest.TestCase):
             / "adr"
             / "ADR-016-cycle-production-orchestre-et-propriete-cfs.md"
         ).read_text(encoding="utf-8")
+        cls.lifecycle_contract = (
+            ROOT / "docs" / "25-contrat-cycle-impression-nettoyage-cfs-v1.md"
+        ).read_text(encoding="utf-8")
 
     def test_interpolation_is_quantified_before_manual_tuning(self):
         self.assertIn("0,009877883 mm", self.audit)
@@ -65,6 +68,44 @@ class MeshEditorAndLifecycleContractTests(unittest.TestCase):
         self.assertIn("Le retrait de l'ancien `+0,27 mm` est", self.lifecycle_adr)
         self.assertIn("atomique avec cette bascule", self.lifecycle_adr)
 
+    def test_frozen_contract_keeps_correct_filament_and_requires_visible_flow(self):
+        for token in (
+            "Le bon filament déjà engagé est conservé",
+            "Une présence capteur ne prouve ni l'identité du filament ni son écoulement",
+            "purger dans tous les cas",
+            "Prouver le débit",
+            "Désengager et nettoyer",
+        ):
+            self.assertIn(token, self.lifecycle_contract)
+
+    def test_frozen_contract_never_assumes_t0_and_separates_transition_temperatures(self):
+        self.assertIn("Aucun `T0` ou autre outil physique n'est supposé", self.lifecycle_contract)
+        self.assertIn("retrait de l'ancien filament à sa température explicite", self.lifecycle_contract)
+        self.assertIn("purge de transition à une température explicitement fournie", self.lifecycle_contract)
+        self.assertIn("retour à la température du nouveau filament", self.lifecycle_contract)
+        self.assertIn("Le CFS n'est jamais propriétaire d'une température de travail", self.lifecycle_contract)
+
+    def test_cleaning_is_coarse_home_human_brush_calibration_and_no_universal_temperature(self):
+        for token in (
+            "référence Z grossière",
+            "au-dessus du réceptacle de purge",
+            "La position X/Y/Z de la brosse est réglée humainement",
+            "aucune preuve d'un capteur de hauteur de brosse",
+            "Il n'existe pas de `+10 °C`, `+20 °C`, `−30 °C` ou `100 °C` universel",
+        ):
+            self.assertIn(token, self.lifecycle_contract)
+
+    def test_mid_print_change_and_end_policy_are_complete(self):
+        for token in (
+            "Aucun homing n'est effectué pendant l'impression",
+            "pression d'avance",
+            "La purge arrière chasse l'ancien matériau",
+            "tour de purge",
+            "conserver le filament correct engagé",
+            "Il n'existe pas de réchauffage automatique différé",
+        ):
+            self.assertIn(token, self.lifecycle_contract)
+
     def test_editor_is_closed_next_gate_is_physical_and_precision_stays_hidden(self):
         gates = (ROOT / "GATES.md").read_text(encoding="utf-8")
         self.assertIn("### `MESH-EDITOR-OFFLINE-V1`", gates)
@@ -73,7 +114,7 @@ class MeshEditorAndLifecycleContractTests(unittest.TestCase):
             gates,
         )
         self.assertIn("### `MESH-EDGE-DIAGNOSTIC-V1`", gates)
-        self.assertIn("Statut : **prochaine mission ; non commencée**", gates)
+        self.assertIn("Statut : **en cours ; passage source sans débit invalide", gates)
         self.assertIn("Elle n'autorise pas automatiquement une impression", gates)
         self.assertIn("Le mode Précision n'est exposé qu'après deux feuilles", gates)
 
