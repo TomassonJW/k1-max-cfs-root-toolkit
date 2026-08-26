@@ -207,7 +207,28 @@
     "printer_transport": false,
     "deployment_candidate": false,
     "physical_test_authorized": false,
-    "next_design_branch": "passive_capture_requires_separate_review_and_exact_GO"
+    "next_design_branch": "closed_by_cfs_minimal_owner_passive_capture_v1"
+  },
+  "cfs_minimal_owner_passive_capture": {
+    "candidate": "K1-CONTROL-CFS-MINIMAL-OWNER-PASSIVE-CAPTURE-V1",
+    "status": "closed_capture_ok_protocol_promotion_ko_bounded",
+    "capture_verdict": "OK",
+    "protocol_gate_verdict": "KO_BOUNDED",
+    "contract": "packages/k1-control-v1/cfs-minimal-owner-passive-capture-v1/contract.json",
+    "evidence_map": "packages/k1-control-v1/cfs-minimal-owner-passive-capture-v1/evidence-map.json",
+    "qualified_route": "T1A",
+    "stock_macro": "BOX_QUIT_MATERIAL",
+    "stock_macro_completed": true,
+    "stock_target_celsius": 220,
+    "stock_macro_cleared_target_at_finish": false,
+    "cleanup_command": "TURN_OFF_HEATERS",
+    "toolhead_segment_still_detected": true,
+    "request_side_full_wire_capture": false,
+    "stock_owner_exclusion": false,
+    "callable_messages": [],
+    "printer_configuration_changed": false,
+    "deployment_candidate": false,
+    "next_design_branch": "offline_stock_unload_guard_before_any_new_printer_action"
   },
   "filament_state": {
     "states": [

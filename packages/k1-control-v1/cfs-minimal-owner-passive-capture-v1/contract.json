@@ -1,0 +1,58 @@
+{
+  "contract_id": "K1-CONTROL-CFS-MINIMAL-OWNER-PASSIVE-CAPTURE-V1",
+  "schema": 1,
+  "status": "closed_capture_ok_protocol_promotion_ko_bounded",
+  "capture_verdict": "OK",
+  "protocol_gate_verdict": "KO_BOUNDED",
+  "printer_action": "one_explicitly_authorized_stock_BOX_QUIT_MATERIAL",
+  "observer_mode": "read_only_log_and_status_subscription",
+  "raw_serial_frames_sent_by_codex": false,
+  "printer_configuration_changed": false,
+  "deployment_candidate": false,
+  "transport_candidate": false,
+  "callable_messages": [],
+  "qualified_observation": {
+    "route": "T1A",
+    "route_before": "engaged",
+    "route_after": "none",
+    "stock_macro_completed": true,
+    "retract_phases": ["buffer", "material"],
+    "matched_success_responses": 2,
+    "wrapper_sensor_transition": "present_to_clear",
+    "toolhead_filament_sensor_after": true,
+    "meaning": "CFS_side_disengaged_segment_after_cutter_still_present_in_toolhead",
+    "cutter_command_in_stock_sequence": true,
+    "physical_cut_sensor_or_human_confirmation": false
+  },
+  "thermal_observation": {
+    "initial_target_celsius": 0,
+    "stock_cycle_target_celsius": 220,
+    "maximum_observed_temperature_celsius": 224.35,
+    "stock_cycle_cleared_target_at_finish": false,
+    "required_cleanup": "TURN_OFF_HEATERS",
+    "final_extruder_target_celsius": 0,
+    "final_bed_target_celsius": 0
+  },
+  "transport_observation": {
+    "percent_encoded_space_attempt": "rejected_as_unknown_command",
+    "http_result_alone_is_success_proof": false,
+    "single_token_TURN_OFF_HEATERS": "confirmed_effective",
+    "future_multiword_commands_require_plus_encoding_and_effect_validation": true
+  },
+  "remaining_blockers": [
+    "request_side_full_wire_capture",
+    "stock_owner_exclusion_acknowledgement_and_restore",
+    "direct_physical_or_sensor_proof_of_cutter_completion",
+    "load_and_purge_terminal_contracts",
+    "other_slots_and_second_CFS_effects",
+    "timeout_late_response_and_reconnect_fault_gates",
+    "background_auto_address_no_response_diagnostics"
+  ],
+  "next_gate": {
+    "candidate": "G4-K1-CONTROL-CFS-STOCK-UNLOAD-GUARD-V1",
+    "default_authority": "offline_only",
+    "goal": "wrap_the_official_unload_with_preconditions_monitoring_and_guaranteed_heater_shutdown",
+    "printer_connection_requires_fresh_exact_GO": true,
+    "automatic_start": false
+  }
+}

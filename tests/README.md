@@ -59,6 +59,14 @@ de toute surface appelable :
 python -m unittest tests.test_cfs_minimal_owner_evidence_v1 -v
 ```
 
+La gate de capture réelle contrôle le retrait officiel `T1A`, la chauffe laissée
+active, l'arrêt final des chauffes, l'état du segment restant dans la tête et la
+fermeture persistante du protocole série :
+
+```powershell
+python -m unittest tests.test_cfs_minimal_owner_passive_capture_v1 -v
+```
+
 La suite complète doit être lancée avec un dossier de découverte explicite :
 
 ```powershell

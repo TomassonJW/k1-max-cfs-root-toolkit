@@ -30,8 +30,10 @@ hors imprimante ; CFS-DYNAMIC-TEMP-ROUTING-V1 est clos avec 25 scénarios verts
 et un propriétaire minimal choisi sans transport ;
 CFS-MINIMAL-OWNER-PROTOCOL-V1 est clos en KO borné avec une liste appelable
 vide ; CFS-MINIMAL-OWNER-EVIDENCE-V1 ajoute une preuve historique exacte du
-retrait `T1A` mais reste close en KO borné, sans message appelable ; production
-remains closed**.
+retrait `T1A` mais reste close en KO borné, sans message appelable ;
+CFS-MINIMAL-OWNER-PASSIVE-CAPTURE-V1 qualifie un retrait stock réel `T1A`,
+révèle une cible `220 °C` laissée active et maintient le protocole série fermé ;
+production remains closed**.
 
 La capture `20260823-165742-g4-k1-control-calibration-ui-prtouch-presets-v1` a
 clos PRTOUCH-PRESETS-V1 après un préflight frais, un déploiement idempotent et
@@ -150,9 +152,23 @@ la réponse capturée, mais la requête complète sur le fil reste absente. La
 source publique de retrait utilise une autre table de commandes et ne peut pas
 être substituée au binaire local. L'exclusion du propriétaire stock, B/C/D, le
 second CFS, coupe, purge, arrêt et reprises après faute restent non prouvés.
-`callable_messages=[]`, aucun transport ni candidat de pose. La prochaine gate
-possible est `G4-K1-CONTROL-CFS-MINIMAL-OWNER-PASSIVE-CAPTURE-V1`, qui exige
-une revue et un GO exact distincts avant toute connexion ou action physique.
+`callable_messages=[]`, aucun transport ni candidat de pose. À cette clôture,
+la gate suivante était `G4-K1-CONTROL-CFS-MINIMAL-OWNER-PASSIVE-CAPTURE-V1`,
+avec revue et GO exact distincts avant toute connexion ou action physique.
+
+Thomas a ensuite donné ce GO, puis a explicitement autorisé Codex à lancer une
+fois le retrait officiel. La capture privée
+`20260827-001616-g4-k1-control-cfs-minimal-owner-passive-capture-v1` est OK :
+route fraîche `T1A`, macro `BOX_QUIT_MATERIAL` terminée, deux phases de retrait
+réussies et premier CFS passé de `A` à aucun filament engagé. La K1 a demandé
+`220 °C` mais n'a pas remis la cible à zéro à la fin. Une tentative locale
+`M104%20S0` a été refusée comme commande inconnue malgré le retour HTTP `ok` ;
+`TURN_OFF_HEATERS` a réellement ramené les cibles à zéro. Le capteur de la tête
+reste actif : le segment après cutter reste présent. Les configurations sont
+inchangées et l'état final est `standby`, CFS connecté, cibles zéro. Aucun
+message série ne devient appelable. La prochaine branche proposée est
+`G4-K1-CONTROL-CFS-STOCK-UNLOAD-GUARD-V1`, hors imprimante seulement : encadrer
+la macro stock avec vérification d'état et arrêt garanti des chauffes.
 
 Thomas authorised V1, but the mandatory preflight proved that `logrotate` was
 absent. V1 is closed and must never be deployed. Thomas later authorised V2;

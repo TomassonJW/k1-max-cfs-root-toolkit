@@ -226,9 +226,33 @@ L'exclusion du propriétaire stock, B/C/D, le second CFS, coupe, purge, arrêt e
 reprises après faute restent non prouvés. `callable_messages=[]`, aucun
 transport et aucun candidat de pose.
 
-Le protocole d'une future capture passive est préparé mais non autorisé. Il
-exige une revue puis le GO exact distinct
-`GO G4-K1-CONTROL-CFS-MINIMAL-OWNER-PASSIVE-CAPTURE-V1`.
+Cette gate avait préparé le protocole de capture passive sans l'autoriser. Le
+GO distinct a depuis été donné et son résultat clos est décrit ci-dessous.
+
+### `G4-K1-CONTROL-CFS-MINIMAL-OWNER-PASSIVE-CAPTURE-V1`
+
+Statut : **capture réelle close OK ; promotion du protocole série KO borné ;
+production fermée**.
+
+Une écoute sans écriture a encadré un unique lancement autorisé de la macro
+constructeur `BOX_QUIT_MATERIAL`. La route fraîche `T1A` est passée de filament
+`A` à aucun filament engagé. Les deux phases de retrait ont reçu leur réponse
+réussie et la macro s'est terminée en environ 106 secondes.
+
+La K1 a demandé `220 °C` pendant le cycle et a laissé cette cible active après
+la fin. L'arrêt `TURN_OFF_HEATERS` a ramené les cibles à zéro. Les configurations
+contrôlées sont inchangées et l'état final est `standby`, CFS connecté.
+
+Le capteur de la tête reste actif : le segment après le cutter est toujours
+présent. La coupe fait partie de la séquence stock, mais n'a pas de confirmation
+physique indépendante. Les trames complètes et l'exclusion du propriétaire
+stock restent inconnues ; `callable_messages=[]`.
+
+La prochaine gate possible est
+`G4-K1-CONTROL-CFS-STOCK-UNLOAD-GUARD-V1`, hors imprimante seulement. En langage
+courant : construire un petit contrôleur qui vérifie l'état, lance la commande
+Creality, surveille sa vraie fin et coupe toujours les chauffes. Toute nouvelle
+connexion ou action K1 exigera un autre GO exact après revue.
 
 ### Reprise physique `MESH-EDGE-DIAGNOSTIC-V1`
 

@@ -1446,3 +1446,33 @@ peut ni se connecter ni démarrer sans le GO exact
 
 Voir ADR-022, `docs/33-preuves-proprietaire-filament-minimal-cfs-v1.md` et
 `packages/k1-control-v1/cfs-minimal-owner-evidence-v1/`.
+
+## D-073 — Le retrait immédiat reste propriétaire Creality mais devient gardé
+
+Date: 2026-08-27
+
+Status: capture réelle close ; retrait stock `T1A` qualifié ; propriétaire
+série indépendant toujours fermé ; production fermée
+
+Sous le GO exact `G4-K1-CONTROL-CFS-MINIMAL-OWNER-PASSIVE-CAPTURE-V1`, une
+écoute sans écriture a encadré un lancement explicitement autorisé de
+`BOX_QUIT_MATERIAL`. La route fraîche était `T1A`. La macro a terminé, les deux
+phases de retrait ont répondu et le premier CFS est passé de `A` à `None`.
+
+La K1 a demandé elle-même `220 °C`, puis a laissé cette cible active après la
+fin de la macro. `TURN_OFF_HEATERS` a été nécessaire et son effet à zéro a été
+relu. Une tentative `%20` mal encodée a aussi montré qu'un `result=ok` HTTP ne
+prouve pas l'exécution du G-code.
+
+Le capteur de la tête reste actif après le retrait côté CFS : le segment situé
+après le cutter n'est pas retiré par cette action. La coupe appartient à la
+séquence stock, mais aucun capteur dédié ou retour humain ne la qualifie
+directement.
+
+La décision est de préparer un garde autour de la macro stock avant de poursuivre
+un propriétaire série indépendant. Ce garde devra vérifier l'état avant et
+après, surveiller la vraie fin et couper toujours les chauffes. La liste série
+reste `callable_messages=[]`.
+
+Voir ADR-023, `docs/34-capture-retrait-officiel-cfs-v1.md` et
+`packages/k1-control-v1/cfs-minimal-owner-passive-capture-v1/`.

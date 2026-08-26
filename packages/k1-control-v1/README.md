@@ -3,7 +3,8 @@
 Statut : **fondation V3, runtime Z/mesh, calibration quotidienne et navigation
 installés ; composite `11 × 11` retenu comme source mais mode Précision KO aux
 bords ; éditeur dérivé hors ligne validé ; routage thermique CFS simulé ;
-protocole du propriétaire minimal fermé en KO borné sans transport ; production
+protocole du propriétaire minimal fermé en KO borné sans transport ; retrait
+stock `T1A` capturé avec garde thermique encore à construire ; production
 fermée**.
 
 La fondation initiale ajoute une seule API Moonraker, une petite
@@ -74,6 +75,20 @@ Cette avancée ne lève ni l'exclusion du propriétaire stock, ni les autres rou
 ni la coupe, la purge ou les reprises après faute. La gate reste close en KO
 borné avec `callable_messages=[]`. Le paquet prépare seulement le protocole
 d'une future capture passive, qui exige une revue et un GO exact distincts.
+
+## Capture réelle du retrait officiel
+
+Le paquet
+[`cfs-minimal-owner-passive-capture-v1/`](cfs-minimal-owner-passive-capture-v1/)
+qualifie un retrait constructeur réel sur la route fraîche `T1A`. La macro
+stock a terminé, les deux phases ont répondu et le CFS ne considère ensuite
+plus aucun slot engagé sur l'unité 1.
+
+La capture révèle que la K1 demande `220 °C` mais laisse cette cible active
+après la fin. Elle montre aussi qu'un retour HTTP `ok` peut masquer une commande
+mal encodée. Le prochain incrément préparera donc hors imprimante un garde
+autour de la macro stock, avec vérification de l'effet réel et arrêt garanti des
+chauffes. Le propriétaire série reste fermé et `callable_messages=[]`.
 
 ## Versions figées
 

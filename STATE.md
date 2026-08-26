@@ -50,11 +50,11 @@ Aucune nouvelle authentification ni action physique n'a eu lieu.
 
 **P4 — calibration quotidienne autonome ; composite physique `11 × 11`
 qualifié techniquement mais KO aux bords en première couche ; éditeur de profil
-dérivé hors ligne validé ; binaire CFS et incident exact audités ; adaptateur
-stock fermé sans primitive qualifiée ; routage thermique dynamique simulé et
-propriétaire minimal choisi sans transport ; diagnostic physique des bords
-suspendu ; contrat de cycle production figé hors imprimante ; production
-volontairement bloquée**
+dérivé hors ligne validé ; retrait stock `T1A` capturé avec deux phases réussies
+mais cible thermique laissée active ; propriétaire série indépendant toujours
+fermé ; garde de retrait stock à préparer hors imprimante ; diagnostic physique
+des bords suspendu ; contrat de cycle production figé hors imprimante ;
+production volontairement bloquée**
 
 La base sûre et réellement requalifiée reste `6 × 6` Lagrange avec un seul mesh
 standard. L'autonomie de calibration quotidienne standard est maintenant
@@ -925,7 +925,28 @@ complète sur le fil, l'exclusion du propriétaire constructeur, B/C/D, le secon
 CFS, coupe, purge, arrêt et reprises après faute restent manquants. La source
 publique détaillée utilise une autre table de commandes et n'est pas une preuve
 du binaire local. La liste appelable reste vide et le protocole de capture
-passive préparé n'est pas autorisé à s'exécuter.
+passive avait alors seulement été préparé ; sa gate réelle est maintenant close
+ci-dessous.
+
+`G4-K1-CONTROL-CFS-MINIMAL-OWNER-PASSIVE-CAPTURE-V1` est maintenant close. La
+capture elle-même est OK : l'observateur n'a rien écrit sur le bus série, la
+route fraîche était `T1A`, la macro constructeur `BOX_QUIT_MATERIAL` a terminé
+et les deux phases de retrait ont répondu. Le premier CFS est passé de filament
+`A` à aucun filament engagé, et les trois configurations contrôlées sont
+restées identiques.
+
+La promotion du protocole reste KO borné. La K1 a demandé `220 °C` puis a laissé
+cette cible active après la fin. Une commande `%20` mal encodée a produit un
+G-code inconnu malgré la réponse HTTP `ok`; `TURN_OFF_HEATERS` a ensuite ramené
+réellement les cibles à zéro. Le capteur de la tête reste actif, donc le segment
+après le cutter est encore présent. La coupe n'a pas de confirmation physique
+indépendante. Les trames complètes, l'exclusion du propriétaire stock, les
+autres routes et les fautes restent non qualifiées. `callable_messages=[]`.
+
+La branche suivante proposée est
+`G4-K1-CONTROL-CFS-STOCK-UNLOAD-GUARD-V1`, hors imprimante seulement. En langage
+courant : encadrer la commande Creality avec des vérifications avant/après et
+un arrêt systématique des chauffes, sans parler directement aux moteurs du CFS.
 
 Thomas explicitly rejected further sacrificial print campaigns on 2026-08-21.
 The V3 + PATHS-V1 observation remains useful coexistence evidence but no longer
@@ -976,9 +997,12 @@ retirement remains atomic with the later proven machine/Orca replacement.
 - Toute utilisation des trames observées par
   `G4-K1-CONTROL-CFS-MINIMAL-OWNER-EVIDENCE-V1` : elles restent historiques,
   non isolées et non appelables.
-- Toute connexion ou capture sous
-  `G4-K1-CONTROL-CFS-MINIMAL-OWNER-PASSIVE-CAPTURE-V1` sans revue puis GO exact
-  distinct.
+- Toute nouvelle connexion ou répétition de
+  `G4-K1-CONTROL-CFS-MINIMAL-OWNER-PASSIVE-CAPTURE-V1`, désormais close et
+  consommée.
+- Toute connexion K1, pose ou nouvel essai physique de
+  `G4-K1-CONTROL-CFS-STOCK-UNLOAD-GUARD-V1` avant préparation hors imprimante,
+  revue et GO exact distinct.
 - Any import or change of Orca fields on the workstation profile.
 - `G4-ZSAFE-START-V1` forever: this rejected name cannot receive a GO.
 - Any future `K1-CONTROL-V1` deployment until a new exact G4 package exists and

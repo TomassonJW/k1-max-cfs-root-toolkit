@@ -77,9 +77,9 @@ et Mainsail `v2.18.2` épinglés, contrat Orca complet et
 Status: **calibration quotidienne autonome ; composite `11 × 11` meilleur au
 centre mais KO aux bords ; éditeur hors imprimante validé ; diagnostic de bord
 suspendu ; débit CFS prouvé mais séquence brute refusée ; binaire et journal
-exacts audités ; adaptateur stock fermé sans primitive qualifiée ; routage
-thermique dynamique simulé et propriétaire minimal choisi sans
-transport ; production fermée**
+exacts audités ; retrait stock `T1A` capturé avec deux phases réussies mais
+chauffe finale non coupée ; routage thermique dynamique simulé et propriétaire
+minimal série toujours sans transport ; production fermée**
 
 Le produit est posé par étapes techniques réversibles, mais Thomas reçoit un
 seul fonctionnement quotidien :
@@ -111,9 +111,12 @@ seul fonctionnement quotidien :
    manquantes avant toute implémentation ou qualification physique ;
 10. gate de preuve supplémentaire close en KO borné : le retrait stock `T1A`
     est maintenant relié à deux requêtes, deux réponses et au capteur local,
-    mais l'exclusion stock et le cycle complet restent manquants ; protocole de
-    capture passive préparé sans l'autoriser ;
-11. contrat Orca final et retrait atomique prouvé de l'ancien post-traitement
+    mais l'exclusion stock et le cycle complet restent manquants ;
+11. capture réelle du retrait officiel `T1A` close : macro terminée, route
+    désengagée et configurations inchangées, mais cible `220 °C` laissée active
+    jusqu'à `TURN_OFF_HEATERS` ; prochain incrément = garde hors imprimante
+    autour de la macro constructeur ;
+12. contrat Orca final et retrait atomique prouvé de l'ancien post-traitement
    `+0,27 mm`.
 
 Le rollback exact de `MESH-EDGE-DIAGNOSTIC-V1` et sa validation finale sont

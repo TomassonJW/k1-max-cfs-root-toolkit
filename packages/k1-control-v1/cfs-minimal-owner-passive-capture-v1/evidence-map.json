@@ -1,0 +1,128 @@
+{
+  "schema": 1,
+  "status": "sanitized_live_capture_evidence",
+  "session": "20260827-001616-g4-k1-control-cfs-minimal-owner-passive-capture-v1",
+  "privacy": {
+    "raw_capture_versioned": false,
+    "CFS_serial_numbers_versioned": false,
+    "CFS_UUIDs_versioned": false,
+    "identity_frames_versioned": false
+  },
+  "private_sources": {
+    "capture": {
+      "path": "inventory/raw/20260827-001616-g4-k1-control-cfs-minimal-owner-passive-capture-v1/official-retract.raw.txt",
+      "sha256": "995b94f92928d2f2d048f677b7183201b6b370cc70f6ccd34c70534b4cffcfe2",
+      "line_count": 13528
+    },
+    "box_before": {
+      "path": "inventory/raw/20260827-001616-g4-k1-control-cfs-minimal-owner-passive-capture-v1/box.before.private.json",
+      "sha256": "74bfaaae68ca7dc6f989bf4568ed97a761cb3ae9c85f132c376a65b0d8172d39"
+    },
+    "box_after": {
+      "path": "inventory/raw/20260827-001616-g4-k1-control-cfs-minimal-owner-passive-capture-v1/box.after.private.json",
+      "sha256": "94e8c905a79cf087c2c638b1112e3901cc38cdfcfd7bc353bb82920d554caf2b"
+    },
+    "final_status": {
+      "path": "inventory/raw/20260827-001616-g4-k1-control-cfs-minimal-owner-passive-capture-v1/final-status.private.json",
+      "sha256": "626b612802835a115a68fcd013f91cfabfb7c0de39d67bde5e990f800d3ac7c1"
+    },
+    "final_config_hashes": {
+      "path": "inventory/raw/20260827-001616-g4-k1-control-cfs-minimal-owner-passive-capture-v1/config-hashes.after.txt",
+      "sha256": "74141628a9376871cde6625a0f2155db3adb510e087e6b9c1659de76c56d631c"
+    }
+  },
+  "observer": {
+    "script": "scripts/start-passive-production-trace.ps1",
+    "script_sha256": "98f15d4e56f1ce3666f57d107f4b78a4bbd5d72902983c39019b4d751c3e1bd6",
+    "remote_file_writes": false,
+    "serial_writes": false,
+    "gcode_actions_from_observer": false,
+    "stop": "local_operator_interrupt_after_final_safe_state",
+    "monitor_closed_footer_present": false,
+    "payload_complete_through_final_target_zero": true
+  },
+  "official_action": {
+    "macro": "BOX_QUIT_MATERIAL",
+    "authority": "explicit_user_authority_in_active_gate",
+    "remote_macro_sequence": [
+      "BOX_ERROR_CLEAR",
+      "BOX_CHECK_MATERIAL",
+      "BOX_CUT_MATERIAL",
+      "BOX_RETRUDE_MATERIAL",
+      "BOX_GO_TO_BOX_EXTRUDE_POS"
+    ],
+    "macro_received_line": 6500,
+    "macro_finished_line": 10071,
+    "elapsed_seconds": 105.880847,
+    "physical_cut_confirmation": false
+  },
+  "route": {
+    "before": {"T1_filament": "A"},
+    "after": {"T1_filament": "None"},
+    "qualified": "T1A"
+  },
+  "retract": {
+    "buffer_request": {
+      "frame": [1, 5, 255, 17, 1, 0],
+      "line": 6719
+    },
+    "buffer_response": {
+      "frame": [247, 1, 3, 0, 17, 202],
+      "line": 6739,
+      "named_result_line": 6741
+    },
+    "material_request": {
+      "frame": [1, 5, 255, 17, 1, 1],
+      "line": 9940
+    },
+    "material_response": {
+      "frame": [247, 1, 3, 0, 17, 202],
+      "line": 9995,
+      "named_result_line": 9997
+    },
+    "wrapper_sensor_clear_line": 9999,
+    "request_side_full_wire_present": false
+  },
+  "thermal": {
+    "initial_target": {"line": 13, "celsius": 0},
+    "stock_target": {"line": 6729, "celsius": 220},
+    "maximum_observed_temperature_celsius": 224.35,
+    "target_remained_220_after_macro_finish": true,
+    "invalid_percent_encoded_M104_attempt": {
+      "received_line": 11162,
+      "error_line": 11163,
+      "classification": "local_transport_encoding_error_no_effect"
+    },
+    "TURN_OFF_HEATERS": {
+      "received_line": 12176,
+      "finished_line": 12177,
+      "target_zero_state_line": 12178
+    }
+  },
+  "final_state": {
+    "print_state": "standby",
+    "extruder_temperature_celsius": 81.42,
+    "extruder_target_celsius": 0,
+    "bed_target_celsius": 0,
+    "homed_axes": "xyz",
+    "box_state": "connect",
+    "box_t_command": "",
+    "toolhead_filament_sensor": true
+  },
+  "configuration": {
+    "unchanged": true,
+    "printer_cfg": "f88d6b52477592805384fca2b4d7abd00298deecd82227af2fa580085fe26fa2",
+    "gcode_macro_cfg": "864fedde88fbb345c220ae5658f7b04779b3981bd78d68eda6fa63c59c79a04f",
+    "box_cfg": "e7a6b26df58a9fa8e49d3af6845f5a0937a790c8ef494b96ec72fd7392abc7a7"
+  },
+  "background_diagnostics": {
+    "error_level_lines_before": 252,
+    "error_level_lines_during": 137,
+    "error_level_lines_after": 133,
+    "no_response_lines_before": 84,
+    "no_response_lines_during": 44,
+    "no_response_lines_after": 44,
+    "operation_failure_marker": false,
+    "classification": "pre_existing_and_continuing_auto_address_noise_still_requires_separate_diagnosis"
+  }
+}
