@@ -55,6 +55,13 @@ Goal 3 a exécuté D1 de CLEAN-MOTION, techniquement vert mais encore en attente
 du verdict visuel humain ; cycle CFS clos
 hors imprimante ; production volontairement bloquée**
 
+Le registre local
+`packages/k1-control-v1/physical-slices-qualification-v1/` fixe désormais les
+sept exigences physiques déjà prévues et la frontière du Goal 4. Son contrôle
+retourne `GOAL3_LEDGER_OK_IN_PROGRESS`, avec `0/7` exigences closes et aucun
+effet K1. Il interdit de déclarer le Goal 3 terminé en remplaçant une preuve
+humaine par des tests ou en déplaçant une exigence vers un nouveau Goal.
+
 `G4-K1-CONTROL-GATEWAY-PRIVATE-LAN-NO-AUTH-V1` est installé et validé. Le mot
 de passe HTTP Basic n'est plus utilisé sur `4409`. Nginx continue de limiter
 l'entrée à la boucle locale et aux plages IPv4 privées ; Moonraker reste lié à

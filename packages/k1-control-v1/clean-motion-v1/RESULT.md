@@ -26,7 +26,7 @@ lectures indépendantes. Tous les profils actuels ont des défauts de bord ; auc
 n'est qualifié robuste.
 
 Vérifications locales actuelles : `22/22` tests ciblés CLEAN-MOTION verts,
-suite complète de `535` tests dont `532` verts et `3` ignorés connus, interface
+suite complète de `541` tests dont `538` verts et `3` ignorés connus, interface
 de l'éditeur `6/6` verte et `62/62` scripts PowerShell relus sans erreur.
 
 Le préflight frais a obtenu `CHECKPOINT_C_PREFLIGHT_OK`. Une seule séquence a

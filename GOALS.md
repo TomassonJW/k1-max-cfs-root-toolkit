@@ -23,6 +23,13 @@ verrouillé.
 | 3 | `GOAL-P4-PHYSICAL-SLICES-QUALIFICATION-V1` | en cours ; D1 CLEAN-MOTION techniquement vert, verdict humain attendu | toutes les fonctions physiques et le profil de bord validés séparément |
 | 4 | `GOAL-P4-DAILY-CUTOVER-V1` | prévu après Goal 3 | bascule unifiée, validation production et clôture définitive du projet |
 
+Le registre exécutable
+`packages/k1-control-v1/physical-slices-qualification-v1/completion-matrix.json`
+fige exactement les sept exigences internes du Goal 3. Il indique actuellement
+`0/7` exigences closes : D1 est techniquement vert mais CLEAN-MOTION reste en
+cours jusqu'au verdict humain et à la fin de sa trajectoire. Ce registre ne
+crée aucun Goal supplémentaire.
+
 ## Goal 1 — Terminer le système hors imprimante
 
 Identifiant : `GOAL-P4-OFFLINE-CYCLE-CFS-V1`
@@ -131,6 +138,8 @@ exacte. Aucun retry automatique et aucune poursuite après un KO.
 
 Fin attendue : toutes les fonctions physiques nécessaires sont validées
 séparément et réversibles ; l'ancien démarrage Orca reste encore disponible.
+La clôture exige les sept lignes `PASSED` et un audit transversal conforme au
+registre ; un test logiciel ne peut jamais remplacer une observation physique.
 
 ## Goal 4 — Basculer, valider la production et clôturer définitivement
 

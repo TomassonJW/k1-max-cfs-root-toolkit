@@ -1,0 +1,119 @@
+{
+  "schema": 1,
+  "contract_id": "GOAL-P4-PHYSICAL-SLICES-QUALIFICATION-V1",
+  "updated_at": "2026-08-27",
+  "goal_status": "IN_PROGRESS",
+  "completion_audit_evidence": null,
+  "current_human_gate": {
+    "requirement_id": "COLD_CLEAN_MOTION",
+    "checkpoint": "D1",
+    "active_gate": "G4-K1-CONTROL-CLEAN-MOTION-V1",
+    "technical_status": "D1_TECHNICAL_OK_AWAITING_HUMAN_VERDICT",
+    "required_human_verdict": "D1_OK",
+    "next_effect_blocked": true
+  },
+  "requirements": [
+    {
+      "order": 1,
+      "id": "COLD_CLEAN_MOTION",
+      "status": "IN_PROGRESS_HUMAN_GATE",
+      "slice_id": "CLEAN-MOTION-V1",
+      "evidence": "packages/k1-control-v1/clean-motion-v1/evidence-map.json",
+      "required_proofs": [
+        "brush_and_receptacle_bounds_observed",
+        "cold_entry_contact_wipe_and_exit_path_observed_without_collision",
+        "every_motion_checkpoint_has_an_explicit_human_verdict",
+        "final_safe_park_targets_zero_and_best_current_mesh_unchanged"
+      ]
+    },
+    {
+      "order": 2,
+      "id": "AUTOMATIC_CLEAN_AND_FINAL_REFERENCE",
+      "status": "NOT_STARTED",
+      "slice_id": "CLEAN-AND-REFERENCE-V1",
+      "evidence": null,
+      "required_proofs": [
+        "versioned_cleaning_recipe_uses_physically_qualified_geometry",
+        "initial_flow_falls_in_the_waste_receptacle",
+        "bounded_hot_cleaning_is_visibly_effective",
+        "no_unqualified_cooling_wipe",
+        "one_final_z_reference_is_run_with_a_clean_nozzle",
+        "heaters_are_requested_zero_and_safe_final_state_is_read_back"
+      ]
+    },
+    {
+      "order": 3,
+      "id": "CFS_START_STATES_AND_TEMPERATURE_OWNER",
+      "status": "NOT_STARTED",
+      "slice_id": "CFS-TEMP-OWNER-V1",
+      "evidence": null,
+      "required_proofs": [
+        "correct_engaged_filament_is_kept",
+        "wrong_engaged_filament_is_changed_once",
+        "empty_path_loads_the_resolved_slot_once",
+        "unknown_or_ambiguous_identity_blocks_before_effect",
+        "phase_specific_temperatures_are_observed",
+        "visible_purge_is_confirmed",
+        "both_cfs_units_are_exercised_across_the_campaign",
+        "heater_shutdown_is_observed_after_each_terminal_path"
+      ]
+    },
+    {
+      "order": 4,
+      "id": "TOOL_CHANGE_AND_RUNOUT",
+      "status": "NOT_STARTED",
+      "slice_id": "TOOL-CHANGE-AND-RUNOUT-V1",
+      "evidence": null,
+      "required_proofs": [
+        "mid_print_tool_change_uses_the_fresh_resolved_route_once",
+        "runout_stops_before_air_printing",
+        "replacement_filament_load_and_visible_purge_are_confirmed",
+        "resume_does_not_duplicate_the_transition",
+        "both_cfs_units_are_covered"
+      ]
+    },
+    {
+      "order": 5,
+      "id": "PAUSE_AND_RESUME",
+      "status": "NOT_STARTED",
+      "slice_id": "PAUSE-RESUME-SEMANTICS-V1",
+      "evidence": null,
+      "required_proofs": [
+        "pause_parks_without_losing_job_state",
+        "resume_restores_the_expected_temperatures_and_position",
+        "filament_transition_is_not_replayed",
+        "mesh_and_accepted_z_remain_explicit"
+      ]
+    },
+    {
+      "order": 6,
+      "id": "CANCEL_END_AND_SEPARATE_DISENGAGE",
+      "status": "NOT_STARTED",
+      "slice_id": "END-SEQUENCE-V1",
+      "evidence": null,
+      "required_proofs": [
+        "cancel_reaches_a_safe_terminal_state",
+        "normal_end_keeps_the_good_filament_engaged",
+        "separate_disengage_and_clean_runs_only_on_explicit_request",
+        "all_terminal_paths_request_heater_targets_zero",
+        "no_terminal_action_is_retried_after_an_uncertain_effect"
+      ]
+    },
+    {
+      "order": 7,
+      "id": "EDGE_PROFILE_POINT_EDIT_AND_PHYSICAL_QUALIFICATION",
+      "status": "OFFLINE_EDITOR_READY_PHYSICAL_NOT_STARTED",
+      "slice_id": "MESH-EDGE-DIAGNOSTIC-V1",
+      "evidence": "packages/k1-control-v1/mesh-editor-offline-v1/mesh-editor-contract.json",
+      "required_proofs": [
+        "immutable_11x11_source_is_preserved",
+        "edge_defects_are_mapped_to_exact_points",
+        "corrections_are_applied_point_by_point_to_a_versioned_derived_profile",
+        "guardrails_and_deterministic_export_are_preserved",
+        "derived_profile_is_physically_compared_on_the_full_useful_area",
+        "rollback_to_the_best_current_profile_is_proved",
+        "robust_label_is_used_only_after_full_zone_success"
+      ]
+    }
+  ]
+}

@@ -31,6 +31,12 @@ final est vert, sans chauffe, route CFS ni changement de configuration, et avec
 le `11 × 11` actif. D1 attend le verdict visuel de Thomas ; D2 n'a pas été
 lancé et D1 ne doit pas être rejoué.
 
+Le registre canonique de complétude du Goal 3 est maintenant
+`packages/k1-control-v1/physical-slices-qualification-v1/completion-matrix.json`.
+Il couvre exactement sept exigences, en compte actuellement `0/7` closes et
+sépare strictement la bascule/validation production du Goal 4. Il n'autorise
+aucun effet et ne crée aucun cinquième Goal.
+
 ## Archive historique — clôture initiale du Goal 2
 
 Date de passation : 2026-08-27

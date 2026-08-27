@@ -1,0 +1,42 @@
+{
+  "contract_id": "GOAL-P4-PHYSICAL-SLICES-QUALIFICATION-V1",
+  "goal_number": 3,
+  "macro_goal_count": 4,
+  "status": "in_progress_clean_motion_d1_awaiting_human_verdict",
+  "authority": "offline_completion_registry_only",
+  "deployment_candidate": false,
+  "printer_connection": false,
+  "remote_commands": [],
+  "gcode_commands": [],
+  "service_actions": [],
+  "completion_policy": {
+    "all_requirements_must_be_passed": true,
+    "human_evidence_cannot_be_replaced_by_automated_tests": true,
+    "ko_stops_the_current_physical_slice": true,
+    "automatic_retry_forbidden": true,
+    "goal_cannot_be_renamed_or_split_to_avoid_a_missing_requirement": true,
+    "goal4_cannot_start_before_goal3_completion_audit": true,
+    "completion_audit_evidence_required": true
+  },
+  "canonical_sources": [
+    "GOALS.md",
+    "docs/25-contrat-cycle-impression-nettoyage-cfs-v1.md",
+    "design/job-lifecycle-contract-v1.json",
+    "packages/k1-control-v1/job-lifecycle-offline-v1/future-deployment-blueprint.json"
+  ],
+  "goal4_boundary": [
+    "atomic_orca_cutover",
+    "unified_daily_k1_control_start",
+    "cold_reboot_survival",
+    "three_consecutive_representative_production_prints",
+    "final_project_closure"
+  ],
+  "cross_cutting_completion_requirements": [
+    "both_cfs_units_physically_exercised",
+    "every_heating_slice_ends_with_requested_targets_zero",
+    "no_hidden_orca_z_offset",
+    "accepted_z_and_selected_mesh_remain_explicit",
+    "every_effect_has_bounded_rollback_or_safe_stop_evidence",
+    "repository_and_live_evidence_are_reconciled"
+  ]
+}

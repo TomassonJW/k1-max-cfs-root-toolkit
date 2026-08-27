@@ -163,6 +163,12 @@ raisonnement `high` est conseillé pour piloter les checkpoints et les preuves.
 L'option `medium` est moins coûteuse, avec plus de risque de reprise si une
 observation physique est ambiguë.
 
+Le registre
+`packages/k1-control-v1/physical-slices-qualification-v1/completion-matrix.json`
+fige les sept exigences du Goal 3 et retourne actuellement `0/7` closes. La
+bascule Orca/K1 Control, le reboot à froid, les trois impressions de production
+et la clôture finale restent au Goal 4 ; aucun cinquième Goal n'est permis.
+
 ## Texte de reprise à envoyer dans une nouvelle session
 
 > `$session-tas` Reprends la passation complète dans

@@ -68,6 +68,10 @@ et Thomas a confirmé `CHECKPOINT C OK` ; D1 a ensuite été exécuté une seule
 technique final est vert, avec chauffes zéro, aucune route CFS, configurations
 inchangées et `11 × 11` actif ; le verdict visuel de Thomas manque encore, D2
 n'a pas été lancé et D1 ne doit pas être rejoué ;
+le registre local `physical-slices-qualification-v1` fixe exactement sept
+exigences internes au Goal 3, en compte actuellement `0/7` closes et interdit
+qu'une preuve physique soit remplacée par un test ou repoussée dans un Goal
+supplémentaire ;
 GATEWAY-PRIVATE-LAN-NO-AUTH-V1 est installé et validé : le port `4409` ne
 demande plus de mot de passe, reste limité aux réseaux IPv4 privés, et présente
 uniquement son proxy local approuvé à Moonraker ; production remains closed**.
