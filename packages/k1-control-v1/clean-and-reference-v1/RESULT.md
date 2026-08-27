@@ -1,7 +1,6 @@
 # Résultat actuel
 
-Statut : **V1 KO physique ; brosse du bac condamnée ; candidat V2 sur la grande
-brosse préparé et préflighté en lecture seule, encore non exécuté**.
+Statut : **nettoyage automatique clos KO ; nettoyage manuel obligatoire**.
 
 Le premier cycle a fini avec les chauffes à zéro et les configurations exactes,
 mais il n'a pas nettoyé la buse. Sa lenteur et son refroidissement au contact de
@@ -9,11 +8,13 @@ la brosse du bac ont recollé le filament sur la buse. Thomas a nettoyé la buse
 la main. Ce passage n'est pas promouvable et ne valide pas la deuxième exigence
 du Goal 3.
 
-Le candidat V2 abandonne complètement cette brosse et le frottement pendant le
-refroidissement. Il prévoit six allers-retours à `F6000` sur la grande brosse,
-puis coupe la chauffe, remonte immédiatement de `5 mm`, sort de la brosse et
-refroidit au parc sûr. La référence finale reste une action séparée après le
-verdict visuel.
+Le V2 a abandonné cette brosse et le frottement pendant le refroidissement,
+mais sa buse était déjà propre et aucune préparation filament ne l'avait
+précédé : ce passage est non probant. Après chargement, petite purge et retrait
+manuels par Thomas, le V3 a exécuté huit allers-retours diagonaux à `F12000`, à
+`Z2,5`, puis une remontée immédiate à `Z7,5`, une sortie et un refroidissement
+au parc sûr. La référence finale prévue n'a pas été exécutée et la voie est
+maintenant fermée.
 
 Le runner physique refuse chaque
 effet sans verdict humain exact, présence devant la K1, plateau libre, brosses
@@ -33,5 +34,8 @@ confirmé les deux cibles à zéro, les configurations exactes et aucun mouvemen
 La chauffe séparée est supprimée du nouveau programme : le cycle suivant finit
 obligatoirement chauffes à zéro sans attendre un message.
 
-Le candidat V2 et ses empreintes sont revérifiés hors imprimante. Le second
-nettoyage reste verrouillé jusqu'au GO humain demandé.
+Le cycle V3 est techniquement vert, sans retry, avec cibles zéro, tête à
+`X81 Y280 Z35`, buse à `141,07 °C`, configurations exactes et profil `11 × 11`
+inchangé. Thomas a toutefois jugé le nettoyage visible non convaincant. Aucun
+V4 et aucune référence Z finale ne sont autorisés par cette gate. La procédure
+retenue est le nettoyage manuel de la buse par Thomas.

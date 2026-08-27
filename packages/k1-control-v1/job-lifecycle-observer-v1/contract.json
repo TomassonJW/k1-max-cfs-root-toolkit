@@ -1,0 +1,105 @@
+{
+  "schema": 1,
+  "mission": "G4-K1-CONTROL-JOB-LIFECYCLE-OBSERVER-V1",
+  "goal": "GOAL-P4-PHYSICAL-SLICES-QUALIFICATION-V1",
+  "requirements_supported": [
+    "TOOL_CHANGE_AND_RUNOUT",
+    "PAUSE_AND_RESUME",
+    "CANCEL_END_AND_SEPARATE_DISENGAGE"
+  ],
+  "authority": "passive_live_observer_only",
+  "status": "PASSIVE_OBSERVER_READY_LIVE_BASELINE_OK_PHYSICAL_CHECKPOINTS_NOT_STARTED",
+  "deployment_candidate": false,
+  "observer": {
+    "program": "packages/k1-control-v1/job-lifecycle-observer-v1/observer.py",
+    "program_sha256": "6c59c3000ac68e7b2c10926467ae954063e394b0183daee19e59cfb883d8fed1",
+    "runner": "packages/k1-control-v1/job-lifecycle-observer-v1/capture_observation.ps1",
+    "runner_sha256": "428c92321ed2f17850100eafb91efef2fab74c9e817a51b37b55d6aedb1f9539",
+    "analyzer": "packages/k1-control-v1/job-lifecycle-observer-v1/analyze_observation.py",
+    "analyzer_sha256": "4fb0b47a3a2c817cb1b3d05774a6467b82bd2784628c276fe34701c6b469c1d9",
+    "poll_interval_s": 0.25,
+    "duration_bounds_s": [5, 900],
+    "remote_file_write": false,
+    "transport": "stream_program_over_ssh_stdin_then_local_moonraker_get_only"
+  },
+  "checkpoints": [
+    "FULL_CYCLE",
+    "TOOL_CHANGE",
+    "RUNOUT_RECOVERY",
+    "PAUSE_RESUME",
+    "CANCEL",
+    "NORMAL_END",
+    "DISENGAGE"
+  ],
+  "observed_fields": [
+    "print_pause_virtual_sd_and_idle_states",
+    "progress_layer_duration_and_filament_counters",
+    "nozzle_and_bed_actual_and_target_temperatures",
+    "toolhead_and_gcode_positions",
+    "active_mesh_and_accepted_z",
+    "cfs_routes_command_and_connections",
+    "head_and_after_cutter_sensors"
+  ],
+  "proof_boundary": {
+    "observer_never_starts_or_changes_a_job": true,
+    "observer_never_starts_a_cfs_action": true,
+    "human_presence_and_immediate_stop_are_required_for_real_checkpoints": true,
+    "one_checkpoint_or_one_full_campaign_per_capture": true,
+    "capture_does_not_constitute_a_positive_physical_verdict": true,
+    "human_verdict_is_recorded_separately": true,
+    "filename_and_identity_values_are_not_exported": true
+  },
+  "invariants": {
+    "klippy_ready_before_capture": true,
+    "print_state_before_capture": ["standby", "printing", "paused"],
+    "both_cfs_connected_before_capture": true,
+    "no_cfs_command_active_before_capture": true,
+    "axes_homed_xyz_before_capture": true,
+    "active_profile": "k1_p001_t055_r001_n11x11",
+    "accepted_z_offset": -0.04,
+    "configuration_hashes_exact_before_capture": true,
+    "configuration_hashes_unchanged_after_capture": true
+  },
+  "forbidden": [
+    "GCODE",
+    "MOONRAKER_POST",
+    "CFS_COMMAND",
+    "HEATER_COMMAND",
+    "MOTION_COMMAND",
+    "JOB_CONTROL_COMMAND",
+    "REMOTE_FILE_WRITE",
+    "SERVICE_ACTION",
+    "AUTOMATIC_RETRY",
+    "IDENTITY_OR_FILENAME_EXPORT",
+    "AUTOMATED_HUMAN_VERDICT"
+  ],
+  "offline_verification": {
+    "synthetic_scenarios": 9,
+    "status": "OK"
+  },
+  "live_read_only_baseline": {
+    "capture_id": "20260828-goal3-v3-live-position-readonly-v1",
+    "sha256": "f5b7704f8471c081a8c14e2680ce02357073c72b9102e72f2943cbaadc2c289c",
+    "snapshot_count": 11,
+    "duration_s": 5,
+    "print_state": "standby",
+    "heater_targets_zero": true,
+    "both_cfs_connected": true,
+    "engaged_routes": [],
+    "active_profile": "k1_p001_t055_r001_n11x11",
+    "accepted_z_offset": -0.04,
+    "configuration_unchanged": true,
+    "observer_effect": false
+  },
+  "effects": {
+    "printer_connection": true,
+    "gcode": false,
+    "job_action": false,
+    "heating": false,
+    "motion": false,
+    "extrusion": false,
+    "cfs_action": false,
+    "remote_write": false,
+    "service_action": false
+  }
+}

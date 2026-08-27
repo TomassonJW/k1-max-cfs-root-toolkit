@@ -11,12 +11,11 @@ chaud ultérieur a montré qu'elle recollait le filament sur la buse. Sa
 géométrie reste une preuve historique, pas une validation fonctionnelle.
 
 Les cinq tranches du cycle impression/CFS ne sont pas encore qualifiées
-physiquement. Le premier nettoyage chaud est KO et Thomas a nettoyé la buse à
-la main. Le candidat V2 utilise seulement la grande brosse : six allers-retours
-à `F6000`, coupure de chauffe, remontée immédiate de `5 mm`, sortie de la brosse
-puis refroidissement au parc sûr. Son préflight frais en lecture seule est vert
-et il attend la préparation manuelle du filament puis le GO explicite de
-Thomas. L'éditeur de mesh point par point est prêt hors ligne,
+physiquement. Après le KO de la brosse du bac, le V2 non probant et un V3 à huit
+allers-retours diagonaux `F12000`, Thomas a jugé le résultat non convaincant.
+Le nettoyage automatique est fermé ; Thomas nettoiera la buse à la main avant
+chaque référence ou impression sensible. Aucune V4 ni référence automatique
+n'est autorisée par cette gate. L'éditeur de mesh point par point est prêt hors ligne,
 mais aucun profil dérivé n'a encore été qualifié physiquement sur toute la zone
 utile.
 
@@ -26,10 +25,14 @@ chauffe, mouvement ni écriture. Il pourra enregistrer la préparation manuelle
 du filament puis les futurs checkpoints CFS, sans jamais les déclencher ni les
 valider à la place de Thomas.
 
+Une première fenêtre `EMPTY_LOAD` destinée au chargement manuel de `T1A` n'a vu
+aucune action stock pendant 120 secondes. Elle est non probante et attend la
+clarification humaine avant reprise.
+
 Le Goal 3 ne pourra passer à `PASSED` qu'après preuves physiques pour les sept
 exigences, audit transversal des deux CFS, chauffes, Z, mesh, retours sûrs et
 réconciliation du dépôt avec les captures live.
 
-Le candidat V2 est revérifié, réépinglé et préflighté en lecture seule. Le
-registre reste à `passed=1`, `remaining=6` tant que le nettoyage réel et sa
-référence finale ne sont pas acceptés.
+Le registre reste à `passed=1`, `remaining=6`. La politique de nettoyage manuel
+est désormais close, mais la réconciliation finale du Goal 3 devra décider
+explicitement comment cette décision remplace l'ancienne exigence automatique.

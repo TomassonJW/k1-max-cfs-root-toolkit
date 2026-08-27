@@ -13,12 +13,21 @@ from typing import Dict
 BEST_PROFILE = "k1_p001_t055_r001_n11x11"
 REFERENCE_NOZZLE_C = 140.0
 REFERENCE_BED_C = 55.0
-BRUSH_CONTACT_Z_MM = 2.0
-BRUSH_RELEASE_Z_MM = 7.0
-HOT_ROUND_TRIPS = 6
-HOT_FEED_MM_MIN = 6000
+BRUSH_CONTACT_Z_MM = 2.5
+BRUSH_RELEASE_Z_MM = 7.5
+HOT_ROUND_TRIPS = 8
+HOT_FEED_MM_MIN = 12000
 LIFT_FEED_MM_MIN = 3000
-BRUSH_LANES_Y_MM = (303.5, 304.0, 304.5, 305.0, 305.5, 306.0)
+BRUSH_ZIGZAG_ROUND_TRIPS = (
+    ((66.0, 306.5), (99.0, 303.5)),
+    ((66.0, 306.0), (99.0, 304.0)),
+    ((66.0, 305.5), (99.0, 304.5)),
+    ((66.0, 305.0), (99.0, 305.5)),
+    ((66.0, 304.5), (99.0, 306.0)),
+    ((66.0, 304.0), (99.0, 306.5)),
+    ((66.0, 303.5), (99.0, 306.0)),
+    ((66.0, 304.0), (99.0, 305.5)),
+)
 
 
 class RecipeError(ValueError):
@@ -40,17 +49,17 @@ class MaterialRecipe:
 def hot_zigzag() -> str:
     lines = [
         "G90",
-        "G1 X99 Y303 Z35 F6000",
-        "G1 Z7 F3000",
-        "G1 Z2 F300",
+        "G1 X99 Y303.5 Z35 F6000",
+        "G1 Z7.5 F3000",
+        "G1 Z2.5 F300",
     ]
-    for y_mm in BRUSH_LANES_Y_MM:
-        lines.append("G1 X66 Y%.1f Z2 F%d" % (y_mm, HOT_FEED_MM_MIN))
-        lines.append("G1 X99 Y%.1f Z2 F%d" % (y_mm, HOT_FEED_MM_MIN))
+    for left, right in BRUSH_ZIGZAG_ROUND_TRIPS:
+        lines.append("G1 X%.1f Y%.1f Z2.5 F%d" % (left[0], left[1], HOT_FEED_MM_MIN))
+        lines.append("G1 X%.1f Y%.1f Z2.5 F%d" % (right[0], right[1], HOT_FEED_MM_MIN))
     lines.extend(
         (
             "TURN_OFF_HEATERS",
-            "G1 Z7 F3000",
+            "G1 Z7.5 F3000",
             "G1 X81 Y280 F6000",
             "G1 Z35 F3000",
             "M400",
@@ -87,7 +96,7 @@ def build_checkpoints(material: MaterialRecipe) -> Dict[str, str]:
     )
     return {
         "heat_and_observe_flow": heat_and_observe,
-        "hot_clean_six_round_trips_lift_exit_then_cool": hot_zigzag(),
+        "hot_clean_eight_diagonal_round_trips_lift_exit_then_cool": hot_zigzag(),
         "final_reference_once": final_reference,
         "emergency_thermal_stop": "TURN_OFF_HEATERS",
     }

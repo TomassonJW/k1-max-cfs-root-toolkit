@@ -4,7 +4,7 @@
   "goal": "GOAL-P4-PHYSICAL-SLICES-QUALIFICATION-V1",
   "requirement": "CFS_START_STATES_AND_TEMPERATURE_OWNER",
   "authority": "passive_live_observer_only",
-  "status": "LIVE_READ_ONLY_BASELINE_OK_READY_FOR_HUMAN_CHECKPOINTS",
+  "status": "LIVE_BASELINE_OK_EMPTY_LOAD_ATTEMPT_SAW_NO_ACTION_AWAITING_HUMAN_CLARIFICATION",
   "deployment_candidate": false,
   "observer": {
     "program": "packages/k1-control-v1/cfs-temp-owner-v1/observer.py",
@@ -99,6 +99,22 @@
       "service_action": false
     }
   },
+  "physical_checkpoint_attempts": [
+    {
+      "checkpoint": "EMPTY_LOAD",
+      "intended_route": "T1A",
+      "capture_id": "20260828-goal3-cfs-empty-load-t1a-v1",
+      "capture_sha256": "1505b66b796cfd9a9ddc89524b0175c528cf84107fef4239168cc04f63331c13",
+      "analysis_sha256": "e165dc94a48ef6fc21d03fb14fa4f2ebb6987bb92505e1b30c9f28cc6c5f7757",
+      "snapshot_count": 160,
+      "route_transition_count": 0,
+      "maximum_nozzle_target_c": 0.0,
+      "active_command_states": [""],
+      "classification": "NON_PROBATIVE_NO_STOCK_ACTION_OBSERVED",
+      "configuration_unchanged": true,
+      "observer_effect": false
+    }
+  ],
   "effects": {
     "printer_connection": true,
     "gcode": false,

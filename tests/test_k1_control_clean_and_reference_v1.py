@@ -63,7 +63,7 @@ class CleanAndReferenceContractTests(unittest.TestCase):
         cls.database = load_database_module()
 
     def test_live_preflight_has_connection_but_no_physical_effect(self) -> None:
-        self.assertEqual("V2_PRIMARY_BRUSH_PREFLIGHT_OK_AWAITING_MANUAL_FILAMENT_PREP_AND_HUMAN_GO", self.contract["status"])
+        self.assertEqual("CLOSED_AUTOMATIC_CLEANING_REJECTED_MANUAL_CLEANING_REQUIRED", self.contract["status"])
         self.assertTrue(self.contract["effects"]["printer_connection"])
         physical = dict(self.contract["effects"])
         physical.pop("printer_connection")
@@ -105,10 +105,10 @@ class CleanAndReferenceContractTests(unittest.TestCase):
 
     def test_cleaning_lifts_five_mm_and_exits_before_cooling(self) -> None:
         scripts = self.recipe.build_checkpoints(self.recipe.MaterialRecipe("TEST", 200.0))
-        clean = scripts["hot_clean_six_round_trips_lift_exit_then_cool"]
+        clean = scripts["hot_clean_eight_diagonal_round_trips_lift_exit_then_cool"]
         expected_tail = "\n".join((
             "TURN_OFF_HEATERS",
-            "G1 Z7 F3000",
+            "G1 Z7.5 F3000",
             "G1 X81 Y280 F6000",
             "G1 Z35 F3000",
             "M400",
@@ -117,13 +117,13 @@ class CleanAndReferenceContractTests(unittest.TestCase):
         self.assertNotIn("G1 X203", clean)
         self.assertNotIn("G1 X206", clean)
 
-    def test_hot_clean_has_six_fast_round_trips_inside_primary_brush(self) -> None:
+    def test_hot_clean_has_eight_fast_diagonal_round_trips_inside_primary_brush(self) -> None:
         scripts = self.recipe.build_checkpoints(self.recipe.MaterialRecipe("TEST", 200.0))
-        hot = scripts["hot_clean_six_round_trips_lift_exit_then_cool"]
-        self.assertIn("G1 X99 Y303 Z35 F6000\nG1 Z7 F3000\nG1 Z2 F300", hot)
-        self.assertEqual(6, hot.count("G1 X66 Y"))
-        self.assertEqual(6, hot.count("G1 X99 Y") - 1)
-        self.assertEqual(12, hot.count("Z2 F6000"))
+        hot = scripts["hot_clean_eight_diagonal_round_trips_lift_exit_then_cool"]
+        self.assertIn("G1 X99 Y303.5 Z35 F6000\nG1 Z7.5 F3000\nG1 Z2.5 F300", hot)
+        self.assertEqual(8, hot.count("G1 X66.0 Y"))
+        self.assertEqual(8, hot.count("G1 X99.0 Y"))
+        self.assertEqual(16, hot.count("Z2.5 F12000"))
         self.assertIn("TURN_OFF_HEATERS", hot)
 
     def test_material_capture_exports_only_safe_slot_labels(self) -> None:
@@ -150,11 +150,12 @@ class CleanAndReferenceContractTests(unittest.TestCase):
     def test_physical_runner_is_human_gated_and_has_no_remote_write(self) -> None:
         runner = (PACKAGE / "run_clean_reference.ps1").read_text(encoding="utf-8")
         for token in (
-            "GEETECH_220_PRIMARY_BRUSH_V2_CONFIRMED",
+            "GEETECH_220_PRIMARY_BRUSH_V3_CONFIRMED",
             "FINAL_NOZZLE_CLEAN_OK",
             "THERMAL_STOP_REQUIRED",
         ):
             self.assertIn(token, runner)
+        self.assertIn("Voie automatique fermée", runner)
         self.assertIn("$RemoteProgram | & ssh.exe", runner)
         self.assertIn("remote_file_write = $false", runner)
         self.assertIn("extrusion = $false", runner)
@@ -170,15 +171,16 @@ class CleanAndReferenceContractTests(unittest.TestCase):
         self.assertNotIn('"NOZZLE_CLEAR', remote)
         self.assertNotRegex(remote, r'(?m)^\s*"G[01].*\bE[-+0-9]')
         self.assertIn('"G1 X81 Y280 F6000"', remote)
-        self.assertIn('"G1 X99 Y303 Z35 F6000"', remote)
-        self.assertIn('"G1 Z2 F300"', remote)
-        self.assertIn('"G1 X66 Y%.1f Z2 F%d"', remote)
-        self.assertIn("HOT_FEED_MM_MIN = 6000", remote)
+        self.assertIn('"G1 X99 Y303.5 Z35 F6000"', remote)
+        self.assertIn('"G1 Z2.5 F300"', remote)
+        self.assertIn('"G1 X%.1f Y%.1f Z2.5 F%d"', remote)
+        self.assertIn("HOT_FEED_MM_MIN = 12000", remote)
         self.assertIn("COOLING_TIMEOUT_S = 300.0", remote)
         self.assertNotIn("cooling_move", remote)
         self.assertIn("off_brush_cooling_timeout", remote)
         self.assertIn('"TURN_OFF_HEATERS"', remote)
         self.assertNotIn('action not in ("preflight", "heat"', remote)
+        self.assertIn("ACTION_CLOSED_MANUAL_CLEANING_REQUIRED", remote)
 
     def test_clean_cycle_cannot_leave_a_hot_target_while_waiting_for_human(self) -> None:
         runner = (PACKAGE / "run_clean_reference.ps1").read_text(encoding="utf-8")
@@ -186,7 +188,7 @@ class CleanAndReferenceContractTests(unittest.TestCase):
         self.assertNotIn("'Heat'", runner)
         self.assertIn("'CleanCycle'", runner)
         self.assertNotIn('"clean-cycle-finish"', remote)
-        self.assertIn('"TURN_OFF_HEATERS",\n        "G1 Z7 F3000",\n        "G1 X81 Y280 F6000"', remote)
+        self.assertIn('"TURN_OFF_HEATERS",\n        "G1 Z7.5 F3000",\n        "G1 X81 Y280 F6000"', remote)
         self.assertTrue(self.contract["thermal_contract"]["clean_cycle_finishes_with_heater_targets_zero"])
 
     def test_history_analyzer_reports_only_safe_markers(self) -> None:
@@ -243,7 +245,7 @@ class CleanAndReferenceContractTests(unittest.TestCase):
         self.assertFalse(evidence["material_inventory_capture"]["previous_nozzle_material_proven"])
         self.assertTrue(evidence["cfs_history_capture"]["stock_load_marker_after_original_T1A_unload"])
         self.assertFalse(evidence["cfs_history_capture"]["route_for_latest_stock_load_proven"])
-        self.assertEqual("HUMAN_ACTION_AND_GATE_REQUIRED", self.contract["only_remaining_pre_effect_fact"]["status"])
+        self.assertEqual("NO_AUTOMATIC_EFFECT_AUTHORIZED", self.contract["only_remaining_pre_effect_fact"]["status"])
         self.assertTrue(self.contract["only_remaining_pre_effect_fact"]["material_and_target_human_confirmed"])
 
     def test_human_confirmed_geetech_recipe_is_220c(self) -> None:
@@ -254,11 +256,15 @@ class CleanAndReferenceContractTests(unittest.TestCase):
 
     def test_every_hot_lane_stays_inside_primary_brush_and_secondary_is_forbidden(self) -> None:
         clean = self.recipe.hot_zigzag()
-        for y_mm in self.recipe.BRUSH_LANES_Y_MM:
-            self.assertGreaterEqual(y_mm, 303.0)
-            self.assertLessEqual(y_mm, 307.0)
-            self.assertIn("G1 X66 Y%.1f Z2 F6000" % y_mm, clean)
-            self.assertIn("G1 X99 Y%.1f Z2 F6000" % y_mm, clean)
+        self.assertEqual(8, len(self.recipe.BRUSH_ZIGZAG_ROUND_TRIPS))
+        previous = (99.0, 303.5)
+        for left, right in self.recipe.BRUSH_ZIGZAG_ROUND_TRIPS:
+            for point in (left, right):
+                self.assertGreaterEqual(point[1], 303.0)
+                self.assertLessEqual(point[1], 307.0)
+                self.assertNotEqual(previous[1], point[1])
+                self.assertIn("G1 X%.1f Y%.1f Z2.5 F12000" % point, clean)
+                previous = point
         self.assertIn("SECONDARY_PURGE_BIN_BRUSH_AUTOMATIC_USE", self.contract["forbidden"])
 
     def test_material_database_capture_maps_current_codes(self) -> None:

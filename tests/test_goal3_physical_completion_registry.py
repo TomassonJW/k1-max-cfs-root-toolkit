@@ -49,8 +49,8 @@ class Goal3PhysicalCompletionRegistryTests(unittest.TestCase):
 
     def test_current_gate_is_clean_and_reference_design_and_effect_is_blocked(self):
         gate = self.matrix["current_human_gate"]
-        self.assertEqual("PRIMARY_BRUSH_V2_MANUAL_FILAMENT_PREP_THEN_HUMAN_GO", gate["checkpoint"])
-        self.assertEqual("GEETECH_220_PRIMARY_BRUSH_V2_CONFIRMED", gate["required_human_verdict"])
+        self.assertEqual("CFS_EMPTY_LOAD_T1A_MANUAL_ACTION_REQUIRED", gate["checkpoint"])
+        self.assertEqual("CFS_EMPTY_LOAD_T1A_VISIBLE_PURGE_OK", gate["required_human_verdict"])
         self.assertTrue(gate["next_effect_blocked"])
 
     def test_current_ledger_verifies_as_in_progress_without_effect(self):

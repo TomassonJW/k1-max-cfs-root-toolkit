@@ -5,11 +5,11 @@
   "goal_status": "IN_PROGRESS",
   "completion_audit_evidence": null,
   "current_human_gate": {
-    "requirement_id": "AUTOMATIC_CLEAN_AND_FINAL_REFERENCE",
-    "checkpoint": "PRIMARY_BRUSH_V2_MANUAL_FILAMENT_PREP_THEN_HUMAN_GO",
-    "active_gate": "G4-K1-CONTROL-CLEAN-AND-REFERENCE-V1",
-    "technical_status": "V1_PHYSICAL_KO_V2_READ_ONLY_PREFLIGHT_OK_AWAITING_MANUAL_PREP_AND_HUMAN_GO",
-    "required_human_verdict": "GEETECH_220_PRIMARY_BRUSH_V2_CONFIRMED",
+    "requirement_id": "CFS_START_STATES_AND_TEMPERATURE_OWNER",
+    "checkpoint": "CFS_EMPTY_LOAD_T1A_MANUAL_ACTION_REQUIRED",
+    "active_gate": "G4-K1-CONTROL-CFS-TEMP-OWNER-V1",
+    "technical_status": "AUTOMATIC_CLEANING_CLOSED_KO_MANUAL_CLEANING_CANONICAL_CFS_CAPTURE_SAW_NO_ACTION",
+    "required_human_verdict": "CFS_EMPTY_LOAD_T1A_VISIBLE_PURGE_OK",
     "next_effect_blocked": true
   },
   "requirements": [
@@ -29,7 +29,7 @@
     {
       "order": 2,
       "id": "AUTOMATIC_CLEAN_AND_FINAL_REFERENCE",
-      "status": "IN_PROGRESS_V1_PHYSICAL_KO_V2_PRIMARY_BRUSH_PREFLIGHT_OK_AWAITING_MANUAL_PREP_AND_HUMAN_GO",
+      "status": "CLOSED_AUTOMATIC_CLEANING_REJECTED_MANUAL_CLEANING_CANONICAL",
       "slice_id": "CLEAN-AND-REFERENCE-V1",
       "evidence": "packages/k1-control-v1/clean-and-reference-v1/contract.json",
       "required_proofs": [

@@ -18,12 +18,21 @@ BEST_PROFILE = "k1_p001_t055_r001_n11x11"
 BEST_PROFILE_SHA256 = "58fd96c55129bf7a17ba890d309cb3cd5e2926ec271d735b60392f8369da0a61"
 REFERENCE_NOZZLE_C = 140.0
 REFERENCE_BED_C = 55.0
-BRUSH_CONTACT_Z_MM = 2.0
-BRUSH_RELEASE_Z_MM = 7.0
-HOT_ROUND_TRIPS = 6
-HOT_FEED_MM_MIN = 6000
+BRUSH_CONTACT_Z_MM = 2.5
+BRUSH_RELEASE_Z_MM = 7.5
+HOT_ROUND_TRIPS = 8
+HOT_FEED_MM_MIN = 12000
 LIFT_FEED_MM_MIN = 3000
-BRUSH_LANES_Y_MM = (303.5, 304.0, 304.5, 305.0, 305.5, 306.0)
+BRUSH_ZIGZAG_ROUND_TRIPS = (
+    ((66.0, 306.5), (99.0, 303.5)),
+    ((66.0, 306.0), (99.0, 304.0)),
+    ((66.0, 305.5), (99.0, 304.5)),
+    ((66.0, 305.0), (99.0, 305.5)),
+    ((66.0, 304.5), (99.0, 306.0)),
+    ((66.0, 304.0), (99.0, 306.5)),
+    ((66.0, 303.5), (99.0, 306.0)),
+    ((66.0, 304.0), (99.0, 305.5)),
+)
 COOLING_TIMEOUT_S = 300.0
 SAFE_ID = re.compile(r"^[A-Za-z0-9._-]+$")
 
@@ -218,7 +227,7 @@ def validate_known_clean_cycle_start(snapshot):
     actual = snapshot["toolhead"]["gcode_position"]
     if not isinstance(actual, list) or len(actual) < 3:
         raise GateError("gcode_position_missing")
-    accepted = ([203.0, 273.0, 35.0], [81.0, 280.0, 35.0])
+    accepted = ([203.0, 273.0, 35.0], [81.0, 280.0, 35.0], [38.0, 100.0, 35.0])
     if not any(all(abs(float(actual[index]) - expected[index]) <= 0.03 for index in range(3)) for expected in accepted):
         raise GateError("clean_cycle_start_position_unknown")
 
@@ -262,16 +271,16 @@ def scripts(cleaning_target):
 def hot_zigzag():
     lines = [
         "G90",
-        "G1 X99 Y303 Z35 F6000",
-        "G1 Z7 F3000",
-        "G1 Z2 F300",
+        "G1 X99 Y303.5 Z35 F6000",
+        "G1 Z7.5 F3000",
+        "G1 Z2.5 F300",
     ]
-    for y_mm in BRUSH_LANES_Y_MM:
-        lines.append("G1 X66 Y%.1f Z2 F%d" % (y_mm, HOT_FEED_MM_MIN))
-        lines.append("G1 X99 Y%.1f Z2 F%d" % (y_mm, HOT_FEED_MM_MIN))
+    for left, right in BRUSH_ZIGZAG_ROUND_TRIPS:
+        lines.append("G1 X%.1f Y%.1f Z2.5 F%d" % (left[0], left[1], HOT_FEED_MM_MIN))
+        lines.append("G1 X%.1f Y%.1f Z2.5 F%d" % (right[0], right[1], HOT_FEED_MM_MIN))
     lines.extend((
         "TURN_OFF_HEATERS",
-        "G1 Z7 F3000",
+        "G1 Z7.5 F3000",
         "G1 X81 Y280 F6000",
         "G1 Z35 F3000",
         "M400",
@@ -438,6 +447,14 @@ def main(argv=None):
     action, material_id, target_text = arguments
     if action not in ("preflight", "clean-cycle", "reference", "stop", "validate"):
         print(json.dumps({"mission": MISSION, "status": "INVALID_ACTION"}, sort_keys=True))
+        return 2
+    if action in ("clean-cycle", "reference"):
+        print(json.dumps({
+            "mission": MISSION,
+            "action": action,
+            "status": "ACTION_CLOSED_MANUAL_CLEANING_REQUIRED",
+            "effects": effects(action, False),
+        }, sort_keys=True))
         return 2
     if not SAFE_ID.fullmatch(material_id) or material_id.lower() in ("unknown", "none"):
         print(json.dumps({"mission": MISSION, "status": "INVALID_MATERIAL"}, sort_keys=True))
