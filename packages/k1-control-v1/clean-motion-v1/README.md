@@ -1,7 +1,7 @@
 # G4-K1-CONTROL-CLEAN-MOTION-V1
 
-Statut : **checkpoint C accepté humainement ; meilleur profil `11 × 11` actif ;
-prochain rapprochement pas encore lancé**.
+Statut : **checkpoint D1 techniquement vert ; verdict visuel de Thomas attendu ;
+D2 verrouillé ; meilleur profil `11 × 11` actif**.
 
 Cette gate est la première tranche physique du Goal 3. Son préalable corrigé
 est satisfait : `G4-K1-CONTROL-BEST-CURRENT-MESH-RESTORE-V1` a remis actif le
@@ -41,5 +41,16 @@ seulement envoyé `TURN_OFF_HEATERS` et rechargé le `11 × 11`, sans mouvement.
 Le validateur corrigé lit la position G-code `50,00 mm` et borne séparément la
 compensation physique. La validation R2 est verte. Thomas a confirmé
 `CHECKPOINT C OK`. Le checkpoint n'a pas été rejoué et ne doit pas l'être.
+
+Le rapprochement D1 a ensuite été exécuté une seule fois. La tête est passée de
+`X156,657 Y142,271 Z50` à `X81 Y280 Z50` à `20 mm/s`. Ce point reste
+`24,5 mm` avant le début Y de la zone stock déclarée. La lecture finale confirme
+la consigne G-code exacte, le Z physique compensé `50,23 mm`, les chauffes à
+zéro, aucune route CFS, les configurations inchangées et le `11 × 11` actif.
+Le statut est `D1_TECHNICAL_OK_AWAITING_HUMAN_VERDICT`.
+
+D1 ne doit pas être rejoué. D2, prévu vers `X81 Y300 Z50` à `10 mm/s`, est
+interdit tant que Thomas n'a pas confirmé visuellement l'absence de bruit,
+contact, obstacle ou perte de visibilité pendant D1.
 
 Voir aussi `docs/42-clean-motion-v1-premiere-tranche-physique.md`.

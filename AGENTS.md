@@ -63,8 +63,11 @@ buse observable et l'arrêt immédiat possible ; le checkpoint C a référencé 
 rechargé le `11 × 11` et commandé `Z=50 mm` une seule fois ; le premier
 validateur a produit un faux KO en lisant le Z physique compensé `50,23 mm`,
 sans rejouer le mouvement ; la validation corrigée en lecture seule est verte
-et Thomas a confirmé `CHECKPOINT C OK` ; le prochain rapprochement vers la
-brosse n'a pas encore été lancé et gardera son propre checkpoint ;
+et Thomas a confirmé `CHECKPOINT C OK` ; D1 a ensuite été exécuté une seule fois
+à froid jusqu'à `X81 Y280 Z50`, encore `24,5 mm` avant la zone stock ; son état
+technique final est vert, avec chauffes zéro, aucune route CFS, configurations
+inchangées et `11 × 11` actif ; le verdict visuel de Thomas manque encore, D2
+n'a pas été lancé et D1 ne doit pas être rejoué ;
 GATEWAY-PRIVATE-LAN-NO-AUTH-V1 est installé et validé : le port `4409` ne
 demande plus de mot de passe, reste limité aux réseaux IPv4 privés, et présente
 uniquement son proxy local approuvé à Moonraker ; production remains closed**.

@@ -25,7 +25,11 @@ correction point par point sur une copie versionnée du `11 × 11` immuable.
 référencés, `11 × 11` rechargé, consigne `Z=50 mm`. La validation corrigée en
 lecture seule est verte après un faux KO local lié à la compensation du mesh.
 Thomas a confirmé `CHECKPOINT C OK`. Le mouvement ne sera pas rejoué ; le
-prochain rapprochement lent n'a pas encore été lancé.
+rapprochement D1 a ensuite été exécuté une seule fois à froid jusqu'à
+`X81 Y280 Z50`, encore `24,5 mm` avant la zone stock déclarée. L'état technique
+final est vert, sans chauffe, route CFS ni changement de configuration, et avec
+le `11 × 11` actif. D1 attend le verdict visuel de Thomas ; D2 n'a pas été
+lancé et D1 ne doit pas être rejoué.
 
 ## Archive historique — clôture initiale du Goal 2
 

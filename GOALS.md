@@ -10,9 +10,9 @@ Ce document ne crée aucun Goal Codex. Le compteur canonique reste fermé à
 **quatre Goals pour terminer le projet** : aucun cinquième Goal obligatoire ne
 sera ajouté. Les Goals 1 et 2 sont clos. ADR-029
 établit qu'aucun profil actuel n'est robuste : tous ont des défauts de bord. Le
-`11 × 11`, meilleur profil observé, est actif et revérifié. Le checkpoint C du
-Goal 3 est accepté humainement. Le prochain incrément est le rapprochement lent
-vers la brosse, sous observation.
+`11 × 11`, meilleur profil observé, est actif et revérifié. Le checkpoint D1 du
+Goal 3 est techniquement vert et attend le verdict visuel de Thomas. D2 reste
+verrouillé.
 
 ## Vue rapide
 
@@ -20,7 +20,7 @@ vers la brosse, sous observation.
 | --- | --- | --- | --- |
 | 1 | `GOAL-P4-OFFLINE-CYCLE-CFS-V1` | terminé hors imprimante | système logiciel complet simulé et plan futur inerte vérifié |
 | 2 | `GOAL-P4-K1-READ-ONLY-QUALIFICATION-V1` | terminé en lecture seule ; écart de mesh alors observé, corrigé par une gate distincte | réponses et délais réels qualifiés sans commande ni impression |
-| 3 | `GOAL-P4-PHYSICAL-SLICES-QUALIFICATION-V1` | en cours ; checkpoint C CLEAN-MOTION accepté | toutes les fonctions physiques et le profil de bord validés séparément |
+| 3 | `GOAL-P4-PHYSICAL-SLICES-QUALIFICATION-V1` | en cours ; D1 CLEAN-MOTION techniquement vert, verdict humain attendu | toutes les fonctions physiques et le profil de bord validés séparément |
 | 4 | `GOAL-P4-DAILY-CUTOVER-V1` | prévu après Goal 3 | bascule unifiée, validation production et clôture définitive du projet |
 
 ## Goal 1 — Terminer le système hors imprimante
@@ -98,14 +98,22 @@ ont depuis reçu leur autorité distincte.
 
 Identifiant : `GOAL-P4-PHYSICAL-SLICES-QUALIFICATION-V1`
 
-État : **en cours ; checkpoint C de CLEAN-MOTION accepté par Thomas ; meilleur
-profil actuel `11 × 11` actif ; prochain rapprochement pas encore lancé**.
+État : **en cours ; checkpoint D1 de CLEAN-MOTION techniquement vert ; verdict
+visuel de Thomas attendu ; D2 non lancé ; meilleur profil actuel `11 × 11`
+actif**.
 
 Le checkpoint C a référencé XYZ, rechargé le `11 × 11`, commandé `Z=50 mm` et
 attendu la fin. Un premier faux KO local a confondu la position physique
 compensée `50,23 mm` avec la consigne. Aucun mouvement n'a été rejoué ; la
 validation corrigée en lecture seule est verte. Thomas a donné
 `CHECKPOINT C OK`. Ce checkpoint ne doit pas être rejoué.
+
+D1 a ensuite déplacé une seule fois la tête à froid jusqu'à
+`X81 Y280 Z50`, encore `24,5 mm` avant la zone stock déclarée. La machine est
+restée froide, au repos, sans route CFS, configurations inchangées et profil
+`11 × 11` actif. D1 ne doit pas être rejoué. D2 reste interdit jusqu'au verdict
+visuel positif de Thomas sur l'absence de bruit, contact, obstacle ou perte de
+visibilité.
 
 Ce qui sera réellement fait, une petite tranche à la fois :
 

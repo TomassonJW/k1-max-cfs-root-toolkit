@@ -1,6 +1,6 @@
 {
   "mission": "G4-K1-CONTROL-CLEAN-MOTION-V1-READ-ONLY-SOURCES",
-  "status": "checkpoint_c_human_ok_next_approach_not_run",
+  "status": "checkpoint_d1_technical_ok_awaiting_human_verdict",
   "collector": {
     "path": "packages/k1-control-v1/clean-motion-v1/remote_geometry_read_only.py",
     "sha256": "36b077e706cc2532f89cbb2389442d667738a9fbb0ef7a7b5b864bd3f8c58229"
@@ -59,5 +59,39 @@
     "human_verdict": "CHECKPOINT_C_OK",
     "human_verdict_source": "human_operator_message",
     "human_verdict_date": "2026-08-27"
+  },
+  "checkpoint_d": {
+    "remote_program": {
+      "path": "packages/k1-control-v1/clean-motion-v1/remote_checkpoint_d.py",
+      "sha256": "795560f66883cc4371ff4e2086e28d7430ce7bca476ae67dc1a689f8ae460be4"
+    },
+    "runner": {
+      "path": "packages/k1-control-v1/clean-motion-v1/run_checkpoint_d.ps1",
+      "sha256": "76a9fe7267cff42d375e246dca071a1c444ea2086175e3a8c261243671faee21",
+      "d2_required_previous_human_verdict": "D1_OK",
+      "d3_required_previous_human_verdict": "D2_OK"
+    },
+    "preflight_d1": {
+      "path": "inventory/raw/20260827-goal3-clean-motion-d1-preflight/clean-motion-checkpoint-d.safe.jsonl",
+      "sha256": "46f1879fbe3e75000b6a33c6a2e79ad570cdbfa4c1e8c4e5514fd3fc11e38b69",
+      "status": "D1_PREFLIGHT_OK"
+    },
+    "run_d1": {
+      "path": "inventory/raw/20260827-goal3-clean-motion-d1-run/clean-motion-checkpoint-d.safe.jsonl",
+      "sha256": "5ba7c1e3c5ed2cac0fec9186f3a0695acf774d38a7f5152ed29592740b16ccc2",
+      "status": "D1_TECHNICAL_OK_AWAITING_HUMAN_VERDICT",
+      "start_gcode_position_mm": [156.657, 142.271, 50.0],
+      "target_gcode_position_mm": [81.0, 280.0, 50.0],
+      "observed_gcode_position_mm": [81.0, 280.0, 50.0],
+      "observed_mesh_compensated_physical_position_mm": [81.0, 280.0, 50.23],
+      "distance_before_declared_brush_zone_mm": 24.5,
+      "heater_targets_zero": true,
+      "cfs_route_absent": true,
+      "active_profile_after": "k1_p001_t055_r001_n11x11",
+      "human_verdict": null
+    },
+    "d2_blocked_until_d1_human_positive": true,
+    "d2_executed": false,
+    "d3_executed": false
   }
 }

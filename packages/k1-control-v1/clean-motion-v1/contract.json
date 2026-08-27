@@ -1,8 +1,8 @@
 {
   "contract_id": "G4-K1-CONTROL-CLEAN-MOTION-V1",
-  "status": "checkpoint_c_human_ok_next_approach_not_run",
+  "status": "checkpoint_d1_technical_ok_awaiting_human_verdict",
   "scope": "cold_brush_geometry_and_collision_free_trajectory_only",
-  "authority": "checkpoint_c_authority_consumed_next_motion_human_gated",
+  "authority": "checkpoint_d1_authority_consumed_d2_blocked_until_human_positive",
   "deployment_candidate": false,
   "read_only_connection_qualified": true,
   "printer_effect_connection": true,
@@ -12,6 +12,9 @@
     "BED_MESH_PROFILE LOAD=k1_p001_t055_r001_n11x11",
     "G90",
     "G1 Z50 F600",
+    "M400",
+    "G90",
+    "G1 X81 Y280 Z50 F1200",
     "M400"
   ],
   "service_actions": [],
@@ -74,6 +77,37 @@
     "human_verdict_date": "2026-08-27",
     "next_motion_blocked_until_human_positive": false,
     "next_motion_requires_fresh_preflight_and_live_observation": true
+  },
+  "checkpoint_d": {
+    "remote_program": "packages/k1-control-v1/clean-motion-v1/remote_checkpoint_d.py",
+    "remote_program_sha256": "795560f66883cc4371ff4e2086e28d7430ce7bca476ae67dc1a689f8ae460be4",
+    "runner": "packages/k1-control-v1/clean-motion-v1/run_checkpoint_d.ps1",
+    "runner_sha256": "76a9fe7267cff42d375e246dca071a1c444ea2086175e3a8c261243671faee21",
+    "d1": {
+      "technical_status": "D1_TECHNICAL_OK_AWAITING_HUMAN_VERDICT",
+      "executed_once": true,
+      "automatic_rerun_forbidden": true,
+      "start_gcode_position_mm": [156.657, 142.271, 50.0],
+      "target_gcode_position_mm": [81.0, 280.0, 50.0],
+      "observed_gcode_position_mm": [81.0, 280.0, 50.0],
+      "observed_mesh_compensated_physical_position_mm": [81.0, 280.0, 50.23],
+      "distance_before_declared_brush_zone_mm": 24.5,
+      "heater_targets_zero": true,
+      "cfs_route_absent": true,
+      "active_profile_after": "k1_p001_t055_r001_n11x11",
+      "human_verdict": null,
+      "d2_blocked_until_human_positive": true
+    },
+    "d2": {
+      "target_gcode_position_mm": [81.0, 300.0, 50.0],
+      "feedrate_mm_per_min": 600,
+      "executed": false
+    },
+    "d3": {
+      "target_gcode_position_mm": [81.0, 303.0, 50.0],
+      "feedrate_mm_per_min": 300,
+      "executed": false
+    }
   },
   "phases": [
     {

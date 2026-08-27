@@ -1,7 +1,7 @@
 # CLEAN-MOTION-V1 — première tranche physique du Goal 3
 
-Statut : **checkpoint C techniquement et humainement vert ; meilleur profil
-actuel `11 × 11` actif ; prochain rapprochement pas encore lancé**.
+Statut : **checkpoint D1 techniquement vert ; verdict visuel attendu ; D2
+verrouillé ; meilleur profil actuel `11 × 11` actif**.
 
 ## Faits déjà qualifiés sans mouvement
 
@@ -65,6 +65,17 @@ un faux KO. Aucun mouvement n'a été rejoué. La validation corrigée en lectur
 seule est verte. Les coordonnées de contact et de brossage restent absentes
 jusqu'au verdict humain sur ce checkpoint. Thomas a depuis confirmé
 `CHECKPOINT C OK` ; le mouvement ne sera pas rejoué.
+
+Le checkpoint D1 a ensuite approché à froid et à hauteur libre jusqu'à
+`X81 Y280 Z50`, à `20 mm/s`. Ce point est encore `24,5 mm` avant le début Y de
+la zone stock déclarée. La position G-code finale est exacte ; la position
+physique compensée vaut `Z=50,23 mm`. Les chauffes sont à zéro, aucune route CFS
+n'est engagée, les configurations n'ont pas changé et le `11 × 11` exact reste
+actif. D1 est donc techniquement vert, mais pas encore humainement qualifié.
+
+Thomas doit confirmer qu'il n'a observé ni bruit, ni contact, ni obstacle, ni
+perte de visibilité. Sans ce verdict, D2 vers `X81 Y300 Z50` à `10 mm/s` reste
+interdit. D1 ne sera pas rejoué.
 
 ## Verdict
 

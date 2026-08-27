@@ -154,8 +154,11 @@ La gate restera froide : aucune chauffe, extrusion, action CFS, mesure de mesh,
 écriture Z, configuration distante, restart ou retry automatique. Toute perte
 de visibilité, résistance, bruit inhabituel ou état ambigu impose l'arrêt.
 
-Le premier checkpoint isolé est techniquement vert et Thomas a confirmé
-`CHECKPOINT C OK`. Le mouvement ne doit pas être rejoué. `gpt-5.6-terra` avec
+Le checkpoint C est techniquement vert et Thomas a confirmé
+`CHECKPOINT C OK`. Il ne doit pas être rejoué. D1 a ensuite été exécuté une
+seule fois à froid jusqu'à `X81 Y280 Z50`, encore `24,5 mm` avant la zone stock.
+L'état technique est vert, mais le verdict visuel de Thomas manque encore ; D2
+reste verrouillé et D1 ne doit pas être rejoué. `gpt-5.6-terra` avec
 raisonnement `high` est conseillé pour piloter les checkpoints et les preuves.
 L'option `medium` est moins coûteuse, avec plus de risque de reprise si une
 observation physique est ambiguë.
@@ -166,8 +169,8 @@ observation physique est ambiguë.
 > `docs/HANDOFF-SESSION-COMPLETE-2026-08-27.md`. Le meilleur profil observé
 > `11 × 11` est actif ; aucun profil actuel n'est qualifié robuste. Je suis
 > devant la K1, plateau libre, brosse visible, buse observable et arrêt immédiat
-> possible. Le checkpoint C est `OK`, a déjà été exécuté une fois et ne doit pas
-> être rejoué. Prépare le rapprochement suivant avec un préflight frais et une
-> observation directe. Ne chauffe, n'extrude et ne lance aucun CFS.
+> possible. Le checkpoint C est `OK` et D1 a déjà été exécuté une fois jusqu'à
+> `X81 Y280 Z50` ; aucun des deux ne doit être rejoué. Attends mon verdict
+> visuel D1 avant tout D2. Ne chauffe, n'extrude et ne lance aucun CFS.
 
 La tâche source reste visible et ne doit pas être archivée.

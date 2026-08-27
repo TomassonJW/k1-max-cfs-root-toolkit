@@ -27,6 +27,10 @@ checkpoint = load_module(
     "clean_motion_checkpoint_c_test",
     PACKAGE / "remote_checkpoint_c.py",
 )
+checkpoint_d = load_module(
+    "clean_motion_checkpoint_d_test",
+    PACKAGE / "remote_checkpoint_d.py",
+)
 
 
 class CleanMotionV1ContractTests(unittest.TestCase):
@@ -35,16 +39,20 @@ class CleanMotionV1ContractTests(unittest.TestCase):
         cls.contract = json.loads((PACKAGE / "contract.json").read_text(encoding="utf-8"))
         cls.form = json.loads((PACKAGE / "human-observation-form.json").read_text(encoding="utf-8"))
 
-    def test_gate_is_not_deployable_and_contains_only_checkpoint_c_commands(self):
+    def test_gate_is_not_deployable_and_records_only_executed_commands(self):
         self.assertEqual(
-            "checkpoint_c_human_ok_next_approach_not_run",
+            "checkpoint_d1_technical_ok_awaiting_human_verdict",
             self.contract["status"],
         )
         self.assertFalse(self.contract["deployment_candidate"])
         self.assertTrue(self.contract["read_only_connection_qualified"])
         self.assertTrue(self.contract["printer_effect_connection"])
         self.assertEqual([], self.contract["remote_commands"])
-        self.assertEqual(checkpoint.CHECKPOINT_SCRIPT.split("\n"), self.contract["gcode_commands"])
+        self.assertEqual(
+            checkpoint.CHECKPOINT_SCRIPT.split("\n")
+            + checkpoint_d.CHECKPOINTS["d1"]["script"].split("\n"),
+            self.contract["gcode_commands"],
+        )
         self.assertEqual([], self.contract["service_actions"])
 
     def test_read_only_evidence_is_pinned_and_keeps_software_geometry_distinct(self):
@@ -91,7 +99,7 @@ class CleanMotionV1ContractTests(unittest.TestCase):
         self.assertTrue(
             all(value is None for key, value in geometry.items() if key != "safe_clearance_z")
         )
-        self.assertEqual("CHECKPOINT_C_HUMAN_OK_NEXT_APPROACH_NOT_RUN", self.form["status"])
+        self.assertEqual("D1_TECHNICAL_OK_AWAITING_HUMAN_VERDICT", self.form["status"])
         self.assertTrue(self.form["operator_present"])
         self.assertTrue(self.form["plate_clear"])
         self.assertTrue(self.form["brush_installed_and_visible"])
@@ -292,6 +300,67 @@ class CleanMotionV1ContractTests(unittest.TestCase):
         self.assertEqual("CHECKPOINT_C_OK", checkpoint_evidence["human_verdict"])
         self.assertEqual("OK", self.contract["checkpoint_c"]["human_verdict"])
         self.assertFalse(self.contract["checkpoint_c"]["next_motion_blocked_until_human_positive"])
+
+    def test_checkpoint_d_stages_three_high_clearance_positions_without_contact(self):
+        self.assertEqual(["d1", "d2", "d3"], sorted(checkpoint_d.CHECKPOINTS))
+        self.assertEqual([81.0, 280.0, 50.0], checkpoint_d.CHECKPOINTS["d1"]["after"])
+        self.assertEqual([81.0, 300.0, 50.0], checkpoint_d.CHECKPOINTS["d2"]["after"])
+        self.assertEqual([81.0, 303.0, 50.0], checkpoint_d.CHECKPOINTS["d3"]["after"])
+        self.assertEqual(checkpoint_d.CHECKPOINTS["d1"]["after"], checkpoint_d.CHECKPOINTS["d2"]["before"])
+        self.assertEqual(checkpoint_d.CHECKPOINTS["d2"]["after"], checkpoint_d.CHECKPOINTS["d3"]["before"])
+
+    def test_checkpoint_d_scripts_are_cold_xy_only_and_slow_down(self):
+        scripts = [checkpoint_d.CHECKPOINTS[name]["script"] for name in ("d1", "d2", "d3")]
+        self.assertIn("F1200", scripts[0])
+        self.assertIn("F600", scripts[1])
+        self.assertIn("F300", scripts[2])
+        for source in scripts:
+            upper = source.upper()
+            self.assertIn("Z50", upper)
+            for forbidden in (
+                "M104",
+                "M109",
+                "M140",
+                "M190",
+                "BOX_",
+                "G28",
+                "BED_MESH_CALIBRATE",
+                " E",
+            ):
+                self.assertNotIn(forbidden, upper)
+
+    def test_checkpoint_d_projection_excludes_cfs_identity_and_remote_writes(self):
+        source = (PACKAGE / "remote_checkpoint_d.py").read_text(encoding="utf-8")
+        self.assertNotIn('get("sn")', source)
+        self.assertNotIn('get("uuid")', source)
+        self.assertNotIn("T3,T4", checkpoint_d.QUERY_PATH)
+        self.assertNotIn("subprocess", source)
+        self.assertNotIn("scp", source.lower())
+
+    def test_checkpoint_d_runner_requires_exact_gate_and_pinned_source(self):
+        source = (PACKAGE / "run_checkpoint_d.ps1").read_text(encoding="utf-8")
+        self.assertIn("G4-K1-CONTROL-CLEAN-MOTION-V1", source)
+        self.assertIn("-Execute", source)
+        self.assertIn("ExpectedProgramSha256", source)
+        self.assertIn("D1_OK", source)
+        self.assertIn("D2_OK", source)
+        self.assertIn("PreviousHumanVerdict", source)
+        self.assertNotIn("__PIN_AFTER_REVIEW__", source)
+
+    def test_checkpoint_d_evidence_pins_program_runner_and_private_captures(self):
+        import hashlib
+
+        evidence = json.loads((PACKAGE / "evidence-map.json").read_text(encoding="utf-8"))
+        checkpoint_evidence = evidence["checkpoint_d"]
+        for key in ("remote_program", "runner", "preflight_d1", "run_d1"):
+            artifact = checkpoint_evidence[key]
+            path = ROOT / artifact["path"]
+            self.assertTrue(path.is_file(), key)
+            self.assertEqual(artifact["sha256"], hashlib.sha256(path.read_bytes()).hexdigest())
+        self.assertIsNone(checkpoint_evidence["run_d1"]["human_verdict"])
+        self.assertTrue(checkpoint_evidence["d2_blocked_until_d1_human_positive"])
+        self.assertFalse(checkpoint_evidence["d2_executed"])
+        self.assertFalse(checkpoint_evidence["d3_executed"])
 
 
 if __name__ == "__main__":
