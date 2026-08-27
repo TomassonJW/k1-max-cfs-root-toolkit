@@ -3,9 +3,11 @@
 Statut : **sources live qualifiées en lecture seule ; aucune commande
 candidate ; aucun effet physique**.
 
-Cette gate sera la première tranche physique du Goal 3 après l'activation
-réussie du profil robuste. Elle sert uniquement à mesurer humainement la zone de
-la brosse et à qualifier une trajectoire à froid sans collision.
+Cette gate est la première tranche physique du Goal 3. Son préalable est
+maintenant satisfait : le profil robuste `k1_p001_t055_r001_n06x06` a été
+activé et revérifié sous `G4-K1-CONTROL-ROBUST-MESH-ACTIVATION-V1`. Elle sert
+uniquement à mesurer humainement la zone de la brosse et à qualifier une
+trajectoire à froid sans collision.
 
 Elle ne qualifie pas encore le nettoyage autonome. Elle interdit chauffage,
 extrusion, action CFS, palpage de la brosse, mesure de mesh, écriture Z,
@@ -26,5 +28,8 @@ La future session remplira `human-observation-form.json` par checkpoints. Les
 commandes candidates ne seront figées qu'après une lecture fraîche des limites
 machine et la confirmation humaine des coordonnées. Toute perte de visibilité,
 résistance, bruit inhabituel ou état ambigu arrêtera la gate immédiatement.
+
+La suite attend donc Thomas devant la K1, plateau libre et brosse visible. Le
+cadre `$session-tas` ne remplace pas ces observations physiques.
 
 Voir aussi `docs/42-clean-motion-v1-premiere-tranche-physique.md`.

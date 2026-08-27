@@ -1327,30 +1327,33 @@ invité non maîtrisé. Elle n'a produit aucun G-code ni effet physique.
 
 ### Gate préalable au Goal 3 — `G4-K1-CONTROL-ROBUST-MESH-ACTIVATION-V1`
 
-Status: **préflight live en lecture seule vert ; attend son GO exact**
+Status: **passed — robuste `6 × 6` actif et revérifié**
 
-La lecture fraîche de reprise confirme la K1 au repos, les cibles à zéro et le
-profil composite physique `k1_p001_t055_r001_n11x11` actif. Ce profil n'est pas
-le robuste quotidien : le robuste qualifié reste
-`k1_p001_t055_r001_n06x06`, présent avec son empreinte exacte.
+La lecture fraîche de reprise confirmait la K1 au repos, les cibles à zéro et
+le profil composite physique `k1_p001_t055_r001_n11x11` actif. Ce profil n'est
+pas le robuste quotidien : le robuste qualifié est
+`k1_p001_t055_r001_n06x06`.
 
-Le programme figé a obtenu `PREFLIGHT_OK` sous la capture privée
-`20260827-robust-mesh-activation-v1-preflight`, sans aucune commande G-code ni
-effet.
+Le programme figé a obtenu `PREFLIGHT_OK` sous la capture privée fraîche
+`20260827-robust-mesh-activation-v1-authorized-preflight`, puis
+`ACTIVATION_OK` sous `20260827-robust-mesh-activation-v1-authorized-run` après
+une seule commande de chargement du robuste. Aucun rollback n'a été nécessaire.
+Deux lectures indépendantes ont confirmé le robuste actif, sa matrice exacte,
+les configurations inchangées et la machine toujours au repos et froide.
 
 La gate préparée vérifie l'état sûr, les composants et les matrices, envoie au
 plus une fois le chargement du robuste, puis relit le profil actif et sa matrice.
 Au premier résultat ambigu après l'envoi, elle tente une seule remise au
 `11 × 11` précédent et ne retente jamais le robuste. Elle ne contient aucun
 fichier distant, restart, chauffage, mouvement, homing, palpage, extrusion ou
-impression. Sa réussite lèvera uniquement le verrou préalable ; elle ne lancera
-pas automatiquement les tranches physiques du Goal 3.
+impression. Son GO exact est consommé et la gate ne doit pas être rejouée. Elle
+a levé uniquement le verrou préalable ; aucune tranche physique n'a été lancée.
 
 ### Première tranche physique — `G4-K1-CONTROL-CLEAN-MOTION-V1`
 
 Status: **sources live qualifiées en lecture seule ; aucune commande candidate**
 
-Cette gate commencera seulement après l'activation verte du robuste et avec
+Le préalable du robuste est satisfait. Cette gate commencera seulement avec
 Thomas devant la K1. Elle qualifiera la géométrie de la brosse et un trajet à
 froid sans collision. Chauffe, extrusion, CFS, palpage de la brosse, mesure de
 mesh, écriture Z, configuration distante, restart et retry automatique sont

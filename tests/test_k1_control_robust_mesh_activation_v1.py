@@ -76,22 +76,75 @@ class RobustMeshActivationV1Tests(unittest.TestCase):
         self.assertEqual(gate.PREVIOUS_PROFILE, contract["profiles"]["expected_previous"]["id"])
         self.assertEqual(11, contract["profiles"]["expected_previous"]["rows"])
         self.assertFalse(contract["authority"]["goal_3_started_by_success"])
+        self.assertEqual("closed_activation_ok", contract["status"])
+        self.assertTrue(contract["closure"]["exact_go_consumed"])
+        self.assertEqual(1, contract["closure"]["primary_attempts"])
+        self.assertEqual(0, contract["closure"]["rollback_attempts"])
         self.assertEqual(
             contract["remote_program_sha256"],
             hashlib.sha256((PACKAGE / "remote_gate.py").read_bytes()).hexdigest(),
         )
 
-    def test_live_preflight_evidence_is_pinned_and_read_only(self):
+    def test_live_activation_evidence_is_pinned_and_bounded(self):
         evidence = json.loads((PACKAGE / "evidence-map.json").read_text(encoding="utf-8"))
-        capture = ROOT / evidence["private_source"]["path"]
-        self.assertTrue(capture.is_file())
-        self.assertEqual(
-            evidence["private_source"]["sha256"],
-            hashlib.sha256(capture.read_bytes()).hexdigest(),
-        )
+        for source in evidence["private_sources"].values():
+            capture = ROOT / source["path"]
+            self.assertTrue(capture.is_file())
+            self.assertEqual(
+                source["sha256"], hashlib.sha256(capture.read_bytes()).hexdigest()
+            )
+            self.assertFalse(source["versioned"])
         self.assertEqual("PREFLIGHT_OK", evidence["safe_result"]["preflight"])
-        self.assertEqual([], evidence["safe_result"]["gcode_commands_attempted"])
+        self.assertEqual("ACTIVATION_OK", evidence["safe_result"]["activation"])
+        self.assertEqual(gate.ROBUST_PROFILE, evidence["safe_result"]["active_profile"])
+        self.assertEqual(1, evidence["safe_result"]["primary_attempts"])
+        self.assertEqual(0, evidence["safe_result"]["rollback_attempts"])
+        self.assertEqual(2, evidence["safe_result"]["independent_read_only_snapshots"])
+        self.assertEqual(
+            ["BED_MESH_PROFILE LOAD=%s" % gate.ROBUST_PROFILE],
+            evidence["safe_result"]["gcode_commands_attempted"],
+        )
         self.assertFalse(evidence["safe_result"]["remote_files_written"])
+
+        preflight_lines = (
+            ROOT / evidence["private_sources"]["fresh_preflight"]["path"]
+        ).read_text(encoding="utf-8-sig").splitlines()
+        activation_lines = (
+            ROOT / evidence["private_sources"]["activation"]["path"]
+        ).read_text(encoding="utf-8-sig").splitlines()
+        validation_lines = (
+            ROOT / evidence["private_sources"]["independent_validation"]["path"]
+        ).read_text(encoding="utf-8-sig").splitlines()
+        self.assertEqual(2, len(preflight_lines))
+        self.assertEqual(2, len(activation_lines))
+        self.assertEqual(2, len(validation_lines))
+        self.assertEqual("ROBUST_MESH_ACTIVATION_V1_PREFLIGHT_OK", preflight_lines[1])
+        self.assertEqual("ROBUST_MESH_ACTIVATION_V1_ACTIVATION_OK", activation_lines[1])
+        self.assertEqual("K1_READ_ONLY_QUALIFICATION_CAPTURE_V1_OK", validation_lines[1])
+
+        activation = json.loads(activation_lines[0])
+        self.assertEqual("ACTIVATION_OK", activation["status"])
+        self.assertEqual(gate.PREVIOUS_PROFILE, activation["before"]["bed_mesh"]["profile_name"])
+        self.assertEqual(gate.ROBUST_PROFILE, activation["after"]["bed_mesh"]["profile_name"])
+        self.assertEqual(
+            gate.ROBUST_PROFILE_SHA256,
+            activation["after"]["bed_mesh"]["probed_matrix"]["sha256"],
+        )
+        self.assertIsNone(activation["rollback"])
+
+        independent = json.loads(validation_lines[0])
+        self.assertTrue(independent["response_schema_stable"])
+        self.assertEqual(independent["hashes_before"], independent["hashes_after"])
+        self.assertEqual(2, len(independent["snapshots"]))
+        for snapshot in independent["snapshots"]:
+            self.assertEqual(gate.ROBUST_PROFILE, snapshot["bed_mesh"]["profile_name"])
+            self.assertEqual(
+                gate.ROBUST_PROFILE_SHA256,
+                snapshot["bed_mesh"]["probed_matrix"]["sha256"],
+            )
+            self.assertEqual(0.0, snapshot["extruder"]["target"])
+            self.assertEqual(0.0, snapshot["heater_bed"]["target"])
+            self.assertEqual("", snapshot["toolhead"]["homed_axes"])
 
     def test_safe_preflight_accepts_only_the_expected_previous_profile(self):
         snapshot = safe_snapshot()

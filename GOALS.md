@@ -6,19 +6,18 @@ Ce fichier sert d'index rapide pour les grandes sessions de travail. Les noms
 ci-dessous regroupent les petites gates déjà définies dans `GATES.md` ; ils ne
 les remplacent pas et n'autorisent aucune action sur la K1 par eux-mêmes.
 
-Ce document ne crée aucun Goal Codex. Les Goals 1 et 2 sont clos. La prochaine
-mission est une activation runtime bornée du profil robuste avant le Goal 3.
-Son paquet est préparé sous
-`packages/k1-control-v1/robust-mesh-activation-v1`. Son préflight live en
-lecture seule est vert et l'activation attend son GO exact.
+Ce document ne crée aucun Goal Codex. Les Goals 1 et 2 sont clos. La gate
+d'activation runtime du robuste est également close OK : le `6 × 6` qualifié
+est actif et revérifié. Le Goal 3 peut commencer uniquement par sa première
+tranche physique, avec Thomas devant la K1.
 
 ## Vue rapide
 
 | Ordre | Grand Goal | État | Résultat concret attendu |
 | --- | --- | --- | --- |
 | 1 | `GOAL-P4-OFFLINE-CYCLE-CFS-V1` | terminé hors imprimante | système logiciel complet simulé et plan futur inerte vérifié |
-| 2 | `GOAL-P4-K1-READ-ONLY-QUALIFICATION-V1` | terminé en lecture seule, suite bloquée par le mesh actif | réponses et délais réels qualifiés sans commande ni impression |
-| 3 | `GOAL-P4-PHYSICAL-SLICES-QUALIFICATION-V1` | prévu, avec Thomas devant la K1 pour les tranches physiques ; attend le profil robuste actif | fonctions physiques validées séparément avec retour arrière |
+| 2 | `GOAL-P4-K1-READ-ONLY-QUALIFICATION-V1` | terminé en lecture seule ; écart de mesh alors observé, corrigé par une gate distincte | réponses et délais réels qualifiés sans commande ni impression |
+| 3 | `GOAL-P4-PHYSICAL-SLICES-QUALIFICATION-V1` | prêt à commencer ; profil robuste actif ; attend Thomas devant la K1 | fonctions physiques validées séparément avec retour arrière |
 | 4 | `GOAL-P4-DAILY-CUTOVER-V1` | prévu après Goal 3 | fonctionnement quotidien unifié, ancien Orca retirable en une transaction |
 
 ## Goal 1 — Terminer le système hors imprimante
@@ -75,23 +74,26 @@ Limite : aucune impression, aucun G-code, aucun retrait, aucune chauffe, aucun
 mouvement, aucun fichier distant, aucun restart et aucune reconnexion CFS
 provoquée.
 
-Résultat de la capture : `CLOSED_READ_ONLY_BLOCKED_MESH_DRIFT`. La K1 utilisait
+Résultat historique de la capture : `CLOSED_READ_ONLY_BLOCKED_MESH_DRIFT`. La
+K1 utilisait
 alors le mesh `default`, dont la matrice différait du profil robuste
 `k1_p001_t055_r001_n06x06`. Une lecture fraîche de fin de session montre
-maintenant le composite `k1_p001_t055_r001_n11x11` actif. La cause de ce
-changement intermédiaire n'est pas qualifiée. Le robuste existe encore mais
-n'est toujours pas actif. Le paquet de lecture seule est clos ; aucun candidat
-de pose ou connecteur de commande n'a été créé.
+ensuite le composite `k1_p001_t055_r001_n11x11` actif. La cause de ce
+changement intermédiaire n'est pas qualifiée. La gate distincte d'activation a
+depuis chargé et revérifié le robuste `k1_p001_t055_r001_n06x06`. Le paquet de
+lecture seule reste clos ; aucun candidat de pose ou connecteur de commande n'a
+été créé dans le Goal 2.
 
-Autorité consommée : ce Goal est clos. Il ne donne aucune autorité pour charger
-le profil robuste ni commencer le Goal 3.
+Autorité consommée : ce Goal est clos. Il ne donnait par lui-même aucune
+autorité pour charger le profil robuste ni commencer le Goal 3 ; ces actions
+ont depuis reçu leur autorité distincte.
 
 ## Goal 3 — Installer progressivement et qualifier les fonctions physiques
 
 Identifiant : `GOAL-P4-PHYSICAL-SLICES-QUALIFICATION-V1`
 
-État : **prévu ; présence humaine obligatoire pour les tranches physiques ;
-bloqué jusqu'à une gate distincte qui vérifie et charge le profil robuste**.
+État : **prêt à commencer ; profil robuste actif ; présence humaine obligatoire
+pour les tranches physiques**.
 
 Ce qui sera réellement fait, une petite tranche à la fois :
 
@@ -141,28 +143,20 @@ prêt pour la campagne finale de validation.
 
 ## Démarrage recommandé
 
-Première gate à préparer avant le Goal 3 :
-
-> Vérifier une dernière fois l'état sûr, charger uniquement
-> `k1_p001_t055_r001_n06x06`, puis relire le profil et sa matrice sans lancer
-> d'impression. Revenir immédiatement à l'état précédent au premier écart.
-
-Cette gate runtime ne chauffe, ne référence et ne déplace pas la machine ; elle
-ne nécessite donc pas Thomas devant la K1. Sa réussite ne lance pas le Goal 3.
-La présence humaine redevient obligatoire avant la première tranche physique.
-
-Identifiant exact de cette gate :
-`G4-K1-CONTROL-ROBUST-MESH-ACTIVATION-V1`. Le GO du grand Goal 3 ne remplace pas
-le GO exact de cette mutation runtime, conformément aux gates séparées.
+La gate préalable `G4-K1-CONTROL-ROBUST-MESH-ACTIVATION-V1` est close OK. Une
+seule commande a chargé `k1_p001_t055_r001_n06x06`, aucun rollback n'a été
+nécessaire et deux lectures indépendantes ont confirmé le profil et sa matrice.
 
 La première tranche physique suivante est désormais cadrée hors imprimante dans
 `packages/k1-control-v1/clean-motion-v1` et le document 42. Elle ne contient
 encore aucune commande. Une capture live en lecture seule a qualifié les limites
 machine et la zone de nettoyage déclarée par le logiciel stock, sans exporter
-son code complet. Thomas devra encore confirmer la brosse réelle, la visibilité
-et chaque rapprochement à froid. Cette préparation ne contourne pas le verrou
-d'activation du robuste.
+son code complet. Thomas doit maintenant être devant la K1, confirmer le
+plateau libre, la brosse réelle, la visibilité et chaque rapprochement à froid.
+Cette gate humaine est la prochaine action unique.
 
-Modèle conseillé : `gpt-5.6-terra`, raisonnement `high`. Option économique : le
-même modèle en `medium`, avec davantage de risque de manquer une incohérence de
-profil, de matrice ou de rollback sur du matériel réel.
+La prochaine action immédiate est une gate humaine : aucun agent ni modèle ne
+peut remplacer la visibilité réelle de Thomas. Une fois Thomas présent,
+`gpt-5.6-terra` avec raisonnement `high` est conseillé pour piloter les arrêts
+et les preuves ; l'option `medium` est moins coûteuse mais augmente le risque de
+reprise si un checkpoint physique est mal interprété.

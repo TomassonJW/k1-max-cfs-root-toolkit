@@ -1,11 +1,11 @@
 {
   "contract_id": "G4-K1-CONTROL-ROBUST-MESH-ACTIVATION-V1",
-  "status": "prepared_off_printer_awaiting_exact_go",
+  "status": "closed_activation_ok",
   "purpose": "activate_the_already_qualified_daily_robust_mesh_before_goal_3",
   "remote_program_sha256": "988079f1fe5a93e6e306e569798e1d2084503a162b358e587d66a640c3349cd0",
   "authority": {
-    "preflight": "classified_read_only_allowed",
-    "activation": "exact_gate_go_required",
+    "preflight": "historical_pre_effect_only_do_not_replay",
+    "activation": "exact_gate_go_consumed_2026_08_27",
     "required_gate": "G4-K1-CONTROL-ROBUST-MESH-ACTIVATION-V1",
     "goal_3_started_by_success": false
   },
@@ -48,5 +48,17 @@
     "never_retry_primary_command": true,
     "rollback_to_exact_previous_profile_after_any_post_send_ambiguity": true,
     "rollback_uncertainty_is_terminal": true
+  },
+  "closure": {
+    "exact_go_consumed": true,
+    "preflight_capture": "20260827-robust-mesh-activation-v1-authorized-preflight",
+    "activation_capture": "20260827-robust-mesh-activation-v1-authorized-run",
+    "independent_validation_capture": "20260827-robust-mesh-activation-v1-independent-validation",
+    "primary_attempts": 1,
+    "rollback_attempts": 0,
+    "independent_read_only_snapshots": 2,
+    "active_profile": "k1_p001_t055_r001_n06x06",
+    "goal_3_unblocked": true,
+    "physical_slices_started": false
   }
 }

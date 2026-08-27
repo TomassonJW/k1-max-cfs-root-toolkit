@@ -73,6 +73,7 @@ class CleanMotionV1ContractTests(unittest.TestCase):
             prerequisites["robust_mesh_activation_gate"],
         )
         self.assertEqual("ACTIVATION_OK", prerequisites["robust_mesh_activation_required_status"])
+        self.assertTrue(prerequisites["robust_mesh_activation_satisfied"])
         self.assertEqual("k1_p001_t055_r001_n06x06", prerequisites["required_active_profile"])
 
     def test_physical_geometry_is_explicitly_missing(self):

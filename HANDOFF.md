@@ -8,6 +8,11 @@ Lire ce document en premier. Le contenu ci-dessous est conservé comme archive
 de la clôture antérieure du Goal 2 ; il ne décrit plus l'état live actuel et ne
 doit pas piloter la prochaine action.
 
+État courant résumé : le robuste quotidien `k1_p001_t055_r001_n06x06` est
+actif et revérifié ; `G4-K1-CONTROL-ROBUST-MESH-ACTIVATION-V1` est close OK.
+La prochaine action est la gate humaine `G4-K1-CONTROL-CLEAN-MOTION-V1`, avec
+Thomas devant la K1, plateau libre et brosse visible.
+
 ## Archive historique — clôture initiale du Goal 2
 
 Date de passation : 2026-08-27

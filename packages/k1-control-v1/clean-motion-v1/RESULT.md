@@ -19,8 +19,11 @@ La capture privée `20260827-clean-motion-v1-read-only-sources-v3` confirme :
 Ces valeurs décrivent la configuration logicielle stock, pas la position
 physique prouvée de la brosse. Thomas doit encore confirmer visuellement ses
 limites, la hauteur libre, le premier contact et les directions sûres. Aucune
-commande de mouvement ne sera préparée avant ces faits humains et avant
-l'activation verte du robuste.
+commande de mouvement ne sera préparée avant ces faits humains. Le préalable
+du mesh est désormais vert : le robuste `k1_p001_t055_r001_n06x06` est actif
+et a été confirmé par deux lectures indépendantes. Il manque uniquement la
+présence de Thomas devant la K1, le plateau libre, la brosse visible et les
+verdicts humains prévus.
 
 Vérifications locales : `11/11` tests ciblés verts, suite complète de `513`
 tests dont `510` verts et `3` ignorés connus, collecteur compatible Python 3.8

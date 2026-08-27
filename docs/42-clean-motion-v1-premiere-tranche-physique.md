@@ -1,6 +1,7 @@
 # CLEAN-MOTION-V1 — première tranche physique du Goal 3
 
-Statut : **plan hors imprimante ; aucune commande de mouvement préparée**.
+Statut : **préalable du robuste satisfait ; attend Thomas devant la K1 ; aucune
+commande de mouvement préparée**.
 
 ## Faits déjà qualifiés sans mouvement
 
@@ -25,8 +26,9 @@ plateau ; il ne doit pas servir à enfoncer la buse dans la brosse. Avant toute
 chauffe, purge ou recette de nettoyage, il faut donc mesurer la géométrie à
 froid et observer un trajet sans collision.
 
-Cette tranche ne commence qu'après
-`G4-K1-CONTROL-ROBUST-MESH-ACTIVATION-V1 = ACTIVATION_OK`.
+Le préalable est maintenant satisfait :
+`G4-K1-CONTROL-ROBUST-MESH-ACTIVATION-V1 = ACTIVATION_OK`, avec le robuste
+`k1_p001_t055_r001_n06x06` confirmé actif par deux lectures indépendantes.
 
 ## Ce que Thomas devra confirmer
 

@@ -6,14 +6,15 @@ Branche cible : `main`
 
 Nouvelle tâche créée : non
 
-Goal Codex actif : absent
+Goal de mission repris : `GOAL-P4-PHYSICAL-SLICES-QUALIFICATION-V1`
 
-État de reprise : **ATTENDRE_GO**
+État de reprise : **ATTENDRE_PRÉSENCE_HUMAINE_CLEAN_MOTION**
 
 ## Résultat global de la session
 
 Cette session a terminé les deux premiers grands Goals de P4, corrigé l'accès
-Mainsail et laissé le dépôt et la K1 dans un état vérifié et reprenable.
+Mainsail, réactivé le robuste quotidien `6 × 6` et laissé le dépôt et la K1
+dans un état vérifié et reprenable avant la première tranche physique.
 
 ### Goal 1 — système complet hors imprimante
 
@@ -63,30 +64,33 @@ présent sur le LAN privé peut maintenant contrôler la K1.
 
 ## État réel au moment de la passation
 
-La dernière lecture live, effectuée après la validation de la passerelle,
-montre :
+La dernière validation indépendante, effectuée après l'activation autorisée,
+montre sur deux lectures stables :
 
 - K1 : `standby` ;
 - cible buse : `0.0 °C` ;
 - cible plateau : `0.0 °C` ;
-- mesh actif : `k1_p001_t055_r001_n11x11` ;
-- mesh quotidien requis : `k1_p001_t055_r001_n06x06`.
+- mesh actif : `k1_p001_t055_r001_n06x06` ;
+- matrice active : `6 × 6`, empreinte `c3c7a2ba…` exacte ;
+- Z accepté : `−0,04 mm` ;
+- axes : libérés ;
+- CFS : `T1/T2` connectés, aucune commande active.
 
-Le passage intermédiaire de `default` au composite `11 × 11` n'est pas
-qualifié. La mission passerelle n'a envoyé aucune commande de mesh. Le profil
-robuste est toujours présent mais n'est pas actif. La production reste fermée,
-le mode Précision reste caché et aucune impression ne doit être lancée dans cet
-état au titre de cette passation.
+Le passage intermédiaire historique de `default` au composite `11 × 11` n'est
+pas qualifié. La mission passerelle n'avait envoyé aucune commande de mesh. La
+gate dédiée a depuis remis le robuste qualifié actif. La production reste
+fermée et le mode Précision reste caché.
 
-La reprise a maintenant préparé le paquet
-`packages/k1-control-v1/robust-mesh-activation-v1` et exécuté son préflight
-strictement en lecture seule. La capture privée
-`20260827-robust-mesh-activation-v1-preflight` est verte : elle confirme le
-`11 × 11` actif, le robuste `6 × 6` présent avec son empreinte exacte, l'état
-au repos, les cibles zéro, le Z accepté, les deux CFS et les configurations
-attendues. Aucune commande G-code ni action physique n'a eu lieu. L'activation
-reste non exécutée. Les `11/11` tests ciblés sont verts ; la suite complète
-exécute maintenant `502` tests, dont `499` verts et `3` ignorés connus.
+`G4-K1-CONTROL-ROBUST-MESH-ACTIVATION-V1` est close OK. Le préflight frais
+`20260827-robust-mesh-activation-v1-authorized-preflight` a confirmé le
+`11 × 11` précédent, le robuste `6 × 6` présent, l'état au repos et toutes les
+empreintes attendues. La capture
+`20260827-robust-mesh-activation-v1-authorized-run` a envoyé une seule fois
+`BED_MESH_PROFILE LOAD=k1_p001_t055_r001_n06x06` et obtenu `ACTIVATION_OK`.
+Aucun rollback, fichier distant, restart, chauffe, mouvement, homing, palpage
+ou impression n'a eu lieu. La capture indépendante
+`20260827-robust-mesh-activation-v1-independent-validation` a ensuite confirmé
+deux fois le robuste actif et les configurations inchangées.
 
 ## Git et preuves
 
@@ -94,7 +98,10 @@ Les commits de mission déjà publiés sont :
 
 - `94c94b17cef3ce8041c1fcc0e71d9f89df303a0b` — retrait du mot de passe et
   déploiement réversible ;
-- `528aefff9be1c498ba79bef25b1b84dee8584e62` — état live du mesh consigné.
+- `528aefff9be1c498ba79bef25b1b84dee8584e62` — état live du mesh consigné ;
+- `e105e5b` — paquet réversible d'activation du robuste ;
+- `cbff064` — cadre hors effet de la première tranche CLEAN-MOTION ;
+- `4858b68` — qualification live en lecture seule de ses sources logicielles.
 
 Avant le commit documentaire final de cette passation, `main` et `origin/main`
 étaient alignés, avec une divergence `0/0` et aucun changement étranger. Le SHA
@@ -105,68 +112,52 @@ Vérifications réutilisables :
 - passerelle sans mot de passe : **OK** ;
 - vrai rendu Chrome/Mainsail : **OK** ;
 - Moonraker et Klipper : **OK**, aucun échec ni avertissement ;
-- suite automatique finale : **491 tests**, 488 verts et 3 ignorés connus ;
+- activation robuste : **OK**, une tentative, aucun rollback ;
+- validation indépendante après activation : **OK**, `2/2` lectures ;
+- tests ciblés activation et CLEAN-MOTION : **OK**, `22/22` ;
+- suite complète : **OK**, `513` tests dont `510` verts et `3` ignorés connus ;
+- scripts PowerShell versionnés : **OK**, `32/32` relus sans erreur ;
 - validation physique ou impression : **non exécutée**, hors périmètre ;
-- dépôt après la dernière mutation applicative : **propre et poussé**.
+- dépôt avant cette clôture documentaire : **propre et poussé**.
 
 Documents à relire : `HANDOFF.md`, `GOALS.md`, `STATE.md`, `GATES.md`,
-`packages/k1-control-v1/k1-read-only-qualification-v1/RESULT.md`, ADR-028 et le
-rapport `20260827-gateway-private-lan-no-auth-v1-deployment-report.md`.
+`packages/k1-control-v1/robust-mesh-activation-v1/RESULT.md`,
+`packages/k1-control-v1/clean-motion-v1/RESULT.md` et le document 42.
 
 ## Prochaine mission unique
 
-Identifiant figé : `G4-K1-CONTROL-ROBUST-MESH-ACTIVATION-V1`.
+Identifiant figé : `G4-K1-CONTROL-CLEAN-MOTION-V1`.
 
-Résultat attendu : charger uniquement le profil déjà présent
-`k1_p001_t055_r001_n06x06`, puis prouver qu'il est actif et que sa matrice
-correspond à la version qualifiée.
+Le préalable du mesh est satisfait. Cette première tranche du Goal 3 doit
+mesurer à froid la brosse réelle et qualifier une trajectoire sans collision.
+Les limites logicielles et la zone stock déclarée X `68…94 mm`,
+Y `304,5…306,5 mm` sont connues, mais elles ne prouvent pas la géométrie
+physique.
 
-Contraintes obligatoires :
+Avant toute commande de mouvement, Thomas doit être devant la K1 et confirmer :
 
-- lecture fraîche avant effet : `standby`, cibles zéro, aucun travail actif ;
-- sauvegarder dans la preuve le profil actif précédent `11 × 11` ;
-- une seule commande `BED_MESH_PROFILE LOAD` vers le robuste ;
-- aucun chauffage, mouvement, homing, palpage, recalibrage, extrusion,
-  impression, fichier distant ou restart ;
-- relire immédiatement le nom actif et la matrice ;
-- arrêt au premier écart et retour au profil précédent si la commande produit
-  un état ambigu.
+- plateau entièrement libre ;
+- brosse réelle visible sans obstacle ;
+- possibilité d'observer la buse pendant chaque rapprochement ;
+- disponibilité pour donner un verdict après chaque checkpoint.
 
-Cette activation runtime ne nécessite pas Thomas devant la K1, car elle ne
-produit aucun mouvement ni chauffage. Elle nécessite néanmoins une nouvelle
-mission explicite, car elle modifie l'état actif de la machine. Sa réussite ne
-lance pas automatiquement le Goal 3.
+La gate restera froide : aucune chauffe, extrusion, action CFS, mesure de mesh,
+écriture Z, configuration distante, restart ou retry automatique. Toute perte
+de visibilité, résistance, bruit inhabituel ou état ambigu impose l'arrêt.
 
-Le paquet, son contrat, ses deux seules commandes possibles et son retour
-arrière ont maintenant été préparés et testés hors effet. L'autorisation exacte
-attendue est `GO G4-K1-CONTROL-ROBUST-MESH-ACTIVATION-V1`.
-
-La première tranche physique suivante, `G4-K1-CONTROL-CLEAN-MOTION-V1`, est
-également cadrée sans commande. Une capture live en lecture seule a qualifié les
-limites machine et la zone stock déclarée X `68…94 mm`, Y `304,5…306,5 mm`,
-sans mouvement ni export du code complet. La tranche mesurera ensuite à froid
-la brosse réelle et la trajectoire sans collision, avec Thomas présent et une
-validation à chaque rapprochement. Elle ne peut pas commencer avant
-l'activation verte du robuste. Les `11/11` tests ciblés CLEAN-MOTION sont verts
-et la suite complète exécute maintenant `513` tests, dont `510` verts et `3`
-ignorés connus.
-
-Après cette gate seulement, le prochain grand Goal sera
-`GOAL-P4-PHYSICAL-SLICES-QUALIFICATION-V1`. Thomas devra alors être présent pour
-chaque tranche qui chauffe, déplace, charge, retire, purge ou imprime.
-
-Modèle conseillé pour l'activation du mesh : `gpt-5.6-terra`, raisonnement
-`high`. Option économique acceptable : le même modèle en `medium`, avec un
-risque supérieur de manquer une incohérence de matrice ou de retour arrière.
+La prochaine action immédiate est donc humaine : aucun agent ni modèle ne peut
+remplacer cette observation. Une fois Thomas présent, `gpt-5.6-terra` avec
+raisonnement `high` est conseillé pour piloter les checkpoints et les preuves.
+L'option `medium` est moins coûteuse, avec plus de risque de reprise si une
+observation physique est ambiguë.
 
 ## Texte de reprise à envoyer dans une nouvelle session
 
 > `$session-tas` Reprends la passation complète dans
-> `docs/HANDOFF-SESSION-COMPLETE-2026-08-27.md`. Vérifie d'abord Git et l'état
-> live en lecture seule. N'exécute que
-> `G4-K1-CONTROL-ROBUST-MESH-ACTIVATION-V1` : charger une seule fois le profil
-> robuste `k1_p001_t055_r001_n06x06`, vérifier le nom actif et la matrice, sans
-> chauffe, mouvement, homing, palpage, impression, fichier distant ni restart.
-> Ne commence pas le Goal 3 dans la même autorisation.
+> `docs/HANDOFF-SESSION-COMPLETE-2026-08-27.md`. Le robuste `6 × 6` est déjà
+> actif et la gate d'activation est consommée. Attends que je sois devant la K1,
+> plateau libre et brosse visible, puis exécute uniquement
+> `G4-K1-CONTROL-CLEAN-MOTION-V1` à froid, checkpoint par checkpoint, avec arrêt
+> immédiat au premier doute. Ne chauffe, n'extrude et ne lance aucun CFS.
 
 La tâche source reste visible et ne doit pas être archivée.

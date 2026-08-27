@@ -1,20 +1,42 @@
 {
   "mission": "G4-K1-CONTROL-ROBUST-MESH-ACTIVATION-V1",
-  "status": "preflight_ok_activation_not_run",
-  "private_source": {
-    "path": "inventory/raw/20260827-robust-mesh-activation-v1-preflight/robust-mesh-activation.safe.jsonl",
-    "sha256": "ae3bc021264a677da3f53d47bdc7a60bead8fd0950f894396b1df3172b9f1a61",
-    "versioned": false,
-    "identity_values_exported": false
+  "status": "closed_activation_ok",
+  "private_sources": {
+    "fresh_preflight": {
+      "path": "inventory/raw/20260827-robust-mesh-activation-v1-authorized-preflight/robust-mesh-activation.safe.jsonl",
+      "sha256": "ae3bc021264a677da3f53d47bdc7a60bead8fd0950f894396b1df3172b9f1a61",
+      "versioned": false,
+      "identity_values_exported": false
+    },
+    "activation": {
+      "path": "inventory/raw/20260827-robust-mesh-activation-v1-authorized-run/robust-mesh-activation.safe.jsonl",
+      "sha256": "7a8938cbf13c3edf205054b27f3a8308680b8c773f8249df8fc502f551c4cc2c",
+      "versioned": false,
+      "identity_values_exported": false
+    },
+    "independent_validation": {
+      "path": "inventory/raw/20260827-robust-mesh-activation-v1-independent-validation/post-activation.safe.json",
+      "sha256": "c4088f6a4262e8ca998f1335d616aa52b538e989832ea6c01dd0f7f599584860",
+      "versioned": false,
+      "identity_values_exported": false
+    }
   },
   "safe_result": {
     "preflight": "PREFLIGHT_OK",
-    "active_profile": "k1_p001_t055_r001_n11x11",
+    "activation": "ACTIVATION_OK",
+    "previous_profile": "k1_p001_t055_r001_n11x11",
+    "active_profile": "k1_p001_t055_r001_n06x06",
     "target_profile": "k1_p001_t055_r001_n06x06",
     "target_matrix_sha256": "c3c7a2ba89f8094328bc5d8b3936b16dbd1de46f4a80bde87cba3d17cfab5f8f",
+    "primary_attempts": 1,
+    "rollback_attempts": 0,
+    "independent_read_only_snapshots": 2,
+    "configuration_hashes_unchanged": true,
     "machine_state": "standby",
     "heater_targets_zero": true,
-    "gcode_commands_attempted": [],
+    "gcode_commands_attempted": [
+      "BED_MESH_PROFILE LOAD=k1_p001_t055_r001_n06x06"
+    ],
     "remote_files_written": false,
     "heater_or_motion_actions": false
   }

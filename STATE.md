@@ -48,13 +48,11 @@ Aucune nouvelle authentification ni action physique n'a eu lieu.
 
 ## Current phase
 
-**P4 — calibration quotidienne autonome ; composite physique `11 × 11`
-qualifié techniquement mais KO aux bords en première couche ; éditeur de profil
-dérivé hors ligne validé ; retrait stock `T1A` capturé avec deux phases réussies
-mais cible thermique laissée active ; propriétaire série indépendant toujours
-fermé ; garde de retrait stock à préparer hors imprimante ; diagnostic physique
-des bords suspendu ; contrat de cycle production figé hors imprimante ;
-production volontairement bloquée**
+**P4 — Goals 1 et 2 clos ; robuste quotidien `6 × 6` de nouveau actif et
+revérifié ; Goal 3 prêt à commencer par CLEAN-MOTION avec Thomas devant la K1 ;
+composite physique `11 × 11` conservé comme source mais KO aux bords ; cycle CFS
+clos hors imprimante ; diagnostic physique des bords suspendu ; production
+volontairement bloquée**
 
 `G4-K1-CONTROL-GATEWAY-PRIVATE-LAN-NO-AUTH-V1` est installé et validé. Le mot
 de passe HTTP Basic n'est plus utilisé sur `4409`. Nginx continue de limiter
@@ -65,20 +63,19 @@ anonyme de `/server/info` est vert et le vrai Chrome affiche Mainsail en
 retour arrière exact. Seul `S57k1_control_gateway` a été rechargé ; aucun effet
 physique ni changement de profil mesh n'a eu lieu.
 
-La lecture live finale de passation montre maintenant le profil composite
+La lecture de passation montrait le profil composite
 `k1_p001_t055_r001_n11x11` actif, alors que la capture Goal 2 observait
-`default`. La cause de cette dérive intermédiaire n'est pas qualifiée et la
-mission passerelle n'a envoyé aucune commande de mesh. L'état courant reste
-`standby`, buse et plateau demandés à zéro. Le robuste requis
-`k1_p001_t055_r001_n06x06` est toujours présent mais non actif ; sa pose runtime
-et sa vérification forment la prochaine mission unique.
+`default`. La cause de cette dérive intermédiaire reste non qualifiée et la
+mission passerelle n'avait envoyé aucune commande de mesh.
 
-Le paquet `G4-K1-CONTROL-ROBUST-MESH-ACTIVATION-V1` est maintenant préparé et
-son préflight live en lecture seule est vert sous
-`20260827-robust-mesh-activation-v1-preflight`. Il a confirmé les deux profils,
-leurs matrices exactes, l'état `standby`, les cibles zéro, le Z `−0,04 mm`, les
-deux CFS et les empreintes attendues. Aucune commande G-code ni action physique
-n'a eu lieu. L'activation runtime reste non exécutée et attend son GO exact.
+`G4-K1-CONTROL-ROBUST-MESH-ACTIVATION-V1` est maintenant close OK. Le préflight
+frais `20260827-robust-mesh-activation-v1-authorized-preflight` a confirmé
+l'état sûr et les deux profils exacts. La capture
+`20260827-robust-mesh-activation-v1-authorized-run` a envoyé une seule fois le
+chargement du robuste `k1_p001_t055_r001_n06x06` et obtenu `ACTIVATION_OK`, sans
+rollback. Deux lectures indépendantes ont ensuite confirmé ce profil actif et
+sa matrice `c3c7a2ba…`, les configurations inchangées, l'état `standby`, les
+cibles zéro, les axes libérés, le Z `−0,04 mm` et les deux CFS connectés.
 
 La première tranche physique `G4-K1-CONTROL-CLEAN-MOTION-V1` est maintenant
 cadrée. Son contrat et son formulaire ne contiennent aucune commande candidate.
@@ -86,8 +83,9 @@ La capture live strictement en lecture seule
 `20260827-clean-motion-v1-read-only-sources-v3` a qualifié les limites machine
 et la zone logicielle stock X `68…94 mm`, Y `304,5…306,5 mm`, trajet X `20 mm`
 et delta Z `−0,15 mm`, sans exporter le code complet. Ces valeurs ne prouvent
-pas la brosse réelle. La gate impose d'abord l'activation verte du robuste,
-puis la présence de Thomas, le plateau libre, la brosse visible et une
+pas la brosse réelle. Le préalable du robuste est désormais satisfait. La gate
+impose maintenant la présence de Thomas, le plateau libre, la brosse visible et
+une
 validation humaine à chaque rapprochement à froid. Aucun essai physique n'a eu
 lieu.
 
