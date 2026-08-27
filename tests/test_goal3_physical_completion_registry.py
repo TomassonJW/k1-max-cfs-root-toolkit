@@ -47,17 +47,17 @@ class Goal3PhysicalCompletionRegistryTests(unittest.TestCase):
         self.assertIn("final_project_closure", boundary)
         self.assertEqual(4, self.contract["macro_goal_count"])
 
-    def test_current_human_gate_is_d3_and_entry_is_blocked(self):
+    def test_current_gate_is_clean_and_reference_design_and_effect_is_blocked(self):
         gate = self.matrix["current_human_gate"]
-        self.assertEqual("D3", gate["checkpoint"])
-        self.assertEqual("D3_OK", gate["required_human_verdict"])
+        self.assertEqual("CLEAN_AND_REFERENCE_DESIGN", gate["checkpoint"])
+        self.assertEqual("RECIPE_REVIEW_THEN_PHYSICAL_CHECKPOINTS", gate["required_human_verdict"])
         self.assertTrue(gate["next_effect_blocked"])
 
     def test_current_ledger_verifies_as_in_progress_without_effect(self):
         result = verifier.verify()
         self.assertEqual("GOAL3_LEDGER_OK_IN_PROGRESS", result["status"])
-        self.assertEqual(0, result["passed_count"])
-        self.assertEqual(7, result["pending_count"])
+        self.assertEqual(1, result["passed_count"])
+        self.assertEqual(6, result["pending_count"])
         self.assertTrue(all(value is False for value in result["effects"].values()))
 
     def test_completion_policy_cannot_hide_missing_physical_evidence(self):

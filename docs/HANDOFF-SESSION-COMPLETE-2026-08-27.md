@@ -135,40 +135,29 @@ Documents à relire : `HANDOFF.md`, `GOALS.md`, `STATE.md`, `GATES.md`,
 
 ## Prochaine mission unique
 
-Identifiant figé : `G4-K1-CONTROL-CLEAN-MOTION-V1`.
+Identifiant : `G4-K1-CONTROL-CLEAN-AND-REFERENCE-V1`.
 
-Le préalable corrigé du mesh est satisfait. Cette première tranche du Goal 3 doit
-mesurer à froid la brosse réelle et qualifier une trajectoire sans collision.
-Les limites logicielles et la zone stock déclarée X `68…94 mm`,
-Y `304,5…306,5 mm` sont connues, mais elles ne prouvent pas la géométrie
-physique.
+CLEAN-MOTION-V1 est clos OK. C, D1, D2 et D3 ont été acceptés, puis deux
+captures manuelles ont fixé la grande brosse autour de
+`X66..99 / Y303..307 / Z2` et la seconde autour de
+`X203..206 / Y303..305 / Z32`. E2 a validé le balayage de la grande brosse,
+E3-R2 l'approche resserrée de la seconde et E4 son carré exact
+`X203..206 / Y304..305`, avec retour sûr à `X203 Y273 Z32`. Le verdict final
+est `E4 OK`. Les chauffes sont à zéro, aucune route CFS n'est engagée, les
+configurations sont inchangées et le meilleur profil actuel `11 × 11` reste
+actif.
 
-Thomas a confirmé :
-
-- plateau entièrement libre ;
-- brosse réelle visible sans obstacle ;
-- possibilité d'observer la buse pendant chaque rapprochement ;
-- disponibilité pour donner un verdict après chaque checkpoint.
-
-La gate restera froide : aucune chauffe, extrusion, action CFS, mesure de mesh,
-écriture Z, configuration distante, restart ou retry automatique. Toute perte
-de visibilité, résistance, bruit inhabituel ou état ambigu impose l'arrêt.
-
-Le checkpoint C est techniquement vert et Thomas a confirmé
-`CHECKPOINT C OK`. Il ne doit pas être rejoué. D1 a ensuite été exécuté une
-seule fois à froid jusqu'à `X81 Y280 Z50`, puis Thomas a confirmé `D1 OK`. D2 a
-approché une seule fois jusqu'à `X81 Y300 Z50`, encore `4,5 mm` avant la zone
-stock. Thomas a confirmé `D2 OK`, puis D3 a approché une seule fois jusqu'à
-`X81 Y303 Z50`, encore `1,5 mm` avant la zone stock. Son état technique est
-vert, mais le verdict visuel de Thomas manque encore ; l'entrée dans la zone
-reste verrouillée et D3 ne doit pas être rejoué. `gpt-5.6-terra` avec
-raisonnement `high` est conseillé pour piloter les checkpoints et les preuves.
-L'option `medium` est moins coûteuse, avec plus de risque de reprise si une
-observation physique est ambiguë.
+La prochaine tranche doit créer une recette versionnée à partir de cette
+géométrie, faire tomber le flux initial dans le réceptacle, observer un
+nettoyage à chaud borné réellement efficace, éviter tout essuyage à une
+température non qualifiée, lancer une seule référence Z avec buse propre, puis
+relire l'arrêt thermique et l'état sûr. La matière réellement présente ou le
+slot à charger doit être résolu avant de fixer les températures ; aucun `T0`
+ne peut être supposé.
 
 Le registre
 `packages/k1-control-v1/physical-slices-qualification-v1/completion-matrix.json`
-fige les sept exigences du Goal 3 et retourne actuellement `0/7` closes. La
+fige les sept exigences du Goal 3 et retourne actuellement `1/7` close. La
 bascule Orca/K1 Control, le reboot à froid, les trois impressions de production
 et la clôture finale restent au Goal 4 ; aucun cinquième Goal n'est permis.
 
@@ -177,10 +166,10 @@ et la clôture finale restent au Goal 4 ; aucun cinquième Goal n'est permis.
 > `$session-tas` Reprends la passation complète dans
 > `docs/HANDOFF-SESSION-COMPLETE-2026-08-27.md`. Le meilleur profil observé
 > `11 × 11` est actif ; aucun profil actuel n'est qualifié robuste. Je suis
-> devant la K1, plateau libre, brosse visible, buse observable et arrêt immédiat
-> possible. Le checkpoint C, D1 et D2 sont `OK`. D3 a déjà été exécuté une fois
-> jusqu'à `X81 Y303 Z50` et ne doit pas être rejoué. Attends mon verdict visuel
-> D3 avant toute entrée dans la zone stock. Ne chauffe, n'extrude et ne lance
-> aucun CFS.
+> devant la K1, plateau libre, brosses visibles, buse observable et arrêt
+> immédiat possible. CLEAN-MOTION-V1 est clos avec `E4 OK`; le Goal 3 est à
+> `1/7`. Reprends `G4-K1-CONTROL-CLEAN-AND-REFERENCE-V1`, résous explicitement
+> la matière ou le slot avant toute température, puis prépare et exécute le
+> nettoyage réel et l'unique référence Z par checkpoints humains.
 
 La tâche source reste visible et ne doit pas être archivée.

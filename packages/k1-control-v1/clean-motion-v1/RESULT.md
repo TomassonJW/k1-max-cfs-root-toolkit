@@ -1,71 +1,43 @@
-# Résultat actuel
+# Résultat final
 
-Statut : **checkpoint D3 techniquement OK ; verdict humain attendu ; entrée
-dans la zone stock non lancée**.
+Statut : **CLOSED OK — `CLEAN_MOTION_V1_OK`**.
 
-La capture privée `20260827-clean-motion-v1-read-only-sources-v3` confirme :
+Les sources logicielles stock annonçaient une zone approximative
+`X68..94 / Y304,5..306,5`, mais elles n'ont pas été promues en vérité physique.
+Thomas a cartographié manuellement les deux brosses sous deux captures GET à
+2 Hz :
 
-- limites logiques : X `−2…306,5 mm`, Y `−0,5…307,5 mm`, Z `−10…305 mm` ;
-- zone de nettoyage déclarée par le `prtouch_v2` stock : X `68…94 mm`,
-  Y `304,5…306,5 mm` ;
-- trajet nominal X configuré : `20 mm` ;
-- delta Z stock déclaré : `−0,15 mm` ;
-- `CX_NOZZLE_CLEAR`, `CX_ROUGH_G28`, `NOZZLE_CLEAR`, `ACCURATE_G28` et
-  `ACCURATE_HOME_Z` sont réellement enregistrées ;
-- le code complet des macros n'a pas été exporté ;
-- aucune commande G-code, lecture ou écriture de fichier distant, chauffe,
-  mouvement, service ou action CFS n'a eu lieu.
+- brosse principale : `X66..99 / Y303..307`, contact parfait à `Z2` ;
+- brosse du bac : `X203..206 / Y304..305`, à `Z32`, avec approche et sortie
+  sûres par `X203 Y273 Z32`.
 
-Ces valeurs décrivent la configuration logicielle stock, pas la position
-physique prouvée de la brosse. Thomas a confirmé le plateau libre, la brosse
-visible, la buse observable et l'arrêt immédiat possible. Les limites exactes,
-la hauteur libre, le premier contact et les directions sûres seront encore
-qualifiés par checkpoints. Le préalable corrigé du mesh est vert : le meilleur
-profil observé `k1_p001_t055_r001_n11x11` est actif et a été confirmé par deux
-lectures indépendantes. Tous les profils actuels ont des défauts de bord ; aucun
-n'est qualifié robuste.
+C, D1, D2 et D3 sont humainement acceptés. E1 a été techniquement sûr mais
+refusé comme test de nettoyage car sans contact utile. E2 a qualifié un passage
+principal de `X99` à `X66` à `Y305 / Z2 / 5 mm/s`. E3 puis E3-R2 ont permis de
+préciser la petite brosse. E4 a exécuté le carré exact demandé : aller-retour à
+`Y305`, puis à `Y304`, entre `X203` et `X206`, à `Z32 / 3 mm/s`. Thomas a rendu
+`E2 OK` et `E4 OK`.
 
-Vérifications locales actuelles : `22/22` tests ciblés CLEAN-MOTION verts,
-suite complète de `541` tests dont `538` verts et `3` ignorés connus, interface
-de l'éditeur `6/6` verte et `62/62` scripts PowerShell relus sans erreur.
+Deux tentatives E3-R2 ont été bloquées avant effet parce que leur départ
+versionné était encore celui d'E3. Une lecture fraîche a séparé position logique
+et physique ; le candidat a été corrigé puis exécuté une fois. Aucun retry
+incertain ni mouvement caché n'a eu lieu.
 
-Le préflight frais a obtenu `CHECKPOINT_C_PREFLIGHT_OK`. Une seule séquence a
-ensuite référencé XYZ, rechargé le `11 × 11`, commandé `Z=50 mm` et attendu la
-fin. Le premier validateur a comparé à tort la position physique compensée
-`50,23 mm` à la consigne G-code et a rendu un faux KO. La récupération n'a fait
-aucun mouvement : chauffes coupées et `11 × 11` rechargé.
+État final prouvé après E4 :
 
-La validation corrigée, strictement en lecture seule, observe la position
-G-code `50,00 mm`, la position physique compensée `50,23 mm`, XYZ référencés,
-le `11 × 11` exact actif, les cibles à zéro, les deux CFS sans route et les
-configurations inchangées. Résultat technique :
-`CHECKPOINT_C_TECHNICAL_OK_AWAITING_HUMAN_VERDICT`.
+- `standby` ;
+- position G-code `X203 Y273 Z32` ;
+- chauffes demandées à zéro ;
+- aucune route CFS ni commande CFS active ;
+- cinq configurations inchangées ;
+- profil `k1_p001_t055_r001_n11x11` actif avec matrice exacte ;
+- aucune extrusion, chauffe, mesure de mesh, écriture distante ou restart.
 
-Thomas a ensuite confirmé `CHECKPOINT C OK`. Cette validation clôt le
-checkpoint C sans le rejouer. Elle permet de préparer le prochain rapprochement
-lent, qui conservera son propre préflight et son observation humaine.
+La gate qualifie uniquement le mouvement froid. Elle fournit la géométrie à la
+gate suivante `G4-K1-CONTROL-CLEAN-AND-REFERENCE-V1`, qui doit encore qualifier
+matière et température explicites, écoulement dans le bac, nettoyage chaud
+visible, arrêt thermique et unique référence Z finale avec buse propre.
 
-Le préflight D1 a obtenu `D1_PREFLIGHT_OK`. Le mouvement unique a commandé
-`G1 X81 Y280 Z50 F1200`, soit un point encore situé `24,5 mm` avant la zone Y
-stock déclarée. L'état final est `standby`, consigne G-code
-`X81 Y280 Z50`, position physique compensée `X81 Y280 Z50,23`, chauffes à zéro,
-aucune route CFS, configurations inchangées et `11 × 11` exact toujours actif.
-Résultat : `D1_TECHNICAL_OK_AWAITING_HUMAN_VERDICT`.
-
-Thomas a confirmé `D1 OK`. D1 n'a pas été rejoué. Le préflight D2 a ensuite
-obtenu `D2_PREFLIGHT_OK`, puis l'unique mouvement D2 a commandé
-`G1 X81 Y300 Z50 F600`.
-
-L'état final D2 est `standby`, consigne G-code `X81 Y300 Z50`, position physique
-compensée `X81 Y300 Z50,23`, chauffes à zéro, aucune route CFS, configurations
-inchangées et `11 × 11` exact actif. Résultat :
-`D2_TECHNICAL_OK_AWAITING_HUMAN_VERDICT`. Thomas a confirmé `D2 OK` et D2 n'a
-pas été rejoué. Le préflight D3 a ensuite obtenu `D3_PREFLIGHT_OK`, puis
-l'unique mouvement D3 a commandé `G1 X81 Y303 Z50 F300`.
-
-L'état final D3 est `standby`, consigne G-code `X81 Y303 Z50`, position physique
-compensée `X81 Y303 Z50,23`, chauffes à zéro, aucune route CFS, configurations
-inchangées et `11 × 11` exact actif. Résultat :
-`D3_TECHNICAL_OK_AWAITING_HUMAN_VERDICT`. D3 ne sera pas rejoué et toute entrée
-dans la zone stock ou approche verticale reste fermée jusqu'au verdict visuel
-explicite de Thomas.
+Vérifications locales finales : `40/40` tests ciblés CLEAN-MOTION et registre,
+suite complète de `553` tests dont `550` verts et `3` ignorés connus, et `64`
+scripts PowerShell relus sans erreur.

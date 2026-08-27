@@ -21,25 +21,27 @@ L'ancien chargement du `6 × 6` reste une preuve technique historique, mais son
 classement produit est annulé par ADR-029. L'éditeur hors ligne permet déjà la
 correction point par point sur une copie versionnée du `11 × 11` immuable.
 
-`G4-K1-CONTROL-CLEAN-MOTION-V1` a exécuté son checkpoint C une seule fois : XYZ
-référencés, `11 × 11` rechargé, consigne `Z=50 mm`. La validation corrigée en
-lecture seule est verte après un faux KO local lié à la compensation du mesh.
-Thomas a confirmé `CHECKPOINT C OK`. Le mouvement ne sera pas rejoué ; le
-rapprochement D1 a ensuite été exécuté une seule fois à froid jusqu'à
-`X81 Y280 Z50`, encore `24,5 mm` avant la zone stock déclarée. L'état technique
-final est vert, sans chauffe, route CFS ni changement de configuration, et avec
-le `11 × 11` actif. Thomas a confirmé `D1 OK` et D1 n'a pas été rejoué. D2 a
-ensuite approché une seule fois jusqu'à `X81 Y300 Z50`, soit `4,5 mm` avant la
-zone Y stock. Thomas a confirmé `D2 OK`, puis D3 a approché une seule fois jusqu'à
-`X81 Y303 Z50`, soit `1,5 mm` avant la zone Y stock. Son état technique est
-vert ; D3 attend le verdict visuel de Thomas, aucune entrée dans la zone stock
-n'a été lancée et D3 ne doit pas être rejoué.
+`G4-K1-CONTROL-CLEAN-MOTION-V1` est clos OK. Après C, D1, D2 et D3, deux
+captures manuelles ont fixé la grande brosse autour de
+`X66..99 / Y303..307 / Z2` et la seconde autour de
+`X203..206 / Y303..305 / Z32`. E2 a validé le balayage de la grande brosse.
+E3-R2 a validé l'approche resserrée de la seconde et E4 son carré exact
+`X203..206 / Y304..305`, avec retour à `X203 Y273 Z32`. Thomas a donné
+`E4 OK`. Les chauffes sont à zéro, aucune route CFS n'est engagée, les
+configurations sont inchangées et le meilleur profil actuel `11 × 11` reste
+actif.
 
 Le registre canonique de complétude du Goal 3 est maintenant
 `packages/k1-control-v1/physical-slices-qualification-v1/completion-matrix.json`.
-Il couvre exactement sept exigences, en compte actuellement `0/7` closes et
+Il couvre exactement sept exigences, en compte actuellement `1/7` close et
 sépare strictement la bascule/validation production du Goal 4. Il n'autorise
 aucun effet et ne crée aucun cinquième Goal.
+
+La prochaine exigence est `AUTOMATIC_CLEAN_AND_FINAL_REFERENCE`, sous
+`G4-K1-CONTROL-CLEAN-AND-REFERENCE-V1` : recette versionnée issue de la
+géométrie qualifiée, purge visible dans le réceptacle, nettoyage à chaud borné,
+une référence Z finale avec buse propre, puis arrêt thermique et état sûr
+relus.
 
 ## Archive historique — clôture initiale du Goal 2
 

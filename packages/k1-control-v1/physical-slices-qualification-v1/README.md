@@ -4,9 +4,11 @@ Ce paquet ne crée aucun Goal ni aucune nouvelle autorité. Il matérialise les
 sept exigences déjà contenues dans `GOALS.md`, le contrat du cycle et le plan
 hors imprimante. Le projet reste limité à quatre Goals.
 
-Statut actuel : **Goal 3 en cours ; D1 et D2 acceptés ; D3 de CLEAN-MOTION
-techniquement vert, verdict humain `D3 OK` encore absent ; aucune tranche
-physique complète passée**.
+Statut actuel : **Goal 3 en cours ; CLEAN-MOTION-V1 est clos OK après les
+validations humaines C, D1, D2, D3, E2, E3-R2 et E4 ; une exigence physique
+sur sept est passée**. La prochaine exigence est
+`AUTOMATIC_CLEAN_AND_FINAL_REFERENCE`, sous la gate
+`G4-K1-CONTROL-CLEAN-AND-REFERENCE-V1`.
 
 Le registre est entièrement local. Il ne contient aucun connecteur K1, aucune
 commande G-code, aucune pose, aucun restart et aucun effet physique. Son
@@ -24,4 +26,5 @@ Commande locale :
 python.exe packages/k1-control-v1/physical-slices-qualification-v1/verify_completion.py
 ```
 
-Résultat attendu aujourd'hui : `GOAL3_LEDGER_OK_IN_PROGRESS`.
+Résultat attendu aujourd'hui : `GOAL3_LEDGER_OK_IN_PROGRESS`, avec
+`passed=1`, `remaining=6` et zéro effet déclaré par ce registre local.

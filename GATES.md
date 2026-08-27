@@ -1364,11 +1364,11 @@ distant, restart, homing, palpage ou impression n'a eu lieu.
 
 ### Première tranche physique — `G4-K1-CONTROL-CLEAN-MOTION-V1`
 
-Status: **D1 et D2 acceptés ; checkpoint D3 techniquement vert ; verdict humain attendu ; entrée non lancée**
+Status: **passed — deux brosses qualifiées à froid avec verdicts humains**
 
 Le meilleur profil actuel `11 × 11` est actif. Thomas a confirmé le plateau
 libre, la brosse visible, la buse observable et l'arrêt immédiat possible. La
-gate qualifiera la géométrie de la brosse et un trajet à froid sans collision.
+gate a qualifié la géométrie des deux brosses et leurs trajets à froid sans collision.
 Chauffe, extrusion, CFS, palpage de la brosse, mesure de mesh, écriture Z,
 configuration distante, restart et retry automatique sont fermés.
 
@@ -1379,11 +1379,7 @@ chauffes et rechargé le profil. Aucun mouvement n'a été rejoué. La validatio
 corrigée en lecture seule observe `Z=50,00 mm` côté G-code, le `11 × 11` exact,
 les cibles zéro et les configurations inchangées.
 
-Les coordonnées de contact restent volontairement absentes : limites de
-brosse, premier contact et directions sûres d'entrée et de sortie sont des
-faits humains encore manquants. Thomas a confirmé `CHECKPOINT C OK`. Le
-checkpoint ne sera pas rejoué ; le prochain rapprochement gardera un préflight
-frais et une observation directe. Voir
+Thomas a confirmé `CHECKPOINT C OK`. Le checkpoint ne sera pas rejoué. Voir
 `docs/42-clean-motion-v1-premiere-tranche-physique.md`.
 
 Le rapprochement D1 a été exécuté une seule fois à froid jusqu'à
@@ -1394,9 +1390,18 @@ et le `11 × 11` actif. Thomas a confirmé `D1 OK` et D1 n'a pas été rejoué. 
 préflight D2 était vert, puis D2 a approché une seule fois jusqu'à
 `X81 Y300 Z50` à `10 mm/s`, encore `4,5 mm` avant la zone stock. Son état
 technique est vert. Thomas a confirmé `D2 OK`, puis D3 a approché une seule fois
-jusqu'à `X81 Y303 Z50` à `5 mm/s`, encore `1,5 mm` avant la zone stock. Son état
-technique est vert ; toute entrée dans la zone stock reste fermée jusqu'au
-verdict visuel de Thomas.
+jusqu'à `X81 Y303 Z50` à `5 mm/s`, encore `1,5 mm` avant la zone stock, et a été
+accepté.
+
+Une capture manuelle longue a ensuite fixé la grande brosse à froid autour de
+`X66..99 / Y303..307 / Z2`. Une seconde capture a fixé la petite brosse autour
+de `X203..206 / Y303..305 / Z32`, avec entrée et sortie sûres à `Y273`. E2 a
+validé un balayage de la grande brosse entre `X99` et `X66` à `Y305 / Z2`.
+E3-R2 a validé l'approche resserrée de la petite brosse, puis E4 a validé un
+cycle exact entre `X203..206` à `Y305`, puis à `Y304`, avant retour à
+`X203 Y273 Z32`. Les chauffes sont restées à zéro, aucune route CFS n'a été
+engagée, les configurations n'ont pas changé et le `11 × 11` est resté actif.
+Le verdict final humain est `E4 OK`; CLEAN-MOTION-V1 est clos.
 
 La capture privée `20260827-clean-motion-v1-read-only-sources-v3` confirme sans
 effet les limites machine et la zone stock déclarée X `68…94 mm`,

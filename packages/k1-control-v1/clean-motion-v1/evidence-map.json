@@ -1,6 +1,6 @@
 {
   "mission": "G4-K1-CONTROL-CLEAN-MOTION-V1-READ-ONLY-SOURCES",
-  "status": "checkpoint_d3_technical_ok_awaiting_human_verdict",
+  "status": "closed_ok_human_qualified_two_brush_cold_motion",
   "collector": {
     "path": "packages/k1-control-v1/clean-motion-v1/remote_geometry_read_only.py",
     "sha256": "36b077e706cc2532f89cbb2389442d667738a9fbb0ef7a7b5b864bd3f8c58229"
@@ -132,10 +132,200 @@
       "heater_targets_zero": true,
       "cfs_route_absent": true,
       "active_profile_after": "k1_p001_t055_r001_n11x11",
-      "human_verdict": null
+      "human_verdict": "D3_OK",
+      "human_verdict_source": "human_operator_message",
+      "human_verdict_date": "2026-08-27"
     },
     "d3_blocked_until_d2_human_positive": false,
     "d3_executed": true,
-    "next_entry_or_vertical_approach_blocked_until_d3_human_positive": true
+    "next_entry_or_vertical_approach_blocked_until_d3_human_positive": false
+  },
+  "manual_geometry_capture_v1": {
+    "collector": {
+      "path": "packages/k1-control-v1/clean-motion-v1/remote_manual_geometry_capture.py",
+      "sha256": "9d56fc37a839dac3feb6b36289f6648fd782370bf957bf707637c5209f8590eb"
+    },
+    "runner": {
+      "path": "packages/k1-control-v1/clean-motion-v1/capture_manual_geometry.ps1",
+      "sha256": "cb8e0cc304350bf3ec6ac577a51686aa376a8a95dd8cb16601ce369b8ca4e420"
+    },
+    "analyzer": {
+      "path": "packages/k1-control-v1/clean-motion-v1/analyze_manual_geometry_capture.py",
+      "sha256": "56eef5db2db9895713a081f6caf6b90d77945d98b2b1d47fc1bce3cfc9f1db62"
+    },
+    "protocol": "packages/k1-control-v1/clean-motion-v1/MANUAL-GEOMETRY-PROTOCOL.md",
+    "capture": {
+      "path": "inventory/raw/20260827-goal3-clean-motion-manual-geometry-v1/clean-motion-manual-geometry.safe.jsonl",
+      "sha256": "4efb9690d210ab1ec816d64b9bc318f280da840bfdcb276aabfb311e553c864f",
+      "status": "COMPLETE",
+      "sample_count": 1798,
+      "duration_s": 900.363,
+      "first_movement_s": 765.364,
+      "codex_motion": false,
+      "operator_manual_motion": true
+    },
+    "analysis_status": "PARTIAL_SECOND_CAPTURE_REQUIRED",
+    "stable_candidates_mm": [[66.0, 303.0, 3.0], [66.0, 307.0, 3.0]],
+    "short_candidates_requiring_repeat_mm": [[96.0, 307.0, 3.0], [98.0, 304.0, 2.0]],
+    "final_gcode_position_mm": [98.0, 304.0, 2.0],
+    "safe_z_return_human_confirmed": false,
+    "automatic_recipe_authorized": false
+  },
+  "manual_geometry_capture_v2_primary_brush": {
+    "capture": {
+      "path": "inventory/raw/20260827-goal3-clean-motion-manual-geometry-v2/clean-motion-manual-geometry.safe.jsonl",
+      "sha256": "9d4fabea65af9d1f98666d93a5acb099035aab705a2975e0b7a6ea83b1b29be0",
+      "status": "COMPLETE",
+      "sample_count": 720,
+      "duration_s": 360.744,
+      "codex_motion": false,
+      "operator_manual_motion": true
+    },
+    "analysis_status": "PRIMARY_BRUSH_QUALIFIED",
+    "stable_corners_gcode_mm": [
+      [66.0, 304.0, 2.0],
+      [66.0, 307.0, 2.0],
+      [99.0, 307.0, 2.0],
+      [99.0, 303.0, 2.0]
+    ],
+    "final_gcode_position_mm": [99.0, 303.0, 32.0],
+    "final_physical_position_mm": [99.0, 303.0, 32.11732],
+    "safe_z_return_human_confirmed": true,
+    "human_verdict": "OK"
+  },
+  "manual_geometry_capture_v1_secondary_purge_brush": {
+    "capture": {
+      "path": "inventory/raw/20260827-goal3-clean-motion-secondary-brush-v1/clean-motion-manual-geometry.safe.jsonl",
+      "sha256": "7f5c0f938dd13b311f24891ac8bfc5d808c776a3de80cb596b60814703337656",
+      "status": "COMPLETE",
+      "sample_count": 480,
+      "duration_s": 240.594,
+      "codex_motion": false,
+      "operator_manual_motion": true
+    },
+    "analysis_status": "SECONDARY_PURGE_BRUSH_QUALIFIED",
+    "stable_corners_gcode_mm": [
+      [203.0, 305.0, 32.0],
+      [206.0, 305.0, 32.0],
+      [206.0, 303.0, 32.0],
+      [203.0, 303.0, 32.0]
+    ],
+    "minimum_observed_z_mm": 32.0,
+    "safe_approach_and_exit_gcode_mm": [203.0, 273.0, 32.0],
+    "human_verdict": "GEOMETRY_OK",
+    "human_verdict_source": "human_operator_message",
+    "human_verdict_date": "2026-08-27"
+  },
+  "brush_trial_candidate": {
+    "remote_program": {
+      "path": "packages/k1-control-v1/clean-motion-v1/remote_brush_trial.py",
+      "sha256": "5942065e9020c15e108218594a5289e97220fa83f8a778d14e51dc353c69833b"
+    },
+    "runner": {
+      "path": "packages/k1-control-v1/clean-motion-v1/run_brush_trial.ps1",
+      "sha256": "02bdc84111f6fb145322099f039d3a02af0789cf67ec1be4e5ed503118880cef"
+    },
+    "e1": {
+      "preflight": {
+        "path": "inventory/raw/20260827-goal3-clean-motion-brush-e1-preflight/clean-motion-brush-trial.safe.jsonl",
+        "sha256": "b65f908c6aca2eea5ff5140d862e4c5fb8125e1c5046680bc46de923d9ccf71f",
+        "status": "E1_PREFLIGHT_OK"
+      },
+      "first_run_not_observed_by_human": {
+        "path": "inventory/raw/20260827-goal3-clean-motion-brush-e1-run/clean-motion-brush-trial.safe.jsonl",
+        "sha256": "99f353d3f8494b641a91902dd674c411c961084df1319b4d6cfc80cdfbc3207f",
+        "status": "E1_TECHNICAL_OK_AWAITING_HUMAN_VERDICT",
+        "human_verdict": "NOT_OBSERVED"
+      },
+      "explicit_human_requested_rerun": {
+        "path": "inventory/raw/20260827-goal3-clean-motion-brush-e1-human-rerun/clean-motion-brush-trial.safe.jsonl",
+        "sha256": "99f353d3f8494b641a91902dd674c411c961084df1319b4d6cfc80cdfbc3207f",
+        "status": "E1_TECHNICAL_OK_AWAITING_HUMAN_VERDICT",
+        "human_verdict": "KO_TOO_FAR_FROM_BOTH_BRUSHES_TO_CLEAN"
+      },
+      "brush_contact": "none",
+      "final_gcode_position_mm": [203.0, 273.0, 32.0],
+      "heater_targets_zero": true,
+      "cfs_route_absent": true,
+      "active_profile_after": "k1_p001_t055_r001_n11x11"
+    },
+    "e1_air_trace_authorized": false,
+    "e2": {
+      "path": "inventory/raw/20260827-goal3-clean-motion-brush-e2-run/clean-motion-brush-trial.safe.jsonl",
+      "sha256": "d759a5d3d9ba0a70f241119e4639c2f302f16ce09652085301593477e85f55a4",
+      "status": "E2_TECHNICAL_OK_AWAITING_HUMAN_VERDICT",
+      "authorized_by": "CONTACT_COORDINATES_OK",
+      "human_verdict": "E2_OK",
+      "contact_path": "X99_Y305_Z2_to_X66_Y305_Z2",
+      "final_gcode_position_mm": [81.0, 280.0, 32.0]
+    },
+    "e3": {
+      "path": "inventory/raw/20260827-goal3-clean-motion-brush-e3-run/clean-motion-brush-trial.safe.jsonl",
+      "sha256": "df9ab643211c1c7d9d3a38c686f220c5cbc8d154706feef41f1f074b0d025109",
+      "status": "E3_TECHNICAL_OK_AWAITING_HUMAN_VERDICT",
+      "authorized_by": "E2_OK",
+      "human_verdict": "QUASI_OK_END_MARGIN_TOO_LARGE",
+      "contact_path": "X203_Y304_Z32_to_X206_Y304_Z32",
+      "final_gcode_position_mm": [203.0, 273.0, 32.0],
+      "r2_candidate_contact_path": "X203_Y304.5_Z32_to_X206_Y304.5_Z32_and_back",
+      "r2_start_gcode_position_mm": [203.0, 273.0, 32.0],
+      "r2_stop_margin_y_mm": 0.5,
+      "r2_authorized": false,
+      "r2_no_effect_attempts": [
+        {
+          "path": "inventory/raw/20260827-goal3-clean-motion-brush-e3-r2-run/clean-motion-brush-trial.safe.jsonl",
+          "sha256": "38f2f5bab02ff9eeba63524facb5c0fd7abd34f21559b7fa7a1729a04abe045c",
+          "status": "E3_PREFLIGHT_KO",
+          "effect": false
+        },
+        {
+          "path": "inventory/raw/20260827-goal3-clean-motion-brush-e3-r2-run2/clean-motion-brush-trial.safe.jsonl",
+          "sha256": "38f2f5bab02ff9eeba63524facb5c0fd7abd34f21559b7fa7a1729a04abe045c",
+          "status": "E3_PREFLIGHT_KO",
+          "effect": false
+        }
+      ],
+      "r2_fresh_position_read": {
+        "path": "inventory/raw/20260827-goal3-clean-motion-e3-r2-position-read/clean-motion-read-only.safe.jsonl",
+        "sha256": "1a51f0d4b9f1699df539af3caeed2661d9ed87a05e6b72a7ab777962ad3fb6a3",
+        "position_mm": [203.0, 273.0, 32.16926933093525],
+        "effect": false
+      },
+      "r2_run": {
+        "path": "inventory/raw/20260827-goal3-clean-motion-brush-e3-r2-run3/clean-motion-brush-trial.safe.jsonl",
+        "sha256": "f91815659ffd6c0f40634cdd0d989f4a176762f80e48da089add50c77ab2bf3c",
+        "status": "E3_TECHNICAL_OK_AWAITING_HUMAN_VERDICT",
+        "contact_path": "X203_Y304.5_Z32_to_X206_Y304.5_Z32_and_back",
+        "final_gcode_position_mm": [203.0, 273.0, 32.0],
+        "heater_targets_zero": true,
+        "cfs_route_absent": true,
+        "active_profile_after": "k1_p001_t055_r001_n11x11",
+        "human_verdict": "E3_R2_OK_WITH_RECIPE_REFINEMENT"
+      }
+    },
+    "e4": {
+      "path": "inventory/raw/20260827-goal3-clean-motion-brush-e4-square-cycle-run/clean-motion-brush-trial.safe.jsonl",
+      "sha256": "c90f0477d60b7ad2e42c481cf354309a7ea1aa2b3ada6a56bdd5c8e0eb42b6ee",
+      "technical_status": "E4_TECHNICAL_OK_AWAITING_HUMAN_VERDICT",
+      "contact_square_mm": {
+        "x": [203.0, 206.0],
+        "y": [304.0, 305.0],
+        "z": 32.0
+      },
+      "sequence": [
+        "X203_to_X206_to_X203_at_Y305",
+        "X203_to_X206_to_X203_at_Y304"
+      ],
+      "authorized_by": "SQUARE_CYCLE_COORDINATES_OK",
+      "executed": true,
+      "final_gcode_position_mm": [203.0, 273.0, 32.0],
+      "heater_targets_zero": true,
+      "cfs_route_absent": true,
+      "active_profile_after": "k1_p001_t055_r001_n11x11",
+      "human_verdict": "E4_OK",
+      "human_verdict_source": "human_operator_message",
+      "human_verdict_date": "2026-08-27"
+    },
+    "automatic_retry": false
   }
 }

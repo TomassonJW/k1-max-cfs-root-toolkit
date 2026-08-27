@@ -56,26 +56,19 @@ est le meilleur profil observé et aucun profil actuel n'est qualifié robuste ;
 `G4-K1-CONTROL-BEST-CURRENT-MESH-RESTORE-V1` a remis le `11 × 11` actif en une
 commande, sans rollback, puis deux lectures indépendantes ont confirmé sa
 matrice exacte, les configurations inchangées, l'état `standby`, les cibles
-zéro et les axes libérés ; la première tranche
-physique CLEAN-MOTION-V1 a qualifié en lecture seule les limites et la zone
-logicielle stock ; Thomas a confirmé le plateau libre, la brosse visible, la
-buse observable et l'arrêt immédiat possible ; le checkpoint C a référencé XYZ,
-rechargé le `11 × 11` et commandé `Z=50 mm` une seule fois ; le premier
-validateur a produit un faux KO en lisant le Z physique compensé `50,23 mm`,
-sans rejouer le mouvement ; la validation corrigée en lecture seule est verte
-et Thomas a confirmé `CHECKPOINT C OK` ; D1 a ensuite été exécuté une seule fois
-à froid jusqu'à `X81 Y280 Z50`, encore `24,5 mm` avant la zone stock ; son état
-technique final est vert, avec chauffes zéro, aucune route CFS, configurations
-inchangées et `11 × 11` actif ; Thomas a confirmé `D1 OK`, puis D2 a approché
-une seule fois jusqu'à `X81 Y300 Z50`, encore `4,5 mm` avant la zone stock, avec
-un état technique vert ; Thomas a confirmé `D2 OK`, puis D3 a approché une seule
-fois jusqu'à `X81 Y303 Z50`, encore `1,5 mm` avant la zone stock, avec un état
-technique vert ; le verdict visuel de Thomas manque encore, aucune entrée dans
-la zone stock n'a été lancée et D3 ne doit pas être rejoué ;
-le registre local `physical-slices-qualification-v1` fixe exactement sept
-exigences internes au Goal 3, en compte actuellement `0/7` closes et interdit
-qu'une preuve physique soit remplacée par un test ou repoussée dans un Goal
-supplémentaire ;
+zéro et les axes libérés ; `G4-K1-CONTROL-CLEAN-MOTION-V1` est maintenant clos
+OK. Après C, D1, D2 et D3 acceptés, Thomas a cartographié manuellement les deux
+brosses sous captures GET : la brosse principale occupe `X66..99 / Y303..307`
+avec contact qualifié à `Z2`, et la brosse du bac occupe
+`X203..206 / Y304..305` à `Z32`. E1 a été refusé comme inutile car sans contact,
+E2 a qualifié un balayage principal à `5 mm/s`, puis E3, E3-R2 et E4 ont affiné
+la seconde brosse. Le cycle carré final E4 fait un aller-retour à `Y305`, puis
+un autre à `Y304`, entre `X203` et `X206`, à `3 mm/s`; Thomas a confirmé
+`E4 OK`. L'état final est `X203 Y273 Z32`, `standby`, chauffes zéro, aucune
+route CFS, configurations inchangées et `11 × 11` actif. Le registre local
+`physical-slices-qualification-v1` fixe exactement sept exigences internes au
+Goal 3, en compte désormais `1/7` close et place
+`G4-K1-CONTROL-CLEAN-AND-REFERENCE-V1` comme exigence active ;
 GATEWAY-PRIVATE-LAN-NO-AUTH-V1 est installé et validé : le port `4409` ne
 demande plus de mot de passe, reste limité aux réseaux IPv4 privés, et présente
 uniquement son proxy local approuvé à Moonraker ; production remains closed**.

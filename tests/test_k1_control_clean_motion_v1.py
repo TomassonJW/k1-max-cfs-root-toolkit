@@ -3,6 +3,7 @@ from importlib.util import module_from_spec, spec_from_file_location
 import json
 from pathlib import Path
 import sys
+import tempfile
 import unittest
 
 
@@ -31,6 +32,18 @@ checkpoint_d = load_module(
     "clean_motion_checkpoint_d_test",
     PACKAGE / "remote_checkpoint_d.py",
 )
+brush_trial = load_module(
+    "clean_motion_brush_trial_test",
+    PACKAGE / "remote_brush_trial.py",
+)
+manual_capture = load_module(
+    "clean_motion_manual_geometry_capture_test",
+    PACKAGE / "remote_manual_geometry_capture.py",
+)
+manual_analysis = load_module(
+    "clean_motion_manual_geometry_analysis_test",
+    PACKAGE / "analyze_manual_geometry_capture.py",
+)
 
 
 class CleanMotionV1ContractTests(unittest.TestCase):
@@ -41,7 +54,7 @@ class CleanMotionV1ContractTests(unittest.TestCase):
 
     def test_gate_is_not_deployable_and_records_only_executed_commands(self):
         self.assertEqual(
-            "checkpoint_d3_technical_ok_awaiting_human_verdict",
+            "closed_ok_human_qualified_two_brush_cold_motion",
             self.contract["status"],
         )
         self.assertFalse(self.contract["deployment_candidate"])
@@ -52,7 +65,22 @@ class CleanMotionV1ContractTests(unittest.TestCase):
             checkpoint.CHECKPOINT_SCRIPT.split("\n")
             + checkpoint_d.CHECKPOINTS["d1"]["script"].split("\n")
             + checkpoint_d.CHECKPOINTS["d2"]["script"].split("\n")
-            + checkpoint_d.CHECKPOINTS["d3"]["script"].split("\n"),
+            + checkpoint_d.CHECKPOINTS["d3"]["script"].split("\n")
+            + brush_trial.TRIALS["e1"]["script"].split("\n")
+            + brush_trial.TRIALS["e2"]["script"].split("\n")
+            + [
+                "G90",
+                "G1 X203 Y273 Z32 F1200",
+                "G1 Y303 F600",
+                "G1 Y304 F180",
+                "G1 X206 F180",
+                "G1 Y303 F180",
+                "G1 X203 F180",
+                "G1 Y273 F600",
+                "M400",
+            ]
+            + brush_trial.TRIALS["e3"]["script"].split("\n")
+            + brush_trial.TRIALS["e4"]["script"].split("\n"),
             self.contract["gcode_commands"],
         )
         self.assertEqual([], self.contract["service_actions"])
@@ -91,17 +119,21 @@ class CleanMotionV1ContractTests(unittest.TestCase):
         self.assertEqual("k1_p001_t055_r001_n11x11", prerequisites["required_active_profile"])
         self.assertFalse("robust_mesh_activation_gate" in prerequisites)
 
-    def test_physical_geometry_is_explicitly_missing(self):
+    def test_physical_geometry_is_human_qualified_for_both_brushes(self):
         required = set(self.contract["physical_facts_required_before_approach_commands"])
         self.assertIn("brush_left_right_front_back_bounds_observed_by_human", required)
         self.assertIn("checkpoint_c_safe_clearance_human_positive", required)
         self.assertIn("first_contact_z_observed_at_cold_slow_speed", required)
         geometry = self.form["observed_geometry_mm"]
+        self.assertEqual(66.0, geometry["brush_x_min"])
+        self.assertEqual(99.0, geometry["brush_x_max"])
+        self.assertEqual(303.0, geometry["brush_y_min"])
+        self.assertEqual(307.0, geometry["brush_y_max"])
+        self.assertEqual(2.0, geometry["first_contact_z"])
+        self.assertEqual(30.0, geometry["secondary_brush_minimum_safe_z"])
         self.assertEqual(50.0, geometry["safe_clearance_z"])
-        self.assertTrue(
-            all(value is None for key, value in geometry.items() if key != "safe_clearance_z")
-        )
-        self.assertEqual("D3_TECHNICAL_OK_AWAITING_HUMAN_VERDICT", self.form["status"])
+        self.assertEqual("CLOSED_OK_HUMAN_QUALIFIED_TWO_BRUSH_COLD_MOTION", self.form["status"])
+        self.assertEqual("CLEAN_MOTION_V1_OK", self.form["verdict"])
         self.assertTrue(self.form["operator_present"])
         self.assertTrue(self.form["plate_clear"])
         self.assertTrue(self.form["brush_installed_and_visible"])
@@ -374,9 +406,172 @@ class CleanMotionV1ContractTests(unittest.TestCase):
         self.assertEqual("D2_OK", checkpoint_evidence["run_d2"]["human_verdict"])
         self.assertFalse(checkpoint_evidence["d3_blocked_until_d2_human_positive"])
         self.assertTrue(checkpoint_evidence["d3_executed"])
-        self.assertIsNone(checkpoint_evidence["run_d3"]["human_verdict"])
-        self.assertTrue(
+        self.assertEqual("D3_OK", checkpoint_evidence["run_d3"]["human_verdict"])
+        self.assertFalse(
             checkpoint_evidence["next_entry_or_vertical_approach_blocked_until_d3_human_positive"]
+        )
+
+    def test_manual_geometry_capture_is_get_only_and_sanitized(self):
+        source = (PACKAGE / "remote_manual_geometry_capture.py").read_text(encoding="utf-8")
+        self.assertIn('method="GET"', source)
+        self.assertNotIn("gcode/script", source)
+        self.assertNotIn("socket.socket", source)
+        self.assertNotIn("subprocess", source)
+        self.assertNotIn('get("sn")', source)
+        self.assertNotIn('get("uuid")', source)
+        self.assertEqual("k1_p001_t055_r001_n11x11", manual_capture.BEST_PROFILE)
+
+    def test_manual_geometry_capture_runner_requires_operator_and_pins_source(self):
+        source = (PACKAGE / "capture_manual_geometry.ps1").read_text(encoding="utf-8")
+        self.assertIn("OperatorPresent", source)
+        self.assertIn("PlateClear", source)
+        self.assertIn("ExpectedProgramSha256", source)
+        self.assertIn("codex_motion = $false", source)
+        self.assertIn("gcode_sent = $false", source)
+
+    def test_manual_geometry_analysis_detects_long_stable_dwells(self):
+        samples = []
+        for index in range(10):
+            samples.append(
+                {
+                    "elapsed_s": float(index),
+                    "gcode_xyz": [70.0, 304.5, 2.0],
+                    "physical_xyz": [70.0, 304.5, 2.2],
+                }
+            )
+        samples.append(
+            {
+                "elapsed_s": 10.0,
+                "gcode_xyz": [94.0, 304.5, 4.0],
+                "physical_xyz": [94.0, 304.5, 4.2],
+            }
+        )
+        dwells = manual_analysis.stable_dwells(samples)
+        self.assertEqual(1, len(dwells))
+        self.assertEqual([70.0, 304.5, 2.0], dwells[0]["gcode_xyz_median"])
+        self.assertEqual(9.0, dwells[0]["duration_s"])
+
+    def test_manual_geometry_analysis_reports_short_dwells_and_extrema(self):
+        samples = [
+            {"elapsed_s": 0.0, "gcode_xyz": [81.0, 303.0, 50.0], "physical_xyz": [81.0, 303.0, 50.2]},
+            {"elapsed_s": 1.0, "gcode_xyz": [81.0, 303.0, 50.0], "physical_xyz": [81.0, 303.0, 50.2]},
+            {"elapsed_s": 2.0, "gcode_xyz": [66.0, 303.0, 3.0], "physical_xyz": [66.0, 303.0, 2.9]},
+            {"elapsed_s": 5.0, "gcode_xyz": [66.0, 303.0, 3.0], "physical_xyz": [66.0, 303.0, 2.9]},
+        ]
+        records = [
+            {"record": "control", "event": "ready"},
+            *[{"record": "sample", **sample} for sample in samples],
+            {"record": "control", "event": "complete"},
+        ]
+        with tempfile.TemporaryDirectory() as directory:
+            path = Path(directory) / "capture.jsonl"
+            path.write_text(
+                "\n".join(json.dumps(record) for record in records) + "\n",
+                encoding="utf-8",
+            )
+            result = manual_analysis.analyze(path)
+        self.assertEqual(2.0, result["first_movement_s"])
+        self.assertEqual([66.0, 303.0, 3.0], result["gcode_extrema"]["minimum_xyz"])
+        self.assertEqual([81.0, 303.0, 50.0], result["gcode_extrema"]["maximum_xyz"])
+        self.assertEqual(1, result["short_dwell_count"])
+
+    def test_manual_geometry_protocol_has_four_ordered_corners_and_safe_lifts(self):
+        source = (PACKAGE / "MANUAL-GEOMETRY-PROTOCOL.md").read_text(encoding="utf-8")
+        for marker in ("X− / Y−", "X+ / Y−", "X+ / Y+", "X− / Y+"):
+            self.assertIn(marker, source)
+        self.assertIn("10 secondes", source)
+        self.assertIn("2 mm", source)
+        self.assertIn("0,1 mm", source)
+
+    def test_qualified_manual_captures_and_brush_candidate_are_hash_pinned(self):
+        import hashlib
+
+        evidence = json.loads((PACKAGE / "evidence-map.json").read_text(encoding="utf-8"))
+        for section in (
+            "manual_geometry_capture_v2_primary_brush",
+            "manual_geometry_capture_v1_secondary_purge_brush",
+        ):
+            artifact = evidence[section]["capture"]
+            path = ROOT / artifact["path"]
+            self.assertTrue(path.is_file(), section)
+            self.assertEqual(artifact["sha256"], hashlib.sha256(path.read_bytes()).hexdigest())
+        for artifact in evidence["brush_trial_candidate"].values():
+            if not isinstance(artifact, dict) or "path" not in artifact:
+                continue
+            path = ROOT / artifact["path"]
+            self.assertTrue(path.is_file())
+            self.assertEqual(artifact["sha256"], hashlib.sha256(path.read_bytes()).hexdigest())
+
+    def test_brush_trials_use_only_the_human_observed_geometry(self):
+        self.assertEqual(["e1", "e2", "e3", "e4"], sorted(brush_trial.TRIALS))
+        self.assertEqual([203.0, 273.0, 32.0], brush_trial.TRIALS["e1"]["before"])
+        self.assertEqual([203.0, 273.0, 32.0], brush_trial.TRIALS["e1"]["after"])
+        self.assertEqual([81.0, 280.0, 32.0], brush_trial.TRIALS["e2"]["after"])
+        self.assertEqual([203.0, 273.0, 32.0], brush_trial.TRIALS["e3"]["before"])
+        self.assertEqual([203.0, 273.0, 32.0], brush_trial.TRIALS["e3"]["after"])
+        self.assertEqual([203.0, 273.0, 32.0], brush_trial.TRIALS["e4"]["before"])
+        self.assertEqual([203.0, 273.0, 32.0], brush_trial.TRIALS["e4"]["after"])
+
+    def test_e1_is_contact_free_and_stops_before_the_secondary_brush(self):
+        trial = brush_trial.TRIALS["e1"]
+        self.assertEqual("none", trial["brush_contact"])
+        self.assertEqual(5.0, trial["minimum_commanded_z_mm"])
+        self.assertIn("G1 X66 F300", trial["script"])
+        self.assertIn("G1 Y300 F600", trial["script"])
+        self.assertNotIn("G1 Y303 F600", trial["script"])
+
+    def test_e2_is_one_primary_contact_and_lifts_before_leaving(self):
+        lines = brush_trial.TRIALS["e2"]["script"].split("\n")
+        self.assertEqual("primary_bed_brush_once", brush_trial.TRIALS["e2"]["brush_contact"])
+        self.assertEqual(2.0, brush_trial.TRIALS["e2"]["minimum_commanded_z_mm"])
+        self.assertLess(lines.index("G1 Z2 F120"), lines.index("G1 X66 F300"))
+        self.assertLess(lines.index("G1 X66 F300"), lines.index("G1 Z12 F300"))
+        self.assertLess(lines.index("G1 Z12 F300"), lines.index("G1 X81 Y280 F600"))
+
+    def test_e3_never_descends_below_secondary_brush_clearance(self):
+        trial = brush_trial.TRIALS["e3"]
+        self.assertEqual("secondary_purge_bin_brush_out_and_back", trial["brush_contact"])
+        self.assertEqual(32.0, trial["minimum_commanded_z_mm"])
+        self.assertIn("G1 Y304.5 F600", trial["script"])
+        self.assertIn("G1 X206 F180", trial["script"])
+        self.assertNotIn("G1 Y303", trial["script"])
+        self.assertNotIn(" Z2", trial["script"])
+        self.assertNotIn(" Z5", trial["script"])
+
+    def test_brush_trial_source_and_runner_keep_effects_bounded(self):
+        source = (PACKAGE / "remote_brush_trial.py").read_text(encoding="utf-8")
+        runner = (PACKAGE / "run_brush_trial.ps1").read_text(encoding="utf-8")
+        for forbidden in ("M104", "M109", "M140", "M190", "BOX_", "BED_MESH_CALIBRATE", "G28"):
+            self.assertNotIn(forbidden, "\n".join(item["script"] for item in brush_trial.TRIALS.values()).upper())
+        self.assertNotIn('get("sn")', source)
+        self.assertNotIn('get("uuid")', source)
+        self.assertNotIn("T3,T4", brush_trial.QUERY_PATH)
+        self.assertIn("GEOMETRY_OK", runner)
+        self.assertIn("CONTACT_COORDINATES_OK", runner)
+        self.assertIn("E2_OK", runner)
+        self.assertIn("SQUARE_CYCLE_COORDINATES_OK", runner)
+        self.assertIn("OperatorPresent", runner)
+        self.assertIn("ImmediateStopAvailable", runner)
+        self.assertNotIn("__PIN_AFTER_REVIEW__", runner)
+
+    def test_e4_is_exactly_one_two_lane_square_observation_cycle(self):
+        trial = brush_trial.TRIALS["e4"]
+        self.assertEqual("secondary_purge_bin_brush_square_cycle_once", trial["brush_contact"])
+        self.assertEqual(32.0, trial["minimum_commanded_z_mm"])
+        self.assertEqual(
+            [
+                "G90",
+                "G1 X203 Y273 Z32 F1200",
+                "G1 Y305 F600",
+                "G1 X206 F180",
+                "G1 X203 F180",
+                "G1 Y304 F180",
+                "G1 X206 F180",
+                "G1 X203 F180",
+                "G1 Y273 F600",
+                "M400",
+            ],
+            trial["script"].split("\n"),
         )
 
 

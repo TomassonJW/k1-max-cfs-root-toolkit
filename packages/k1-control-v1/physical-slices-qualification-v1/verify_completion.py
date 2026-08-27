@@ -72,14 +72,38 @@ def verify() -> dict:
     clean = requirements[0]
     clean_evidence = load_json(ROOT / clean["evidence"])
     require(
-        clean_evidence["status"] == "checkpoint_d3_technical_ok_awaiting_human_verdict",
+        clean_evidence["status"] == "closed_ok_human_qualified_two_brush_cold_motion",
         "clean_motion_status_drift",
     )
     require(clean_evidence["checkpoint_d"]["run_d1"]["human_verdict"] == "D1_OK", "d1_verdict_drift")
     require(clean_evidence["checkpoint_d"]["d2_executed"] is True, "d2_execution_missing")
     require(clean_evidence["checkpoint_d"]["run_d2"]["human_verdict"] == "D2_OK", "d2_verdict_drift")
     require(clean_evidence["checkpoint_d"]["d3_executed"] is True, "d3_execution_missing")
-    require(clean_evidence["checkpoint_d"]["run_d3"]["human_verdict"] is None, "d3_verdict_drift")
+    require(clean_evidence["checkpoint_d"]["run_d3"]["human_verdict"] == "D3_OK", "d3_verdict_drift")
+    require(
+        clean_evidence["manual_geometry_capture_v2_primary_brush"]["human_verdict"] == "OK",
+        "primary_geometry_verdict_drift",
+    )
+    require(
+        clean_evidence["manual_geometry_capture_v1_secondary_purge_brush"]["human_verdict"] == "GEOMETRY_OK",
+        "secondary_geometry_verdict_drift",
+    )
+    brush_trials = clean_evidence["brush_trial_candidate"]
+    require(
+        brush_trials["e1"]["explicit_human_requested_rerun"]["human_verdict"]
+        == "KO_TOO_FAR_FROM_BOTH_BRUSHES_TO_CLEAN",
+        "e1_verdict_drift",
+    )
+    require(brush_trials["e2"]["human_verdict"] == "E2_OK", "e2_verdict_drift")
+    require(
+        brush_trials["e3"]["human_verdict"] == "QUASI_OK_END_MARGIN_TOO_LARGE",
+        "e3_verdict_drift",
+    )
+    require(
+        brush_trials["e3"]["r2_run"]["human_verdict"] == "E3_R2_OK_WITH_RECIPE_REFINEMENT",
+        "e3_r2_verdict_drift",
+    )
+    require(brush_trials["e4"]["human_verdict"] == "E4_OK", "e4_verdict_drift")
 
     mesh = requirements[-1]
     mesh_evidence = load_json(ROOT / mesh["evidence"])

@@ -1,7 +1,7 @@
 {
   "schema": 1,
   "gate": "G4-K1-CONTROL-CLEAN-MOTION-V1",
-  "status": "D3_TECHNICAL_OK_AWAITING_HUMAN_VERDICT",
+  "status": "CLOSED_OK_HUMAN_QUALIFIED_TWO_BRUSH_COLD_MOTION",
   "capture_id": null,
   "operator_present": true,
   "plate_clear": true,
@@ -16,20 +16,26 @@
     "axes_homed": false
   },
   "observed_geometry_mm": {
-    "brush_x_min": null,
-    "brush_x_max": null,
-    "brush_y_min": null,
-    "brush_y_max": null,
+    "brush_x_min": 66.0,
+    "brush_x_max": 99.0,
+    "brush_y_min": 303.0,
+    "brush_y_max": 307.0,
     "safe_clearance_z": 50.0,
-    "first_contact_z": null,
+    "first_contact_z": 2.0,
     "receptacle_x_min": null,
     "receptacle_x_max": null,
     "receptacle_y_min": null,
-    "receptacle_y_max": null
+    "receptacle_y_max": null,
+    "secondary_brush_x_min": 203.0,
+    "secondary_brush_x_max": 206.0,
+    "secondary_brush_y_min": 303.0,
+    "secondary_brush_y_max": 305.0,
+    "secondary_brush_minimum_safe_z": 30.0,
+    "secondary_brush_qualified_z": 32.0
   },
   "observed_directions": {
-    "safe_entry": null,
-    "safe_exit": null
+    "safe_entry": "primary_from_x99_y303_after_vertical_descent_secondary_from_x203_y273_at_z32",
+    "safe_exit": "primary_vertical_lift_before_xy_secondary_to_x203_y273_at_z32"
   },
   "checkpoints": [
     {
@@ -82,16 +88,130 @@
       "active_profile_after": "k1_p001_t055_r001_n11x11",
       "heaters_zero": true,
       "cfs_route_absent": true,
-      "human_verdict": null,
-      "notes": "Le mouvement D3 a ete execute une seule fois a froid. Toute entree dans la zone stock ou approche verticale reste interdite tant que Thomas n'a pas confirme visuellement D3."
+      "human_verdict": "OK",
+      "notes": "Le mouvement D3 a ete execute une seule fois a froid. Thomas a confirme D3 OK et propose une cartographie manuelle observee des quatre coins."
+    },
+    {
+      "id": "MANUAL_GEOMETRY_CAPTURE_V1",
+      "attempt": 1,
+      "technical_status": "COMPLETE_PARTIAL_GEOMETRY",
+      "codex_motion": false,
+      "operator_manual_motion": true,
+      "sample_count": 1798,
+      "first_movement_s": 765.364,
+      "stable_candidates_mm": [[66.0, 303.0, 3.0], [66.0, 307.0, 3.0]],
+      "short_candidates_requiring_repeat_mm": [[96.0, 307.0, 3.0], [98.0, 304.0, 2.0]],
+      "final_gcode_position_mm": [98.0, 304.0, 2.0],
+      "safe_z_return_human_confirmed": false,
+      "human_verdict": "PARTIAL_SECOND_CAPTURE_REQUIRED",
+      "notes": "La capture a commence les mouvements tardivement. Deux coins ont un palier >= 6 s ; les deux coins cote X+ doivent etre repris. Thomas doit d'abord confirmer la remontee Z sure."
+    },
+    {
+      "id": "MANUAL_GEOMETRY_CAPTURE_V2_PRIMARY_BRUSH",
+      "attempt": 1,
+      "technical_status": "COMPLETE_PRIMARY_BRUSH_QUALIFIED",
+      "codex_motion": false,
+      "operator_manual_motion": true,
+      "sample_count": 720,
+      "stable_corners_mm": [
+        [66.0, 304.0, 2.0],
+        [66.0, 307.0, 2.0],
+        [99.0, 307.0, 2.0],
+        [99.0, 303.0, 2.0]
+      ],
+      "final_gcode_position_mm": [99.0, 303.0, 32.0],
+      "final_physical_position_mm": [99.0, 303.0, 32.11732],
+      "safe_z_return_human_confirmed": true,
+      "human_verdict": "OK",
+      "notes": "Thomas a execute la sequence propre des quatre coins, confirme Z2 comme contact parfait puis remonte a Z32."
+    },
+    {
+      "id": "MANUAL_GEOMETRY_CAPTURE_V1_SECONDARY_PURGE_BRUSH",
+      "attempt": 1,
+      "technical_status": "COMPLETE_SECONDARY_BRUSH_QUALIFIED",
+      "codex_motion": false,
+      "operator_manual_motion": true,
+      "sample_count": 480,
+      "stable_corners_mm": [
+        [203.0, 305.0, 32.0],
+        [206.0, 305.0, 32.0],
+        [206.0, 303.0, 32.0],
+        [203.0, 303.0, 32.0]
+      ],
+      "safe_approach_and_exit_mm": [203.0, 273.0, 32.0],
+      "minimum_observed_z_mm": 32.0,
+      "human_verdict": "OK",
+      "notes": "Thomas confirme les quatre limites utiles et le point degage. Toute approche de cette brosse impose Z >= 30."
+    },
+    {
+      "id": "E1_COLD_AIR_TRACE",
+      "execution_count": 2,
+      "first_run_human_observation": "NOT_OBSERVED",
+      "second_run_reason": "EXPLICIT_HUMAN_REQUEST_TO_OBSERVE",
+      "technical_status": "OK_AWAITING_HUMAN_VERDICT",
+      "start_and_end_gcode_position_mm": [203.0, 273.0, 32.0],
+      "primary_brush_clearance_z_mm": 5.0,
+      "secondary_brush_stop_y_mm": 300.0,
+      "secondary_brush_distance_before_contact_mm": 3.0,
+      "brush_contact": false,
+      "heater_targets_zero": true,
+      "cfs_route_absent": true,
+      "active_profile_after": "k1_p001_t055_r001_n11x11",
+      "human_verdict": "KO_TOO_FAR_FROM_BOTH_BRUSHES_TO_CLEAN",
+      "notes": "E1 n'a produit aucune collision signalee mais Thomas confirme qu'il etait trop loin des deux brosses pour nettoyer. Les coordonnees de contact manuelles sont explicitement revalidees pour E2 puis E3."
+    },
+    {
+      "id": "E2_PRIMARY_BRUSH_CONTACT",
+      "attempt": 1,
+      "technical_status": "OK",
+      "contact_path": "X99_Y305_Z2_to_X66_Y305_Z2",
+      "contact_feedrate_mm_per_min": 300,
+      "final_gcode_position_mm": [81.0, 280.0, 32.0],
+      "heater_targets_zero": true,
+      "cfs_route_absent": true,
+      "human_verdict": "E2_OK",
+      "notes": "Thomas confirme le contact lent de la brosse principale."
+    },
+    {
+      "id": "E3_SECONDARY_PURGE_BRUSH_CONTACT",
+      "attempt": 1,
+      "technical_status": "OK_AWAITING_HUMAN_VERDICT",
+      "contact_path": "X203_Y304_Z32_to_X206_Y304_Z32",
+      "contact_feedrate_mm_per_min": 180,
+      "final_gcode_position_mm": [203.0, 273.0, 32.0],
+      "heater_targets_zero": true,
+      "cfs_route_absent": true,
+      "human_verdict": "QUASI_OK_END_MARGIN_TOO_LARGE",
+      "r2_contact_path": "X203_Y304.5_Z32_to_X206_Y304.5_Z32_and_back",
+      "r2_stop_margin_y_mm": 0.5,
+      "r2_technical_status": "OK_AWAITING_HUMAN_VERDICT",
+      "r2_final_gcode_position_mm": [203.0, 273.0, 32.0],
+      "r2_human_verdict": "E3_R2_OK_WITH_RECIPE_REFINEMENT",
+      "notes": "Thomas accepte R2 mais precise que le vrai carre utile est X203..206 et Y304..305."
+    },
+    {
+      "id": "E4_SECONDARY_BRUSH_SQUARE_OBSERVATION_CYCLE",
+      "attempt": 1,
+      "technical_status": "OK",
+      "contact_square_mm": {
+        "x": [203.0, 206.0],
+        "y": [304.0, 305.0],
+        "z": 32.0
+      },
+      "sequence": [
+        "X203_to_X206_to_X203_at_Y305",
+        "X203_to_X206_to_X203_at_Y304"
+      ],
+      "human_verdict": "E4_OK",
+      "notes": "Cycle d'observation exact demande puis valide par Thomas ; aucun zigzag diagonal dans cette etape."
     }
   ],
   "final_state": {
-    "safe_park": null,
-    "heater_targets_zero": null,
-    "active_profile": null,
-    "active_profile_sha256": null
+    "safe_park": [203.0, 273.0, 32.0],
+    "heater_targets_zero": true,
+    "active_profile": "k1_p001_t055_r001_n11x11",
+    "active_profile_sha256": "58fd96c55129bf7a17ba890d309cb3cd5e2926ec271d735b60392f8369da0a61"
   },
-  "verdict": null,
-  "notes": null
+  "verdict": "CLEAN_MOTION_V1_OK",
+  "notes": "Deux brosses qualifiees a froid. La gate ne qualifie encore ni chauffe, purge, efficacite de nettoyage a chaud ni reference Z finale."
 }

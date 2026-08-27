@@ -1,61 +1,51 @@
 # G4-K1-CONTROL-CLEAN-MOTION-V1
 
-Statut : **checkpoint D3 techniquement vert ; verdict visuel de Thomas attendu ;
-entrée dans la zone stock verrouillée ; meilleur profil `11 × 11` actif**.
+Statut : **clos OK ; deux brosses qualifiées à froid ; meilleur profil observé
+`11 × 11` toujours actif**.
 
-Cette gate est la première tranche physique du Goal 3. Son préalable corrigé
-est satisfait : `G4-K1-CONTROL-BEST-CURRENT-MESH-RESTORE-V1` a remis actif le
-meilleur profil observé `k1_p001_t055_r001_n11x11`. Tous les profils actuels ont
-des défauts de bord ; aucun n'est qualifié robuste. Elle sert
-uniquement à mesurer humainement la zone de la brosse et à qualifier une
-trajectoire à froid sans collision.
+Cette gate est l'exigence 1 sur 7 du Goal 3. Elle a qualifié les coordonnées,
+les hauteurs et les mouvements froids nécessaires à une future recette de
+nettoyage. Elle ne qualifie pas encore la chauffe, l'extrusion, la purge visible,
+l'efficacité du nettoyage à chaud ni la référence Z finale.
 
-Elle ne qualifie pas encore le nettoyage autonome. Elle interdit chauffage,
-extrusion, action CFS, palpage de la brosse, mesure de mesh, écriture Z,
-configuration distante, restart et répétition automatique.
+## Géométrie physique qualifiée
 
-Le contrat de départ ne contenait volontairement aucune coordonnée ni commande
-de mouvement. Les limites physiques de la brosse, la hauteur libre, le premier contact et les
-directions sûres d'entrée et de sortie sont encore des faits physiques manquants
-qui devront être observés avec Thomas devant la K1.
+- Brosse principale : `X66..99`, `Y303..307`, contact à `Z2`.
+- Sortie sûre de la brosse principale : remontée verticale avant tout mouvement
+  hors de la zone.
+- Brosse du bac de purge : carré utile `X203..206`, `Y304..305`, à `Z32`.
+- Approche et sortie sûres de la seconde brosse : `X203 Y273 Z32`.
+- La seconde brosse impose `Z >= 30` pendant toute approche.
 
-La capture privée `20260827-clean-motion-v1-read-only-sources-v3` a néanmoins
-qualifié les limites logiques et la zone déclarée par le logiciel stock :
-X `68…94 mm`, Y `304,5…306,5 mm`, trajet X `20 mm`, delta Z `−0,15 mm`.
-Ces nombres restent des indications logicielles, pas une preuve de la brosse
-réelle. Voir `RESULT.md` et `evidence-map.json`.
+Ces valeurs proviennent de captures manuelles GET à 2 Hz. Codex n'a envoyé
+aucun mouvement pendant leur acquisition. Thomas a placé la buse sur chaque
+point, confirmé le contact `Z2`, la remontée sûre et les quatre limites de la
+seconde brosse.
 
-Thomas a maintenant confirmé le plateau libre, la brosse visible, la buse
-observable et l'arrêt immédiat possible. `human-observation-form.json` enregistre
-ces quatre faits. Les commandes restent séparées par checkpoints : toute perte de visibilité,
-résistance, bruit inhabituel ou état ambigu arrêtera la gate immédiatement.
+## Qualifications de mouvement
 
-Le premier mouvement a tenu compte du comportement stock : `G28` recharge
-`default`, puis le checkpoint a rechargé explicitement le `11 × 11`, commandé
-`Z=50 mm` et attendu l'arrêt. Il n'a ni chauffé, ni extrudé, ni agi sur le CFS,
-ni mesuré un mesh.
+- C, D1, D2 et D3 : acceptés humainement.
+- E1 : techniquement sans collision, mais refusé comme test de nettoyage car
+  volontairement trop loin des brosses.
+- E2 : un balayage de la brosse principale de `X99` à `X66`, à `Y305 / Z2` et
+  `5 mm/s` ; verdict `E2 OK`.
+- E3 puis E3-R2 : affinage de la marge Y de la brosse du bac.
+- E4 : un aller-retour `X203 ↔ X206` à `Y305`, puis un autre à `Y304`, toujours
+  à `Z32` et `3 mm/s` ; verdict `E4 OK`.
 
-Le premier validateur a lu `50,23 mm` sur la position physique compensée par le
-mesh et a produit un faux KO malgré la consigne `Z=50`. La récupération a
-seulement envoyé `TURN_OFF_HEATERS` et rechargé le `11 × 11`, sans mouvement.
-Le validateur corrigé lit la position G-code `50,00 mm` et borne séparément la
-compensation physique. La validation R2 est verte. Thomas a confirmé
-`CHECKPOINT C OK`. Le checkpoint n'a pas été rejoué et ne doit pas l'être.
+Après chaque effet, la K1 est restée en attente, chauffes à zéro, sans route CFS,
+avec les configurations inchangées et le profil
+`k1_p001_t055_r001_n11x11` actif. La position finale est
+`X203 Y273 Z32`.
 
-Le rapprochement D1 a ensuite été exécuté une seule fois. La tête est passée de
-`X156,657 Y142,271 Z50` à `X81 Y280 Z50` à `20 mm/s`. Ce point reste
-`24,5 mm` avant le début Y de la zone stock déclarée. La lecture finale confirme
-la consigne G-code exacte, le Z physique compensé `50,23 mm`, les chauffes à
-zéro, aucune route CFS, les configurations inchangées et le `11 × 11` actif.
-Le statut technique était `D1_TECHNICAL_OK_AWAITING_HUMAN_VERDICT`. Thomas a
-ensuite confirmé `D1 OK` sans signaler de problème visuel.
+## Limite et suite
 
-D1 n'a pas été rejoué. Après un préflight frais, D2 a déplacé une seule fois la
-tête jusqu'à `X81 Y300 Z50` à `10 mm/s`, soit `4,5 mm` avant la zone Y stock.
-La machine est toujours froide, sans route CFS, configurations inchangées et
-`11 × 11` actif. Thomas a confirmé `D2 OK`, puis D3 a approché une seule fois
-jusqu'à `X81 Y303 Z50` à `5 mm/s`, soit `1,5 mm` avant la zone Y stock. D3 est
-techniquement vert. Toute entrée dans la zone stock ou approche verticale reste
-interdite tant que Thomas n'a pas confirmé visuellement D3.
+La géométrie peut maintenant alimenter une recette versionnée, mais cette gate
+n'autorise aucun nouveau mouvement. La suite est
+`G4-K1-CONTROL-CLEAN-AND-REFERENCE-V1` : choisir explicitement la matière et la
+température, chauffer au-dessus du réceptacle, vérifier le débit visible,
+qualifier un nettoyage borné, couper les chauffes puis exécuter une seule
+référence Z finale avec buse propre.
 
-Voir aussi `docs/42-clean-motion-v1-premiere-tranche-physique.md`.
+Les preuves exactes sont dans `evidence-map.json`; les décisions humaines et
+coordonnées sont dans `human-observation-form.json`.

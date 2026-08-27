@@ -51,14 +51,14 @@ Aucune nouvelle authentification ni action physique n'a eu lieu.
 **P4 — Goals 1 et 2 clos ; meilleur profil observé `11 × 11` actif et
 revérifié ; tous les profils actuels ont des défauts de bord ; aucun profil
 actuel n'est qualifié robuste ; éditeur point par point disponible hors ligne ;
-Goal 3 a accepté D1 et D2 puis exécuté D3 de CLEAN-MOTION, techniquement vert
-mais en attente du verdict visuel humain ; cycle CFS clos
+Goal 3 a clos CLEAN-MOTION-V1 avec les deux brosses qualifiées à froid et
+compte `1/7` exigence physique passée ; cycle CFS clos
 hors imprimante ; production volontairement bloquée**
 
 Le registre local
 `packages/k1-control-v1/physical-slices-qualification-v1/` fixe désormais les
 sept exigences physiques déjà prévues et la frontière du Goal 4. Son contrôle
-retourne `GOAL3_LEDGER_OK_IN_PROGRESS`, avec `0/7` exigences closes et aucun
+retourne `GOAL3_LEDGER_OK_IN_PROGRESS`, avec `1/7` exigence close et aucun
 effet K1. Il interdit de déclarer le Goal 3 terminé en remplaçant une preuve
 humaine par des tests ou en déplaçant une exigence vers un nouveau Goal.
 
@@ -85,8 +85,7 @@ observé `k1_p001_t055_r001_n11x11` actif en une commande. Aucun rollback n'a
 `58fd96c5…`, les configurations inchangées, l'état `standby`, les cibles zéro,
 les axes libérés, le Z `−0,04 mm` et les deux CFS connectés.
 
-La première tranche physique `G4-K1-CONTROL-CLEAN-MOTION-V1` a exécuté son
-checkpoint C une seule fois.
+La première tranche physique `G4-K1-CONTROL-CLEAN-MOTION-V1` est close OK.
 La capture live strictement en lecture seule
 `20260827-clean-motion-v1-read-only-sources-v3` a qualifié les limites machine
 et la zone logicielle stock X `68…94 mm`, Y `304,5…306,5 mm`, trajet X `20 mm`
@@ -108,8 +107,16 @@ le `11 × 11` actif. Thomas a confirmé `D1 OK`. D1 n'a pas été rejoué. D2 a
 ensuite approché une seule fois jusqu'à `X81 Y300 Z50`, encore `4,5 mm` avant la
 zone stock, à froid et sans autre effet. Thomas a confirmé `D2 OK`, puis D3 a approché une
 seule fois jusqu'à `X81 Y303 Z50`, encore `1,5 mm` avant la zone stock, à froid
-et sans autre effet. D3 est techniquement vert et attend le verdict visuel de
-Thomas ; aucune entrée dans la zone stock n'a été lancée.
+et sans autre effet. Thomas a confirmé `D3 OK`.
+
+Deux captures longues sous conduite manuelle ont ensuite fixé la grande brosse
+autour de `X66..99 / Y303..307 / Z2` et la seconde autour de
+`X203..206 / Y303..305 / Z32`, avec sortie sûre à `X203 Y273 Z32`. E2 a validé
+le balayage de la grande brosse, E3-R2 l'approche resserrée de la seconde et E4
+son carré exact `X203..206 / Y304..305`. Le verdict final humain est `E4 OK`.
+Les chauffes sont à zéro, aucune route CFS n'est engagée, les configurations
+sont inchangées et le `11 × 11` reste actif. La prochaine exigence est le
+nettoyage réel borné suivi d'une unique référence Z avec buse propre.
 
 La recette de mesure quotidienne qualifiée reste `6 × 6` Lagrange avec un seul
 mesh standard ; cela ne signifie pas que son profil résultant est robuste ni

@@ -10,9 +10,9 @@ Ce document ne crée aucun Goal Codex. Le compteur canonique reste fermé à
 **quatre Goals pour terminer le projet** : aucun cinquième Goal obligatoire ne
 sera ajouté. Les Goals 1 et 2 sont clos. ADR-029
 établit qu'aucun profil actuel n'est robuste : tous ont des défauts de bord. Le
-`11 × 11`, meilleur profil observé, est actif et revérifié. Thomas a accepté D1
-et D2. Le checkpoint D3 du Goal 3 est techniquement vert et attend son verdict
-visuel. L'entrée dans la zone stock reste verrouillée.
+`11 × 11`, meilleur profil observé, est actif et revérifié. CLEAN-MOTION-V1 est
+clos OK après les validations humaines C, D1, D2, D3, E2, E3-R2 et E4. Le Goal
+3 compte désormais une exigence physique passée sur sept.
 
 ## Vue rapide
 
@@ -20,16 +20,15 @@ visuel. L'entrée dans la zone stock reste verrouillée.
 | --- | --- | --- | --- |
 | 1 | `GOAL-P4-OFFLINE-CYCLE-CFS-V1` | terminé hors imprimante | système logiciel complet simulé et plan futur inerte vérifié |
 | 2 | `GOAL-P4-K1-READ-ONLY-QUALIFICATION-V1` | terminé en lecture seule ; écart de mesh alors observé, corrigé par une gate distincte | réponses et délais réels qualifiés sans commande ni impression |
-| 3 | `GOAL-P4-PHYSICAL-SLICES-QUALIFICATION-V1` | en cours ; D1 et D2 acceptés, D3 CLEAN-MOTION techniquement vert et verdict humain attendu | toutes les fonctions physiques et le profil de bord validés séparément |
+| 3 | `GOAL-P4-PHYSICAL-SLICES-QUALIFICATION-V1` | en cours ; CLEAN-MOTION-V1 clos OK, `1/7` exigences passées | toutes les fonctions physiques et le profil de bord validés séparément |
 | 4 | `GOAL-P4-DAILY-CUTOVER-V1` | prévu après Goal 3 | bascule unifiée, validation production et clôture définitive du projet |
 
 Le registre exécutable
 `packages/k1-control-v1/physical-slices-qualification-v1/completion-matrix.json`
 fige exactement les sept exigences internes du Goal 3. Il indique actuellement
-`0/7` exigences closes : D1 et D2 sont acceptés et D3 est techniquement vert,
-mais CLEAN-MOTION reste en cours jusqu'au verdict humain et à la fin de sa
-trajectoire. Ce registre ne
-crée aucun Goal supplémentaire.
+`1/7` exigence close : CLEAN-MOTION-V1 a qualifié à froid la grande brosse et
+la brosse secondaire, y compris le carré exact `X203..206 / Y304..305` à
+`Z32`. Ce registre ne crée aucun Goal supplémentaire.
 
 ## Goal 1 — Terminer le système hors imprimante
 
@@ -106,9 +105,9 @@ ont depuis reçu leur autorité distincte.
 
 Identifiant : `GOAL-P4-PHYSICAL-SLICES-QUALIFICATION-V1`
 
-État : **en cours ; D1 et D2 acceptés ; checkpoint D3 de CLEAN-MOTION
-techniquement vert ; verdict visuel de Thomas attendu ; entrée dans la zone
-stock non lancée ; meilleur profil actuel `11 × 11` actif**.
+État : **en cours ; CLEAN-MOTION-V1 clos OK ; `1/7` exigences passées ;
+prochaine exigence : nettoyage réel borné puis référence Z finale avec buse
+propre ; meilleur profil actuel `11 × 11` actif**.
 
 Le checkpoint C a référencé XYZ, rechargé le `11 × 11`, commandé `Z=50 mm` et
 attendu la fin. Un premier faux KO local a confondu la position physique
@@ -121,10 +120,17 @@ D1 a ensuite déplacé une seule fois la tête à froid jusqu'à
 restée froide, au repos, sans route CFS, configurations inchangées et profil
 `11 × 11` actif. Thomas a confirmé `D1 OK` et D1 n'a pas été rejoué. D2 a ensuite
 approché une seule fois jusqu'à `X81 Y300 Z50`, soit `4,5 mm` avant la zone Y
-stock, avec le même état sûr. Thomas a confirmé `D2 OK`, puis D3 a approché une seule fois jusqu'à
-`X81 Y303 Z50`, soit `1,5 mm`
-avant la zone Y stock. D3 attend maintenant le verdict visuel de
-Thomas ; toute entrée dans la zone stock reste interdite.
+stock, avec le même état sûr. Thomas a confirmé `D2 OK`, puis D3 a approché une
+seule fois jusqu'à `X81 Y303 Z50`, soit `1,5 mm` avant la zone Y stock, et a
+été accepté.
+
+Les captures manuelles ont ensuite mesuré la grande brosse autour de
+`X66..99 / Y303..307 / Z2` et la seconde autour de
+`X203..206 / Y303..305 / Z32`. E2 a validé un balayage réel à froid de la
+grande brosse. E3-R2 a resserré l'approche de la seconde, puis E4 a validé son
+carré exact `X203..206 / Y304..305`. Le retour final est `X203 Y273 Z32`, les
+chauffes sont à zéro, aucune route CFS n'est engagée et le `11 × 11` est resté
+actif. CLEAN-MOTION-V1 est donc clos OK.
 
 Ce qui sera réellement fait, une petite tranche à la fois :
 

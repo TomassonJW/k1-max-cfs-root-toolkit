@@ -5,18 +5,18 @@
   "goal_status": "IN_PROGRESS",
   "completion_audit_evidence": null,
   "current_human_gate": {
-    "requirement_id": "COLD_CLEAN_MOTION",
-    "checkpoint": "D3",
-    "active_gate": "G4-K1-CONTROL-CLEAN-MOTION-V1",
-    "technical_status": "D3_TECHNICAL_OK_AWAITING_HUMAN_VERDICT",
-    "required_human_verdict": "D3_OK",
+    "requirement_id": "AUTOMATIC_CLEAN_AND_FINAL_REFERENCE",
+    "checkpoint": "CLEAN_AND_REFERENCE_DESIGN",
+    "active_gate": "G4-K1-CONTROL-CLEAN-AND-REFERENCE-V1",
+    "technical_status": "NOT_STARTED",
+    "required_human_verdict": "RECIPE_REVIEW_THEN_PHYSICAL_CHECKPOINTS",
     "next_effect_blocked": true
   },
   "requirements": [
     {
       "order": 1,
       "id": "COLD_CLEAN_MOTION",
-      "status": "IN_PROGRESS_HUMAN_GATE",
+      "status": "PASSED",
       "slice_id": "CLEAN-MOTION-V1",
       "evidence": "packages/k1-control-v1/clean-motion-v1/evidence-map.json",
       "required_proofs": [
