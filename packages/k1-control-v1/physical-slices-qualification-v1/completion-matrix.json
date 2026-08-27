@@ -6,10 +6,10 @@
   "completion_audit_evidence": null,
   "current_human_gate": {
     "requirement_id": "COLD_CLEAN_MOTION",
-    "checkpoint": "D1",
+    "checkpoint": "D2",
     "active_gate": "G4-K1-CONTROL-CLEAN-MOTION-V1",
-    "technical_status": "D1_TECHNICAL_OK_AWAITING_HUMAN_VERDICT",
-    "required_human_verdict": "D1_OK",
+    "technical_status": "D2_TECHNICAL_OK_AWAITING_HUMAN_VERDICT",
+    "required_human_verdict": "D2_OK",
     "next_effect_blocked": true
   },
   "requirements": [

@@ -72,11 +72,13 @@ def verify() -> dict:
     clean = requirements[0]
     clean_evidence = load_json(ROOT / clean["evidence"])
     require(
-        clean_evidence["status"] == "checkpoint_d1_technical_ok_awaiting_human_verdict",
+        clean_evidence["status"] == "checkpoint_d2_technical_ok_awaiting_human_verdict",
         "clean_motion_status_drift",
     )
-    require(clean_evidence["checkpoint_d"]["run_d1"]["human_verdict"] is None, "d1_verdict_drift")
-    require(clean_evidence["checkpoint_d"]["d2_executed"] is False, "d2_must_not_be_executed")
+    require(clean_evidence["checkpoint_d"]["run_d1"]["human_verdict"] == "D1_OK", "d1_verdict_drift")
+    require(clean_evidence["checkpoint_d"]["d2_executed"] is True, "d2_execution_missing")
+    require(clean_evidence["checkpoint_d"]["run_d2"]["human_verdict"] is None, "d2_verdict_drift")
+    require(clean_evidence["checkpoint_d"]["d3_executed"] is False, "d3_must_not_be_executed")
 
     mesh = requirements[-1]
     mesh_evidence = load_json(ROOT / mesh["evidence"])

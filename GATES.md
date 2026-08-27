@@ -1364,7 +1364,7 @@ distant, restart, homing, palpage ou impression n'a eu lieu.
 
 ### Première tranche physique — `G4-K1-CONTROL-CLEAN-MOTION-V1`
 
-Status: **checkpoint D1 techniquement vert ; verdict humain attendu ; D2 non lancé**
+Status: **D1 accepté ; checkpoint D2 techniquement vert ; verdict humain attendu ; D3 non lancé**
 
 Le meilleur profil actuel `11 × 11` est actif. Thomas a confirmé le plateau
 libre, la brosse visible, la buse observable et l'arrêt immédiat possible. La
@@ -1390,8 +1390,10 @@ Le rapprochement D1 a été exécuté une seule fois à froid jusqu'à
 `X81 Y280 Z50`, à `20 mm/s`, encore `24,5 mm` avant la zone Y stock. La lecture
 finale confirme la consigne G-code exacte, la compensation physique
 `Z=50,23 mm`, les cibles zéro, aucune route CFS, les configurations inchangées
-et le `11 × 11` actif. D1 attend encore le verdict visuel de Thomas ; D2 vers
-`X81 Y300 Z50` reste fermé et D1 ne sera pas rejoué.
+et le `11 × 11` actif. Thomas a confirmé `D1 OK` et D1 n'a pas été rejoué. Le
+préflight D2 était vert, puis D2 a approché une seule fois jusqu'à
+`X81 Y300 Z50` à `10 mm/s`, encore `4,5 mm` avant la zone stock. Son état
+technique est vert ; D3 reste fermé jusqu'au verdict visuel de Thomas.
 
 La capture privée `20260827-clean-motion-v1-read-only-sources-v3` confirme sans
 effet les limites machine et la zone stock déclarée X `68…94 mm`,

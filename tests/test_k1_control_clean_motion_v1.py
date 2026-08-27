@@ -41,7 +41,7 @@ class CleanMotionV1ContractTests(unittest.TestCase):
 
     def test_gate_is_not_deployable_and_records_only_executed_commands(self):
         self.assertEqual(
-            "checkpoint_d1_technical_ok_awaiting_human_verdict",
+            "checkpoint_d2_technical_ok_awaiting_human_verdict",
             self.contract["status"],
         )
         self.assertFalse(self.contract["deployment_candidate"])
@@ -50,7 +50,8 @@ class CleanMotionV1ContractTests(unittest.TestCase):
         self.assertEqual([], self.contract["remote_commands"])
         self.assertEqual(
             checkpoint.CHECKPOINT_SCRIPT.split("\n")
-            + checkpoint_d.CHECKPOINTS["d1"]["script"].split("\n"),
+            + checkpoint_d.CHECKPOINTS["d1"]["script"].split("\n")
+            + checkpoint_d.CHECKPOINTS["d2"]["script"].split("\n"),
             self.contract["gcode_commands"],
         )
         self.assertEqual([], self.contract["service_actions"])
@@ -99,7 +100,7 @@ class CleanMotionV1ContractTests(unittest.TestCase):
         self.assertTrue(
             all(value is None for key, value in geometry.items() if key != "safe_clearance_z")
         )
-        self.assertEqual("D1_TECHNICAL_OK_AWAITING_HUMAN_VERDICT", self.form["status"])
+        self.assertEqual("D2_TECHNICAL_OK_AWAITING_HUMAN_VERDICT", self.form["status"])
         self.assertTrue(self.form["operator_present"])
         self.assertTrue(self.form["plate_clear"])
         self.assertTrue(self.form["brush_installed_and_visible"])
@@ -352,14 +353,23 @@ class CleanMotionV1ContractTests(unittest.TestCase):
 
         evidence = json.loads((PACKAGE / "evidence-map.json").read_text(encoding="utf-8"))
         checkpoint_evidence = evidence["checkpoint_d"]
-        for key in ("remote_program", "runner", "preflight_d1", "run_d1"):
+        for key in (
+            "remote_program",
+            "runner",
+            "preflight_d1",
+            "run_d1",
+            "preflight_d2",
+            "run_d2",
+        ):
             artifact = checkpoint_evidence[key]
             path = ROOT / artifact["path"]
             self.assertTrue(path.is_file(), key)
             self.assertEqual(artifact["sha256"], hashlib.sha256(path.read_bytes()).hexdigest())
-        self.assertIsNone(checkpoint_evidence["run_d1"]["human_verdict"])
-        self.assertTrue(checkpoint_evidence["d2_blocked_until_d1_human_positive"])
-        self.assertFalse(checkpoint_evidence["d2_executed"])
+        self.assertEqual("D1_OK", checkpoint_evidence["run_d1"]["human_verdict"])
+        self.assertFalse(checkpoint_evidence["d2_blocked_until_d1_human_positive"])
+        self.assertTrue(checkpoint_evidence["d2_executed"])
+        self.assertIsNone(checkpoint_evidence["run_d2"]["human_verdict"])
+        self.assertTrue(checkpoint_evidence["d3_blocked_until_d2_human_positive"])
         self.assertFalse(checkpoint_evidence["d3_executed"])
 
 

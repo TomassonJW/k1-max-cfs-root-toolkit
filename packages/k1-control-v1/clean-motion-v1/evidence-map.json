@@ -1,6 +1,6 @@
 {
   "mission": "G4-K1-CONTROL-CLEAN-MOTION-V1-READ-ONLY-SOURCES",
-  "status": "checkpoint_d1_technical_ok_awaiting_human_verdict",
+  "status": "checkpoint_d2_technical_ok_awaiting_human_verdict",
   "collector": {
     "path": "packages/k1-control-v1/clean-motion-v1/remote_geometry_read_only.py",
     "sha256": "36b077e706cc2532f89cbb2389442d667738a9fbb0ef7a7b5b864bd3f8c58229"
@@ -88,10 +88,32 @@
       "heater_targets_zero": true,
       "cfs_route_absent": true,
       "active_profile_after": "k1_p001_t055_r001_n11x11",
+      "human_verdict": "D1_OK",
+      "human_verdict_source": "human_operator_message",
+      "human_verdict_date": "2026-08-27"
+    },
+    "preflight_d2": {
+      "path": "inventory/raw/20260827-goal3-clean-motion-d2-preflight/clean-motion-checkpoint-d.safe.jsonl",
+      "sha256": "1e9b033cea4db50793049a3191ad47a68405d90ff69141594a9e85ecbfc46246",
+      "status": "D2_PREFLIGHT_OK"
+    },
+    "run_d2": {
+      "path": "inventory/raw/20260827-goal3-clean-motion-d2-run/clean-motion-checkpoint-d.safe.jsonl",
+      "sha256": "85d33f0f5da5d53cd2e4ec8ece73652aae04a601ceed504bbc372e9216d2a408",
+      "status": "D2_TECHNICAL_OK_AWAITING_HUMAN_VERDICT",
+      "start_gcode_position_mm": [81.0, 280.0, 50.0],
+      "target_gcode_position_mm": [81.0, 300.0, 50.0],
+      "observed_gcode_position_mm": [81.0, 300.0, 50.0],
+      "observed_mesh_compensated_physical_position_mm": [81.0, 300.0, 50.23],
+      "distance_before_declared_brush_zone_mm": 4.5,
+      "heater_targets_zero": true,
+      "cfs_route_absent": true,
+      "active_profile_after": "k1_p001_t055_r001_n11x11",
       "human_verdict": null
     },
-    "d2_blocked_until_d1_human_positive": true,
-    "d2_executed": false,
+    "d2_blocked_until_d1_human_positive": false,
+    "d2_executed": true,
+    "d3_blocked_until_d2_human_positive": true,
     "d3_executed": false
   }
 }

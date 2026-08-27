@@ -1,6 +1,6 @@
 # Résultat actuel
 
-Statut : **checkpoint D1 techniquement OK ; verdict humain attendu ; D2 non
+Statut : **checkpoint D2 techniquement OK ; verdict humain attendu ; D3 non
 lancé**.
 
 La capture privée `20260827-clean-motion-v1-read-only-sources-v3` confirme :
@@ -52,5 +52,12 @@ stock déclarée. L'état final est `standby`, consigne G-code
 aucune route CFS, configurations inchangées et `11 × 11` exact toujours actif.
 Résultat : `D1_TECHNICAL_OK_AWAITING_HUMAN_VERDICT`.
 
-Le mouvement D1 ne sera pas rejoué. D2 reste fermé jusqu'au verdict visuel
-explicite de Thomas sur D1.
+Thomas a confirmé `D1 OK`. D1 n'a pas été rejoué. Le préflight D2 a ensuite
+obtenu `D2_PREFLIGHT_OK`, puis l'unique mouvement D2 a commandé
+`G1 X81 Y300 Z50 F600`.
+
+L'état final D2 est `standby`, consigne G-code `X81 Y300 Z50`, position physique
+compensée `X81 Y300 Z50,23`, chauffes à zéro, aucune route CFS, configurations
+inchangées et `11 × 11` exact actif. Résultat :
+`D2_TECHNICAL_OK_AWAITING_HUMAN_VERDICT`. D2 ne sera pas rejoué et D3 reste
+fermé jusqu'au verdict visuel explicite de Thomas.

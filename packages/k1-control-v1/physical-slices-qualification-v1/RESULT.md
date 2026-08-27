@@ -4,8 +4,8 @@ Le registre couvre exactement sept exigences du Goal 3 et sépare explicitement
 les actions du Goal 4. Il n'ajoute ni mission obligatoire, ni transport, ni
 effet sur la K1.
 
-État réel : aucune exigence n'est encore close. CLEAN-MOTION est en cours au
-checkpoint D1, techniquement vert mais en attente du verdict visuel humain. Les
+État réel : aucune exigence n'est encore close. CLEAN-MOTION est en cours : D1
+est accepté, D2 est techniquement vert mais en attente du verdict visuel humain. Les
 cinq tranches du cycle impression/CFS ne sont pas commencées physiquement.
 L'éditeur de mesh point par point est prêt hors ligne, mais aucun profil dérivé
 n'a encore été qualifié physiquement sur toute la zone utile.

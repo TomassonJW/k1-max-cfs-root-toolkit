@@ -1,6 +1,6 @@
 # CLEAN-MOTION-V1 — première tranche physique du Goal 3
 
-Statut : **checkpoint D1 techniquement vert ; verdict visuel attendu ; D2
+Statut : **checkpoint D2 techniquement vert ; verdict visuel attendu ; D3
 verrouillé ; meilleur profil actuel `11 × 11` actif**.
 
 ## Faits déjà qualifiés sans mouvement
@@ -73,9 +73,13 @@ physique compensée vaut `Z=50,23 mm`. Les chauffes sont à zéro, aucune route 
 n'est engagée, les configurations n'ont pas changé et le `11 × 11` exact reste
 actif. D1 est donc techniquement vert, mais pas encore humainement qualifié.
 
-Thomas doit confirmer qu'il n'a observé ni bruit, ni contact, ni obstacle, ni
-perte de visibilité. Sans ce verdict, D2 vers `X81 Y300 Z50` à `10 mm/s` reste
-interdit. D1 ne sera pas rejoué.
+Thomas a confirmé `D1 OK`, sans signaler de bruit, contact, obstacle ou perte de
+visibilité. D1 n'a pas été rejoué. Après un préflight frais, D2 a approché une
+seule fois jusqu'à `X81 Y300 Z50` à `10 mm/s`, soit `4,5 mm` avant la zone Y
+stock. L'état technique final reste froid, sûr et inchangé hors position.
+
+Thomas doit maintenant confirmer visuellement D2. Sans `D2 OK`, D3 vers
+`X81 Y303 Z50` à `5 mm/s` reste interdit. D2 ne sera pas rejoué.
 
 ## Verdict
 
