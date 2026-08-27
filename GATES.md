@@ -1364,7 +1364,7 @@ distant, restart, homing, palpage ou impression n'a eu lieu.
 
 ### Première tranche physique — `G4-K1-CONTROL-CLEAN-MOTION-V1`
 
-Status: **checkpoint C techniquement vert ; verdict humain attendu avant toute suite**
+Status: **checkpoint C techniquement vert et accepté humainement ; suite non lancée**
 
 Le meilleur profil actuel `11 × 11` est actif. Thomas a confirmé le plateau
 libre, la brosse visible, la buse observable et l'arrêt immédiat possible. La
@@ -1381,8 +1381,9 @@ les cibles zéro et les configurations inchangées.
 
 Les coordonnées de contact restent volontairement absentes : limites de
 brosse, premier contact et directions sûres d'entrée et de sortie sont des
-faits humains encore manquants. Le formulaire attend le verdict de Thomas sur
-ce checkpoint avant tout rapprochement. Voir
+faits humains encore manquants. Thomas a confirmé `CHECKPOINT C OK`. Le
+checkpoint ne sera pas rejoué ; le prochain rapprochement gardera un préflight
+frais et une observation directe. Voir
 `docs/42-clean-motion-v1-premiere-tranche-physique.md`.
 
 La capture privée `20260827-clean-motion-v1-read-only-sources-v3` confirme sans

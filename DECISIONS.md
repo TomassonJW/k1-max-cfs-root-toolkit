@@ -1670,3 +1670,25 @@ profil robuste explicites.
 
 Voir ADR-029, `docs/24-mesh-editor-offline-v1.md` et
 `packages/k1-control-v1/best-current-mesh-restore-v1/`.
+
+## D-081 — Quatre Goals terminent le projet, sans P5 ou P6 obligatoire caché
+
+Date: 2026-08-27
+
+Status: décision de pilotage acceptée par Thomas
+
+Le plan précédent affichait quatre Goals tout en repoussant encore la validation
+production en P5 et le durcissement en P6. Cette structure contredisait la
+promesse opérationnelle selon laquelle les quatre Goals devaient terminer le
+projet et rendait le compteur trompeur.
+
+Le compteur canonique reste désormais strictement limité à quatre Goals. Les
+Goals 1 et 2 sont terminés. Le Goal 3 ferme toutes les qualifications physiques,
+y compris le nettoyage, le cycle filament et la correction des bords. Le Goal 4
+regroupe la bascule quotidienne, le rollback, le redémarrage à froid, les trois
+impressions consécutives, les deux CFS, la conservation du Z et du mesh, la
+baseline V1, la documentation et la fermeture Git.
+
+Quand le Goal 4 passe, le projet est terminé : aucune gate obligatoire, P5 ou P6
+ne reste ouverte. Les améliorations communautaires éventuelles deviennent un
+backlog optionnel extérieur au projet et ne peuvent pas repousser sa clôture.

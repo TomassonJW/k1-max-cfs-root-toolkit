@@ -37,7 +37,7 @@ class CleanMotionV1ContractTests(unittest.TestCase):
 
     def test_gate_is_not_deployable_and_contains_only_checkpoint_c_commands(self):
         self.assertEqual(
-            "checkpoint_c_technical_ok_awaiting_human_verdict",
+            "checkpoint_c_human_ok_next_approach_not_run",
             self.contract["status"],
         )
         self.assertFalse(self.contract["deployment_candidate"])
@@ -86,8 +86,12 @@ class CleanMotionV1ContractTests(unittest.TestCase):
         self.assertIn("brush_left_right_front_back_bounds_observed_by_human", required)
         self.assertIn("checkpoint_c_safe_clearance_human_positive", required)
         self.assertIn("first_contact_z_observed_at_cold_slow_speed", required)
-        self.assertTrue(all(value is None for value in self.form["observed_geometry_mm"].values()))
-        self.assertEqual("CHECKPOINT_C_TECHNICAL_OK_AWAITING_HUMAN_VERDICT", self.form["status"])
+        geometry = self.form["observed_geometry_mm"]
+        self.assertEqual(50.0, geometry["safe_clearance_z"])
+        self.assertTrue(
+            all(value is None for key, value in geometry.items() if key != "safe_clearance_z")
+        )
+        self.assertEqual("CHECKPOINT_C_HUMAN_OK_NEXT_APPROACH_NOT_RUN", self.form["status"])
         self.assertTrue(self.form["operator_present"])
         self.assertTrue(self.form["plate_clear"])
         self.assertTrue(self.form["brush_installed_and_visible"])
@@ -285,7 +289,9 @@ class CleanMotionV1ContractTests(unittest.TestCase):
             "CHECKPOINT_C_TECHNICAL_OK_AWAITING_HUMAN_VERDICT",
             checkpoint_evidence["corrected_read_only_validation"]["status"],
         )
-        self.assertIsNone(checkpoint_evidence["human_verdict"])
+        self.assertEqual("CHECKPOINT_C_OK", checkpoint_evidence["human_verdict"])
+        self.assertEqual("OK", self.contract["checkpoint_c"]["human_verdict"])
+        self.assertFalse(self.contract["checkpoint_c"]["next_motion_blocked_until_human_positive"])
 
 
 if __name__ == "__main__":

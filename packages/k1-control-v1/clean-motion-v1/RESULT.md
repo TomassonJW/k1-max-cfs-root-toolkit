@@ -1,7 +1,7 @@
 # Résultat actuel
 
-Statut : **checkpoint C techniquement OK ; verdict humain attendu ; aucun
-rapprochement vers la brosse autorisé**.
+Statut : **checkpoint C techniquement et humainement OK ; prochain
+rapprochement vers la brosse pas encore lancé**.
 
 La capture privée `20260827-clean-motion-v1-read-only-sources-v3` confirme :
 
@@ -41,4 +41,6 @@ le `11 × 11` exact actif, les cibles à zéro, les deux CFS sans route et les
 configurations inchangées. Résultat technique :
 `CHECKPOINT_C_TECHNICAL_OK_AWAITING_HUMAN_VERDICT`.
 
-La suite reste bloquée jusqu'au verdict visuel de Thomas sur ce mouvement.
+Thomas a ensuite confirmé `CHECKPOINT C OK`. Cette validation clôt le
+checkpoint C sans le rejouer. Elle permet de préparer le prochain rapprochement
+lent, qui conservera son propre préflight et son observation humaine.

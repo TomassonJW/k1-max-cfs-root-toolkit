@@ -1,7 +1,7 @@
 {
   "schema": 1,
   "gate": "G4-K1-CONTROL-CLEAN-MOTION-V1",
-  "status": "CHECKPOINT_C_TECHNICAL_OK_AWAITING_HUMAN_VERDICT",
+  "status": "CHECKPOINT_C_HUMAN_OK_NEXT_APPROACH_NOT_RUN",
   "capture_id": null,
   "operator_present": true,
   "plate_clear": true,
@@ -20,7 +20,7 @@
     "brush_x_max": null,
     "brush_y_min": null,
     "brush_y_max": null,
-    "safe_clearance_z": null,
+    "safe_clearance_z": 50.0,
     "first_contact_z": null,
     "receptacle_x_min": null,
     "receptacle_x_max": null,
@@ -40,8 +40,8 @@
       "mesh_compensated_physical_z_mm": 50.23,
       "active_profile_after": "k1_p001_t055_r001_n11x11",
       "heaters_zero": true,
-      "human_verdict": null,
-      "notes": "Le premier validateur a confondu Z G-code et Z physique compense. Aucun mouvement n'a ete rejoue."
+      "human_verdict": "OK",
+      "notes": "Thomas a confirme CHECKPOINT C OK. Le premier validateur avait confondu Z G-code et Z physique compense. Aucun mouvement n'a ete rejoue."
     }
   ],
   "final_state": {

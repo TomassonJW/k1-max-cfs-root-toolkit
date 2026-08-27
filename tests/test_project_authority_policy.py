@@ -56,6 +56,15 @@ class ProjectAuthorityPolicyTests(unittest.TestCase):
         self.assertIn("G4-K1-CONTROL-CALIBRATION-UI-NAVIGATION-V1", deployer)
         self.assertIn("-Gate", deployer)
 
+    def test_four_macro_goals_end_the_project_without_hidden_required_phase(self):
+        goals = (ROOT / "GOALS.md").read_text(encoding="utf-8")
+        normalized_goals = " ".join(goals.split())
+        self.assertIn("quatre Goals pour terminer le projet", normalized_goals)
+        self.assertIn("Quand ce Goal passe, le projet est **terminé**", normalized_goals)
+        self.assertIn("aucune gate obligatoire ne reste ouverte", normalized_goals)
+        self.assertNotIn("## Horizons après ces quatre Goals", goals)
+        self.assertNotIn("Gate G5 reste obligatoire", goals)
+
 
 if __name__ == "__main__":
     unittest.main()

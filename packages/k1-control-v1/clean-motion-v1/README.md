@@ -1,7 +1,7 @@
 # G4-K1-CONTROL-CLEAN-MOTION-V1
 
-Statut : **checkpoint C techniquement vert ; meilleur profil `11 × 11` actif ;
-verdict visuel humain attendu avant tout mouvement suivant**.
+Statut : **checkpoint C accepté humainement ; meilleur profil `11 × 11` actif ;
+prochain rapprochement pas encore lancé**.
 
 Cette gate est la première tranche physique du Goal 3. Son préalable corrigé
 est satisfait : `G4-K1-CONTROL-BEST-CURRENT-MESH-RESTORE-V1` a remis actif le
@@ -39,7 +39,7 @@ Le premier validateur a lu `50,23 mm` sur la position physique compensée par le
 mesh et a produit un faux KO malgré la consigne `Z=50`. La récupération a
 seulement envoyé `TURN_OFF_HEATERS` et rechargé le `11 × 11`, sans mouvement.
 Le validateur corrigé lit la position G-code `50,00 mm` et borne séparément la
-compensation physique. La validation R2 est verte. Le checkpoint n'a pas été
-rejoué et ne doit pas l'être.
+compensation physique. La validation R2 est verte. Thomas a confirmé
+`CHECKPOINT C OK`. Le checkpoint n'a pas été rejoué et ne doit pas l'être.
 
 Voir aussi `docs/42-clean-motion-v1-premiere-tranche-physique.md`.

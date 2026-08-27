@@ -1,7 +1,7 @@
 # CLEAN-MOTION-V1 — première tranche physique du Goal 3
 
-Statut : **checkpoint C techniquement vert ; meilleur profil actuel `11 × 11`
-actif ; verdict humain attendu avant toute suite**.
+Statut : **checkpoint C techniquement et humainement vert ; meilleur profil
+actuel `11 × 11` actif ; prochain rapprochement pas encore lancé**.
 
 ## Faits déjà qualifiés sans mouvement
 
@@ -63,7 +63,8 @@ une hauteur libre de `Z=50 mm`. Le premier validateur a confondu la position
 G-code `50,00 mm` et la position physique compensée `50,23 mm`, puis a produit
 un faux KO. Aucun mouvement n'a été rejoué. La validation corrigée en lecture
 seule est verte. Les coordonnées de contact et de brossage restent absentes
-jusqu'au verdict humain sur ce checkpoint.
+jusqu'au verdict humain sur ce checkpoint. Thomas a depuis confirmé
+`CHECKPOINT C OK` ; le mouvement ne sera pas rejoué.
 
 ## Verdict
 

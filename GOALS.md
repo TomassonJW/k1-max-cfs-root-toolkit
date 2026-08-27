@@ -6,11 +6,13 @@ Ce fichier sert d'index rapide pour les grandes sessions de travail. Les noms
 ci-dessous regroupent les petites gates déjà définies dans `GATES.md` ; ils ne
 les remplacent pas et n'autorisent aucune action sur la K1 par eux-mêmes.
 
-Ce document ne crée aucun Goal Codex. Les Goals 1 et 2 sont clos. ADR-029
+Ce document ne crée aucun Goal Codex. Le compteur canonique reste fermé à
+**quatre Goals pour terminer le projet** : aucun cinquième Goal obligatoire ne
+sera ajouté. Les Goals 1 et 2 sont clos. ADR-029
 établit qu'aucun profil actuel n'est robuste : tous ont des défauts de bord. Le
-`11 × 11`, meilleur profil observé, est actif et revérifié. Le Goal 3 a exécuté
-son premier checkpoint physique et attend le verdict visuel de Thomas avant de
-s'approcher de la brosse.
+`11 × 11`, meilleur profil observé, est actif et revérifié. Le checkpoint C du
+Goal 3 est accepté humainement. Le prochain incrément est le rapprochement lent
+vers la brosse, sous observation.
 
 ## Vue rapide
 
@@ -18,8 +20,8 @@ s'approcher de la brosse.
 | --- | --- | --- | --- |
 | 1 | `GOAL-P4-OFFLINE-CYCLE-CFS-V1` | terminé hors imprimante | système logiciel complet simulé et plan futur inerte vérifié |
 | 2 | `GOAL-P4-K1-READ-ONLY-QUALIFICATION-V1` | terminé en lecture seule ; écart de mesh alors observé, corrigé par une gate distincte | réponses et délais réels qualifiés sans commande ni impression |
-| 3 | `GOAL-P4-PHYSICAL-SLICES-QUALIFICATION-V1` | checkpoint C CLEAN-MOTION techniquement vert ; verdict humain attendu | fonctions physiques validées séparément avec retour arrière |
-| 4 | `GOAL-P4-DAILY-CUTOVER-V1` | prévu après Goal 3 | fonctionnement quotidien unifié, ancien Orca retirable en une transaction |
+| 3 | `GOAL-P4-PHYSICAL-SLICES-QUALIFICATION-V1` | en cours ; checkpoint C CLEAN-MOTION accepté | toutes les fonctions physiques et le profil de bord validés séparément |
+| 4 | `GOAL-P4-DAILY-CUTOVER-V1` | prévu après Goal 3 | bascule unifiée, validation production et clôture définitive du projet |
 
 ## Goal 1 — Terminer le système hors imprimante
 
@@ -96,14 +98,14 @@ ont depuis reçu leur autorité distincte.
 
 Identifiant : `GOAL-P4-PHYSICAL-SLICES-QUALIFICATION-V1`
 
-État : **en reprise ; checkpoint C de CLEAN-MOTION techniquement vert ; meilleur
-profil actuel `11 × 11` actif ; verdict visuel de Thomas attendu**.
+État : **en cours ; checkpoint C de CLEAN-MOTION accepté par Thomas ; meilleur
+profil actuel `11 × 11` actif ; prochain rapprochement pas encore lancé**.
 
 Le checkpoint C a référencé XYZ, rechargé le `11 × 11`, commandé `Z=50 mm` et
 attendu la fin. Un premier faux KO local a confondu la position physique
 compensée `50,23 mm` avec la consigne. Aucun mouvement n'a été rejoué ; la
-validation corrigée en lecture seule est verte. La suite est bloquée jusqu'au
-verdict humain.
+validation corrigée en lecture seule est verte. Thomas a donné
+`CHECKPOINT C OK`. Ce checkpoint ne doit pas être rejoué.
 
 Ce qui sera réellement fait, une petite tranche à la fois :
 
@@ -122,7 +124,7 @@ exacte. Aucun retry automatique et aucune poursuite après un KO.
 Fin attendue : toutes les fonctions physiques nécessaires sont validées
 séparément et réversibles ; l'ancien démarrage Orca reste encore disponible.
 
-## Goal 4 — Basculer vers le fonctionnement quotidien complet
+## Goal 4 — Basculer, valider la production et clôturer définitivement
 
 Identifiant : `GOAL-P4-DAILY-CUTOVER-V1`
 
@@ -135,22 +137,26 @@ Ce qui sera réellement fait :
 - retirer ensemble l'ancien départ Orca et le post-traitement `+0,27 mm` ;
 - conserver le bon filament engagé en fin d'impression ;
 - exposer le retrait par le bouton séparé `Désengager et nettoyer` ;
-- prouver le retour complet à l'ancien fonctionnement.
+- prouver le retour complet à l'ancien fonctionnement ;
+- redémarrer à froid et exécuter trois impressions consécutives représentatives ;
+- exercer les deux CFS, un changement de filament et les reprises intégrées ;
+- confirmer la conservation du Z, du mesh et des configurations après reboot ;
+- vérifier Orca et K1 Control sans correction manuelle ni intervention Codex ;
+- fermer la documentation, les données privées, Git et la baseline V1.
 
-Limite : cette bascule n'ouvre pas encore la production. Gate G5 reste
-obligatoire.
+La validation production auparavant repoussée en P5 fait désormais partie de
+ce Goal 4. Elle ne crée donc plus un cinquième Goal caché.
 
-Fin attendue : le fonctionnement quotidien est simple, unifié et réversible,
-prêt pour la campagne finale de validation.
+Fin attendue : fonctionnement quotidien simple, unifié, réversible et validé en
+production. Quand ce Goal passe, le projet est **terminé** et aucune gate
+obligatoire ne reste ouverte.
 
-## Horizons après ces quatre Goals
+## Après les quatre Goals
 
-- **P5 — validation production** : redémarrage à froid, trois impressions
-  consécutives, deux CFS, changements de matériaux, Z conservé, pause/reprise,
-  Orca et K1 Control sans intervention Codex, puis baseline V1 stable.
-- **P6 — durcissement communautaire** : compatibilités, nettoyage automatique
-  des données privées, documentation, licence et releases sans contenu
-  propriétaire.
+Il n'existe plus de phase obligatoire P5 ou P6 après le Goal 4. Les éventuelles
+compatibilités communautaires ou améliorations futures deviennent un backlog
+optionnel, extérieur à la définition de fin du projet. Elles ne peuvent pas
+repousser la clôture.
 
 ## Démarrage recommandé
 
@@ -164,9 +170,9 @@ La première tranche physique est cadrée dans
 lecture seule a qualifié les limites machine et la zone de nettoyage déclarée
 par le logiciel stock, sans exporter son code complet. Thomas a confirmé le
 plateau libre, la brosse visible, la buse observable et l'arrêt immédiat
-possible. Le checkpoint C a été exécuté une fois et sa validation technique
-corrigée est verte. Aucun mouvement ne doit être rejoué ; la suite attend le
-verdict visuel de Thomas.
+possible. Le checkpoint C a été exécuté une fois, sa validation technique
+corrigée est verte et Thomas l'a accepté. Aucun mouvement ne doit être rejoué ;
+le prochain incrément est un rapprochement lent distinct.
 
 La présence humaine est acquise pour le démarrage, mais chaque rapprochement
 reste un checkpoint humain. `gpt-5.6-terra` avec raisonnement `high` est

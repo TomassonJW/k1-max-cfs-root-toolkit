@@ -8,7 +8,7 @@ Nouvelle tâche créée : non
 
 Goal de mission repris : `GOAL-P4-PHYSICAL-SLICES-QUALIFICATION-V1`
 
-État de reprise : **ATTENDRE_VERDICT_HUMAIN_CHECKPOINT_C_CLEAN_MOTION**
+État de reprise : **CHECKPOINT_C_HUMAIN_OK_PRÉPARER_RAPPROCHEMENT_SUIVANT**
 
 ## Résultat global de la session
 
@@ -154,8 +154,8 @@ La gate restera froide : aucune chauffe, extrusion, action CFS, mesure de mesh,
 écriture Z, configuration distante, restart ou retry automatique. Toute perte
 de visibilité, résistance, bruit inhabituel ou état ambigu impose l'arrêt.
 
-Le premier checkpoint isolé est techniquement vert. Un verdict humain est
-obligatoire avant le mouvement suivant. `gpt-5.6-terra` avec
+Le premier checkpoint isolé est techniquement vert et Thomas a confirmé
+`CHECKPOINT C OK`. Le mouvement ne doit pas être rejoué. `gpt-5.6-terra` avec
 raisonnement `high` est conseillé pour piloter les checkpoints et les preuves.
 L'option `medium` est moins coûteuse, avec plus de risque de reprise si une
 observation physique est ambiguë.
@@ -166,9 +166,8 @@ observation physique est ambiguë.
 > `docs/HANDOFF-SESSION-COMPLETE-2026-08-27.md`. Le meilleur profil observé
 > `11 × 11` est actif ; aucun profil actuel n'est qualifié robuste. Je suis
 > devant la K1, plateau libre, brosse visible, buse observable et arrêt immédiat
-> possible. Le checkpoint C a déjà été exécuté une fois et ne doit pas être
-> rejoué. Demande-moi uniquement mon verdict visuel sur ce mouvement avant de
-> préparer le rapprochement suivant. Ne chauffe, n'extrude et ne lance aucun
-> CFS.
+> possible. Le checkpoint C est `OK`, a déjà été exécuté une fois et ne doit pas
+> être rejoué. Prépare le rapprochement suivant avec un préflight frais et une
+> observation directe. Ne chauffe, n'extrude et ne lance aucun CFS.
 
 La tâche source reste visible et ne doit pas être archivée.

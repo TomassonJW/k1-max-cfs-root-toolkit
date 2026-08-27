@@ -24,7 +24,8 @@ correction point par point sur une copie versionnée du `11 × 11` immuable.
 `G4-K1-CONTROL-CLEAN-MOTION-V1` a exécuté son checkpoint C une seule fois : XYZ
 référencés, `11 × 11` rechargé, consigne `Z=50 mm`. La validation corrigée en
 lecture seule est verte après un faux KO local lié à la compensation du mesh.
-Le prochain mouvement est bloqué jusqu'au verdict visuel de Thomas.
+Thomas a confirmé `CHECKPOINT C OK`. Le mouvement ne sera pas rejoué ; le
+prochain rapprochement lent n'a pas encore été lancé.
 
 ## Archive historique — clôture initiale du Goal 2
 

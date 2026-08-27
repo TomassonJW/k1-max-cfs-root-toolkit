@@ -63,7 +63,8 @@ buse observable et l'arrêt immédiat possible ; le checkpoint C a référencé 
 rechargé le `11 × 11` et commandé `Z=50 mm` une seule fois ; le premier
 validateur a produit un faux KO en lisant le Z physique compensé `50,23 mm`,
 sans rejouer le mouvement ; la validation corrigée en lecture seule est verte
-et attend le verdict visuel de Thomas avant tout rapprochement vers la brosse ;
+et Thomas a confirmé `CHECKPOINT C OK` ; le prochain rapprochement vers la
+brosse n'a pas encore été lancé et gardera son propre checkpoint ;
 GATEWAY-PRIVATE-LAN-NO-AUTH-V1 est installé et validé : le port `4409` ne
 demande plus de mot de passe, reste limité aux réseaux IPv4 privés, et présente
 uniquement son proxy local approuvé à Moonraker ; production remains closed**.

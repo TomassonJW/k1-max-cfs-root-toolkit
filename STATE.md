@@ -51,7 +51,7 @@ Aucune nouvelle authentification ni action physique n'a eu lieu.
 **P4 — Goals 1 et 2 clos ; meilleur profil observé `11 × 11` actif et
 revérifié ; tous les profils actuels ont des défauts de bord ; aucun profil
 actuel n'est qualifié robuste ; éditeur point par point disponible hors ligne ;
-Goal 3 a exécuté le checkpoint C de CLEAN-MOTION et attend le verdict humain ; cycle CFS clos
+Goal 3 a exécuté et accepté le checkpoint C de CLEAN-MOTION ; cycle CFS clos
 hors imprimante ; production volontairement bloquée**
 
 `G4-K1-CONTROL-GATEWAY-PRIVATE-LAN-NO-AUTH-V1` est installé et validé. Le mot
@@ -91,8 +91,9 @@ ou mesure de mesh. Le premier validateur a comparé à tort la position physique
 compensée `50,23 mm` à la consigne ; aucun mouvement n'a été rejoué. La
 validation corrigée lit `Z=50,00 mm` côté G-code et confirme la machine au repos,
 froide, configurations inchangées et `11 × 11` actif. Le statut est
-`CHECKPOINT_C_TECHNICAL_OK_AWAITING_HUMAN_VERDICT`. Chaque rapprochement suivant
-reste bloqué jusqu'au verdict visuel de Thomas.
+`CHECKPOINT_C_TECHNICAL_OK_AWAITING_HUMAN_VERDICT`. Thomas a ensuite confirmé
+`CHECKPOINT C OK`. Le checkpoint ne sera pas rejoué ; le rapprochement suivant
+n'a pas encore été lancé.
 
 La recette de mesure quotidienne qualifiée reste `6 × 6` Lagrange avec un seul
 mesh standard ; cela ne signifie pas que son profil résultant est robuste ni
