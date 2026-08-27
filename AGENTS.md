@@ -39,7 +39,9 @@ CFS-STOCK-UNLOAD-GUARD-LIVE-PREFLIGHT-V1 cartographie les champs réels en lectu
 seule, retire l'hypothèse d'un état direct de fin et constate aucune route
 engagée ; CFS-STOCK-UNLOAD-GUARD-ADAPTER-OFFLINE-V1 traduit maintenant dix
 réponses synthétiques vers le garde, refuse les ambiguïtés et reste sans
-transport ;
+transport ; CFS-STOCK-UNLOAD-GUARD-ADAPTER-LIVE-READ-ONLY-V1 confirme deux
+lectures nettoyées, aucune route et des configurations inchangées sans appeler
+le garde ;
 production remains closed**.
 
 La capture `20260823-165742-g4-k1-control-calibration-ui-prtouch-presets-v1` a
@@ -217,6 +219,19 @@ candidat de pose n'existe. La prochaine branche proposée est
 `G4-K1-CONTROL-CFS-STOCK-UNLOAD-GUARD-ADAPTER-LIVE-READ-ONLY-V1` : une future
 lecture fraîche et nettoyée, sans appel du chemin d'effet du garde. Cette
 connexion n'est pas autorisée par la gate hors imprimante close.
+
+Thomas a ensuite autorisé cette lecture seule. La capture privée
+`20260827-110102-g4-k1-control-cfs-stock-unload-guard-adapter-live-read-only-v1`
+est close OK : deux lectures stables, `T1/T2` connectés, aucune route engagée,
+commande vide, cibles zéro et empreintes de configuration inchangées. `sn` et
+`uuid` sont retirés avant l'adaptateur et tout champ nouveau est refusé. La
+forme réelle `T3/T4.state = "None"` est désormais reconnue comme inactive ; les
+autres valeurs inconnues restent fermées. Le garde n'est ni importé ni appelé,
+les tests ciblés obtiennent `61/61` et la suite complète exécute `443` tests,
+dont `440` verts et `3` ignorés connus. Aucun G-code, fichier distant, service
+ou effet physique n'a lieu. La prochaine branche proposée est
+`G4-K1-CONTROL-CFS-STOCK-UNLOAD-GUARD-TRANSPORT-OFFLINE-V1`, hors imprimante
+seulement et sans autorité de connexion ou de commande réelle.
 
 Thomas authorised V1, but the mandatory preflight proved that `logrotate` was
 absent. V1 is closed and must never be deployed. Thomas later authorised V2;

@@ -21,6 +21,9 @@ L'adaptateur refuse un champ absent, une valeur de mauvais type, une températur
 négative ou non finie, plusieurs routes, un slot actif sur une unité
 déconnectée et une unité `T3/T4` déclarée connectée.
 Un état d'unité inconnu est refusé au lieu d'être assimilé à une déconnexion.
+La validation live suivante a ensuite prouvé la valeur exacte `None` pour les
+unités non provisionnées `T3/T4` ; cette valeur précise est désormais reconnue
+comme inactive, sans élargir les autres valeurs acceptées.
 
 Une route absente reste traduite en liste vide. Un second CFS déconnecté reste
 traduit en liste incomplète. Dans les deux cas, le garde peut ensuite expliquer

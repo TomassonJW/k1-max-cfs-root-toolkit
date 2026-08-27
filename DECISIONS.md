@@ -1556,3 +1556,34 @@ le chemin d'effet du garde.
 
 Voir ADR-026, `docs/37-adaptateur-hors-ligne-garde-retrait-cfs-v1.md` et
 `packages/k1-control-v1/cfs-stock-unload-guard-adapter-offline-v1/`.
+
+## D-077 — Nettoyer sur liste blanche avant l'adaptateur live
+
+Date: 2026-08-27
+
+Status: validation live close en lecture seule ; production fermée
+
+`G4-K1-CONTROL-CFS-STOCK-UNLOAD-GUARD-ADAPTER-LIVE-READ-ONLY-V1` garde la
+capture complète sous `inventory/raw`, puis impose localement la forme exacte
+observée. Le validateur reconstruit une réponse minimale avant l'adaptateur :
+les champs `sn`, `uuid` et tous les champs sans utilité fonctionnelle ne
+franchissent pas cette frontière. Un champ nouveau dans l'état, `box` ou une
+unité CFS provoque un arrêt.
+
+Deux lectures fraîches produisent le même résultat : `T1/T2` connectés, aucune
+route engagée, commande CFS vide, cibles zéro et état
+`BLOCKED_NO_ENGAGED_ROUTE`. Les trois configurations gardent les mêmes
+empreintes. La forme réelle prouve aussi `T3/T4.state = "None"` ; cette seule
+valeur est ajoutée comme état inactif, toutes les autres valeurs inconnues
+restant refusées.
+
+Les tests ciblés obtiennent `61/61` et la suite complète exécute `443` tests,
+dont `440` verts et `3` ignorés connus.
+
+Le garde n'est ni importé ni appelé. Aucun G-code, fichier distant, service,
+chauffage, mouvement ou retrait n'a lieu. La prochaine gate proposée devra
+construire hors imprimante le futur transport à partir de réponses synthétiques
+ou enregistrées, sans connexion K1.
+
+Voir `docs/38-validation-live-adaptateur-garde-retrait-cfs-v1.md` et
+`packages/k1-control-v1/cfs-stock-unload-guard-adapter-live-read-only-v1/`.

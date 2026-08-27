@@ -326,6 +326,31 @@ courant : lire un état K1 frais, retirer les identités avant traitement et
 vérifier seulement la traduction. Cette future mission ne devra pas appeler le
 chemin d'effet du garde et n'autorisera aucun G-code ni retrait.
 
+### `G4-K1-CONTROL-CFS-STOCK-UNLOAD-GUARD-ADAPTER-LIVE-READ-ONLY-V1`
+
+Statut : **close OK en lecture seule ; aucune route engagée ; production
+fermée**.
+
+La capture privée `20260827-110102` contient deux lectures stables. La liste
+blanche retire `sn` et `uuid` avant l'adaptateur et refuse tout champ nouveau.
+L'adaptation confirme `T1/T2`, aucune route, commande vide, cibles zéro et
+`BLOCKED_NO_ENGAGED_ROUTE`. Les empreintes des trois configurations sont
+inchangées. La valeur réelle `None` des unités non provisionnées `T3/T4` est
+maintenant reconnue comme inactive ; les autres états inconnus restent refusés.
+
+Les tests ciblés obtiennent `61/61` et la suite complète exécute `443` tests,
+dont `440` verts et `3` ignorés connus.
+
+`StockUnloadGuard.run` n'est ni importé ni appelé. Aucun G-code, fichier
+distant, service, chauffage, mouvement ou retrait n'a été produit. Aucun
+transport ni candidat de pose n'existe.
+
+La prochaine gate possible est
+`G4-K1-CONTROL-CFS-STOCK-UNLOAD-GUARD-TRANSPORT-OFFLINE-V1`. En langage
+courant : définir et éprouver hors imprimante la future couche de lecture et
+d'envoi sur des réponses synthétiques ou enregistrées. Elle n'autorisera ni
+connexion K1 ni G-code réel.
+
 ### Reprise physique `MESH-EDGE-DIAGNOSTIC-V1`
 
 Avant toute reprise physique restante : route filament fraîchement résolue,

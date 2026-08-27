@@ -120,6 +120,17 @@ class CfsStockUnloadGuardAdapterOfflineV1Tests(unittest.TestCase):
         with self.assertRaisesRegex(adapter.AdapterInputError, "unit_state_invalid"):
             adapter.adapt_query_response(payload)
 
+    def test_real_unprovisioned_unit_state_is_treated_as_inactive(self):
+        payload = fixture("no-route.json")
+        payload["result"]["status"]["box"]["T3"]["state"] = "None"
+        payload["result"]["status"]["box"]["T4"]["state"] = "None"
+        snapshot = adapter.adapt_query_response(payload)
+        self.assertEqual(["T1", "T2"], snapshot["connected_cfs_units"])
+        self.assertEqual([], snapshot["engaged_routes"])
+        payload["result"]["status"]["box"]["T1"]["state"] = "None"
+        with self.assertRaisesRegex(adapter.AdapterInputError, "unit_state_invalid:T1"):
+            adapter.adapt_query_response(payload)
+
     def test_filament_on_disconnected_unit_is_rejected(self):
         with self.assertRaisesRegex(
             adapter.AdapterInputError, "filament_on_disconnected_unit"

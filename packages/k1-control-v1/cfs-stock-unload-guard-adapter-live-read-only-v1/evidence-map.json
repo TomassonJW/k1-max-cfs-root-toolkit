@@ -1,0 +1,38 @@
+{
+  "schema": 1,
+  "mission": "G4-K1-CONTROL-CFS-STOCK-UNLOAD-GUARD-ADAPTER-LIVE-READ-ONLY-V1",
+  "authority": "read_only_only",
+  "private_source": {
+    "path": "inventory/raw/20260827-110102-g4-k1-control-cfs-stock-unload-guard-adapter-live-read-only-v1/adapter-live-read-only.private.txt",
+    "sha256": "6770b411f6c5b763a06f77bd3c753a478a798e9814f108fdcac7b6e931c8e994",
+    "versioned": false
+  },
+  "known_exact_live_shape": {
+    "connected_unit_state": "connect",
+    "unprovisioned_unit_state": "None",
+    "identity_fields_removed": ["sn", "uuid"],
+    "unknown_status_box_or_unit_fields": "reject_before_adapter"
+  },
+  "safe_result": {
+    "status": "OK",
+    "live_snapshots": 2,
+    "klippy_state": "ready",
+    "adapted_snapshot": {
+      "print_state": "standby",
+      "box_state": "connect",
+      "connected_cfs_units": ["T1", "T2"],
+      "active_cfs_command": "",
+      "engaged_routes": [],
+      "extruder_target_c": 0.0,
+      "bed_target_c": 0.0,
+      "toolhead_filament_present": true
+    },
+    "configuration_hashes_unchanged": true,
+    "identity_fields_removed_before_adapter": ["sn", "uuid"],
+    "schema_drift_detected": false,
+    "current_guard_readiness_without_guard_call": "BLOCKED_NO_ENGAGED_ROUTE",
+    "guard_run_called": false,
+    "remote_writes": false,
+    "gcode_sent": false
+  }
+}

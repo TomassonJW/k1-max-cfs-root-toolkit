@@ -13,7 +13,7 @@ from typing import Any, Dict, Mapping
 
 UNIT_NAMES = ("T1", "T2", "T3", "T4")
 SUPPORTED_CONNECTED_UNITS = {"T1", "T2"}
-UNIT_STATES = {"connect", "disconnect"}
+UNIT_STATES = {"connect", "disconnect", "None"}
 FILAMENT_SLOTS = {"A", "B", "C", "D"}
 NO_FILAMENT = "None"
 
@@ -89,6 +89,8 @@ def adapt_query_response(payload: Mapping[str, Any]) -> Dict[str, Any]:
             _field(unit, "filament", unit_path), "%s.filament" % unit_path
         )
         if unit_state not in UNIT_STATES:
+            raise AdapterInputError("unit_state_invalid:%s" % unit_name)
+        if unit_state == NO_FILAMENT and unit_name in SUPPORTED_CONNECTED_UNITS:
             raise AdapterInputError("unit_state_invalid:%s" % unit_name)
         if filament not in FILAMENT_SLOTS and filament != NO_FILAMENT:
             raise AdapterInputError("filament_value_invalid:%s" % unit_name)

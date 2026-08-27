@@ -991,6 +991,28 @@ La branche suivante proposée est
 courant : lire un état K1 frais, retirer les identités avant la traduction et
 vérifier uniquement le résultat, sans appeler le chemin d'effet du garde.
 
+Cette gate est maintenant close OK en lecture seule. La capture privée
+`20260827-110102-g4-k1-control-cfs-stock-unload-guard-adapter-live-read-only-v1`
+contient deux lectures stables. `sn` et `uuid` sont retirés par projection sur
+liste blanche avant l'adaptateur ; tout champ nouveau ferme la validation. Les
+deux adaptations donnent `T1/T2` connectés, aucune route, commande CFS vide,
+cibles zéro et `BLOCKED_NO_ENGAGED_ROUTE`. Les trois configurations gardent
+leurs empreintes exactes.
+
+Les tests ciblés obtiennent `61/61` et la suite complète exécute `443` tests,
+dont `440` verts et `3` ignorés connus.
+
+La réponse fraîche prouve aussi la valeur texte `None` pour les unités non
+provisionnées `T3/T4`. Elle est désormais reconnue comme inactive, sans accepter
+d'autres états inconnus. Le garde n'a pas été importé ni appelé. Aucun G-code,
+fichier distant, service, chauffage, mouvement ou retrait n'a eu lieu ; aucun
+transport ou candidat de pose n'existe.
+
+La branche suivante proposée est
+`G4-K1-CONTROL-CFS-STOCK-UNLOAD-GUARD-TRANSPORT-OFFLINE-V1`. Elle devra définir
+et tester le futur transport entièrement hors imprimante, sans connexion K1 ni
+commande réelle.
+
 Thomas explicitly rejected further sacrificial print campaigns on 2026-08-21.
 The V3 + PATHS-V1 observation remains useful coexistence evidence but no longer
 blocks offline product construction. L'autorité globale du Goal couvre la
@@ -1051,10 +1073,9 @@ retirement remains atomic with the later proven machine/Orca replacement.
 - Toute connexion ou action physique de
   `G4-K1-CONTROL-CFS-STOCK-UNLOAD-GUARD-ADAPTER-OFFLINE-V1`, désormais close
   hors imprimante et sans transport.
-- Toute connexion de
-  `G4-K1-CONTROL-CFS-STOCK-UNLOAD-GUARD-ADAPTER-LIVE-READ-ONLY-V1` tant qu'une
-  mission séparée n'a pas fixé ses lectures et sa méthode de nettoyage ; cette
-  future gate n'autorisera toujours aucun G-code ni retrait.
+- Toute connexion, tout G-code ou essai réel de
+  `G4-K1-CONTROL-CFS-STOCK-UNLOAD-GUARD-TRANSPORT-OFFLINE-V1`, qui reste une
+  future gate hors imprimante sans autorité d'effet.
 - Any import or change of Orca fields on the workstation profile.
 - `G4-ZSAFE-START-V1` forever: this rejected name cannot receive a GO.
 - Any future `K1-CONTROL-V1` deployment until a new exact G4 package exists and

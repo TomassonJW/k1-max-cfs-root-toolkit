@@ -277,7 +277,7 @@
     "input": "redacted_printer_objects_query_response",
     "output": "cfs_stock_unload_guard_snapshot",
     "supported_connected_cfs_units": ["T1", "T2"],
-    "supported_unit_states": ["connect", "disconnect"],
+    "supported_unit_states": ["connect", "disconnect", "None_for_T3_T4_only"],
     "supported_slots": ["A", "B", "C", "D"],
     "no_route_is_translated": true,
     "disconnected_second_cfs_is_translated_for_guard_refusal": true,
@@ -289,6 +289,24 @@
     "deployment_candidate": false,
     "physical_test_authorized": false,
     "next_design_branch": "separate_live_read_only_adapter_validation"
+  },
+  "cfs_stock_unload_guard_adapter_live_read_only": {
+    "candidate": "K1-CONTROL-CFS-STOCK-UNLOAD-GUARD-ADAPTER-LIVE-READ-ONLY-V1",
+    "status": "closed_live_read_only_adapter_ok",
+    "contract": "packages/k1-control-v1/cfs-stock-unload-guard-adapter-live-read-only-v1/contract.json",
+    "live_snapshots": 2,
+    "identity_removed_before_adapter": true,
+    "exact_schema_allowlist": true,
+    "real_unprovisioned_unit_state": "None",
+    "configuration_hashes_unchanged": true,
+    "current_guard_readiness": "BLOCKED_NO_ENGAGED_ROUTE",
+    "guard_run_called": false,
+    "gcode_sent": false,
+    "remote_files_written": false,
+    "printer_transport": false,
+    "deployment_candidate": false,
+    "physical_test_authorized": false,
+    "next_design_branch": "offline_transport_contract_before_any_effect_gate"
   },
   "filament_state": {
     "states": [

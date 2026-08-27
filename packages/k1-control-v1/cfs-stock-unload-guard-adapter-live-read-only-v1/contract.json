@@ -1,0 +1,41 @@
+{
+  "contract_id": "K1-CONTROL-CFS-STOCK-UNLOAD-GUARD-ADAPTER-LIVE-READ-ONLY-V1",
+  "schema": 1,
+  "status": "closed_live_read_only_adapter_ok",
+  "authority_consumed": "read_only_only",
+  "printer_connected": true,
+  "live_snapshots": 2,
+  "identity_removed_before_adapter": true,
+  "identity_fields": ["sn", "uuid"],
+  "exact_schema_allowlist": true,
+  "schema_drift_detected": false,
+  "adapter_correction": {
+    "real_unprovisioned_unit_state": "None",
+    "meaning": "inactive_unit",
+    "other_unknown_unit_states_rejected": true
+  },
+  "adaptation_deterministic": true,
+  "configuration_hashes_unchanged": true,
+  "current_guard_readiness": "BLOCKED_NO_ENGAGED_ROUTE",
+  "validation": {
+    "targeted_tests": "61/61",
+    "full_suite_executed": 443,
+    "full_suite_passed": 440,
+    "full_suite_skipped_known": 3
+  },
+  "guard_run_called": false,
+  "gcode_sent": false,
+  "remote_files_written": false,
+  "service_actions": false,
+  "physical_actions": false,
+  "transport_candidate": false,
+  "deployment_candidate": false,
+  "next_gate": {
+    "candidate": "G4-K1-CONTROL-CFS-STOCK-UNLOAD-GUARD-TRANSPORT-OFFLINE-V1",
+    "default_authority": "offline_only",
+    "goal": "specify_and_test_the_future_snapshot_and_gcode_transport_against_recorded_or_synthetic_responses_without_printer_connection",
+    "printer_connection_authorized": false,
+    "gcode_authorized": false,
+    "physical_unload_authorized": false
+  }
+}
