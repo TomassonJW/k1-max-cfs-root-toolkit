@@ -45,9 +45,9 @@
     {
       "order": 3,
       "id": "CFS_START_STATES_AND_TEMPERATURE_OWNER",
-      "status": "NOT_STARTED",
+      "status": "PASSIVE_OBSERVER_READY_LIVE_BASELINE_OK_PHYSICAL_CHECKPOINTS_NOT_STARTED",
       "slice_id": "CFS-TEMP-OWNER-V1",
-      "evidence": null,
+      "evidence": "packages/k1-control-v1/cfs-temp-owner-v1/contract.json",
       "required_proofs": [
         "correct_engaged_filament_is_kept",
         "wrong_engaged_filament_is_changed_once",

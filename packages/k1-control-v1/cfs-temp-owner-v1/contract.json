@@ -1,0 +1,112 @@
+{
+  "schema": 1,
+  "mission": "G4-K1-CONTROL-CFS-TEMP-OWNER-V1",
+  "goal": "GOAL-P4-PHYSICAL-SLICES-QUALIFICATION-V1",
+  "requirement": "CFS_START_STATES_AND_TEMPERATURE_OWNER",
+  "authority": "passive_live_observer_only",
+  "status": "LIVE_READ_ONLY_BASELINE_OK_READY_FOR_HUMAN_CHECKPOINTS",
+  "deployment_candidate": false,
+  "observer": {
+    "program": "packages/k1-control-v1/cfs-temp-owner-v1/observer.py",
+    "program_sha256": "7f818e5d144e3a9c6565ef80b72b36f127f4e9362c51b4b3fa5e825916f81aa6",
+    "runner": "packages/k1-control-v1/cfs-temp-owner-v1/capture_observation.ps1",
+    "runner_sha256": "a76a791eec72a6556b069010f3ceb0d99e040cc6d8782e0d981876d7d67f6b59",
+    "analyzer": "packages/k1-control-v1/cfs-temp-owner-v1/analyze_observation.py",
+    "analyzer_sha256": "1e65c24b66fb546e9335e731ffc70707d0d3676f8cf9540026c3bd9e7bebeec9",
+    "poll_interval_s": 0.5,
+    "duration_bounds_s": [5, 300],
+    "remote_file_write": false,
+    "transport": "stream_program_over_ssh_stdin_then_local_moonraker_get_only"
+  },
+  "checkpoints": [
+    "CLEANING_PREP",
+    "KEEP_CORRECT",
+    "EMPTY_LOAD",
+    "WRONG_CHANGE",
+    "CROSS_CFS"
+  ],
+  "observed_fields": [
+    "print_state",
+    "nozzle_actual_and_target",
+    "bed_actual_and_target",
+    "cfs_connection_states",
+    "active_cfs_command",
+    "engaged_route_labels",
+    "head_and_after_cutter_sensors",
+    "homed_axes_and_gcode_position",
+    "active_mesh_profile",
+    "accepted_z"
+  ],
+  "physical_campaign_contract": {
+    "observer_never_starts_a_stock_action": true,
+    "stock_action_is_manual_in_the_existing_interface": true,
+    "human_presence_and_immediate_stop_are_required": true,
+    "one_checkpoint_per_capture": true,
+    "capture_does_not_constitute_a_positive_physical_verdict": true,
+    "human_verdict_is_recorded_separately": true,
+    "cleaning_prep_sequence": "manual_load_small_visible_purge_manual_unload_then_explicit_GO_for_cleaning_v2"
+  },
+  "invariants": {
+    "klippy_ready_before_capture": true,
+    "printer_standby_before_capture": true,
+    "both_cfs_connected_before_capture": true,
+    "no_cfs_command_active_before_capture": true,
+    "axes_homed_xyz_before_capture": true,
+    "active_profile": "k1_p001_t055_r001_n11x11",
+    "accepted_z_offset": -0.04,
+    "configuration_hashes_exact_before_capture": true,
+    "configuration_hashes_unchanged_after_capture": true
+  },
+  "forbidden": [
+    "GCODE",
+    "MOONRAKER_POST",
+    "CFS_COMMAND",
+    "HEATER_COMMAND",
+    "MOTION_COMMAND",
+    "REMOTE_FILE_WRITE",
+    "SERVICE_ACTION",
+    "AUTOMATIC_RETRY",
+    "IDENTITY_FIELD_EXPORT",
+    "AUTOMATED_HUMAN_VERDICT"
+  ],
+  "offline_verification": {
+    "synthetic_scenarios": 8,
+    "status": "8_OF_8_OK"
+  },
+  "live_read_only_baseline": {
+    "capture_id": "20260827-goal3-cfs-temp-owner-live-baseline-v1",
+    "capture_sha256": "57d23fdd7056db4b36548ad3384f448a411b3e33cce114104d6220991ad99460",
+    "analysis_sha256": "f99fdb6cf8fcf80d7f9cf158ea7a1bad0bf789665552b60ebba49b5512482371",
+    "checkpoint": "CLEANING_PREP",
+    "duration_s": 5,
+    "snapshot_count": 8,
+    "status": "CFS_TEMP_OWNER_ANALYSIS_OK",
+    "engaged_routes": [],
+    "active_command_states": [""],
+    "head_sensor_states": [true],
+    "after_cutter_sensor_states": [false],
+    "heater_targets_zero": true,
+    "configuration_unchanged": true,
+    "active_profile": "k1_p001_t055_r001_n11x11",
+    "accepted_z_offset": -0.04,
+    "human_physical_verdict": null,
+    "effects": {
+      "gcode": false,
+      "heating": false,
+      "motion": false,
+      "cfs_action": false,
+      "remote_write": false,
+      "service_action": false
+    }
+  },
+  "effects": {
+    "printer_connection": true,
+    "gcode": false,
+    "heating": false,
+    "motion": false,
+    "extrusion": false,
+    "cfs_action": false,
+    "remote_write": false,
+    "service_action": false
+  }
+}

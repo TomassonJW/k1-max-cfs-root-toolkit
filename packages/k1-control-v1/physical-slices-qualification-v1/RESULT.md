@@ -20,6 +20,12 @@ Thomas. L'éditeur de mesh point par point est prêt hors ligne,
 mais aucun profil dérivé n'a encore été qualifié physiquement sur toute la zone
 utile.
 
+L'observateur passif CFS de l'exigence 3 est également prêt : `8/8` scénarios
+hors imprimante et baseline live de huit lectures verte, sans route, commande,
+chauffe, mouvement ni écriture. Il pourra enregistrer la préparation manuelle
+du filament puis les futurs checkpoints CFS, sans jamais les déclencher ni les
+valider à la place de Thomas.
+
 Le Goal 3 ne pourra passer à `PASSED` qu'après preuves physiques pour les sept
 exigences, audit transversal des deux CFS, chauffes, Z, mesh, retours sûrs et
 réconciliation du dépôt avec les captures live.
