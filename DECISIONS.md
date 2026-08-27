@@ -1587,3 +1587,31 @@ ou enregistrées, sans connexion K1.
 
 Voir `docs/38-validation-live-adaptateur-garde-retrait-cfs-v1.md` et
 `packages/k1-control-v1/cfs-stock-unload-guard-adapter-live-read-only-v1/`.
+
+## D-078 — Fermer le cycle complet hors imprimante avant tout connecteur réel
+
+Date: 2026-08-27
+
+Status: Goal 1 clos hors imprimante ; production et connexion K1 fermées
+
+`GOAL-P4-OFFLINE-CYCLE-CFS-V1` sépare trois responsabilités : le transport
+simulé qui impose délais et envois uniques, le moteur pur qui porte le cycle
+complet, et un plan futur inerte qui épingle sources, destinations, sauvegardes
+et rollback. Aucun connecteur réel, service ou nouveau framework n'est ajouté.
+
+Le vieux prototype à 17 cas n'est pas étendu : les 27 scénarios canoniques du
+nouveau contrat couvrent démarrage, filament correct, absent ou incorrect,
+changements, runout, pause, reprise, annulation, reboot, fin et retrait séparé.
+Une route est fraîche et consommable une fois ; une cible est posée avant tout
+effet ; un timeout ou une preuve ambiguë coupe les cibles simulées et interdit
+tout retry.
+
+Le transport obtient `13/13`, le cycle `27/27` et les tests ciblés du moteur
+`20/20`. La suite complète exécute `476` tests, dont `473` verts et `3` ignorés
+connus. Ces résultats ne prouvent ni réseau, ni mouvement, ni débit, ni effet
+physique. Le prochain Goal est uniquement une qualification K1 en lecture
+seule, sous une autorité séparée.
+
+Voir ADR-027, `docs/39-transport-hors-ligne-garde-retrait-cfs-v1.md`,
+`docs/40-cycle-complet-hors-imprimante-v1.md` et
+`packages/k1-control-v1/job-lifecycle-offline-v1/`.

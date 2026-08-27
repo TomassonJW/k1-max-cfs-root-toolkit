@@ -1,0 +1,18 @@
+{
+  "contract_id": "K1-CONTROL-CFS-STOCK-UNLOAD-GUARD-TRANSPORT-OFFLINE-V1",
+  "scenarios": [
+    {"id": "success_route_clear_and_targets_zero", "expected": {"verdict": "OK", "stock_count": 1, "cleanup_count": 1}},
+    {"id": "exact_deadlines_are_accepted", "expected": {"verdict": "OK", "stock_count": 1, "cleanup_count": 1}},
+    {"id": "http_ok_without_unload_effect", "expected": {"verdict": "KO", "code": "stock_unload_timeout", "stock_count": 1, "cleanup_count": 1}},
+    {"id": "http_ok_without_cleanup_effect", "expected": {"verdict": "KO", "code": "heater_shutdown_effect_unproven", "stock_count": 1, "cleanup_count": 1}},
+    {"id": "stock_timeout_no_retry_cleanup_once", "expected": {"verdict": "KO", "primary_prefix": "stock_unload_transport_error", "stock_count": 1, "cleanup_count": 1}},
+    {"id": "stock_connection_loss_no_retry_cleanup_once", "expected": {"verdict": "KO", "primary_prefix": "stock_unload_transport_error", "stock_count": 1, "cleanup_count": 1}},
+    {"id": "poll_timeout_cleanup_once", "expected": {"verdict": "KO", "primary_prefix": "stock_unload_transport_error", "stock_count": 1, "cleanup_count": 1}},
+    {"id": "cleanup_timeout_no_retry", "expected": {"verdict": "KO", "cleanup_prefix": "heater_shutdown_error", "stock_count": 1, "cleanup_count": 1}},
+    {"id": "schema_drift_refused_before_command", "expected": {"verdict": "KO", "primary_prefix": "preflight_snapshot_invalid", "stock_count": 0, "cleanup_count": 0}},
+    {"id": "duplicate_stock_rejected", "expected": {"transport_code": "duplicate_command_rejected", "endpoint_commands": 1}},
+    {"id": "duplicate_cleanup_rejected", "expected": {"transport_code": "duplicate_command_rejected", "endpoint_commands": 2}},
+    {"id": "unsupported_command_rejected", "expected": {"transport_code": "command_not_allowlisted", "endpoint_commands": 0}},
+    {"id": "cleanup_before_stock_rejected", "expected": {"transport_code": "cleanup_before_stock_rejected", "endpoint_commands": 0}}
+  ]
+}

@@ -17,19 +17,15 @@ class ProjectAuthorityPolicyTests(unittest.TestCase):
 
     def test_current_handoff_never_requests_a_literal_gate(self):
         handoff = (ROOT / "HANDOFF.md").read_text(encoding="utf-8")
-        current_header = "\n".join(handoff.splitlines()[:45])
+        current_header = "\n".join(handoff.splitlines()[:70])
         self.assertNotIn("autoriser littéralement", current_header)
-        self.assertIn("CFS-STOCK-UNLOAD-GUARD-ADAPTER-OFFLINE-V1", current_header)
-        self.assertIn("CFS-STOCK-UNLOAD-GUARD-ADAPTER-LIVE-READ-ONLY-V1", current_header)
-        self.assertIn("MESH-EDGE-DIAGNOSTIC-V1", current_header)
-        self.assertIn("audit CFS", current_header)
-        self.assertIn("ATTENDRE_GO", current_header)
-        self.assertIn("profil diagnostic et quatre G-code", current_header)
-        self.assertIn("quatre G-code", current_header)
-        self.assertIn("Aucun `GO` exact", current_header)
-        self.assertIn("plateau réellement libre", current_header)
-        self.assertIn("rollback", current_header)
-        self.assertIn("VALIDATE_MESH_EDGE_DIAGNOSTIC_V1_OK", current_header)
+        self.assertIn("GOAL-P4-OFFLINE-CYCLE-CFS-V1", current_header)
+        self.assertIn("terminé", current_header)
+        self.assertIn("GOAL-P4-K1-READ-ONLY-QUALIFICATION-V1", current_header)
+        self.assertIn("aucune connexion", current_header)
+        self.assertIn("aucun G-code", current_header)
+        self.assertIn("autorité séparée", current_header)
+        self.assertIn("rollback", handoff)
 
     def test_adr_and_decision_preserve_technical_safety_controls(self):
         adr = (

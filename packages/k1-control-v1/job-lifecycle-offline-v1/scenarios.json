@@ -1,0 +1,32 @@
+{
+  "contract_id": "K1-CONTROL-JOB-LIFECYCLE-OFFLINE-V1",
+  "scenarios": [
+    {"id": "mesh_reference_match", "expected": {"verdict": "pass_offline", "phase": "mesh_z_armed"}},
+    {"id": "mesh_reference_mismatch", "expected": {"verdict": "blocked_safe", "reason_code": "mesh_profile_mismatch", "cfs_effects": 0}},
+    {"id": "clean_unknown_previous_material", "expected": {"verdict": "blocked_safe", "reason_code": "cleaning_recipe_unknown", "cfs_effects": 0}},
+    {"id": "clean_brush_z_not_probed", "expected": {"verdict": "pass_offline", "phase": "nozzle_cleaning"}},
+    {"id": "start_correct_filament_engaged", "expected": {"verdict": "pass_offline", "phase": "printing", "cut_count": 0, "unload_count": 0, "load_count": 0, "purge_count": 1, "engaged_tool": "T0"}},
+    {"id": "start_wrong_filament_engaged", "expected": {"verdict": "pass_offline", "phase": "printing", "cut_count": 1, "unload_count": 1, "load_count": 1, "purge_count": 1, "engaged_tool": "T0"}},
+    {"id": "start_no_filament", "expected": {"verdict": "pass_offline", "phase": "printing", "load_count": 1, "purge_count": 1, "engaged_tool": "T0"}},
+    {"id": "start_unknown_filament_identity", "expected": {"verdict": "blocked_safe", "reason_code": "filament_identity_unknown", "cfs_effects": 0}},
+    {"id": "sensor_present_no_nozzle_flow", "expected": {"verdict": "blocked_safe", "reason_code": "flow_not_proven", "purge_count": 0}},
+    {"id": "sensor_disagreement", "expected": {"verdict": "blocked_safe", "reason_code": "sensor_disagreement", "cfs_effects": 0}},
+    {"id": "equivalent_refill", "expected": {"verdict": "pass_offline", "phase": "printing", "engaged_route": "T1C", "nozzle_target_c": 210.0, "load_count": 1}},
+    {"id": "intentional_same_material_color_change", "expected": {"verdict": "pass_offline", "phase": "printing", "engaged_tool": "T1", "cut_count": 1, "load_count": 1, "purge_count": 2}},
+    {"id": "intentional_cross_material_change", "expected": {"verdict": "pass_offline", "phase": "printing", "engaged_tool": "T5", "nozzle_target_c": 240.0, "cut_count": 1, "load_count": 1, "purge_count": 2}},
+    {"id": "cross_cfs_change", "expected": {"verdict": "pass_offline", "phase": "printing", "engaged_tool": "T1", "engaged_route": "T2B"}},
+    {"id": "pause_normal", "expected": {"verdict": "pass_offline", "phase": "paused_normal", "cfs_effects": 1, "purge_count": 1}},
+    {"id": "resume_with_optional_reprime", "expected": {"verdict": "pass_offline", "phase": "printing", "effective_z_offset_mm": -0.05, "accepted_z_revision": "z-r2", "purge_count": 2}},
+    {"id": "tall_part_blocks_rear_path", "expected": {"verdict": "blocked_safe", "reason_code": "rear_path_blocked", "cfs_effects": 1}},
+    {"id": "end_keep_engaged", "expected": {"verdict": "closed_safe", "phase": "closed_safe", "engaged_tool": "T0", "cut_count": 0, "unload_count": 0, "nozzle_target_c": 0.0, "bed_target_c": 0.0}},
+    {"id": "manual_disengage_and_clean", "expected": {"verdict": "closed_safe", "phase": "closed_safe", "filament_state": "engaged_unknown", "engaged_tool": null, "disengage_guard_used": true}},
+    {"id": "cfs_late_220_rewrite", "expected": {"verdict": "blocked_safe", "reason_code": "late_temperature_rewrite", "cut_count": 0}},
+    {"id": "orca_contract_version_mismatch", "expected": {"verdict": "blocked_safe", "reason_code": "contract_version_mismatch", "cfs_effects": 0}},
+    {"id": "cancel_and_reboot_each_phase", "expected": {"verdict": "pass_offline", "safe_subcases": 3, "implicit_replays": 0}},
+    {"id": "deployment_slice_rollback", "expected": {"verdict": "pass_offline", "candidate_differs": true, "rollback_exact": true}},
+    {"id": "cfs_route_freshness", "expected": {"verdict": "pass_offline", "stale_blocked": true, "reused_blocked": true, "reconnect_blocked": true}},
+    {"id": "cfs_first_and_normal_targets", "expected": {"verdict": "pass_offline", "nozzle_target_c": 210.0, "bed_target_c": 60.0, "print_phase": "normal"}},
+    {"id": "cfs_transition_load_target", "expected": {"verdict": "pass_offline", "unload_target_c": 205.0, "load_target_c": 205.0, "purge_target_c": 205.0}},
+    {"id": "cfs_no_transport_offline_matrix", "expected": {"verdict": "pass_offline", "transport_scenarios": 13, "lifecycle_paths": 4, "real_transport_calls": 0}}
+  ]
+}

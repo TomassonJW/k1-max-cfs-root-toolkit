@@ -351,6 +351,45 @@ courant : définir et éprouver hors imprimante la future couche de lecture et
 d'envoi sur des réponses synthétiques ou enregistrées. Elle n'autorisera ni
 connexion K1 ni G-code réel.
 
+### `G4-K1-CONTROL-CFS-STOCK-UNLOAD-GUARD-TRANSPORT-OFFLINE-V1`
+
+Statut : **close OK hors imprimante ; `13/13` ; aucun connecteur réel ;
+production fermée**.
+
+Le transport simulé n'accepte que `BOX_QUIT_MATERIAL` et
+`TURN_OFF_HEATERS`. Chaque commande est tentée au plus une fois. Les limites
+exactes `2/150/15 s` sont acceptées ; un dépassement, une coupure ou une réponse
+ambiguë rend l'effet inconnu et interdit tout nouvel envoi identique. Un faux
+succès de requête ne remplace jamais la route réellement libérée ni les deux
+cibles réellement à zéro.
+
+Treize scénarios couvrent succès, limites, faux succès, timeouts, coupures,
+dérive de forme, doubles envois, ordre interdit et commande inconnue. Aucun
+réseau, processus, adresse K1, G-code, service, fichier distant ou candidat de
+pose n'existe.
+
+### `GOAL-P4-OFFLINE-CYCLE-CFS-V1`
+
+Statut : **Goal 1 clos OK hors imprimante ; `27/27` cas canoniques ; production
+fermée**.
+
+Le moteur pur porte l'admission, le nettoyage, la référence, le mesh/Z, le
+filament, les changements, le runout, la pause, la reprise, l'annulation, le
+reboot, la fin et l'action séparée `Désengager et nettoyer`. Chaque frontière
+CFS consomme une preuve de route fraîche et un identifiant unique, exige la
+cible avant effet et ferme toute reprise sur timeout ou preuve ambiguë.
+
+Les tests ciblés du cycle obtiennent `20/20` et la suite complète exécute `476`
+tests, dont `473` verts et `3` ignorés connus. Le plan futur épingle trois
+sources, trois destinations, leurs sauvegardes, leur rollback et sept tranches
+physiques futures, mais contient zéro commande distante et aucun connecteur
+réel. La K1 n'a pas été contactée.
+
+La prochaine mission unique est `GOAL-P4-K1-READ-ONLY-QUALIFICATION-V1` : lire
+un état K1 frais et comparer forme, valeurs et délais au modèle. Elle exige une
+autorité séparée et n'autorisera aucun G-code, fichier distant, restart, chauffe,
+mouvement ou retrait.
+
 ### Reprise physique `MESH-EDGE-DIAGNOSTIC-V1`
 
 Avant toute reprise physique restante : route filament fraîchement résolue,

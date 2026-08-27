@@ -94,6 +94,23 @@ python -m unittest tests.test_cfs_stock_unload_guard_adapter_offline_v1 -v
 python packages\k1-control-v1\cfs-stock-unload-guard-adapter-offline-v1\run_scenarios.py
 ```
 
+Le transport simulé contrôle les délais, coupures, faux succès et envois
+uniques du retrait et de l'arrêt thermique, sans connecteur réel :
+
+```powershell
+python -m unittest tests.test_cfs_stock_unload_guard_transport_offline_v1 -v
+python packages\k1-control-v1\cfs-stock-unload-guard-transport-offline-v1\run_scenarios.py
+```
+
+Le cycle complet hors imprimante contrôle les 27 cas canoniques, le moteur pur,
+la composition avec le garde et le plan futur inerte :
+
+```powershell
+python -m unittest tests.test_job_lifecycle_offline_v1 -v
+python packages\k1-control-v1\job-lifecycle-offline-v1\run_scenarios.py
+python packages\k1-control-v1\job-lifecycle-offline-v1\verify_blueprint.py
+```
+
 La suite complète doit être lancée avec un dossier de découverte explicite :
 
 ```powershell

@@ -1,7 +1,7 @@
 {
   "contract_id": "K1-CONTROL-JOB-LIFECYCLE-V1",
   "schema": 1,
-  "status": "frozen_offline_production_closed",
+  "status": "offline_system_complete_production_closed",
   "printer_mutation_authorized": false,
   "canonical_document": "docs/25-contrat-cycle-impression-nettoyage-cfs-v1.md",
   "target": {
@@ -307,6 +307,33 @@
     "deployment_candidate": false,
     "physical_test_authorized": false,
     "next_design_branch": "offline_transport_contract_before_any_effect_gate"
+  },
+  "cfs_stock_unload_guard_transport_offline": {
+    "candidate": "K1-CONTROL-CFS-STOCK-UNLOAD-GUARD-TRANSPORT-OFFLINE-V1",
+    "status": "offline_transport_closed_green",
+    "contract": "packages/k1-control-v1/cfs-stock-unload-guard-transport-offline-v1/contract.json",
+    "allowed_commands": ["BOX_QUIT_MATERIAL", "TURN_OFF_HEATERS"],
+    "automatic_retry": false,
+    "unknown_effect_is_never_replayed": true,
+    "scenario_matrix": "13/13",
+    "printer_connection": false,
+    "real_connector_present": false,
+    "deployment_candidate": false,
+    "physical_test_authorized": false
+  },
+  "job_lifecycle_offline": {
+    "candidate": "K1-CONTROL-JOB-LIFECYCLE-OFFLINE-V1",
+    "goal": "GOAL-P4-OFFLINE-CYCLE-CFS-V1",
+    "status": "offline_system_closed_green",
+    "contract": "packages/k1-control-v1/job-lifecycle-offline-v1/contract.json",
+    "canonical_scenarios": "27/27",
+    "targeted_tests": "20/20",
+    "future_deployment_blueprint": "packages/k1-control-v1/job-lifecycle-offline-v1/future-deployment-blueprint.json",
+    "printer_connection": false,
+    "real_connector_present": false,
+    "deployment_candidate": false,
+    "physical_test_authorized": false,
+    "next_goal": "GOAL-P4-K1-READ-ONLY-QUALIFICATION-V1"
   },
   "filament_state": {
     "states": [

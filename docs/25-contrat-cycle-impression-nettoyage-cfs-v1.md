@@ -416,10 +416,19 @@ second CFS, intégrité de trame et exclusion du propriétaire stock ne sont pas
 qualifiés. La liste appelable, le transport, la pose et la qualification
 physique de `CFS-TEMP-OWNER-V1` restent donc absents.
 
+État au 27 août 2026 : `GOAL-P4-OFFLINE-CYCLE-CFS-V1` est terminé. Le transport
+simulé du garde obtient `13/13`, la machine d'états exécute les `27/27` cas
+canoniques et le plan futur épingle sources, destinations, sauvegardes et
+rollback sans contenir de connecteur réel ni de commande distante. Cette
+fermeture ne qualifie aucun mouvement, débit, délai réseau ou effet physique.
+La prochaine étape est une comparaison en lecture seule avec un état K1 frais,
+sous une autorité séparée.
+
 ## 16. Références
 
 - [ADR-016 — cycle de production orchestré](adr/ADR-016-cycle-production-orchestre-et-propriete-cfs.md)
 - [ADR-021 — protocole minimal fermé en KO borné](adr/ADR-021-fermer-le-protocole-minimal-cfs-en-ko-borne.md)
+- [ADR-027 — cycle hors imprimante avant connecteur réel](adr/ADR-027-fermer-le-cycle-hors-imprimante-avant-tout-connecteur-reel.md)
 - [Audit mesh et cycle CFS](23-audit-mesh-manuel-et-cycle-production-cfs.md)
 - [Klipper — capteurs filament](https://www.klipper3d.org/Config_Reference.html#filament-sensors)
 - [Klipper — profils bed mesh](https://www.klipper3d.org/Bed_Mesh.html#profiles)

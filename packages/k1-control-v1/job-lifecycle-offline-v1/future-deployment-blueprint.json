@@ -1,0 +1,76 @@
+{
+  "contract_id": "K1-CONTROL-JOB-LIFECYCLE-FUTURE-DEPLOYMENT-BLUEPRINT-V1",
+  "status": "offline_blueprint_not_deployable",
+  "authority": "offline_only",
+  "deployment_candidate": false,
+  "execute": false,
+  "printer_connection": false,
+  "remote_commands": [],
+  "service_actions": [],
+  "gcode_commands": [],
+  "runtime_python": "3.8.2",
+  "files": [
+    {
+      "role": "job_contract_model",
+      "source": "contract_model.py",
+      "sha256": "3e665e934b02472fa21b283bcc725f54555de4fa56b93e1fe8877fa1dc74368b",
+      "future_destination": "/usr/data/k1-control-v1/current/moonraker/moonraker/moonraker/components/k1_control_job_contract_model.py"
+    },
+    {
+      "role": "job_lifecycle_core",
+      "source": "engine.py",
+      "sha256": "d9607c3d096b3507dd899f830080da6f83b1d9a9d0716e5cf143c20597da7a2e",
+      "future_destination": "/usr/data/k1-control-v1/current/moonraker/moonraker/moonraker/components/k1_control_job_lifecycle_core.py"
+    },
+    {
+      "role": "stock_unload_guard_transport_seam",
+      "source": "../cfs-stock-unload-guard-transport-offline-v1/transport.py",
+      "sha256": "42ba9b91f3b3d5887072312beada958ddba9193838e1bce852f027e54b178c5a",
+      "future_destination": "/usr/data/k1-control-v1/current/moonraker/moonraker/moonraker/components/k1_control_cfs_guard_transport.py"
+    }
+  ],
+  "future_write_set": [
+    "/usr/data/k1-control-v1/current/moonraker/moonraker/moonraker/components/k1_control_job_contract_model.py",
+    "/usr/data/k1-control-v1/current/moonraker/moonraker/moonraker/components/k1_control_job_lifecycle_core.py",
+    "/usr/data/k1-control-v1/current/moonraker/moonraker/moonraker/components/k1_control_cfs_guard_transport.py"
+  ],
+  "backup_requirements": {
+    "before_first_write": true,
+    "exact_hashes_required": true,
+    "new_paths_must_be_absent": true,
+    "existing_files_to_hash": [
+      "/usr/data/k1-control-v1/current/config/moonraker.conf",
+      "/usr/data/k1-control-v1/current/moonraker/moonraker/moonraker/components/k1_control.py",
+      "/usr/data/k1-control-v1/current/moonraker/moonraker/moonraker/components/k1_control_calibration_core.py"
+    ],
+    "backup_root_template": "/usr/data/k1-control-v1/backups/<capture-id>/job-lifecycle-v1"
+  },
+  "rollback_requirements": {
+    "remove_only_confirmed_new_paths": true,
+    "restore_existing_files_from_exact_backup": true,
+    "verify_hashes_after_restore": true,
+    "restart_only_dedicated_moonraker_if_a_future_review_requires_it": true,
+    "validate_stock_ui_calibration_z_mesh_and_two_cfs": true,
+    "same_write_set_as_candidate": true
+  },
+  "future_slices": [
+    {"id": "CLEAN-MOTION-V1", "first_real_effect": "cold_motion", "human_presence": true},
+    {"id": "CLEAN-AND-REFERENCE-V1", "first_real_effect": "controlled_heat_and_reference", "human_presence": true},
+    {"id": "CFS-TEMP-OWNER-V1", "first_real_effect": "single_filament_boundary", "human_presence": true},
+    {"id": "TOOL-CHANGE-AND-RUNOUT-V1", "first_real_effect": "mid_print_filament_boundary", "human_presence": true},
+    {"id": "PAUSE-RESUME-SEMANTICS-V1", "first_real_effect": "pause_and_resume", "human_presence": true},
+    {"id": "END-SEQUENCE-V1", "first_real_effect": "end_and_optional_disengage", "human_presence": true},
+    {"id": "ORCA-CUTOVER-V1", "first_real_effect": "atomic_profile_cutover", "human_presence": true}
+  ],
+  "intentionally_missing_until_goal_2": [
+    "real_query_connector",
+    "real_command_connector",
+    "moonraker_component_wiring",
+    "deployment_script",
+    "executable_deployment_manifest",
+    "remote_command_encoding",
+    "live_deadline_qualification",
+    "service_restart_command",
+    "orca_profile_mutation"
+  ]
+}

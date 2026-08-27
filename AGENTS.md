@@ -41,7 +41,11 @@ engagée ; CFS-STOCK-UNLOAD-GUARD-ADAPTER-OFFLINE-V1 traduit maintenant dix
 réponses synthétiques vers le garde, refuse les ambiguïtés et reste sans
 transport ; CFS-STOCK-UNLOAD-GUARD-ADAPTER-LIVE-READ-ONLY-V1 confirme deux
 lectures nettoyées, aucune route et des configurations inchangées sans appeler
-le garde ;
+le garde ; CFS-STOCK-UNLOAD-GUARD-TRANSPORT-OFFLINE-V1 est clos avec `13/13`
+scénarios et aucun connecteur réel ; `GOAL-P4-OFFLINE-CYCLE-CFS-V1` est terminé
+avec `27/27` scénarios canoniques, un moteur pur et un plan futur inerte ; la
+prochaine étape est `GOAL-P4-K1-READ-ONLY-QUALIFICATION-V1`, sous autorité
+séparée ;
 production remains closed**.
 
 La capture `20260823-165742-g4-k1-control-calibration-ui-prtouch-presets-v1` a
@@ -229,9 +233,22 @@ forme réelle `T3/T4.state = "None"` est désormais reconnue comme inactive ; le
 autres valeurs inconnues restent fermées. Le garde n'est ni importé ni appelé,
 les tests ciblés obtiennent `61/61` et la suite complète exécute `443` tests,
 dont `440` verts et `3` ignorés connus. Aucun G-code, fichier distant, service
-ou effet physique n'a lieu. La prochaine branche proposée est
-`G4-K1-CONTROL-CFS-STOCK-UNLOAD-GUARD-TRANSPORT-OFFLINE-V1`, hors imprimante
-seulement et sans autorité de connexion ou de commande réelle.
+ou effet physique n'a lieu.
+
+Thomas a ensuite autorisé `GOAL-P4-OFFLINE-CYCLE-CFS-V1` avec `$session-tas`.
+Le transport simulé du garde est clos avec `13/13` scénarios : seules les deux
+commandes déjà figées sont acceptées, chacune au plus une fois, et tout effet
+incertain reste non rejouable. Le cycle complet hors imprimante est clos avec
+`27/27` scénarios canoniques et `20/20` tests ciblés du moteur. Il couvre les
+états filament, le démarrage, le nettoyage, les changements, le runout, la
+pause, la reprise, l'annulation, le reboot, la fin et l'action séparée de
+désengagement. Le plan futur épingle trois sources, trois destinations, les
+sauvegardes, le rollback et sept tranches humaines, mais contient zéro commande
+distante et aucun connecteur réel. Aucune connexion K1, G-code, chauffe,
+mouvement, fichier distant ou action physique n'a eu lieu. La suite complète
+exécute `476` tests, dont `473` verts et `3` ignorés connus. Le prochain Goal
+unique est `GOAL-P4-K1-READ-ONLY-QUALIFICATION-V1`, qui exige une autorité de
+connexion séparée et ne permettra aucun effet.
 
 Thomas authorised V1, but the mandatory preflight proved that `logrotate` was
 absent. V1 is closed and must never be deployed. Thomas later authorised V2;

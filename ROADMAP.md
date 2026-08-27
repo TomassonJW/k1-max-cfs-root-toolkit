@@ -92,7 +92,8 @@ centre mais KO aux bords ; éditeur hors imprimante validé ; diagnostic de bord
 suspendu ; débit CFS prouvé mais séquence brute refusée ; binaire et journal
 exacts audités ; retrait stock `T1A` capturé avec deux phases réussies mais
 chauffe finale non coupée ; garde stock, mapping live et adaptateur de réponse
-fermés et verts sans transport ; production fermée**
+fermés et verts ; transport simulé et cycle complet hors imprimante clos ;
+qualification K1 en lecture seule suivante ; production fermée**
 
 Le produit est posé par étapes techniques réversibles, mais Thomas reçoit un
 seul fonctionnement quotidien :
@@ -136,8 +137,15 @@ seul fonctionnement quotidien :
     état courant bloqué sans route ;
 14. adaptateur hors ligne clos : dix réponses synthétiques, traduction vers les
     huit champs du garde, refus des routes ambiguës et données invalides, aucun
-    réseau ni chemin d'effet ; prochaine gate = validation live en lecture seule ;
-15. contrat Orca final et retrait atomique prouvé de l'ancien post-traitement
+    réseau ni chemin d'effet ; validation live ensuite close sur deux lectures
+    nettoyées et configurations inchangées ;
+15. transport simulé du garde clos : `13/13`, délais bornés, commandes uniques,
+    effets inconnus non rejoués, aucun connecteur réel ;
+16. `GOAL-P4-OFFLINE-CYCLE-CFS-V1` clos : `27/27` cas canoniques, moteur pur,
+    plan futur épinglé avec sauvegardes et rollback, zéro commande distante ;
+17. prochain Goal prêt : comparaison en lecture seule avec un état K1 frais,
+    sous autorité séparée et sans effet ;
+18. contrat Orca final et retrait atomique prouvé de l'ancien post-traitement
     `+0,27 mm`.
 
 Le rollback exact de `MESH-EDGE-DIAGNOSTIC-V1` et sa validation finale sont

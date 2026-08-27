@@ -21,9 +21,15 @@ class ProductionControlContractTests(unittest.TestCase):
     def position(self, stage_id: str) -> int:
         return next(index for index, stage in enumerate(self.sequence) if stage["id"] == stage_id)
 
-    def test_contract_is_frozen_offline_and_never_authorizes_printer_mutation(self) -> None:
-        self.assertEqual(self.contract["status"], "frozen_offline_production_closed")
+    def test_contract_is_complete_offline_and_never_authorizes_printer_mutation(self) -> None:
+        self.assertEqual(self.contract["status"], "offline_system_complete_production_closed")
         self.assertFalse(self.contract["printer_mutation_authorized"])
+        self.assertFalse(
+            self.contract["job_lifecycle_offline"]["real_connector_present"]
+        )
+        self.assertFalse(
+            self.contract["cfs_stock_unload_guard_transport_offline"]["deployment_candidate"]
+        )
         self.assertIn("production_cutover", self.contract["deployment"])
         self.assertIn("not implemented", self.contract["deployment"]["production_cutover"])
 

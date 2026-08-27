@@ -1008,10 +1008,26 @@ d'autres états inconnus. Le garde n'a pas été importé ni appelé. Aucun G-co
 fichier distant, service, chauffage, mouvement ou retrait n'a eu lieu ; aucun
 transport ou candidat de pose n'existe.
 
-La branche suivante proposée est
-`G4-K1-CONTROL-CFS-STOCK-UNLOAD-GUARD-TRANSPORT-OFFLINE-V1`. Elle devra définir
-et tester le futur transport entièrement hors imprimante, sans connexion K1 ni
-commande réelle.
+`G4-K1-CONTROL-CFS-STOCK-UNLOAD-GUARD-TRANSPORT-OFFLINE-V1` est maintenant close
+OK hors imprimante. La couche simulée accepte uniquement
+`BOX_QUIT_MATERIAL` et `TURN_OFF_HEATERS`, chacune au plus une fois. Un timeout,
+une coupure ou un retour ambigu rend l'effet inconnu et interdit de renvoyer la
+même commande. Les `13/13` scénarios sont verts. Aucun connecteur réel, réseau,
+processus, G-code ou candidat de pose n'existe.
+
+`GOAL-P4-OFFLINE-CYCLE-CFS-V1` est maintenant terminé. La machine d'états pure
+couvre les `27/27` scénarios canoniques du démarrage à la fin, y compris
+filament correct, absent ou incorrect, changements, runout, pause, reprise,
+annulation, reboot et action séparée de désengagement. Le plan futur épingle
+trois sources, trois destinations, les sauvegardes, le rollback et sept petites
+tranches avec présence humaine, mais contient zéro commande distante. Les tests
+ciblés du cycle obtiennent `20/20` et la suite complète exécute `476` tests,
+dont `473` verts et `3` ignorés connus.
+
+Le prochain Goal unique est `GOAL-P4-K1-READ-ONLY-QUALIFICATION-V1`. En langage
+courant : se connecter pour comparer des états et délais frais au modèle local,
+sans envoyer de commande, écrire de fichier ou provoquer un effet. Cette
+connexion exige une autorité séparée ; elle n'est pas ouverte par le Goal 1.
 
 Le pilotage macro est maintenant regroupé dans `GOALS.md`. Quatre grandes
 sessions y couvrent successivement le système hors imprimante, sa vérification
@@ -1079,9 +1095,12 @@ retirement remains atomic with the later proven machine/Orca replacement.
 - Toute connexion ou action physique de
   `G4-K1-CONTROL-CFS-STOCK-UNLOAD-GUARD-ADAPTER-OFFLINE-V1`, désormais close
   hors imprimante et sans transport.
-- Toute connexion, tout G-code ou essai réel de
-  `G4-K1-CONTROL-CFS-STOCK-UNLOAD-GUARD-TRANSPORT-OFFLINE-V1`, qui reste une
-  future gate hors imprimante sans autorité d'effet.
+- Toute connexion, tout G-code ou essai réel issu de
+  `G4-K1-CONTROL-CFS-STOCK-UNLOAD-GUARD-TRANSPORT-OFFLINE-V1` et
+  `GOAL-P4-OFFLINE-CYCLE-CFS-V1`, désormais clos hors imprimante.
+- Toute connexion du prochain `GOAL-P4-K1-READ-ONLY-QUALIFICATION-V1` sans son
+  autorité séparée ; même autorisé, ce Goal exclura G-code, écriture distante,
+  restart, chauffe, mouvement et retrait.
 - Any import or change of Orca fields on the workstation profile.
 - `G4-ZSAFE-START-V1` forever: this rejected name cannot receive a GO.
 - Any future `K1-CONTROL-V1` deployment until a new exact G4 package exists and

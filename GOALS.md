@@ -6,14 +6,15 @@ Ce fichier sert d'index rapide pour les grandes sessions de travail. Les noms
 ci-dessous regroupent les petites gates déjà définies dans `GATES.md` ; ils ne
 les remplacent pas et n'autorisent aucune action sur la K1 par eux-mêmes.
 
-Aucun Goal Codex n'est actuellement créé ou lancé par ce document.
+Ce document ne crée aucun Goal Codex. Le Goal 1 est clos ; le Goal 2 reste à
+lancer sous une autorité de connexion en lecture seule séparée.
 
 ## Vue rapide
 
 | Ordre | Grand Goal | État | Résultat concret attendu |
 | --- | --- | --- | --- |
-| 1 | `GOAL-P4-OFFLINE-CYCLE-CFS-V1` | prêt à lancer hors imprimante | système logiciel complet simulé et paquet réel préparé |
-| 2 | `GOAL-P4-K1-READ-ONLY-QUALIFICATION-V1` | prévu après Goal 1 | réponses et délais réels compris sans commande ni impression |
+| 1 | `GOAL-P4-OFFLINE-CYCLE-CFS-V1` | terminé hors imprimante | système logiciel complet simulé et plan futur inerte vérifié |
+| 2 | `GOAL-P4-K1-READ-ONLY-QUALIFICATION-V1` | prêt sous autorité séparée | réponses et délais réels compris sans commande ni impression |
 | 3 | `GOAL-P4-PHYSICAL-SLICES-QUALIFICATION-V1` | prévu, avec Thomas devant la K1 | fonctions physiques validées séparément avec retour arrière |
 | 4 | `GOAL-P4-DAILY-CUTOVER-V1` | prévu après Goal 3 | fonctionnement quotidien unifié, ancien Orca retirable en une transaction |
 
@@ -21,9 +22,9 @@ Aucun Goal Codex n'est actuellement créé ou lancé par ce document.
 
 Identifiant : `GOAL-P4-OFFLINE-CYCLE-CFS-V1`
 
-État : **prêt à lancer**.
+État : **terminé hors imprimante**.
 
-Ce qui sera réellement fait :
+Ce qui a été réellement fait :
 
 - construire le transport simulé du garde CFS ;
 - couvrir le démarrage, le bon ou mauvais filament, l'absence de filament, les
@@ -33,25 +34,25 @@ Ce qui sera réellement fait :
 - préparer les futurs fichiers d'installation, sauvegardes et retours arrière ;
 - fermer les tests, la documentation et Git.
 
-Limite : aucune connexion K1, aucun G-code réel, aucune chauffe, aucun mouvement
-et aucun candidat de pose autorisé.
+Limite respectée : aucune connexion K1, aucun G-code réel, aucune chauffe, aucun
+mouvement et aucun candidat de pose exécutable.
 
-Première mission interne :
-`G4-K1-CONTROL-CFS-STOCK-UNLOAD-GUARD-TRANSPORT-OFFLINE-V1`.
+Première mission interne close :
+`G4-K1-CONTROL-CFS-STOCK-UNLOAD-GUARD-TRANSPORT-OFFLINE-V1`, `13/13` scénarios.
 
-Fin attendue : le cycle complet fonctionne de façon déterministe sur des
-réponses synthétiques ou enregistrées, et chaque future action réelle est
-préparée mais reste fermée.
+Résultat : les `27/27` scénarios canoniques sont verts, les tests ciblés du cycle
+obtiennent `20/20` et le plan futur épingle trois sources, trois destinations,
+les sauvegardes et le rollback sans contenir de commande distante. La suite
+complète exécute `476` tests, dont `473` verts et `3` ignorés connus.
 
-Autorité : `GO_DIRECT` uniquement dans le clavardage où `$session-tas` a été
-explicitement invoqué ; sinon attendre une demande de lancement. Cette règle ne
-donne aucune autorité sur l'imprimante.
+Autorité consommée : ce Goal est clos. Il ne donne aucune autorité sur
+l'imprimante ni sur le Goal 2.
 
 ## Goal 2 — Vérifier le système sur la vraie K1 sans impression
 
 Identifiant : `GOAL-P4-K1-READ-ONLY-QUALIFICATION-V1`
 
-État : **prévu après le Goal 1**.
+État : **prêt à lancer sous une autorité séparée**.
 
 Ce qui sera réellement fait :
 
@@ -126,11 +127,10 @@ prêt pour la campagne finale de validation.
 
 Objectif à utiliser pour le prochain grand Goal :
 
-> Terminer et intégrer tout le système hors imprimante du cycle d'impression et
-> du garde CFS, depuis le transport simulé jusqu'à la préparation complète des
-> futures étapes réelles, sans connexion K1, sans G-code réel et sans action
-> physique.
+> Comparer le système hors imprimante à un état K1 frais en lecture seule,
+> comprendre les formes, erreurs et délais réels, puis préparer les futures
+> commandes sans en envoyer aucune et sans modifier la machine.
 
 Modèle conseillé : `gpt-5.6-terra`, raisonnement `high`. Option économique : le
-même modèle en `medium`, avec plus de risque d'oublier un cas de délai, de
-double commande ou de reprise après erreur.
+même modèle en `medium`, avec plus de risque de manquer une dérive de forme, de
+délai ou d'état avant les futures qualifications physiques.

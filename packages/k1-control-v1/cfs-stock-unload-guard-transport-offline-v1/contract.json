@@ -1,0 +1,58 @@
+{
+  "contract_id": "K1-CONTROL-CFS-STOCK-UNLOAD-GUARD-TRANSPORT-OFFLINE-V1",
+  "gate": "G4-K1-CONTROL-CFS-STOCK-UNLOAD-GUARD-TRANSPORT-OFFLINE-V1",
+  "schema": 1,
+  "status": "offline_transport_closed_green",
+  "authority": "offline_only",
+  "printer_connection": false,
+  "printer_action": false,
+  "gcode_sent": false,
+  "deployment_candidate": false,
+  "real_connector_present": false,
+  "interfaces": {
+    "guard_methods": ["snapshot", "run_gcode"],
+    "snapshot_input": "synthetic_or_already_redacted_k1_query_response",
+    "snapshot_output": "eight_field_guard_snapshot",
+    "allowed_commands": ["BOX_QUIT_MATERIAL", "TURN_OFF_HEATERS"]
+  },
+  "deadlines_seconds": {
+    "query": 2,
+    "BOX_QUIT_MATERIAL": 150,
+    "TURN_OFF_HEATERS": 15,
+    "exact_deadline_is_accepted": true
+  },
+  "single_shot_rules": {
+    "automatic_retry": false,
+    "duplicate_stock_command": "reject_before_endpoint",
+    "duplicate_cleanup_command": "reject_before_endpoint",
+    "cleanup_before_stock": "reject_before_endpoint",
+    "stock_timeout_effect": "unknown_never_resend",
+    "cleanup_after_stock_uncertainty": "one_attempt_allowed"
+  },
+  "required_scenarios": [
+    "success_route_clear_and_targets_zero",
+    "exact_deadlines_are_accepted",
+    "http_ok_without_unload_effect",
+    "http_ok_without_cleanup_effect",
+    "stock_timeout_no_retry_cleanup_once",
+    "stock_connection_loss_no_retry_cleanup_once",
+    "poll_timeout_cleanup_once",
+    "cleanup_timeout_no_retry",
+    "schema_drift_refused_before_command",
+    "duplicate_stock_rejected",
+    "duplicate_cleanup_rejected",
+    "unsupported_command_rejected",
+    "cleanup_before_stock_rejected"
+  ],
+  "result": {
+    "scenario_matrix": "13/13",
+    "targeted_tests": "13/13",
+    "integrated_goal": "GOAL-P4-OFFLINE-CYCLE-CFS-V1"
+  },
+  "next_gate": {
+    "candidate": "GOAL-P4-K1-READ-ONLY-QUALIFICATION-V1",
+    "scope": "compare_the_offline_contract_with_fresh_read_only_k1_state",
+    "printer_connection": false,
+    "printer_action": false
+  }
+}
