@@ -51,7 +51,9 @@ aucun effet ; sa capture bloque la suite physique parce que le mesh actif
 `k1_p001_t055_r001_n06x06` ; une lecture fraîche après la correction de la
 passerelle montre désormais le composite `k1_p001_t055_r001_n11x11` actif,
 toujours différent du robuste requis ; la prochaine gate doit charger et
-vérifier uniquement le robuste avant le Goal 3 ;
+vérifier uniquement le robuste avant le Goal 3 ; son paquet est préparé et son
+préflight live en lecture seule est vert, mais l'activation attend encore le GO
+exact `GO G4-K1-CONTROL-ROBUST-MESH-ACTIVATION-V1` ;
 GATEWAY-PRIVATE-LAN-NO-AUTH-V1 est installé et validé : le port `4409` ne
 demande plus de mot de passe, reste limité aux réseaux IPv4 privés, et présente
 uniquement son proxy local approuvé à Moonraker ; production remains closed**.

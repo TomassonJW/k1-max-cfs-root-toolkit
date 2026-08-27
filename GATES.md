@@ -1325,6 +1325,27 @@ présente son proxy local approuvé à Moonraker. La validation LAN anonyme obti
 Cette gate n'autorise aucune exposition Internet, redirection de port ou réseau
 invité non maîtrisé. Elle n'a produit aucun G-code ni effet physique.
 
+### Gate préalable au Goal 3 — `G4-K1-CONTROL-ROBUST-MESH-ACTIVATION-V1`
+
+Status: **préflight live en lecture seule vert ; attend son GO exact**
+
+La lecture fraîche de reprise confirme la K1 au repos, les cibles à zéro et le
+profil composite physique `k1_p001_t055_r001_n11x11` actif. Ce profil n'est pas
+le robuste quotidien : le robuste qualifié reste
+`k1_p001_t055_r001_n06x06`, présent avec son empreinte exacte.
+
+Le programme figé a obtenu `PREFLIGHT_OK` sous la capture privée
+`20260827-robust-mesh-activation-v1-preflight`, sans aucune commande G-code ni
+effet.
+
+La gate préparée vérifie l'état sûr, les composants et les matrices, envoie au
+plus une fois le chargement du robuste, puis relit le profil actif et sa matrice.
+Au premier résultat ambigu après l'envoi, elle tente une seule remise au
+`11 × 11` précédent et ne retente jamais le robuste. Elle ne contient aucun
+fichier distant, restart, chauffage, mouvement, homing, palpage, extrusion ou
+impression. Sa réussite lèvera uniquement le verrou préalable ; elle ne lancera
+pas automatiquement les tranches physiques du Goal 3.
+
 ## G5 — V1 production baseline
 
 Status: **not passed**

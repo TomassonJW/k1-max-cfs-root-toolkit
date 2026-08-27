@@ -73,6 +73,13 @@ mission passerelle n'a envoyé aucune commande de mesh. L'état courant reste
 `k1_p001_t055_r001_n06x06` est toujours présent mais non actif ; sa pose runtime
 et sa vérification forment la prochaine mission unique.
 
+Le paquet `G4-K1-CONTROL-ROBUST-MESH-ACTIVATION-V1` est maintenant préparé et
+son préflight live en lecture seule est vert sous
+`20260827-robust-mesh-activation-v1-preflight`. Il a confirmé les deux profils,
+leurs matrices exactes, l'état `standby`, les cibles zéro, le Z `−0,04 mm`, les
+deux CFS et les empreintes attendues. Aucune commande G-code ni action physique
+n'a eu lieu. L'activation runtime reste non exécutée et attend son GO exact.
+
 La base sûre et réellement requalifiée reste `6 × 6` Lagrange avec un seul mesh
 standard. L'autonomie de calibration quotidienne standard est maintenant
 atteinte : la campagne a réussi sans console et le vrai écran corrigé ouvre

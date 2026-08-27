@@ -78,6 +78,16 @@ robuste est toujours présent mais n'est pas actif. La production reste fermée,
 le mode Précision reste caché et aucune impression ne doit être lancée dans cet
 état au titre de cette passation.
 
+La reprise a maintenant préparé le paquet
+`packages/k1-control-v1/robust-mesh-activation-v1` et exécuté son préflight
+strictement en lecture seule. La capture privée
+`20260827-robust-mesh-activation-v1-preflight` est verte : elle confirme le
+`11 × 11` actif, le robuste `6 × 6` présent avec son empreinte exacte, l'état
+au repos, les cibles zéro, le Z accepté, les deux CFS et les configurations
+attendues. Aucune commande G-code ni action physique n'a eu lieu. L'activation
+reste non exécutée. Les `11/11` tests ciblés sont verts ; la suite complète
+exécute maintenant `502` tests, dont `499` verts et `3` ignorés connus.
+
 ## Git et preuves
 
 Les commits de mission déjà publiés sont :
@@ -105,7 +115,7 @@ rapport `20260827-gateway-private-lan-no-auth-v1-deployment-report.md`.
 
 ## Prochaine mission unique
 
-Identifiant proposé : `G4-K1-CONTROL-ROBUST-MESH-ACTIVATION-V1`.
+Identifiant figé : `G4-K1-CONTROL-ROBUST-MESH-ACTIVATION-V1`.
 
 Résultat attendu : charger uniquement le profil déjà présent
 `k1_p001_t055_r001_n06x06`, puis prouver qu'il est actif et que sa matrice
@@ -126,6 +136,10 @@ Cette activation runtime ne nécessite pas Thomas devant la K1, car elle ne
 produit aucun mouvement ni chauffage. Elle nécessite néanmoins une nouvelle
 mission explicite, car elle modifie l'état actif de la machine. Sa réussite ne
 lance pas automatiquement le Goal 3.
+
+Le paquet, son contrat, ses deux seules commandes possibles et son retour
+arrière ont maintenant été préparés et testés hors effet. L'autorisation exacte
+attendue est `GO G4-K1-CONTROL-ROBUST-MESH-ACTIVATION-V1`.
 
 Après cette gate seulement, le prochain grand Goal sera
 `GOAL-P4-PHYSICAL-SLICES-QUALIFICATION-V1`. Thomas devra alors être présent pour

@@ -1,0 +1,21 @@
+{
+  "mission": "G4-K1-CONTROL-ROBUST-MESH-ACTIVATION-V1",
+  "status": "preflight_ok_activation_not_run",
+  "private_source": {
+    "path": "inventory/raw/20260827-robust-mesh-activation-v1-preflight/robust-mesh-activation.safe.jsonl",
+    "sha256": "ae3bc021264a677da3f53d47bdc7a60bead8fd0950f894396b1df3172b9f1a61",
+    "versioned": false,
+    "identity_values_exported": false
+  },
+  "safe_result": {
+    "preflight": "PREFLIGHT_OK",
+    "active_profile": "k1_p001_t055_r001_n11x11",
+    "target_profile": "k1_p001_t055_r001_n06x06",
+    "target_matrix_sha256": "c3c7a2ba89f8094328bc5d8b3936b16dbd1de46f4a80bde87cba3d17cfab5f8f",
+    "machine_state": "standby",
+    "heater_targets_zero": true,
+    "gcode_commands_attempted": [],
+    "remote_files_written": false,
+    "heater_or_motion_actions": false
+  }
+}

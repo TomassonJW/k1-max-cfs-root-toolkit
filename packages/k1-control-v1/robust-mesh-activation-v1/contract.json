@@ -1,0 +1,52 @@
+{
+  "contract_id": "G4-K1-CONTROL-ROBUST-MESH-ACTIVATION-V1",
+  "status": "prepared_off_printer_awaiting_exact_go",
+  "purpose": "activate_the_already_qualified_daily_robust_mesh_before_goal_3",
+  "remote_program_sha256": "988079f1fe5a93e6e306e569798e1d2084503a162b358e587d66a640c3349cd0",
+  "authority": {
+    "preflight": "classified_read_only_allowed",
+    "activation": "exact_gate_go_required",
+    "required_gate": "G4-K1-CONTROL-ROBUST-MESH-ACTIVATION-V1",
+    "goal_3_started_by_success": false
+  },
+  "profiles": {
+    "expected_previous": {
+      "id": "k1_p001_t055_r001_n11x11",
+      "role": "immutable_composite_physical_source",
+      "rows": 11,
+      "columns": 11,
+      "points_sha256": "58fd96c55129bf7a17ba890d309cb3cd5e2926ec271d735b60392f8369da0a61"
+    },
+    "target": {
+      "id": "k1_p001_t055_r001_n06x06",
+      "role": "qualified_daily_robust_profile",
+      "rows": 6,
+      "columns": 6,
+      "points_sha256": "c3c7a2ba89f8094328bc5d8b3936b16dbd1de46f4a80bde87cba3d17cfab5f8f"
+    }
+  },
+  "effect": {
+    "primary_command": "BED_MESH_PROFILE LOAD=k1_p001_t055_r001_n06x06",
+    "maximum_primary_attempts": 1,
+    "conditional_rollback_command": "BED_MESH_PROFILE LOAD=k1_p001_t055_r001_n11x11",
+    "maximum_rollback_attempts": 1,
+    "remote_file_write": false,
+    "restart": false,
+    "heater_or_motion": false,
+    "homing_or_probe": false,
+    "print": false
+  },
+  "success": [
+    "fresh_safe_preflight",
+    "target_profile_active",
+    "active_probed_matrix_matches_target_profile",
+    "all_reviewed_hashes_unchanged",
+    "machine_remains_idle_and_cold"
+  ],
+  "failure": {
+    "stop_on_first_preflight_mismatch": true,
+    "never_retry_primary_command": true,
+    "rollback_to_exact_previous_profile_after_any_post_send_ambiguity": true,
+    "rollback_uncertainty_is_terminal": true
+  }
+}

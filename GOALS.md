@@ -8,6 +8,9 @@ les remplacent pas et n'autorisent aucune action sur la K1 par eux-mêmes.
 
 Ce document ne crée aucun Goal Codex. Les Goals 1 et 2 sont clos. La prochaine
 mission est une activation runtime bornée du profil robuste avant le Goal 3.
+Son paquet est préparé sous
+`packages/k1-control-v1/robust-mesh-activation-v1`. Son préflight live en
+lecture seule est vert et l'activation attend son GO exact.
 
 ## Vue rapide
 
@@ -147,6 +150,10 @@ Première gate à préparer avant le Goal 3 :
 Cette gate runtime ne chauffe, ne référence et ne déplace pas la machine ; elle
 ne nécessite donc pas Thomas devant la K1. Sa réussite ne lance pas le Goal 3.
 La présence humaine redevient obligatoire avant la première tranche physique.
+
+Identifiant exact de cette gate :
+`G4-K1-CONTROL-ROBUST-MESH-ACTIVATION-V1`. Le GO du grand Goal 3 ne remplace pas
+le GO exact de cette mutation runtime, conformément aux gates séparées.
 
 Modèle conseillé : `gpt-5.6-terra`, raisonnement `high`. Option économique : le
 même modèle en `medium`, avec davantage de risque de manquer une incohérence de
