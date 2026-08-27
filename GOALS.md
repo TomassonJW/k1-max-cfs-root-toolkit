@@ -6,8 +6,8 @@ Ce fichier sert d'index rapide pour les grandes sessions de travail. Les noms
 ci-dessous regroupent les petites gates déjà définies dans `GATES.md` ; ils ne
 les remplacent pas et n'autorisent aucune action sur la K1 par eux-mêmes.
 
-Ce document ne crée aucun Goal Codex. Le Goal 1 est clos ; le Goal 2 reste à
-lancer sous une autorité de connexion en lecture seule séparée.
+Ce document ne crée aucun Goal Codex. Les Goals 1 et 2 sont clos. La prochaine
+mission est une activation runtime bornée du profil robuste avant le Goal 3.
 
 ## Vue rapide
 
@@ -15,7 +15,7 @@ lancer sous une autorité de connexion en lecture seule séparée.
 | --- | --- | --- | --- |
 | 1 | `GOAL-P4-OFFLINE-CYCLE-CFS-V1` | terminé hors imprimante | système logiciel complet simulé et plan futur inerte vérifié |
 | 2 | `GOAL-P4-K1-READ-ONLY-QUALIFICATION-V1` | terminé en lecture seule, suite bloquée par le mesh actif | réponses et délais réels qualifiés sans commande ni impression |
-| 3 | `GOAL-P4-PHYSICAL-SLICES-QUALIFICATION-V1` | prévu, avec Thomas devant la K1 ; attend le profil robuste actif | fonctions physiques validées séparément avec retour arrière |
+| 3 | `GOAL-P4-PHYSICAL-SLICES-QUALIFICATION-V1` | prévu, avec Thomas devant la K1 pour les tranches physiques ; attend le profil robuste actif | fonctions physiques validées séparément avec retour arrière |
 | 4 | `GOAL-P4-DAILY-CUTOVER-V1` | prévu après Goal 3 | fonctionnement quotidien unifié, ancien Orca retirable en une transaction |
 
 ## Goal 1 — Terminer le système hors imprimante
@@ -72,11 +72,13 @@ Limite : aucune impression, aucun G-code, aucun retrait, aucune chauffe, aucun
 mouvement, aucun fichier distant, aucun restart et aucune reconnexion CFS
 provoquée.
 
-Résultat : `CLOSED_READ_ONLY_BLOCKED_MESH_DRIFT`. La K1 utilise le mesh
-`default`, dont la matrice diffère du profil robuste
-`k1_p001_t055_r001_n06x06`. Le profil robuste existe encore avec la bonne
-empreinte, mais il n'est pas actif. Le paquet de lecture seule est clos ; aucun
-candidat de pose ou connecteur de commande n'a été créé.
+Résultat de la capture : `CLOSED_READ_ONLY_BLOCKED_MESH_DRIFT`. La K1 utilisait
+alors le mesh `default`, dont la matrice différait du profil robuste
+`k1_p001_t055_r001_n06x06`. Une lecture fraîche de fin de session montre
+maintenant le composite `k1_p001_t055_r001_n11x11` actif. La cause de ce
+changement intermédiaire n'est pas qualifiée. Le robuste existe encore mais
+n'est toujours pas actif. Le paquet de lecture seule est clos ; aucun candidat
+de pose ou connecteur de commande n'a été créé.
 
 Autorité consommée : ce Goal est clos. Il ne donne aucune autorité pour charger
 le profil robuste ni commencer le Goal 3.
@@ -85,8 +87,8 @@ le profil robuste ni commencer le Goal 3.
 
 Identifiant : `GOAL-P4-PHYSICAL-SLICES-QUALIFICATION-V1`
 
-État : **prévu ; présence humaine obligatoire ; bloqué jusqu'à une gate
-distincte qui vérifie et charge le profil robuste**.
+État : **prévu ; présence humaine obligatoire pour les tranches physiques ;
+bloqué jusqu'à une gate distincte qui vérifie et charge le profil robuste**.
 
 Ce qui sera réellement fait, une petite tranche à la fois :
 
@@ -138,12 +140,14 @@ prêt pour la campagne finale de validation.
 
 Première gate à préparer avant le Goal 3 :
 
-> Thomas présent devant la K1, vérifier une dernière fois l'état sûr, charger
-> uniquement `k1_p001_t055_r001_n06x06`, puis relire le profil et sa matrice
-> sans lancer d'impression. Revenir immédiatement à l'état précédent au premier
-> écart.
+> Vérifier une dernière fois l'état sûr, charger uniquement
+> `k1_p001_t055_r001_n06x06`, puis relire le profil et sa matrice sans lancer
+> d'impression. Revenir immédiatement à l'état précédent au premier écart.
+
+Cette gate runtime ne chauffe, ne référence et ne déplace pas la machine ; elle
+ne nécessite donc pas Thomas devant la K1. Sa réussite ne lance pas le Goal 3.
+La présence humaine redevient obligatoire avant la première tranche physique.
 
 Modèle conseillé : `gpt-5.6-terra`, raisonnement `high`. Option économique : le
 même modèle en `medium`, avec davantage de risque de manquer une incohérence de
-profil, de matrice ou de rollback sur du matériel réel. La présence humaine est
-obligatoire avant toute commande.
+profil, de matrice ou de rollback sur du matériel réel.

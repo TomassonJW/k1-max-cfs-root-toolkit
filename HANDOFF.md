@@ -1,4 +1,14 @@
-# HANDOFF — reprise propre du pilotage K1 Max CFS
+# HANDOFF — redirection vers la passation complète actuelle
+
+La passation canonique de la session est désormais :
+
+`docs/HANDOFF-SESSION-COMPLETE-2026-08-27.md`
+
+Lire ce document en premier. Le contenu ci-dessous est conservé comme archive
+de la clôture antérieure du Goal 2 ; il ne décrit plus l'état live actuel et ne
+doit pas piloter la prochaine action.
+
+## Archive historique — clôture initiale du Goal 2
 
 Date de passation : 2026-08-27
 Projet : `C:\Users\janko\Documents\ChatGPT\k1-max-cfs-root-toolkit`
