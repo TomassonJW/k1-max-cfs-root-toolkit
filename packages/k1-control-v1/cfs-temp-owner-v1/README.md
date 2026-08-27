@@ -43,11 +43,15 @@ configurations inchangées. Elle n'a produit aucun effet et ne qualifie encore
 aucune transition physique.
 
 La première fenêtre `EMPTY_LOAD/T1A` n'a vu aucune action et reste explicitement
-non probante. Elle ne sera relancée qu'après confirmation de ce qui s'est passé
-dans l'interface stock.
+non probante. Thomas a confirmé qu'il n'avait rien déclenché pendant cette
+fenêtre, puis que la dernière action réelle avait chargé et retiré `T1A` lors
+de la préparation manuelle du nettoyage. Le prochain essai peut donc recharger
+ce même `T1A` sous observation, sans attribuer à l'interface un refus non vu.
 
 L'adaptateur de décision ne commande rien. Il refuse plusieurs routes, une
-commande CFS active, un segment présent sans route unique et toute route dont
-la matière n'a pas été confirmée. Il ne propose `LOAD` que lorsque les deux
-capteurs sont libres, `KEEP` ou `CHANGE` seulement après identité matière
-explicite.
+commande CFS active, un segment présent dont la route résiduelle n'a pas été
+confirmée et toute route engagée dont la matière n'a pas été confirmée. Il
+propose `LOAD` lorsque les deux capteurs sont libres, ou lorsque l'opérateur a
+confirmé que le segment résiduel vient exactement de la même route demandée.
+Une route résiduelle différente reste bloquée. `KEEP` ou `CHANGE` exigent une
+identité matière explicite.

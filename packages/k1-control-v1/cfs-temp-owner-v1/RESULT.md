@@ -14,9 +14,15 @@ inchangées. Aucun G-code, mouvement, chauffage, fichier distant ou service.
 
 Une première fenêtre réelle `EMPTY_LOAD` de 120 secondes destinée à `T1A` n'a
 vu aucune action stock : 160 lectures, route toujours vide, aucune commande,
-aucune chauffe et aucune transition. Elle est non probante et ne qualifie pas
-le chargement. Il faut savoir si l'action n'a pas été lancée ou si l'interface
-l'a refusée avant toute nouvelle tentative.
+aucune chauffe et aucune transition. Thomas a ensuite confirmé qu'il n'avait
+rien déclenché pendant cette fenêtre. Elle est donc classée non probante et ne
+qualifie pas le chargement, sans indiquer un refus de l'interface.
+
+Thomas a aussi confirmé que la dernière action réelle, pendant la préparation
+manuelle du nettoyage, avait chargé puis retiré `T1A`. Le segment encore détecté
+dans la tête est donc attribué explicitement à `T1A`. Le décideur accepte
+maintenant un futur chargement de ce même `T1A`, mais bloque toujours si cette
+origine n'est pas confirmée ou si la route demandée est différente.
 
 Le manifeste physique fixe désormais quatre checkpoints couvrant `T1A`, `T2C`,
 la conservation du bon filament et le blocage d'une identité ambiguë. Son

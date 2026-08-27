@@ -26,8 +26,17 @@ def require(condition: bool, code: str) -> None:
         raise DecisionError(code)
 
 
-def classify(snapshot: Dict[str, Any], intended_route: str, material_identity_confirmed: bool) -> Dict[str, Any]:
+def classify(
+    snapshot: Dict[str, Any],
+    intended_route: str,
+    material_identity_confirmed: bool,
+    confirmed_residual_route: str | None = None,
+) -> Dict[str, Any]:
     require(bool(ROUTE.fullmatch(intended_route)), "intended_route_invalid")
+    require(
+        confirmed_residual_route is None or bool(ROUTE.fullmatch(confirmed_residual_route)),
+        "confirmed_residual_route_invalid",
+    )
     cfs = snapshot.get("cfs")
     sensors = snapshot.get("sensors")
     require(isinstance(cfs, dict) and isinstance(sensors, dict), "snapshot_shape_invalid")
@@ -43,8 +52,15 @@ def classify(snapshot: Dict[str, Any], intended_route: str, material_identity_co
         reason = "MULTIPLE_ENGAGED_ROUTES"
     elif not routes:
         if sensors.get("head") is True or sensors.get("after_cutter") is True:
-            decision = "BLOCK"
-            reason = "SEGMENT_PRESENT_WITHOUT_UNIQUE_ROUTE"
+            if confirmed_residual_route is None:
+                decision = "BLOCK"
+                reason = "SEGMENT_PRESENT_WITHOUT_UNIQUE_ROUTE"
+            elif confirmed_residual_route == intended_route:
+                decision = "LOAD"
+                reason = "CONFIRMED_RESIDUAL_SEGMENT_SAME_ROUTE"
+            else:
+                decision = "BLOCK"
+                reason = "CONFIRMED_RESIDUAL_ROUTE_DIFFERS"
         else:
             decision = "LOAD"
             reason = "PATH_CONFIRMED_EMPTY"
@@ -65,6 +81,7 @@ def classify(snapshot: Dict[str, Any], intended_route: str, material_identity_co
         "intended_route": intended_route,
         "observed_routes": routes,
         "material_identity_confirmed": material_identity_confirmed,
+        "confirmed_residual_route": confirmed_residual_route,
         "effects": {
             "gcode": False,
             "heating": False,
@@ -76,7 +93,12 @@ def classify(snapshot: Dict[str, Any], intended_route: str, material_identity_co
     }
 
 
-def classify_capture(path: Path, intended_route: str, material_identity_confirmed: bool) -> Dict[str, Any]:
+def classify_capture(
+    path: Path,
+    intended_route: str,
+    material_identity_confirmed: bool,
+    confirmed_residual_route: str | None = None,
+) -> Dict[str, Any]:
     records = [json.loads(line) for line in path.read_text(encoding="utf-8-sig").splitlines() if line.strip()]
     require(len(records) >= 3, "capture_shape_invalid")
     require(records[0].get("kind") == "header" and records[-1].get("kind") == "footer", "capture_shape_invalid")
@@ -84,7 +106,12 @@ def classify_capture(path: Path, intended_route: str, material_identity_confirme
     require(records[-1].get("configuration_unchanged") is True, "configuration_changed")
     snapshots = [record for record in records[1:-1] if record.get("kind") == "snapshot"]
     require(bool(snapshots), "snapshots_missing")
-    result = classify(snapshots[-1], intended_route, material_identity_confirmed)
+    result = classify(
+        snapshots[-1],
+        intended_route,
+        material_identity_confirmed,
+        confirmed_residual_route,
+    )
     result["capture_path"] = str(path)
     result["snapshot_count"] = len(snapshots)
     return result
@@ -95,9 +122,15 @@ def main() -> int:
     parser.add_argument("capture", type=Path)
     parser.add_argument("--intended-route", required=True)
     parser.add_argument("--material-identity-confirmed", action="store_true")
+    parser.add_argument("--confirmed-residual-route")
     args = parser.parse_args()
     try:
-        result = classify_capture(args.capture, args.intended_route, args.material_identity_confirmed)
+        result = classify_capture(
+            args.capture,
+            args.intended_route,
+            args.material_identity_confirmed,
+            args.confirmed_residual_route,
+        )
     except Exception as exc:
         print(json.dumps({"status": "CFS_START_DECISION_KO", "error": f"{type(exc).__name__}:{exc}"}, sort_keys=True))
         return 1

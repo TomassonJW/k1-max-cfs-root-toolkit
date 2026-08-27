@@ -35,5 +35,13 @@
   },
   "technical_status": "BLOCK_OK_EFFECT_FREE",
   "human_physical_verdict": null,
-  "qualification_status": "AWAITING_HUMAN_CONFIRMATION_NO_EFFECT_OBSERVED"
+  "qualification_status": "AWAITING_HUMAN_CONFIRMATION_NO_EFFECT_OBSERVED",
+  "later_human_clarification": {
+    "date": "2026-08-28",
+    "first_empty_load_capture_action_triggered": false,
+    "last_real_route_loaded_then_removed_during_manual_brush_preparation": "T1A",
+    "current_head_segment_attributed_to_route": "T1A",
+    "scope": "permits_only_a_future_same_route_T1A_load_decision",
+    "does_not_qualify_checkpoint": true
+  }
 }

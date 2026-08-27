@@ -4,7 +4,7 @@
   "goal": "GOAL-P4-PHYSICAL-SLICES-QUALIFICATION-V1",
   "requirement": "CFS_START_STATES_AND_TEMPERATURE_OWNER",
   "authority": "passive_live_observer_only",
-  "status": "LIVE_BASELINE_OK_EMPTY_LOAD_ATTEMPT_SAW_NO_ACTION_AWAITING_HUMAN_CLARIFICATION",
+  "status": "LIVE_BASELINE_OK_EMPTY_LOAD_T1A_READY_FOR_HUMAN_RERUN",
   "deployment_candidate": false,
   "physical_campaign": {
     "manifest": "packages/k1-control-v1/cfs-temp-owner-v1/physical-campaign.json",
@@ -15,9 +15,9 @@
   },
   "start_decision_adapter": {
     "program": "packages/k1-control-v1/cfs-temp-owner-v1/start_decision.py",
-    "program_sha256": "5d059b2ce6ef8c014f52af82bc673ab52f26082b5bb7ea76384f4ee149fa9465",
+    "program_sha256": "5dd8da99756c5c08afe6bb31c09be1eb9e285a66c37b7927ac1f588cec7b1092",
     "authority": "pure_local_classification_of_sanitized_read_only_capture",
-    "status": "LIVE_AMBIGUOUS_BLOCK_TECHNICAL_OK_AWAITING_HUMAN_NO_EFFECT_VERDICT",
+    "status": "LIVE_AMBIGUOUS_BLOCK_TECHNICAL_OK_EXPLICIT_RESIDUAL_ROUTE_SUPPORTED",
     "material_identity_is_never_inferred_from_route": true,
     "effects": [],
     "live_evidence": "packages/k1-control-v1/cfs-temp-owner-v1/ambiguous-start-read-only-evidence.json"
@@ -126,7 +126,12 @@
       "route_transition_count": 0,
       "maximum_nozzle_target_c": 0.0,
       "active_command_states": [""],
-      "classification": "NON_PROBATIVE_NO_STOCK_ACTION_OBSERVED",
+      "classification": "NON_PROBATIVE_OPERATOR_DID_NOT_TRIGGER_ACTION",
+      "human_clarification": {
+        "date": "2026-08-28",
+        "last_real_route_loaded_then_removed": "T1A",
+        "current_head_segment_attributed_to_route": "T1A"
+      },
       "configuration_unchanged": true,
       "observer_effect": false
     }

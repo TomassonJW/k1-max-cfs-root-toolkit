@@ -3,7 +3,7 @@
   "campaign_id": "CFS-TEMP-OWNER-PHYSICAL-CAMPAIGN-V1",
   "goal": "GOAL-P4-PHYSICAL-SLICES-QUALIFICATION-V1",
   "requirement": "CFS_START_STATES_AND_TEMPERATURE_OWNER",
-  "status": "AWAITING_EMPTY_LOAD_T1A_HUMAN_ACTION",
+  "status": "READY_FOR_EMPTY_LOAD_T1A_HUMAN_RERUN",
   "authority": "human_stock_actions_with_passive_observers",
   "automatic_retry": false,
   "observer": "packages/k1-control-v1/cfs-temp-owner-v1/capture_observation.ps1",
@@ -32,6 +32,7 @@
       "id": "EMPTY_LOAD_T1A",
       "observer_checkpoint": "EMPTY_LOAD",
       "starting_routes": [],
+      "starting_residual_route_human_confirmed": "T1A",
       "human_action": "stock_ui_load_T1A_once",
       "expected_final_routes": ["T1A"],
       "required_observations": [
@@ -42,9 +43,10 @@
         "terminal_invariants"
       ],
       "accepted_human_verdict": "CFS_EMPTY_LOAD_T1A_VISIBLE_PURGE_OK",
-      "evidence_status": "NON_PROBATIVE_FIRST_CAPTURE_SAW_NO_ACTION",
+      "evidence_status": "READY_FOR_RERUN_HUMAN_CONFIRMED_PREVIOUS_T1A_RESIDUAL",
       "capture_id": "20260828-goal3-cfs-empty-load-t1a-v1",
-      "rerun_requires_human_clarification": true
+      "first_capture_classification": "NON_PROBATIVE_OPERATOR_DID_NOT_TRIGGER_ACTION",
+      "rerun_requires_human_clarification": false
     },
     {
       "order": 2,

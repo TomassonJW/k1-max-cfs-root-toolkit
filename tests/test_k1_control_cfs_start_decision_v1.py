@@ -51,6 +51,21 @@ class CfsStartDecisionTests(unittest.TestCase):
         self.assertEqual("LOAD", result["decision"])
         self.assertEqual("PATH_CONFIRMED_EMPTY", result["reason"])
 
+    def test_confirmed_residual_same_route_allows_load(self):
+        result = self.module.classify(self.snapshot(head=True), "T1A", False, "T1A")
+        self.assertEqual("LOAD", result["decision"])
+        self.assertEqual("CONFIRMED_RESIDUAL_SEGMENT_SAME_ROUTE", result["reason"])
+        self.assertEqual("T1A", result["confirmed_residual_route"])
+
+    def test_confirmed_residual_other_route_still_blocks(self):
+        result = self.module.classify(self.snapshot(head=True), "T2C", False, "T1A")
+        self.assertEqual("BLOCK", result["decision"])
+        self.assertEqual("CONFIRMED_RESIDUAL_ROUTE_DIFFERS", result["reason"])
+
+    def test_invalid_confirmed_residual_route_is_rejected(self):
+        with self.assertRaises(self.module.DecisionError):
+            self.module.classify(self.snapshot(head=True), "T1A", False, "unknown")
+
     def test_route_without_material_identity_still_blocks(self):
         result = self.module.classify(self.snapshot(["T1A"], head=True), "T1A", False)
         self.assertEqual("BLOCK", result["decision"])

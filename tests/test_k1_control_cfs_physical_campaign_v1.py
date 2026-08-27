@@ -49,10 +49,13 @@ class CfsPhysicalCampaignTests(unittest.TestCase):
         self.assertEqual([], ambiguous["expected_effects"])
         self.assertTrue(ambiguous["requires_read_only_decision_adapter"])
 
-    def test_current_attempt_is_not_promoted(self):
+    def test_current_attempt_remains_unqualified_but_rerun_is_ready(self):
         first = self.campaign["checkpoints"][0]
-        self.assertEqual("NON_PROBATIVE_FIRST_CAPTURE_SAW_NO_ACTION", first["evidence_status"])
-        self.assertTrue(first["rerun_requires_human_clarification"])
+        self.assertEqual("READY_FOR_RERUN_HUMAN_CONFIRMED_PREVIOUS_T1A_RESIDUAL", first["evidence_status"])
+        self.assertEqual("NON_PROBATIVE_OPERATOR_DID_NOT_TRIGGER_ACTION", first["first_capture_classification"])
+        self.assertEqual("T1A", first["starting_residual_route_human_confirmed"])
+        self.assertFalse(first["rerun_requires_human_clarification"])
+        self.assertNotEqual("PASSED", first["evidence_status"])
 
 
 if __name__ == "__main__":
