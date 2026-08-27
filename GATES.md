@@ -1346,6 +1346,21 @@ fichier distant, restart, chauffage, mouvement, homing, palpage, extrusion ou
 impression. Sa réussite lèvera uniquement le verrou préalable ; elle ne lancera
 pas automatiquement les tranches physiques du Goal 3.
 
+### Première tranche physique — `G4-K1-CONTROL-CLEAN-MOTION-V1`
+
+Status: **protocole préparé hors imprimante ; aucune commande candidate**
+
+Cette gate commencera seulement après l'activation verte du robuste et avec
+Thomas devant la K1. Elle qualifiera la géométrie de la brosse et un trajet à
+froid sans collision. Chauffe, extrusion, CFS, palpage de la brosse, mesure de
+mesh, écriture Z, configuration distante, restart et retry automatique sont
+fermés.
+
+Les coordonnées exactes restent volontairement absentes : limites de brosse,
+hauteur libre, premier contact et directions sûres d'entrée et de sortie sont
+des faits humains encore manquants. Le formulaire de capture impose un verdict
+à chaque checkpoint. Voir `docs/42-clean-motion-v1-premiere-tranche-physique.md`.
+
 ## G5 — V1 production baseline
 
 Status: **not passed**

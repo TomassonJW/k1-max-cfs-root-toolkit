@@ -1,0 +1,99 @@
+{
+  "contract_id": "G4-K1-CONTROL-CLEAN-MOTION-V1",
+  "status": "protocol_prepared_no_candidate_commands",
+  "scope": "cold_brush_geometry_and_collision_free_trajectory_only",
+  "authority": "offline_preparation_only",
+  "deployment_candidate": false,
+  "printer_connection": false,
+  "remote_commands": [],
+  "gcode_commands": [],
+  "service_actions": [],
+  "prerequisites": {
+    "robust_mesh_activation_gate": "G4-K1-CONTROL-ROBUST-MESH-ACTIVATION-V1",
+    "robust_mesh_activation_required_status": "ACTIVATION_OK",
+    "required_active_profile": "k1_p001_t055_r001_n06x06",
+    "required_active_profile_sha256": "c3c7a2ba89f8094328bc5d8b3936b16dbd1de46f4a80bde87cba3d17cfab5f8f",
+    "human_present": true,
+    "plate_clear_confirmed": true,
+    "brush_installed_and_visible": true,
+    "printer_standby": true,
+    "heater_targets_zero": true,
+    "cfs_transition_absent": true
+  },
+  "physical_facts_required_before_candidate_commands": [
+    "machine_axis_limits_from_fresh_read_only_state",
+    "brush_left_right_front_back_bounds_observed_by_human",
+    "safe_clearance_z_observed_by_human",
+    "first_contact_z_observed_at_cold_slow_speed",
+    "safe_entry_direction_observed_by_human",
+    "safe_exit_direction_observed_by_human",
+    "waste_receptacle_bounds_observed_by_human",
+    "camera_or_direct_visibility_maintained"
+  ],
+  "phases": [
+    {
+      "id": "A_READ_ONLY_BASELINE",
+      "effect": false,
+      "result": "fresh_safe_state_and_current_geometry_sources"
+    },
+    {
+      "id": "B_HUMAN_STATIC_OBSERVATION",
+      "effect": false,
+      "result": "brush_and_receptacle_bounds_recorded_without_motion"
+    },
+    {
+      "id": "C_COLD_REFERENCE_AND_HIGH_CLEARANCE",
+      "effect": true,
+      "human_confirmation_before_effect": true,
+      "result": "reference_and_clearance_path_observed_without_contact"
+    },
+    {
+      "id": "D_SLOW_APPROACH_CHECKPOINTS",
+      "effect": true,
+      "human_confirmation_before_each_checkpoint": true,
+      "result": "entry_exit_and_contact_plane_observed_at_cold"
+    },
+    {
+      "id": "E_COLD_DRY_TRAJECTORY",
+      "effect": true,
+      "human_confirmation_before_effect": true,
+      "result": "bounded_brush_path_completed_without_heat_or_extrusion"
+    },
+    {
+      "id": "F_SAFE_RETURN_AND_FINAL_READ",
+      "effect": true,
+      "result": "toolhead_parked_targets_zero_and_robust_mesh_unchanged"
+    }
+  ],
+  "forbidden": {
+    "heating": true,
+    "extrusion": true,
+    "cfs_action": true,
+    "filament_load_or_unload": true,
+    "probing_brush_with_prtouch": true,
+    "mesh_measurement": true,
+    "z_offset_write": true,
+    "configuration_write": true,
+    "service_restart": true,
+    "automatic_retry": true,
+    "unobserved_motion": true
+  },
+  "stop_conditions": [
+    "human_loses_direct_or_camera_visibility",
+    "unexpected_noise_or_resistance",
+    "brush_or_receptacle_moves",
+    "nozzle_enters_unreviewed_zone",
+    "heater_target_becomes_nonzero",
+    "job_or_cfs_transition_starts",
+    "state_or_position_becomes_ambiguous"
+  ],
+  "success_evidence": [
+    "versioned_brush_geometry_with_human_observation",
+    "ordered_cold_trajectory_with_every_checkpoint_verdict",
+    "no_collision_or_unexpected_contact",
+    "no_heat_extrusion_cfs_probe_mesh_or_z_effect",
+    "safe_final_park_and_targets_zero",
+    "robust_profile_still_active_and_unchanged"
+  ],
+  "next_gate_after_success": "G4-K1-CONTROL-CLEAN-AND-REFERENCE-V1"
+}

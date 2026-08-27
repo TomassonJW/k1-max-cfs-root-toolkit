@@ -80,6 +80,13 @@ leurs matrices exactes, l'état `standby`, les cibles zéro, le Z `−0,04 mm`, 
 deux CFS et les empreintes attendues. Aucune commande G-code ni action physique
 n'a eu lieu. L'activation runtime reste non exécutée et attend son GO exact.
 
+La première tranche physique `G4-K1-CONTROL-CLEAN-MOTION-V1` est maintenant
+cadrée hors imprimante. Son contrat et son formulaire ne contiennent aucune
+commande ni coordonnée candidate. Ils imposent d'abord l'activation verte du
+robuste, puis la présence de Thomas, le plateau libre, la brosse visible et une
+validation humaine à chaque rapprochement à froid. Aucun essai physique n'a eu
+lieu.
+
 La base sûre et réellement requalifiée reste `6 × 6` Lagrange avec un seul mesh
 standard. L'autonomie de calibration quotidienne standard est maintenant
 atteinte : la campagne a réussi sans console et le vrai écran corrigé ouvre

@@ -1,0 +1,42 @@
+{
+  "schema": 1,
+  "gate": "G4-K1-CONTROL-CLEAN-MOTION-V1",
+  "status": "NOT_RUN",
+  "capture_id": null,
+  "operator_present": null,
+  "plate_clear": null,
+  "brush_installed_and_visible": null,
+  "visibility_mode": null,
+  "initial_state": {
+    "standby": null,
+    "heater_targets_zero": null,
+    "active_profile": null,
+    "active_profile_sha256": null,
+    "axes_homed": null
+  },
+  "observed_geometry_mm": {
+    "brush_x_min": null,
+    "brush_x_max": null,
+    "brush_y_min": null,
+    "brush_y_max": null,
+    "safe_clearance_z": null,
+    "first_contact_z": null,
+    "receptacle_x_min": null,
+    "receptacle_x_max": null,
+    "receptacle_y_min": null,
+    "receptacle_y_max": null
+  },
+  "observed_directions": {
+    "safe_entry": null,
+    "safe_exit": null
+  },
+  "checkpoints": [],
+  "final_state": {
+    "safe_park": null,
+    "heater_targets_zero": null,
+    "active_profile": null,
+    "active_profile_sha256": null
+  },
+  "verdict": null,
+  "notes": null
+}
