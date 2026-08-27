@@ -19,6 +19,8 @@ class ProjectAuthorityPolicyTests(unittest.TestCase):
         handoff = (ROOT / "HANDOFF.md").read_text(encoding="utf-8")
         current_header = "\n".join(handoff.splitlines()[:45])
         self.assertNotIn("autoriser littéralement", current_header)
+        self.assertIn("CFS-STOCK-UNLOAD-GUARD-ADAPTER-OFFLINE-V1", current_header)
+        self.assertIn("CFS-STOCK-UNLOAD-GUARD-ADAPTER-LIVE-READ-ONLY-V1", current_header)
         self.assertIn("MESH-EDGE-DIAGNOSTIC-V1", current_header)
         self.assertIn("audit CFS", current_header)
         self.assertIn("ATTENDRE_GO", current_header)
