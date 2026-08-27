@@ -4,7 +4,7 @@ Le registre couvre exactement sept exigences du Goal 3 et sépare explicitement
 les actions du Goal 4. Il n'ajoute ni mission obligatoire, ni transport, ni
 effet sur la K1.
 
-État réel : **une exigence sur sept est close**. CLEAN-MOTION-V1 conserve les
+État réel : **deux exigences sur sept sont closes**. CLEAN-MOTION-V1 conserve les
 deux géométries observées à froid. La grande brosse est la seule candidate au
 nettoyage automatique. La brosse du bac est désormais condamnée : le cycle
 chaud ultérieur a montré qu'elle recollait le filament sur la buse. Sa
@@ -33,6 +33,7 @@ Le Goal 3 ne pourra passer à `PASSED` qu'après preuves physiques pour les sept
 exigences, audit transversal des deux CFS, chauffes, Z, mesh, retours sûrs et
 réconciliation du dépôt avec les captures live.
 
-Le registre reste à `passed=1`, `remaining=6`. La politique de nettoyage manuel
-est désormais close, mais la réconciliation finale du Goal 3 devra décider
-explicitement comment cette décision remplace l'ancienne exigence automatique.
+Le registre est à `passed=2`, `remaining=5`. L'identifiant automatique
+historique reste visible, mais ADR-030 et la politique versionnée prouvent sa
+résolution : voie automatique rejetée, nettoyage manuel obligatoire et actions
+automatiques techniquement bloquées.

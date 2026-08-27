@@ -2,7 +2,7 @@
   "contract_id": "GOAL-P4-PHYSICAL-SLICES-QUALIFICATION-V1",
   "goal_number": 3,
   "macro_goal_count": 4,
-  "status": "in_progress_clean_motion_manual_geometry_partial_safe_return_unconfirmed",
+  "status": "in_progress_two_of_seven_cleaning_manual_cfs_next",
   "authority": "offline_completion_registry_only",
   "deployment_candidate": false,
   "printer_connection": false,
@@ -22,7 +22,9 @@
     "GOALS.md",
     "docs/25-contrat-cycle-impression-nettoyage-cfs-v1.md",
     "design/job-lifecycle-contract-v1.json",
-    "packages/k1-control-v1/job-lifecycle-offline-v1/future-deployment-blueprint.json"
+    "packages/k1-control-v1/job-lifecycle-offline-v1/future-deployment-blueprint.json",
+    "design/manual-nozzle-cleaning-policy-v1.json",
+    "docs/adr/ADR-030-nettoyage-buse-manuel-obligatoire.md"
   ],
   "goal4_boundary": [
     "atomic_orca_cutover",

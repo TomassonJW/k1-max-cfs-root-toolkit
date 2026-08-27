@@ -1,6 +1,6 @@
 # GOALS — pilotage macro
 
-Date de mise à jour : 2026-08-27
+Date de mise à jour : 2026-08-28
 
 Ce fichier sert d'index rapide pour les grandes sessions de travail. Les noms
 ci-dessous regroupent les petites gates déjà définies dans `GATES.md` ; ils ne
@@ -11,8 +11,9 @@ Ce document ne crée aucun Goal Codex. Le compteur canonique reste fermé à
 sera ajouté. Les Goals 1 et 2 sont clos. ADR-029
 établit qu'aucun profil actuel n'est robuste : tous ont des défauts de bord. Le
 `11 × 11`, meilleur profil observé, est actif et revérifié. CLEAN-MOTION-V1 est
-clos OK après les validations humaines C, D1, D2, D3, E2, E3-R2 et E4. Le Goal
-3 compte désormais une exigence physique passée sur sept.
+clos OK après les validations humaines C, D1, D2, D3, E2, E3-R2 et E4. ADR-030
+ferme ensuite le nettoyage automatique en KO et rend le nettoyage manuel
+obligatoire. Le Goal 3 compte désormais deux exigences résolues sur sept.
 
 ## Vue rapide
 
@@ -20,22 +21,21 @@ clos OK après les validations humaines C, D1, D2, D3, E2, E3-R2 et E4. Le Goal
 | --- | --- | --- | --- |
 | 1 | `GOAL-P4-OFFLINE-CYCLE-CFS-V1` | terminé hors imprimante | système logiciel complet simulé et plan futur inerte vérifié |
 | 2 | `GOAL-P4-K1-READ-ONLY-QUALIFICATION-V1` | terminé en lecture seule ; écart de mesh alors observé, corrigé par une gate distincte | réponses et délais réels qualifiés sans commande ni impression |
-| 3 | `GOAL-P4-PHYSICAL-SLICES-QUALIFICATION-V1` | en cours ; CLEAN-MOTION-V1 clos OK, `1/7` exigences passées | toutes les fonctions physiques et le profil de bord validés séparément |
+| 3 | `GOAL-P4-PHYSICAL-SLICES-QUALIFICATION-V1` | en cours ; nettoyage manuel canonique, `2/7` exigences passées | toutes les fonctions physiques et le profil de bord validés séparément |
 | 4 | `GOAL-P4-DAILY-CUTOVER-V1` | prévu après Goal 3 | bascule unifiée, validation production et clôture définitive du projet |
 
 Le registre exécutable
 `packages/k1-control-v1/physical-slices-qualification-v1/completion-matrix.json`
 fige exactement les sept exigences internes du Goal 3. Il indique actuellement
-`1/7` exigence close : CLEAN-MOTION-V1 a qualifié à froid la grande brosse et
-la brosse secondaire, y compris le carré exact `X203..206 / Y304..305` à
-`Z32`. Le pilote complet de l'exigence suivante est prêt et son préflight live
-sans effet est vert. Thomas a confirmé le Geetech et la cible `220 °C`. Un
-premier arrêt après chauffe, avant tout frottement, a montré qu'une attente
-interactive pouvait laisser une cible chaude ; les chauffes ont été coupées et
-le pilote corrigé. Le cycle atomique chauffe, nettoie, refroidit en frottant
-jusqu'à environ `140 °C`, finit à `Z34` et remet les cibles à zéro sans attendre
-un message. Il attend seulement Thomas devant la K1. Ce registre ne crée aucun
-Goal supplémentaire.
+`2/7` exigences closes. CLEAN-MOTION-V1 a qualifié les géométries à froid. Les
+essais chauds suivants ont montré que la brosse du bac recollait le filament et
+que la grande brosse restait non convaincante même après huit allers-retours
+diagonaux à `F12000`. Thomas a donc choisi le nettoyage manuel obligatoire.
+Cette résolution reste attachée à l'identifiant historique de l'exigence : le
+KO automatique n'est ni supprimé ni présenté comme un succès. Les actions
+automatiques sont désormais bloquées. L'exigence courante est la qualification
+CFS ; sa première fenêtre `EMPTY_LOAD/T1A` n'a vu aucune action stock et reste
+non probante. Ce registre ne crée aucun Goal supplémentaire.
 
 ## Goal 1 — Terminer le système hors imprimante
 
@@ -112,9 +112,10 @@ ont depuis reçu leur autorité distincte.
 
 Identifiant : `GOAL-P4-PHYSICAL-SLICES-QUALIFICATION-V1`
 
-État : **en cours ; CLEAN-MOTION-V1 clos OK ; `1/7` exigences passées ;
-prochaine exigence : nettoyage réel borné puis référence Z finale avec buse
-propre ; meilleur profil actuel `11 × 11` actif**.
+État : **en cours ; `2/7` exigences passées ; nettoyage automatique clos KO et
+remplacé par une gate manuelle obligatoire ; prochaine exigence : qualification
+des états de départ CFS et des températures ; meilleur profil actuel `11 × 11`
+actif**.
 
 Le checkpoint C a référencé XYZ, rechargé le `11 × 11`, commandé `Z=50 mm` et
 attendu la fin. Un premier faux KO local a confondu la position physique

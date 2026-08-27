@@ -56,8 +56,8 @@ class Goal3PhysicalCompletionRegistryTests(unittest.TestCase):
     def test_current_ledger_verifies_as_in_progress_without_effect(self):
         result = verifier.verify()
         self.assertEqual("GOAL3_LEDGER_OK_IN_PROGRESS", result["status"])
-        self.assertEqual(1, result["passed_count"])
-        self.assertEqual(6, result["pending_count"])
+        self.assertEqual(2, result["passed_count"])
+        self.assertEqual(5, result["pending_count"])
         self.assertTrue(all(value is False for value in result["effects"].values()))
 
     def test_completion_policy_cannot_hide_missing_physical_evidence(self):

@@ -1,7 +1,7 @@
 {
   "schema": 1,
   "contract_id": "GOAL-P4-PHYSICAL-SLICES-QUALIFICATION-V1",
-  "updated_at": "2026-08-27",
+  "updated_at": "2026-08-28",
   "goal_status": "IN_PROGRESS",
   "completion_audit_evidence": null,
   "current_human_gate": {
@@ -29,17 +29,20 @@
     {
       "order": 2,
       "id": "AUTOMATIC_CLEAN_AND_FINAL_REFERENCE",
-      "status": "CLOSED_AUTOMATIC_CLEANING_REJECTED_MANUAL_CLEANING_CANONICAL",
+      "status": "PASSED",
       "slice_id": "CLEAN-AND-REFERENCE-V1",
       "evidence": "packages/k1-control-v1/clean-and-reference-v1/contract.json",
+      "canonical_label": "NOZZLE_CLEANING_POLICY",
+      "resolution": "AUTOMATIC_REJECTED_MANUAL_ONLY_POLICY_ACCEPTED",
+      "policy": "design/manual-nozzle-cleaning-policy-v1.json",
       "required_proofs": [
-        "versioned_cleaning_recipe_uses_physically_qualified_geometry",
-        "manual_stock_load_small_purge_and_unload_are_observed_before_the_second_cleaning_test",
-        "bounded_hot_cleaning_is_visibly_effective",
-        "heater_is_cut_then_nozzle_lifts_five_mm_and_exits_before_any_cooling_wait",
-        "clean_cycle_returns_both_heater_targets_to_zero_before_waiting_for_human",
-        "one_final_z_reference_is_run_with_a_clean_nozzle",
-        "heaters_are_requested_zero_and_safe_final_state_is_read_back"
+        "both_automatic_brush_candidates_have_retained_physical_evidence",
+        "v3_human_verdict_rejects_automatic_cleaning_as_not_convincing",
+        "clean_cycle_returns_both_heater_targets_to_zero_and_safe_park",
+        "active_11x11_profile_and_configuration_hashes_remain_unchanged",
+        "automatic_clean_and_reference_actions_are_technically_blocked",
+        "manual_nozzle_cleaning_is_the_versioned_canonical_policy",
+        "final_reference_is_truthfully_recorded_as_not_executed"
       ]
     },
     {

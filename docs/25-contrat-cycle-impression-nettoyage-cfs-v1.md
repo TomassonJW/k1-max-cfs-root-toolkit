@@ -1,22 +1,22 @@
 # Contrat V1 — nettoyage, impression et cycle filament CFS
 
-Date : 2026-08-26
+Date : 2026-08-28
 
-Statut : **figé hors imprimante ; aucune implémentation production ni mutation
-K1 autorisée par ce document**
+Statut : **amendé après qualification physique ; nettoyage manuel obligatoire ;
+aucune implémentation production ni mutation K1 autorisée par ce document**
 
 Ce document fixe le comportement attendu de K1 Control pour :
 
-- le nettoyage autonome de la buse ;
+- le nettoyage manuel obligatoire de la buse ;
 - le démarrage d'une impression ;
 - le maintien, le chargement et le remplacement du filament ;
 - la pause, le changement volontaire, la fin de filament et la reprise ;
 - la fin d'impression et le retrait manuel sur commande ;
 - le choix du mesh et les calibrations qui nécessitent ou non du filament.
 
-Il complète ADR-016. En cas d'écart, la règle la plus sûre de ce document ferme
-la phase. Il ne remplace pas une gate physique, un préflight frais, un backup ou
-un rollback.
+Il complète ADR-016 et ADR-030. En cas d'écart, la règle la plus sûre de ce
+document ferme la phase. Il ne remplace pas une gate physique, un préflight
+frais, un backup ou un rollback.
 
 ## 1. Invariants non négociables
 
@@ -142,53 +142,43 @@ mais leur correspondance physique et leur combinaison correcte ne sont pas
 encore qualifiées. Le second a déjà été vu désactivé. Leur audit passif est une
 condition de l'implémentation ; aucun des deux ne devient une preuve de débit.
 
-## 5. Nettoyage autonome de buse
+## 5. Nettoyage de buse — politique manuelle obligatoire
 
-### 5.1 Admission
+### 5.1 Décision physique
 
-Le nettoyage autonome refuse de démarrer si une impression ou une calibration
-est active, si le CFS est en transition, si le plateau n'est pas déclaré libre
-ou si la recette de l'ancien matériau est inconnue sans confirmation humaine.
+Les essais automatiques sur les deux brosses sont clos. La brosse du bac a
+recollé du filament sur la buse. La grande brosse a ensuite été testée jusqu'à
+huit allers-retours diagonaux à `F12000`, sans résultat visuel convaincant.
 
-Il capture axes, cibles thermiques, outil, capteurs, mesh, Z et limites de
-mouvement. Il n'extrude pas et ne change pas de filament.
+Le nettoyage automatique est donc rejeté. Aucun brossage automatique ni aucune
+référence finale issue de cette gate ne peut être lancé. Cette décision est
+figée par ADR-030 et `design/manual-nozzle-cleaning-policy-v1.json`.
 
-### 5.2 Séquence
+### 5.2 Séquence manuelle canonique
 
-1. Référencer X/Y et obtenir seulement la référence Z grossière nécessaire pour
-   circuler sans collision.
-2. Aller à hauteur sûre au-dessus du réceptacle de purge.
-3. Chauffer à la cible de nettoyage explicite de l'ancien matériau et attendre
-   une fenêtre bornée.
-4. Approcher la brosse à hauteur sûre.
-5. Descendre au plan de nettoyage calibré, puis exécuter la recette de traits
-   X, Y et diagonaux avec vitesses, accélérations et nombre de passages bornés.
-6. Remonter avant de quitter la brosse.
-7. Une phase de balayage pendant refroidissement n'est permise que pour une
-   recette matière déjà qualifiée. Elle est absente de la première V1.
-8. Parquer, demander `cible buse = 0`, restaurer vitesses et accélérations, puis
-   afficher la température réelle tant qu'elle reste dangereuse.
-9. Enregistrer le résultat et rendre la main.
+1. Mettre la machine dans un état où Thomas peut atteindre la buse sans danger.
+2. Thomas nettoie lui-même la buse.
+3. Thomas confirme visuellement `NOZZLE_VISIBLY_CLEAN`.
+4. La référence Z finale peut seulement commencer après cette confirmation.
+5. En cas de doute ou de verdict négatif, la référence et l'impression restent
+   bloquées.
 
-La tête chauffe au-dessus du réceptacle, pas immobile sur la brosse, afin que
-l'écoulement initial tombe dans la zone de déchet.
+Cette gate ne commande ni chauffe, ni mouvement, ni CFS. Elle ne déduit jamais
+la propreté d'un retour logiciel.
 
-### 5.3 Calibration de la brosse
+### 5.3 Géométries historiques des brosses
 
-La position X/Y/Z de la brosse est réglée humainement, à froid, à vitesse très
-faible, puis conservée dans une recette versionnée. La première qualification
-valide la trajectoire à froid, loin du plateau, avant tout essai chaud.
+Les coordonnées, trajectoires froides et captures chaudes restent conservées
+pour la traçabilité. Elles ne sont plus une recette exécutable. Un futur retour
+au brossage demanderait une décision distincte et une nouvelle qualification
+physique ; aucun V4 n'est implicite.
 
-Il n'existe actuellement aucune preuve d'un capteur de hauteur de brosse. Le
-PRTouch qualifie le contact buse/plateau ; il ne doit pas être utilisé pour
-enfoncer la buse dans une brosse arrière dont la force n'est pas prouvée comme
-transmise au plateau.
+### 5.4 Calibration Z et mesh
 
-### 5.4 Nettoyage manuel
-
-Pour une calibration Z ou mesh de métrologie, le nettoyage manuel avec contrôle
-visuel reste le choix par défaut tant que la recette automatique n'a pas réussi
-sa propre campagne physique. L'interface propose explicitement cette gate.
+Le nettoyage manuel avec contrôle visuel est obligatoire avant une référence Z
+ou un mesh de métrologie. Aucun chargement ni aucune purge n'a lieu pendant la
+mesure de contact. Le retrait préalable reste recommandé si l'absence de
+suintement ne peut pas être garantie autrement.
 
 ## 6. Démarrage d'une impression
 
@@ -197,7 +187,8 @@ sa propre campagne physique. L'interface propose explicitement cette gate.
 3. Classer l'état filament. Toute contradiction ferme le départ.
 4. Lancer immédiatement la chauffe plateau à la cible du contrat.
 5. Si nécessaire, faire la référence grossière permettant de circuler.
-6. Nettoyer la buse automatiquement ou obtenir la confirmation manuelle.
+6. Obtenir la confirmation humaine que la buse a été nettoyée manuellement et
+   est visiblement propre.
 7. Attendre la cible plateau et la stabilité bornée requise, puis revenir à la
    température de palpage qualifiée.
 8. Faire une seule référence Z précise avec la buse propre.
@@ -312,10 +303,10 @@ scientifique séparée.
 
 | Calibration | Politique filament |
 |---|---|
-| Z ou mesh par contact buse/plateau | nettoyage manuel par défaut ; aucun chargement ni purge pendant la mesure ; retrait préalable recommandé si l'absence de suintement n'est pas autrement prouvée |
+| Z ou mesh par contact buse/plateau | nettoyage manuel obligatoire ; aucun chargement ni purge pendant la mesure ; retrait préalable recommandé si l'absence de suintement n'est pas autrement prouvée |
 | débit, température, rétraction ou pression d'avance | filament requis et explicitement résolu |
 | résonances et input shaper | filament sans rôle métrologique ; aucun changement automatique |
-| calibration de la brosse | à froid et sans extrusion avant toute recette chaude |
+| géométrie historique de la brosse | conservée comme preuve, non exécutable sans décision future distincte |
 
 Le retrait CFS ne prouve pas une buse vide : un résidu peut rester dans le bloc
 de chauffe. La propreté extérieure et l'absence de suintement restent des
@@ -338,7 +329,8 @@ L'interface fournit un bouton séparé **Désengager et nettoyer**. Cette action
 
 - utilise la température explicite enregistrée de l'ancien matériau ;
 - coupe, retire et vérifie le rembobinage ;
-- lance éventuellement la recette de nettoyage qualifiée ;
+- ne lance aucun nettoyage automatique ; le nettoyage manuel reste une gate
+  séparée si la buse doit être rendue propre ;
 - finit avec cibles zéro, outil `none` ou état `unknown` clairement affiché.
 
 Il n'existe pas de réchauffage automatique différé et sans présence humaine
@@ -388,8 +380,9 @@ reste suspendue. Avant toute reprise :
 2. **JOB-LIFECYCLE-OFFLINE-V1** : machine d'états simulée avec erreurs,
    horloges, capteurs et réécritures thermiques injectés.
 3. **CLEAN-MOTION-V1** : coordonnées et trajectoires de brosse à froid.
-4. **CLEAN-AND-REFERENCE-V1** : nettoyage autonome puis référence Z finale,
-   sans CFS ni impression.
+4. **CLEAN-AND-REFERENCE-V1** : essais automatiques clos KO, politique manuelle
+   obligatoire et actions automatiques désactivées ; la référence finale prévue
+   n'a pas été exécutée.
 5. **CFS-TEMP-OWNER-V1** : cible par phase, démarrage avec filament correct,
    absent puis incorrect, d'abord CFS 1 puis CFS 2.
 6. **TOOL-CHANGE-AND-RUNOUT-V1** : changement voulu, remplacement équivalent,
@@ -429,6 +422,7 @@ sous une autorité séparée.
 - [ADR-016 — cycle de production orchestré](adr/ADR-016-cycle-production-orchestre-et-propriete-cfs.md)
 - [ADR-021 — protocole minimal fermé en KO borné](adr/ADR-021-fermer-le-protocole-minimal-cfs-en-ko-borne.md)
 - [ADR-027 — cycle hors imprimante avant connecteur réel](adr/ADR-027-fermer-le-cycle-hors-imprimante-avant-tout-connecteur-reel.md)
+- [ADR-030 — nettoyage de buse manuel obligatoire](adr/ADR-030-nettoyage-buse-manuel-obligatoire.md)
 - [Audit mesh et cycle CFS](23-audit-mesh-manuel-et-cycle-production-cfs.md)
 - [Klipper — capteurs filament](https://www.klipper3d.org/Config_Reference.html#filament-sensors)
 - [Klipper — profils bed mesh](https://www.klipper3d.org/Bed_Mesh.html#profiles)

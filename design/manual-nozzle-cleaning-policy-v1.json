@@ -1,0 +1,40 @@
+{
+  "schema": 1,
+  "policy_id": "MANUAL-NOZZLE-CLEANING-POLICY-V1",
+  "status": "canonical",
+  "decision": "manual_cleaning_required",
+  "supersedes_behavior": "automatic_brush_cleaning",
+  "historical_requirement_id": "AUTOMATIC_CLEAN_AND_FINAL_REFERENCE",
+  "historical_requirement_resolution": "AUTOMATIC_REJECTED_MANUAL_ONLY_POLICY_ACCEPTED",
+  "operator": "human",
+  "required_before": [
+    "final_z_reference",
+    "sensitive_print"
+  ],
+  "required_confirmation": "NOZZLE_VISIBLY_CLEAN",
+  "automatic_cleaning": {
+    "allowed": false,
+    "runner_actions_blocked": ["CleanCycle", "Reference"],
+    "future_reopening_requires_separate_decision": true
+  },
+  "start_sequence_override": {
+    "replaces_step": "controlled_nozzle_clean",
+    "step": "human_manual_nozzle_clean_confirmation",
+    "kind": "human_gate",
+    "sets_on_success": ["nozzle_clean"],
+    "sets_on_failure": [],
+    "automatic_effects": []
+  },
+  "calibration_policy": {
+    "manual_cleaning_is_mandatory": true,
+    "no_load_or_purge_during_contact_measurement": true,
+    "unload_recommended_if_ooze_cannot_otherwise_be_excluded": true
+  },
+  "evidence": {
+    "physical_contract": "packages/k1-control-v1/clean-and-reference-v1/contract.json",
+    "decision_record": "docs/adr/ADR-030-nettoyage-buse-manuel-obligatoire.md",
+    "v3_human_verdict": "KO_NOT_CONVINCING_AUTOMATIC_CLEANING_ABANDONED",
+    "final_reference_executed": false,
+    "safe_terminal_state_proven": true
+  }
+}

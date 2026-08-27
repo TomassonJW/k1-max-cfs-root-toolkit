@@ -4,6 +4,14 @@
   "status": "offline_system_complete_production_closed",
   "printer_mutation_authorized": false,
   "canonical_document": "docs/25-contrat-cycle-impression-nettoyage-cfs-v1.md",
+  "amendments": [
+    {
+      "id": "MANUAL-NOZZLE-CLEANING-POLICY-V1",
+      "path": "design/manual-nozzle-cleaning-policy-v1.json",
+      "decision_record": "docs/adr/ADR-030-nettoyage-buse-manuel-obligatoire.md",
+      "effect": "controlled_nozzle_clean_is_replaced_by_a_human_manual_clean_confirmation_gate"
+    }
+  ],
   "target": {
     "printer": "Creality K1 Max S12 structure 0",
     "firmware": "2.3.5.34",

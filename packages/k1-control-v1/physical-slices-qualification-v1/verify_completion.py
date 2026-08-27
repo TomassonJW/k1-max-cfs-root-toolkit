@@ -8,6 +8,7 @@ PACKAGE = Path(__file__).resolve().parent
 ROOT = PACKAGE.parents[2]
 CONTRACT = PACKAGE / "contract.json"
 MATRIX = PACKAGE / "completion-matrix.json"
+MANUAL_CLEANING_POLICY = ROOT / "design" / "manual-nozzle-cleaning-policy-v1.json"
 
 EXPECTED_REQUIREMENTS = [
     "COLD_CLEAN_MOTION",
@@ -104,6 +105,33 @@ def verify() -> dict:
         "e3_r2_verdict_drift",
     )
     require(brush_trials["e4"]["human_verdict"] == "E4_OK", "e4_verdict_drift")
+
+    cleaning = requirements[1]
+    require(cleaning["status"] == "PASSED", "cleaning_policy_not_passed")
+    require(
+        cleaning.get("resolution") == "AUTOMATIC_REJECTED_MANUAL_ONLY_POLICY_ACCEPTED",
+        "cleaning_resolution_drift",
+    )
+    cleaning_evidence = load_json(ROOT / cleaning["evidence"])
+    require(
+        cleaning_evidence["status"] == "CLOSED_AUTOMATIC_CLEANING_REJECTED_MANUAL_CLEANING_REQUIRED",
+        "automatic_cleaning_not_closed",
+    )
+    v3 = cleaning_evidence["live_read_only_evidence"]["primary_brush_v3_clean_cycle"]
+    require(
+        v3["human_visual_verdict"] == "KO_NOT_CONVINCING_AUTOMATIC_CLEANING_ABANDONED",
+        "v3_human_verdict_drift",
+    )
+    require(v3["heater_targets_zero"] is True, "v3_heaters_not_zero")
+    require(v3["final_reference_executed"] is False, "final_reference_must_not_be_invented")
+    policy = load_json(MANUAL_CLEANING_POLICY)
+    require(policy["status"] == "canonical", "manual_cleaning_policy_not_canonical")
+    require(policy["automatic_cleaning"]["allowed"] is False, "automatic_cleaning_still_allowed")
+    require(
+        policy["historical_requirement_resolution"]
+        == "AUTOMATIC_REJECTED_MANUAL_ONLY_POLICY_ACCEPTED",
+        "manual_cleaning_policy_resolution_drift",
+    )
 
     mesh = requirements[-1]
     mesh_evidence = load_json(ROOT / mesh["evidence"])

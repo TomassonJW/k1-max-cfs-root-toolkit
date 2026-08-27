@@ -4,15 +4,13 @@ Ce paquet ne crée aucun Goal ni aucune nouvelle autorité. Il matérialise les
 sept exigences déjà contenues dans `GOALS.md`, le contrat du cycle et le plan
 hors imprimante. Le projet reste limité à quatre Goals.
 
-Statut actuel : **Goal 3 en cours ; CLEAN-MOTION-V1 est clos OK après les
-validations humaines C, D1, D2, D3, E2, E3-R2 et E4 ; une exigence physique
-sur sept est passée**. La prochaine exigence est
-`AUTOMATIC_CLEAN_AND_FINAL_REFERENCE`, sous la gate
-`G4-K1-CONTROL-CLEAN-AND-REFERENCE-V1`.
-Son pilote réutilise le carré E4 exact et interdit extrusion et CFS. Son
-préflight live sans effet est vert ; la première chauffe reste bloquée tant que
-la matière du segment présent dans la tête et sa température ne sont pas
-confirmées.
+Statut actuel : **Goal 3 en cours ; deux exigences sur sept sont passées**.
+CLEAN-MOTION-V1 est clos OK. L'identifiant historique
+`AUTOMATIC_CLEAN_AND_FINAL_REFERENCE` reste visible, mais sa résolution est le
+rejet physique du nettoyage automatique et l'adoption du nettoyage manuel
+obligatoire. Les actions automatiques sont bloquées et la référence finale
+n'est pas présentée comme exécutée. La prochaine exigence est la qualification
+des états CFS et de leurs températures.
 
 Le registre est entièrement local. Il ne contient aucun connecteur K1, aucune
 commande G-code, aucune pose, aucun restart et aucun effet physique. Son
@@ -31,4 +29,4 @@ python.exe packages/k1-control-v1/physical-slices-qualification-v1/verify_comple
 ```
 
 Résultat attendu aujourd'hui : `GOAL3_LEDGER_OK_IN_PROGRESS`, avec
-`passed=1`, `remaining=6` et zéro effet déclaré par ce registre local.
+`passed=2`, `remaining=5` et zéro effet déclaré par ce registre local.

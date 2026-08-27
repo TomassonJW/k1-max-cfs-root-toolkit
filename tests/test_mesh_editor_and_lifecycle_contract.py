@@ -114,12 +114,12 @@ class MeshEditorAndLifecycleContractTests(unittest.TestCase):
         self.assertIn("retour à la température du nouveau filament", self.lifecycle_contract)
         self.assertIn("Le CFS n'est jamais propriétaire d'une température de travail", self.lifecycle_contract)
 
-    def test_cleaning_is_coarse_home_human_brush_calibration_and_no_universal_temperature(self):
+    def test_cleaning_is_manual_only_and_no_universal_temperature(self):
         for token in (
-            "référence Z grossière",
-            "au-dessus du réceptacle de purge",
-            "La position X/Y/Z de la brosse est réglée humainement",
-            "aucune preuve d'un capteur de hauteur de brosse",
+            "nettoyage manuel obligatoire",
+            "Aucun brossage automatique",
+            "Thomas confirme visuellement `NOZZLE_VISIBLY_CLEAN`",
+            "Elles ne sont plus une recette exécutable",
             "Il n'existe pas de `+10 °C`, `+20 °C`, `−30 °C` ou `100 °C` universel",
         ):
             self.assertIn(token, self.lifecycle_contract)
