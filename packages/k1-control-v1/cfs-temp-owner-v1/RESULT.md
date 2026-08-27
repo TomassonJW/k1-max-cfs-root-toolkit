@@ -22,3 +22,9 @@ Le manifeste physique fixe désormais quatre checkpoints couvrant `T1A`, `T2C`,
 la conservation du bon filament et le blocage d'une identité ambiguë. Son
 vérificateur retourne `CFS_PHYSICAL_CAMPAIGN_READY_INCOMPLETE` avec `0/4` : le
 plan est prêt, mais aucune preuve humaine n'est inventée.
+
+Le décideur local est également prêt et testé. Une capture live fraîche de huit
+lectures a retrouvé le segment détecté dans la tête, aucune route engagée,
+cibles zéro et configurations inchangées. Le décideur renvoie
+`BLOCK/SEGMENT_PRESENT_WITHOUT_UNIQUE_ROUTE` avec zéro effet. La confirmation
+humaine d'absence d'effet reste nécessaire pour passer le quatrième checkpoint.

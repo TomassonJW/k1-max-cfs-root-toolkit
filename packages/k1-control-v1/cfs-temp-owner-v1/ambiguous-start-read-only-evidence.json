@@ -1,0 +1,39 @@
+{
+  "schema": 1,
+  "mission": "G4-K1-CONTROL-CFS-TEMP-OWNER-V1",
+  "checkpoint": "AMBIGUOUS_IDENTITY_BLOCK",
+  "capture_id": "20260828-goal3-cfs-ambiguous-start-readonly-v1",
+  "capture_sha256": "6f12d1384a6e3d101a5949f31828e7a7f538742a25a768e26c6c0caf3be046a5",
+  "analysis_sha256": "ef588c336e0bc08e68a56cc08e87515f56aa240dff46aa0997afc86e8792ffa4",
+  "snapshot_count": 8,
+  "live_state": {
+    "print_state": "standby",
+    "engaged_routes": [],
+    "active_command": "",
+    "head_sensor": true,
+    "after_cutter_sensor": false,
+    "nozzle_target_c": 0.0,
+    "bed_target_c": 0.0,
+    "both_cfs_connected": true,
+    "active_profile": "k1_p001_t055_r001_n11x11",
+    "accepted_z_offset": -0.04,
+    "configuration_unchanged": true
+  },
+  "decision": {
+    "intended_route": "T1A",
+    "material_identity_confirmed": false,
+    "result": "BLOCK",
+    "reason": "SEGMENT_PRESENT_WITHOUT_UNIQUE_ROUTE"
+  },
+  "effects": {
+    "gcode": false,
+    "heating": false,
+    "motion": false,
+    "cfs_action": false,
+    "remote_write": false,
+    "service_action": false
+  },
+  "technical_status": "BLOCK_OK_EFFECT_FREE",
+  "human_physical_verdict": null,
+  "qualification_status": "AWAITING_HUMAN_CONFIRMATION_NO_EFFECT_OBSERVED"
+}

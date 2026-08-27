@@ -99,7 +99,8 @@
         "configuration_hashes_unchanged"
       ],
       "accepted_human_verdict": "CFS_AMBIGUOUS_IDENTITY_BLOCK_OK",
-      "evidence_status": "NOT_STARTED",
+      "evidence_status": "TECHNICAL_BLOCK_OK_AWAITING_HUMAN_NO_EFFECT_VERDICT",
+      "evidence": "packages/k1-control-v1/cfs-temp-owner-v1/ambiguous-start-read-only-evidence.json",
       "requires_read_only_decision_adapter": true
     }
   ],

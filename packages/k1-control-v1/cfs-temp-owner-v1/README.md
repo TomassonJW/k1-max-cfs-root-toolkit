@@ -22,7 +22,7 @@ La campagne physique réutilise ces lectures en quatre preuves seulement :
 2. conservation de `T1A` pendant le futur démarrage représentatif ;
 3. changement unique de `T1A` vers `T2C`, qui couvre aussi le second CFS ;
 4. identité ambiguë bloquée sans effet par l'adaptateur de décision en lecture
-   seule encore à préparer.
+   seule désormais prêt.
 
 Les captures des étapes 2 et 3 seront réutilisées pour changement/runout et fin
 de travail : elles ne seront pas rejouées uniquement pour remplir deux lignes.
@@ -45,3 +45,9 @@ aucune transition physique.
 La première fenêtre `EMPTY_LOAD/T1A` n'a vu aucune action et reste explicitement
 non probante. Elle ne sera relancée qu'après confirmation de ce qui s'est passé
 dans l'interface stock.
+
+L'adaptateur de décision ne commande rien. Il refuse plusieurs routes, une
+commande CFS active, un segment présent sans route unique et toute route dont
+la matière n'a pas été confirmée. Il ne propose `LOAD` que lorsque les deux
+capteurs sont libres, `KEEP` ou `CHANGE` seulement après identité matière
+explicite.

@@ -13,6 +13,15 @@
     "checkpoint_count": 4,
     "passed_count": 0
   },
+  "start_decision_adapter": {
+    "program": "packages/k1-control-v1/cfs-temp-owner-v1/start_decision.py",
+    "program_sha256": "5d059b2ce6ef8c014f52af82bc673ab52f26082b5bb7ea76384f4ee149fa9465",
+    "authority": "pure_local_classification_of_sanitized_read_only_capture",
+    "status": "LIVE_AMBIGUOUS_BLOCK_TECHNICAL_OK_AWAITING_HUMAN_NO_EFFECT_VERDICT",
+    "material_identity_is_never_inferred_from_route": true,
+    "effects": [],
+    "live_evidence": "packages/k1-control-v1/cfs-temp-owner-v1/ambiguous-start-read-only-evidence.json"
+  },
   "observer": {
     "program": "packages/k1-control-v1/cfs-temp-owner-v1/observer.py",
     "program_sha256": "7f818e5d144e3a9c6565ef80b72b36f127f4e9362c51b4b3fa5e825916f81aa6",

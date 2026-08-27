@@ -5,6 +5,7 @@ from pathlib import Path
 
 
 PACKAGE = Path(__file__).resolve().parent
+ROOT = PACKAGE.parents[2]
 CAMPAIGN = PACKAGE / "physical-campaign.json"
 EXPECTED_IDS = [
     "EMPTY_LOAD_T1A",
@@ -42,6 +43,8 @@ def verify() -> dict:
         require(verdict not in verdicts, "duplicate_human_verdict")
         verdicts.add(verdict)
         require(bool(checkpoint["required_observations"]), "required_observations_missing")
+        if checkpoint.get("evidence") is not None:
+            require((ROOT / checkpoint["evidence"]).is_file(), "checkpoint_evidence_missing")
 
     require(any(route.startswith("T1") for route in routes), "T1_not_covered")
     require(any(route.startswith("T2") for route in routes), "T2_not_covered")
