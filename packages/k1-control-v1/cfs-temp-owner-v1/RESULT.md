@@ -17,3 +17,8 @@ vu aucune action stock : 160 lectures, route toujours vide, aucune commande,
 aucune chauffe et aucune transition. Elle est non probante et ne qualifie pas
 le chargement. Il faut savoir si l'action n'a pas été lancée ou si l'interface
 l'a refusée avant toute nouvelle tentative.
+
+Le manifeste physique fixe désormais quatre checkpoints couvrant `T1A`, `T2C`,
+la conservation du bon filament et le blocage d'une identité ambiguë. Son
+vérificateur retourne `CFS_PHYSICAL_CAMPAIGN_READY_INCOMPLETE` avec `0/4` : le
+plan est prêt, mais aucune preuve humaine n'est inventée.

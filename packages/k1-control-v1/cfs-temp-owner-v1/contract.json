@@ -6,6 +6,13 @@
   "authority": "passive_live_observer_only",
   "status": "LIVE_BASELINE_OK_EMPTY_LOAD_ATTEMPT_SAW_NO_ACTION_AWAITING_HUMAN_CLARIFICATION",
   "deployment_candidate": false,
+  "physical_campaign": {
+    "manifest": "packages/k1-control-v1/cfs-temp-owner-v1/physical-campaign.json",
+    "verifier": "packages/k1-control-v1/cfs-temp-owner-v1/verify_physical_campaign.py",
+    "status": "READY_INCOMPLETE",
+    "checkpoint_count": 4,
+    "passed_count": 0
+  },
   "observer": {
     "program": "packages/k1-control-v1/cfs-temp-owner-v1/observer.py",
     "program_sha256": "7f818e5d144e3a9c6565ef80b72b36f127f4e9362c51b4b3fa5e825916f81aa6",

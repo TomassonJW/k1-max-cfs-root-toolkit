@@ -1,0 +1,113 @@
+{
+  "schema": 1,
+  "campaign_id": "CFS-TEMP-OWNER-PHYSICAL-CAMPAIGN-V1",
+  "goal": "GOAL-P4-PHYSICAL-SLICES-QUALIFICATION-V1",
+  "requirement": "CFS_START_STATES_AND_TEMPERATURE_OWNER",
+  "status": "AWAITING_EMPTY_LOAD_T1A_HUMAN_ACTION",
+  "authority": "human_stock_actions_with_passive_observers",
+  "automatic_retry": false,
+  "observer": "packages/k1-control-v1/cfs-temp-owner-v1/capture_observation.ps1",
+  "shared_lifecycle_observer": "packages/k1-control-v1/job-lifecycle-observer-v1/capture_observation.ps1",
+  "global_entry": {
+    "operator_present": true,
+    "immediate_stop_available": true,
+    "printer_standby_or_explicit_test_job": true,
+    "both_cfs_connected": true,
+    "no_cfs_command_active": true,
+    "active_profile": "k1_p001_t055_r001_n11x11",
+    "accepted_z_offset": -0.04,
+    "configuration_hashes_exact": true
+  },
+  "terminal_invariants": {
+    "active_command": "",
+    "heater_targets_zero": true,
+    "configuration_hashes_unchanged": true,
+    "active_profile_unchanged": true,
+    "accepted_z_unchanged": true,
+    "no_automatic_retry": true
+  },
+  "checkpoints": [
+    {
+      "order": 1,
+      "id": "EMPTY_LOAD_T1A",
+      "observer_checkpoint": "EMPTY_LOAD",
+      "starting_routes": [],
+      "human_action": "stock_ui_load_T1A_once",
+      "expected_final_routes": ["T1A"],
+      "required_observations": [
+        "single_route_transition_to_T1A",
+        "phase_specific_nozzle_target_observed",
+        "head_sensor_consistent",
+        "visible_purge_confirmed_by_human",
+        "terminal_invariants"
+      ],
+      "accepted_human_verdict": "CFS_EMPTY_LOAD_T1A_VISIBLE_PURGE_OK",
+      "evidence_status": "NON_PROBATIVE_FIRST_CAPTURE_SAW_NO_ACTION",
+      "capture_id": "20260828-goal3-cfs-empty-load-t1a-v1",
+      "rerun_requires_human_clarification": true
+    },
+    {
+      "order": 2,
+      "id": "KEEP_CORRECT_T1A",
+      "observer_checkpoint": "KEEP_CORRECT",
+      "starting_routes": ["T1A"],
+      "human_action": "start_the_later_representative_job_that_declares_T1A_as_correct",
+      "expected_final_routes": ["T1A"],
+      "required_observations": [
+        "no_cut_or_unload",
+        "no_route_transition",
+        "small_visible_purge_confirmed_by_human",
+        "terminal_invariants_after_job_end"
+      ],
+      "accepted_human_verdict": "CFS_KEEP_CORRECT_T1A_OK",
+      "evidence_reuse": [
+        "TOOL_CHANGE_AND_RUNOUT",
+        "CANCEL_END_AND_SEPARATE_DISENGAGE"
+      ],
+      "evidence_status": "NOT_STARTED"
+    },
+    {
+      "order": 3,
+      "id": "WRONG_CHANGE_T1A_TO_T2C",
+      "observer_checkpoint": "WRONG_CHANGE",
+      "starting_routes": ["T1A"],
+      "human_action": "stock_ui_change_once_from_T1A_to_T2C",
+      "expected_final_routes": ["T2C"],
+      "required_observations": [
+        "old_material_target_observed_before_unload",
+        "route_T1A_released_once",
+        "route_T2C_loaded_once",
+        "transition_and_new_material_targets_observed",
+        "visible_purge_confirmed_by_human",
+        "both_cfs_units_exercised",
+        "terminal_invariants"
+      ],
+      "accepted_human_verdict": "CFS_WRONG_CHANGE_T1A_TO_T2C_OK",
+      "evidence_reuse": ["TOOL_CHANGE_AND_RUNOUT"],
+      "evidence_status": "NOT_STARTED"
+    },
+    {
+      "order": 4,
+      "id": "AMBIGUOUS_IDENTITY_BLOCK",
+      "observer_checkpoint": "CROSS_CFS",
+      "starting_state": "head_sensor_present_with_no_unique_engaged_route_or_other_real_ambiguity",
+      "human_action": "request_start_decision_without_confirming_a_route",
+      "expected_effects": [],
+      "required_observations": [
+        "decision_is_blocked_before_heat_motion_cut_load_or_extrusion",
+        "ambiguity_is_displayed",
+        "configuration_hashes_unchanged"
+      ],
+      "accepted_human_verdict": "CFS_AMBIGUOUS_IDENTITY_BLOCK_OK",
+      "evidence_status": "NOT_STARTED",
+      "requires_read_only_decision_adapter": true
+    }
+  ],
+  "completion": {
+    "all_checkpoints_must_pass": true,
+    "both_cfs_units_must_be_observed": ["T1", "T2"],
+    "visible_purge_requires_human_evidence": true,
+    "telemetry_never_replaces_human_verdict": true,
+    "failure_or_uncertain_effect_stops_without_retry": true
+  }
+}
