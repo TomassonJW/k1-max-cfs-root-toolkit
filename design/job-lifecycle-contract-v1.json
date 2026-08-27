@@ -270,6 +270,26 @@
     "physical_test_authorized": false,
     "next_design_branch": "offline_query_response_adapter_before_any_live_run"
   },
+  "cfs_stock_unload_guard_adapter_offline": {
+    "candidate": "K1-CONTROL-CFS-STOCK-UNLOAD-GUARD-ADAPTER-OFFLINE-V1",
+    "status": "offline_adapter_closed_green",
+    "contract": "packages/k1-control-v1/cfs-stock-unload-guard-adapter-offline-v1/contract.json",
+    "input": "redacted_printer_objects_query_response",
+    "output": "cfs_stock_unload_guard_snapshot",
+    "supported_connected_cfs_units": ["T1", "T2"],
+    "supported_unit_states": ["connect", "disconnect"],
+    "supported_slots": ["A", "B", "C", "D"],
+    "no_route_is_translated": true,
+    "disconnected_second_cfs_is_translated_for_guard_refusal": true,
+    "multiple_routes_are_rejected": true,
+    "missing_or_invalid_fields_are_rejected": true,
+    "unknown_fields_are_not_copied": true,
+    "scenario_matrix": "10/10",
+    "printer_transport": false,
+    "deployment_candidate": false,
+    "physical_test_authorized": false,
+    "next_design_branch": "separate_live_read_only_adapter_validation"
+  },
   "filament_state": {
     "states": [
       "absent_confirmed",

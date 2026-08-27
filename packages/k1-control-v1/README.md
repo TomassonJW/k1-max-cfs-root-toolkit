@@ -114,6 +114,19 @@ cycle stock. Le garde utilise désormais le retour sans erreur de la requête et
 la disparition réelle de la route. La prochaine étape construit seulement le
 traducteur hors imprimante à partir de réponses nettoyées.
 
+## Adaptateur hors imprimante du garde de retrait
+
+Le paquet
+[`cfs-stock-unload-guard-adapter-offline-v1/`](cfs-stock-unload-guard-adapter-offline-v1/)
+convertit une réponse K1 déjà nettoyée vers les huit champs du garde. Il traduit
+les états sûrs sans route ou avec un CFS déconnecté, et refuse les routes
+multiples, les incohérences, les champs incomplets et les températures
+invalides.
+
+Ses dix exemples sont synthétiques et sans identité matérielle. Il ne contient
+aucun réseau, processus, G-code, transport ou candidat de pose. Une future
+validation live restera une gate distincte strictement en lecture seule.
+
 ## Versions figées
 
 - Moonraker MIPS : paquet du Helper Script au commit

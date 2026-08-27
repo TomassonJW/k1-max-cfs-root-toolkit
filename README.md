@@ -102,6 +102,10 @@ sont décrits dans
 L'audit exact du binaire CFS, du journal de l'incident et le contrat
 d'adaptateur fermé sont décrits dans
 [`docs/29-audit-box-wrapper-et-adaptateur-cfs-v1.md`](docs/29-audit-box-wrapper-et-adaptateur-cfs-v1.md).
+Le mapping live du garde et son adaptateur local fermé sont décrits dans
+[`docs/36-preflight-live-garde-retrait-cfs-v1.md`](docs/36-preflight-live-garde-retrait-cfs-v1.md)
+et
+[`docs/37-adaptateur-hors-ligne-garde-retrait-cfs-v1.md`](docs/37-adaptateur-hors-ligne-garde-retrait-cfs-v1.md).
 
 ## Repository map
 

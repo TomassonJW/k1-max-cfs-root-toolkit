@@ -1,0 +1,100 @@
+{
+  "schema": 1,
+  "scenarios": [
+    {
+      "id": "no_route",
+      "fixture": "fixtures/no-route.json",
+      "expected_snapshot": {
+        "print_state": "standby",
+        "box_state": "connect",
+        "connected_cfs_units": ["T1", "T2"],
+        "active_cfs_command": "",
+        "engaged_routes": [],
+        "extruder_target_c": 0.0,
+        "bed_target_c": 0.0,
+        "toolhead_filament_present": true
+      }
+    },
+    {
+      "id": "unique_route",
+      "fixture": "fixtures/unique-route.json",
+      "expected_snapshot": {
+        "print_state": "standby",
+        "box_state": "connect",
+        "connected_cfs_units": ["T1", "T2"],
+        "active_cfs_command": "",
+        "engaged_routes": ["T1A"],
+        "extruder_target_c": 0.0,
+        "bed_target_c": 0.0,
+        "toolhead_filament_present": true
+      }
+    },
+    {
+      "id": "active_command",
+      "fixture": "fixtures/active-command.json",
+      "expected_snapshot": {
+        "print_state": "standby",
+        "box_state": "connect",
+        "connected_cfs_units": ["T1", "T2"],
+        "active_cfs_command": "RETRUDE_PROCESS",
+        "engaged_routes": ["T1A"],
+        "extruder_target_c": 220.0,
+        "bed_target_c": 0.0,
+        "toolhead_filament_present": true
+      }
+    },
+    {
+      "id": "second_cfs_disconnected",
+      "fixture": "fixtures/second-cfs-disconnected.json",
+      "expected_snapshot": {
+        "print_state": "standby",
+        "box_state": "connect",
+        "connected_cfs_units": ["T1"],
+        "active_cfs_command": "",
+        "engaged_routes": ["T1A"],
+        "extruder_target_c": 0.0,
+        "bed_target_c": 0.0,
+        "toolhead_filament_present": true
+      }
+    },
+    {
+      "id": "disabled_toolhead_sensor",
+      "fixture": "fixtures/disabled-toolhead-sensor.json",
+      "expected_snapshot": {
+        "print_state": "standby",
+        "box_state": "connect",
+        "connected_cfs_units": ["T1", "T2"],
+        "active_cfs_command": "",
+        "engaged_routes": [],
+        "extruder_target_c": 0.0,
+        "bed_target_c": 0.0,
+        "toolhead_filament_present": null
+      }
+    },
+    {
+      "id": "ambiguous_routes",
+      "fixture": "fixtures/ambiguous-routes.json",
+      "expected_error": "engaged_routes_ambiguous"
+    },
+    {
+      "id": "incomplete_response",
+      "fixture": "fixtures/incomplete-response.json",
+      "expected_error": "field_missing:payload.result.status.heater_bed"
+    },
+    {
+      "id": "invalid_temperature",
+      "fixture": "fixtures/invalid-temperature.json",
+      "expected_error": "temperature_invalid:payload.result.status.extruder.target"
+    },
+    {
+      "id": "unsupported_connected_unit",
+      "fixture": "fixtures/unsupported-connected-unit.json",
+      "expected_error": "connected_unit_unsupported:T3"
+    },
+    {
+      "id": "filament_on_disconnected_unit",
+      "fixture": "fixtures/filament-on-disconnected-unit.json",
+      "expected_error": "filament_on_disconnected_unit:T2"
+    }
+  ]
+}

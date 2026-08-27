@@ -1,0 +1,41 @@
+{
+  "contract_id": "K1-CONTROL-CFS-STOCK-UNLOAD-GUARD-ADAPTER-OFFLINE-V1",
+  "schema": 1,
+  "status": "offline_adapter_closed_green",
+  "authority_consumed": "offline_only",
+  "input": "redacted_printer_objects_query_response",
+  "output": "cfs_stock_unload_guard_snapshot",
+  "input_redaction_required": true,
+  "unknown_fields_copied_to_output": false,
+  "supported_connected_units": ["T1", "T2"],
+  "supported_unit_states": ["connect", "disconnect"],
+  "supported_slots": ["A", "B", "C", "D"],
+  "policy": {
+    "no_route_is_valid_snapshot": true,
+    "one_route_is_valid_snapshot": true,
+    "multiple_routes_are_rejected": true,
+    "disconnected_second_cfs_is_translated_for_guard_refusal": true,
+    "disabled_toolhead_sensor_becomes_null": true,
+    "missing_or_invalid_fields_are_rejected": true,
+    "temperatures_must_be_finite_and_non_negative": true
+  },
+  "printer_connection": false,
+  "gcode_surface": false,
+  "network_transport": false,
+  "process_execution": false,
+  "remote_files_written": false,
+  "service_actions": false,
+  "physical_actions": false,
+  "deployment_candidate": false,
+  "scenario_matrix": "10/10",
+  "targeted_tests": "17/17",
+  "full_suite": "429_tests_426_passed_3_skipped",
+  "next_gate": {
+    "candidate": "G4-K1-CONTROL-CFS-STOCK-UNLOAD-GUARD-ADAPTER-LIVE-READ-ONLY-V1",
+    "default_authority": "read_only_only",
+    "goal": "feed_fresh_redacted_read_only_K1_state_through_the_adapter_without_calling_the_guard_effect_path",
+    "printer_connection_requires_a_separate_explicit_mission": true,
+    "gcode_authorized": false,
+    "physical_unload_authorized": false
+  }
+}

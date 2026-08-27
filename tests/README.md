@@ -85,6 +85,15 @@ python -m unittest tests.test_cfs_stock_unload_guard_live_preflight_v1 -v
 python packages\k1-control-v1\cfs-stock-unload-guard-live-preflight-v1\verify_private_capture.py
 ```
 
+L'adaptateur hors imprimante contrôle la traduction des huit champs du garde,
+les routes absente, unique ou ambiguë, le second CFS déconnecté, les données
+incomplètes, les températures invalides et l'absence de transport :
+
+```powershell
+python -m unittest tests.test_cfs_stock_unload_guard_adapter_offline_v1 -v
+python packages\k1-control-v1\cfs-stock-unload-guard-adapter-offline-v1\run_scenarios.py
+```
+
 La suite complète doit être lancée avec un dossier de découverte explicite :
 
 ```powershell

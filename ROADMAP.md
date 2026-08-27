@@ -78,8 +78,8 @@ Status: **calibration quotidienne autonome ; composite `11 × 11` meilleur au
 centre mais KO aux bords ; éditeur hors imprimante validé ; diagnostic de bord
 suspendu ; débit CFS prouvé mais séquence brute refusée ; binaire et journal
 exacts audités ; retrait stock `T1A` capturé avec deux phases réussies mais
-chauffe finale non coupée ; routage thermique dynamique simulé et propriétaire
-minimal série toujours sans transport ; production fermée**
+chauffe finale non coupée ; garde stock, mapping live et adaptateur de réponse
+fermés et verts sans transport ; production fermée**
 
 Le produit est posé par étapes techniques réversibles, mais Thomas reçoit un
 seul fonctionnement quotidien :
@@ -120,9 +120,12 @@ seul fonctionnement quotidien :
     effet ;
 13. préflight live en lecture seule clos : champs réels cartographiés, aucun état
     direct de fin de retrait, garde corrigé sur la route réellement libérée et
-    état courant bloqué sans route ; prochain incrément = adaptateur hors ligne ;
-14. contrat Orca final et retrait atomique prouvé de l'ancien post-traitement
-   `+0,27 mm`.
+    état courant bloqué sans route ;
+14. adaptateur hors ligne clos : dix réponses synthétiques, traduction vers les
+    huit champs du garde, refus des routes ambiguës et données invalides, aucun
+    réseau ni chemin d'effet ; prochaine gate = validation live en lecture seule ;
+15. contrat Orca final et retrait atomique prouvé de l'ancien post-traitement
+    `+0,27 mm`.
 
 Le rollback exact de `MESH-EDGE-DIAGNOSTIC-V1` et sa validation finale sont
 verts. Aucun acte physique suivant n'est automatiquement autorisé. La reprise

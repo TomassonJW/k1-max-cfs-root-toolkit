@@ -303,6 +303,29 @@ La prochaine gate possible est
 construire hors imprimante le traducteur entre une réponse K1 nettoyée et les
 champs du garde. Son GO n'autorisera ni connexion ni retrait réel.
 
+### `G4-K1-CONTROL-CFS-STOCK-UNLOAD-GUARD-ADAPTER-OFFLINE-V1`
+
+Statut : **close hors imprimante ; traduction OK ; aucun transport ni candidat
+de pose ; production fermée**.
+
+L'adaptateur pur extrait uniquement les huit champs attendus par le garde. Il
+traduit une route absente et un second CFS déconnecté afin que le garde applique
+ses refus normaux. Il refuse avant toute suite plusieurs routes, un slot actif
+sur une unité déconnectée, une unité `T3/T4` connectée, un champ incomplet ou une
+température invalide.
+
+Les dix réponses publiques sont synthétiques et sans identité. La matrice
+obtient `10/10`, les tests ciblés `17/17` et la suite complète `429` tests
+exécutés, `426` verts et `3` ignorés connus. Aucun module réseau, série ou
+processus n'est importé. Aucun accès K1, G-code, chauffe, mouvement, retrait,
+restart ou fichier distant n'a été produit.
+
+La prochaine gate possible est
+`G4-K1-CONTROL-CFS-STOCK-UNLOAD-GUARD-ADAPTER-LIVE-READ-ONLY-V1`. En langage
+courant : lire un état K1 frais, retirer les identités avant traitement et
+vérifier seulement la traduction. Cette future mission ne devra pas appeler le
+chemin d'effet du garde et n'autorisera aucun G-code ni retrait.
+
 ### Reprise physique `MESH-EDGE-DIAGNOSTIC-V1`
 
 Avant toute reprise physique restante : route filament fraîchement résolue,

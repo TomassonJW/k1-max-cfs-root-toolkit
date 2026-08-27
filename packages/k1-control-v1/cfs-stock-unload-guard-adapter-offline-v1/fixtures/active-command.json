@@ -1,0 +1,21 @@
+{
+  "result": {
+    "status": {
+      "print_stats": {"state": "standby"},
+      "extruder": {"target": 220},
+      "heater_bed": {"target": 0},
+      "box": {
+        "state": "connect",
+        "t_command": "RETRUDE_PROCESS",
+        "T1": {"state": "connect", "filament": "A"},
+        "T2": {"state": "connect", "filament": "None"},
+        "T3": {"state": "disconnect", "filament": "None"},
+        "T4": {"state": "disconnect", "filament": "None"}
+      },
+      "filament_switch_sensor filament_sensor": {
+        "enabled": true,
+        "filament_detected": true
+      }
+    }
+  }
+}

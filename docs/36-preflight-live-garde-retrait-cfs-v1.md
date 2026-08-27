@@ -75,15 +75,15 @@ acceptée comme autorité, même si elle contenait encore des réponses. Aucun e
 distant n'a eu lieu. Le collecteur corrigé utilise le `curl` exact de la K1 et
 la seconde capture est l'unique preuve live retenue.
 
-## Prochaine action
+## Étape suivante réalisée hors imprimante
 
-En langage courant : construire maintenant sur l'ordinateur le petit
-traducteur qui convertira une réponse K1 nettoyée en données comprises par le
-garde. Il sera testé sur une route absente, unique ou ambiguë, un CFS déconnecté
-et des valeurs invalides.
+L'étape suivante a construit sur l'ordinateur le petit traducteur qui convertit
+une réponse K1 nettoyée en données comprises par le garde. Il est testé sur une
+route absente, unique ou ambiguë, un CFS déconnecté et des valeurs invalides.
 
-Mission proposée :
+Mission close :
 `G4-K1-CONTROL-CFS-STOCK-UNLOAD-GUARD-ADAPTER-OFFLINE-V1`.
 
-Son GO autorisera uniquement du code et des tests hors imprimante. Il
-n'autorisera aucune connexion ni aucun retrait réel.
+Cette clôture reste hors imprimante. Elle n'autorise aucune connexion ni aucun
+retrait réel. Le résultat est publié dans
+`docs/37-adaptateur-hors-ligne-garde-retrait-cfs-v1.md`.

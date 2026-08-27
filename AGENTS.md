@@ -37,7 +37,9 @@ CFS-STOCK-UNLOAD-GUARD-V1 encadre maintenant hors imprimante cette macro avec
 preuve d'effet, aucun retry et arrêt thermique vérifié ;
 CFS-STOCK-UNLOAD-GUARD-LIVE-PREFLIGHT-V1 cartographie les champs réels en lecture
 seule, retire l'hypothèse d'un état direct de fin et constate aucune route
-engagée ;
+engagée ; CFS-STOCK-UNLOAD-GUARD-ADAPTER-OFFLINE-V1 traduit maintenant dix
+réponses synthétiques vers le garde, refuse les ambiguïtés et reste sans
+transport ;
 production remains closed**.
 
 La capture `20260823-165742-g4-k1-control-calibration-ui-prtouch-presets-v1` a
@@ -202,10 +204,19 @@ La K1 n'expose aucun champ direct `stock_unload_state`, et `t_command` est rest�
 vide pendant le retrait historique. Le garde est corrigé pour qualifier la fin
 par le retour sans erreur de la requête, la route réellement libérée,
 `t_command` vide et les chauffes à zéro. L'état courant est
-`BLOCKED_NO_ENGAGED_ROUTE`. La prochaine branche proposée est
-`G4-K1-CONTROL-CFS-STOCK-UNLOAD-GUARD-ADAPTER-OFFLINE-V1` : construire et tester
-hors imprimante la traduction des réponses K1 nettoyées. Son GO n'autorisera
-aucune connexion ni action matérielle.
+`BLOCKED_NO_ENGAGED_ROUTE`.
+
+`G4-K1-CONTROL-CFS-STOCK-UNLOAD-GUARD-ADAPTER-OFFLINE-V1` est ensuite close OK
+hors imprimante. ADR-026 sépare la forme K1 du garde : l'adaptateur extrait
+seulement huit champs, traduit une route absente ou un second CFS déconnecté et
+refuse plusieurs routes, les incohérences, les champs absents et les
+températures invalides. Ses dix exemples sont synthétiques, sa matrice obtient
+`10/10`, ses tests ciblés `17/17` et la suite complète exécute `429` tests dont
+`426` verts et `3` ignorés connus. Aucun réseau, G-code, processus, accès K1 ou
+candidat de pose n'existe. La prochaine branche proposée est
+`G4-K1-CONTROL-CFS-STOCK-UNLOAD-GUARD-ADAPTER-LIVE-READ-ONLY-V1` : une future
+lecture fraîche et nettoyée, sans appel du chemin d'effet du garde. Cette
+connexion n'est pas autorisée par la gate hors imprimante close.
 
 Thomas authorised V1, but the mandatory preflight proved that `logrotate` was
 absent. V1 is closed and must never be deployed. Thomas later authorised V2;

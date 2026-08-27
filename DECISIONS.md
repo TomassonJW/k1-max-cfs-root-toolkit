@@ -1526,3 +1526,33 @@ imprimante, à partir d'exemples nettoyés.
 
 Voir ADR-025, `docs/36-preflight-live-garde-retrait-cfs-v1.md` et
 `packages/k1-control-v1/cfs-stock-unload-guard-live-preflight-v1/`.
+
+## D-076 — La forme K1 reste séparée du garde et de tout transport
+
+Date: 2026-08-27
+
+Status: adaptateur clos hors imprimante ; matrice et tests verts ; production
+fermée
+
+`G4-K1-CONTROL-CFS-STOCK-UNLOAD-GUARD-ADAPTER-OFFLINE-V1` introduit une seule
+fonction de traduction entre une réponse K1 déjà nettoyée et les huit champs du
+garde. Le contrôleur ne connaît donc ni Moonraker, ni la forme privée de `box`,
+ni un futur transport.
+
+Une route absente et un second CFS déconnecté restent des états traduisibles :
+le garde les refuse ensuite avec ses préconditions normales. Plusieurs routes,
+un filament déclaré sur une unité déconnectée, une unité `T3/T4` connectée, un
+champ absent ou une température invalide sont refusés par l'adaptateur.
+
+Les dix exemples sont synthétiques et sans identité matérielle. La matrice
+obtient `10/10`, les tests ciblés `17/17` et la suite complète exécute `429`
+tests, dont `426` verts et `3` ignorés connus. Le paquet n'importe aucun module
+réseau, série ou processus ; il n'a ni G-code, ni connexion K1, ni candidat de
+pose.
+
+La prochaine gate possible est une validation live séparée et strictement en
+lecture seule. Elle devra nettoyer avant traduction et ne devra jamais appeler
+le chemin d'effet du garde.
+
+Voir ADR-026, `docs/37-adaptateur-hors-ligne-garde-retrait-cfs-v1.md` et
+`packages/k1-control-v1/cfs-stock-unload-guard-adapter-offline-v1/`.
