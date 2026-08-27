@@ -1,0 +1,30 @@
+{
+  "contract_id": "G4-K1-CONTROL-GATEWAY-PRIVATE-LAN-NO-AUTH-V1",
+  "status": "authorized_by_explicit_user_request",
+  "target": "private-LAN nginx gateway only",
+  "allowed_before_sha256": [
+    "714d6a17756ab101c0845ae683d0f8d9ee9a6c82708c94db8c794d479bbe026d",
+    "18a3ed6e160a16e56cc2284cf9cc8d784ce7908fe7e74356d8d72c0d571a6f02"
+  ],
+  "candidate": {
+    "source": "nginx.conf",
+    "destination": "/usr/data/k1-control-v1/state/nginx-active.conf",
+    "sha256": "afb3dda29fd0008dfc7cb058bb530f3d3bf9de6578f79ded5bfcd831e7687c0d"
+  },
+  "service_action": "reload /etc/init.d/S57k1_control_gateway only",
+  "preserved": [
+    "Moonraker loopback binding 127.0.0.1:7125",
+    "private IPv4 source allow-list",
+    "stock Creality web services",
+    "Klipper and printer configuration",
+    "existing nginx.htpasswd for exact rollback"
+  ],
+  "forbidden": [
+    "G-code",
+    "heating",
+    "homing or movement",
+    "printing",
+    "Moonraker or Klipper restart",
+    "password file deletion"
+  ]
+}

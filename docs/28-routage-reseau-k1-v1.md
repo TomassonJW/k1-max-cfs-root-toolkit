@@ -1,7 +1,7 @@
 # Routage réseau K1 V1
 
-Date : 2026-08-26
-Statut : appliqué et validé ; aucune action physique ni écriture K1
+Date : 2026-08-27
+Statut : routage appliqué ; passerelle LAN sans mot de passe validée
 
 ## Résultat
 
@@ -34,19 +34,26 @@ Aucune correction distante n'était nécessaire :
 Le changement DHCP reste ainsi limité à la couche locale qui établit la
 connexion SSH.
 
+Depuis `G4-K1-CONTROL-GATEWAY-PRIVATE-LAN-NO-AUTH-V1`, le tunnel reste
+disponible mais n'est plus obligatoire sur le LAN privé. Le port `4409` répond
+sans HTTP Basic, après filtrage des sources privées par nginx. Moonraker reste
+sur `127.0.0.1:7125` et voit uniquement le proxy local approuvé.
+
 ## Preuves du 26 août
 
 - résolution SSH effective : endpoint réservé, port 22, utilisateur root ;
 - identité de clé conservée et contrôle strict actif ;
 - connexion réelle : `K1_FIXED_ENDPOINT_OK` ;
-- tunnel Mainsail neuf : HTTP `401` attendu ;
-- vue Calibration sur le tunnel existant : HTTP `401` attendu ;
+- tunnel Mainsail neuf : HTTP `401` attendu au 26 août, avant retrait de HTTP
+  Basic ;
+- vue Calibration sur le tunnel existant : HTTP `401` attendu au 26 août,
+  avant retrait de HTTP Basic ;
 - audit distant des trois configurations réseau : aucune référence trouvée ;
 - aucune chauffe, mouvement, extrusion, commande CFS, écriture distante ou
   restart.
 
 ## Règle durable
 
-Ne jamais introduire une adresse RFC 1918 dans un script ou un document publié.
+Ne jamais introduire une adresse RFC 1918 précise dans un script ou un document publié.
 Si l'adresse réservée change, modifier uniquement l'endpoint de `k1max-root`,
 préserver l'identité de clé, puis rejouer les deux préflights de tunnel.

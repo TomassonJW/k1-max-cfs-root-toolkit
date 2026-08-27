@@ -1615,3 +1615,27 @@ seule, sous une autorité séparée.
 Voir ADR-027, `docs/39-transport-hors-ligne-garde-retrait-cfs-v1.md`,
 `docs/40-cycle-complet-hors-imprimante-v1.md` et
 `packages/k1-control-v1/job-lifecycle-offline-v1/`.
+
+## D-079 — Retirer HTTP Basic de la passerelle du LAN privé
+
+Date: 2026-08-27
+
+Status: installé et validé ; exposition Internet interdite
+
+À la demande explicite de Thomas, la passerelle Mainsail du port `4409` ne
+demande plus de compte ni de mot de passe. Le premier diagnostic a prouvé que
+nginx, Moonraker et Klipper étaient sains tandis qu'un Chrome neuf obtenait
+`ERR_INVALID_AUTH_CREDENTIALS`.
+
+La frontière durable devient réseau : nginx accepte seulement la boucle locale
+et les plages IPv4 privées. Moonraker reste inaccessible directement sur le
+LAN et reçoit les requêtes du seul proxy local approuvé. Le fichier de compte
+reste inutilisé pour permettre un retour arrière exact.
+
+L'appel LAN anonyme de `/server/info` est vert et le vrai Chrome rend Mainsail
+en `Standby` sans erreur console. Aucun G-code, chauffe, mouvement, impression,
+changement de mesh ou restart Moonraker/Klipper n'a eu lieu.
+
+Voir ADR-028,
+`experiments/p4/20260827-gateway-private-lan-no-auth-v1-deployment-report.md` et
+`packages/k1-control-v1/gateway-private-lan-no-auth-v1/`.

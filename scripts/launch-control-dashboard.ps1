@@ -36,6 +36,11 @@ function Get-DashboardStatus {
     }
 }
 
+function Test-DashboardReady {
+    param([Parameter(Mandatory = $true)][int]$Status)
+    return $Status -in @(200, 401)
+}
+
 function Show-LauncherError {
     param([Parameter(Mandatory = $true)][string]$Message)
 
@@ -51,7 +56,7 @@ function Show-LauncherError {
 try {
     $status = Get-DashboardStatus
     $source = 'existing-tunnel'
-    if ($status -ne 401) {
+    if (-not (Test-DashboardReady -Status $status)) {
         $ssh = Get-Command 'ssh.exe' -ErrorAction Stop
         $arguments = @(
             '-N',
@@ -72,17 +77,17 @@ try {
         foreach ($attempt in 1..40) {
             Start-Sleep -Milliseconds 250
             $status = Get-DashboardStatus
-            if ($status -eq 401) { break }
+            if (Test-DashboardReady -Status $status) { break }
             if ($tunnel.HasExited) { break }
         }
     }
 
-    if ($status -ne 401) {
+    if (-not (Test-DashboardReady -Status $status)) {
         throw "Le tunnel SSH n'a pas atteint Mainsail (HTTP $status). Verifie que l'imprimante est allumee et joignable."
     }
 
     if ($NoOpen) {
-        Write-Output "LAUNCHER_PREFLIGHT_OK source=$source http=401 view=$View url=$DashboardUrl"
+        Write-Output "LAUNCHER_PREFLIGHT_OK source=$source http=$status view=$View url=$DashboardUrl"
         exit 0
     }
     Start-Process $DashboardUrl

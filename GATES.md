@@ -1311,6 +1311,20 @@ Le passage composite n'a pas été lancé. La configuration persistante et le
 profil robuste sont intacts ; les deux G-code ont été retirés. Un successeur
 doit prouver d'abord un Z absolu correct sur un motif court.
 
+### Gate réseau — `G4-K1-CONTROL-GATEWAY-PRIVATE-LAN-NO-AUTH-V1`
+
+Status: **passed — Mainsail et Moonraker accessibles sans mot de passe sur le
+LAN privé**
+
+La configuration active retire HTTP Basic, conserve les règles `allow` des
+réseaux IPv4 privés et garde Moonraker uniquement sur `127.0.0.1:7125`. Nginx
+présente son proxy local approuvé à Moonraker. La validation LAN anonyme obtient
+`/server/info` avec Klipper `ready`, puis le vrai Chrome rend Mainsail en
+`Standby` sans erreur console. Seul le service nginx dédié a été rechargé.
+
+Cette gate n'autorise aucune exposition Internet, redirection de port ou réseau
+invité non maîtrisé. Elle n'a produit aucun G-code ni effet physique.
+
 ## G5 — V1 production baseline
 
 Status: **not passed**

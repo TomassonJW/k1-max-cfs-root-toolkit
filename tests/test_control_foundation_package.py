@@ -150,7 +150,7 @@ class ControlFoundationPackageTests(unittest.TestCase):
         self.assertIn("ServerAliveInterval=30", helper)
         self.assertIn("BatchMode=yes", helper)
         self.assertIn("'k1max-root'", helper)
-        self.assertIn("$status -ne 401", helper)
+        self.assertIn("return $Status -in @(200, 401)", helper)
         self.assertIn("Start-Process $DashboardUrl", helper)
         self.assertNotRegex(helper, r"192\.168\.|10\.\d+\.\d+\.\d+")
 

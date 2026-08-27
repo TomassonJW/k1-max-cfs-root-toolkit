@@ -1,6 +1,6 @@
 # STATE
 
-Last updated: 2026-08-26
+Last updated: 2026-08-27
 
 Thomas a approuvé le 24 août 2026 l'autorité par objectif définie par D-054. Un
 Goal actif ou une mission clairement décrite couvre désormais les actions
@@ -55,6 +55,15 @@ mais cible thermique laissée active ; propriétaire série indépendant toujour
 fermé ; garde de retrait stock à préparer hors imprimante ; diagnostic physique
 des bords suspendu ; contrat de cycle production figé hors imprimante ;
 production volontairement bloquée**
+
+`G4-K1-CONTROL-GATEWAY-PRIVATE-LAN-NO-AUTH-V1` est installé et validé. Le mot
+de passe HTTP Basic n'est plus utilisé sur `4409`. Nginx continue de limiter
+l'entrée à la boucle locale et aux plages IPv4 privées ; Moonraker reste lié à
+`127.0.0.1:7125` et voit uniquement le proxy local approuvé. L'appel LAN
+anonyme de `/server/info` est vert et le vrai Chrome affiche Mainsail en
+`Standby` sans erreur. Le fichier de compte persistant reste inutilisé pour un
+retour arrière exact. Seul `S57k1_control_gateway` a été rechargé ; aucun effet
+physique ni changement de profil mesh n'a eu lieu.
 
 La base sûre et réellement requalifiée reste `6 × 6` Lagrange avec un seul mesh
 standard. L'autonomie de calibration quotidienne standard est maintenant
