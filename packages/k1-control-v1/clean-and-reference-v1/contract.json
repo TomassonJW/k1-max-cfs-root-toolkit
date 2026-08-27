@@ -1,0 +1,84 @@
+{
+  "schema": 1,
+  "mission": "G4-K1-CONTROL-CLEAN-AND-REFERENCE-V1",
+  "goal": "GOAL-P4-PHYSICAL-SLICES-QUALIFICATION-V1",
+  "requirement": "AUTOMATIC_CLEAN_AND_FINAL_REFERENCE",
+  "status": "OFFLINE_CANDIDATE_BLOCKED_MATERIAL_RECIPE",
+  "source_gate": "G4-K1-CONTROL-CLEAN-MOTION-V1",
+  "source_gate_status": "CLEAN_MOTION_V1_OK",
+  "source_geometry": {
+    "contract": "packages/k1-control-v1/clean-motion-v1/contract.json",
+    "brush": "secondary_purge_bin_brush",
+    "x_bounds_mm": [203.0, 206.0],
+    "y_bounds_mm": [304.0, 305.0],
+    "qualified_z_mm": 32.0,
+    "minimum_safe_approach_z_mm": 30.0,
+    "safe_approach_and_exit_mm": [203.0, 273.0, 32.0],
+    "contact_feedrate_mm_per_min": 180,
+    "approach_feedrate_mm_per_min": 600
+  },
+  "thermal_contract": {
+    "previous_material_id": null,
+    "cleaning_target_c": null,
+    "cleaning_window_c": 2.0,
+    "final_reference_nozzle_target_c": 140.0,
+    "final_reference_nozzle_window_c": 2.0,
+    "final_reference_bed_target_c": 55.0,
+    "final_reference_bed_window_c": 1.0,
+    "material_and_cleaning_target_must_be_explicit_before_effect": true,
+    "cooling_wipe": "forbidden",
+    "stable_probe_temperature_wipe": "one_cycle_pending_human_qualification"
+  },
+  "flow_observation": {
+    "candidate_point_mm": [204.5, 304.5, 35.0],
+    "basis": "three_mm_above_human_qualified_secondary_brush_square",
+    "extrusion": false,
+    "cfs_action": false,
+    "required_human_verdict": "FLOW_FALLS_IN_WASTE_RECEPTACLE_OK",
+    "negative_verdict_action": "TURN_OFF_HEATERS_AND_STOP"
+  },
+  "cleaning_cycles": {
+    "hot_material_target": {
+      "count": 1,
+      "path": "E4_EXACT_SQUARE",
+      "required_human_verdict": "HOT_CLEAN_VISIBLE_OK"
+    },
+    "stable_140c_before_reference": {
+      "count": 1,
+      "path": "E4_EXACT_SQUARE",
+      "requires_completed_cooling_without_wipe": true,
+      "required_human_verdict": "FINAL_NOZZLE_CLEAN_OK"
+    }
+  },
+  "final_reference": {
+    "command": "ACCURATE_G28",
+    "maximum_execution_count": 1,
+    "requires_human_verdict": "FINAL_NOZZLE_CLEAN_OK",
+    "profile_reload_after": "k1_p001_t055_r001_n11x11",
+    "profile_matrix_sha256": "58fd96c55129bf7a17ba890d309cb3cd5e2926ec271d735b60392f8369da0a61",
+    "heater_shutdown_required": true,
+    "automatic_retry": false
+  },
+  "forbidden": [
+    "T0_OR_ANY_HARDCODED_TOOL",
+    "CFS_COMMAND",
+    "EXTRUSION",
+    "STOCK_NOZZLE_CLEAR",
+    "UNQUALIFIED_DIAGONAL",
+    "UNQUALIFIED_COOLING_WIPE",
+    "SECOND_FINAL_REFERENCE",
+    "AUTOMATIC_RETRY",
+    "REMOTE_FILE_WRITE",
+    "SERVICE_ACTION"
+  ],
+  "effects": {
+    "printer_connection": false,
+    "gcode": false,
+    "heating": false,
+    "motion": false,
+    "extrusion": false,
+    "cfs_action": false,
+    "remote_write": false,
+    "service_action": false
+  }
+}

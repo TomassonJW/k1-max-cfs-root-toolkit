@@ -62,6 +62,12 @@ retourne `GOAL3_LEDGER_OK_IN_PROGRESS`, avec `1/7` exigence close et aucun
 effet K1. Il interdit de déclarer le Goal 3 terminé en remplaçant une preuve
 humaine par des tests ou en déplaçant une exigence vers un nouveau Goal.
 
+Le candidat hors imprimante `G4-K1-CONTROL-CLEAN-AND-REFERENCE-V1` reprend
+exactement le carré E4 et sépare chauffe, observation du flux, nettoyage chaud,
+refroidissement sans essuyage, nettoyage stable à `140 °C` et unique référence
+Z. Il ne contient aucun transport et reste bloqué avant effet tant que la
+matière précédente et sa température explicite ne sont pas renseignées.
+
 `G4-K1-CONTROL-GATEWAY-PRIVATE-LAN-NO-AUTH-V1` est installé et validé. Le mot
 de passe HTTP Basic n'est plus utilisé sur `4409`. Nginx continue de limiter
 l'entrée à la boucle locale et aux plages IPv4 privées ; Moonraker reste lié à

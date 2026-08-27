@@ -8,7 +8,7 @@
     "requirement_id": "AUTOMATIC_CLEAN_AND_FINAL_REFERENCE",
     "checkpoint": "CLEAN_AND_REFERENCE_DESIGN",
     "active_gate": "G4-K1-CONTROL-CLEAN-AND-REFERENCE-V1",
-    "technical_status": "NOT_STARTED",
+    "technical_status": "OFFLINE_CANDIDATE_BLOCKED_MATERIAL_RECIPE",
     "required_human_verdict": "RECIPE_REVIEW_THEN_PHYSICAL_CHECKPOINTS",
     "next_effect_blocked": true
   },
@@ -29,9 +29,9 @@
     {
       "order": 2,
       "id": "AUTOMATIC_CLEAN_AND_FINAL_REFERENCE",
-      "status": "NOT_STARTED",
+      "status": "IN_PROGRESS_OFFLINE_CANDIDATE_BLOCKED_MATERIAL_RECIPE",
       "slice_id": "CLEAN-AND-REFERENCE-V1",
-      "evidence": null,
+      "evidence": "packages/k1-control-v1/clean-and-reference-v1/contract.json",
       "required_proofs": [
         "versioned_cleaning_recipe_uses_physically_qualified_geometry",
         "initial_flow_falls_in_the_waste_receptacle",
