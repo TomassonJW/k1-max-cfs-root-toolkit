@@ -81,9 +81,13 @@ deux CFS et les empreintes attendues. Aucune commande G-code ni action physique
 n'a eu lieu. L'activation runtime reste non exécutée et attend son GO exact.
 
 La première tranche physique `G4-K1-CONTROL-CLEAN-MOTION-V1` est maintenant
-cadrée hors imprimante. Son contrat et son formulaire ne contiennent aucune
-commande ni coordonnée candidate. Ils imposent d'abord l'activation verte du
-robuste, puis la présence de Thomas, le plateau libre, la brosse visible et une
+cadrée. Son contrat et son formulaire ne contiennent aucune commande candidate.
+La capture live strictement en lecture seule
+`20260827-clean-motion-v1-read-only-sources-v3` a qualifié les limites machine
+et la zone logicielle stock X `68…94 mm`, Y `304,5…306,5 mm`, trajet X `20 mm`
+et delta Z `−0,15 mm`, sans exporter le code complet. Ces valeurs ne prouvent
+pas la brosse réelle. La gate impose d'abord l'activation verte du robuste,
+puis la présence de Thomas, le plateau libre, la brosse visible et une
 validation humaine à chaque rapprochement à froid. Aucun essai physique n'a eu
 lieu.
 

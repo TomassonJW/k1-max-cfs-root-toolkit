@@ -157,9 +157,11 @@ le GO exact de cette mutation runtime, conformément aux gates séparées.
 
 La première tranche physique suivante est désormais cadrée hors imprimante dans
 `packages/k1-control-v1/clean-motion-v1` et le document 42. Elle ne contient
-encore aucune coordonnée ni commande : Thomas devra d'abord confirmer la zone
-de brosse, la visibilité et chaque rapprochement à froid. Cette préparation ne
-contourne pas le verrou d'activation du robuste.
+encore aucune commande. Une capture live en lecture seule a qualifié les limites
+machine et la zone de nettoyage déclarée par le logiciel stock, sans exporter
+son code complet. Thomas devra encore confirmer la brosse réelle, la visibilité
+et chaque rapprochement à froid. Cette préparation ne contourne pas le verrou
+d'activation du robuste.
 
 Modèle conseillé : `gpt-5.6-terra`, raisonnement `high`. Option économique : le
 même modèle en `medium`, avec davantage de risque de manquer une incohérence de

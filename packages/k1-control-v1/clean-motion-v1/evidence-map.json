@@ -1,0 +1,35 @@
+{
+  "mission": "G4-K1-CONTROL-CLEAN-MOTION-V1-READ-ONLY-SOURCES",
+  "status": "read_only_sources_qualified_no_candidate_commands",
+  "collector": {
+    "path": "packages/k1-control-v1/clean-motion-v1/remote_geometry_read_only.py",
+    "sha256": "36b077e706cc2532f89cbb2389442d667738a9fbb0ef7a7b5b864bd3f8c58229"
+  },
+  "private_source": {
+    "path": "inventory/raw/20260827-clean-motion-v1-read-only-sources-v3/clean-motion-read-only.safe.jsonl",
+    "sha256": "d0d1f6a2c75e896e3f04bf4933baadb04ff01e17562b92e5da1e182ed89dbb8c",
+    "versioned": false,
+    "full_macro_source_exported": false,
+    "identity_values_exported": false
+  },
+  "safe_result": {
+    "capture": "CAPTURE_OK",
+    "axis_minimum_mm": [-2.0, -0.5, -10.0],
+    "axis_maximum_mm": [306.5, 307.5, 305.0],
+    "stock_declared_cleaning_zone_mm": {
+      "x_start": 68.0,
+      "x_end": 94.0,
+      "y_start": 304.5,
+      "y_end": 306.5,
+      "wipe_distance_x": 20.0,
+      "configured_down_delta_z": -0.15,
+      "bed_max_error": 5
+    },
+    "active_profile": "k1_p001_t055_r001_n11x11",
+    "robust_profile_present_and_exact": true,
+    "gcode_sent": false,
+    "remote_files_read": false,
+    "remote_files_written": false,
+    "heater_or_motion_action": false
+  }
+}

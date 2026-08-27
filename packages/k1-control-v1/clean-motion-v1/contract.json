@@ -1,13 +1,36 @@
 {
   "contract_id": "G4-K1-CONTROL-CLEAN-MOTION-V1",
-  "status": "protocol_prepared_no_candidate_commands",
+  "status": "read_only_sources_qualified_no_candidate_commands",
   "scope": "cold_brush_geometry_and_collision_free_trajectory_only",
   "authority": "offline_preparation_only",
   "deployment_candidate": false,
-  "printer_connection": false,
+  "read_only_connection_qualified": true,
+  "printer_effect_connection": false,
   "remote_commands": [],
   "gcode_commands": [],
   "service_actions": [],
+  "read_only_facts": {
+    "capture": "20260827-clean-motion-v1-read-only-sources-v3",
+    "axis_minimum_mm": [-2.0, -0.5, -10.0],
+    "axis_maximum_mm": [306.5, 307.5, 305.0],
+    "stock_declared_cleaning_zone_mm": {
+      "x_start": 68.0,
+      "x_end": 94.0,
+      "y_start": 304.5,
+      "y_end": 306.5,
+      "wipe_distance_x": 20.0,
+      "configured_down_delta_z": -0.15,
+      "bed_max_error": 5
+    },
+    "registered_commands_confirmed": [
+      "CX_NOZZLE_CLEAR",
+      "CX_ROUGH_G28",
+      "NOZZLE_CLEAR",
+      "ACCURATE_G28",
+      "ACCURATE_HOME_Z"
+    ],
+    "full_macro_source_exported": false
+  },
   "prerequisites": {
     "robust_mesh_activation_gate": "G4-K1-CONTROL-ROBUST-MESH-ACTIVATION-V1",
     "robust_mesh_activation_required_status": "ACTIVATION_OK",
@@ -21,7 +44,6 @@
     "cfs_transition_absent": true
   },
   "physical_facts_required_before_candidate_commands": [
-    "machine_axis_limits_from_fresh_read_only_state",
     "brush_left_right_front_back_bounds_observed_by_human",
     "safe_clearance_z_observed_by_human",
     "first_contact_z_observed_at_cold_slow_speed",

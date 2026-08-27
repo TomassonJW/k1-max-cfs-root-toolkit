@@ -142,10 +142,14 @@ arrière ont maintenant été préparés et testés hors effet. L'autorisation e
 attendue est `GO G4-K1-CONTROL-ROBUST-MESH-ACTIVATION-V1`.
 
 La première tranche physique suivante, `G4-K1-CONTROL-CLEAN-MOTION-V1`, est
-également cadrée hors imprimante dans un paquet documentaire sans commande. Elle
-mesurera à froid la zone de brosse et la trajectoire sans collision, avec Thomas
-présent et une validation à chaque rapprochement. Elle ne peut pas commencer
-avant l'activation verte du robuste.
+également cadrée sans commande. Une capture live en lecture seule a qualifié les
+limites machine et la zone stock déclarée X `68…94 mm`, Y `304,5…306,5 mm`,
+sans mouvement ni export du code complet. La tranche mesurera ensuite à froid
+la brosse réelle et la trajectoire sans collision, avec Thomas présent et une
+validation à chaque rapprochement. Elle ne peut pas commencer avant
+l'activation verte du robuste. Les `11/11` tests ciblés CLEAN-MOTION sont verts
+et la suite complète exécute maintenant `513` tests, dont `510` verts et `3`
+ignorés connus.
 
 Après cette gate seulement, le prochain grand Goal sera
 `GOAL-P4-PHYSICAL-SLICES-QUALIFICATION-V1`. Thomas devra alors être présent pour

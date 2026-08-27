@@ -1348,7 +1348,7 @@ pas automatiquement les tranches physiques du Goal 3.
 
 ### Première tranche physique — `G4-K1-CONTROL-CLEAN-MOTION-V1`
 
-Status: **protocole préparé hors imprimante ; aucune commande candidate**
+Status: **sources live qualifiées en lecture seule ; aucune commande candidate**
 
 Cette gate commencera seulement après l'activation verte du robuste et avec
 Thomas devant la K1. Elle qualifiera la géométrie de la brosse et un trajet à
@@ -1360,6 +1360,11 @@ Les coordonnées exactes restent volontairement absentes : limites de brosse,
 hauteur libre, premier contact et directions sûres d'entrée et de sortie sont
 des faits humains encore manquants. Le formulaire de capture impose un verdict
 à chaque checkpoint. Voir `docs/42-clean-motion-v1-premiere-tranche-physique.md`.
+
+La capture privée `20260827-clean-motion-v1-read-only-sources-v3` confirme sans
+effet les limites machine et la zone stock déclarée X `68…94 mm`,
+Y `304,5…306,5 mm`, avec trajet X `20 mm` et delta Z `−0,15 mm`. Ces valeurs ne
+valident pas la brosse physique et ne deviennent pas des commandes candidates.
 
 ## G5 — V1 production baseline
 

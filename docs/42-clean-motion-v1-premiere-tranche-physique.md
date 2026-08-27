@@ -2,6 +2,21 @@
 
 Statut : **plan hors imprimante ; aucune commande de mouvement préparée**.
 
+## Faits déjà qualifiés sans mouvement
+
+La capture privée `20260827-clean-motion-v1-read-only-sources-v3` a obtenu
+`CAPTURE_OK` uniquement par requêtes GET. Elle confirme les limites logiques
+X `−2…306,5 mm`, Y `−0,5…307,5 mm`, Z `−10…305 mm`.
+
+Le `prtouch_v2` actif déclare une zone de nettoyage X `68…94 mm`,
+Y `304,5…306,5 mm`, un trajet X de `20 mm` et un delta Z de `−0,15 mm`.
+Les commandes stock de nettoyage et de référence sont réellement enregistrées.
+Leur code complet n'a pas été exporté.
+
+Ces valeurs prouvent la configuration logicielle, pas la position physique de
+la brosse. Elles servent seulement à préparer l'observation humaine et ne sont
+pas encore des coordonnées autorisées de mouvement.
+
 ## Pourquoi cette tranche vient en premier
 
 Le contrat de cycle exige un nettoyage autonome, mais la position et la hauteur
@@ -37,9 +52,9 @@ impression.
 6. Revenir au-dessus de la zone, puis tester une trajectoire sèche et bornée.
 7. Sortir par la direction sûre, parquer et relire l'état final.
 
-Les coordonnées, vitesses, accélérations et commandes exactes restent absentes
-tant que les faits physiques ne sont pas observés. Il n'existe donc encore
-aucun script exécutable pour cette tranche.
+Les coordonnées autorisées, vitesses, accélérations et commandes exactes restent
+absentes tant que les faits physiques ne sont pas observés. Il n'existe donc
+encore aucun script exécutable pour cette tranche.
 
 ## Verdict
 

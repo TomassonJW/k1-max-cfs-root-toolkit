@@ -54,8 +54,9 @@ toujours différent du robuste requis ; la prochaine gate doit charger et
 vérifier uniquement le robuste avant le Goal 3 ; son paquet est préparé et son
 préflight live en lecture seule est vert, mais l'activation attend encore le GO
 exact `GO G4-K1-CONTROL-ROBUST-MESH-ACTIVATION-V1` ; la première tranche
-physique CLEAN-MOTION-V1 est cadrée hors imprimante sans aucune commande et
-attend cette activation puis Thomas devant la K1 ;
+physique CLEAN-MOTION-V1 a qualifié en lecture seule les limites et la zone
+logicielle stock sans aucune commande ; elle attend cette activation puis
+Thomas devant la K1 pour confirmer la brosse réelle ;
 GATEWAY-PRIVATE-LAN-NO-AUTH-V1 est installé et validé : le port `4409` ne
 demande plus de mot de passe, reste limité aux réseaux IPv4 privés, et présente
 uniquement son proxy local approuvé à Moonraker ; production remains closed**.
