@@ -65,6 +65,14 @@ anonyme de `/server/info` est vert et le vrai Chrome affiche Mainsail en
 retour arrière exact. Seul `S57k1_control_gateway` a été rechargé ; aucun effet
 physique ni changement de profil mesh n'a eu lieu.
 
+La lecture live finale de passation montre maintenant le profil composite
+`k1_p001_t055_r001_n11x11` actif, alors que la capture Goal 2 observait
+`default`. La cause de cette dérive intermédiaire n'est pas qualifiée et la
+mission passerelle n'a envoyé aucune commande de mesh. L'état courant reste
+`standby`, buse et plateau demandés à zéro. Le robuste requis
+`k1_p001_t055_r001_n06x06` est toujours présent mais non actif ; sa pose runtime
+et sa vérification forment la prochaine mission unique.
+
 La base sûre et réellement requalifiée reste `6 × 6` Lagrange avec un seul mesh
 standard. L'autonomie de calibration quotidienne standard est maintenant
 atteinte : la campagne a réussi sans console et le vrai écran corrigé ouvre

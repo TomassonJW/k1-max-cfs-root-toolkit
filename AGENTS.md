@@ -46,10 +46,12 @@ scénarios et aucun connecteur réel ; `GOAL-P4-OFFLINE-CYCLE-CFS-V1` est termin
 avec `27/27` scénarios canoniques, un moteur pur et un plan futur inerte ;
 `GOAL-P4-K1-READ-ONLY-QUALIFICATION-V1` est clos en lecture seule avec deux
 réponses stables, des lectures à moins de `236 ms`, les empreintes exactes et
-aucun effet ; il bloque la suite physique parce que le mesh actif `default`
-diffère du profil robuste encore présent `k1_p001_t055_r001_n06x06` ; la
-prochaine gate exige Thomas devant la K1 pour charger et vérifier uniquement ce
-profil avant le Goal 3 ;
+aucun effet ; sa capture bloque la suite physique parce que le mesh actif
+`default` différait du profil robuste encore présent
+`k1_p001_t055_r001_n06x06` ; une lecture fraîche après la correction de la
+passerelle montre désormais le composite `k1_p001_t055_r001_n11x11` actif,
+toujours différent du robuste requis ; la prochaine gate doit charger et
+vérifier uniquement le robuste avant le Goal 3 ;
 GATEWAY-PRIVATE-LAN-NO-AUTH-V1 est installé et validé : le port `4409` ne
 demande plus de mot de passe, reste limité aux réseaux IPv4 privés, et présente
 uniquement son proxy local approuvé à Moonraker ; production remains closed**.
