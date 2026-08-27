@@ -18,9 +18,12 @@ BEST_PROFILE = "k1_p001_t055_r001_n11x11"
 BEST_PROFILE_SHA256 = "58fd96c55129bf7a17ba890d309cb3cd5e2926ec271d735b60392f8369da0a61"
 REFERENCE_NOZZLE_C = 140.0
 REFERENCE_BED_C = 55.0
-BRUSH_CONTACT_Z_MM = 32.0
-BRUSH_RELEASE_Z_MM = 34.0
+BRUSH_CONTACT_Z_MM = 2.0
+BRUSH_RELEASE_Z_MM = 7.0
 HOT_ROUND_TRIPS = 6
+HOT_FEED_MM_MIN = 6000
+LIFT_FEED_MM_MIN = 3000
+BRUSH_LANES_Y_MM = (303.5, 304.0, 304.5, 305.0, 305.5, 306.0)
 COOLING_TIMEOUT_S = 300.0
 SAFE_ID = re.compile(r"^[A-Za-z0-9._-]+$")
 
@@ -215,7 +218,7 @@ def validate_known_clean_cycle_start(snapshot):
     actual = snapshot["toolhead"]["gcode_position"]
     if not isinstance(actual, list) or len(actual) < 3:
         raise GateError("gcode_position_missing")
-    accepted = ([203.0, 273.0, 32.0], [204.5, 304.5, 35.0])
+    accepted = ([203.0, 273.0, 35.0], [81.0, 280.0, 35.0])
     if not any(all(abs(float(actual[index]) - expected[index]) <= 0.03 for index in range(3)) for expected in accepted):
         raise GateError("clean_cycle_start_position_unknown")
 
@@ -235,20 +238,13 @@ def scripts(cleaning_target):
     return {
         "clean-cycle-heat": "\n".join((
             "G90",
-            "G1 Z35 F300",
-            "G1 X203 Y273 F600",
-            "G1 X204.5 Y304.5 F600",
+            "G1 Z35 F3000",
+            "G1 X81 Y280 F6000",
             "M104 S%.1f" % cleaning_target,
             "TEMPERATURE_WAIT SENSOR=extruder MINIMUM=%.1f MAXIMUM=%.1f" % (cleaning_target - 2.0, cleaning_target + 2.0),
             "M400",
         )),
         "clean-cycle-start": hot_zigzag(),
-        "clean-cycle-finish": "\n".join((
-            "G90",
-            "G1 X203 Y304 Z34 F30",
-            "TURN_OFF_HEATERS",
-            "M400",
-        )),
         "reference": "\n".join((
             "M104 S140.0",
             "M140 S55.0",
@@ -266,45 +262,21 @@ def scripts(cleaning_target):
 def hot_zigzag():
     lines = [
         "G90",
-        "G1 X203 Y273 Z35 F600",
-        "G1 Z32 F300",
-        "G1 Y305 F600",
+        "G1 X99 Y303 Z35 F6000",
+        "G1 Z7 F3000",
+        "G1 Z2 F300",
     ]
-    for index in range(HOT_ROUND_TRIPS):
-        y_value = 305 if index % 2 == 0 else 304
-        lines.append("G1 X206 Y%d Z32 F600" % y_value)
-        lines.append("G1 X203 Y%d Z32 F600" % y_value)
-    lines.extend(("M104 S0", "M400"))
-    return "\n".join(lines)
-
-
-def cooling_z_for_temperature(temperature_c, cleaning_target_c):
-    if cleaning_target_c <= REFERENCE_NOZZLE_C:
-        raise GateError("cleaning_target_must_exceed_reference")
-    progress = (cleaning_target_c - temperature_c) / (cleaning_target_c - REFERENCE_NOZZLE_C)
-    progress = min(1.0, max(0.0, progress))
-    raw_z = BRUSH_CONTACT_Z_MM + (BRUSH_RELEASE_Z_MM - BRUSH_CONTACT_Z_MM) * progress
-    return round(raw_z * 20.0) / 20.0
-
-
-def cooling_move(index, z_mm):
-    if not BRUSH_CONTACT_Z_MM <= z_mm <= BRUSH_RELEASE_Z_MM:
-        raise GateError("cooling_z_out_of_bounds")
-    x_value = 206 if index % 2 == 0 else 203
-    y_value = 305 if (index // 2) % 2 == 0 else 304
-    return "\n".join((
-        "G90",
-        "G1 X%d Y%d Z%.2f F30" % (x_value, y_value, z_mm),
+    for y_mm in BRUSH_LANES_Y_MM:
+        lines.append("G1 X66 Y%.1f Z2 F%d" % (y_mm, HOT_FEED_MM_MIN))
+        lines.append("G1 X99 Y%.1f Z2 F%d" % (y_mm, HOT_FEED_MM_MIN))
+    lines.extend((
+        "TURN_OFF_HEATERS",
+        "G1 Z7 F3000",
+        "G1 X81 Y280 F6000",
+        "G1 Z35 F3000",
         "M400",
     ))
-
-
-def reviewed_cooling_moves():
-    return {
-        cooling_move(index, 32.0 + step * 0.05)
-        for index in range(4)
-        for step in range(41)
-    }
+    return "\n".join(lines)
 
 
 def send_reviewed_script(script, allowed):
@@ -353,7 +325,7 @@ def validate_action_state(action, snapshot, target, before):
         validate_known_clean_cycle_start(snapshot)
     elif action == "reference":
         validate_targets(snapshot, 0.0, 0.0)
-        validate_position(snapshot, [203.0, 304.0, 34.0], "clean_cool_end_position")
+        validate_position(snapshot, [81.0, 280.0, 35.0], "clean_cycle_park_position")
     elif action == "validate":
         validate_targets(snapshot, 0.0, 0.0)
     elif action == "stop":
@@ -373,7 +345,7 @@ def validate_after(action, snapshot, target, before):
         nozzle_actual = finite(snapshot["heaters"]["extruder_temperature"], "extruder_temperature_invalid")
         if not 134.0 <= nozzle_actual <= 142.0:
             raise GateError("clean_cycle_finish_temperature_outside_window")
-        validate_position(snapshot, [203.0, 304.0, 34.0], "clean_cool_end_position")
+        validate_position(snapshot, [81.0, 280.0, 35.0], "clean_cycle_park_position")
     elif action in ("reference", "stop"):
         validate_targets(snapshot, 0.0, 0.0)
     else:
@@ -401,27 +373,21 @@ def run(action, material_id, cleaning_target):
     try:
         attempted = True
         if action == "clean-cycle":
-            allowed = set(reviewed.values()) | reviewed_cooling_moves()
+            allowed = set(reviewed.values())
             send_reviewed_script(reviewed["clean-cycle-heat"], allowed)
             send_reviewed_script(reviewed["clean-cycle-start"], allowed)
             deadline = time.monotonic() + COOLING_TIMEOUT_S
-            last_z = BRUSH_CONTACT_Z_MM
-            move_index = 0
             while True:
-                current = capture_snapshot()
-                validate_base(current)
-                validate_targets(current, 0.0, 0.0)
-                temperature = finite(current["heaters"]["extruder_temperature"], "extruder_temperature_invalid")
+                cooling = capture_snapshot()
+                validate_base(cooling)
+                validate_targets(cooling, 0.0, 0.0)
+                validate_position(cooling, [81.0, 280.0, 35.0], "clean_cycle_park_position")
+                temperature = finite(cooling["heaters"]["extruder_temperature"], "extruder_temperature_invalid")
                 if temperature <= 142.0:
                     break
                 if time.monotonic() >= deadline:
-                    raise GateError("sensor_controlled_cooling_timeout")
-                next_z = max(last_z, cooling_z_for_temperature(temperature, cleaning_target))
-                move_script = cooling_move(move_index, next_z)
-                send_reviewed_script(move_script, allowed)
-                last_z = next_z
-                move_index += 1
-            send_reviewed_script(reviewed["clean-cycle-finish"], allowed)
+                    raise GateError("off_brush_cooling_timeout")
+                time.sleep(0.5)
         else:
             send_reviewed_script(reviewed[action], set(reviewed.values()))
         after = capture_snapshot()

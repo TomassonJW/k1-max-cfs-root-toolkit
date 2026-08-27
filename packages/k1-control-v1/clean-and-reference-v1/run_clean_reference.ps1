@@ -27,7 +27,7 @@ param(
 
 $ErrorActionPreference = 'Stop'
 $RequiredGate = 'G4-K1-CONTROL-CLEAN-AND-REFERENCE-V1'
-$ExpectedProgramSha256 = 'e779147cbb9c78b17a69970d53ecb9b6f70978a07777fc5aad0f23cb820103b3'
+$ExpectedProgramSha256 = '31e483f34bc0fc879326ae79a75ff28114bf29f4a0d084ad4b36666beffc0b4a'
 $WorkspaceRoot = (Resolve-Path (Join-Path $PSScriptRoot '..\..\..')).Path
 $RawRoot = Join-Path $WorkspaceRoot 'inventory\raw'
 $SessionDirectory = Join-Path $RawRoot $CaptureId
@@ -43,7 +43,7 @@ $RemoteAction = switch ($Action) {
     'Validate' { 'validate' }
 }
 $RequiredPreviousHumanVerdict = switch ($Action) {
-    'CleanCycle' { 'GEETECH_220_CYCLE_CONFIRMED' }
+    'CleanCycle' { 'GEETECH_220_PRIMARY_BRUSH_V2_CONFIRMED' }
     'Reference' { 'FINAL_NOZZLE_CLEAN_OK' }
     'Stop' { 'THERMAL_STOP_REQUIRED' }
     default { '' }

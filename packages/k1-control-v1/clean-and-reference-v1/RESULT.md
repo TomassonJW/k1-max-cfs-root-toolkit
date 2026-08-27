@@ -1,27 +1,31 @@
 # Résultat actuel
 
-Statut : **Geetech et `220 °C` confirmés ; préflight frais vert ; cycle
-physique atomique prêt sous observation humaine**.
+Statut : **V1 KO physique ; brosse du bac condamnée ; candidat V2 sur la grande
+brosse préparé et préflighté en lecture seule, encore non exécuté**.
 
-La recette produit une chauffe et observation du flux, six allers-retours
-rapides dans E4, puis un frottement lent piloté par la température réelle. La
-buse remonte progressivement de `Z32` à `Z34` et ne termine qu'à
-environ `140 °C`, avec les cibles remises à zéro. Viennent ensuite, après le
-verdict visuel, une référence finale unique et l'arrêt thermique d'urgence.
+Le premier cycle a fini avec les chauffes à zéro et les configurations exactes,
+mais il n'a pas nettoyé la buse. Sa lenteur et son refroidissement au contact de
+la brosse du bac ont recollé le filament sur la buse. Thomas a nettoyé la buse à
+la main. Ce passage n'est pas promouvable et ne valide pas la deuxième exigence
+du Goal 3.
 
-Le runner physique complet est maintenant créé et épinglé. Il refuse chaque
+Le candidat V2 abandonne complètement cette brosse et le frottement pendant le
+refroidissement. Il prévoit six allers-retours à `F6000` sur la grande brosse,
+puis coupe la chauffe, remonte immédiatement de `5 mm`, sort de la brosse et
+refroidit au parc sûr. La référence finale reste une action séparée après le
+verdict visuel.
+
+Le runner physique refuse chaque
 effet sans verdict humain exact, présence devant la K1, plateau libre, brosses
 et buse visibles et arrêt immédiat possible. Il ne contient aucune extrusion,
 commande CFS, écriture distante ou relance automatique.
 
-Deux lectures live stables ont qualifié les codes matière des slots, mais pas
-le segment dans la tête. L'historique contient un marqueur de chargement plus
-récent que le retrait T1A ; l'identité historique ne peut donc pas être
-réutilisée comme certitude. Le préflight live du pilote est vert sans G-code à
-`X203 Y273 Z32`, chauffes zéro, `11 × 11` exact et configurations conformes.
-Le nouveau préflight sans effet qualifie le programme révisé, les cibles zéro,
-la position d'observation sûre, le `11 × 11` actif et les configurations
-exactes. La seule barrière avant chauffe est la présence humaine renouvelée.
+Avant le second essai, du filament pourra être chargé, légèrement purgé puis
+retiré manuellement avec les fonctions stock sous observation. Aucune commande
+CFS non qualifiée n'est ajoutée au runner. Le second nettoyage attend le GO
+explicite de Thomas après cette préparation. Le préflight frais est déjà vert :
+aucun G-code, mouvement ou chauffage ; cibles zéro, configurations exactes et
+profil `11 × 11` actif.
 
 Un premier passage s'est arrêté après la chauffe faute de verdict reçu dans la
 fenêtre interactive. Aucun nettoyage n'a été exécuté. La coupure de sécurité a
@@ -29,8 +33,5 @@ confirmé les deux cibles à zéro, les configurations exactes et aucun mouvemen
 La chauffe séparée est supprimée du nouveau programme : le cycle suivant finit
 obligatoirement chauffes à zéro sans attendre un message.
 
-Vérifications : `19/19` tests du paquet, `25/25` avec le registre Goal 3,
-suite complète de `572` tests dont `569` verts et `3` ignorés connus, et
-`67/67` scripts PowerShell relus sans erreur. Effets physiques de cette étape :
-un placement et une chauffe à `220 °C`, aucun frottement, puis une coupure sans
-mouvement. Le cycle atomique révisé n'a encore produit aucun effet.
+Le candidat V2 et ses empreintes sont revérifiés hors imprimante. Le second
+nettoyage reste verrouillé jusqu'au GO humain demandé.

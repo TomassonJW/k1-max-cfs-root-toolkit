@@ -13,11 +13,12 @@ from typing import Dict
 BEST_PROFILE = "k1_p001_t055_r001_n11x11"
 REFERENCE_NOZZLE_C = 140.0
 REFERENCE_BED_C = 55.0
-BRUSH_CONTACT_Z_MM = 32.0
-BRUSH_RELEASE_Z_MM = 34.0
+BRUSH_CONTACT_Z_MM = 2.0
+BRUSH_RELEASE_Z_MM = 7.0
 HOT_ROUND_TRIPS = 6
-HOT_FEED_MM_MIN = 600
-COOLING_FEED_MM_MIN = 30
+HOT_FEED_MM_MIN = 6000
+LIFT_FEED_MM_MIN = 3000
+BRUSH_LANES_Y_MM = (303.5, 304.0, 304.5, 305.0, 305.5, 306.0)
 
 
 class RecipeError(ValueError):
@@ -39,37 +40,23 @@ class MaterialRecipe:
 def hot_zigzag() -> str:
     lines = [
         "G90",
-        "G1 X203 Y273 Z35 F600",
-        "G1 Z32 F300",
-        "G1 Y305 F600",
+        "G1 X99 Y303 Z35 F6000",
+        "G1 Z7 F3000",
+        "G1 Z2 F300",
     ]
-    for index in range(HOT_ROUND_TRIPS):
-        y_value = 305 if index % 2 == 0 else 304
-        lines.append("G1 X206 Y%d Z32 F%d" % (y_value, HOT_FEED_MM_MIN))
-        lines.append("G1 X203 Y%d Z32 F%d" % (y_value, HOT_FEED_MM_MIN))
-    lines.extend(("M104 S0", "M400"))
+    for y_mm in BRUSH_LANES_Y_MM:
+        lines.append("G1 X66 Y%.1f Z2 F%d" % (y_mm, HOT_FEED_MM_MIN))
+        lines.append("G1 X99 Y%.1f Z2 F%d" % (y_mm, HOT_FEED_MM_MIN))
+    lines.extend(
+        (
+            "TURN_OFF_HEATERS",
+            "G1 Z7 F3000",
+            "G1 X81 Y280 F6000",
+            "G1 Z35 F3000",
+            "M400",
+        )
+    )
     return "\n".join(lines)
-
-
-def cooling_z_for_temperature(temperature_c: float, cleaning_target_c: float) -> float:
-    if cleaning_target_c <= REFERENCE_NOZZLE_C:
-        raise RecipeError("cleaning_target_must_exceed_reference")
-    progress = (cleaning_target_c - temperature_c) / (cleaning_target_c - REFERENCE_NOZZLE_C)
-    progress = min(1.0, max(0.0, progress))
-    raw_z = BRUSH_CONTACT_Z_MM + (BRUSH_RELEASE_Z_MM - BRUSH_CONTACT_Z_MM) * progress
-    return round(raw_z * 20.0) / 20.0
-
-
-def cooling_move(index: int, z_mm: float) -> str:
-    if not BRUSH_CONTACT_Z_MM <= z_mm <= BRUSH_RELEASE_Z_MM:
-        raise RecipeError("cooling_z_out_of_bounds")
-    x_value = 206 if index % 2 == 0 else 203
-    y_value = 305 if (index // 2) % 2 == 0 else 304
-    return "\n".join((
-        "G90",
-        "G1 X%d Y%d Z%.2f F%d" % (x_value, y_value, z_mm, COOLING_FEED_MM_MIN),
-        "M400",
-    ))
 
 
 def build_checkpoints(material: MaterialRecipe) -> Dict[str, str]:
@@ -78,20 +65,11 @@ def build_checkpoints(material: MaterialRecipe) -> Dict[str, str]:
     heat_and_observe = "\n".join(
         (
             "G90",
-            "G1 Z35 F300",
-            "G1 X203 Y273 F600",
-            "G1 X204.5 Y304.5 F600",
+            "G1 Z35 F3000",
+            "G1 X81 Y280 F6000",
             "M104 S%.1f" % cleaning_target,
             "TEMPERATURE_WAIT SENSOR=extruder MINIMUM=%.1f MAXIMUM=%.1f"
             % (cleaning_target - 2.0, cleaning_target + 2.0),
-            "M400",
-        )
-    )
-    finish_cooling = "\n".join(
-        (
-            "G90",
-            "G1 X203 Y304 Z34 F30",
-            "TURN_OFF_HEATERS",
             "M400",
         )
     )
@@ -109,8 +87,7 @@ def build_checkpoints(material: MaterialRecipe) -> Dict[str, str]:
     )
     return {
         "heat_and_observe_flow": heat_and_observe,
-        "hot_clean_six_round_trips_and_begin_cooling": hot_zigzag(),
-        "finish_sensor_controlled_cooling": finish_cooling,
+        "hot_clean_six_round_trips_lift_exit_then_cool": hot_zigzag(),
         "final_reference_once": final_reference,
         "emergency_thermal_stop": "TURN_OFF_HEATERS",
     }

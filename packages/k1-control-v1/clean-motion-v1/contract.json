@@ -218,7 +218,11 @@
       "y_bounds_mm": [303.0, 305.0],
       "minimum_safe_z_mm": 30.0,
       "qualified_operating_z_mm": 32.0,
-      "safe_approach_and_exit_gcode_mm": [203.0, 273.0, 32.0]
+      "safe_approach_and_exit_gcode_mm": [203.0, 273.0, 32.0],
+      "geometry_observation_status": "HISTORICALLY_QUALIFIED",
+      "automatic_cleaning_disposition": "CONDEMNED_AFTER_LATER_HOT_CYCLE_KO",
+      "automatic_cleaning_allowed": false,
+      "later_evidence": "20260827-goal3-clean-reference-clean-cycle-v1"
     },
     "captures": [
       {

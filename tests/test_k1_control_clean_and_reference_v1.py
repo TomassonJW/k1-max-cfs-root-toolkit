@@ -63,19 +63,20 @@ class CleanAndReferenceContractTests(unittest.TestCase):
         cls.database = load_database_module()
 
     def test_live_preflight_has_connection_but_no_physical_effect(self) -> None:
-        self.assertEqual("LIVE_PREFLIGHT_OK_READY_FOR_HUMAN_OBSERVED_CLEAN_CYCLE", self.contract["status"])
+        self.assertEqual("V2_PRIMARY_BRUSH_PREFLIGHT_OK_AWAITING_MANUAL_FILAMENT_PREP_AND_HUMAN_GO", self.contract["status"])
         self.assertTrue(self.contract["effects"]["printer_connection"])
         physical = dict(self.contract["effects"])
         physical.pop("printer_connection")
         self.assertFalse(any(physical.values()))
         self.assertFalse(self.contract["live_read_only_evidence"]["preflight_capture"]["material_identity_accepted_for_effect"])
 
-    def test_geometry_is_exactly_the_human_qualified_secondary_square(self) -> None:
+    def test_geometry_is_exactly_the_human_qualified_primary_brush(self) -> None:
         geometry = self.contract["source_geometry"]
-        self.assertEqual([203.0, 206.0], geometry["x_bounds_mm"])
-        self.assertEqual([304.0, 305.0], geometry["y_bounds_mm"])
-        self.assertEqual(32.0, geometry["qualified_z_mm"])
-        self.assertEqual([203.0, 273.0, 32.0], geometry["safe_approach_and_exit_mm"])
+        self.assertEqual("primary_bed_brush", geometry["brush"])
+        self.assertEqual([66.0, 99.0], geometry["x_bounds_mm"])
+        self.assertEqual([303.0, 307.0], geometry["y_bounds_mm"])
+        self.assertEqual(2.0, geometry["qualified_z_mm"])
+        self.assertEqual([81.0, 280.0, 35.0], geometry["safe_exit_mm"])
 
     def test_material_is_mandatory(self) -> None:
         for material in ("", "unknown", "none"):
@@ -102,24 +103,28 @@ class CleanAndReferenceContractTests(unittest.TestCase):
         self.assertIn("BED_MESH_PROFILE LOAD=k1_p001_t055_r001_n11x11", scripts["final_reference_once"])
         self.assertIn("TURN_OFF_HEATERS", scripts["final_reference_once"])
 
-    def test_cooling_is_sensor_controlled_and_finishes_two_mm_above_contact(self) -> None:
+    def test_cleaning_lifts_five_mm_and_exits_before_cooling(self) -> None:
         scripts = self.recipe.build_checkpoints(self.recipe.MaterialRecipe("TEST", 200.0))
-        cooling = scripts["finish_sensor_controlled_cooling"]
-        self.assertIn("X203 Y304 Z34 F30", cooling)
-        self.assertIn("TURN_OFF_HEATERS", cooling)
-        self.assertNotIn("M104 S140", cooling)
-        self.assertEqual(32.0, self.recipe.cooling_z_for_temperature(220.0, 220.0))
-        self.assertEqual(33.0, self.recipe.cooling_z_for_temperature(180.0, 220.0))
-        self.assertEqual(34.0, self.recipe.cooling_z_for_temperature(140.0, 220.0))
+        clean = scripts["hot_clean_six_round_trips_lift_exit_then_cool"]
+        expected_tail = "\n".join((
+            "TURN_OFF_HEATERS",
+            "G1 Z7 F3000",
+            "G1 X81 Y280 F6000",
+            "G1 Z35 F3000",
+            "M400",
+        ))
+        self.assertTrue(clean.endswith(expected_tail))
+        self.assertNotIn("G1 X203", clean)
+        self.assertNotIn("G1 X206", clean)
 
-    def test_hot_clean_has_six_fast_round_trips_inside_e4(self) -> None:
+    def test_hot_clean_has_six_fast_round_trips_inside_primary_brush(self) -> None:
         scripts = self.recipe.build_checkpoints(self.recipe.MaterialRecipe("TEST", 200.0))
-        hot = scripts["hot_clean_six_round_trips_and_begin_cooling"]
-        self.assertIn("G1 X203 Y273 Z35 F600\nG1 Z32 F300", hot)
-        self.assertEqual(6, hot.count("G1 X206 Y"))
-        self.assertEqual(6, hot.count("G1 X203 Y") - 1)
-        self.assertNotIn("F180", hot)
-        self.assertIn("M104 S0", hot)
+        hot = scripts["hot_clean_six_round_trips_lift_exit_then_cool"]
+        self.assertIn("G1 X99 Y303 Z35 F6000\nG1 Z7 F3000\nG1 Z2 F300", hot)
+        self.assertEqual(6, hot.count("G1 X66 Y"))
+        self.assertEqual(6, hot.count("G1 X99 Y") - 1)
+        self.assertEqual(12, hot.count("Z2 F6000"))
+        self.assertIn("TURN_OFF_HEATERS", hot)
 
     def test_material_capture_exports_only_safe_slot_labels(self) -> None:
         unit = {
@@ -145,7 +150,7 @@ class CleanAndReferenceContractTests(unittest.TestCase):
     def test_physical_runner_is_human_gated_and_has_no_remote_write(self) -> None:
         runner = (PACKAGE / "run_clean_reference.ps1").read_text(encoding="utf-8")
         for token in (
-            "GEETECH_220_CYCLE_CONFIRMED",
+            "GEETECH_220_PRIMARY_BRUSH_V2_CONFIRMED",
             "FINAL_NOZZLE_CLEAN_OK",
             "THERMAL_STOP_REQUIRED",
         ):
@@ -164,11 +169,14 @@ class CleanAndReferenceContractTests(unittest.TestCase):
         self.assertEqual(1, remote.count('"ACCURATE_G28",'))
         self.assertNotIn('"NOZZLE_CLEAR', remote)
         self.assertNotRegex(remote, r'(?m)^\s*"G[01].*\bE[-+0-9]')
-        self.assertIn('"G1 X204.5 Y304.5 F600"', remote)
-        self.assertIn('"G1 X203 Y273 Z35 F600"', remote)
-        self.assertIn('"G1 Z32 F300"', remote)
-        self.assertIn('"G1 X%d Y%d Z%.2f F30"', remote)
+        self.assertIn('"G1 X81 Y280 F6000"', remote)
+        self.assertIn('"G1 X99 Y303 Z35 F6000"', remote)
+        self.assertIn('"G1 Z2 F300"', remote)
+        self.assertIn('"G1 X66 Y%.1f Z2 F%d"', remote)
+        self.assertIn("HOT_FEED_MM_MIN = 6000", remote)
         self.assertIn("COOLING_TIMEOUT_S = 300.0", remote)
+        self.assertNotIn("cooling_move", remote)
+        self.assertIn("off_brush_cooling_timeout", remote)
         self.assertIn('"TURN_OFF_HEATERS"', remote)
         self.assertNotIn('action not in ("preflight", "heat"', remote)
 
@@ -177,8 +185,8 @@ class CleanAndReferenceContractTests(unittest.TestCase):
         remote = (PACKAGE / "remote_clean_reference.py").read_text(encoding="utf-8")
         self.assertNotIn("'Heat'", runner)
         self.assertIn("'CleanCycle'", runner)
-        self.assertIn('"clean-cycle-finish"', remote)
-        self.assertIn('"G1 X203 Y304 Z34 F30",\n            "TURN_OFF_HEATERS"', remote)
+        self.assertNotIn('"clean-cycle-finish"', remote)
+        self.assertIn('"TURN_OFF_HEATERS",\n        "G1 Z7 F3000",\n        "G1 X81 Y280 F6000"', remote)
         self.assertTrue(self.contract["thermal_contract"]["clean_cycle_finishes_with_heater_targets_zero"])
 
     def test_history_analyzer_reports_only_safe_markers(self) -> None:
@@ -235,7 +243,7 @@ class CleanAndReferenceContractTests(unittest.TestCase):
         self.assertFalse(evidence["material_inventory_capture"]["previous_nozzle_material_proven"])
         self.assertTrue(evidence["cfs_history_capture"]["stock_load_marker_after_original_T1A_unload"])
         self.assertFalse(evidence["cfs_history_capture"]["route_for_latest_stock_load_proven"])
-        self.assertEqual("HUMAN_CONFIRMATION_REQUIRED", self.contract["only_remaining_pre_effect_fact"]["status"])
+        self.assertEqual("HUMAN_ACTION_AND_GATE_REQUIRED", self.contract["only_remaining_pre_effect_fact"]["status"])
         self.assertTrue(self.contract["only_remaining_pre_effect_fact"]["material_and_target_human_confirmed"])
 
     def test_human_confirmed_geetech_recipe_is_220c(self) -> None:
@@ -244,10 +252,14 @@ class CleanAndReferenceContractTests(unittest.TestCase):
         self.assertEqual(220.0, thermal["cleaning_target_c"])
         self.assertEqual("last_used_print_temperature_plus_20_to_30_c", thermal["canonical_rule_proposed_by_human"])
 
-    def test_cooling_moves_never_leave_the_qualified_square(self) -> None:
-        for index in range(8):
-            move = self.recipe.cooling_move(index, 33.0)
-            self.assertRegex(move, r"G1 X(203|206) Y(304|305) Z33\.00 F30")
+    def test_every_hot_lane_stays_inside_primary_brush_and_secondary_is_forbidden(self) -> None:
+        clean = self.recipe.hot_zigzag()
+        for y_mm in self.recipe.BRUSH_LANES_Y_MM:
+            self.assertGreaterEqual(y_mm, 303.0)
+            self.assertLessEqual(y_mm, 307.0)
+            self.assertIn("G1 X66 Y%.1f Z2 F6000" % y_mm, clean)
+            self.assertIn("G1 X99 Y%.1f Z2 F6000" % y_mm, clean)
+        self.assertIn("SECONDARY_PURGE_BIN_BRUSH_AUTOMATIC_USE", self.contract["forbidden"])
 
     def test_material_database_capture_maps_current_codes(self) -> None:
         evidence = self.contract["live_read_only_evidence"]["material_database_capture"]
