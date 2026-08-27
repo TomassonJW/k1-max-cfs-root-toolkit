@@ -1,105 +1,97 @@
-# HANDOFF — validation live en lecture seule de l'adaptateur CFS
+# HANDOFF — reprise propre du pilotage K1 Max CFS
 
 Date de passation : 2026-08-27
 Projet : `C:\Users\janko\Documents\ChatGPT\k1-max-cfs-root-toolkit`
 Branche cible : `main`
-Mission terminée :
-`G4-K1-CONTROL-CFS-STOCK-UNLOAD-GUARD-ADAPTER-LIVE-READ-ONLY-V1`
+Nouvelle tâche créée : non
+Goal actif : absent
 
 ## État à annoncer immédiatement à Thomas
 
-- **La validation live de l'adaptateur est close OK en lecture seule.**
-- Deux états K1 frais ont été lus et donnent la même traduction fonctionnelle.
-- `sn` et `uuid` sont retirés avant l'appel à l'adaptateur ; la capture brute
-  reste privée et ignorée par Git.
-- Klipper est prêt, la K1 est au repos, `T1/T2` sont connectés, aucune route
-  n'est engagée, la commande CFS est vide et les cibles sont à zéro.
-- Les trois configurations gardent les mêmes empreintes avant et après.
-- Le garde n'a été ni importé ni appelé. Aucun G-code, chauffage, mouvement,
-  retrait, fichier distant, service ou restart n'a eu lieu.
-- L'état fonctionnel reste `BLOCKED_NO_ENGAGED_ROUTE`. Aucun transport ni
-  candidat de pose n'existe et la production reste fermée.
+- **Le travail de cette session est fermé proprement et prêt à reprendre plus
+  tard dans une session neuve.**
+- Les quatre grandes sessions futures sont enregistrées dans `GOALS.md` et
+  reliées à `ROADMAP.md` et `STATE.md`.
+- La prochaine grande session est entièrement hors imprimante. Elle ne doit ni
+  se connecter à la K1, ni envoyer de G-code, ni produire d'action physique.
+- La production reste fermée et le mode Précision reste caché.
+- Cette session source doit rester visible et ne doit pas être archivée.
 
 ## État livré
 
-Le paquet
-`packages/k1-control-v1/cfs-stock-unload-guard-adapter-live-read-only-v1/`
-contient le collecteur strictement en lecture seule, la projection locale sur
-liste blanche, la vérification de la preuve privée, le contrat fermé et le
-résultat public nettoyé. La capture privée de référence est
-`20260827-110102-g4-k1-control-cfs-stock-unload-guard-adapter-live-read-only-v1` ;
-seule son empreinte SHA-256 est publiée.
+La dernière gate technique close est
+`G4-K1-CONTROL-CFS-STOCK-UNLOAD-GUARD-ADAPTER-LIVE-READ-ONLY-V1`. Deux lectures
+K1 stables ont confirmé `T1/T2` connectés, aucune route engagée, commande CFS
+vide, cibles zéro et configurations inchangées. Les identités sont retirées
+avant l'adaptateur. L'état fonctionnel reste `BLOCKED_NO_ENGAGED_ROUTE`.
 
-La forme live a révélé une différence exacte avec les exemples synthétiques :
-les unités non provisionnées `T3/T4` utilisent l'état texte `None`. L'adaptateur
-reconnaît désormais cette valeur uniquement pour `T3/T4` comme état inactif.
-Elle reste refusée pour `T1/T2`, et toute autre valeur inconnue reste refusée.
+Cette observation date de la capture privée `20260827-110102`. Elle devra être
+considérée comme potentiellement périmée dans une future session ; elle ne vaut
+pas préflight frais et n'autorise aucun retrait.
 
-La décision D-077 complète ADR-026 sans changer l'architecture : le collecteur,
-le nettoyage, l'adaptateur et le garde restent séparés. Les documents
-canoniques sont `docs/38-validation-live-adaptateur-garde-retrait-cfs-v1.md`,
-D-077, `GATES.md`, `STATE.md` et
-`design/job-lifecycle-contract-v1.json`.
+Le pilotage macro est maintenant centralisé dans `GOALS.md` :
 
-## Git vérifié avant le commit de passation
+1. `GOAL-P4-OFFLINE-CYCLE-CFS-V1` — terminer tout le système hors imprimante ;
+2. `GOAL-P4-K1-READ-ONLY-QUALIFICATION-V1` — vérifier ensuite la vraie K1 sans
+   impression ni commande ;
+3. `GOAL-P4-PHYSICAL-SLICES-QUALIFICATION-V1` — installer et qualifier les
+   fonctions physiques par petites tranches avec Thomas présent ;
+4. `GOAL-P4-DAILY-CUTOVER-V1` — basculer enfin vers le fonctionnement quotidien
+   complet avant la campagne G5.
 
-- SHA de départ local et distant :
-  `973fcabbcfad54115671bad94ecb6c27dc3826b6` ;
-- divergence avant clôture : `0/0` ;
-- branche de mission séparée : aucune ;
-- worktree de mission séparé : aucun ;
-- autre worktree observé : aucun ;
-- ressource étrangère observée : aucune ;
-- le commit final, le SHA local/distant et la propreté seront communiqués dans
-  le compte rendu final.
+Ces noms sont des regroupements de pilotage. Ils ne remplacent pas les gates de
+`GATES.md` et ne donnent aucune autorité d'installation ou de production.
 
-## Vérifications
+## Git vérifié avant le commit de cette passation
 
-- capture SSH revue : **OK**, sortie `exit_code=0` ;
-- validation privée nettoyée : **OK**,
-  `VALIDATE_CFS_STOCK_UNLOAD_GUARD_ADAPTER_LIVE_READ_ONLY_V1_OK` ;
-- deux lectures stables et empreintes inchangées : **OK** ;
-- tests ciblés garde, mapping et adaptateurs : **OK**, `61/61` ;
-- suite complète : **OK**, `443` exécutés, `440` verts et `3` ignorés connus ;
-- `git diff --check` : **OK** avant staging ;
-- validation physique ou retrait : **non exécuté**, hors périmètre ;
-- production : **fermée**.
+- dernier commit de pilotage :
+  `0a59107248f5517590828a2e4dd26ac56ced2a14` ;
+- `main` local et `origin/main` alignés avant cette modification ;
+- divergence : `0/0` ;
+- checkout propre au départ ;
+- un seul worktree, sur `main` ;
+- aucune branche de mission ou ressource étrangère observée ;
+- le SHA final contenant cette passation sera communiqué dans le compte rendu.
 
-## Limites et risques
+## Vérifications réutilisables
 
-- l'état live courant ne contient aucune route engagée : aucune précondition de
-  retrait n'est satisfaite ;
-- le validateur refuse volontairement toute dérive de forme, ce qui peut exiger
-  une nouvelle revue après une évolution du firmware ;
-- le futur transport n'existe pas encore ; les délais, erreurs réseau,
-  réponses trompeuses et arrêt thermique doivent encore être reliés sans
-  affaiblir le garde ;
-- la capture privée ne doit jamais être ajoutée à Git ni recopiée dans une
-  passation publique.
+- dernière suite complète après changement du code CFS : **OK**, `443` tests
+  exécutés, `440` verts et `3` ignorés connus ;
+- validation live nettoyée de l'adaptateur : **OK** ;
+- documentation des grands Goals : **OK**, `git diff --check` et contrôle
+  staged verts lors de son commit ;
+- nouvelle validation physique ou humaine : **non exécutée**, hors périmètre ;
+- suite complète relancée pour cette passation documentaire : **non**, inutile
+  puisque le code n'a pas changé.
 
 ## Prochaine mission unique
 
-### `G4-K1-CONTROL-CFS-STOCK-UNLOAD-GUARD-TRANSPORT-OFFLINE-V1`
+### `GOAL-P4-OFFLINE-CYCLE-CFS-V1`
 
-En langage courant : construire hors imprimante la petite couche qui pourra un
-jour lire l'état K1 et transmettre uniquement les deux commandes déjà figées
-par le garde. Elle sera testée sur des réponses synthétiques ou enregistrées,
-avec délais, erreurs, faux retours positifs et absence totale de relance
-automatique.
+Résultat attendu : terminer et intégrer tout le système hors imprimante du cycle
+d'impression et du garde CFS, depuis le transport simulé jusqu'à la préparation
+complète des futures étapes réelles.
 
-Contraintes : aucune connexion K1, aucun G-code réel, aucun processus distant,
-aucun retrait, aucune chauffe et aucun candidat de pose. Relire ADR-023 à
-ADR-026, D-077, le contrat du garde et le paquet live présent.
+Première mission interne :
+`G4-K1-CONTROL-CFS-STOCK-UNLOAD-GUARD-TRANSPORT-OFFLINE-V1`.
 
-Critères de fin : interface minimale documentée, encodage exact, erreurs et
-timeouts fermés, deux commandes seulement, tests de non-répétition, aucune
-capacité live dans les tests, suite complète verte et nouvelle passation.
+Concrètement, il faut tester la lecture simulée, les deux commandes déjà figées,
+les délais, coupures, faux succès, doubles envois, arrêt thermique, changements
+de filament, pause, reprise, annulation et fin. Aucun accès K1, G-code réel,
+chauffage, mouvement, retrait, fichier distant ou candidat de pose n'est permis.
 
-Autorisation de démarrage : **GO_DIRECT dans ce clavardage tant que
-`$session-tas` reste actif ; sinon ATTENDRE_GO**. Cette autorité ne couvre
-toujours aucune connexion ni action physique.
+Relire dans cet ordre : `HANDOFF.md`, `GOALS.md`, le début de `ROADMAP.md`, la
+gate courante dans `GATES.md`, puis les contrats du garde et de l'adaptateur.
 
-Modèle conseillé : `gpt-5.6-terra`, raisonnement `high`, pour relier les erreurs
-de transport aux invariants thermiques sans ouvrir un chemin d'effet. Option
-économique : `gpt-5.6-terra` en `medium`, avec plus de risque d'oublier un cas
-de timeout ou de répétition.
+Critères de fin : cycle hors ligne déterministe, aucun retry automatique, erreurs
+et délais fermés, tests ciblés et suite complète verts, documentation et Git
+clos, puis nouvelle passation.
+
+Autorisation de démarrage : **ATTENDRE_GO**. Dans la future session, Thomas peut
+envoyer `GO GOAL-P4-OFFLINE-CYCLE-CFS-V1`. S'il veut retrouver l'autonomie de
+session sans demandes répétées, il doit aussi invoquer explicitement
+`$session-tas` dans ce nouveau clavardage.
+
+Modèle conseillé : `gpt-5.6-terra`, raisonnement `high`. Option économique : le
+même modèle en `medium`, avec plus de risque d'oublier un cas de délai, de double
+commande ou de reprise après erreur.
