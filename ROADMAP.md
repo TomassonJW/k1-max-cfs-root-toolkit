@@ -1,5 +1,18 @@
 # ROADMAP
 
+## Pilotage rapide par grandes sessions
+
+Les quatre grands Goals de reprise sont regroupés dans `GOALS.md` :
+
+1. terminer tout le système hors imprimante ;
+2. le vérifier sur la vraie K1 sans impression ni commande ;
+3. installer et qualifier les fonctions physiques par petites tranches ;
+4. basculer ensuite vers le fonctionnement quotidien complet.
+
+Le premier est prêt à lancer. Les trois suivants gardent leurs validations
+humaines et leurs gates propres. Ces regroupements facilitent le pilotage mais
+ne remplacent pas l'ordre détaillé de `GATES.md`.
+
 ## P0 — Repository and safety baseline
 
 Status: **completed**

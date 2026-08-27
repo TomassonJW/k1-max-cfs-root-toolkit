@@ -1013,6 +1013,12 @@ La branche suivante proposée est
 et tester le futur transport entièrement hors imprimante, sans connexion K1 ni
 commande réelle.
 
+Le pilotage macro est maintenant regroupé dans `GOALS.md`. Quatre grandes
+sessions y couvrent successivement le système hors imprimante, sa vérification
+réelle sans effet, les qualifications physiques supervisées et la bascule vers
+le fonctionnement quotidien. Ce regroupement ne crée aucun Goal Codex et ne
+change aucune autorité de connexion, de pose ou d'action physique.
+
 Thomas explicitly rejected further sacrificial print campaigns on 2026-08-21.
 The V3 + PATHS-V1 observation remains useful coexistence evidence but no longer
 blocks offline product construction. L'autorité globale du Goal couvre la
