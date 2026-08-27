@@ -1,9 +1,10 @@
 # HANDOFF — mapping live du garde de retrait CFS
 
-Date de passation : 2026-08-27
+Date de passation : 2026-08-27 09:52:56 +02:00
 Projet : `C:\Users\janko\Documents\ChatGPT\k1-max-cfs-root-toolkit`
 Branche cible : `main`
 Mission terminée : `G4-K1-CONTROL-CFS-STOCK-UNLOAD-GUARD-LIVE-PREFLIGHT-V1`
+Tâche source : `01a03f87-9fb5-7ab3-95ed-b4ea07c2743e`
 
 ## État à annoncer immédiatement à Thomas
 
@@ -37,11 +38,17 @@ Mission terminée : `G4-K1-CONTROL-CFS-STOCK-UNLOAD-GUARD-LIVE-PREFLIGHT-V1`
 
 - SHA initial local et distant :
   `33c860fef21c4d2679beac0fc48b811c872734d4`.
+- Commit de mission :
+  `a283898a91f4b816ebab475bc154b0edfc4f3802` (`map live CFS unload guard state`).
+- `main` local et `origin/main` ont été vérifiés sur ce même SHA après
+  `git fetch origin`.
+- Divergence locale/distante : aucune.
+- Statut du checkout cible avant cette mise à jour documentaire : propre.
 - Branche de mission séparée : aucune.
 - Worktree de mission séparé : aucun.
 - Autre worktree observé : aucun.
-- Le commit de mission et le SHA final doivent être lus après le commit et
-  l'envoi de cette passation.
+- Le présent ajustement documentaire de clôture doit être committé et poussé
+  séparément ; son SHA final est à relever dans le compte rendu de clôture.
 
 ## Capture live retenue
 
@@ -107,6 +114,8 @@ réels. ADR-025, D-075, le document 36 et les documents de pilotage sont publié
 - tests du garde : `18/18` verts ;
 - tests du préflight live : `12/12` verts ;
 - suite complète : `412` tests exécutés, `409` verts et `3` ignorés connus ;
+- suite complète rejouée le 2026-08-27 pendant la clôture : même résultat,
+  `OK (skipped=3)` ;
 - configurations avant/après : identiques ;
 - lecture live : OK ;
 - action physique : non exécutée.
