@@ -62,14 +62,16 @@ retourne `GOAL3_LEDGER_OK_IN_PROGRESS`, avec `1/7` exigence close et aucun
 effet K1. Il interdit de déclarer le Goal 3 terminé en remplaçant une preuve
 humaine par des tests ou en déplaçant une exigence vers un nouveau Goal.
 
-Le pilote `G4-K1-CONTROL-CLEAN-AND-REFERENCE-V1` reprend exactement le carré E4
-et sépare chauffe, observation du flux, nettoyage chaud, refroidissement sans
-essuyage, nettoyage stable à `140 °C` et unique référence Z. Son préflight live
-sans effet est vert à `X203 Y273 Z32`, chauffes zéro, `11 × 11` exact et
-configurations conformes. Deux lectures des slots et l'historique ne prouvent
-pas l'identité du segment dans la tête ; un chargement postérieur au retrait
-T1A interdit de réutiliser cette ancienne identité. La première chauffe reste
-bloquée jusqu'à confirmation humaine de la matière et de sa température.
+Le pilote `G4-K1-CONTROL-CLEAN-AND-REFERENCE-V1` reprend exactement le carré E4.
+Thomas a fixé Geetech et `220 °C`, six allers-retours rapides, puis un frottement
+lent piloté par la température réelle avec remontée de `Z32` à `Z34`. Un premier
+passage s'est arrêté après chauffe, sans nettoyage, puis les chauffes ont été
+coupées. La chauffe séparée est supprimée : le cycle atomique finit autour de
+`140 °C` avec les deux cibles à zéro, sans attendre de verdict. Son nouveau
+préflight live sans effet est vert à la position sûre `X204,5 Y304,5 Z35`, avec
+le `11 × 11` exact et les configurations conformes. Le cycle physique attend
+seulement Thomas devant la K1 ; la référence Z restera séparée jusqu'au verdict
+visuel « buse propre ».
 
 `G4-K1-CONTROL-GATEWAY-PRIVATE-LAN-NO-AUTH-V1` est installé et validé. Le mot
 de passe HTTP Basic n'est plus utilisé sur `4409`. Nginx continue de limiter

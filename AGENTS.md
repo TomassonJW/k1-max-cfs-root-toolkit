@@ -70,11 +70,14 @@ route CFS, configurations inchangées et `11 × 11` actif. Le registre local
 Goal 3, en compte désormais `1/7` close et place
 `G4-K1-CONTROL-CLEAN-AND-REFERENCE-V1` comme exigence active. Son pilote
 physique complet est prêt et son préflight live sans effet est vert à
-`X203 Y273 Z32`, chauffes zéro et `11 × 11` exact. Deux lectures des slots CFS
-ne prouvent pas l'identité du segment dans la tête ; un marqueur de chargement
-postérieur au retrait T1A interdit de la déduire de cet ancien retrait. La
-première chauffe attend uniquement la confirmation humaine de la matière et de
-sa température ;
+la position sûre `X204,5 Y304,5 Z35`, chauffes zéro et `11 × 11` exact. Thomas
+a confirmé le Geetech et `220 °C`. Un premier passage s'est arrêté après la
+chauffe et avant tout nettoyage ; la coupure de sécurité a remis les deux
+cibles à zéro. La chauffe seule est supprimée. Le cycle atomique suivant fait
+six allers-retours rapides dans E4, refroidit en frottant lentement et en
+remontant de `Z32` à `Z34` selon la température mesurée, puis finit chauffes à
+zéro autour de `140 °C`. Il attend Thomas devant la K1 et le verdict
+`GEETECH_220_CYCLE_CONFIRMED` ;
 GATEWAY-PRIVATE-LAN-NO-AUTH-V1 est installé et validé : le port `4409` ne
 demande plus de mot de passe, reste limité aux réseaux IPv4 privés, et présente
 uniquement son proxy local approuvé à Moonraker ; production remains closed**.

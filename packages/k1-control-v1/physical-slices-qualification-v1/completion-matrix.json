@@ -6,10 +6,10 @@
   "completion_audit_evidence": null,
   "current_human_gate": {
     "requirement_id": "AUTOMATIC_CLEAN_AND_FINAL_REFERENCE",
-    "checkpoint": "MATERIAL_IDENTITY",
+    "checkpoint": "ATOMIC_CLEAN_CYCLE_HUMAN_PRESENCE",
     "active_gate": "G4-K1-CONTROL-CLEAN-AND-REFERENCE-V1",
-    "technical_status": "LIVE_PREFLIGHT_OK_BLOCKED_PREVIOUS_MATERIAL_IDENTITY",
-    "required_human_verdict": "MATERIAL_RECIPE_CONFIRMED",
+    "technical_status": "LIVE_PREFLIGHT_OK_READY_FOR_HUMAN_OBSERVED_CLEAN_CYCLE",
+    "required_human_verdict": "GEETECH_220_CYCLE_CONFIRMED",
     "next_effect_blocked": true
   },
   "requirements": [
@@ -29,14 +29,15 @@
     {
       "order": 2,
       "id": "AUTOMATIC_CLEAN_AND_FINAL_REFERENCE",
-      "status": "IN_PROGRESS_LIVE_PREFLIGHT_OK_BLOCKED_PREVIOUS_MATERIAL_IDENTITY",
+      "status": "IN_PROGRESS_LIVE_PREFLIGHT_OK_READY_FOR_HUMAN_OBSERVED_CLEAN_CYCLE",
       "slice_id": "CLEAN-AND-REFERENCE-V1",
       "evidence": "packages/k1-control-v1/clean-and-reference-v1/contract.json",
       "required_proofs": [
         "versioned_cleaning_recipe_uses_physically_qualified_geometry",
         "initial_flow_falls_in_the_waste_receptacle",
         "bounded_hot_cleaning_is_visibly_effective",
-        "no_unqualified_cooling_wipe",
+        "sensor_controlled_cooling_wipe_stays_inside_E4_and_rises_from_Z32_to_Z34",
+        "clean_cycle_returns_both_heater_targets_to_zero_before_waiting_for_human",
         "one_final_z_reference_is_run_with_a_clean_nozzle",
         "heaters_are_requested_zero_and_safe_final_state_is_read_back"
       ]

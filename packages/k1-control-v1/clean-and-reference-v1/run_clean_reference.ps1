@@ -1,6 +1,6 @@
 [CmdletBinding()]
 param(
-    [ValidateSet('Preflight', 'Heat', 'HotClean', 'Cool', 'StableClean', 'Reference', 'Stop', 'Validate')]
+    [ValidateSet('Preflight', 'CleanCycle', 'Reference', 'Stop', 'Validate')]
     [string]$Action = 'Preflight',
 
     [Parameter(Mandatory = $true)]
@@ -8,7 +8,7 @@ param(
     [string]$MaterialId,
 
     [Parameter(Mandatory = $true)]
-    [ValidateRange(140.0, 300.0)]
+    [ValidateRange(160.0, 300.0)]
     [double]$CleaningTargetC,
 
     [ValidatePattern('^[A-Za-z0-9._-]+$')]
@@ -27,29 +27,23 @@ param(
 
 $ErrorActionPreference = 'Stop'
 $RequiredGate = 'G4-K1-CONTROL-CLEAN-AND-REFERENCE-V1'
-$ExpectedProgramSha256 = '62c3fc42ecc5f1d6730cafd8e93cefc49c9a8299f0b9a2eebd5f17657a52fc48'
+$ExpectedProgramSha256 = 'e779147cbb9c78b17a69970d53ecb9b6f70978a07777fc5aad0f23cb820103b3'
 $WorkspaceRoot = (Resolve-Path (Join-Path $PSScriptRoot '..\..\..')).Path
 $RawRoot = Join-Path $WorkspaceRoot 'inventory\raw'
 $SessionDirectory = Join-Path $RawRoot $CaptureId
 $CapturePath = Join-Path $SessionDirectory 'clean-and-reference.safe.jsonl'
 $MetadataPath = Join-Path $SessionDirectory 'local-metadata.json'
 $RemoteProgramPath = Join-Path $PSScriptRoot 'remote_clean_reference.py'
-$IsEffect = $Action -in @('Heat', 'HotClean', 'Cool', 'StableClean', 'Reference', 'Stop')
+$IsEffect = $Action -in @('CleanCycle', 'Reference', 'Stop')
 $RemoteAction = switch ($Action) {
     'Preflight' { 'preflight' }
-    'Heat' { 'heat' }
-    'HotClean' { 'hot-clean' }
-    'Cool' { 'cool' }
-    'StableClean' { 'stable-clean' }
+    'CleanCycle' { 'clean-cycle' }
     'Reference' { 'reference' }
     'Stop' { 'stop' }
     'Validate' { 'validate' }
 }
 $RequiredPreviousHumanVerdict = switch ($Action) {
-    'Heat' { 'MATERIAL_RECIPE_CONFIRMED' }
-    'HotClean' { 'FLOW_FALLS_IN_WASTE_RECEPTACLE_OK' }
-    'Cool' { 'HOT_CLEAN_VISIBLE_OK' }
-    'StableClean' { 'COOLING_COMPLETE_NO_WIPE_OK' }
+    'CleanCycle' { 'GEETECH_220_CYCLE_CONFIRMED' }
     'Reference' { 'FINAL_NOZZLE_CLEAN_OK' }
     'Stop' { 'THERMAL_STOP_REQUIRED' }
     default { '' }

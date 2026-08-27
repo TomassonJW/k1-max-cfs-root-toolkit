@@ -7,6 +7,7 @@ import os
 import re
 import socket
 import sys
+import time
 from urllib.request import Request, urlopen
 
 
@@ -17,6 +18,10 @@ BEST_PROFILE = "k1_p001_t055_r001_n11x11"
 BEST_PROFILE_SHA256 = "58fd96c55129bf7a17ba890d309cb3cd5e2926ec271d735b60392f8369da0a61"
 REFERENCE_NOZZLE_C = 140.0
 REFERENCE_BED_C = 55.0
+BRUSH_CONTACT_Z_MM = 32.0
+BRUSH_RELEASE_Z_MM = 34.0
+HOT_ROUND_TRIPS = 6
+COOLING_TIMEOUT_S = 300.0
 SAFE_ID = re.compile(r"^[A-Za-z0-9._-]+$")
 
 EXPECTED_HASHES = {
@@ -206,6 +211,15 @@ def validate_position(snapshot, expected, code):
             raise GateError("%s_axis_%s" % (code, index))
 
 
+def validate_known_clean_cycle_start(snapshot):
+    actual = snapshot["toolhead"]["gcode_position"]
+    if not isinstance(actual, list) or len(actual) < 3:
+        raise GateError("gcode_position_missing")
+    accepted = ([203.0, 273.0, 32.0], [204.5, 304.5, 35.0])
+    if not any(all(abs(float(actual[index]) - expected[index]) <= 0.03 for index in range(3)) for expected in accepted):
+        raise GateError("clean_cycle_start_position_unknown")
+
+
 def validate_targets(snapshot, nozzle, bed, actual_window=None):
     if abs(finite(snapshot["heaters"]["extruder_target"], "extruder_target_invalid") - nozzle) > 0.01:
         raise GateError("extruder_target_drift")
@@ -219,27 +233,27 @@ def validate_targets(snapshot, nozzle, bed, actual_window=None):
 
 def scripts(cleaning_target):
     return {
-        "heat": "\n".join((
+        "clean-cycle-heat": "\n".join((
             "G90",
-            "G1 X203 Y273 Z32 F1200",
             "G1 Z35 F300",
+            "G1 X203 Y273 F600",
             "G1 X204.5 Y304.5 F600",
             "M104 S%.1f" % cleaning_target,
             "TEMPERATURE_WAIT SENSOR=extruder MINIMUM=%.1f MAXIMUM=%.1f" % (cleaning_target - 2.0, cleaning_target + 2.0),
             "M400",
         )),
-        "hot-clean": e4_square(),
-        "cool": "\n".join((
+        "clean-cycle-start": hot_zigzag(),
+        "clean-cycle-finish": "\n".join((
             "G90",
-            "G1 X203 Y273 Z35 F600",
+            "G1 X203 Y304 Z34 F30",
+            "TURN_OFF_HEATERS",
+            "M400",
+        )),
+        "reference": "\n".join((
             "M104 S140.0",
             "M140 S55.0",
             "TEMPERATURE_WAIT SENSOR=extruder MINIMUM=138.0 MAXIMUM=142.0",
             "TEMPERATURE_WAIT SENSOR=heater_bed MINIMUM=54.0 MAXIMUM=56.0",
-            "M400",
-        )),
-        "stable-clean": e4_square(),
-        "reference": "\n".join((
             "ACCURATE_G28",
             "BED_MESH_PROFILE LOAD=%s" % BEST_PROFILE,
             "TURN_OFF_HEATERS",
@@ -249,20 +263,48 @@ def scripts(cleaning_target):
     }
 
 
-def e4_square():
-    return "\n".join((
+def hot_zigzag():
+    lines = [
         "G90",
         "G1 X203 Y273 Z35 F600",
         "G1 Z32 F300",
         "G1 Y305 F600",
-        "G1 X206 F180",
-        "G1 X203 F180",
-        "G1 Y304 F180",
-        "G1 X206 F180",
-        "G1 X203 F180",
-        "G1 Y273 F600",
+    ]
+    for index in range(HOT_ROUND_TRIPS):
+        y_value = 305 if index % 2 == 0 else 304
+        lines.append("G1 X206 Y%d Z32 F600" % y_value)
+        lines.append("G1 X203 Y%d Z32 F600" % y_value)
+    lines.extend(("M104 S0", "M400"))
+    return "\n".join(lines)
+
+
+def cooling_z_for_temperature(temperature_c, cleaning_target_c):
+    if cleaning_target_c <= REFERENCE_NOZZLE_C:
+        raise GateError("cleaning_target_must_exceed_reference")
+    progress = (cleaning_target_c - temperature_c) / (cleaning_target_c - REFERENCE_NOZZLE_C)
+    progress = min(1.0, max(0.0, progress))
+    raw_z = BRUSH_CONTACT_Z_MM + (BRUSH_RELEASE_Z_MM - BRUSH_CONTACT_Z_MM) * progress
+    return round(raw_z * 20.0) / 20.0
+
+
+def cooling_move(index, z_mm):
+    if not BRUSH_CONTACT_Z_MM <= z_mm <= BRUSH_RELEASE_Z_MM:
+        raise GateError("cooling_z_out_of_bounds")
+    x_value = 206 if index % 2 == 0 else 203
+    y_value = 305 if (index // 2) % 2 == 0 else 304
+    return "\n".join((
+        "G90",
+        "G1 X%d Y%d Z%.2f F30" % (x_value, y_value, z_mm),
         "M400",
     ))
+
+
+def reviewed_cooling_moves():
+    return {
+        cooling_move(index, 32.0 + step * 0.05)
+        for index in range(4)
+        for step in range(41)
+    }
 
 
 def send_reviewed_script(script, allowed):
@@ -292,10 +334,10 @@ def send_reviewed_script(script, allowed):
 def effects(action, attempted, recovery_stop_attempted=False):
     return {
         "gcode_attempted": attempted,
-        "heating": action in ("heat", "cool") and attempted,
-        "motion": action in ("heat", "hot-clean", "cool", "stable-clean", "reference") and attempted,
+        "heating": action in ("clean-cycle", "reference") and attempted,
+        "motion": action in ("clean-cycle", "reference") and attempted,
         "final_z_reference": action == "reference" and attempted,
-        "heater_stop": action in ("reference", "stop") and attempted or recovery_stop_attempted,
+        "heater_stop": action in ("clean-cycle", "reference", "stop") and attempted or recovery_stop_attempted,
         "extrusion": False,
         "cfs_action": False,
         "remote_write": False,
@@ -306,21 +348,12 @@ def effects(action, attempted, recovery_stop_attempted=False):
 
 def validate_action_state(action, snapshot, target, before):
     validate_base(snapshot)
-    if action in ("preflight", "heat"):
+    if action in ("preflight", "clean-cycle"):
         validate_targets(snapshot, 0.0, 0.0)
-        validate_position(snapshot, [203.0, 273.0, 32.0], "start_position")
-    elif action == "hot-clean":
-        validate_targets(snapshot, target, 0.0, (target - 2.0, target + 2.0))
-        validate_position(snapshot, [204.5, 304.5, 35.0], "flow_observation_position")
-    elif action == "cool":
-        validate_targets(snapshot, target, 0.0, (target - 2.0, target + 2.0))
-        validate_position(snapshot, [203.0, 273.0, 32.0], "hot_clean_end_position")
-    elif action == "stable-clean":
-        validate_targets(snapshot, REFERENCE_NOZZLE_C, REFERENCE_BED_C, (138.0, 142.0))
-        validate_position(snapshot, [203.0, 273.0, 35.0], "cool_end_position")
+        validate_known_clean_cycle_start(snapshot)
     elif action == "reference":
-        validate_targets(snapshot, REFERENCE_NOZZLE_C, REFERENCE_BED_C, (138.0, 142.0))
-        validate_position(snapshot, [203.0, 273.0, 32.0], "stable_clean_end_position")
+        validate_targets(snapshot, 0.0, 0.0)
+        validate_position(snapshot, [203.0, 304.0, 34.0], "clean_cool_end_position")
     elif action == "validate":
         validate_targets(snapshot, 0.0, 0.0)
     elif action == "stop":
@@ -335,21 +368,12 @@ def validate_action_state(action, snapshot, target, before):
 def validate_after(action, snapshot, target, before):
     validate_base(snapshot)
     require_equal(snapshot["hashes"], before["hashes"], "configuration_changed")
-    if action == "heat":
-        validate_targets(snapshot, target, 0.0, (target - 2.0, target + 2.0))
-        validate_position(snapshot, [204.5, 304.5, 35.0], "heat_end_position")
-    elif action == "hot-clean":
-        validate_targets(snapshot, target, 0.0, (target - 2.0, target + 2.0))
-        validate_position(snapshot, [203.0, 273.0, 32.0], "hot_clean_end_position")
-    elif action == "cool":
-        validate_targets(snapshot, REFERENCE_NOZZLE_C, REFERENCE_BED_C, (138.0, 142.0))
-        bed_actual = finite(snapshot["heaters"]["bed_temperature"], "bed_temperature_invalid")
-        if not 54.0 <= bed_actual <= 56.0:
-            raise GateError("bed_temperature_outside_window")
-        validate_position(snapshot, [203.0, 273.0, 35.0], "cool_end_position")
-    elif action == "stable-clean":
-        validate_targets(snapshot, REFERENCE_NOZZLE_C, REFERENCE_BED_C, (138.0, 142.0))
-        validate_position(snapshot, [203.0, 273.0, 32.0], "stable_clean_end_position")
+    if action == "clean-cycle":
+        validate_targets(snapshot, 0.0, 0.0)
+        nozzle_actual = finite(snapshot["heaters"]["extruder_temperature"], "extruder_temperature_invalid")
+        if not 134.0 <= nozzle_actual <= 142.0:
+            raise GateError("clean_cycle_finish_temperature_outside_window")
+        validate_position(snapshot, [203.0, 304.0, 34.0], "clean_cool_end_position")
     elif action in ("reference", "stop"):
         validate_targets(snapshot, 0.0, 0.0)
     else:
@@ -376,7 +400,30 @@ def run(action, material_id, cleaning_target):
     recovery_stop_attempted = False
     try:
         attempted = True
-        send_reviewed_script(reviewed[action], set(reviewed.values()))
+        if action == "clean-cycle":
+            allowed = set(reviewed.values()) | reviewed_cooling_moves()
+            send_reviewed_script(reviewed["clean-cycle-heat"], allowed)
+            send_reviewed_script(reviewed["clean-cycle-start"], allowed)
+            deadline = time.monotonic() + COOLING_TIMEOUT_S
+            last_z = BRUSH_CONTACT_Z_MM
+            move_index = 0
+            while True:
+                current = capture_snapshot()
+                validate_base(current)
+                validate_targets(current, 0.0, 0.0)
+                temperature = finite(current["heaters"]["extruder_temperature"], "extruder_temperature_invalid")
+                if temperature <= 142.0:
+                    break
+                if time.monotonic() >= deadline:
+                    raise GateError("sensor_controlled_cooling_timeout")
+                next_z = max(last_z, cooling_z_for_temperature(temperature, cleaning_target))
+                move_script = cooling_move(move_index, next_z)
+                send_reviewed_script(move_script, allowed)
+                last_z = next_z
+                move_index += 1
+            send_reviewed_script(reviewed["clean-cycle-finish"], allowed)
+        else:
+            send_reviewed_script(reviewed[action], set(reviewed.values()))
         after = capture_snapshot()
         validate_after(action, after, cleaning_target, before)
         return {
@@ -423,7 +470,7 @@ def main(argv=None):
         print(json.dumps({"mission": MISSION, "status": "INVALID_ARGUMENTS"}, sort_keys=True))
         return 2
     action, material_id, target_text = arguments
-    if action not in ("preflight", "heat", "hot-clean", "cool", "stable-clean", "reference", "stop", "validate"):
+    if action not in ("preflight", "clean-cycle", "reference", "stop", "validate"):
         print(json.dumps({"mission": MISSION, "status": "INVALID_ACTION"}, sort_keys=True))
         return 2
     if not SAFE_ID.fullmatch(material_id) or material_id.lower() in ("unknown", "none"):
@@ -434,7 +481,7 @@ def main(argv=None):
     except ValueError:
         print(json.dumps({"mission": MISSION, "status": "INVALID_TARGET"}, sort_keys=True))
         return 2
-    if not math.isfinite(cleaning_target) or not 140.0 <= cleaning_target <= 300.0:
+    if not math.isfinite(cleaning_target) or not 160.0 <= cleaning_target <= 300.0:
         print(json.dumps({"mission": MISSION, "status": "INVALID_TARGET"}, sort_keys=True))
         return 2
     try:

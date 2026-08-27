@@ -43,15 +43,17 @@ géométrie qualifiée, purge visible dans le réceptacle, nettoyage à chaud bo
 une référence Z finale avec buse propre, puis arrêt thermique et état sûr
 relus.
 
-Le pilote complet et son arrêt thermique sont prêts. Son préflight live sans
-effet est vert à `X203 Y273 Z32`, chauffes zéro, configurations conformes et
-`11 × 11` exact. Les deux CFS ne publient aucune route engagée. Leurs codes de
-slot ne prouvent pas la matière du segment dans la tête et l'historique contient
-un chargement postérieur au retrait T1A. La valeur provisoire
-`CFS_TYPE_000001 / 220 °C` n'est donc pas autorisée pour chauffer. Il faut
-seulement que Thomas confirme la matière réellement présente et la température
-de nettoyage correspondante ; le premier verdict consommé sera
-`MATERIAL_RECIPE_CONFIRMED`.
+Le pilote complet et son arrêt thermique sont prêts. Thomas a confirmé le
+Geetech et `220 °C`. Un premier passage a chauffé puis a été arrêté sans
+nettoyage faute de verdict reçu ; la coupure a remis les deux cibles à zéro.
+Le défaut de protocole est corrigé : il n'existe plus d'action de chauffe seule.
+Le cycle atomique fait six allers-retours rapides, coupe la chauffe, frotte
+lentement dans E4 en remontant de `Z32` à `Z34` selon la température mesurée,
+puis finit chauffes à zéro autour de `140 °C`. Son préflight frais sans effet
+est vert à `X204,5 Y304,5 Z35`, configurations conformes et `11 × 11` exact.
+Il attend Thomas devant la K1 et le verdict
+`GEETECH_220_CYCLE_CONFIRMED`. La référence finale n'est autorisée qu'après
+`FINAL_NOZZLE_CLEAN_OK`.
 
 ## Archive historique — clôture initiale du Goal 2
 

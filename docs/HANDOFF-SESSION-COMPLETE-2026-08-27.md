@@ -147,17 +147,16 @@ est `E4 OK`. Les chauffes sont à zéro, aucune route CFS n'est engagée, les
 configurations sont inchangées et le meilleur profil actuel `11 × 11` reste
 actif.
 
-Le pilote versionné de la tranche suivante est prêt. Il sépare l'observation du
-flux dans le bac, un carré E4 chaud, le refroidissement sans essuyage, un carré
-stable à `140 °C`, une seule référence Z et l'arrêt thermique. Son préflight
-live sans effet est vert à `X203 Y273 Z32`, chauffes zéro, profil `11 × 11`
-exact et configurations conformes.
-
-Deux lectures live des slots ne prouvent pas la matière du segment présent dans
-la tête. L'historique contient un chargement postérieur au retrait T1A ; la
-valeur provisoire `CFS_TYPE_000001 / 220 °C` utilisée pour le préflight ne peut
-pas autoriser une chauffe. Thomas doit uniquement confirmer la matière réelle
-et sa température de nettoyage. Aucun `T0` ni aucune action CFS ne sera utilisé.
+Thomas a confirmé le Geetech et `220 °C`. Un premier passage a chauffé la buse,
+mais a été arrêté avant tout nettoyage faute de verdict reçu ; la coupure de
+sécurité a remis les deux cibles à zéro. La chauffe seule a donc été supprimée.
+Le pilote atomique versionné fait six allers-retours rapides dans E4, coupe la
+chauffe, continue très lentement dans le même carré tout en remontant de `Z32`
+à `Z34` selon la température réellement mesurée, puis finit autour de `140 °C`
+avec les cibles à zéro. La référence Z est séparée jusqu'au verdict visuel
+« buse propre ». Son préflight frais sans effet est vert à la position sûre
+`X204,5 Y304,5 Z35`, profil `11 × 11` exact et configurations conformes. Aucun
+`T0`, aucune extrusion ni aucune action CFS ne sera utilisé.
 
 Le registre
 `packages/k1-control-v1/physical-slices-qualification-v1/completion-matrix.json`
@@ -173,8 +172,9 @@ et la clôture finale restent au Goal 4 ; aucun cinquième Goal n'est permis.
 > devant la K1, plateau libre, brosses visibles, buse observable et arrêt
 > immédiat possible. CLEAN-MOTION-V1 est clos avec `E4 OK`; le Goal 3 est à
 > `1/7`. Le pilote `G4-K1-CONTROL-CLEAN-AND-REFERENCE-V1` et son préflight sont
-> prêts. La matière du segment dans la tête reste inconnue malgré les lectures
-> CFS. Demande seulement ma confirmation matière + température, puis exécute le
-> nettoyage réel et l'unique référence Z par checkpoints humains.
+> prêts. Geetech et `220 °C` sont confirmés. Le cycle atomique finit chauffes à
+> zéro et attend seulement mon retour devant la K1 avec le verdict
+> `GEETECH_220_CYCLE_CONFIRMED`. Exécute ensuite le nettoyage réel, demande mon
+> verdict visuel, puis fais l'unique référence Z.
 
 La tâche source reste visible et ne doit pas être archivée.

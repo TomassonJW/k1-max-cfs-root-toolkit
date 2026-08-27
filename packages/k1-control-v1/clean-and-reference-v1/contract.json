@@ -3,7 +3,7 @@
   "mission": "G4-K1-CONTROL-CLEAN-AND-REFERENCE-V1",
   "goal": "GOAL-P4-PHYSICAL-SLICES-QUALIFICATION-V1",
   "requirement": "AUTOMATIC_CLEAN_AND_FINAL_REFERENCE",
-  "status": "LIVE_PREFLIGHT_OK_BLOCKED_PREVIOUS_MATERIAL_IDENTITY",
+  "status": "LIVE_PREFLIGHT_OK_READY_FOR_HUMAN_OBSERVED_CLEAN_CYCLE",
   "source_gate": "G4-K1-CONTROL-CLEAN-MOTION-V1",
   "source_gate_status": "CLEAN_MOTION_V1_OK",
   "source_geometry": {
@@ -18,36 +18,50 @@
     "approach_feedrate_mm_per_min": 600
   },
   "thermal_contract": {
-    "previous_material_id": null,
-    "cleaning_target_c": null,
+    "previous_material_id": "GEETECH_LAST_USED",
+    "cleaning_target_c": 220.0,
     "cleaning_window_c": 2.0,
     "final_reference_nozzle_target_c": 140.0,
     "final_reference_nozzle_window_c": 2.0,
     "final_reference_bed_target_c": 55.0,
     "final_reference_bed_window_c": 1.0,
     "material_and_cleaning_target_must_be_explicit_before_effect": true,
-    "cooling_wipe": "forbidden",
-    "stable_probe_temperature_wipe": "one_cycle_pending_human_qualification"
+    "canonical_rule_proposed_by_human": "last_used_print_temperature_plus_20_to_30_c",
+    "human_confirmed_case": "GEETECH_LAST_USED_AT_220_C_CLEANING_TARGET",
+    "hot_round_trips": 6,
+    "hot_feedrate_mm_per_min": 600,
+    "cooling_control": "measured_nozzle_temperature_not_fixed_duration",
+    "cooling_timeout_s": 300,
+    "cooling_target_c": 140.0,
+    "cooling_feedrate_mm_per_min": 30,
+    "cooling_z_ramp_mm": [32.0, 34.0],
+    "cooling_z_step_mm": 0.05,
+    "cooling_wipe": "required_inside_E4_square_until_measured_140_c",
+    "twenty_seconds_is_only_an_operator_estimate": true,
+    "clean_cycle_finishes_with_heater_targets_zero": true,
+    "final_reference_reheats_only_after_human_clean_verdict": true
   },
   "flow_observation": {
     "candidate_point_mm": [204.5, 304.5, 35.0],
     "basis": "three_mm_above_human_qualified_secondary_brush_square",
     "extrusion": false,
     "cfs_action": false,
-    "required_human_verdict": "FLOW_FALLS_IN_WASTE_RECEPTACLE_OK",
+    "required_human_verdict": "GEETECH_220_CYCLE_CONFIRMED",
     "negative_verdict_action": "TURN_OFF_HEATERS_AND_STOP"
   },
   "cleaning_cycles": {
-    "hot_material_target": {
-      "count": 1,
-      "path": "E4_EXACT_SQUARE",
-      "required_human_verdict": "HOT_CLEAN_VISIBLE_OK"
+    "hot_220c": {
+      "round_trips": 6,
+      "path": "E4_ZIGZAG_X203_206_Y304_305_Z32",
+      "feedrate_mm_per_min": 600
     },
-    "stable_140c_before_reference": {
-      "count": 1,
-      "path": "E4_EXACT_SQUARE",
-      "requires_completed_cooling_without_wipe": true,
-      "required_human_verdict": "FINAL_NOZZLE_CLEAN_OK"
+    "sensor_controlled_cooling": {
+      "path": "E4_SLOW_DIAGONAL_X203_206_Y304_305",
+      "feedrate_mm_per_min": 30,
+      "z_rises_monotonically_from_mm": 32.0,
+      "z_finishes_at_mm": 34.0,
+      "actual_temperature_finish_window_c": [134.0, 142.0],
+      "required_human_verdict_after": "FINAL_NOZZLE_CLEAN_OK"
     }
   },
   "final_reference": {
@@ -61,12 +75,12 @@
   },
   "physical_runner": {
     "remote_program": "packages/k1-control-v1/clean-and-reference-v1/remote_clean_reference.py",
-    "remote_program_sha256": "62c3fc42ecc5f1d6730cafd8e93cefc49c9a8299f0b9a2eebd5f17657a52fc48",
+    "remote_program_sha256": "e779147cbb9c78b17a69970d53ecb9b6f70978a07777fc5aad0f23cb820103b3",
     "runner": "packages/k1-control-v1/clean-and-reference-v1/run_clean_reference.ps1",
-    "runner_sha256": "853673a86e41be6f32ad08ca61fabbbc549909d2621bbc3aa170d664e2406015",
+    "runner_sha256": "85ad22111b8e5111d77cda1f745e957f40c5731910fbd3e7c6c50f769ebcaf8d",
     "remote_file_write": false,
     "automatic_retry": false,
-    "actions": ["preflight", "heat", "hot-clean", "cool", "stable-clean", "reference", "stop", "validate"],
+    "actions": ["preflight", "clean-cycle", "reference", "stop", "validate"],
     "human_verdict_before_every_effect": true
   },
   "live_read_only_evidence": {
@@ -102,12 +116,61 @@
       "gcode": false,
       "motion": false,
       "heating": false
+    },
+    "atomic_cycle_preflight_capture": {
+      "capture_id": "20260827-goal3-clean-reference-atomic-preflight-v1",
+      "sha256": "fd55dfb1c1ffe779249870eabc541f43ff800f7f34264913ca0c64049e674e49",
+      "material_id": "GEETECH_LAST_USED",
+      "cleaning_target_c": 220.0,
+      "status": "PREFLIGHT_OK",
+      "position_gcode_mm": [204.5, 304.5, 35.0],
+      "known_safe_observation_position": true,
+      "heaters_target_zero": true,
+      "active_profile": "k1_p001_t055_r001_n11x11",
+      "configuration_hashes_exact": true,
+      "gcode": false,
+      "motion": false,
+      "heating": false
+    },
+    "material_database_capture": {
+      "capture_id": "20260827-goal3-clean-reference-material-database-v2",
+      "sha256": "9b7d9c48f733491235bec325dedcbcdb4725820f43b76a49652674579f2a8243",
+      "database_sha256": "9518ae9b6ea9ee44f16fe3f8f871cc2906a13e89374781dac569f8e53996090d",
+      "material_box_info_sha256": "788e5b77fe333ce9152a96898661fb6b56454c6692597654b2cf417daf000169",
+      "material_modify_info_sha256": "b46bd5e3e99d769f580d0748c6c533fa90bcd4d5a911d0022a73a114712ec8c8",
+      "material_option_sha256": "ab16d5aa7452f036b4d36e09a57d111968c05ac54062a8b42bed772272f10745",
+      "code_000001": "PLA",
+      "code_000003": "PETG",
+      "slot_material_families": ["PLA", "PETG"],
+      "previous_nozzle_material_proven": false,
+      "gcode": false,
+      "remote_write": false
+    },
+    "aborted_heat_capture": {
+      "capture_id": "20260827-goal3-clean-reference-heat-geetech-v1",
+      "sha256": "1bd3feb46e13c21b065b02d43277eb4405add19438c62da4123a05e4c7dd537d",
+      "status": "HEAT_TECHNICAL_OK_AWAITING_HUMAN_VERDICT",
+      "cleaning_motion_executed": false,
+      "superseded_separate_heat_action": true
+    },
+    "safety_stop_capture": {
+      "capture_id": "20260827-goal3-clean-reference-safety-stop-v1",
+      "sha256": "1ca650317375730e141dead91b63abb154c2b278f71e2e8671624632346f0c75",
+      "status": "STOP_TECHNICAL_OK_AWAITING_HUMAN_VERDICT",
+      "extruder_target_after_c": 0.0,
+      "bed_target_after_c": 0.0,
+      "motion": false,
+      "configuration_hashes_exact": true
     }
   },
   "only_remaining_pre_effect_fact": {
-    "id": "PREVIOUS_NOZZLE_MATERIAL_AND_CLEANING_TARGET",
+    "id": "HUMAN_PRESENT_FOR_ATOMIC_CLEAN_CYCLE",
     "status": "HUMAN_CONFIRMATION_REQUIRED",
-    "reason": "live_CFS_inventory_does_not_identify_the_segment_in_the_toolhead_and_history_contains_a_later_unresolved_load_marker"
+    "material_and_target_human_confirmed": true,
+    "material_id": "GEETECH_LAST_USED",
+    "cleaning_target_c": 220.0,
+    "required_verdict": "GEETECH_220_CYCLE_CONFIRMED",
+    "reason": "the_atomic_cycle_heats_and_moves_and_requires_direct_observation_and_immediate_stop_availability"
   },
   "forbidden": [
     "T0_OR_ANY_HARDCODED_TOOL",
@@ -115,7 +178,8 @@
     "EXTRUSION",
     "STOCK_NOZZLE_CLEAR",
     "UNQUALIFIED_DIAGONAL",
-    "UNQUALIFIED_COOLING_WIPE",
+    "COOLING_OUTSIDE_E4_SQUARE",
+    "FIXED_TIME_SUBSTITUTE_FOR_MEASURED_140_C",
     "SECOND_FINAL_REFERENCE",
     "AUTOMATIC_RETRY",
     "REMOTE_FILE_WRITE",

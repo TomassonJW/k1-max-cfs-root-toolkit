@@ -29,10 +29,13 @@ fige exactement les sept exigences internes du Goal 3. Il indique actuellement
 `1/7` exigence close : CLEAN-MOTION-V1 a qualifié à froid la grande brosse et
 la brosse secondaire, y compris le carré exact `X203..206 / Y304..305` à
 `Z32`. Le pilote complet de l'exigence suivante est prêt et son préflight live
-sans effet est vert. Les inventaires CFS ne prouvent pas l'identité du segment
-présent dans la tête et l'historique contient un chargement postérieur au
-retrait T1A : la première chauffe reste bloquée jusqu'à confirmation humaine de
-la matière et de sa température. Ce registre ne crée aucun Goal supplémentaire.
+sans effet est vert. Thomas a confirmé le Geetech et la cible `220 °C`. Un
+premier arrêt après chauffe, avant tout frottement, a montré qu'une attente
+interactive pouvait laisser une cible chaude ; les chauffes ont été coupées et
+le pilote corrigé. Le cycle atomique chauffe, nettoie, refroidit en frottant
+jusqu'à environ `140 °C`, finit à `Z34` et remet les cibles à zéro sans attendre
+un message. Il attend seulement Thomas devant la K1. Ce registre ne crée aucun
+Goal supplémentaire.
 
 ## Goal 1 — Terminer le système hors imprimante
 
