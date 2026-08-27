@@ -333,7 +333,34 @@
     "real_connector_present": false,
     "deployment_candidate": false,
     "physical_test_authorized": false,
-    "next_goal": "GOAL-P4-K1-READ-ONLY-QUALIFICATION-V1"
+    "next_goal": "closed_by_GOAL-P4-K1-READ-ONLY-QUALIFICATION-V1"
+  },
+  "k1_read_only_qualification": {
+    "candidate": "GOAL-P4-K1-READ-ONLY-QUALIFICATION-V1",
+    "status": "closed_read_only_blocked_mesh_drift",
+    "contract": "packages/k1-control-v1/k1-read-only-qualification-v1/contract.json",
+    "evidence_map": "packages/k1-control-v1/k1-read-only-qualification-v1/evidence-map.json",
+    "live_snapshots": 2,
+    "response_schema_stable": true,
+    "identity_values_exported": false,
+    "maximum_observed_query_ms": 235.525,
+    "per_request_timeout_s": 5.0,
+    "configuration_hashes_unchanged": true,
+    "live_connected_cfs_units": ["T1", "T2"],
+    "live_engaged_routes": [],
+    "live_filament_state": "engaged_unknown",
+    "live_accepted_z_offset_mm": -0.04,
+    "active_mesh_profile": "default",
+    "required_mesh_profile": "k1_p001_t055_r001_n06x06",
+    "active_mesh_matches_required": false,
+    "mapping_cache_invalidates_on_connection_epoch": true,
+    "same_state_reconnect_between_polls_detectable": false,
+    "gcode_sent": false,
+    "remote_files_written": false,
+    "service_actions": false,
+    "physical_actions": false,
+    "deployment_candidate": false,
+    "next_gate": "human_present_load_and_verify_robust_mesh_before_goal_3"
   },
   "filament_state": {
     "states": [

@@ -4,45 +4,55 @@ Date de passation : 2026-08-27
 Projet : `C:\Users\janko\Documents\ChatGPT\k1-max-cfs-root-toolkit`
 Branche cible : `main`
 Nouvelle tâche créée : non
-Goal actif : absent
+Goal actif : absent après clôture
 
 ## État à annoncer immédiatement à Thomas
 
-- **`GOAL-P4-OFFLINE-CYCLE-CFS-V1` est terminé et fermé hors imprimante.**
-- Le transport simulé, le cycle complet et le plan futur inerte sont intégrés ;
-  aucune connexion à la K1, aucun G-code et aucune action physique n'ont eu lieu.
-- La prochaine grande session est une qualification K1 en lecture seule. Elle
-  exige une autorité séparée et ne doit envoyer aucune commande.
+- **`GOAL-P4-K1-READ-ONLY-QUALIFICATION-V1` est terminé.**
+- La lecture réelle est qualifiée sans effet, mais la suite physique est
+  bloquée : le mesh actif `default` diffère du profil robuste requis.
+- Le profil robuste `k1_p001_t055_r001_n06x06` existe encore avec sa bonne
+  empreinte ; il n'a pas été chargé, car le Goal 2 l'interdisait.
+- Aucune impression, G-code, écriture distante, chauffe, mouvement, restart,
+  action CFS ou reconnexion provoquée n'a eu lieu.
 - La production reste fermée et le mode Précision reste caché.
 - Cette session source doit rester visible et ne doit pas être archivée.
 
 ## État livré
 
-La dernière grande mission close est `GOAL-P4-OFFLINE-CYCLE-CFS-V1`. Son
-transport simulé accepte uniquement `BOX_QUIT_MATERIAL` et
-`TURN_OFF_HEATERS`, une fois chacun, et obtient `13/13`. Le moteur pur couvre
-les `27/27` scénarios canoniques et ses tests ciblés obtiennent `20/20`.
+La capture privée retenue est
+`20260827-142853-goal-p4-k1-read-only-qualification-v1`. Le nettoyage a lieu sur
+la K1 avant le retour local : aucun numéro de série, UUID, nom de fichier
+d'impression ou contenu de configuration n'est exporté.
 
-Le cycle traite admission, nettoyage, référence, mesh/Z, filament correct,
-absent ou incorrect, changements, runout, pause, reprise, annulation, reboot,
-fin et action séparée `Désengager et nettoyer`. Un timeout ou un effet ambigu
-ferme la reprise et n'est jamais rejoué.
+Deux lectures stables confirment Klippy prêt, l'imprimante en `standby`, les
+cibles à zéro, les axes libérés, `T1/T2` connectés, `T3/T4` non configurés,
+aucune route engagée, `t_command` vide, le capteur de tête actif et le Z accepté
+à `−0,04 mm`. L'identité filament reste donc classée `engaged_unknown`.
 
-Le plan futur épingle trois sources, trois destinations, les sauvegardes, le
-rollback et sept petites tranches physiques. Il contient zéro commande distante,
-aucun connecteur réel et aucun script de pose.
+Les lectures d'état ont pris `199,212 ms` et `235,525 ms`, sous le plafond de
+`5 s`. La forme est identique entre les deux réponses. Les douze empreintes de
+configuration, composants Moonraker et fichiers UI correspondent aux versions
+revues et sont identiques avant/après.
 
-La dernière observation K1 reste la capture privée `20260827-110102`. Elle est
-potentiellement périmée : elle ne vaut ni état frais ni autorité de connexion et
-n'autorise aucun retrait.
+Le seul écart bloquant est réel : le mesh actif `default` et le profil robuste
+requis `k1_p001_t055_r001_n06x06` sont tous deux des matrices `6 × 6`, mais
+leurs empreintes diffèrent. Le robuste existe toujours ; il n'est simplement
+pas actif. Le statut fermé est `CLOSED_READ_ONLY_BLOCKED_MESH_DRIFT`.
+
+Le collecteur `GET`, la traduction pure, le délai et la règle d'invalidation du
+mapping sont qualifiés. Une reconnexion très courte qui revient au même état
+entre deux sondages reste invisible ; le futur composant Moonraker devra donc
+prendre son époque dans les notifications.
 
 Le pilotage macro est maintenant centralisé dans `GOALS.md` :
 
 1. `GOAL-P4-OFFLINE-CYCLE-CFS-V1` — terminé hors imprimante ;
-2. `GOAL-P4-K1-READ-ONLY-QUALIFICATION-V1` — prochaine étape, vérifier la K1 sans
-   impression ni commande ;
+2. `GOAL-P4-K1-READ-ONLY-QUALIFICATION-V1` — terminé en lecture seule avec KO
+   borné du mesh actif ;
 3. `GOAL-P4-PHYSICAL-SLICES-QUALIFICATION-V1` — installer et qualifier les
-   fonctions physiques par petites tranches avec Thomas présent ;
+   fonctions physiques par petites tranches avec Thomas présent, après le
+   chargement contrôlé du profil robuste ;
 4. `GOAL-P4-DAILY-CUTOVER-V1` — basculer enfin vers le fonctionnement quotidien
    complet avant la campagne G5.
 
@@ -51,48 +61,46 @@ Ces noms sont des regroupements de pilotage. Ils ne remplacent pas les gates de
 
 ## Git vérifié avant le commit de cette passation
 
-- base de mission : `5c0e843dfec32625a42b3daeddc66e4c711b7dc7` ;
+- base de mission : `5927a7ff49b67dc52a9ae5af6f1a1193ff19003a` ;
 - `main` local et `origin/main` étaient alignés sur cette base ;
 - divergence : `0/0` ;
 - checkout propre au départ ;
-- un seul worktree ; travail réalisé sur `codex/offline-cycle-cfs-v1` ;
+- un seul worktree ; travail réalisé sur `codex/k1-read-only-qualification-v1` ;
 - aucune branche de mission ou ressource étrangère observée ;
 - le SHA final contenant cette passation sera communiqué dans le compte rendu.
 
 ## Vérifications réutilisables
 
-- transport simulé : **OK**, `13/13` scénarios et `13/13` tests ciblés ;
-- cycle complet : **OK**, `27/27` scénarios et `20/20` tests ciblés ;
-- plan futur inerte : **OK**, trois sources, trois destinations, sept tranches,
-  zéro commande distante ;
-- suite complète : **OK**, `476` tests exécutés, `473` verts et `3` ignorés ;
-- nouvelle validation physique ou humaine : **non exécutée**, hors périmètre ;
-- connexion ou mutation K1 : **non exécutée**, interdite par le Goal.
+- preuve live nettoyée : **OK**, `2/2` lectures ;
+- schéma réel : **OK**, stable et épinglé ;
+- délai de lecture : **OK**, maximum observé `235,525 ms` sous `5 s` ;
+- empreintes distantes : **OK**, exactes et inchangées ;
+- CFS, Z et état au repos : **OK** pour la lecture seule ;
+- mesh actif conforme au contrat quotidien : **KO borné** ;
+- validation physique ou humaine : **non exécutée**, hors périmètre ;
+- effet sur la K1 : **aucun** ;
+- suite complète : **OK**, `488` tests exécutés, `485` verts et `3` ignorés ;
+- scripts PowerShell : **OK**, `29` fichiers relus sans erreur.
 
 ## Prochaine mission unique
 
-### `GOAL-P4-K1-READ-ONLY-QUALIFICATION-V1`
+### Gate préalable au `GOAL-P4-PHYSICAL-SLICES-QUALIFICATION-V1`
 
-Résultat attendu : comparer le système local à un état K1 frais sans envoyer de
-commande. Il faut confirmer les formes, valeurs, erreurs et délais observables,
-puis préparer les futurs connecteurs sans créer de surface d'effet.
+Thomas doit être devant la K1. La prochaine gate vérifiera l'état sûr et les
+empreintes, chargera uniquement `k1_p001_t055_r001_n06x06`, puis relira le nom
+actif et la matrice sans lancer d'impression. Elle s'arrêtera au premier écart
+et gardera un retour arrière exact.
 
-Concrètement, la future mission lira seulement les objets utiles, retirera toute
-identité avant traitement, comparera deux lectures stables au contrat local et
-s'arrêtera sur toute donnée nouvelle ou ambiguë. Aucun G-code, fichier distant,
-restart, chauffe, mouvement, retrait ou impression ne sera permis.
+Relire dans cet ordre : `HANDOFF.md`, `GOALS.md`, le document 41, le `RESULT.md`
+et le contrat du paquet `k1-read-only-qualification-v1`, puis le plan futur.
 
-Relire dans cet ordre : `HANDOFF.md`, `GOALS.md`, le document 40 sur le cycle
-complet hors imprimante, ADR-027, les deux nouveaux contrats et le plan futur.
+Cette action modifie l'état d'exécution de la K1 et exige une nouvelle
+autorisation explicite ; le Goal 2 clos ne l'autorise pas. Concrètement, le
+prochain GO permettra seulement de charger le profil robuste déjà présent et
+de vérifier sa matrice, pas d'imprimer ni de commencer toutes les tranches du
+Goal 3.
 
-Critères de fin : forme réelle qualifiée, écarts documentés, futurs appels et
-rollback préparés mais non exécutables, tests et Git clos. Le vert restera une
-preuve de lecture seule, jamais une qualification physique.
-
-Autorisation de démarrage : **ATTENDRE UNE AUTORITÉ DE CONNEXION LECTURE SEULE**.
-Concrètement, Thomas autorisera uniquement l'ouverture d'une connexion pour lire
-l'état courant et les empreintes nécessaires, sans aucune commande ni écriture.
-
-Modèle conseillé : `gpt-5.6-terra`, raisonnement `high`. Option économique : le
-même modèle en `medium`, avec plus de risque de manquer une dérive de forme, de
-délai ou d'état avant les qualifications physiques.
+Modèle conseillé : `gpt-5.6-terra`, raisonnement `high`, car la tâche est petite
+mais touche du matériel réel et doit distinguer précisément profil, matrice et
+rollback. Option économique : `gpt-5.6-terra` en `medium`, avec un risque plus
+élevé de reprise si un état transitoire ou une incohérence de preuve apparaît.

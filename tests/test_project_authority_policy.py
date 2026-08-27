@@ -22,9 +22,15 @@ class ProjectAuthorityPolicyTests(unittest.TestCase):
         self.assertIn("GOAL-P4-OFFLINE-CYCLE-CFS-V1", current_header)
         self.assertIn("terminé", current_header)
         self.assertIn("GOAL-P4-K1-READ-ONLY-QUALIFICATION-V1", current_header)
-        self.assertIn("aucune connexion", current_header)
-        self.assertIn("aucun G-code", current_header)
-        self.assertIn("autorité séparée", current_header)
+        self.assertIn(
+            "20260827-142853-goal-p4-k1-read-only-qualification-v1",
+            current_header,
+        )
+        self.assertIn(
+            "Aucune impression, G-code, écriture distante", current_header
+        )
+        self.assertIn("exige une nouvelle", handoff)
+        self.assertIn("autorisation explicite", handoff)
         self.assertIn("rollback", handoff)
 
     def test_adr_and_decision_preserve_technical_safety_controls(self):

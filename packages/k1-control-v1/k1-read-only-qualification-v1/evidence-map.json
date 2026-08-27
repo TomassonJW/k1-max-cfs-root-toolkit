@@ -1,0 +1,34 @@
+{
+  "schema": 1,
+  "mission": "GOAL-P4-K1-READ-ONLY-QUALIFICATION-V1",
+  "authority": "strict_read_only",
+  "private_source": {
+    "path": "inventory/raw/20260827-142853-goal-p4-k1-read-only-qualification-v1/goal2-read-only.safe.json",
+    "sha256": "39d08be870a8b7f36fdf693f1243f8929b43b7e654d314a7cecf085781c33531",
+    "versioned": false,
+    "identity_values_exported": false
+  },
+  "safe_result": {
+    "status": "CLOSED_READ_ONLY_BLOCKED_MESH_DRIFT",
+    "live_snapshots": 2,
+    "schema_stable": true,
+    "configuration_hashes_unchanged": true,
+    "query_deadline_qualified": true,
+    "maximum_observed_query_ms": 235.525,
+    "connected_cfs_units": ["T1", "T2"],
+    "engaged_routes": [],
+    "filament_state": "engaged_unknown",
+    "accepted_z_offset_mm": -0.04,
+    "active_mesh_profile": "default",
+    "required_mesh_profile": "k1_p001_t055_r001_n06x06",
+    "active_mesh_matches_required": false,
+    "offline_contract_ready": false,
+    "mapping_cache_valid_between_reads": true,
+    "same_state_reconnect_between_polls_detectable": false,
+    "gcode_sent": false,
+    "remote_files_written": false,
+    "service_action": false,
+    "physical_action": false,
+    "deployment_candidate": false
+  }
+}

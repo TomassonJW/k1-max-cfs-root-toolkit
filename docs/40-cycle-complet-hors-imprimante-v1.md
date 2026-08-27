@@ -68,7 +68,9 @@ modification Orca.
 
 ## Ce qui reste réellement à faire
 
-Le Goal 2 devra comparer ce modèle à une lecture K1 fraîche, sans commande. Les
-Goals suivants qualifieront ensuite, une petite tranche à la fois, géométrie,
-nettoyage, débit, retrait, changements, pause/reprise et fin. La production et
-le mode Précision restent fermés.
+Le Goal 2 a comparé ce modèle à une lecture K1 fraîche, sans effet. La lecture,
+les délais et les empreintes sont qualifiés, mais le mesh actif `default`
+diffère du profil robuste requis. Une gate humaine distincte devra d'abord
+charger et vérifier ce profil. Les Goals suivants qualifieront ensuite, une
+petite tranche à la fois, géométrie, nettoyage, débit, retrait, changements,
+pause/reprise et fin. La production et le mode Précision restent fermés.

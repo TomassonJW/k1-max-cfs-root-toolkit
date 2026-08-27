@@ -1,0 +1,87 @@
+{
+  "contract_id": "GOAL-P4-K1-READ-ONLY-QUALIFICATION-V1",
+  "status": "closed_read_only_blocked_mesh_drift",
+  "authority": "strict_read_only",
+  "capture": {
+    "http_methods": ["GET"],
+    "query_count": 2,
+    "query_interval_s": 2.0,
+    "per_request_timeout_s": 5.0,
+    "remote_sanitization_before_local_processing": true,
+    "identity_values_exported": false,
+    "remote_file_content_exported": false
+  },
+  "response_schema": {
+    "canonical_sha256": "ae7281e5df2f222602fa3d353868f6fb5cbf7d92745fc0197f4417d6160f4da5",
+    "stable_between_reads": true,
+    "unknown_fields_policy": "reject_before_lifecycle_projection"
+  },
+  "required_moonraker_sections": [
+    "server",
+    "authorization",
+    "machine",
+    "file_manager",
+    "data_store",
+    "job_state",
+    "history",
+    "k1_control",
+    "k1_control_probe_count",
+    "k1_control_composite_subgrid",
+    "k1_control_composite_mesh"
+  ],
+  "expected_hashes": {
+    "/usr/data/printer_data/config/printer.cfg": "f88d6b52477592805384fca2b4d7abd00298deecd82227af2fa580085fe26fa2",
+    "/usr/data/printer_data/config/box.cfg": "e7a6b26df58a9fa8e49d3af6845f5a0937a790c8ef494b96ec72fd7392abc7a7",
+    "/usr/data/printer_data/config/gcode_macro.cfg": "864fedde88fbb345c220ae5658f7b04779b3981bd78d68eda6fa63c59c79a04f",
+    "/usr/data/printer_data/config/k1-control-z-mesh.cfg": "dd7fa02a8b7b9bd46850c90cf2a85afa71ce27cfa263c120ef4e9cca6b48c113",
+    "/usr/data/printer_data/config/k1-control-calibration-path.cfg": "825aadac8679e0d0e9be140cc5ba4e7656b2bff0d197d1683a73d2b5be4e364e",
+    "/usr/data/k1-control-v1/current/config/moonraker.conf": "950dc211e0b7cd8990a8bb131062f633cd9bddfdd75cc6168a10149356ed5761",
+    "/usr/data/k1-control-v1/current/moonraker/moonraker/moonraker/components/k1_control.py": "27c0734f149ea89a8ba0d5e17f7f65aecc95c1383c359662cb366a687bb7d303",
+    "/usr/data/k1-control-v1/current/moonraker/moonraker/moonraker/components/k1_control_calibration_core.py": "9a6a24195b504a82f88e3b7464c508eaf49f8450169578257c8fe98a5d5f4e97",
+    "/usr/data/k1-control-v1/current/moonraker/moonraker/moonraker/components/k1_control_probe_count.py": "8c8c4aaf20856be1880cea56badd2fe81bd488966eab0d55e7672f73eb1db7b0",
+    "/usr/data/k1-control-v1/current/www/mainsail/k1-control/index.html": "4892294d278497f2f4215564b3e70fcedb354fb880f306641a29a03042ad1abc",
+    "/usr/data/k1-control-v1/current/www/mainsail/k1-control/app.js": "001a31fe7357b0031bfbfa5f6856f8436315cf9640f5a61b2f6121766c985554",
+    "/usr/data/k1-control-v1/current/www/mainsail/k1-control/styles.css": "a7c27fbcdc07f24b00b6d47cc1d9aa8570b9483bcf4dd3615419de579f9aaa12"
+  },
+  "expected_live_state": {
+    "print_state": "standby",
+    "connected_cfs_units": ["T1", "T2"],
+    "engaged_routes": [],
+    "filament_state": "engaged_unknown",
+    "extruder_target_c": 0.0,
+    "bed_target_c": 0.0,
+    "accepted_z_valid": true,
+    "accepted_z_offset_mm": -0.04,
+    "low_moves_armed": false,
+    "active_mesh_profile": "default",
+    "required_mesh_profile": "k1_p001_t055_r001_n06x06",
+    "active_mesh_sha256": "ca13f9a7904fad990b8fc72f7e4ec5cf95b55694cc93b325850241ab1506b5f8",
+    "required_mesh_sha256": "c3c7a2ba89f8094328bc5d8b3936b16dbd1de46f4a80bde87cba3d17cfab5f8f",
+    "safe_idle": true,
+    "offline_contract_ready": false
+  },
+  "mapping_cache": {
+    "observed_mapping_stable": true,
+    "invalidate_on_observable_mapping_change": true,
+    "invalidate_on_connection_epoch_change": true,
+    "same_state_reconnect_between_polls_detectable": false,
+    "future_moonraker_notification_epoch_required": true,
+    "physical_reconnect_triggered": false
+  },
+  "integration": {
+    "qualified_read_only_collector": "capture_live_read_only.ps1",
+    "qualified_projection": "read_only_connector.py",
+    "preferred_future_boundary": "separate_moonraker_component_with_notification_epoch",
+    "existing_calibration_component_modified": false,
+    "component_activated": false,
+    "deployment_candidate": false
+  },
+  "forbidden": {
+    "gcode": true,
+    "remote_file_write": true,
+    "service_action": true,
+    "heater_or_motion": true,
+    "guard_effect_path": true,
+    "automatic_retry": true
+  }
+}

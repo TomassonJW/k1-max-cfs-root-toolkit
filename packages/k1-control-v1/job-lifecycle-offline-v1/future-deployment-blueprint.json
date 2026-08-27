@@ -9,6 +9,18 @@
   "service_actions": [],
   "gcode_commands": [],
   "runtime_python": "3.8.2",
+  "goal_2_read_only_qualification": {
+    "status": "closed_read_only_blocked_mesh_drift",
+    "contract": "../k1-read-only-qualification-v1/contract.json",
+    "collector": "../k1-read-only-qualification-v1/capture_live_read_only.ps1",
+    "projection": "../k1-read-only-qualification-v1/read_only_connector.py",
+    "qualified_http_methods": ["GET"],
+    "qualified_request_timeout_s": 5.0,
+    "maximum_observed_query_ms": 235.525,
+    "remote_sanitization_before_local_processing": true,
+    "current_blocker": "active_mesh_default_differs_from_required_robust_profile",
+    "deployment_authorized": false
+  },
   "files": [
     {
       "role": "job_contract_model",
@@ -62,14 +74,13 @@
     {"id": "END-SEQUENCE-V1", "first_real_effect": "end_and_optional_disengage", "human_presence": true},
     {"id": "ORCA-CUTOVER-V1", "first_real_effect": "atomic_profile_cutover", "human_presence": true}
   ],
-  "intentionally_missing_until_goal_2": [
-    "real_query_connector",
+  "intentionally_missing_after_goal_2": [
     "real_command_connector",
     "moonraker_component_wiring",
+    "connection_epoch_notification_wiring",
     "deployment_script",
     "executable_deployment_manifest",
     "remote_command_encoding",
-    "live_deadline_qualification",
     "service_restart_command",
     "orca_profile_mutation"
   ]

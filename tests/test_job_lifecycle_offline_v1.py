@@ -274,15 +274,23 @@ class JobLifecycleOfflineV1Tests(unittest.TestCase):
         self.assertEqual(0, result["gcode_commands"])
         self.assertFalse(result["deployment_candidate"])
 
-    def test_future_blueprint_keeps_goal_2_dependencies_explicitly_missing(self):
+    def test_future_blueprint_records_goal_2_and_keeps_effect_paths_missing(self):
         candidate = json.loads(
             (PACKAGE / "future-deployment-blueprint.json").read_text(
                 encoding="utf-8"
             )
         )
-        missing = set(candidate["intentionally_missing_until_goal_2"])
-        self.assertIn("real_query_connector", missing)
+        qualification = candidate["goal_2_read_only_qualification"]
+        self.assertEqual(
+            "closed_read_only_blocked_mesh_drift", qualification["status"]
+        )
+        self.assertEqual(["GET"], qualification["qualified_http_methods"])
+        self.assertFalse(qualification["deployment_authorized"])
+        missing = set(candidate["intentionally_missing_after_goal_2"])
+        self.assertNotIn("real_query_connector", missing)
+        self.assertNotIn("live_deadline_qualification", missing)
         self.assertIn("real_command_connector", missing)
+        self.assertIn("connection_epoch_notification_wiring", missing)
         self.assertIn("deployment_script", missing)
         self.assertIn("remote_command_encoding", missing)
         self.assertIn("orca_profile_mutation", missing)

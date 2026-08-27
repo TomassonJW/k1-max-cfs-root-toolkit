@@ -111,6 +111,14 @@ python packages\k1-control-v1\job-lifecycle-offline-v1\run_scenarios.py
 python packages\k1-control-v1\job-lifecycle-offline-v1\verify_blueprint.py
 ```
 
+La qualification K1 du Goal 2 vérifie la capture nettoyée, les délais, les
+empreintes, l'invalidation du mapping et le KO borné du mesh actif :
+
+```powershell
+python -m unittest tests.test_k1_read_only_qualification_v1 -v
+python packages\k1-control-v1\k1-read-only-qualification-v1\analyze_capture.py
+```
+
 La suite complète doit être lancée avec un dossier de découverte explicite :
 
 ```powershell

@@ -43,5 +43,7 @@ python packages\k1-control-v1\job-lifecycle-offline-v1\run_scenarios.py
 python -m unittest tests.test_job_lifecycle_offline_v1 -v
 ```
 
-La prochaine grande étape est le Goal 2 : comparer ce modèle à une lecture K1
-fraîche, sans envoyer de commande et sans produire d'effet.
+Le Goal 2 a maintenant comparé ce modèle à une lecture K1 fraîche sans effet.
+La lecture est qualifiée, mais la suite physique reste bloquée parce que le
+mesh actif `default` diffère du profil robuste requis. Voir le paquet
+`../k1-read-only-qualification-v1`.

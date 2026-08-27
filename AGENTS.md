@@ -43,9 +43,13 @@ transport ; CFS-STOCK-UNLOAD-GUARD-ADAPTER-LIVE-READ-ONLY-V1 confirme deux
 lectures nettoyées, aucune route et des configurations inchangées sans appeler
 le garde ; CFS-STOCK-UNLOAD-GUARD-TRANSPORT-OFFLINE-V1 est clos avec `13/13`
 scénarios et aucun connecteur réel ; `GOAL-P4-OFFLINE-CYCLE-CFS-V1` est terminé
-avec `27/27` scénarios canoniques, un moteur pur et un plan futur inerte ; la
-prochaine étape est `GOAL-P4-K1-READ-ONLY-QUALIFICATION-V1`, sous autorité
-séparée ;
+avec `27/27` scénarios canoniques, un moteur pur et un plan futur inerte ;
+`GOAL-P4-K1-READ-ONLY-QUALIFICATION-V1` est clos en lecture seule avec deux
+réponses stables, des lectures à moins de `236 ms`, les empreintes exactes et
+aucun effet ; il bloque la suite physique parce que le mesh actif `default`
+diffère du profil robuste encore présent `k1_p001_t055_r001_n06x06` ; la
+prochaine gate exige Thomas devant la K1 pour charger et vérifier uniquement ce
+profil avant le Goal 3 ;
 production remains closed**.
 
 La capture `20260823-165742-g4-k1-control-calibration-ui-prtouch-presets-v1` a
@@ -249,6 +253,29 @@ mouvement, fichier distant ou action physique n'a eu lieu. La suite complète
 exécute `476` tests, dont `473` verts et `3` ignorés connus. Le prochain Goal
 unique est `GOAL-P4-K1-READ-ONLY-QUALIFICATION-V1`, qui exige une autorité de
 connexion séparée et ne permettra aucun effet.
+
+Thomas a ensuite lancé ce Goal 2 complet avec `$session-tas`. La capture privée
+`20260827-142853-goal-p4-k1-read-only-qualification-v1` contient deux lectures
+nettoyées sur la K1 avant leur retour local. La forme est stable, les requêtes
+d'état prennent `199,212 ms` et `235,525 ms` sous un plafond de `5 s`, Klippy
+est prêt, les chauffes sont à zéro, les axes sont libérés, `T1/T2` sont
+connectés, aucune route n'est engagée et le Z accepté reste à `−0,04 mm`. Les
+empreintes des configurations et composants correspondent aux versions revues
+et restent identiques avant/après. Aucun G-code, fichier distant, restart,
+chauffe, mouvement, appel du garde ou reconnect CFS n'a eu lieu.
+
+Le Goal 2 est clos avec `CLOSED_READ_ONLY_BLOCKED_MESH_DRIFT` : le mesh actif
+`default` est une matrice `6 × 6` différente du profil robuste requis
+`k1_p001_t055_r001_n06x06`, même si ce dernier existe encore avec son empreinte
+attendue. Le collecteur `GET`, le délai, le nettoyage, la traduction et la
+règle d'invalidation du mapping sont qualifiés hors effet. Une reconnexion
+brève qui revient au même état n'est pas détectable par deux sondages ; le futur
+composant Moonraker devra fournir une époque de connexion par notification. La
+prochaine action n'est pas le Goal 3 complet : Thomas doit être présent pour une
+gate distincte qui vérifie puis charge seulement le profil robuste, avec
+rollback au premier écart et sans impression. Les tests ciblés Goal 2 et cycle
+obtiennent `32/32`, la suite complète exécute `488` tests dont `485` verts et
+`3` ignorés connus, et les `29` scripts PowerShell se relisent sans erreur.
 
 Thomas authorised V1, but the mandatory preflight proved that `logrotate` was
 absent. V1 is closed and must never be deployed. Thomas later authorised V2;

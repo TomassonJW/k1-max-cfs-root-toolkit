@@ -14,8 +14,8 @@ lancer sous une autorité de connexion en lecture seule séparée.
 | Ordre | Grand Goal | État | Résultat concret attendu |
 | --- | --- | --- | --- |
 | 1 | `GOAL-P4-OFFLINE-CYCLE-CFS-V1` | terminé hors imprimante | système logiciel complet simulé et plan futur inerte vérifié |
-| 2 | `GOAL-P4-K1-READ-ONLY-QUALIFICATION-V1` | prêt sous autorité séparée | réponses et délais réels compris sans commande ni impression |
-| 3 | `GOAL-P4-PHYSICAL-SLICES-QUALIFICATION-V1` | prévu, avec Thomas devant la K1 | fonctions physiques validées séparément avec retour arrière |
+| 2 | `GOAL-P4-K1-READ-ONLY-QUALIFICATION-V1` | terminé en lecture seule, suite bloquée par le mesh actif | réponses et délais réels qualifiés sans commande ni impression |
+| 3 | `GOAL-P4-PHYSICAL-SLICES-QUALIFICATION-V1` | prévu, avec Thomas devant la K1 ; attend le profil robuste actif | fonctions physiques validées séparément avec retour arrière |
 | 4 | `GOAL-P4-DAILY-CUTOVER-V1` | prévu après Goal 3 | fonctionnement quotidien unifié, ancien Orca retirable en une transaction |
 
 ## Goal 1 — Terminer le système hors imprimante
@@ -52,30 +52,41 @@ l'imprimante ni sur le Goal 2.
 
 Identifiant : `GOAL-P4-K1-READ-ONLY-QUALIFICATION-V1`
 
-État : **prêt à lancer sous une autorité séparée**.
+État : **terminé en lecture seule ; suite physique bloquée par la dérive du mesh actif**.
 
-Ce qui sera réellement fait :
+Ce qui a été réellement fait :
 
-- lire les états, réponses, délais et erreurs réels ;
-- vérifier que le nettoyage des identités et la traduction restent exacts ;
-- comparer le comportement réel au système simulé ;
-- préparer les commandes exactes et leur retour arrière sans les envoyer ;
-- arrêter la session sur toute donnée nouvelle ou ambiguë.
+- deux lectures fraîches, nettoyées sur la K1 avant leur retour local ;
+- forme de réponse stable et plafond de lecture fermé à `5 s` ;
+- lectures d'état mesurées à `199,212 ms` et `235,525 ms` ;
+- deux CFS connectés, aucune route engagée, commande vide, chauffes à zéro ;
+- Z accepté à `−0,04 mm`, mouvements bas désarmés et configurations exactes ;
+- collecteur `GET`, traduction pure et règle d'invalidation du mapping testés ;
+- points d'intégration Moonraker préparés sans ajouter de composant.
+
+Vérifications : `32/32` tests ciblés Goal 2 et cycle, puis `488` tests dans la
+suite complète dont `485` verts et `3` ignorés connus ; `29/29` scripts
+PowerShell relus sans erreur.
 
 Limite : aucune impression, aucun G-code, aucun retrait, aucune chauffe, aucun
-mouvement et aucun fichier distant.
+mouvement, aucun fichier distant, aucun restart et aucune reconnexion CFS
+provoquée.
 
-Fin attendue : un paquet réel entièrement revu est prêt pour une future
-qualification physique, sans avoir produit d'effet sur la K1.
+Résultat : `CLOSED_READ_ONLY_BLOCKED_MESH_DRIFT`. La K1 utilise le mesh
+`default`, dont la matrice diffère du profil robuste
+`k1_p001_t055_r001_n06x06`. Le profil robuste existe encore avec la bonne
+empreinte, mais il n'est pas actif. Le paquet de lecture seule est clos ; aucun
+candidat de pose ou connecteur de commande n'a été créé.
 
-Autorité : une connexion K1 exigera une autorisation explicite propre à la gate
-alors préparée.
+Autorité consommée : ce Goal est clos. Il ne donne aucune autorité pour charger
+le profil robuste ni commencer le Goal 3.
 
 ## Goal 3 — Installer progressivement et qualifier les fonctions physiques
 
 Identifiant : `GOAL-P4-PHYSICAL-SLICES-QUALIFICATION-V1`
 
-État : **prévu ; présence humaine obligatoire**.
+État : **prévu ; présence humaine obligatoire ; bloqué jusqu'à une gate
+distincte qui vérifie et charge le profil robuste**.
 
 Ce qui sera réellement fait, une petite tranche à la fois :
 
@@ -125,12 +136,14 @@ prêt pour la campagne finale de validation.
 
 ## Démarrage recommandé
 
-Objectif à utiliser pour le prochain grand Goal :
+Première gate à préparer avant le Goal 3 :
 
-> Comparer le système hors imprimante à un état K1 frais en lecture seule,
-> comprendre les formes, erreurs et délais réels, puis préparer les futures
-> commandes sans en envoyer aucune et sans modifier la machine.
+> Thomas présent devant la K1, vérifier une dernière fois l'état sûr, charger
+> uniquement `k1_p001_t055_r001_n06x06`, puis relire le profil et sa matrice
+> sans lancer d'impression. Revenir immédiatement à l'état précédent au premier
+> écart.
 
 Modèle conseillé : `gpt-5.6-terra`, raisonnement `high`. Option économique : le
-même modèle en `medium`, avec plus de risque de manquer une dérive de forme, de
-délai ou d'état avant les futures qualifications physiques.
+même modèle en `medium`, avec davantage de risque de manquer une incohérence de
+profil, de matrice ou de rollback sur du matériel réel. La présence humaine est
+obligatoire avant toute commande.
