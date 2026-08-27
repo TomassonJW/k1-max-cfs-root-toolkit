@@ -1,0 +1,73 @@
+{
+  "schema": 1,
+  "mission": "G4-K1-CONTROL-CFS-STOCK-UNLOAD-GUARD-LIVE-PREFLIGHT-V1",
+  "authority": "read_only_only",
+  "private_sources": {
+    "valid_live_capture": {
+      "path": "inventory/raw/20260827-020930-g4-k1-control-cfs-stock-unload-guard-live-preflight-v1/guard-live-preflight.private.txt",
+      "sha256": "ef9af2d9bcdd812ba8e124ba26e84cb5cc34d7225e62e5f392758146f6b59604"
+    },
+    "rejected_curl_option_capture": {
+      "path": "inventory/raw/20260827-020828-g4-k1-control-cfs-stock-unload-guard-live-preflight-v1/guard-live-preflight.private.txt",
+      "sha256": "53dbc3791532bcc3b6ea152d7b4fd703896df050d5ce607d341a4cfe56db8b1c",
+      "reason": "collector_emitted_unsupported_Creality_curl_option_errors_so_this_capture_was_not_accepted"
+    },
+    "historical_stock_capture": {
+      "path": "inventory/raw/20260827-001616-g4-k1-control-cfs-minimal-owner-passive-capture-v1/official-retract.raw.txt",
+      "sha256": "995b94f92928d2f2d048f677b7183201b6b370cc70f6ccd34c70534b4cffcfe2"
+    },
+    "historical_box_before": {
+      "path": "inventory/raw/20260827-001616-g4-k1-control-cfs-minimal-owner-passive-capture-v1/box.before.private.json",
+      "sha256": "74bfaaae68ca7dc6f989bf4568ed97a761cb3ae9c85f132c376a65b0d8172d39"
+    },
+    "historical_box_after": {
+      "path": "inventory/raw/20260827-001616-g4-k1-control-cfs-minimal-owner-passive-capture-v1/box.after.private.json",
+      "sha256": "94e8c905a79cf087c2c638b1112e3901cc38cdfcfd7bc353bb82920d554caf2b"
+    }
+  },
+  "direct_live_mapping": {
+    "print_state": "print_stats.state",
+    "extruder_target_c": "extruder.target",
+    "bed_target_c": "heater_bed.target",
+    "box_state": "box.state",
+    "connected_cfs_units": "box.T1..T4.state_equal_connect",
+    "active_cfs_command": "box.t_command",
+    "engaged_routes": "for_each_connected_box_Tn_append_Tn_plus_filament_when_filament_is_A_to_D",
+    "toolhead_filament_present": "filament_switch_sensor filament_sensor.filament_detected"
+  },
+  "live_findings": {
+    "klippy_state": "ready",
+    "failed_components": [],
+    "warnings": [],
+    "stable_snapshots": 2,
+    "print_state": "standby",
+    "box_state": "connect",
+    "connected_cfs_units": ["T1", "T2"],
+    "active_cfs_command": "",
+    "engaged_routes": [],
+    "extruder_target_c": 0,
+    "bed_target_c": 0,
+    "toolhead_filament_present": true,
+    "stock_unload_state_field_present": false
+  },
+  "historical_cross_check": {
+    "T1_filament_before": "A",
+    "T1_filament_after": "None",
+    "box_t_command_distinct_values_during_capture": [""],
+    "macro_received_and_finished_markers_present": true
+  },
+  "decision": {
+    "mapping_verdict": "OK_WITH_GUARD_CORRECTION",
+    "current_guard_readiness": "BLOCKED_NO_ENGAGED_ROUTE",
+    "direct_stock_unload_state_field": false,
+    "completion_rule": "request_returned_plus_expected_route_cleared_plus_t_command_empty",
+    "http_ok_alone_sufficient": false,
+    "physical_unload_authorized": false,
+    "deployment_candidate": false
+  },
+  "privacy": {
+    "raw_capture_versioned": false,
+    "CFS_serial_numbers_versioned": false,
+    "CFS_UUIDs_versioned": false
+  }
+}

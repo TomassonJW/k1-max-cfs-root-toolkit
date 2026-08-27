@@ -35,6 +35,9 @@ CFS-MINIMAL-OWNER-PASSIVE-CAPTURE-V1 qualifie un retrait stock réel `T1A`,
 révèle une cible `220 °C` laissée active et maintient le protocole série fermé ;
 CFS-STOCK-UNLOAD-GUARD-V1 encadre maintenant hors imprimante cette macro avec
 preuve d'effet, aucun retry et arrêt thermique vérifié ;
+CFS-STOCK-UNLOAD-GUARD-LIVE-PREFLIGHT-V1 cartographie les champs réels en lecture
+seule, retire l'hypothèse d'un état direct de fin et constate aucune route
+engagée ;
 production remains closed**.
 
 La capture `20260823-165742-g4-k1-control-calibration-ui-prtouch-presets-v1` a
@@ -186,6 +189,23 @@ proposée est
 champs réels nécessaires au garde, sans G-code, chauffe, mouvement, retrait ou
 fichier distant. Cette connexion exige un GO exact distinct ; un essai réel
 ultérieur restera une autre gate.
+
+Thomas a ensuite donné ce GO exact. Deux lectures live stables confirment
+Klipper prêt, `standby`, `T1/T2` connectés, `t_command` vide, les cibles à zéro,
+le segment après cutter encore présent et aucune route CFS engagée. Les trois
+configurations sont inchangées ; aucun G-code, fichier distant, service ou effet
+physique n'a été produit. Le premier collecteur avec `curl -sS` a signalé des
+options incompatibles et n'est pas retenu ; la seconde capture utilise le curl
+Creality exact.
+
+La K1 n'expose aucun champ direct `stock_unload_state`, et `t_command` est resté
+vide pendant le retrait historique. Le garde est corrigé pour qualifier la fin
+par le retour sans erreur de la requête, la route réellement libérée,
+`t_command` vide et les chauffes à zéro. L'état courant est
+`BLOCKED_NO_ENGAGED_ROUTE`. La prochaine branche proposée est
+`G4-K1-CONTROL-CFS-STOCK-UNLOAD-GUARD-ADAPTER-OFFLINE-V1` : construire et tester
+hors imprimante la traduction des réponses K1 nettoyées. Son GO n'autorisera
+aucune connexion ni action matérielle.
 
 Thomas authorised V1, but the mandatory preflight proved that `logrotate` was
 absent. V1 is closed and must never be deployed. Thomas later authorised V2;

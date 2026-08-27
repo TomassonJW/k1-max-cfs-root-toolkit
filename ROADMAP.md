@@ -117,8 +117,11 @@ seul fonctionnement quotidien :
     jusqu'à `TURN_OFF_HEATERS` ;
 12. garde hors imprimante de la macro constructeur clos : une seule tentative,
     preuve réelle de fin, aucun retry et arrêt thermique toujours vérifié après
-    effet ; prochain incrément = correspondance live en lecture seule ;
-13. contrat Orca final et retrait atomique prouvé de l'ancien post-traitement
+    effet ;
+13. préflight live en lecture seule clos : champs réels cartographiés, aucun état
+    direct de fin de retrait, garde corrigé sur la route réellement libérée et
+    état courant bloqué sans route ; prochain incrément = adaptateur hors ligne ;
+14. contrat Orca final et retrait atomique prouvé de l'ancien post-traitement
    `+0,27 mm`.
 
 Le rollback exact de `MESH-EDGE-DIAGNOSTIC-V1` et sa validation finale sont

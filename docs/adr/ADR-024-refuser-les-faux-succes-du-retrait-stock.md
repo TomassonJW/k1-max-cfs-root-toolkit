@@ -30,9 +30,11 @@ retrait, puis nettoyage thermique obligatoire et vérifié.
 
 ## Décision
 
-Le garde ne déclare un succès que si la fin stock, la route libérée, la commande
-CFS vide et les chauffes à zéro sont toutes observées. La réponse HTTP est
-conservée comme information, jamais comme preuve suffisante.
+Le garde ne déclare un succès que si la requête revient sans erreur de
+transport, la route est réellement libérée, la commande CFS est vide et les
+chauffes sont à zéro. La réponse HTTP est conservée comme information, jamais
+comme preuve suffisante. Le préflight live a ensuite confirmé qu'aucun champ
+direct de fin stock n'existe : le contrat n'en suppose plus un.
 
 Avant le premier effet, un refus n'envoie pas `TURN_OFF_HEATERS`, afin de ne pas
 interrompre une activité étrangère. Dès que `BOX_QUIT_MATERIAL` a été tenté, le

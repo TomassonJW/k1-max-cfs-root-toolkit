@@ -102,6 +102,18 @@ Elle n'a aucun transport réel, ne se connecte pas à la K1 et n'autorise aucune
 pose. La prochaine étape est seulement une correspondance live en lecture seule
 des champs nécessaires au garde.
 
+## Préflight live du garde de retrait
+
+Le paquet
+[`cfs-stock-unload-guard-live-preflight-v1/`](cfs-stock-unload-guard-live-preflight-v1/)
+qualifie cette correspondance par deux lectures réelles stables. `T1/T2` sont
+connectés, les cibles sont à zéro et aucune route n'est engagée.
+
+La K1 n'expose aucun champ direct de fin de retrait ; `t_command` ne suit pas le
+cycle stock. Le garde utilise désormais le retour sans erreur de la requête et
+la disparition réelle de la route. La prochaine étape construit seulement le
+traducteur hors imprimante à partir de réponses nettoyées.
+
 ## Versions figées
 
 - Moonraker MIPS : paquet du Helper Script au commit

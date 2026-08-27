@@ -232,7 +232,7 @@
   },
   "cfs_stock_unload_guard": {
     "candidate": "K1-CONTROL-CFS-STOCK-UNLOAD-GUARD-V1",
-    "status": "offline_guard_closed_green",
+    "status": "offline_guard_closed_green_live_fields_aligned",
     "contract": "packages/k1-control-v1/cfs-stock-unload-guard-v1/contract.json",
     "stock_command": "BOX_QUIT_MATERIAL",
     "cleanup_command": "TURN_OFF_HEATERS",
@@ -241,13 +241,34 @@
     "cleanup_after_any_stock_attempt": true,
     "cleanup_before_stock_attempt_on_preflight_refusal": false,
     "success_requires_route_clear": true,
-    "success_requires_stock_completion": true,
+    "direct_stock_unload_state_field_required": false,
+    "success_requires_stock_request_return_without_transport_error": true,
     "success_requires_targets_zero": true,
     "toolhead_segment_may_remain": true,
     "printer_transport": false,
     "deployment_candidate": false,
     "physical_test_authorized": false,
-    "next_design_branch": "read_only_live_field_mapping_before_any_deployment_or_unload"
+    "next_design_branch": "closed_by_read_only_live_field_mapping"
+  },
+  "cfs_stock_unload_guard_live_preflight": {
+    "candidate": "K1-CONTROL-CFS-STOCK-UNLOAD-GUARD-LIVE-PREFLIGHT-V1",
+    "status": "closed_mapping_ok_guard_corrected_current_route_empty",
+    "contract": "packages/k1-control-v1/cfs-stock-unload-guard-live-preflight-v1/contract.json",
+    "evidence_map": "packages/k1-control-v1/cfs-stock-unload-guard-live-preflight-v1/evidence-map.json",
+    "printer_connected_read_only": true,
+    "gcode_sent": false,
+    "remote_files_written": false,
+    "configuration_hashes_unchanged": true,
+    "live_connected_cfs_units": ["T1", "T2"],
+    "live_engaged_routes": [],
+    "live_targets_zero": true,
+    "direct_stock_unload_state_field": false,
+    "historical_t_command_stayed_empty": true,
+    "mapping_verdict": "OK_WITH_GUARD_CORRECTION",
+    "current_guard_readiness": "BLOCKED_NO_ENGAGED_ROUTE",
+    "deployment_candidate": false,
+    "physical_test_authorized": false,
+    "next_design_branch": "offline_query_response_adapter_before_any_live_run"
   },
   "filament_state": {
     "states": [

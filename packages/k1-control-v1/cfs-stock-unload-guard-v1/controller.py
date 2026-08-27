@@ -64,7 +64,6 @@ def _snapshot(raw: Mapping[str, Any]) -> Dict[str, Any]:
         "connected_cfs_units",
         "active_cfs_command",
         "engaged_routes",
-        "stock_unload_state",
         "extruder_target_c",
         "bed_target_c",
         "toolhead_filament_present",
@@ -88,9 +87,6 @@ def _snapshot(raw: Mapping[str, Any]) -> Dict[str, Any]:
         raise GuardInputError("engaged_routes contains duplicates")
     if any(not ROUTE_TOKEN.fullmatch(route) for route in clean_routes):
         raise GuardInputError("engaged_routes contains an invalid route")
-    unload_state = str(raw["stock_unload_state"])
-    if unload_state not in {"idle", "running", "completed", "failed"}:
-        raise GuardInputError("stock_unload_state is invalid")
     present = raw["toolhead_filament_present"]
     if present is not None and not isinstance(present, bool):
         raise GuardInputError("toolhead_filament_present must be boolean or null")
@@ -100,7 +96,6 @@ def _snapshot(raw: Mapping[str, Any]) -> Dict[str, Any]:
         "connected_cfs_units": clean_units,
         "active_cfs_command": str(raw["active_cfs_command"]),
         "engaged_routes": clean_routes,
-        "stock_unload_state": unload_state,
         "extruder_target_c": _finite_non_negative(
             raw["extruder_target_c"], "extruder_target_c"
         ),
@@ -141,8 +136,6 @@ class StockUnloadGuard:
             return "two_cfs_units_not_confirmed"
         if state["active_cfs_command"]:
             return "cfs_command_already_active"
-        if state["stock_unload_state"] != "idle":
-            return "stock_unload_not_idle"
         if state["engaged_routes"] != [expected_route]:
             return "expected_route_not_uniquely_engaged"
         return None
@@ -212,15 +205,12 @@ class StockUnloadGuard:
                 if set(state["connected_cfs_units"]) != {"T1", "T2"}:
                     primary_error = "cfs_unit_lost_during_unload"
                     break
-                if state["stock_unload_state"] == "failed":
-                    primary_error = "stock_unload_reported_failure"
-                    break
                 if state["engaged_routes"] not in ([expected_route], []):
                     primary_error = "engaged_route_changed_unexpectedly"
                     break
-                stock_complete = state["stock_unload_state"] == "completed"
                 route_clear = state["engaged_routes"] == []
                 command_clear = state["active_cfs_command"] == ""
+                stock_complete = route_clear and command_clear
                 if stock_complete and route_clear and command_clear:
                     break
             else:

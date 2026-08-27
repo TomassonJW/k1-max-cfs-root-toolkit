@@ -76,6 +76,15 @@ python -m unittest tests.test_cfs_stock_unload_guard_v1 -v
 python packages\k1-control-v1\cfs-stock-unload-guard-v1\run_scenarios.py
 ```
 
+Le préflight live contrôle les empreintes privées, les deux lectures stables,
+la correspondance des champs K1, l'absence de G-code et la correction du faux
+champ de fin de retrait :
+
+```powershell
+python -m unittest tests.test_cfs_stock_unload_guard_live_preflight_v1 -v
+python packages\k1-control-v1\cfs-stock-unload-guard-live-preflight-v1\verify_private_capture.py
+```
+
 La suite complète doit être lancée avec un dossier de découverte explicite :
 
 ```powershell

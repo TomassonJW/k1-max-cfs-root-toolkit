@@ -962,6 +962,23 @@ se connecter uniquement pour lire les vrais champs de la K1 et vérifier qu'ils
 correspondent au contrat, sans envoyer de G-code, chauffer, retirer du filament
 ou installer un fichier. Cette connexion exige un nouveau GO exact.
 
+`G4-K1-CONTROL-CFS-STOCK-UNLOAD-GUARD-LIVE-PREFLIGHT-V1` est maintenant close en
+lecture seule. Deux états stables montrent Klipper prêt, la machine `standby`,
+`T1/T2` connectés, `t_command` vide, les cibles à zéro et aucune route engagée.
+Les configurations sont inchangées. Aucun G-code, fichier distant, service ou
+effet physique n'a eu lieu.
+
+La K1 n'expose aucun champ direct `stock_unload_state` et la capture historique
+montre que `t_command` était resté vide pendant le retrait. Le garde a donc été
+corrigé : le succès demande le retour sans erreur de la requête, la route
+réellement libérée, `t_command` vide et les chauffes confirmées à zéro. L'état
+courant est `BLOCKED_NO_ENGAGED_ROUTE`.
+
+La branche suivante proposée est
+`G4-K1-CONTROL-CFS-STOCK-UNLOAD-GUARD-ADAPTER-OFFLINE-V1`. En langage courant :
+construire sur l'ordinateur le traducteur entre une réponse K1 nettoyée et le
+garde, sans connexion ni action matérielle.
+
 Thomas explicitly rejected further sacrificial print campaigns on 2026-08-21.
 The V3 + PATHS-V1 observation remains useful coexistence evidence but no longer
 blocks offline product construction. L'autorité globale du Goal couvre la
@@ -1018,7 +1035,10 @@ retirement remains atomic with the later proven machine/Orca replacement.
   `G4-K1-CONTROL-CFS-STOCK-UNLOAD-GUARD-V1`, désormais clos hors imprimante.
 - Toute connexion de
   `G4-K1-CONTROL-CFS-STOCK-UNLOAD-GUARD-LIVE-PREFLIGHT-V1` sans son GO exact ;
-  même autorisé, ce préflight restera en lecture seule et sans retrait.
+  cette gate est maintenant close et son GO consommé.
+- Toute connexion ou action physique de
+  `G4-K1-CONTROL-CFS-STOCK-UNLOAD-GUARD-ADAPTER-OFFLINE-V1` ; son futur GO
+  autorisera seulement du code et des tests locaux.
 - Any import or change of Orca fields on the workstation profile.
 - `G4-ZSAFE-START-V1` forever: this rejected name cannot receive a GO.
 - Any future `K1-CONTROL-V1` deployment until a new exact G4 package exists and

@@ -280,6 +280,29 @@ lire seulement la K1 pour vérifier la correspondance exacte de chaque état don
 le garde a besoin. Aucun G-code, retrait, chauffe, pose ou restart ne sera
 autorisé par ce préflight. Un GO exact distinct est requis pour la connexion.
 
+### `G4-K1-CONTROL-CFS-STOCK-UNLOAD-GUARD-LIVE-PREFLIGHT-V1`
+
+Statut : **close en lecture seule ; mapping OK avec correction du garde ; état
+courant bloqué sans route ; production fermée**.
+
+Deux instantanés stables confirment Klipper prêt, `standby`, `T1/T2` connectés,
+`t_command` vide, chauffes à zéro et aucune route engagée. Les empreintes des
+trois configurations sont identiques avant/après. Aucun G-code, fichier
+distant, service ou effet physique n'a été produit.
+
+La K1 n'expose aucun champ direct de fin de retrait et `t_command` était resté
+vide pendant la capture historique. Le garde ne suppose donc plus
+`stock_unload_state` : il combine retour sans erreur de la requête, route
+réellement libérée, `t_command` vide et nettoyage thermique vérifié.
+
+Le premier collecteur avec `curl -sS` a signalé des options incompatibles et sa
+capture n'est pas retenue. La seconde capture corrigée est l'autorité live.
+
+La prochaine gate possible est
+`G4-K1-CONTROL-CFS-STOCK-UNLOAD-GUARD-ADAPTER-OFFLINE-V1`. En langage courant :
+construire hors imprimante le traducteur entre une réponse K1 nettoyée et les
+champs du garde. Son GO n'autorisera ni connexion ni retrait réel.
+
 ### Reprise physique `MESH-EDGE-DIAGNOSTIC-V1`
 
 Avant toute reprise physique restante : route filament fraîchement résolue,

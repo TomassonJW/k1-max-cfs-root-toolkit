@@ -14,8 +14,10 @@ présents, qu'aucune commande CFS n'est active et qu'une seule route correspond
 à celle demandée.
 
 Après ce contrôle, il peut demander une seule fois le retrait stock. Une réponse
-HTTP positive ne suffit jamais : le garde attend à la fois la fin stock, la
-libération de la route et l'absence de commande CFS active.
+HTTP positive ne suffit jamais : le garde attend le retour sans erreur de la
+requête, la libération réelle de la route et l'absence de commande CFS active.
+Le préflight live a prouvé que la K1 n'expose aucun champ direct
+`stock_unload_state` ; le garde n'en invente donc plus un.
 
 Dès que le retrait a été tenté, il demande une seule fois
 `TURN_OFF_HEATERS`, même après une panne. Il ne conclut que lorsque les deux

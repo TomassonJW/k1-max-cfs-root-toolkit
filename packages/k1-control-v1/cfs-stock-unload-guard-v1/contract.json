@@ -1,7 +1,7 @@
 {
   "contract_id": "K1-CONTROL-CFS-STOCK-UNLOAD-GUARD-V1",
   "schema": 1,
-  "status": "offline_guard_closed_green",
+  "status": "offline_guard_closed_green_live_fields_aligned",
   "authority": "offline_only",
   "printer_connection": false,
   "printer_action": false,
@@ -14,11 +14,10 @@
     "box_state": "connect",
     "connected_cfs_units": ["T1", "T2"],
     "active_cfs_command": "",
-    "stock_unload_state": "idle",
     "engaged_route": "exactly_one_and_matches_requested_route"
   },
   "success_requires": [
-    "stock_unload_state_completed",
+    "stock_request_returned_without_transport_exception",
     "requested_route_cleared",
     "active_cfs_command_cleared",
     "extruder_target_zero_after_cleanup",
@@ -34,7 +33,13 @@
     "reason_for_no_preflight_cleanup": "do_not_interrupt_an_existing_print_or_foreign_operation",
     "cleanup_ack_is_effect_proof": false,
     "toolhead_sensor_clear_required": false,
-    "toolhead_segment_message_required": true
+    "toolhead_segment_message_required": true,
+    "direct_stock_unload_state_field_required": false,
+    "completion_is_derived_from": [
+      "stock_request_returned_without_transport_exception",
+      "requested_route_cleared",
+      "active_cfs_command_cleared"
+    ]
   },
   "offline_verdict": "OK",
   "next_gate": {

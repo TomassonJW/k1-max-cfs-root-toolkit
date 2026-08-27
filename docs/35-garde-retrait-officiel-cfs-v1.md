@@ -24,7 +24,6 @@ Avant toute commande, le garde exige :
 - l'état CFS `connect` ;
 - les deux unités `T1` et `T2` visibles ;
 - aucune commande CFS active ;
-- un retrait stock au repos ;
 - exactement une route engagée, identique à celle demandée.
 
 Si une de ces preuves manque, il refuse sans envoyer de commande. Il ne coupe
@@ -34,8 +33,8 @@ une opération étrangère déjà active.
 Après le premier effet, il :
 
 1. envoie au maximum une fois `BOX_QUIT_MATERIAL` ;
-2. attend la fin stock, la libération de la route et la disparition de la
-   commande CFS active ;
+2. attend le retour de la requête, la libération réelle de la route et la
+   disparition de la commande CFS active ;
 3. refuse tout changement vers une autre route, toute déconnexion, tout échec
    stock ou toute sortie de `standby` ;
 4. n'effectue aucun second essai automatique ;
@@ -59,6 +58,11 @@ invalide.
 
 Le code du paquet n'importe aucun module réseau, série, SSH ou de lancement de
 processus.
+
+Le préflight live suivant a prouvé que la K1 n'expose aucun champ direct de fin
+de retrait et que `box.t_command` reste vide pendant le cycle stock. Le contrat
+a donc été corrigé : la fin est déduite du retour sans erreur de la requête et
+de la route réellement libérée. HTTP `ok` seul reste insuffisant.
 
 ## Limites
 

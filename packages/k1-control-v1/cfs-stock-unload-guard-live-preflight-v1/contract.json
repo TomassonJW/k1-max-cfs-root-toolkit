@@ -1,0 +1,33 @@
+{
+  "contract_id": "K1-CONTROL-CFS-STOCK-UNLOAD-GUARD-LIVE-PREFLIGHT-V1",
+  "schema": 1,
+  "status": "closed_mapping_ok_guard_corrected_current_route_empty",
+  "authority_consumed": "read_only_only",
+  "printer_connected": true,
+  "gcode_sent": false,
+  "remote_files_written": false,
+  "service_actions": false,
+  "physical_actions": false,
+  "mapping_verdict": "OK_WITH_GUARD_CORRECTION",
+  "current_guard_readiness": "BLOCKED_NO_ENGAGED_ROUTE",
+  "guard_correction": {
+    "removed_assumption": "direct_stock_unload_state_field",
+    "reason": "field_absent_and_box_t_command_stayed_empty_during_historical_stock_unload",
+    "new_completion_evidence": [
+      "stock_request_returned_without_transport_exception",
+      "expected_route_cleared",
+      "box_t_command_empty"
+    ],
+    "http_ok_alone_is_success": false
+  },
+  "configuration_hashes_unchanged": true,
+  "deployment_candidate": false,
+  "transport_candidate": false,
+  "next_gate": {
+    "candidate": "G4-K1-CONTROL-CFS-STOCK-UNLOAD-GUARD-ADAPTER-OFFLINE-V1",
+    "default_authority": "offline_only",
+    "goal": "build_and_test_the_query_response_to_guard_snapshot_adapter_from_redacted_fixtures",
+    "printer_connection_requires_fresh_exact_GO": true,
+    "physical_unload_authorized": false
+  }
+}

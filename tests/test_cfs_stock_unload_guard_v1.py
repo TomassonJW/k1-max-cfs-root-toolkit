@@ -31,7 +31,6 @@ BASE = {
     "connected_cfs_units": ["T1", "T2"],
     "active_cfs_command": "",
     "engaged_routes": ["T1A"],
-    "stock_unload_state": "idle",
     "extruder_target_c": 0,
     "bed_target_c": 0,
     "toolhead_filament_present": True,
@@ -50,17 +49,15 @@ def successful_scenario():
         "after_stock": [
             state(
                 active_cfs_command="RETRUDE_PROCESS",
-                stock_unload_state="running",
                 extruder_target_c=220,
             ),
             state(
                 engaged_routes=[],
-                stock_unload_state="completed",
                 extruder_target_c=220,
             ),
         ],
         "after_cleanup": [
-            state(engaged_routes=[], stock_unload_state="completed")
+            state(engaged_routes=[])
         ],
     }
 
@@ -71,7 +68,10 @@ class CfsStockUnloadGuardV1Tests(unittest.TestCase):
         cls.contract = json.loads((PACKAGE / "contract.json").read_text(encoding="utf-8"))
 
     def test_contract_is_offline_and_not_deployable(self):
-        self.assertEqual("offline_guard_closed_green", self.contract["status"])
+        self.assertEqual(
+            "offline_guard_closed_green_live_fields_aligned",
+            self.contract["status"],
+        )
         self.assertEqual("offline_only", self.contract["authority"])
         self.assertFalse(self.contract["printer_connection"])
         self.assertFalse(self.contract["printer_action"])
@@ -100,11 +100,10 @@ class CfsStockUnloadGuardV1Tests(unittest.TestCase):
         scenario["after_stock"] = [
             state(
                 active_cfs_command="RETRUDE_PROCESS",
-                stock_unload_state="running",
                 extruder_target_c=220,
             )
         ]
-        scenario["after_cleanup"] = [state(stock_unload_state="running")]
+        scenario["after_cleanup"] = [state()]
         api = fake_api.FakePrinterApi(scenario)
         result = controller.StockUnloadGuard(api, max_polls=2).run("T1A")
         self.assertEqual("stock_unload_timeout", result.code)
@@ -116,7 +115,6 @@ class CfsStockUnloadGuardV1Tests(unittest.TestCase):
         scenario["after_cleanup"] = [
             state(
                 engaged_routes=[],
-                stock_unload_state="completed",
                 extruder_target_c=220,
             )
         ]
@@ -192,12 +190,11 @@ class CfsStockUnloadGuardV1Tests(unittest.TestCase):
         scenario["after_stock"] = [
             state(
                 engaged_routes=["T1B"],
-                stock_unload_state="completed",
                 extruder_target_c=220,
             )
         ]
         scenario["after_cleanup"] = [
-            state(engaged_routes=["T1B"], stock_unload_state="completed")
+            state(engaged_routes=["T1B"])
         ]
         api = fake_api.FakePrinterApi(scenario)
         result = controller.StockUnloadGuard(api).run("T1A")
@@ -244,7 +241,10 @@ class CfsStockUnloadGuardV1Tests(unittest.TestCase):
             )
         )
         gate = lifecycle["cfs_stock_unload_guard"]
-        self.assertEqual("offline_guard_closed_green", gate["status"])
+        self.assertEqual(
+            "offline_guard_closed_green_live_fields_aligned",
+            gate["status"],
+        )
         self.assertFalse(gate["http_ok_is_effect_proof"])
         self.assertFalse(gate["automatic_stock_retry"])
         self.assertTrue(gate["success_requires_targets_zero"])

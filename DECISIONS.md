@@ -1501,3 +1501,28 @@ la K1 ; elle demandera un GO exact distinct et n'autorisera aucun retrait.
 
 Voir ADR-024, `docs/35-garde-retrait-officiel-cfs-v1.md` et
 `packages/k1-control-v1/cfs-stock-unload-guard-v1/`.
+
+## D-075 — La fin du retrait vient de la route libérée, pas d'un état fictif
+
+Date: 2026-08-27
+
+Status: préflight live clos en lecture seule ; mapping OK avec correction ;
+aucune action physique ; production fermée
+
+`G4-K1-CONTROL-CFS-STOCK-UNLOAD-GUARD-LIVE-PREFLIGHT-V1` a lu deux fois l'état
+réel de la K1 sans G-code ni écriture. Klipper est prêt, `T1` et `T2` sont
+connectés, les cibles sont à zéro, `t_command` est vide et aucune route CFS
+n'est engagée. Les trois configurations gardent leurs empreintes exactes.
+
+L'objet `box` n'expose aucun `stock_unload_state`. La capture historique prouve
+en outre que `t_command` est resté vide pendant le retrait stock. Le garde est
+donc corrigé : après sa tentative unique, il exige le retour sans erreur de la
+requête, la disparition réelle de la route et `t_command` vide, puis les
+chauffes à zéro. HTTP `ok` seul reste insuffisant.
+
+L'état courant est `BLOCKED_NO_ENGAGED_ROUTE`, donc aucune tentative ne serait
+permise. La prochaine gate construit seulement l'adaptateur de réponse K1 hors
+imprimante, à partir d'exemples nettoyés.
+
+Voir ADR-025, `docs/36-preflight-live-garde-retrait-cfs-v1.md` et
+`packages/k1-control-v1/cfs-stock-unload-guard-live-preflight-v1/`.
