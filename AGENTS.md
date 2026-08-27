@@ -68,7 +68,13 @@ un autre à `Y304`, entre `X203` et `X206`, à `3 mm/s`; Thomas a confirmé
 route CFS, configurations inchangées et `11 × 11` actif. Le registre local
 `physical-slices-qualification-v1` fixe exactement sept exigences internes au
 Goal 3, en compte désormais `1/7` close et place
-`G4-K1-CONTROL-CLEAN-AND-REFERENCE-V1` comme exigence active ;
+`G4-K1-CONTROL-CLEAN-AND-REFERENCE-V1` comme exigence active. Son pilote
+physique complet est prêt et son préflight live sans effet est vert à
+`X203 Y273 Z32`, chauffes zéro et `11 × 11` exact. Deux lectures des slots CFS
+ne prouvent pas l'identité du segment dans la tête ; un marqueur de chargement
+postérieur au retrait T1A interdit de la déduire de cet ancien retrait. La
+première chauffe attend uniquement la confirmation humaine de la matière et de
+sa température ;
 GATEWAY-PRIVATE-LAN-NO-AUTH-V1 est installé et validé : le port `4409` ne
 demande plus de mot de passe, reste limité aux réseaux IPv4 privés, et présente
 uniquement son proxy local approuvé à Moonraker ; production remains closed**.

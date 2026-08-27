@@ -3,7 +3,7 @@
   "mission": "G4-K1-CONTROL-CLEAN-AND-REFERENCE-V1",
   "goal": "GOAL-P4-PHYSICAL-SLICES-QUALIFICATION-V1",
   "requirement": "AUTOMATIC_CLEAN_AND_FINAL_REFERENCE",
-  "status": "OFFLINE_CANDIDATE_BLOCKED_MATERIAL_RECIPE",
+  "status": "LIVE_PREFLIGHT_OK_BLOCKED_PREVIOUS_MATERIAL_IDENTITY",
   "source_gate": "G4-K1-CONTROL-CLEAN-MOTION-V1",
   "source_gate_status": "CLEAN_MOTION_V1_OK",
   "source_geometry": {
@@ -59,6 +59,56 @@
     "heater_shutdown_required": true,
     "automatic_retry": false
   },
+  "physical_runner": {
+    "remote_program": "packages/k1-control-v1/clean-and-reference-v1/remote_clean_reference.py",
+    "remote_program_sha256": "62c3fc42ecc5f1d6730cafd8e93cefc49c9a8299f0b9a2eebd5f17657a52fc48",
+    "runner": "packages/k1-control-v1/clean-and-reference-v1/run_clean_reference.ps1",
+    "runner_sha256": "853673a86e41be6f32ad08ca61fabbbc549909d2621bbc3aa170d664e2406015",
+    "remote_file_write": false,
+    "automatic_retry": false,
+    "actions": ["preflight", "heat", "hot-clean", "cool", "stable-clean", "reference", "stop", "validate"],
+    "human_verdict_before_every_effect": true
+  },
+  "live_read_only_evidence": {
+    "material_inventory_capture": {
+      "capture_id": "20260827-goal3-clean-reference-material-read-only-v1",
+      "sha256": "d4849c5650c7c015be3da2211522171fa3b8f1c8a0dbdac14de5e5fa4e0167d5",
+      "stable_reads": 2,
+      "engaged_routes": [],
+      "T1_material_codes": {"A": "000001", "B": "-1", "C": "-1", "D": "000001"},
+      "T2_material_codes": {"A": "000001", "B": "000001", "C": "000003", "D": "000001"},
+      "previous_nozzle_material_proven": false
+    },
+    "cfs_history_capture": {
+      "capture_id": "20260827-goal3-clean-reference-cfs-history-v1",
+      "sha256": "0b24145108d0480e611544c0be83ebe76d6469e61dc884f42f1b9f5f1903006c",
+      "safe_history_sha256": "3aafeccc265710110c1e852e5dcfe273001b13ae1905ece362b7c63fc9d0ed87",
+      "stock_load_marker_after_original_T1A_unload": true,
+      "latest_stock_load_marker": "2026-08-27 09:38:41.838",
+      "route_for_latest_stock_load_proven": false,
+      "conclusion": "historical_T1A_segment_cannot_be_promoted_to_current_material_identity"
+    },
+    "preflight_capture": {
+      "capture_id": "20260827-goal3-clean-reference-preflight-v2",
+      "sha256": "142be6d17095f70bcb89b87a521b618781eb8cd70404454e84ddf4e0e13d3008",
+      "material_id": "CFS_TYPE_000001_PROVISIONAL",
+      "cleaning_target_c": 220.0,
+      "material_identity_accepted_for_effect": false,
+      "status": "PREFLIGHT_OK",
+      "position_gcode_mm": [203.0, 273.0, 32.0],
+      "heaters_target_zero": true,
+      "active_profile": "k1_p001_t055_r001_n11x11",
+      "configuration_hashes_exact": true,
+      "gcode": false,
+      "motion": false,
+      "heating": false
+    }
+  },
+  "only_remaining_pre_effect_fact": {
+    "id": "PREVIOUS_NOZZLE_MATERIAL_AND_CLEANING_TARGET",
+    "status": "HUMAN_CONFIRMATION_REQUIRED",
+    "reason": "live_CFS_inventory_does_not_identify_the_segment_in_the_toolhead_and_history_contains_a_later_unresolved_load_marker"
+  },
   "forbidden": [
     "T0_OR_ANY_HARDCODED_TOOL",
     "CFS_COMMAND",
@@ -72,7 +122,7 @@
     "SERVICE_ACTION"
   ],
   "effects": {
-    "printer_connection": false,
+    "printer_connection": true,
     "gcode": false,
     "heating": false,
     "motion": false,

@@ -49,8 +49,8 @@ class Goal3PhysicalCompletionRegistryTests(unittest.TestCase):
 
     def test_current_gate_is_clean_and_reference_design_and_effect_is_blocked(self):
         gate = self.matrix["current_human_gate"]
-        self.assertEqual("CLEAN_AND_REFERENCE_DESIGN", gate["checkpoint"])
-        self.assertEqual("RECIPE_REVIEW_THEN_PHYSICAL_CHECKPOINTS", gate["required_human_verdict"])
+        self.assertEqual("MATERIAL_IDENTITY", gate["checkpoint"])
+        self.assertEqual("MATERIAL_RECIPE_CONFIRMED", gate["required_human_verdict"])
         self.assertTrue(gate["next_effect_blocked"])
 
     def test_current_ledger_verifies_as_in_progress_without_effect(self):

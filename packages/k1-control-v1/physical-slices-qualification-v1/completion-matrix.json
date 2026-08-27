@@ -6,10 +6,10 @@
   "completion_audit_evidence": null,
   "current_human_gate": {
     "requirement_id": "AUTOMATIC_CLEAN_AND_FINAL_REFERENCE",
-    "checkpoint": "CLEAN_AND_REFERENCE_DESIGN",
+    "checkpoint": "MATERIAL_IDENTITY",
     "active_gate": "G4-K1-CONTROL-CLEAN-AND-REFERENCE-V1",
-    "technical_status": "OFFLINE_CANDIDATE_BLOCKED_MATERIAL_RECIPE",
-    "required_human_verdict": "RECIPE_REVIEW_THEN_PHYSICAL_CHECKPOINTS",
+    "technical_status": "LIVE_PREFLIGHT_OK_BLOCKED_PREVIOUS_MATERIAL_IDENTITY",
+    "required_human_verdict": "MATERIAL_RECIPE_CONFIRMED",
     "next_effect_blocked": true
   },
   "requirements": [
@@ -29,7 +29,7 @@
     {
       "order": 2,
       "id": "AUTOMATIC_CLEAN_AND_FINAL_REFERENCE",
-      "status": "IN_PROGRESS_OFFLINE_CANDIDATE_BLOCKED_MATERIAL_RECIPE",
+      "status": "IN_PROGRESS_LIVE_PREFLIGHT_OK_BLOCKED_PREVIOUS_MATERIAL_IDENTITY",
       "slice_id": "CLEAN-AND-REFERENCE-V1",
       "evidence": "packages/k1-control-v1/clean-and-reference-v1/contract.json",
       "required_proofs": [

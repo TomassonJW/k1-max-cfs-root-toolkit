@@ -147,13 +147,17 @@ est `E4 OK`. Les chauffes sont à zéro, aucune route CFS n'est engagée, les
 configurations sont inchangées et le meilleur profil actuel `11 × 11` reste
 actif.
 
-La prochaine tranche doit créer une recette versionnée à partir de cette
-géométrie, faire tomber le flux initial dans le réceptacle, observer un
-nettoyage à chaud borné réellement efficace, éviter tout essuyage à une
-température non qualifiée, lancer une seule référence Z avec buse propre, puis
-relire l'arrêt thermique et l'état sûr. La matière réellement présente ou le
-slot à charger doit être résolu avant de fixer les températures ; aucun `T0`
-ne peut être supposé.
+Le pilote versionné de la tranche suivante est prêt. Il sépare l'observation du
+flux dans le bac, un carré E4 chaud, le refroidissement sans essuyage, un carré
+stable à `140 °C`, une seule référence Z et l'arrêt thermique. Son préflight
+live sans effet est vert à `X203 Y273 Z32`, chauffes zéro, profil `11 × 11`
+exact et configurations conformes.
+
+Deux lectures live des slots ne prouvent pas la matière du segment présent dans
+la tête. L'historique contient un chargement postérieur au retrait T1A ; la
+valeur provisoire `CFS_TYPE_000001 / 220 °C` utilisée pour le préflight ne peut
+pas autoriser une chauffe. Thomas doit uniquement confirmer la matière réelle
+et sa température de nettoyage. Aucun `T0` ni aucune action CFS ne sera utilisé.
 
 Le registre
 `packages/k1-control-v1/physical-slices-qualification-v1/completion-matrix.json`
@@ -168,8 +172,9 @@ et la clôture finale restent au Goal 4 ; aucun cinquième Goal n'est permis.
 > `11 × 11` est actif ; aucun profil actuel n'est qualifié robuste. Je suis
 > devant la K1, plateau libre, brosses visibles, buse observable et arrêt
 > immédiat possible. CLEAN-MOTION-V1 est clos avec `E4 OK`; le Goal 3 est à
-> `1/7`. Reprends `G4-K1-CONTROL-CLEAN-AND-REFERENCE-V1`, résous explicitement
-> la matière ou le slot avant toute température, puis prépare et exécute le
+> `1/7`. Le pilote `G4-K1-CONTROL-CLEAN-AND-REFERENCE-V1` et son préflight sont
+> prêts. La matière du segment dans la tête reste inconnue malgré les lectures
+> CFS. Demande seulement ma confirmation matière + température, puis exécute le
 > nettoyage réel et l'unique référence Z par checkpoints humains.
 
 La tâche source reste visible et ne doit pas être archivée.

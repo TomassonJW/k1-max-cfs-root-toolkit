@@ -2,8 +2,9 @@
 
 Deuxième exigence physique du Goal 3.
 
-Statut : **candidat hors imprimante ; effet bloqué jusqu'à résolution explicite
-de la matière et revue de la température**.
+Statut : **pilote physique complet et préflight live sans effet verts ; effet
+bloqué jusqu'à résolution explicite de la matière présente dans la tête et de
+sa température de nettoyage**.
 
 Cette tranche réutilise uniquement le carré de la brosse du bac qualifié par
 E4 : `X203..206 / Y304..305 / Z32`, avec entrée et sortie à
@@ -29,3 +30,15 @@ Le cycle prévu est volontairement découpé :
 
 Toute réponse humaine négative coupe les chauffes et ferme la suite. Aucun
 checkpoint physique n'est rejoué automatiquement.
+
+Deux lectures live montrent les deux CFS connectés, aucune route engagée et les
+codes matière actuels des huit slots. Elles ne peuvent pas identifier le
+segment déjà présent dans la tête. L'historique retenu contient en outre un
+marqueur de chargement postérieur au retrait historique T1A ; T1A/`000001` ne
+peut donc pas être promu en identité actuelle par déduction.
+
+Le préflight live du pilote est vert à la position `X203 Y273 Z32`, chauffes à
+zéro, profil `11 × 11` exact et configurations inchangées. La valeur
+`CFS_TYPE_000001_PROVISIONAL / 220 °C` utilisée pour tester ce préflight reste
+explicitement interdite pour les actions physiques tant qu'elle n'est pas
+confirmée.

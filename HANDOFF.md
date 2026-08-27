@@ -11,8 +11,8 @@ doit pas piloter la prochaine action.
 `GOAL-P4-OFFLINE-CYCLE-CFS-V1` est terminé hors imprimante et
 `GOAL-P4-K1-READ-ONLY-QUALIFICATION-V1` est terminé en lecture seule. La capture
 canonique de ce second Goal reste
-`20260827-142853-goal-p4-k1-read-only-qualification-v1`. Aucune impression,
-G-code, écriture distante, chauffe ou mouvement n'a été produit par ce Goal.
+`20260827-142853-goal-p4-k1-read-only-qualification-v1`. Aucune impression, G-code, écriture distante,
+chauffe ou mouvement n'a été produit par ce Goal.
 
 État courant corrigé : tous les profils actuels ont des défauts de bord et
 aucun n'est qualifié robuste. Le `11 × 11`, meilleur profil observé, est actif
@@ -42,6 +42,16 @@ La prochaine exigence est `AUTOMATIC_CLEAN_AND_FINAL_REFERENCE`, sous
 géométrie qualifiée, purge visible dans le réceptacle, nettoyage à chaud borné,
 une référence Z finale avec buse propre, puis arrêt thermique et état sûr
 relus.
+
+Le pilote complet et son arrêt thermique sont prêts. Son préflight live sans
+effet est vert à `X203 Y273 Z32`, chauffes zéro, configurations conformes et
+`11 × 11` exact. Les deux CFS ne publient aucune route engagée. Leurs codes de
+slot ne prouvent pas la matière du segment dans la tête et l'historique contient
+un chargement postérieur au retrait T1A. La valeur provisoire
+`CFS_TYPE_000001 / 220 °C` n'est donc pas autorisée pour chauffer. Il faut
+seulement que Thomas confirme la matière réellement présente et la température
+de nettoyage correspondante ; le premier verdict consommé sera
+`MATERIAL_RECIPE_CONFIRMED`.
 
 ## Archive historique — clôture initiale du Goal 2
 

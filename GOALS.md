@@ -28,10 +28,11 @@ Le registre exécutable
 fige exactement les sept exigences internes du Goal 3. Il indique actuellement
 `1/7` exigence close : CLEAN-MOTION-V1 a qualifié à froid la grande brosse et
 la brosse secondaire, y compris le carré exact `X203..206 / Y304..305` à
-`Z32`. Le candidat hors imprimante de l'exigence suivante est prêt, mais reste
-bloqué avant effet tant que la matière précédente et sa température de
-nettoyage ne sont pas explicites. Ce registre ne crée aucun Goal
-supplémentaire.
+`Z32`. Le pilote complet de l'exigence suivante est prêt et son préflight live
+sans effet est vert. Les inventaires CFS ne prouvent pas l'identité du segment
+présent dans la tête et l'historique contient un chargement postérieur au
+retrait T1A : la première chauffe reste bloquée jusqu'à confirmation humaine de
+la matière et de sa température. Ce registre ne crée aucun Goal supplémentaire.
 
 ## Goal 1 — Terminer le système hors imprimante
 

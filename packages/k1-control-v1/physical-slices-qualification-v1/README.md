@@ -9,9 +9,10 @@ validations humaines C, D1, D2, D3, E2, E3-R2 et E4 ; une exigence physique
 sur sept est passée**. La prochaine exigence est
 `AUTOMATIC_CLEAN_AND_FINAL_REFERENCE`, sous la gate
 `G4-K1-CONTROL-CLEAN-AND-REFERENCE-V1`.
-Son candidat hors imprimante réutilise le carré E4 exact, interdit extrusion et
-CFS, et reste bloqué tant que la matière précédente et sa température de
-nettoyage ne sont pas explicites.
+Son pilote réutilise le carré E4 exact et interdit extrusion et CFS. Son
+préflight live sans effet est vert ; la première chauffe reste bloquée tant que
+la matière du segment présent dans la tête et sa température ne sont pas
+confirmées.
 
 Le registre est entièrement local. Il ne contient aucun connecteur K1, aucune
 commande G-code, aucune pose, aucun restart et aucun effet physique. Son
