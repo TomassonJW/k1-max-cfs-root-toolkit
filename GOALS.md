@@ -6,10 +6,11 @@ Ce fichier sert d'index rapide pour les grandes sessions de travail. Les noms
 ci-dessous regroupent les petites gates déjà définies dans `GATES.md` ; ils ne
 les remplacent pas et n'autorisent aucune action sur la K1 par eux-mêmes.
 
-Ce document ne crée aucun Goal Codex. Les Goals 1 et 2 sont clos. La gate
-d'activation runtime du robuste est également close OK : le `6 × 6` qualifié
-est actif et revérifié. Le Goal 3 peut commencer uniquement par sa première
-tranche physique, avec Thomas devant la K1.
+Ce document ne crée aucun Goal Codex. Les Goals 1 et 2 sont clos. ADR-029
+établit qu'aucun profil actuel n'est robuste : tous ont des défauts de bord. Le
+`11 × 11`, meilleur profil observé, est actif et revérifié. Le Goal 3 a exécuté
+son premier checkpoint physique et attend le verdict visuel de Thomas avant de
+s'approcher de la brosse.
 
 ## Vue rapide
 
@@ -17,7 +18,7 @@ tranche physique, avec Thomas devant la K1.
 | --- | --- | --- | --- |
 | 1 | `GOAL-P4-OFFLINE-CYCLE-CFS-V1` | terminé hors imprimante | système logiciel complet simulé et plan futur inerte vérifié |
 | 2 | `GOAL-P4-K1-READ-ONLY-QUALIFICATION-V1` | terminé en lecture seule ; écart de mesh alors observé, corrigé par une gate distincte | réponses et délais réels qualifiés sans commande ni impression |
-| 3 | `GOAL-P4-PHYSICAL-SLICES-QUALIFICATION-V1` | prêt à commencer ; profil robuste actif ; attend Thomas devant la K1 | fonctions physiques validées séparément avec retour arrière |
+| 3 | `GOAL-P4-PHYSICAL-SLICES-QUALIFICATION-V1` | checkpoint C CLEAN-MOTION techniquement vert ; verdict humain attendu | fonctions physiques validées séparément avec retour arrière |
 | 4 | `GOAL-P4-DAILY-CUTOVER-V1` | prévu après Goal 3 | fonctionnement quotidien unifié, ancien Orca retirable en une transaction |
 
 ## Goal 1 — Terminer le système hors imprimante
@@ -54,7 +55,8 @@ l'imprimante ni sur le Goal 2.
 
 Identifiant : `GOAL-P4-K1-READ-ONLY-QUALIFICATION-V1`
 
-État : **terminé en lecture seule ; suite physique bloquée par la dérive du mesh actif**.
+État : **terminé en lecture seule ; l'écart de mesh alors observé est clos par
+une gate distincte**.
 
 Ce qui a été réellement fait :
 
@@ -76,24 +78,32 @@ provoquée.
 
 Résultat historique de la capture : `CLOSED_READ_ONLY_BLOCKED_MESH_DRIFT`. La
 K1 utilisait
-alors le mesh `default`, dont la matrice différait du profil robuste
+alors le mesh `default`, dont la matrice différait du profil quotidien
 `k1_p001_t055_r001_n06x06`. Une lecture fraîche de fin de session montre
 ensuite le composite `k1_p001_t055_r001_n11x11` actif. La cause de ce
-changement intermédiaire n'est pas qualifiée. La gate distincte d'activation a
-depuis chargé et revérifié le robuste `k1_p001_t055_r001_n06x06`. Le paquet de
+changement intermédiaire n'est pas qualifiée. Une gate a chargé à tort le
+`6 × 6` sous l'ancienne nomenclature, puis
+`G4-K1-CONTROL-BEST-CURRENT-MESH-RESTORE-V1` a remis et revérifié le meilleur
+profil actuel `11 × 11`. Le paquet de
 lecture seule reste clos ; aucun candidat de pose ou connecteur de commande n'a
 été créé dans le Goal 2.
 
 Autorité consommée : ce Goal est clos. Il ne donnait par lui-même aucune
-autorité pour charger le profil robuste ni commencer le Goal 3 ; ces actions
+autorité pour changer le profil actif ni commencer le Goal 3 ; ces actions
 ont depuis reçu leur autorité distincte.
 
 ## Goal 3 — Installer progressivement et qualifier les fonctions physiques
 
 Identifiant : `GOAL-P4-PHYSICAL-SLICES-QUALIFICATION-V1`
 
-État : **prêt à commencer ; profil robuste actif ; présence humaine obligatoire
-pour les tranches physiques**.
+État : **en reprise ; checkpoint C de CLEAN-MOTION techniquement vert ; meilleur
+profil actuel `11 × 11` actif ; verdict visuel de Thomas attendu**.
+
+Le checkpoint C a référencé XYZ, rechargé le `11 × 11`, commandé `Z=50 mm` et
+attendu la fin. Un premier faux KO local a confondu la position physique
+compensée `50,23 mm` avec la consigne. Aucun mouvement n'a été rejoué ; la
+validation corrigée en lecture seule est verte. La suite est bloquée jusqu'au
+verdict humain.
 
 Ce qui sera réellement fait, une petite tranche à la fois :
 
@@ -103,7 +113,8 @@ Ce qui sera réellement fait, une petite tranche à la fois :
 - vérifier changement de filament, runout, pause, reprise, annulation et fin ;
 - reprendre le diagnostic des bords seulement après une route fraîche et une
   purge réellement visible ;
-- tester le profil de précision sans remplacer le profil robuste quotidien.
+- corriger les bords point par point depuis la source `11 × 11`, puis tester un
+  candidat dérivé sans écraser les profils existants.
 
 Limite : chaque tranche conserve sa gate, ses critères OK/KO et son autorisation
 exacte. Aucun retry automatique et aucune poursuite après un KO.
@@ -143,20 +154,22 @@ prêt pour la campagne finale de validation.
 
 ## Démarrage recommandé
 
-La gate préalable `G4-K1-CONTROL-ROBUST-MESH-ACTIVATION-V1` est close OK. Une
-seule commande a chargé `k1_p001_t055_r001_n06x06`, aucun rollback n'a été
-nécessaire et deux lectures indépendantes ont confirmé le profil et sa matrice.
+La nomenclature de cette ancienne gate est obsolète. La correction
+`G4-K1-CONTROL-BEST-CURRENT-MESH-RESTORE-V1` est close OK : une seule commande
+a remis `k1_p001_t055_r001_n11x11`, aucun rollback n'a été nécessaire et deux
+lectures indépendantes ont confirmé le profil et sa matrice.
 
-La première tranche physique suivante est désormais cadrée hors imprimante dans
-`packages/k1-control-v1/clean-motion-v1` et le document 42. Elle ne contient
-encore aucune commande. Une capture live en lecture seule a qualifié les limites
-machine et la zone de nettoyage déclarée par le logiciel stock, sans exporter
-son code complet. Thomas doit maintenant être devant la K1, confirmer le
-plateau libre, la brosse réelle, la visibilité et chaque rapprochement à froid.
-Cette gate humaine est la prochaine action unique.
+La première tranche physique est cadrée dans
+`packages/k1-control-v1/clean-motion-v1` et le document 42. Une capture live en
+lecture seule a qualifié les limites machine et la zone de nettoyage déclarée
+par le logiciel stock, sans exporter son code complet. Thomas a confirmé le
+plateau libre, la brosse visible, la buse observable et l'arrêt immédiat
+possible. Le checkpoint C a été exécuté une fois et sa validation technique
+corrigée est verte. Aucun mouvement ne doit être rejoué ; la suite attend le
+verdict visuel de Thomas.
 
-La prochaine action immédiate est une gate humaine : aucun agent ni modèle ne
-peut remplacer la visibilité réelle de Thomas. Une fois Thomas présent,
-`gpt-5.6-terra` avec raisonnement `high` est conseillé pour piloter les arrêts
-et les preuves ; l'option `medium` est moins coûteuse mais augmente le risque de
-reprise si un checkpoint physique est mal interprété.
+La présence humaine est acquise pour le démarrage, mais chaque rapprochement
+reste un checkpoint humain. `gpt-5.6-terra` avec raisonnement `high` est
+conseillé pour piloter les arrêts et les preuves ; l'option `medium` est moins
+coûteuse mais augmente le risque de reprise si un checkpoint physique est mal
+interprété.

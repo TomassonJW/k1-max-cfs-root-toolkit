@@ -4,6 +4,10 @@ Date : 25 août 2026
 
 Verdict : **OK, gate hors imprimante close**.
 
+Nomenclature corrigée le 27 août 2026 par ADR-029 : tous les profils actuels
+ont des défauts de bord. Le `11 × 11` est le meilleur profil observé et le moins
+mauvais globalement ; aucun profil actuel n'est qualifié robuste.
+
 ## But
 
 Créer le premier éditeur sûr de profils mesh dérivés sans toucher à la K1 :
@@ -55,6 +59,10 @@ l’autorité pour l’export Klipper.
 La source k1_p001_t055_r001_n11x11 n’est jamais modifiée. Le moteur crée
 k1_p001_t055_r001_n11x11_tuned_v001 et conserve séparément source, demande,
 normalisation et résultat final.
+
+Cette dérivation est désormais le chemin principal pour corriger les bords
+point par point. Le mode `Un point` modifie une seule cellule par petits pas ;
+ligne, colonne et zone restent des outils avancés optionnels.
 
 Le document dérivé contient une empreinte canonique et refuse :
 

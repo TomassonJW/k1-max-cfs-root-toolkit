@@ -1,18 +1,19 @@
 {
   "schema": 1,
   "gate": "G4-K1-CONTROL-CLEAN-MOTION-V1",
-  "status": "NOT_RUN",
+  "status": "CHECKPOINT_C_TECHNICAL_OK_AWAITING_HUMAN_VERDICT",
   "capture_id": null,
-  "operator_present": null,
-  "plate_clear": null,
-  "brush_installed_and_visible": null,
-  "visibility_mode": null,
+  "operator_present": true,
+  "plate_clear": true,
+  "brush_installed_and_visible": true,
+  "visibility_mode": "direct_or_camera_nozzle_observable_confirmed_by_operator",
+  "immediate_stop_available": true,
   "initial_state": {
-    "standby": null,
-    "heater_targets_zero": null,
-    "active_profile": null,
-    "active_profile_sha256": null,
-    "axes_homed": null
+    "standby": true,
+    "heater_targets_zero": true,
+    "active_profile": "k1_p001_t055_r001_n11x11",
+    "active_profile_sha256": "58fd96c55129bf7a17ba890d309cb3cd5e2926ec271d735b60392f8369da0a61",
+    "axes_homed": false
   },
   "observed_geometry_mm": {
     "brush_x_min": null,
@@ -30,7 +31,19 @@
     "safe_entry": null,
     "safe_exit": null
   },
-  "checkpoints": [],
+  "checkpoints": [
+    {
+      "id": "C_COLD_REFERENCE_AND_HIGH_CLEARANCE",
+      "attempt": 1,
+      "technical_status": "OK_AFTER_READ_ONLY_VALIDATOR_CORRECTION",
+      "commanded_z_mm": 50.0,
+      "mesh_compensated_physical_z_mm": 50.23,
+      "active_profile_after": "k1_p001_t055_r001_n11x11",
+      "heaters_zero": true,
+      "human_verdict": null,
+      "notes": "Le premier validateur a confondu Z G-code et Z physique compense. Aucun mouvement n'a ete rejoue."
+    }
+  ],
   "final_state": {
     "safe_park": null,
     "heater_targets_zero": null,

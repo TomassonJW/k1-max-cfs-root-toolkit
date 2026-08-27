@@ -1,13 +1,19 @@
 {
   "contract_id": "G4-K1-CONTROL-CLEAN-MOTION-V1",
-  "status": "read_only_sources_qualified_no_candidate_commands",
+  "status": "checkpoint_c_technical_ok_awaiting_human_verdict",
   "scope": "cold_brush_geometry_and_collision_free_trajectory_only",
-  "authority": "offline_preparation_only",
+  "authority": "checkpoint_c_authority_consumed_next_motion_human_gated",
   "deployment_candidate": false,
   "read_only_connection_qualified": true,
-  "printer_effect_connection": false,
+  "printer_effect_connection": true,
   "remote_commands": [],
-  "gcode_commands": [],
+  "gcode_commands": [
+    "G28",
+    "BED_MESH_PROFILE LOAD=k1_p001_t055_r001_n11x11",
+    "G90",
+    "G1 Z50 F600",
+    "M400"
+  ],
   "service_actions": [],
   "read_only_facts": {
     "capture": "20260827-clean-motion-v1-read-only-sources-v3",
@@ -32,28 +38,41 @@
     "full_macro_source_exported": false
   },
   "prerequisites": {
-    "robust_mesh_activation_gate": "G4-K1-CONTROL-ROBUST-MESH-ACTIVATION-V1",
-    "robust_mesh_activation_required_status": "ACTIVATION_OK",
-    "robust_mesh_activation_satisfied": true,
-    "robust_mesh_activation_evidence": "packages/k1-control-v1/robust-mesh-activation-v1/evidence-map.json",
-    "required_active_profile": "k1_p001_t055_r001_n06x06",
-    "required_active_profile_sha256": "c3c7a2ba89f8094328bc5d8b3936b16dbd1de46f4a80bde87cba3d17cfab5f8f",
+    "best_current_mesh_restore_gate": "G4-K1-CONTROL-BEST-CURRENT-MESH-RESTORE-V1",
+    "best_current_mesh_restore_required_status": "RESTORE_OK",
+    "best_current_mesh_restore_satisfied": true,
+    "best_current_mesh_restore_evidence": "packages/k1-control-v1/best-current-mesh-restore-v1/evidence-map.json",
+    "required_active_profile": "k1_p001_t055_r001_n11x11",
+    "required_active_profile_sha256": "58fd96c55129bf7a17ba890d309cb3cd5e2926ec271d735b60392f8369da0a61",
+    "required_active_profile_role": "best_current_observed_edge_defective_not_robust",
     "human_present": true,
     "plate_clear_confirmed": true,
     "brush_installed_and_visible": true,
+    "nozzle_observable": true,
+    "immediate_stop_available": true,
     "printer_standby": true,
     "heater_targets_zero": true,
     "cfs_transition_absent": true
   },
-  "physical_facts_required_before_candidate_commands": [
+  "physical_facts_required_before_approach_commands": [
     "brush_left_right_front_back_bounds_observed_by_human",
-    "safe_clearance_z_observed_by_human",
+    "checkpoint_c_safe_clearance_human_positive",
     "first_contact_z_observed_at_cold_slow_speed",
     "safe_entry_direction_observed_by_human",
     "safe_exit_direction_observed_by_human",
     "waste_receptacle_bounds_observed_by_human",
     "camera_or_direct_visibility_maintained"
   ],
+  "checkpoint_c": {
+    "technical_status": "CHECKPOINT_C_TECHNICAL_OK_AWAITING_HUMAN_VERDICT",
+    "executed_once": true,
+    "automatic_rerun_forbidden": true,
+    "commanded_clearance_z_mm": 50.0,
+    "observed_mesh_compensated_z_mm": 50.23,
+    "active_profile_after": "k1_p001_t055_r001_n11x11",
+    "human_verdict": null,
+    "next_motion_blocked_until_human_positive": true
+  },
   "phases": [
     {
       "id": "A_READ_ONLY_BASELINE",
@@ -86,7 +105,7 @@
     {
       "id": "F_SAFE_RETURN_AND_FINAL_READ",
       "effect": true,
-      "result": "toolhead_parked_targets_zero_and_robust_mesh_unchanged"
+      "result": "toolhead_parked_targets_zero_and_best_current_mesh_unchanged"
     }
   ],
   "forbidden": {
@@ -117,7 +136,7 @@
     "no_collision_or_unexpected_contact",
     "no_heat_extrusion_cfs_probe_mesh_or_z_effect",
     "safe_final_park_and_targets_zero",
-    "robust_profile_still_active_and_unchanged"
+    "best_current_11x11_profile_still_active_and_unchanged"
   ],
   "next_gate_after_success": "G4-K1-CONTROL-CLEAN-AND-REFERENCE-V1"
 }

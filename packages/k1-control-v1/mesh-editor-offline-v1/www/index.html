@@ -11,7 +11,7 @@
       <div>
         <p class="eyebrow">K1 Control · laboratoire local</p>
         <h1>Éditeur de profil dérivé</h1>
-        <p class="subtitle">Corrige le relief du profil composite sans toucher au Z global.</p>
+        <p class="subtitle">Corrige point par point les bords du meilleur profil actuel, sans toucher au Z global.</p>
       </div>
       <div class="mode-badge" aria-label="Mode strictement hors ligne">
         <span class="mode-dot" aria-hidden="true"></span>
@@ -24,13 +24,14 @@
         <div class="section-heading">
           <div>
             <p class="step-label">Profil de travail</p>
-            <h2 id="profile-title">Composite physique 11 × 11</h2>
+            <h2 id="profile-title">Meilleur profil observé 11 × 11 · bords à corriger</h2>
           </div>
           <button id="create-profile" class="primary">Créer la dérivation v001</button>
         </div>
 
         <div id="empty-state" class="empty-state">
           <p>La source physique reste immuable. Crée une copie dérivée avant toute correction.</p>
+          <p><strong>Aucun profil actuel n’est robuste :</strong> le 11 × 11 est seulement le moins mauvais observé.</p>
         </div>
 
         <div id="editor" hidden>
@@ -79,7 +80,7 @@
       <aside class="control-column">
         <section class="panel" aria-labelledby="correction-title">
           <p class="step-label">Correction locale</p>
-          <h2 id="correction-title">Choisis où agir</h2>
+          <h2 id="correction-title">Choisis le point à corriger</h2>
 
           <label for="selection-mode">Sélection</label>
           <select id="selection-mode">
@@ -107,7 +108,7 @@
               <small>delta positif</small>
             </button>
           </div>
-          <p class="help">Ces actions modifient uniquement le mesh. Le Z global n’est jamais inclus.</p>
+          <p class="help">Pour travailler point par point, garde « Un point », clique une cellule, puis applique un petit pas. Le Z global n’est jamais inclus.</p>
         </section>
 
         <section class="panel" aria-labelledby="history-title">

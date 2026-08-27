@@ -1639,3 +1639,34 @@ changement de mesh ou restart Moonraker/Klipper n'a eu lieu.
 Voir ADR-028,
 `experiments/p4/20260827-gateway-private-lan-no-auth-v1-deployment-report.md` et
 `packages/k1-control-v1/gateway-private-lan-no-auth-v1/`.
+
+## D-080 — Réserver « robuste » à un verdict et prendre le `11 × 11` comme meilleure référence actuelle
+
+Date: 2026-08-27
+
+Status: décision acceptée ; correction live close sans mouvement
+
+Tous les profils actuels présentent des défauts de bord. Le `6 × 6` reste une
+ancienne recette quotidienne et un repli historique, mais il n'est pas robuste.
+Le composite `k1_p001_t055_r001_n11x11` est le meilleur résultat global observé
+et le moins mauvais aux bords ; il reste imparfait et devient la source immuable
+des corrections.
+
+Le mot `robuste` désigne désormais uniquement un futur verdict obtenu après une
+validation physique complète de la zone utile. Les noms historiques contenant
+`ROBUST-*` restent inchangés pour conserver la traçabilité, mais ne portent plus
+ce verdict produit.
+
+La gate corrective `G4-K1-CONTROL-BEST-CURRENT-MESH-RESTORE-V1` a chargé une
+seule fois le `11 × 11` exact, sans chauffe, mouvement, homing, fichier distant,
+restart, palpage ni impression. Deux lectures indépendantes confirment le
+profil actif et les configurations inchangées.
+
+L'éditeur hors ligne existant reste le seul outil de correction : il sait déjà
+sélectionner un point, une ligne, une colonne ou une zone, appliquer un delta
+explicite et produire un dérivé versionné sans toucher à la source ni au Z
+global. L'interface rend maintenant l'édition point par point et l'absence de
+profil robuste explicites.
+
+Voir ADR-029, `docs/24-mesh-editor-offline-v1.md` et
+`packages/k1-control-v1/best-current-mesh-restore-v1/`.

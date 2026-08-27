@@ -1,5 +1,8 @@
 {
   "contract_id": "G4-K1-CONTROL-ROBUST-MESH-ACTIVATION-V1",
+  "historical_name_retained_for_traceability": true,
+  "product_interpretation_superseded_by": "ADR-029",
+  "must_not_be_replayed": true,
   "status": "closed_activation_ok",
   "purpose": "activate_the_already_qualified_daily_robust_mesh_before_goal_3",
   "remote_program_sha256": "988079f1fe5a93e6e306e569798e1d2084503a162b358e587d66a640c3349cd0",

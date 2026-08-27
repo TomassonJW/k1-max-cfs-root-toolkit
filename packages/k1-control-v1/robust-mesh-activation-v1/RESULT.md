@@ -1,6 +1,11 @@
 # Résultat final
 
-Statut : **ACTIVATION_OK ; robuste `6 × 6` actif ; gate close**.
+Statut technique historique : **ACTIVATION_OK ; commande exécutée ; gate
+close**. Statut produit actuel : **classement annulé par ADR-029**.
+
+Le `6 × 6` ne doit plus être décrit comme robuste. Tous les profils actuels ont
+des défauts de bord ; le `11 × 11` est le meilleur profil observé et a depuis
+été restauré par `G4-K1-CONTROL-BEST-CURRENT-MESH-RESTORE-V1`.
 
 Le préflight frais
 `20260827-robust-mesh-activation-v1-authorized-preflight` a exécuté le
@@ -31,7 +36,7 @@ lectures stables avec le même profil et la même matrice. Elle confirme aussi l
 Z accepté `−0,04 mm`, les deux CFS connectés sans commande active et l'absence
 d'effet supplémentaire.
 
-Le GO exact est consommé. Cette gate ne doit pas être rejouée. Le profil robuste
+Le GO exact est consommé. Cette gate ne doit pas être rejouée. L'ancien profil
 quotidien est `k1_p001_t055_r001_n06x06` ; le `11 × 11` reste la source
 composite physique immuable et n'est pas promu à cause de son KO sévère aux
 bords.

@@ -46,18 +46,24 @@ scénarios et aucun connecteur réel ; `GOAL-P4-OFFLINE-CYCLE-CFS-V1` est termin
 avec `27/27` scénarios canoniques, un moteur pur et un plan futur inerte ;
 `GOAL-P4-K1-READ-ONLY-QUALIFICATION-V1` est clos en lecture seule avec deux
 réponses stables, des lectures à moins de `236 ms`, les empreintes exactes et
-aucun effet ; sa capture bloquait la suite physique parce que le mesh actif
-`default` différait du profil robuste encore présent
-`k1_p001_t055_r001_n06x06` ; une lecture fraîche après la correction de la
-passerelle montrait ensuite le composite `k1_p001_t055_r001_n11x11` actif ;
-`G4-K1-CONTROL-ROBUST-MESH-ACTIVATION-V1` est désormais close OK : une seule
-commande a chargé le robuste `k1_p001_t055_r001_n06x06`, aucun rollback n'a été
-nécessaire et deux lectures indépendantes ont confirmé sa matrice exacte, les
-configurations inchangées, l'état `standby`, les cibles zéro et les axes
-libérés ; la première tranche
+aucun effet ; sa capture observait `default`, puis une lecture fraîche après la
+correction de la passerelle montrait le composite
+`k1_p001_t055_r001_n11x11` actif ; l'ancienne nomenclature a ensuite conduit à
+charger à tort le `6 × 6` sous
+`G4-K1-CONTROL-ROBUST-MESH-ACTIVATION-V1` ; ADR-029 corrige cette
+interprétation : tous les profils actuels ont des défauts de bord, le `11 × 11`
+est le meilleur profil observé et aucun profil actuel n'est qualifié robuste ;
+`G4-K1-CONTROL-BEST-CURRENT-MESH-RESTORE-V1` a remis le `11 × 11` actif en une
+commande, sans rollback, puis deux lectures indépendantes ont confirmé sa
+matrice exacte, les configurations inchangées, l'état `standby`, les cibles
+zéro et les axes libérés ; la première tranche
 physique CLEAN-MOTION-V1 a qualifié en lecture seule les limites et la zone
-logicielle stock sans aucune commande ; elle attend maintenant Thomas devant
-la K1 pour confirmer la brosse réelle ;
+logicielle stock ; Thomas a confirmé le plateau libre, la brosse visible, la
+buse observable et l'arrêt immédiat possible ; le checkpoint C a référencé XYZ,
+rechargé le `11 × 11` et commandé `Z=50 mm` une seule fois ; le premier
+validateur a produit un faux KO en lisant le Z physique compensé `50,23 mm`,
+sans rejouer le mouvement ; la validation corrigée en lecture seule est verte
+et attend le verdict visuel de Thomas avant tout rapprochement vers la brosse ;
 GATEWAY-PRIVATE-LAN-NO-AUTH-V1 est installé et validé : le port `4409` ne
 demande plus de mot de passe, reste limité aux réseaux IPv4 privés, et présente
 uniquement son proxy local approuvé à Moonraker ; production remains closed**.

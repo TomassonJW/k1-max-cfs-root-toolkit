@@ -1,6 +1,13 @@
 {
   "schema": "k1-control.mesh-editor.contract.v1",
   "mission": "MESH-EDITOR-OFFLINE-V1",
+  "nomenclature": {
+    "decision": "ADR-029",
+    "all_current_profiles_have_edge_defects": true,
+    "best_current_observed_profile": "k1_p001_t055_r001_n11x11",
+    "robust_profile_currently_exists": false,
+    "robust_is_a_future_full_zone_qualification": true
+  },
   "execution": {
     "mode": "offline_only",
     "bind_address": "127.0.0.1",
@@ -13,6 +20,7 @@
   },
   "source": {
     "id": "k1_p001_t055_r001_n11x11",
+    "role": "best_current_observed_edge_defective_immutable_source",
     "immutable": true,
     "rows": 11,
     "columns": 11,
@@ -65,6 +73,7 @@
   "qualification": {
     "offline_contract": "required",
     "physical_test": "not_run",
+    "robust": false,
     "precision_ui_promotion": "blocked",
     "production": "blocked"
   }

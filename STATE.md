@@ -48,11 +48,11 @@ Aucune nouvelle authentification ni action physique n'a eu lieu.
 
 ## Current phase
 
-**P4 — Goals 1 et 2 clos ; robuste quotidien `6 × 6` de nouveau actif et
-revérifié ; Goal 3 prêt à commencer par CLEAN-MOTION avec Thomas devant la K1 ;
-composite physique `11 × 11` conservé comme source mais KO aux bords ; cycle CFS
-clos hors imprimante ; diagnostic physique des bords suspendu ; production
-volontairement bloquée**
+**P4 — Goals 1 et 2 clos ; meilleur profil observé `11 × 11` actif et
+revérifié ; tous les profils actuels ont des défauts de bord ; aucun profil
+actuel n'est qualifié robuste ; éditeur point par point disponible hors ligne ;
+Goal 3 a exécuté le checkpoint C de CLEAN-MOTION et attend le verdict humain ; cycle CFS clos
+hors imprimante ; production volontairement bloquée**
 
 `G4-K1-CONTROL-GATEWAY-PRIVATE-LAN-NO-AUTH-V1` est installé et validé. Le mot
 de passe HTTP Basic n'est plus utilisé sur `4409`. Nginx continue de limiter
@@ -68,29 +68,35 @@ La lecture de passation montrait le profil composite
 `default`. La cause de cette dérive intermédiaire reste non qualifiée et la
 mission passerelle n'avait envoyé aucune commande de mesh.
 
-`G4-K1-CONTROL-ROBUST-MESH-ACTIVATION-V1` est maintenant close OK. Le préflight
-frais `20260827-robust-mesh-activation-v1-authorized-preflight` a confirmé
-l'état sûr et les deux profils exacts. La capture
-`20260827-robust-mesh-activation-v1-authorized-run` a envoyé une seule fois le
-chargement du robuste `k1_p001_t055_r001_n06x06` et obtenu `ACTIVATION_OK`, sans
-rollback. Deux lectures indépendantes ont ensuite confirmé ce profil actif et
-sa matrice `c3c7a2ba…`, les configurations inchangées, l'état `standby`, les
-cibles zéro, les axes libérés, le Z `−0,04 mm` et les deux CFS connectés.
+L'ancienne nomenclature a conduit à charger le `6 × 6` sous la gate historique
+`G4-K1-CONTROL-ROBUST-MESH-ACTIVATION-V1`. ADR-029 corrige cette erreur de
+classement : le `6 × 6` est un ancien profil quotidien, pas un profil robuste.
+`G4-K1-CONTROL-BEST-CURRENT-MESH-RESTORE-V1` a ensuite remis le meilleur profil
+observé `k1_p001_t055_r001_n11x11` actif en une commande. Aucun rollback n'a
+été nécessaire. Deux lectures indépendantes ont confirmé sa matrice
+`58fd96c5…`, les configurations inchangées, l'état `standby`, les cibles zéro,
+les axes libérés, le Z `−0,04 mm` et les deux CFS connectés.
 
-La première tranche physique `G4-K1-CONTROL-CLEAN-MOTION-V1` est maintenant
-cadrée. Son contrat et son formulaire ne contiennent aucune commande candidate.
+La première tranche physique `G4-K1-CONTROL-CLEAN-MOTION-V1` a exécuté son
+checkpoint C une seule fois.
 La capture live strictement en lecture seule
 `20260827-clean-motion-v1-read-only-sources-v3` a qualifié les limites machine
 et la zone logicielle stock X `68…94 mm`, Y `304,5…306,5 mm`, trajet X `20 mm`
 et delta Z `−0,15 mm`, sans exporter le code complet. Ces valeurs ne prouvent
-pas la brosse réelle. Le préalable du robuste est désormais satisfait. La gate
-impose maintenant la présence de Thomas, le plateau libre, la brosse visible et
-une
-validation humaine à chaque rapprochement à froid. Aucun essai physique n'a eu
-lieu.
+pas la brosse réelle. Le meilleur profil actuel est actif. Thomas a confirmé le
+plateau libre, la brosse visible, la buse observable et l'arrêt immédiat
+possible. Le préflight frais était vert. La séquence a référencé XYZ, rechargé
+le `11 × 11`, commandé `Z=50 mm` et attendu la fin sans chauffe, extrusion, CFS
+ou mesure de mesh. Le premier validateur a comparé à tort la position physique
+compensée `50,23 mm` à la consigne ; aucun mouvement n'a été rejoué. La
+validation corrigée lit `Z=50,00 mm` côté G-code et confirme la machine au repos,
+froide, configurations inchangées et `11 × 11` actif. Le statut est
+`CHECKPOINT_C_TECHNICAL_OK_AWAITING_HUMAN_VERDICT`. Chaque rapprochement suivant
+reste bloqué jusqu'au verdict visuel de Thomas.
 
-La base sûre et réellement requalifiée reste `6 × 6` Lagrange avec un seul mesh
-standard. L'autonomie de calibration quotidienne standard est maintenant
+La recette de mesure quotidienne qualifiée reste `6 × 6` Lagrange avec un seul
+mesh standard ; cela ne signifie pas que son profil résultant est robuste ni
+meilleur aux bords. L'autonomie de calibration quotidienne standard est maintenant
 atteinte : la campagne a réussi sans console et le vrai écran corrigé ouvre
 depuis Mainsail sans nouvelle authentification ni traduction Codex. Le mode
 précision composite est techniquement qualifié, mais sa comparaison physique

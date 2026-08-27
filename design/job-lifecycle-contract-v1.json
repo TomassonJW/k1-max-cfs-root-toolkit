@@ -40,9 +40,12 @@
     "selection": "explicit_exact_or_physically_qualified_temperature_band",
     "load_order": "after_every_homing_or_macro_that_may_clear_or_replace_mesh",
     "verify_after_load": true,
-    "standard_safe_profile": "k1_p001_t055_r001_n06x06",
-    "standard_probe_count": [6, 6],
-    "standard_algorithm": "lagrange",
+    "best_current_profile": "k1_p001_t055_r001_n11x11",
+    "best_current_profile_role": "observed_best_edge_defective_immutable_source",
+    "current_robust_profile": null,
+    "all_current_profiles_have_edge_defects": true,
+    "daily_measurement_probe_count": [6, 6],
+    "daily_measurement_algorithm": "lagrange",
     "daily_measurement_count": 1,
     "precision": {
       "physical_source": "k1_p001_t055_r001_n11x11",
@@ -351,7 +354,9 @@
     "live_filament_state": "engaged_unknown",
     "live_accepted_z_offset_mm": -0.04,
     "active_mesh_profile": "default",
-    "required_mesh_profile": "k1_p001_t055_r001_n06x06",
+    "required_mesh_profile_at_capture": "k1_p001_t055_r001_n06x06",
+    "capture_interpretation_superseded_by": "ADR-029",
+    "current_best_mesh_profile": "k1_p001_t055_r001_n11x11",
     "active_mesh_matches_required": false,
     "mapping_cache_invalidates_on_connection_epoch": true,
     "same_state_reconnect_between_polls_detectable": false,
@@ -360,7 +365,9 @@
     "service_actions": false,
     "physical_actions": false,
     "deployment_candidate": false,
-    "next_gate": "human_present_load_and_verify_robust_mesh_before_goal_3"
+    "historical_next_gate": "human_present_load_and_verify_robust_mesh_before_goal_3",
+    "current_correction_gate": "G4-K1-CONTROL-BEST-CURRENT-MESH-RESTORE-V1",
+    "current_correction_status": "RESTORE_OK"
   },
   "filament_state": {
     "states": [

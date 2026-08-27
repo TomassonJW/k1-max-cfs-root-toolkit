@@ -8,13 +8,16 @@ Nouvelle tâche créée : non
 
 Goal de mission repris : `GOAL-P4-PHYSICAL-SLICES-QUALIFICATION-V1`
 
-État de reprise : **ATTENDRE_PRÉSENCE_HUMAINE_CLEAN_MOTION**
+État de reprise : **ATTENDRE_VERDICT_HUMAIN_CHECKPOINT_C_CLEAN_MOTION**
 
 ## Résultat global de la session
 
-Cette session a terminé les deux premiers grands Goals de P4, corrigé l'accès
-Mainsail, réactivé le robuste quotidien `6 × 6` et laissé le dépôt et la K1
-dans un état vérifié et reprenable avant la première tranche physique.
+Cette session a terminé les deux premiers grands Goals de P4 et corrigé l'accès
+Mainsail. Une interprétation ultérieure a chargé à tort le `6 × 6` comme profil
+« robuste ». ADR-029 corrige la nomenclature : tous les profils actuels ont des
+défauts de bord, aucun n'est robuste et le `11 × 11` est le meilleur profil
+observé. `G4-K1-CONTROL-BEST-CURRENT-MESH-RESTORE-V1` l'a remis actif et
+revérifié avant la première tranche physique.
 
 ### Goal 1 — système complet hors imprimante
 
@@ -64,24 +67,27 @@ présent sur le LAN privé peut maintenant contrôler la K1.
 
 ## État réel au moment de la passation
 
-La dernière validation indépendante, effectuée après l'activation autorisée,
+La dernière validation indépendante, effectuée après la correction autorisée,
 montre sur deux lectures stables :
 
 - K1 : `standby` ;
 - cible buse : `0.0 °C` ;
 - cible plateau : `0.0 °C` ;
-- mesh actif : `k1_p001_t055_r001_n06x06` ;
-- matrice active : `6 × 6`, empreinte `c3c7a2ba…` exacte ;
+- mesh actif : `k1_p001_t055_r001_n11x11` ;
+- matrice active : `11 × 11`, empreinte `58fd96c5…` exacte ;
 - Z accepté : `−0,04 mm` ;
 - axes : libérés ;
 - CFS : `T1/T2` connectés, aucune commande active.
 
-Le passage intermédiaire historique de `default` au composite `11 × 11` n'est
-pas qualifié. La mission passerelle n'avait envoyé aucune commande de mesh. La
-gate dédiée a depuis remis le robuste qualifié actif. La production reste
-fermée et le mode Précision reste caché.
+La mission passerelle n'avait envoyé aucune commande de mesh. L'ancienne gate
+d'activation a ensuite chargé le `6 × 6` à partir d'une nomenclature erronée.
+Son exécution reste traçable, mais elle ne doit pas être rejouée. La correction
+a rechargé une seule fois le `11 × 11`, sans chauffe, mouvement, fichier,
+restart, homing, palpage ni impression. Deux lectures indépendantes confirment
+le résultat. La production reste fermée et le mode Précision reste caché.
 
-`G4-K1-CONTROL-ROBUST-MESH-ACTIVATION-V1` est close OK. Le préflight frais
+Historique : `G4-K1-CONTROL-ROBUST-MESH-ACTIVATION-V1` est techniquement close
+OK, mais son interprétation produit est annulée. Le préflight frais
 `20260827-robust-mesh-activation-v1-authorized-preflight` a confirmé le
 `11 × 11` précédent, le robuste `6 × 6` présent, l'état au repos et toutes les
 empreintes attendues. La capture
@@ -90,7 +96,9 @@ empreintes attendues. La capture
 Aucun rollback, fichier distant, restart, chauffe, mouvement, homing, palpage
 ou impression n'a eu lieu. La capture indépendante
 `20260827-robust-mesh-activation-v1-independent-validation` a ensuite confirmé
-deux fois le robuste actif et les configurations inchangées.
+deux fois le `6 × 6` actif et les configurations inchangées. La gate corrective
+`G4-K1-CONTROL-BEST-CURRENT-MESH-RESTORE-V1` a depuis remis et revérifié le
+`11 × 11` exact.
 
 ## Git et preuves
 
@@ -112,8 +120,9 @@ Vérifications réutilisables :
 - passerelle sans mot de passe : **OK** ;
 - vrai rendu Chrome/Mainsail : **OK** ;
 - Moonraker et Klipper : **OK**, aucun échec ni avertissement ;
-- activation robuste : **OK**, une tentative, aucun rollback ;
-- validation indépendante après activation : **OK**, `2/2` lectures ;
+- ancienne activation `6 × 6` : **exécution OK, classement annulé** ;
+- correction vers le meilleur profil `11 × 11` : **RESTORE_OK**, une tentative,
+  aucun rollback, validation indépendante `2/2` ;
 - tests ciblés activation et CLEAN-MOTION : **OK**, `22/22` ;
 - suite complète : **OK**, `513` tests dont `510` verts et `3` ignorés connus ;
 - scripts PowerShell versionnés : **OK**, `32/32` relus sans erreur ;
@@ -128,13 +137,13 @@ Documents à relire : `HANDOFF.md`, `GOALS.md`, `STATE.md`, `GATES.md`,
 
 Identifiant figé : `G4-K1-CONTROL-CLEAN-MOTION-V1`.
 
-Le préalable du mesh est satisfait. Cette première tranche du Goal 3 doit
+Le préalable corrigé du mesh est satisfait. Cette première tranche du Goal 3 doit
 mesurer à froid la brosse réelle et qualifier une trajectoire sans collision.
 Les limites logicielles et la zone stock déclarée X `68…94 mm`,
 Y `304,5…306,5 mm` sont connues, mais elles ne prouvent pas la géométrie
 physique.
 
-Avant toute commande de mouvement, Thomas doit être devant la K1 et confirmer :
+Thomas a confirmé :
 
 - plateau entièrement libre ;
 - brosse réelle visible sans obstacle ;
@@ -145,8 +154,8 @@ La gate restera froide : aucune chauffe, extrusion, action CFS, mesure de mesh,
 écriture Z, configuration distante, restart ou retry automatique. Toute perte
 de visibilité, résistance, bruit inhabituel ou état ambigu impose l'arrêt.
 
-La prochaine action immédiate est donc humaine : aucun agent ni modèle ne peut
-remplacer cette observation. Une fois Thomas présent, `gpt-5.6-terra` avec
+Le premier checkpoint isolé est techniquement vert. Un verdict humain est
+obligatoire avant le mouvement suivant. `gpt-5.6-terra` avec
 raisonnement `high` est conseillé pour piloter les checkpoints et les preuves.
 L'option `medium` est moins coûteuse, avec plus de risque de reprise si une
 observation physique est ambiguë.
@@ -154,10 +163,12 @@ observation physique est ambiguë.
 ## Texte de reprise à envoyer dans une nouvelle session
 
 > `$session-tas` Reprends la passation complète dans
-> `docs/HANDOFF-SESSION-COMPLETE-2026-08-27.md`. Le robuste `6 × 6` est déjà
-> actif et la gate d'activation est consommée. Attends que je sois devant la K1,
-> plateau libre et brosse visible, puis exécute uniquement
-> `G4-K1-CONTROL-CLEAN-MOTION-V1` à froid, checkpoint par checkpoint, avec arrêt
-> immédiat au premier doute. Ne chauffe, n'extrude et ne lance aucun CFS.
+> `docs/HANDOFF-SESSION-COMPLETE-2026-08-27.md`. Le meilleur profil observé
+> `11 × 11` est actif ; aucun profil actuel n'est qualifié robuste. Je suis
+> devant la K1, plateau libre, brosse visible, buse observable et arrêt immédiat
+> possible. Le checkpoint C a déjà été exécuté une fois et ne doit pas être
+> rejoué. Demande-moi uniquement mon verdict visuel sur ce mouvement avant de
+> préparer le rapprochement suivant. Ne chauffe, n'extrude et ne lance aucun
+> CFS.
 
 La tâche source reste visible et ne doit pas être archivée.

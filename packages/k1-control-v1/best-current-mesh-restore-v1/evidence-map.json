@@ -1,0 +1,37 @@
+{
+  "mission": "G4-K1-CONTROL-BEST-CURRENT-MESH-RESTORE-V1",
+  "status": "closed_restore_ok",
+  "private_sources": {
+    "clean_preflight": {
+      "path": "inventory/raw/20260827-best-current-mesh-restore-v1-preflight-clean/best-current-mesh-restore.safe.jsonl",
+      "sha256": "8459883cf21c8cb1b2d110ae72404d4e6f103e2afb363f515769d6a416739710",
+      "versioned": false,
+      "identity_values_exported": false
+    },
+    "restore": {
+      "path": "inventory/raw/20260827-best-current-mesh-restore-v1-run/best-current-mesh-restore.safe.jsonl",
+      "sha256": "c827bc012614dd34841100c9fda685ef1e035907e532b79c44dede0c0b1cfb5f",
+      "versioned": false,
+      "identity_values_exported": false
+    },
+    "independent_validation": {
+      "path": "inventory/raw/20260827-best-current-mesh-restore-v1-independent-validation/after-restore.safe.json",
+      "sha256": "6028ba81afd7799e43b20fa42bc3bb53526cbc4bfbedf310acb0ca0bad2aaccf",
+      "versioned": false,
+      "identity_values_exported": false
+    }
+  },
+  "safe_result": {
+    "preflight": "PREFLIGHT_OK",
+    "restore": "RESTORE_OK",
+    "previous_active_profile": "k1_p001_t055_r001_n06x06",
+    "active_profile": "k1_p001_t055_r001_n11x11",
+    "active_matrix_sha256": "58fd96c55129bf7a17ba890d309cb3cd5e2926ec271d735b60392f8369da0a61",
+    "primary_attempts": 1,
+    "rollback_attempts": 0,
+    "independent_read_only_snapshots": 2,
+    "configuration_hashes_unchanged": true,
+    "heater_or_motion_actions": false,
+    "remote_files_written": false
+  }
+}

@@ -60,8 +60,14 @@ class ProductionControlContractTests(unittest.TestCase):
                 "nozzle_diameter_mm",
             ],
         )
-        self.assertEqual(self.contract["mesh"]["standard_probe_count"], [6, 6])
-        self.assertEqual(self.contract["mesh"]["standard_algorithm"], "lagrange")
+        self.assertEqual(self.contract["mesh"]["daily_measurement_probe_count"], [6, 6])
+        self.assertEqual(
+            self.contract["mesh"]["best_current_profile"],
+            "k1_p001_t055_r001_n11x11",
+        )
+        self.assertIsNone(self.contract["mesh"]["current_robust_profile"])
+        self.assertTrue(self.contract["mesh"]["all_current_profiles_have_edge_defects"])
+        self.assertEqual(self.contract["mesh"]["daily_measurement_algorithm"], "lagrange")
         self.assertTrue(self.contract["mesh"]["precision"]["ui_hidden"])
         self.assertIn("silent_nearest_profile_selection", self.contract["mesh"]["forbidden"])
 

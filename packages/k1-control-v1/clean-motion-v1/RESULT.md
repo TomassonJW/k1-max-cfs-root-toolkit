@@ -1,7 +1,7 @@
 # Résultat actuel
 
-Statut : **sources live qualifiées en lecture seule ; aucune commande
-candidate ; aucun essai physique**.
+Statut : **checkpoint C techniquement OK ; verdict humain attendu ; aucun
+rapprochement vers la brosse autorisé**.
 
 La capture privée `20260827-clean-motion-v1-read-only-sources-v3` confirme :
 
@@ -17,14 +17,28 @@ La capture privée `20260827-clean-motion-v1-read-only-sources-v3` confirme :
   mouvement, service ou action CFS n'a eu lieu.
 
 Ces valeurs décrivent la configuration logicielle stock, pas la position
-physique prouvée de la brosse. Thomas doit encore confirmer visuellement ses
-limites, la hauteur libre, le premier contact et les directions sûres. Aucune
-commande de mouvement ne sera préparée avant ces faits humains. Le préalable
-du mesh est désormais vert : le robuste `k1_p001_t055_r001_n06x06` est actif
-et a été confirmé par deux lectures indépendantes. Il manque uniquement la
-présence de Thomas devant la K1, le plateau libre, la brosse visible et les
-verdicts humains prévus.
+physique prouvée de la brosse. Thomas a confirmé le plateau libre, la brosse
+visible, la buse observable et l'arrêt immédiat possible. Les limites exactes,
+la hauteur libre, le premier contact et les directions sûres seront encore
+qualifiés par checkpoints. Le préalable corrigé du mesh est vert : le meilleur
+profil observé `k1_p001_t055_r001_n11x11` est actif et a été confirmé par deux
+lectures indépendantes. Tous les profils actuels ont des défauts de bord ; aucun
+n'est qualifié robuste.
 
-Vérifications locales : `11/11` tests ciblés verts, suite complète de `513`
-tests dont `510` verts et `3` ignorés connus, collecteur compatible Python 3.8
-et script PowerShell relu sans erreur.
+Vérifications locales actuelles : `17/17` tests ciblés CLEAN-MOTION verts,
+suite complète de `529` tests dont `526` verts et `3` ignorés connus, interface
+de l'éditeur `6/6` verte et `62/62` scripts PowerShell relus sans erreur.
+
+Le préflight frais a obtenu `CHECKPOINT_C_PREFLIGHT_OK`. Une seule séquence a
+ensuite référencé XYZ, rechargé le `11 × 11`, commandé `Z=50 mm` et attendu la
+fin. Le premier validateur a comparé à tort la position physique compensée
+`50,23 mm` à la consigne G-code et a rendu un faux KO. La récupération n'a fait
+aucun mouvement : chauffes coupées et `11 × 11` rechargé.
+
+La validation corrigée, strictement en lecture seule, observe la position
+G-code `50,00 mm`, la position physique compensée `50,23 mm`, XYZ référencés,
+le `11 × 11` exact actif, les cibles à zéro, les deux CFS sans route et les
+configurations inchangées. Résultat technique :
+`CHECKPOINT_C_TECHNICAL_OK_AWAITING_HUMAN_VERDICT`.
+
+La suite reste bloquée jusqu'au verdict visuel de Thomas sur ce mouvement.

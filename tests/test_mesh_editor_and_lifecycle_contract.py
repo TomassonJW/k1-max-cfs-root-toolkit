@@ -1,4 +1,5 @@
 from pathlib import Path
+import json
 import unittest
 
 
@@ -26,6 +27,21 @@ class MeshEditorAndLifecycleContractTests(unittest.TestCase):
         cls.lifecycle_contract = (
             ROOT / "docs" / "25-contrat-cycle-impression-nettoyage-cfs-v1.md"
         ).read_text(encoding="utf-8")
+        cls.nomenclature_adr = (
+            ROOT
+            / "docs"
+            / "adr"
+            / "ADR-029-nomenclature-profils-mesh-et-reference-11x11.md"
+        ).read_text(encoding="utf-8")
+        cls.editor_contract = json.loads(
+            (
+                ROOT
+                / "packages"
+                / "k1-control-v1"
+                / "mesh-editor-offline-v1"
+                / "mesh-editor-contract.json"
+            ).read_text(encoding="utf-8")
+        )
 
     def test_interpolation_is_quantified_before_manual_tuning(self):
         self.assertIn("0,009877883 mm", self.audit)
@@ -48,6 +64,19 @@ class MeshEditorAndLifecycleContractTests(unittest.TestCase):
             "Le glisser-déposer vertical en 3D est repoussé",
         ):
             self.assertIn(token, self.mesh_adr)
+
+    def test_nomenclature_keeps_11x11_best_current_but_no_profile_robust(self):
+        normalized_adr = " ".join(self.nomenclature_adr.split())
+        self.assertIn("tous les profils actuels ont des défauts", normalized_adr)
+        self.assertIn("meilleur profil observé `11 × 11`", self.nomenclature_adr)
+        self.assertIn("aucun profil actuel ne le possède", self.nomenclature_adr)
+        nomenclature = self.editor_contract["nomenclature"]
+        self.assertTrue(nomenclature["all_current_profiles_have_edge_defects"])
+        self.assertEqual(
+            "k1_p001_t055_r001_n11x11",
+            nomenclature["best_current_observed_profile"],
+        )
+        self.assertFalse(nomenclature["robust_profile_currently_exists"])
 
     def test_one_job_contract_replaces_duplicate_stock_entry_points(self):
         self.assertIn("KCTRL_JOB_BEGIN", self.lifecycle_adr)

@@ -1,0 +1,40 @@
+{
+  "contract_id": "G4-K1-CONTROL-BEST-CURRENT-MESH-RESTORE-V1",
+  "status": "closed_restore_ok",
+  "purpose": "restore_the_best_current_observed_profile_after_nomenclature_correction",
+  "remote_program_sha256": "7372a3751a1af928c2f8594df3308ad6e529971f1a43b72342adcbda9bfe2900",
+  "nomenclature": {
+    "all_current_profiles_have_edge_defects": true,
+    "daily_6x6_profile": "k1_p001_t055_r001_n06x06",
+    "best_current_observed_profile": "k1_p001_t055_r001_n11x11",
+    "robust_profile_currently_exists": false,
+    "robust_label_reserved_until_full_zone_validation": true
+  },
+  "effect": {
+    "primary_command": "BED_MESH_PROFILE LOAD=k1_p001_t055_r001_n11x11",
+    "maximum_primary_attempts": 1,
+    "conditional_rollback_command": "BED_MESH_PROFILE LOAD=k1_p001_t055_r001_n06x06",
+    "maximum_rollback_attempts": 1,
+    "remote_file_write": false,
+    "restart": false,
+    "heater_or_motion": false,
+    "homing_or_probe": false,
+    "print": false
+  },
+  "success": [
+    "fresh_safe_preflight",
+    "best_current_profile_active",
+    "active_matrix_matches_exact_11x11_source",
+    "all_reviewed_hashes_unchanged",
+    "machine_remains_idle_and_cold"
+  ],
+  "closure": {
+    "preflight": "PREFLIGHT_OK",
+    "restore": "RESTORE_OK",
+    "primary_attempts": 1,
+    "rollback_attempts": 0,
+    "independent_read_only_snapshots": 2,
+    "active_profile": "k1_p001_t055_r001_n11x11",
+    "identity_values_exported": false
+  }
+}

@@ -1,5 +1,6 @@
 import assert from "node:assert/strict";
 import test from "node:test";
+import fs from "node:fs";
 
 import {
   allCellsForMode,
@@ -24,6 +25,16 @@ test("les quatre modes de sélection produisent les cellules attendues", () => {
   assert.equal(region.length, 9);
   assert.deepEqual(region[0], [3, 4]);
   assert.deepEqual(region.at(-1), [5, 6]);
+});
+
+test("l'interface annonce la vraie nomenclature et l'édition point par point", () => {
+  const html = fs.readFileSync(
+    new URL("../packages/k1-control-v1/mesh-editor-offline-v1/www/index.html", import.meta.url),
+    "utf8",
+  );
+  assert.match(html, /Meilleur profil observé 11 × 11/);
+  assert.match(html, /Aucun profil actuel n’est robuste/);
+  assert.match(html, /Pour travailler point par point/);
 });
 
 test("une zone supérieure à 3 par 3 est refusée", () => {

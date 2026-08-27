@@ -23,6 +23,10 @@ collector = load_module(
     "clean_motion_geometry_read_only_test",
     PACKAGE / "remote_geometry_read_only.py",
 )
+checkpoint = load_module(
+    "clean_motion_checkpoint_c_test",
+    PACKAGE / "remote_checkpoint_c.py",
+)
 
 
 class CleanMotionV1ContractTests(unittest.TestCase):
@@ -31,16 +35,16 @@ class CleanMotionV1ContractTests(unittest.TestCase):
         cls.contract = json.loads((PACKAGE / "contract.json").read_text(encoding="utf-8"))
         cls.form = json.loads((PACKAGE / "human-observation-form.json").read_text(encoding="utf-8"))
 
-    def test_gate_is_not_deployable_and_contains_no_commands(self):
+    def test_gate_is_not_deployable_and_contains_only_checkpoint_c_commands(self):
         self.assertEqual(
-            "read_only_sources_qualified_no_candidate_commands",
+            "checkpoint_c_technical_ok_awaiting_human_verdict",
             self.contract["status"],
         )
         self.assertFalse(self.contract["deployment_candidate"])
         self.assertTrue(self.contract["read_only_connection_qualified"])
-        self.assertFalse(self.contract["printer_effect_connection"])
+        self.assertTrue(self.contract["printer_effect_connection"])
         self.assertEqual([], self.contract["remote_commands"])
-        self.assertEqual([], self.contract["gcode_commands"])
+        self.assertEqual(checkpoint.CHECKPOINT_SCRIPT.split("\n"), self.contract["gcode_commands"])
         self.assertEqual([], self.contract["service_actions"])
 
     def test_read_only_evidence_is_pinned_and_keeps_software_geometry_distinct(self):
@@ -63,26 +67,31 @@ class CleanMotionV1ContractTests(unittest.TestCase):
         self.assertEqual(94.0, geometry["x_end"])
         self.assertIn(
             "brush_left_right_front_back_bounds_observed_by_human",
-            self.contract["physical_facts_required_before_candidate_commands"],
+            self.contract["physical_facts_required_before_approach_commands"],
         )
 
-    def test_robust_activation_is_a_hard_prerequisite(self):
+    def test_best_current_11x11_is_the_hard_prerequisite(self):
         prerequisites = self.contract["prerequisites"]
         self.assertEqual(
-            "G4-K1-CONTROL-ROBUST-MESH-ACTIVATION-V1",
-            prerequisites["robust_mesh_activation_gate"],
+            "G4-K1-CONTROL-BEST-CURRENT-MESH-RESTORE-V1",
+            prerequisites["best_current_mesh_restore_gate"],
         )
-        self.assertEqual("ACTIVATION_OK", prerequisites["robust_mesh_activation_required_status"])
-        self.assertTrue(prerequisites["robust_mesh_activation_satisfied"])
-        self.assertEqual("k1_p001_t055_r001_n06x06", prerequisites["required_active_profile"])
+        self.assertEqual("RESTORE_OK", prerequisites["best_current_mesh_restore_required_status"])
+        self.assertTrue(prerequisites["best_current_mesh_restore_satisfied"])
+        self.assertEqual("k1_p001_t055_r001_n11x11", prerequisites["required_active_profile"])
+        self.assertFalse("robust_mesh_activation_gate" in prerequisites)
 
     def test_physical_geometry_is_explicitly_missing(self):
-        required = set(self.contract["physical_facts_required_before_candidate_commands"])
+        required = set(self.contract["physical_facts_required_before_approach_commands"])
         self.assertIn("brush_left_right_front_back_bounds_observed_by_human", required)
-        self.assertIn("safe_clearance_z_observed_by_human", required)
+        self.assertIn("checkpoint_c_safe_clearance_human_positive", required)
         self.assertIn("first_contact_z_observed_at_cold_slow_speed", required)
         self.assertTrue(all(value is None for value in self.form["observed_geometry_mm"].values()))
-        self.assertEqual("NOT_RUN", self.form["status"])
+        self.assertEqual("CHECKPOINT_C_TECHNICAL_OK_AWAITING_HUMAN_VERDICT", self.form["status"])
+        self.assertTrue(self.form["operator_present"])
+        self.assertTrue(self.form["plate_clear"])
+        self.assertTrue(self.form["brush_installed_and_visible"])
+        self.assertTrue(self.form["immediate_stop_available"])
 
     def test_every_effect_phase_requires_or_follows_human_checkpoints(self):
         phases = self.contract["phases"]
@@ -197,6 +206,86 @@ class CleanMotionV1ContractTests(unittest.TestCase):
         self.assertNotIn("scp.exe", source)
         self.assertNotIn("-Execute", source)
         self.assertNotIn("-Gate", source)
+
+    def test_checkpoint_c_is_one_bounded_cold_script(self):
+        self.assertEqual(
+            [
+                "G28",
+                "BED_MESH_PROFILE LOAD=k1_p001_t055_r001_n11x11",
+                "G90",
+                "G1 Z50 F600",
+                "M400",
+            ],
+            checkpoint.CHECKPOINT_SCRIPT.split("\n"),
+        )
+        upper = checkpoint.CHECKPOINT_SCRIPT.upper()
+        for forbidden in ("M104", "M109", "M140", "M190", " E", "BOX_", "BED_MESH_CALIBRATE"):
+            self.assertNotIn(forbidden, upper)
+
+    def test_checkpoint_c_compensates_for_stock_g28_mesh_replacement(self):
+        lines = checkpoint.CHECKPOINT_SCRIPT.split("\n")
+        self.assertLess(lines.index("G28"), lines.index("BED_MESH_PROFILE LOAD=k1_p001_t055_r001_n11x11"))
+        self.assertLess(lines.index("BED_MESH_PROFILE LOAD=k1_p001_t055_r001_n11x11"), lines.index("G1 Z50 F600"))
+
+    def test_checkpoint_c_safe_projection_excludes_cfs_identity(self):
+        source = (PACKAGE / "remote_checkpoint_c.py").read_text(encoding="utf-8")
+        self.assertNotIn('get("sn")', source)
+        self.assertNotIn('get("uuid")', source)
+        self.assertNotIn("T3,T4", checkpoint.QUERY_PATH)
+
+    def test_checkpoint_c_runner_requires_exact_gate_and_reviewed_hash(self):
+        source = (PACKAGE / "run_checkpoint_c.ps1").read_text(encoding="utf-8")
+        self.assertIn("G4-K1-CONTROL-CLEAN-MOTION-V1", source)
+        self.assertIn("-Execute", source)
+        self.assertIn("ExpectedProgramSha256", source)
+        self.assertNotIn("scp.exe", source)
+
+    def test_checkpoint_c_validation_separates_commanded_and_mesh_compensated_z(self):
+        snapshot = {
+            "server": {"klippy_state": "ready", "failed_components": [], "warnings": []},
+            "print": {"state": "standby", "filename_present": False},
+            "heaters": {"extruder_target": 0.0, "bed_target": 0.0},
+            "toolhead": {
+                "homed_axes": "xyz",
+                "position": [156.657, 142.271, 50.23, 0.0],
+                "gcode_position": [156.657, 142.271, 50.0, 0.0],
+            },
+            "bed_mesh": {
+                "profile_name": checkpoint.BEST_CURRENT_PROFILE,
+                "probed_matrix": {"rows": 11, "columns": [11] * 11, "sha256": checkpoint.BEST_CURRENT_SHA256},
+                "best_current_profile": {"rows": 11, "columns": [11] * 11, "sha256": checkpoint.BEST_CURRENT_SHA256},
+            },
+            "box": {
+                "state": "connect",
+                "t_command": "",
+                "T1": {"state": "connect", "filament": "None"},
+                "T2": {"state": "connect", "filament": "None"},
+            },
+            "runtime": {
+                "ready": 1,
+                "session_active": 0,
+                "accepted_z_valid": 1,
+                "accepted_z_offset": -0.04,
+                "low_moves_armed": 0,
+            },
+            "store": {"integrity": "ok"},
+            "calibration_path": {"phase": "idle", "motion_armed": 0, "commit_ready": 0},
+            "hashes": checkpoint.EXPECTED_HASHES,
+        }
+        checkpoint.validate_after(snapshot)
+
+    def test_checkpoint_c_evidence_pins_false_ko_and_corrected_validation(self):
+        evidence = json.loads((PACKAGE / "evidence-map.json").read_text(encoding="utf-8"))
+        checkpoint_evidence = evidence["checkpoint_c"]
+        self.assertEqual(
+            "false_ko_validator_used_mesh_compensated_physical_z",
+            checkpoint_evidence["run"]["interpretation"],
+        )
+        self.assertEqual(
+            "CHECKPOINT_C_TECHNICAL_OK_AWAITING_HUMAN_VERDICT",
+            checkpoint_evidence["corrected_read_only_validation"]["status"],
+        )
+        self.assertIsNone(checkpoint_evidence["human_verdict"])
 
 
 if __name__ == "__main__":

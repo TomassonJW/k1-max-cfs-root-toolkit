@@ -1327,42 +1327,63 @@ invité non maîtrisé. Elle n'a produit aucun G-code ni effet physique.
 
 ### Gate préalable au Goal 3 — `G4-K1-CONTROL-ROBUST-MESH-ACTIVATION-V1`
 
-Status: **passed — robuste `6 × 6` actif et revérifié**
+Status: **close techniquement, mais nomenclature et choix courant annulés par
+ADR-029 et la gate de correction suivante**
 
 La lecture fraîche de reprise confirmait la K1 au repos, les cibles à zéro et
-le profil composite physique `k1_p001_t055_r001_n11x11` actif. Ce profil n'est
-pas le robuste quotidien : le robuste qualifié est
-`k1_p001_t055_r001_n06x06`.
+le profil composite physique `k1_p001_t055_r001_n11x11` actif. L'interprétation
+qui classait ensuite `k1_p001_t055_r001_n06x06` comme robuste était fausse :
+tous les profils actuels ont des défauts de bord et le `11 × 11` est le meilleur
+profil observé.
 
 Le programme figé a obtenu `PREFLIGHT_OK` sous la capture privée fraîche
 `20260827-robust-mesh-activation-v1-authorized-preflight`, puis
 `ACTIVATION_OK` sous `20260827-robust-mesh-activation-v1-authorized-run` après
-une seule commande de chargement du robuste. Aucun rollback n'a été nécessaire.
-Deux lectures indépendantes ont confirmé le robuste actif, sa matrice exacte,
+une seule commande de chargement du `6 × 6`. Aucun rollback n'a été nécessaire.
+Deux lectures indépendantes ont confirmé l'effet technique et sa matrice exacte,
 les configurations inchangées et la machine toujours au repos et froide.
 
 La gate préparée vérifie l'état sûr, les composants et les matrices, envoie au
-plus une fois le chargement du robuste, puis relit le profil actif et sa matrice.
+plus une fois le chargement du `6 × 6`, puis relit le profil actif et sa matrice.
 Au premier résultat ambigu après l'envoi, elle tente une seule remise au
-`11 × 11` précédent et ne retente jamais le robuste. Elle ne contient aucun
+`11 × 11` précédent et ne retente jamais le `6 × 6`. Elle ne contient aucun
 fichier distant, restart, chauffage, mouvement, homing, palpage, extrusion ou
 impression. Son GO exact est consommé et la gate ne doit pas être rejouée. Elle
-a levé uniquement le verrou préalable ; aucune tranche physique n'a été lancée.
+a levé uniquement l'ancien verrou préalable ; aucune tranche physique n'a été
+lancée. Ne jamais réutiliser son nom comme preuve que le `6 × 6` est robuste.
+
+### Correction de référence — `G4-K1-CONTROL-BEST-CURRENT-MESH-RESTORE-V1`
+
+Status: **passed — meilleur profil observé `11 × 11` actif et revérifié**
+
+ADR-029 réserve désormais le mot `robuste` à une future qualification complète.
+Cette gate a chargé une seule fois `k1_p001_t055_r001_n11x11`, sans rollback,
+puis deux lectures indépendantes ont confirmé sa matrice exacte, les
+configurations inchangées, la K1 froide et au repos. Aucun mouvement, fichier
+distant, restart, homing, palpage ou impression n'a eu lieu.
 
 ### Première tranche physique — `G4-K1-CONTROL-CLEAN-MOTION-V1`
 
-Status: **sources live qualifiées en lecture seule ; aucune commande candidate**
+Status: **checkpoint C techniquement vert ; verdict humain attendu avant toute suite**
 
-Le préalable du robuste est satisfait. Cette gate commencera seulement avec
-Thomas devant la K1. Elle qualifiera la géométrie de la brosse et un trajet à
-froid sans collision. Chauffe, extrusion, CFS, palpage de la brosse, mesure de
-mesh, écriture Z, configuration distante, restart et retry automatique sont
-fermés.
+Le meilleur profil actuel `11 × 11` est actif. Thomas a confirmé le plateau
+libre, la brosse visible, la buse observable et l'arrêt immédiat possible. La
+gate qualifiera la géométrie de la brosse et un trajet à froid sans collision.
+Chauffe, extrusion, CFS, palpage de la brosse, mesure de mesh, écriture Z,
+configuration distante, restart et retry automatique sont fermés.
 
-Les coordonnées exactes restent volontairement absentes : limites de brosse,
-hauteur libre, premier contact et directions sûres d'entrée et de sortie sont
-des faits humains encore manquants. Le formulaire de capture impose un verdict
-à chaque checkpoint. Voir `docs/42-clean-motion-v1-premiere-tranche-physique.md`.
+Le checkpoint C a référencé XYZ, rechargé le `11 × 11`, commandé `Z=50 mm` et
+attendu la fin. Le premier validateur a lu `50,23 mm` sur la position physique
+compensée et produit un faux KO ; la récupération a seulement recoupé les
+chauffes et rechargé le profil. Aucun mouvement n'a été rejoué. La validation
+corrigée en lecture seule observe `Z=50,00 mm` côté G-code, le `11 × 11` exact,
+les cibles zéro et les configurations inchangées.
+
+Les coordonnées de contact restent volontairement absentes : limites de
+brosse, premier contact et directions sûres d'entrée et de sortie sont des
+faits humains encore manquants. Le formulaire attend le verdict de Thomas sur
+ce checkpoint avant tout rapprochement. Voir
+`docs/42-clean-motion-v1-premiere-tranche-physique.md`.
 
 La capture privée `20260827-clean-motion-v1-read-only-sources-v3` confirme sans
 effet les limites machine et la zone stock déclarée X `68…94 mm`,

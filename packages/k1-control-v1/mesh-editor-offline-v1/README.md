@@ -6,6 +6,16 @@ Ce paquet permet de créer et manipuler en mémoire un profil dérivé du compos
 physique 11 × 11. Il ne contient aucun transport K1, aucune pose distante,
 aucune écriture de configuration et aucune commande de mouvement.
 
+Nomenclature corrigée par ADR-029 : tous les profils actuels ont des défauts de
+bord. Le `11 × 11` est le meilleur profil observé et le moins mauvais, pas un
+profil robuste. Le mot `robuste` reste réservé à un futur dérivé validé sur
+toute la zone utile.
+
+L'édition point par point est déjà opérationnelle : choisir `Un point`, cliquer
+la cellule voulue, puis appliquer `Rapprocher` ou `Éloigner` par pas de
+`0,005 mm` ou `0,010 mm`. La source reste inchangée ; seule la dérivation
+versionnée reçoit la correction.
+
 ## Lancer la démonstration locale
 
 Depuis la racine du dépôt :

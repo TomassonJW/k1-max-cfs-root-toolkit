@@ -2,8 +2,9 @@
 
 Date : 2026-08-24
 
-Statut : retenue pour prototype hors imprimante ; aucune correction n'est
-encore appliquée à la K1
+Statut : retenue et implémentée hors imprimante. Sa terminologie `robuste 6 × 6`
+est corrigée par ADR-029 ; aucune correction dérivée n'est encore appliquée à
+la K1.
 
 ## Contexte
 
@@ -50,9 +51,11 @@ Chaque profil dérivé contient :
 - le résultat du test de première couche et l'état `draft`, `qualified` ou
   `rejected`.
 
-Le profil source `k1_p001_t055_r001_n11x11` reste intact. Le premier profil
+Le profil source `k1_p001_t055_r001_n11x11` reste intact. Il est le meilleur
+profil actuellement observé, tout en gardant des défauts de bord. Le premier profil
 éditable portera un autre nom, par exemple
-`k1_p001_t055_r001_n11x11_tuned_v001`. Le robuste `6 × 6` reste le repli sûr.
+`k1_p001_t055_r001_n11x11_tuned_v001`. Le `6 × 6` reste un repli historique,
+pas un profil robuste. Aucun profil actuel n'est qualifié robuste.
 
 ## Séparation entre correction locale et Z global
 
@@ -160,7 +163,7 @@ ce qui ne fournit ni source immuable ni transaction métier complète.
 
 La pose d'un profil dérivé se fait uniquement au repos : backup exact,
 écriture atomique du nouveau bloc, restart Klipper borné, relecture de ses 121
-valeurs, puis rechargement du robuste. L'activation du profil dérivé est une
+valeurs, puis rechargement du meilleur profil courant `11 × 11`. L'activation du profil dérivé est une
 action séparée et réversible depuis l'interface.
 
 ## Conséquences
@@ -168,7 +171,8 @@ action séparée et réversible depuis l'interface.
 ### Positives
 
 - Thomas peut corriger une erreur spatiale stable sans console ni Codex ;
-- la mesure d'origine et le profil robuste restent toujours récupérables ;
+- la mesure d'origine, le meilleur profil courant et le repli `6 × 6` restent
+  toujours récupérables ;
 - chaque essai est attribuable et comparable ;
 - le Z global, le mesh et l'interpolation ne sont plus confondus ;
 - le futur mode Précision peut rester caché tant qu'aucun profil dérivé n'est

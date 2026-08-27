@@ -8,10 +8,23 @@ Lire ce document en premier. Le contenu ci-dessous est conservé comme archive
 de la clôture antérieure du Goal 2 ; il ne décrit plus l'état live actuel et ne
 doit pas piloter la prochaine action.
 
-État courant résumé : le robuste quotidien `k1_p001_t055_r001_n06x06` est
-actif et revérifié ; `G4-K1-CONTROL-ROBUST-MESH-ACTIVATION-V1` est close OK.
-La prochaine action est la gate humaine `G4-K1-CONTROL-CLEAN-MOTION-V1`, avec
-Thomas devant la K1, plateau libre et brosse visible.
+`GOAL-P4-OFFLINE-CYCLE-CFS-V1` est terminé hors imprimante et
+`GOAL-P4-K1-READ-ONLY-QUALIFICATION-V1` est terminé en lecture seule. La capture
+canonique de ce second Goal reste
+`20260827-142853-goal-p4-k1-read-only-qualification-v1`. Aucune impression,
+G-code, écriture distante, chauffe ou mouvement n'a été produit par ce Goal.
+
+État courant corrigé : tous les profils actuels ont des défauts de bord et
+aucun n'est qualifié robuste. Le `11 × 11`, meilleur profil observé, est actif
+et revérifié après `G4-K1-CONTROL-BEST-CURRENT-MESH-RESTORE-V1 = RESTORE_OK`.
+L'ancien chargement du `6 × 6` reste une preuve technique historique, mais son
+classement produit est annulé par ADR-029. L'éditeur hors ligne permet déjà la
+correction point par point sur une copie versionnée du `11 × 11` immuable.
+
+`G4-K1-CONTROL-CLEAN-MOTION-V1` a exécuté son checkpoint C une seule fois : XYZ
+référencés, `11 × 11` rechargé, consigne `Z=50 mm`. La validation corrigée en
+lecture seule est verte après un faux KO local lié à la compensation du mesh.
+Le prochain mouvement est bloqué jusqu'au verdict visuel de Thomas.
 
 ## Archive historique — clôture initiale du Goal 2
 

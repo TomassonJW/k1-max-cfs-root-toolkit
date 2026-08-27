@@ -1,13 +1,20 @@
 # G4-K1-CONTROL-ROBUST-MESH-ACTIVATION-V1
 
-Statut : **close OK ; profil robuste `6 × 6` actif et revérifié**.
+Statut technique historique : **close OK ; commande exécutée et revérifiée**.
+Statut produit actuel : **nomenclature et choix annulés par ADR-029 ; ne pas
+rejouer**.
+
+Le nom historique de cette gate est conservé pour la traçabilité. Il ne prouve
+pas que le `6 × 6` est robuste. Tous les profils actuels ont des défauts de bord
+et le `11 × 11` est le meilleur profil observé. La gate corrective
+`G4-K1-CONTROL-BEST-CURRENT-MESH-RESTORE-V1` l'a remis actif.
 
 Cette gate lève le verrou placé entre le Goal 2 et le Goal 3. Elle distingue
 deux profils déjà présents sur la K1 :
 
-- `k1_p001_t055_r001_n06x06` : profil robuste quotidien qualifié ;
-- `k1_p001_t055_r001_n11x11` : source physique composite, conservée mais non
-  promue comme robuste à cause des défauts sévères observés aux bords.
+- `k1_p001_t055_r001_n06x06` : ancien profil quotidien, avec défauts de bord ;
+- `k1_p001_t055_r001_n11x11` : meilleur profil observé, source physique
+  immuable, avec défauts de bord.
 
 Le préflight vérifie l'état au repos, les chauffes à zéro, les axes libérés, le
 Z accepté, les deux CFS, les empreintes de configuration et les trois matrices
