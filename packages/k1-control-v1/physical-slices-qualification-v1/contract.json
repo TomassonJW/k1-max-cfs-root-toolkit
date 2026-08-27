@@ -2,7 +2,7 @@
   "contract_id": "GOAL-P4-PHYSICAL-SLICES-QUALIFICATION-V1",
   "goal_number": 3,
   "macro_goal_count": 4,
-  "status": "in_progress_clean_motion_d2_awaiting_human_verdict",
+  "status": "in_progress_clean_motion_d3_awaiting_human_verdict",
   "authority": "offline_completion_registry_only",
   "deployment_candidate": false,
   "printer_connection": false,

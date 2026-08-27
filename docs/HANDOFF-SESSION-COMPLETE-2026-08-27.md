@@ -158,8 +158,10 @@ Le checkpoint C est techniquement vert et Thomas a confirmé
 `CHECKPOINT C OK`. Il ne doit pas être rejoué. D1 a ensuite été exécuté une
 seule fois à froid jusqu'à `X81 Y280 Z50`, puis Thomas a confirmé `D1 OK`. D2 a
 approché une seule fois jusqu'à `X81 Y300 Z50`, encore `4,5 mm` avant la zone
-stock. Son état technique est vert, mais le verdict visuel de Thomas manque
-encore ; D3 reste verrouillé et D2 ne doit pas être rejoué. `gpt-5.6-terra` avec
+stock. Thomas a confirmé `D2 OK`, puis D3 a approché une seule fois jusqu'à
+`X81 Y303 Z50`, encore `1,5 mm` avant la zone stock. Son état technique est
+vert, mais le verdict visuel de Thomas manque encore ; l'entrée dans la zone
+reste verrouillée et D3 ne doit pas être rejoué. `gpt-5.6-terra` avec
 raisonnement `high` est conseillé pour piloter les checkpoints et les preuves.
 L'option `medium` est moins coûteuse, avec plus de risque de reprise si une
 observation physique est ambiguë.
@@ -176,8 +178,9 @@ et la clôture finale restent au Goal 4 ; aucun cinquième Goal n'est permis.
 > `docs/HANDOFF-SESSION-COMPLETE-2026-08-27.md`. Le meilleur profil observé
 > `11 × 11` est actif ; aucun profil actuel n'est qualifié robuste. Je suis
 > devant la K1, plateau libre, brosse visible, buse observable et arrêt immédiat
-> possible. Le checkpoint C et D1 sont `OK`. D2 a déjà été exécuté une fois
-> jusqu'à `X81 Y300 Z50` et ne doit pas être rejoué. Attends mon verdict visuel
-> D2 avant tout D3. Ne chauffe, n'extrude et ne lance aucun CFS.
+> possible. Le checkpoint C, D1 et D2 sont `OK`. D3 a déjà été exécuté une fois
+> jusqu'à `X81 Y303 Z50` et ne doit pas être rejoué. Attends mon verdict visuel
+> D3 avant toute entrée dans la zone stock. Ne chauffe, n'extrude et ne lance
+> aucun CFS.
 
 La tâche source reste visible et ne doit pas être archivée.

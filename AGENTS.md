@@ -68,8 +68,10 @@ et Thomas a confirmé `CHECKPOINT C OK` ; D1 a ensuite été exécuté une seule
 technique final est vert, avec chauffes zéro, aucune route CFS, configurations
 inchangées et `11 × 11` actif ; Thomas a confirmé `D1 OK`, puis D2 a approché
 une seule fois jusqu'à `X81 Y300 Z50`, encore `4,5 mm` avant la zone stock, avec
-un état technique vert ; le verdict visuel de Thomas manque encore, D3 n'a pas
-été lancé et D2 ne doit pas être rejoué ;
+un état technique vert ; Thomas a confirmé `D2 OK`, puis D3 a approché une seule
+fois jusqu'à `X81 Y303 Z50`, encore `1,5 mm` avant la zone stock, avec un état
+technique vert ; le verdict visuel de Thomas manque encore, aucune entrée dans
+la zone stock n'a été lancée et D3 ne doit pas être rejoué ;
 le registre local `physical-slices-qualification-v1` fixe exactement sept
 exigences internes au Goal 3, en compte actuellement `0/7` closes et interdit
 qu'une preuve physique soit remplacée par un test ou repoussée dans un Goal

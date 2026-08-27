@@ -4,8 +4,8 @@ Ce paquet ne crée aucun Goal ni aucune nouvelle autorité. Il matérialise les
 sept exigences déjà contenues dans `GOALS.md`, le contrat du cycle et le plan
 hors imprimante. Le projet reste limité à quatre Goals.
 
-Statut actuel : **Goal 3 en cours ; D1 accepté ; D2 de CLEAN-MOTION
-techniquement vert, verdict humain `D2 OK` encore absent ; aucune tranche
+Statut actuel : **Goal 3 en cours ; D1 et D2 acceptés ; D3 de CLEAN-MOTION
+techniquement vert, verdict humain `D3 OK` encore absent ; aucune tranche
 physique complète passée**.
 
 Le registre est entièrement local. Il ne contient aucun connecteur K1, aucune

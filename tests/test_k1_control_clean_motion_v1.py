@@ -41,7 +41,7 @@ class CleanMotionV1ContractTests(unittest.TestCase):
 
     def test_gate_is_not_deployable_and_records_only_executed_commands(self):
         self.assertEqual(
-            "checkpoint_d2_technical_ok_awaiting_human_verdict",
+            "checkpoint_d3_technical_ok_awaiting_human_verdict",
             self.contract["status"],
         )
         self.assertFalse(self.contract["deployment_candidate"])
@@ -51,7 +51,8 @@ class CleanMotionV1ContractTests(unittest.TestCase):
         self.assertEqual(
             checkpoint.CHECKPOINT_SCRIPT.split("\n")
             + checkpoint_d.CHECKPOINTS["d1"]["script"].split("\n")
-            + checkpoint_d.CHECKPOINTS["d2"]["script"].split("\n"),
+            + checkpoint_d.CHECKPOINTS["d2"]["script"].split("\n")
+            + checkpoint_d.CHECKPOINTS["d3"]["script"].split("\n"),
             self.contract["gcode_commands"],
         )
         self.assertEqual([], self.contract["service_actions"])
@@ -100,7 +101,7 @@ class CleanMotionV1ContractTests(unittest.TestCase):
         self.assertTrue(
             all(value is None for key, value in geometry.items() if key != "safe_clearance_z")
         )
-        self.assertEqual("D2_TECHNICAL_OK_AWAITING_HUMAN_VERDICT", self.form["status"])
+        self.assertEqual("D3_TECHNICAL_OK_AWAITING_HUMAN_VERDICT", self.form["status"])
         self.assertTrue(self.form["operator_present"])
         self.assertTrue(self.form["plate_clear"])
         self.assertTrue(self.form["brush_installed_and_visible"])
@@ -360,6 +361,8 @@ class CleanMotionV1ContractTests(unittest.TestCase):
             "run_d1",
             "preflight_d2",
             "run_d2",
+            "preflight_d3",
+            "run_d3",
         ):
             artifact = checkpoint_evidence[key]
             path = ROOT / artifact["path"]
@@ -368,9 +371,13 @@ class CleanMotionV1ContractTests(unittest.TestCase):
         self.assertEqual("D1_OK", checkpoint_evidence["run_d1"]["human_verdict"])
         self.assertFalse(checkpoint_evidence["d2_blocked_until_d1_human_positive"])
         self.assertTrue(checkpoint_evidence["d2_executed"])
-        self.assertIsNone(checkpoint_evidence["run_d2"]["human_verdict"])
-        self.assertTrue(checkpoint_evidence["d3_blocked_until_d2_human_positive"])
-        self.assertFalse(checkpoint_evidence["d3_executed"])
+        self.assertEqual("D2_OK", checkpoint_evidence["run_d2"]["human_verdict"])
+        self.assertFalse(checkpoint_evidence["d3_blocked_until_d2_human_positive"])
+        self.assertTrue(checkpoint_evidence["d3_executed"])
+        self.assertIsNone(checkpoint_evidence["run_d3"]["human_verdict"])
+        self.assertTrue(
+            checkpoint_evidence["next_entry_or_vertical_approach_blocked_until_d3_human_positive"]
+        )
 
 
 if __name__ == "__main__":

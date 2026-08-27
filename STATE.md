@@ -51,8 +51,8 @@ Aucune nouvelle authentification ni action physique n'a eu lieu.
 **P4 — Goals 1 et 2 clos ; meilleur profil observé `11 × 11` actif et
 revérifié ; tous les profils actuels ont des défauts de bord ; aucun profil
 actuel n'est qualifié robuste ; éditeur point par point disponible hors ligne ;
-Goal 3 a accepté D1 puis exécuté D2 de CLEAN-MOTION, techniquement vert mais en
-attente du verdict visuel humain ; cycle CFS clos
+Goal 3 a accepté D1 et D2 puis exécuté D3 de CLEAN-MOTION, techniquement vert
+mais en attente du verdict visuel humain ; cycle CFS clos
 hors imprimante ; production volontairement bloquée**
 
 Le registre local
@@ -100,14 +100,16 @@ compensée `50,23 mm` à la consigne ; aucun mouvement n'a été rejoué. La
 validation corrigée lit `Z=50,00 mm` côté G-code et confirme la machine au repos,
 froide, configurations inchangées et `11 × 11` actif. Le statut est
 `CHECKPOINT_C_TECHNICAL_OK_AWAITING_HUMAN_VERDICT`. Thomas a ensuite confirmé
-`CHECKPOINT C OK`. Le checkpoint ne sera pas rejoué ; le rapprochement suivant
-n'a pas été rejoué. D1 a ensuite déplacé une seule fois la tête à froid jusqu'à
+`CHECKPOINT C OK`. Le checkpoint ne sera pas rejoué. D1 a ensuite déplacé une
+seule fois la tête à froid jusqu'à
 `X81 Y280 Z50`, encore `24,5 mm` avant la zone stock déclarée. L'état final
 confirme les chauffes à zéro, aucune route CFS, les configurations inchangées et
 le `11 × 11` actif. Thomas a confirmé `D1 OK`. D1 n'a pas été rejoué. D2 a
 ensuite approché une seule fois jusqu'à `X81 Y300 Z50`, encore `4,5 mm` avant la
-zone stock, à froid et sans autre effet. D2 est techniquement vert et attend le
-verdict visuel de Thomas ; D3 n'a pas été lancé.
+zone stock, à froid et sans autre effet. Thomas a confirmé `D2 OK`, puis D3 a approché une
+seule fois jusqu'à `X81 Y303 Z50`, encore `1,5 mm` avant la zone stock, à froid
+et sans autre effet. D3 est techniquement vert et attend le verdict visuel de
+Thomas ; aucune entrée dans la zone stock n'a été lancée.
 
 La recette de mesure quotidienne qualifiée reste `6 × 6` Lagrange avec un seul
 mesh standard ; cela ne signifie pas que son profil résultant est robuste ni

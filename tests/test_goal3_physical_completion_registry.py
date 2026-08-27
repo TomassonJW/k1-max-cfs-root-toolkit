@@ -47,10 +47,10 @@ class Goal3PhysicalCompletionRegistryTests(unittest.TestCase):
         self.assertIn("final_project_closure", boundary)
         self.assertEqual(4, self.contract["macro_goal_count"])
 
-    def test_current_human_gate_is_d2_and_d3_is_blocked(self):
+    def test_current_human_gate_is_d3_and_entry_is_blocked(self):
         gate = self.matrix["current_human_gate"]
-        self.assertEqual("D2", gate["checkpoint"])
-        self.assertEqual("D2_OK", gate["required_human_verdict"])
+        self.assertEqual("D3", gate["checkpoint"])
+        self.assertEqual("D3_OK", gate["required_human_verdict"])
         self.assertTrue(gate["next_effect_blocked"])
 
     def test_current_ledger_verifies_as_in_progress_without_effect(self):

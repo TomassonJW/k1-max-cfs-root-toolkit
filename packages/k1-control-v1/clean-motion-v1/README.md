@@ -1,7 +1,7 @@
 # G4-K1-CONTROL-CLEAN-MOTION-V1
 
-Statut : **checkpoint D2 techniquement vert ; verdict visuel de Thomas attendu ;
-D3 verrouillé ; meilleur profil `11 × 11` actif**.
+Statut : **checkpoint D3 techniquement vert ; verdict visuel de Thomas attendu ;
+entrée dans la zone stock verrouillée ; meilleur profil `11 × 11` actif**.
 
 Cette gate est la première tranche physique du Goal 3. Son préalable corrigé
 est satisfait : `G4-K1-CONTROL-BEST-CURRENT-MESH-RESTORE-V1` a remis actif le
@@ -53,7 +53,9 @@ ensuite confirmé `D1 OK` sans signaler de problème visuel.
 D1 n'a pas été rejoué. Après un préflight frais, D2 a déplacé une seule fois la
 tête jusqu'à `X81 Y300 Z50` à `10 mm/s`, soit `4,5 mm` avant la zone Y stock.
 La machine est toujours froide, sans route CFS, configurations inchangées et
-`11 × 11` actif. D2 est techniquement vert. D3 vers `X81 Y303 Z50` à `5 mm/s`
-reste interdit tant que Thomas n'a pas confirmé visuellement D2.
+`11 × 11` actif. Thomas a confirmé `D2 OK`, puis D3 a approché une seule fois
+jusqu'à `X81 Y303 Z50` à `5 mm/s`, soit `1,5 mm` avant la zone Y stock. D3 est
+techniquement vert. Toute entrée dans la zone stock ou approche verticale reste
+interdite tant que Thomas n'a pas confirmé visuellement D3.
 
 Voir aussi `docs/42-clean-motion-v1-premiere-tranche-physique.md`.

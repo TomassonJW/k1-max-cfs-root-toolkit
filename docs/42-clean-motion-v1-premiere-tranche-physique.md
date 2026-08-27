@@ -1,7 +1,7 @@
 # CLEAN-MOTION-V1 — première tranche physique du Goal 3
 
-Statut : **checkpoint D2 techniquement vert ; verdict visuel attendu ; D3
-verrouillé ; meilleur profil actuel `11 × 11` actif**.
+Statut : **checkpoint D3 techniquement vert ; verdict visuel attendu ; entrée
+dans la zone stock verrouillée ; meilleur profil actuel `11 × 11` actif**.
 
 ## Faits déjà qualifiés sans mouvement
 
@@ -78,8 +78,13 @@ visibilité. D1 n'a pas été rejoué. Après un préflight frais, D2 a approch�
 seule fois jusqu'à `X81 Y300 Z50` à `10 mm/s`, soit `4,5 mm` avant la zone Y
 stock. L'état technique final reste froid, sûr et inchangé hors position.
 
-Thomas doit maintenant confirmer visuellement D2. Sans `D2 OK`, D3 vers
-`X81 Y303 Z50` à `5 mm/s` reste interdit. D2 ne sera pas rejoué.
+Thomas a confirmé visuellement `D2 OK`. D2 n'a pas été rejoué. Après un
+préflight frais, D3 a approché une seule fois jusqu'à `X81 Y303 Z50` à
+`5 mm/s`, soit `1,5 mm` avant la zone Y stock. L'état technique final reste
+froid, sûr et inchangé hors position.
+
+Thomas doit maintenant confirmer visuellement D3. Sans `D3 OK`, aucune entrée
+dans la zone stock ni approche verticale n'est autorisée. D3 ne sera pas rejoué.
 
 ## Verdict
 

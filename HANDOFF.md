@@ -30,8 +30,10 @@ rapprochement D1 a ensuite été exécuté une seule fois à froid jusqu'à
 final est vert, sans chauffe, route CFS ni changement de configuration, et avec
 le `11 × 11` actif. Thomas a confirmé `D1 OK` et D1 n'a pas été rejoué. D2 a
 ensuite approché une seule fois jusqu'à `X81 Y300 Z50`, soit `4,5 mm` avant la
-zone Y stock. Son état technique est vert ; D2 attend le verdict visuel de
-Thomas, D3 n'a pas été lancé et D2 ne doit pas être rejoué.
+zone Y stock. Thomas a confirmé `D2 OK`, puis D3 a approché une seule fois jusqu'à
+`X81 Y303 Z50`, soit `1,5 mm` avant la zone Y stock. Son état technique est
+vert ; D3 attend le verdict visuel de Thomas, aucune entrée dans la zone stock
+n'a été lancée et D3 ne doit pas être rejoué.
 
 Le registre canonique de complétude du Goal 3 est maintenant
 `packages/k1-control-v1/physical-slices-qualification-v1/completion-matrix.json`.
