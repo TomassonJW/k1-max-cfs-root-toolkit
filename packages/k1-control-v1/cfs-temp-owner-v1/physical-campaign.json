@@ -3,7 +3,7 @@
   "campaign_id": "CFS-TEMP-OWNER-PHYSICAL-CAMPAIGN-V1",
   "goal": "GOAL-P4-PHYSICAL-SLICES-QUALIFICATION-V1",
   "requirement": "CFS_START_STATES_AND_TEMPERATURE_OWNER",
-  "status": "READY_FOR_EMPTY_LOAD_T1A_HUMAN_RERUN",
+  "status": "EMPTY_LOAD_T1A_PASSED_KEEP_CORRECT_PENDING",
   "authority": "human_stock_actions_with_passive_observers",
   "automatic_retry": false,
   "observer": "packages/k1-control-v1/cfs-temp-owner-v1/capture_observation.ps1",
@@ -43,8 +43,11 @@
         "terminal_invariants"
       ],
       "accepted_human_verdict": "CFS_EMPTY_LOAD_T1A_VISIBLE_PURGE_OK",
-      "evidence_status": "READY_FOR_RERUN_HUMAN_CONFIRMED_PREVIOUS_T1A_RESIDUAL",
-      "capture_id": "20260828-goal3-cfs-empty-load-t1a-v1",
+      "evidence_status": "PASSED",
+      "capture_id": "20260828-goal3-cfs-empty-load-t1a-r2",
+      "evidence": "packages/k1-control-v1/cfs-temp-owner-v1/empty-load-t1a-evidence.json",
+      "human_verdict": "CFS_EMPTY_LOAD_T1A_VISIBLE_PURGE_OK",
+      "human_verdict_date": "2026-08-28",
       "first_capture_classification": "NON_PROBATIVE_OPERATOR_DID_NOT_TRIGGER_ACTION",
       "rerun_requires_human_clarification": false
     },

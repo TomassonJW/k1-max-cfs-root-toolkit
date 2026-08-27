@@ -6,10 +6,10 @@
   "completion_audit_evidence": null,
   "current_human_gate": {
     "requirement_id": "CFS_START_STATES_AND_TEMPERATURE_OWNER",
-    "checkpoint": "CFS_EMPTY_LOAD_T1A_MANUAL_ACTION_REQUIRED",
+    "checkpoint": "CFS_KEEP_CORRECT_T1A_REPRESENTATIVE_JOB_REQUIRED",
     "active_gate": "G4-K1-CONTROL-CFS-TEMP-OWNER-V1",
-    "technical_status": "AUTOMATIC_CLEANING_CLOSED_KO_MANUAL_CLEANING_CANONICAL_CFS_CAPTURE_SAW_NO_ACTION",
-    "required_human_verdict": "CFS_EMPTY_LOAD_T1A_VISIBLE_PURGE_OK",
+    "technical_status": "EMPTY_LOAD_T1A_PASSED_CFS_CAMPAIGN_1_OF_4",
+    "required_human_verdict": "CFS_KEEP_CORRECT_T1A_OK",
     "next_effect_blocked": true
   },
   "requirements": [
@@ -48,7 +48,7 @@
     {
       "order": 3,
       "id": "CFS_START_STATES_AND_TEMPERATURE_OWNER",
-      "status": "PASSIVE_OBSERVER_READY_LIVE_BASELINE_OK_PHYSICAL_CHECKPOINTS_NOT_STARTED",
+      "status": "PHYSICAL_CHECKPOINTS_1_OF_4_PASSED",
       "slice_id": "CFS-TEMP-OWNER-V1",
       "evidence": "packages/k1-control-v1/cfs-temp-owner-v1/contract.json",
       "required_proofs": [

@@ -29,8 +29,8 @@ class CfsPhysicalCampaignTests(unittest.TestCase):
     def test_campaign_is_exactly_four_non_overlapping_checkpoints(self):
         result = self.verifier.verify()
         self.assertEqual("CFS_PHYSICAL_CAMPAIGN_READY_INCOMPLETE", result["status"])
-        self.assertEqual(0, result["passed_count"])
-        self.assertEqual(4, result["pending_count"])
+        self.assertEqual(1, result["passed_count"])
+        self.assertEqual(3, result["pending_count"])
 
     def test_campaign_covers_both_cfs_units(self):
         rendered = json.dumps(self.campaign, sort_keys=True)
@@ -49,13 +49,19 @@ class CfsPhysicalCampaignTests(unittest.TestCase):
         self.assertEqual([], ambiguous["expected_effects"])
         self.assertTrue(ambiguous["requires_read_only_decision_adapter"])
 
-    def test_current_attempt_remains_unqualified_but_rerun_is_ready(self):
+    def test_empty_load_t1a_has_technical_and_human_evidence(self):
         first = self.campaign["checkpoints"][0]
-        self.assertEqual("READY_FOR_RERUN_HUMAN_CONFIRMED_PREVIOUS_T1A_RESIDUAL", first["evidence_status"])
+        evidence = json.loads((ROOT / first["evidence"]).read_text(encoding="utf-8"))
+        self.assertEqual("PASSED", first["evidence_status"])
+        self.assertEqual("CFS_EMPTY_LOAD_T1A_VISIBLE_PURGE_OK", first["human_verdict"])
+        self.assertEqual("PASSED", evidence["qualification_status"])
+        self.assertEqual([[], ["T1A"]], evidence["technical_evidence"]["route_states"])
+        self.assertEqual(220.0, evidence["technical_evidence"]["maximum_nozzle_target_c"])
+        self.assertEqual(0.0, evidence["technical_evidence"]["final_nozzle_target_c"])
+        self.assertTrue(evidence["human_evidence"]["visible_purge"])
         self.assertEqual("NON_PROBATIVE_OPERATOR_DID_NOT_TRIGGER_ACTION", first["first_capture_classification"])
         self.assertEqual("T1A", first["starting_residual_route_human_confirmed"])
         self.assertFalse(first["rerun_requires_human_clarification"])
-        self.assertNotEqual("PASSED", first["evidence_status"])
 
 
 if __name__ == "__main__":

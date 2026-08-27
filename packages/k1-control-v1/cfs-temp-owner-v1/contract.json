@@ -4,14 +4,14 @@
   "goal": "GOAL-P4-PHYSICAL-SLICES-QUALIFICATION-V1",
   "requirement": "CFS_START_STATES_AND_TEMPERATURE_OWNER",
   "authority": "passive_live_observer_only",
-  "status": "LIVE_BASELINE_OK_EMPTY_LOAD_T1A_READY_FOR_HUMAN_RERUN",
+  "status": "EMPTY_LOAD_T1A_PASSED_KEEP_CORRECT_PENDING",
   "deployment_candidate": false,
   "physical_campaign": {
     "manifest": "packages/k1-control-v1/cfs-temp-owner-v1/physical-campaign.json",
     "verifier": "packages/k1-control-v1/cfs-temp-owner-v1/verify_physical_campaign.py",
     "status": "READY_INCOMPLETE",
     "checkpoint_count": 4,
-    "passed_count": 0
+    "passed_count": 1
   },
   "start_decision_adapter": {
     "program": "packages/k1-control-v1/cfs-temp-owner-v1/start_decision.py",
@@ -134,6 +134,25 @@
       },
       "configuration_unchanged": true,
       "observer_effect": false
+    },
+    {
+      "checkpoint": "EMPTY_LOAD",
+      "intended_route": "T1A",
+      "capture_id": "20260828-goal3-cfs-empty-load-t1a-r2",
+      "capture_sha256": "8915b914a66bb57765a9f5c5befa7716e0a4e70cf347d108dfcf24ed2b6fd36b",
+      "analysis_sha256": "648b9a544e4bd9c2f6ce0270daf582d0eaf57719d6ecc95dc6fa29809a80576d",
+      "snapshot_count": 240,
+      "route_transition_count": 1,
+      "maximum_nozzle_target_c": 220.0,
+      "maximum_nozzle_temperature_c": 223.56,
+      "final_nozzle_target_c": 0.0,
+      "final_bed_target_c": 0.0,
+      "active_command_states": [""],
+      "classification": "PASSED",
+      "human_verdict": "CFS_EMPTY_LOAD_T1A_VISIBLE_PURGE_OK",
+      "configuration_unchanged": true,
+      "observer_effect": false,
+      "evidence": "packages/k1-control-v1/cfs-temp-owner-v1/empty-load-t1a-evidence.json"
     }
   ],
   "effects": {

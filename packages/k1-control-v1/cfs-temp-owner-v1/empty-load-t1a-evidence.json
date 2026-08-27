@@ -1,0 +1,43 @@
+{
+  "schema": 1,
+  "mission": "G4-K1-CONTROL-CFS-TEMP-OWNER-V1",
+  "checkpoint": "EMPTY_LOAD_T1A",
+  "capture_id": "20260828-goal3-cfs-empty-load-t1a-r2",
+  "capture_sha256": "8915b914a66bb57765a9f5c5befa7716e0a4e70cf347d108dfcf24ed2b6fd36b",
+  "analysis_sha256": "648b9a544e4bd9c2f6ce0270daf582d0eaf57719d6ecc95dc6fa29809a80576d",
+  "technical_evidence": {
+    "snapshot_count": 240,
+    "route_states": [[], ["T1A"]],
+    "route_transition_count": 1,
+    "active_command_states": [""],
+    "head_sensor_states": [true],
+    "after_cutter_sensor_states": [false, true],
+    "maximum_nozzle_target_c": 220.0,
+    "maximum_nozzle_temperature_c": 223.56,
+    "final_nozzle_target_c": 0.0,
+    "final_bed_target_c": 0.0,
+    "configuration_unchanged": true,
+    "active_profile": "k1_p001_t055_r001_n11x11",
+    "accepted_z_offset": -0.04,
+    "observer_effect": false
+  },
+  "human_evidence": {
+    "verdict": "CFS_EMPTY_LOAD_T1A_VISIBLE_PURGE_OK",
+    "source": "human_operator_message",
+    "date": "2026-08-28",
+    "visible_purge": true,
+    "abnormal_noise_or_blockage_reported": false
+  },
+  "physical_action": {
+    "initiator": "human_operator_stock_ui",
+    "single_load_requested": true,
+    "route_left_engaged": "T1A",
+    "automatic_retry": false
+  },
+  "terminal_state": {
+    "route": "T1A",
+    "heater_targets_zero": true,
+    "configuration_unchanged": true
+  },
+  "qualification_status": "PASSED"
+}

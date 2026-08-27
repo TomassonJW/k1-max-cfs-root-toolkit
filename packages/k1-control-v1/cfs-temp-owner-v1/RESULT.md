@@ -1,11 +1,18 @@
 # Résultat actuel
 
-Statut : **observateur qualifié hors imprimante et baseline live en lecture
-seule verte ; transitions physiques non commencées**.
+Statut : **observateur qualifié ; premier checkpoint physique `EMPTY_LOAD_T1A`
+clos OK ; campagne CFS à `1/4`**.
 
-Aucune exigence physique CFS n'est déclarée réussie par ce paquet. Il prépare
-seulement une preuve fiable des futures actions manuelles, sans pouvoir les
-déclencher ni remplacer le verdict de Thomas.
+L'observateur ne déclenche aucune action et ne remplace jamais le verdict de
+Thomas. Le premier chargement physique est toutefois maintenant qualifié par
+les deux preuves complémentaires.
+
+La capture `20260828-goal3-cfs-empty-load-t1a-r2` contient 240 lectures. Elle a
+vu une seule transition de route vide vers `T1A`, une cible de buse à `220 °C`,
+les deux capteurs passer dans l'état attendu, puis les deux cibles revenir à
+zéro. Les configurations, le profil `11 × 11` et le Z `−0,04 mm` sont restés
+inchangés. Thomas a confirmé une purge visible sans bruit anormal ni blocage et
+`T1A` reste engagé. `EMPTY_LOAD_T1A` est donc `PASSED`.
 
 Les `8/8` scénarios synthétiques sont verts. La baseline réelle contient huit
 lectures stables sur cinq secondes : aucune route, aucune commande CFS, cibles
@@ -24,10 +31,11 @@ dans la tête est donc attribué explicitement à `T1A`. Le décideur accepte
 maintenant un futur chargement de ce même `T1A`, mais bloque toujours si cette
 origine n'est pas confirmée ou si la route demandée est différente.
 
-Le manifeste physique fixe désormais quatre checkpoints couvrant `T1A`, `T2C`,
+Le manifeste physique fixe quatre checkpoints couvrant `T1A`, `T2C`,
 la conservation du bon filament et le blocage d'une identité ambiguë. Son
-vérificateur retourne `CFS_PHYSICAL_CAMPAIGN_READY_INCOMPLETE` avec `0/4` : le
-plan est prêt, mais aucune preuve humaine n'est inventée.
+vérificateur retourne encore `CFS_PHYSICAL_CAMPAIGN_READY_INCOMPLETE`, désormais
+avec `1/4`. Le prochain checkpoint doit prouver qu'un travail demandant le bon
+`T1A` déjà engagé ne le coupe, ne le retire et ne le recharge pas.
 
 Le décideur local est également prêt et testé. Une capture live fraîche de huit
 lectures a retrouvé le segment détecté dans la tête, aucune route engagée,

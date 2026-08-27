@@ -48,6 +48,11 @@ fenêtre, puis que la dernière action réelle avait chargé et retiré `T1A` lo
 de la préparation manuelle du nettoyage. Le prochain essai peut donc recharger
 ce même `T1A` sous observation, sans attribuer à l'interface un refus non vu.
 
+La reprise `20260828-goal3-cfs-empty-load-t1a-r2` est close OK : une seule
+transition vers `T1A`, cible de buse à `220 °C`, purge visible confirmée par
+Thomas, puis cibles zéro et configurations inchangées. `T1A` reste engagé pour
+le checkpoint suivant `KEEP_CORRECT_T1A`. La campagne physique est à `1/4`.
+
 L'adaptateur de décision ne commande rien. Il refuse plusieurs routes, une
 commande CFS active, un segment présent dont la route résiduelle n'a pas été
 confirmée et toute route engagée dont la matière n'a pas été confirmée. Il
