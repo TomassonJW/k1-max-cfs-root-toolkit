@@ -47,20 +47,20 @@ class Goal3PhysicalCompletionRegistryTests(unittest.TestCase):
         self.assertIn("final_project_closure", boundary)
         self.assertEqual(4, self.contract["macro_goal_count"])
 
-    def test_current_gate_waits_for_manual_clean_with_safe_file_installed(self):
+    def test_current_gate_waits_for_z_thermal_stabilization_diagnostic(self):
         gate = self.matrix["current_human_gate"]
         self.assertEqual(
-            "SAFE_TWO_LAYER_KEEP_CORRECT_T1A_TRIAL_AWAITING_MANUAL_CLEAN",
+            "Z_THERMAL_STABILIZATION_DIAGNOSTIC_PREPARATION",
             gate["checkpoint"],
         )
-        self.assertIn("T1A_ENGAGED", gate["technical_status"])
-        self.assertIn("SAFE_END_GCODE_INSTALLED_EXACT_NOT_RUN", gate["technical_status"])
+        self.assertIn("KEEP_CORRECT_T1A_OWNED_START", gate["technical_status"])
+        self.assertIn("HUMAN_Z_MINUS_0_19", gate["technical_status"])
         self.assertEqual(
-            "G4-K1-CONTROL-START-SEQUENCE-OWNER-PHYSICAL-KEEP-CORRECT-T1A-V1",
+            "G4-K1-CONTROL-Z-THERMAL-STABILIZATION-DIAGNOSTIC-V1",
             gate["active_gate"],
         )
         self.assertEqual(
-            "MANUAL_NOZZLE_CLEAN_AND_SHORT_FIRST_LAYER_OBSERVATION",
+            "REVIEW_200_SECOND_SOAK_DIAGNOSTIC_THEN_PLATE_CLEAR_AND_MANUAL_CLEAN",
             gate["required_human_verdict"],
         )
         self.assertTrue(gate["next_effect_blocked"])

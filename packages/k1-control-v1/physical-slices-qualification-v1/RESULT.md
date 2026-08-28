@@ -30,10 +30,9 @@ cible `220 °C`, retour des chauffes à zéro et configurations inchangées. La
 seconde reprise `KEEP_CORRECT_T1A` a ensuite conservé `T1A` sans transition ni
 commande CFS et n'a jamais demandé la cible cachée `220 °C`. Le chemin CFS
 « garder le bon filament » est donc techniquement prouvé pendant ce départ
-observé. Le checkpoint complet reste non passé faute d'état terminal et de
-première couche acceptable sans correction humaine.
+observé.
 
-Le départ complet reste KO. `START_PRINT` a vidé ou remplacé le `11 × 11`
+Le départ stock historique reste KO. `START_PRINT` a vidé ou remplacé le `11 × 11`
 pendant ses mouvements bas, puis son brossage a laissé du filament sur la buse.
 Thomas a nettoyé manuellement et a dû passer temporairement de `−0,04` à
 `−0,19 mm` pour une première couche à peine correcte. Le `11 × 11` exact était
@@ -44,6 +43,13 @@ en preuve métrologique absolue. ADR-031 et START-SEQUENCE-OWNER-V1 préparent
 donc hors imprimante le remplacement atomique du départ stock : nettoyage
 manuel, une seule référence Z propre, aucun brossage, aucune mesure de mesh,
 températures explicites et purge après armement mesh/Z.
+
+Le départ possédé a ensuite été exécuté une fois. L'automatisation est verte,
+la purge est confirmée et les deux couches sont bonnes après intervention
+humaine à `−0,19 mm`. `KEEP_CORRECT_T1A` passe donc comme checkpoint CFS, mais
+le Z `−0,04 mm` ne passe pas sans intervention. La différence entre les `200 s`
+de stabilisation de la calibration et l'absence de stabilisation du départ est
+une hypothèse plausible, pas encore une preuve.
 
 Le Goal 3 ne pourra passer à `PASSED` qu'après preuves physiques pour les sept
 exigences, audit transversal des deux CFS, chauffes, Z, mesh, retours sûrs et
@@ -57,11 +63,12 @@ automatiques techniquement bloquées.
 ## Reprise actuelle au 29 août 2026
 
 `T1A` est engagé et l'état sûr a été restauré. Le petit fichier de deux couches
-utilise le départ possédé et une fin bornée sans `END_PRINT`, `BOX_END` ni
-`BOX_END_PRINT`; son empreinte corrigée a remplacé atomiquement l'ancienne
-version distante, qui n'a jamais été lancée. La gate attend le nettoyage manuel
-de la buse et la présence de Thomas.
+a terminé sans `END_PRINT`, `BOX_END` ni `BOX_END_PRINT`. Sa fin minimale a bien
+coupé les chauffes et libéré les moteurs, mais n'a ni parqué la tête ni présenté
+le plateau. Ce constat alimente l'exigence 6 sans la faire passer. Le filament
+est volontairement resté engagé ; son retrait appartient au bouton séparé
+`Désengager et nettoyer`.
 
-La gate passive suivante `T1A → T2C` est déjà préparée hors imprimante, sans
-commande d'effet et sans retry. Elle ne sera utilisée qu'après le verdict du
-petit essai.
+La gate passive `T1A → T2C` est déjà préparée hors imprimante, sans commande
+d'effet et sans retry. Avant de l'utiliser, le prochain verrou est un diagnostic
+Z avec la même stabilisation thermique que la calibration.

@@ -51,13 +51,20 @@ ce même `T1A` sous observation, sans attribuer à l'interface un refus non vu.
 La reprise `20260828-goal3-cfs-empty-load-t1a-r2` est close OK : une seule
 transition vers `T1A`, cible de buse à `220 °C`, purge visible confirmée par
 Thomas, puis cibles zéro et configurations inchangées. `T1A` reste engagé pour
-le checkpoint suivant `KEEP_CORRECT_T1A`. La campagne physique est à `1/4`.
+le checkpoint suivant `KEEP_CORRECT_T1A`. La campagne physique était alors à
+`1/4`.
 
 Le premier `KEEP_CORRECT_T1A` a ensuite échoué proprement avant qualification :
 le préfixe Orca historique `G28/T0/START_PRINT` a conservé `T1A` sans transition,
 mais a remplacé le `11 × 11` par `default`. Après annulation, les chauffes sont
 à zéro mais l'état interne reste `cancelled/T0`, sans route engagée. Thomas a
 choisi l'extinction et la reprise à froid. Aucun retry ni restart n'a été lancé.
+
+Le départ possédé a finalement repris ce checkpoint sous la capture
+`20260829-goal3-start-owner-physical-keep-correct-t1a-v1-run`. T1A est resté
+engagé, la purge est confirmée et deux couches sont bonnes après réglage humain
+du Z à `−0,19 mm`. La campagne passe à `2/4`. Le Z accepté `−0,04 mm` reste à
+diagnostiquer dans une fenêtre thermique stabilisée avant les autres impressions.
 
 L'adaptateur de décision ne commande rien. Il refuse plusieurs routes, une
 commande CFS active, un segment présent dont la route résiduelle n'a pas été

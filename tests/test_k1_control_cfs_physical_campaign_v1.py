@@ -29,8 +29,8 @@ class CfsPhysicalCampaignTests(unittest.TestCase):
     def test_campaign_is_exactly_four_non_overlapping_checkpoints(self):
         result = self.verifier.verify()
         self.assertEqual("CFS_PHYSICAL_CAMPAIGN_READY_INCOMPLETE", result["status"])
-        self.assertEqual(1, result["passed_count"])
-        self.assertEqual(3, result["pending_count"])
+        self.assertEqual(2, result["passed_count"])
+        self.assertEqual(2, result["pending_count"])
 
     def test_campaign_covers_both_cfs_units(self):
         rendered = json.dumps(self.campaign, sort_keys=True)
@@ -49,18 +49,25 @@ class CfsPhysicalCampaignTests(unittest.TestCase):
         self.assertEqual([], ambiguous["expected_effects"])
         self.assertTrue(ambiguous["requires_read_only_decision_adapter"])
 
-    def test_keep_correct_cfs_proof_and_start_ko_are_both_retained_without_premature_pass(self):
+    def test_keep_correct_owned_start_pass_and_historical_ko_are_both_retained(self):
         checkpoint = self.campaign["checkpoints"][1]
         evidence = json.loads((ROOT / checkpoint["evidence"]).read_text(encoding="utf-8"))
         previous = json.loads((ROOT / checkpoint["previous_ko_evidence"]).read_text(encoding="utf-8"))
         self.assertEqual(
-            "CFS_KEEP_CORRECT_PASSED_START_SEQUENCE_KO_NO_TERMINAL_VERDICT",
+            "PASSED",
             checkpoint["evidence_status"],
         )
-        self.assertTrue(evidence["confirmed_cfs_result"]["no_cut_unload_or_reload_observed"])
-        self.assertEqual(0, evidence["confirmed_cfs_result"]["route_transition_count"])
-        self.assertFalse(evidence["confirmed_cfs_result"]["hidden_220_target_observed"])
-        self.assertEqual(-0.19, evidence["later_live_read_only_state"]["effective_live_homing_origin_z_mm"])
+        self.assertEqual(
+            "HUMAN_Z_INTERVENTION_AND_SEPARATE_Z_FOLLOWUP_REQUIRED",
+            checkpoint["qualification_note"],
+        )
+        self.assertEqual("CFS_KEEP_CORRECT_T1A_OK", checkpoint["human_verdict"])
+        self.assertEqual(0, evidence["automatic_observations"]["route_transition_count"])
+        self.assertEqual([["T1A"]], evidence["automatic_observations"]["engaged_route_states"])
+        self.assertEqual(-0.19, evidence["human_verdict"]["live_z_adjustment_mm"]["preferred"])
+        self.assertFalse(evidence["z_interpretation"]["accepted_minus_0_04_qualified_without_intervention"])
+        self.assertFalse(evidence["terminal_presentation_observation"]["head_parked"])
+        self.assertTrue(evidence["filament_end_policy"]["T1A_kept_engaged"])
         self.assertEqual("default", previous["attempt"]["observed"]["active_profile_at_capture_end"])
         self.assertEqual("T0", previous["safe_stop"]["last_fresh_read_only_state_before_human_power_off"]["cfs_active_command"])
         self.assertFalse(previous["safe_stop"]["printer_restart_sent"])

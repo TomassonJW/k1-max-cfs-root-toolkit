@@ -6,10 +6,10 @@
   "completion_audit_evidence": null,
   "current_human_gate": {
     "requirement_id": "CFS_START_STATES_AND_TEMPERATURE_OWNER",
-    "checkpoint": "SAFE_TWO_LAYER_KEEP_CORRECT_T1A_TRIAL_AWAITING_MANUAL_CLEAN",
-    "active_gate": "G4-K1-CONTROL-START-SEQUENCE-OWNER-PHYSICAL-KEEP-CORRECT-T1A-V1",
-    "technical_status": "T1A_ENGAGED_11X11_RESTORED_SAFE_END_GCODE_INSTALLED_EXACT_NOT_RUN_720_TESTS_GREEN",
-    "required_human_verdict": "MANUAL_NOZZLE_CLEAN_AND_SHORT_FIRST_LAYER_OBSERVATION",
+    "checkpoint": "Z_THERMAL_STABILIZATION_DIAGNOSTIC_PREPARATION",
+    "active_gate": "G4-K1-CONTROL-Z-THERMAL-STABILIZATION-DIAGNOSTIC-V1",
+    "technical_status": "KEEP_CORRECT_T1A_OWNED_START_AND_PURGE_PASSED_TWO_LAYERS_OK_ONLY_AFTER_HUMAN_Z_MINUS_0_19_MINIMAL_END_DID_NOT_PARK",
+    "required_human_verdict": "REVIEW_200_SECOND_SOAK_DIAGNOSTIC_THEN_PLATE_CLEAR_AND_MANUAL_CLEAN",
     "next_effect_blocked": true
   },
   "requirements": [
@@ -48,10 +48,10 @@
     {
       "order": 3,
       "id": "CFS_START_STATES_AND_TEMPERATURE_OWNER",
-      "status": "PHYSICAL_CHECKPOINTS_1_OF_4_PASSED",
+      "status": "PHYSICAL_CHECKPOINTS_2_OF_4_PASSED_Z_FOLLOWUP_REQUIRED",
       "slice_id": "CFS-TEMP-OWNER-V1",
       "evidence": "packages/k1-control-v1/cfs-temp-owner-v1/contract.json",
-      "latest_checkpoint_evidence": "packages/k1-control-v1/cfs-temp-owner-v1/keep-correct-t1a-r5-evidence.json",
+      "latest_checkpoint_evidence": "packages/k1-control-v1/cfs-temp-owner-v1/keep-correct-t1a-owned-start-evidence.json",
       "corrective_design": "packages/k1-control-v1/start-sequence-owner-v1/contract.json",
       "active_physical_gate": "packages/k1-control-v1/start-sequence-owner-physical-keep-correct-t1a-v1/contract.json",
       "next_checkpoint_candidate": "packages/k1-control-v1/wrong-change-t1a-to-t2c-v1/contract.json",

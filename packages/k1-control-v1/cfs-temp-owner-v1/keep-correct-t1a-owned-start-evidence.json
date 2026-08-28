@@ -1,0 +1,71 @@
+{
+  "schema": 1,
+  "mission": "G4-K1-CONTROL-START-SEQUENCE-OWNER-PHYSICAL-KEEP-CORRECT-T1A-V1",
+  "checkpoint": "KEEP_CORRECT_T1A",
+  "qualification_status": "PASSED_CFS_KEEP_CORRECT_WITH_HUMAN_Z_INTERVENTION",
+  "capture": {
+    "capture_id": "20260829-goal3-start-owner-physical-keep-correct-t1a-v1-run",
+    "capture_sha256": "b10afd1c57cdd2f7be73d76d3e08b8d9669912c6692d29dff39f40e9f31fda94",
+    "snapshot_count": 674,
+    "source_gcode_sha256": "d98c2a7fe9bb9bc1620cd3cc622edd4a48eaa7bd9c507bd0573de7bc5dab9f7f",
+    "automation_status": "KEEP_CORRECT_T1A_PHYSICAL_AUTOMATIC_OK",
+    "automatic_retry": false,
+    "configuration_hashes_unchanged": true
+  },
+  "automatic_observations": {
+    "engaged_route_states": [["T1A"]],
+    "route_transition_count": 0,
+    "active_command_states": [""],
+    "maximum_nozzle_target_c": 195.0,
+    "maximum_bed_target_c": 55.0,
+    "expected_owner_phases_observed_in_order": true,
+    "active_profile_before_purge_and_model": "k1_p001_t055_r001_n11x11",
+    "accepted_z_offset_mm": -0.04,
+    "terminal_heater_targets_zero": true,
+    "terminal_owner_phase": "idle",
+    "terminal_low_moves_armed": 0,
+    "terminal_axes_released": true
+  },
+  "human_verdict": {
+    "verbatim": "PURGE OK — 2 COUCHES OK À -0,19",
+    "date": "2026-08-29",
+    "visible_purge": "OK",
+    "two_layers": "OK_AFTER_LIVE_Z_ADJUSTMENT",
+    "live_z_adjustment_mm": {
+      "first": -0.20,
+      "preferred": -0.19
+    }
+  },
+  "z_interpretation": {
+    "accepted_minus_0_04_qualified_without_intervention": false,
+    "persistent_accepted_z_changed": false,
+    "manual_live_adjustment_cleared_at_terminal_state": true,
+    "calibration_soak_seconds": 200,
+    "owned_start_soak_seconds": 0,
+    "plausible_not_proven": "the_plate_had_not_reached_the_same_200_second_thermal_stabilization_window_as_the_accepted_Z_calibration",
+    "next_gate": "G4-K1-CONTROL-Z-THERMAL-STABILIZATION-DIAGNOSTIC-V1",
+    "automatic_recalibration_authorized": false
+  },
+  "terminal_presentation_observation": {
+    "heater_shutdown": "OK",
+    "motors_released": "OK",
+    "head_parked": false,
+    "bed_presented_for_part_removal": false,
+    "end_homing_executed": false,
+    "classification": "MINIMAL_SAFE_TEST_END_ONLY_NOT_PRODUCTION_END_QUALIFICATION",
+    "future_requirement": "CANCEL_END_AND_SEPARATE_DISENGAGE"
+  },
+  "filament_end_policy": {
+    "T1A_kept_engaged": true,
+    "automatic_cut_unload_or_rewind_expected": false,
+    "separate_explicit_action": "Désengager et nettoyer",
+    "classification": "EXPECTED_CANONICAL_BEHAVIOR"
+  },
+  "decision": {
+    "checkpoint_result": "CFS_KEEP_CORRECT_T1A_OK",
+    "cfs_campaign_progress": "2_OF_4_PASSED",
+    "z_followup_required_before_later_printing_slices": true,
+    "end_sequence_requirement_passed": false,
+    "automatic_retry": false
+  }
+}

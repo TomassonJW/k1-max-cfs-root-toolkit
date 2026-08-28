@@ -3,7 +3,7 @@
   "campaign_id": "CFS-TEMP-OWNER-PHYSICAL-CAMPAIGN-V1",
   "goal": "GOAL-P4-PHYSICAL-SLICES-QUALIFICATION-V1",
   "requirement": "CFS_START_STATES_AND_TEMPERATURE_OWNER",
-  "status": "KEEP_CORRECT_ROUTE_PROVED_START_SEQUENCE_KO_OFFLINE_OWNER_REQUIRED",
+  "status": "PHYSICAL_CHECKPOINTS_2_OF_4_PASSED_Z_STABILIZATION_FOLLOWUP_REQUIRED",
   "authority": "human_stock_actions_with_passive_observers",
   "automatic_retry": false,
   "observer": "packages/k1-control-v1/cfs-temp-owner-v1/capture_observation.ps1",
@@ -69,8 +69,13 @@
         "TOOL_CHANGE_AND_RUNOUT",
         "CANCEL_END_AND_SEPARATE_DISENGAGE"
       ],
-      "evidence_status": "CFS_KEEP_CORRECT_PASSED_START_SEQUENCE_KO_NO_TERMINAL_VERDICT",
-      "evidence": "packages/k1-control-v1/cfs-temp-owner-v1/keep-correct-t1a-r5-evidence.json",
+      "evidence_status": "PASSED",
+      "qualification_note": "HUMAN_Z_INTERVENTION_AND_SEPARATE_Z_FOLLOWUP_REQUIRED",
+      "evidence": "packages/k1-control-v1/cfs-temp-owner-v1/keep-correct-t1a-owned-start-evidence.json",
+      "human_verdict": "CFS_KEEP_CORRECT_T1A_OK",
+      "human_verdict_date": "2026-08-29",
+      "owned_start_capture_id": "20260829-goal3-start-owner-physical-keep-correct-t1a-v1-run",
+      "previous_attempt_evidence": "packages/k1-control-v1/cfs-temp-owner-v1/keep-correct-t1a-r5-evidence.json",
       "attempt_capture_id": "20260828-goal3-cfs-keep-correct-t1a-r5",
       "previous_ko_evidence": "packages/k1-control-v1/cfs-temp-owner-v1/keep-correct-t1a-ko-evidence.json",
       "rerun_candidate_remote_display_name": "Languettes_3 LU Bin Fit - Bin-To-Bin Clicking Lite Rail - (5.5 MU Rail)_PLA_4h6m",
@@ -84,7 +89,9 @@
         "fresh_human_presence_and_immediate_stop"
       ],
       "mesh_recalibration_in_scope": false,
-      "corrective_gate": "G4-K1-CONTROL-START-SEQUENCE-OWNER-V1"
+      "corrective_gate": "G4-K1-CONTROL-START-SEQUENCE-OWNER-V1",
+      "z_followup_gate": "G4-K1-CONTROL-Z-THERMAL-STABILIZATION-DIAGNOSTIC-V1",
+      "end_presentation_reused_as_pass_evidence": false
     },
     {
       "order": 3,

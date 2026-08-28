@@ -1,7 +1,7 @@
 # Résultat actuel
 
-Statut : **observateur qualifié ; premier checkpoint physique `EMPTY_LOAD_T1A`
-clos OK ; campagne CFS à `1/4`**.
+Statut : **observateur qualifié ; `EMPTY_LOAD_T1A` et le départ possédé
+`KEEP_CORRECT_T1A` clos OK ; campagne CFS à `2/4`**.
 
 L'observateur ne déclenche aucune action et ne remplace jamais le verdict de
 Thomas. Le premier chargement physique est toutefois maintenant qualifié par
@@ -34,8 +34,7 @@ origine n'est pas confirmée ou si la route demandée est différente.
 Le manifeste physique fixe quatre checkpoints couvrant `T1A`, `T2C`,
 la conservation du bon filament et le blocage d'une identité ambiguë. Son
 vérificateur retourne encore `CFS_PHYSICAL_CAMPAIGN_READY_INCOMPLETE`, désormais
-avec `1/4`. Le prochain checkpoint doit prouver qu'un travail demandant le bon
-`T1A` déjà engagé ne le coupe, ne le retire et ne le recharge pas.
+avec `2/4`.
 
 Le décideur local est également prêt et testé. Une capture live fraîche de huit
 lectures a retrouvé le segment détecté dans la tête, aucune route engagée,
@@ -50,6 +49,14 @@ capture s'est terminée pendant un `T0` encore actif, avant verdict de première
 couche. Thomas a annulé depuis l'interface stock. Les chauffes sont revenues à
 zéro, mais la dernière lecture avant extinction restait `cancelled`, sans route,
 avec `T0` résiduel et mesh `default`. Aucun restart n'a été envoyé.
+
+Le successeur possédé est clos sous la capture
+`20260829-goal3-start-owner-physical-keep-correct-t1a-v1-run`. T1A n'a jamais
+changé, aucune commande CFS n'a été active, la purge est confirmée et les deux
+couches sont bonnes après intervention humaine à `−0,19 mm`. Le checkpoint CFS
+passe et la campagne atteint `2/4`. Le Z accepté `−0,04 mm` n'est cependant pas
+qualifié sans intervention ; la stabilisation thermique doit être isolée avant
+la suite imprimée.
 
 Un fichier corrigé `…PLA_4h6m` est présent sur la K1 mais n'a pas été lancé. Son
 ordre vérifié retire les `G28/Tn` préalables et place
