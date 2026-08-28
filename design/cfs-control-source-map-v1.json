@@ -2,7 +2,7 @@
   "map_id": "K1-CONTROL-CFS-SOURCE-MAP-V1",
   "schema": 1,
   "as_of": "2026-08-28",
-  "status": "offline_architecture_accepted_implementation_closed",
+  "status": "s12_read_only_surface_confirmed_effects_and_implementation_closed",
   "authority": {
     "printer_connection_authorized": false,
     "printer_mutation_authorized": false,
@@ -247,6 +247,55 @@
       ]
     }
   ],
+  "s12_preflight": {
+    "mission": "G4-K1-CONTROL-CFS-S12-OWNER-PREFLIGHT-V1",
+    "status": "CLOSED_READ_ONLY_S12_SURFACE_CONFIRMED_EFFECTS_CLOSED",
+    "canonical_document": "docs/44-preflight-proprietaire-cfs-s12-v1.md",
+    "package": "packages/k1-control-v1/cfs-s12-owner-preflight-v1",
+    "capture": "inventory/raw/20260828-g4-k1-control-cfs-s12-owner-preflight-v1/cfs-s12-owner-preflight-v1.safe.json",
+    "capture_versioned": false,
+    "remote_sanitization": true,
+    "identity_values_exported": false,
+    "exact_binary_matches_historical_capture": true,
+    "exact_loader_matches_historical_capture": true,
+    "box_object_active": true,
+    "exact_binary_command_name_count": 66,
+    "required_command_names_present": true,
+    "required_callback_markers_present": true,
+    "public_argument_signatures_correlated_not_physically_qualified": true,
+    "connected_classic_cfs_units": 2,
+    "stock_auto_refill_value_observed": 1,
+    "stock_cfs_print_enable_value_observed": 1,
+    "same_material_groups_at_capture": [
+      [
+        "T1A"
+      ],
+      [
+        "T1D"
+      ],
+      [
+        "T2A"
+      ],
+      [
+        "T2B"
+      ],
+      [
+        "T2C"
+      ],
+      [
+        "T2D"
+      ]
+    ],
+    "stock_identical_replacement_pair_present_at_capture": false,
+    "gcode_help_limit": "compiled_commands_without_help_text_are_not_listed_so_absence_from_help_is_not_command_absence",
+    "gcode": false,
+    "heat": false,
+    "motion": false,
+    "CFS_effect": false,
+    "remote_write": false,
+    "service_restart": false,
+    "deployment_candidate": false
+  },
   "command_decisions": {
     "forbidden_owned_entry_points": [
       "START_PRINT",
@@ -482,22 +531,29 @@
     {
       "id": "GAP-S12-COMMAND-INVENTORY",
       "kind": "read_only",
+      "status": "resolved_for_offline_owner_model_effects_unqualified",
       "needs": "exact_symbols_arguments_config_and_hashes_on_this_K1_Max_S12",
-      "next_gate": "G4-K1-CONTROL-CFS-S12-OWNER-PREFLIGHT-V1",
+      "resolution": "exact_loaded_binary_loader_config_runtime_commands_and_callbacks_bound_to_pinned_public_argument_signatures",
+      "truthful_limit": "public_argument_signatures_are_correlated_but_each_effect_still_requires_a_physical_gate",
+      "next_gate": "G4-K1-CONTROL-CFS-OWNER-CORE-OFFLINE-V1",
       "allows_effect": false
     },
     {
       "id": "GAP-RUNOUT-OWNER-EXCLUSION",
       "kind": "read_only",
+      "status": "surface_mapped_offline_state_machine_pending",
       "needs": "exact_runout_callbacks_notifications_runtime_flags_and_stock_resume_paths",
-      "next_gate": "same_read_only_preflight_if_reviewed",
+      "resolution": "runtime_flags_command_names_and_callback_markers_are_bound_to_the_exact_S12_binary",
+      "next_gate": "G4-K1-CONTROL-CFS-OWNER-CORE-OFFLINE-V1",
       "allows_effect": false
     },
     {
       "id": "GAP-END-AND-RECOVERY-STATE",
       "kind": "read_only",
+      "status": "surface_mapped_offline_state_machine_pending",
       "needs": "exact_BOX_END_PRINT_mapping_power_loss_sensor_enable_and_recovery_cleanup_paths",
-      "next_gate": "same_read_only_preflight_if_reviewed",
+      "resolution": "end_power_loss_retry_and_mapping_cleanup_names_are_present_in_the_exact_S12_binary",
+      "next_gate": "G4-K1-CONTROL-CFS-OWNER-CORE-OFFLINE-V1",
       "allows_effect": false
     },
     {
@@ -530,9 +586,10 @@
     }
   ],
   "next_gate": {
-    "id": "G4-K1-CONTROL-CFS-S12-OWNER-PREFLIGHT-V1",
-    "scope": "prepare_then_run_exact_read_only_inventory_only_after_fresh_GO",
-    "printer_connection_requires_fresh_exact_GO": true,
+    "id": "G4-K1-CONTROL-CFS-OWNER-CORE-OFFLINE-V1",
+    "scope": "build_pure_offline_owner_state_machine_against_recorded_sanitized_S12_responses_after_fresh_exact_GO",
+    "printer_connection": false,
+    "implementation_authorized": false,
     "gcode": false,
     "heat": false,
     "motion": false,

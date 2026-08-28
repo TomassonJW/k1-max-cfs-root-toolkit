@@ -1,0 +1,155 @@
+{
+  "schema": 1,
+  "mission": "G4-K1-CONTROL-CFS-S12-OWNER-PREFLIGHT-V1",
+  "as_of": "2026-08-28",
+  "authority": {
+    "printer_connection": true,
+    "http_methods": [
+      "GET"
+    ],
+    "gcode": false,
+    "heat": false,
+    "motion": false,
+    "cfs_effect": false,
+    "remote_write": false,
+    "service_restart": false,
+    "deployment": false,
+    "physical_phase": false
+  },
+  "target": {
+    "printer": "Creality K1 Max S12 structure 0",
+    "firmware": "2.3.5.34",
+    "classic_cfs_units": 2,
+    "cfs_ui_version": "1.1.3"
+  },
+  "capture": {
+    "single_ssh_session": true,
+    "remote_sanitization_before_local_output": true,
+    "query_timeout_s": 5.0,
+    "identity_fields_removed": [
+      "sn",
+      "uuid"
+    ],
+    "logs_read": false,
+    "remote_binary_copied": false
+  },
+  "historical_exact_hashes": {
+    "/usr/share/klipper/klippy/extras/box.py": "6d7486e1a15cde03f3152eef0d771d0bdd4a90df9b5ef7ecb88bc5d944f20ac4",
+    "/usr/share/klipper/klippy/extras/box.pyc": "16bc2b96ae45540e5f52d50463cc4afba1ba8b191f6a5c1d456659e69dca9f4c",
+    "/usr/share/klipper/klippy/extras/box_wrapper.cpython-38-mipsel-linux-gnu.so": "af630c02ccdb51b57585114e5be2be7fcf91fdb10d88872eb6a0c65f048de777"
+  },
+  "public_cross_map": {
+    "facts_only_no_code_copy": true,
+    "sources": [
+      {
+        "id": "HELIXSCREEN-CFS-INTERNALS",
+        "revision": "192eb3babd2946d3e868e9c259da8037262529d5",
+        "url": "https://github.com/prestonbrown/helixscreen",
+        "limit": "K1 support and command dialect are public evidence, not exact proof for this S12 binary"
+      },
+      {
+        "id": "FREDERICKALT-BOX-WRAPPER",
+        "revision": "083c5a5679d5f7d3f3cfff9a6303b6d224347c29",
+        "url": "https://github.com/FrederickAlt/CREALITY-K1-AND-K1-MAX-CFS-RETRUDE-BEFORE-CUT-MOD",
+        "limit": "decompiled interface is correlated with the exact local surface but does not qualify an effect"
+      }
+    ],
+    "candidate_signatures": {
+      "BOX_EXTRUDE_MATERIAL": {
+        "required": [
+          "TNN"
+        ],
+        "optional": []
+      },
+      "BOX_EXTRUDER_EXTRUDE": {
+        "required": [],
+        "optional": [
+          "TNN"
+        ]
+      },
+      "BOX_CUT_MATERIAL": {
+        "required": [],
+        "optional": []
+      },
+      "BOX_RETRUDE_MATERIAL": {
+        "required": [],
+        "optional": []
+      },
+      "BOX_ENABLE_AUTO_REFILL": {
+        "required": [
+          "ENABLE"
+        ],
+        "optional": []
+      },
+      "BOX_ENABLE_CFS_PRINT": {
+        "required": [
+          "ENABLE"
+        ],
+        "optional": []
+      },
+      "BOX_MATERIAL_FLUSH": {
+        "required": [],
+        "optional": [
+          "LEN",
+          "VELOCITY",
+          "TEMP",
+          "PERCENT"
+        ]
+      },
+      "BOX_MATERIAL_CHANGE_FLUSH": {
+        "required": [],
+        "optional": [
+          "LAST_TNN",
+          "TNN"
+        ]
+      }
+    }
+  },
+  "required_command_names": [
+    "BOX_EXTRUDE_MATERIAL",
+    "BOX_EXTRUDER_EXTRUDE",
+    "BOX_CUT_MATERIAL",
+    "BOX_RETRUDE_MATERIAL",
+    "BOX_ENABLE_AUTO_REFILL",
+    "BOX_UPDATE_SAME_MATERIAL_LIST",
+    "BOX_CHECK_MATERIAL_REFILL",
+    "BOX_EXTRUSION_ALL_MATERIALS",
+    "BOX_TNN_RETRY_PROCESS",
+    "BOX_END_PRINT",
+    "BOX_POWER_LOSS_RESTORE"
+  ],
+  "required_binary_callbacks": [
+    "material_auto_refill",
+    "filament_err_tighten_up_event",
+    "filament_err_retry_process",
+    "extrusion_all_materials",
+    "check_material_refill",
+    "power_loss_clean",
+    "power_loss_restore",
+    "print_end_err_retry_process",
+    "empty_print_retry_process",
+    "if_in_resume",
+    "do_after_pause",
+    "box_end",
+    "update_Tnn_map"
+  ],
+  "forbidden_automatic_entry_points": [
+    "BOX_NOZZLE_CLEAN",
+    "BOX_MATERIAL_FLUSH",
+    "BOX_MATERIAL_CHANGE_FLUSH",
+    "BOX_ERROR_CLEAR",
+    "BOX_TNN_RETRY_PROCESS",
+    "BOX_CHECK_MATERIAL_REFILL",
+    "BOX_EXTRUSION_ALL_MATERIALS",
+    "BOX_RESUME_EXTRUDE",
+    "BOX_END_PRINT",
+    "BOX_RETRUDE_MATERIAL_WITH_TNN"
+  ],
+  "closure": {
+    "successful_inventory_can_open_separately_authorized_offline_owner_gate": true,
+    "successful_inventory_authorizes_any_effect": false,
+    "each_physical_primitive_requires_separate_human_present_gate": true,
+    "custom_auto_refill_remains_a_required_feature": true,
+    "stock_auto_refill_is_not_the_selected_job_owner": true
+  }
+}

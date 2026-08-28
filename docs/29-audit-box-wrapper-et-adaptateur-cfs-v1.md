@@ -6,9 +6,9 @@ production fermée
 
 Mise à jour du 28 août 2026 : la cartographie publique recoupée dans
 `design/cfs-control-source-map-v1.json` identifie plusieurs petites primitives
-stock comme candidates. Elle ne contredit pas ce KO local et ne les rend pas
-appelables : le binaire S12 exact et chaque effet restent à qualifier selon
-ADR-032.
+stock comme candidates. Le préflight S12 du document 44 lie maintenant leurs
+noms et rappels au binaire exact sans contredire ce KO local ni les rendre
+appelables : chaque effet reste à qualifier selon ADR-032.
 
 ## Résultat court
 
@@ -113,3 +113,8 @@ filament minimal séparé à partir du protocole série déjà observé, ou obte
 preuve isolée suffisante d'une primitive étroite sans l'exécuter sur la K1. Une
 future pose ou un essai physique devra être une mission distincte avec fichiers,
 commandes, backup, rollback et critères OK/KO relus.
+
+Mise à jour : ADR-032 a depuis choisi le propriétaire K1 Control au-dessus des
+petites primitives stock. Le préflight S12 est clos sans effet ; la prochaine
+mission canonique est désormais `G4-K1-CONTROL-CFS-OWNER-CORE-OFFLINE-V1` après
+un GO exact séparé.

@@ -202,8 +202,14 @@ d’effet :
 2. des gates physiques séparées pour charger sans flush stock, couper,
    retirer, changer d’un CFS à l’autre et simuler une fin de bobine.
 
+La gate `G4-K1-CONTROL-CFS-S12-OWNER-PREFLIGHT-V1` est maintenant close en
+lecture seule. Le document 44 lie le chargeur, le binaire, 66 noms `BOX_*`, les
+rappels de runout et de reprise, les états publics et les configurations à
+cette S12 exacte. Les signatures d'arguments publiques sont corrélées à cette
+surface, mais aucun effet n'est qualifié.
+
 La prochaine gate proposée est
-`G4-K1-CONTROL-CFS-S12-OWNER-PREFLIGHT-V1`. Elle sera préparée hors
-imprimante puis, après un nouveau GO exact, ne fera que lire. Elle n’enverra
-aucun G-code, ne chauffera, ne bougera, n’écrira aucun fichier distant et ne
-redémarrera aucun service.
+`G4-K1-CONTROL-CFS-OWNER-CORE-OFFLINE-V1`. Après un nouveau GO exact, elle ne
+construira que le moteur pur contre les réponses enregistrées. Elle n'aura
+aucune connexion K1, aucun G-code, aucun chauffage, aucun mouvement, aucun
+fichier distant et aucun candidat de pose.

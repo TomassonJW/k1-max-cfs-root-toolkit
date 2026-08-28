@@ -2,8 +2,14 @@
 
 Date : 2026-08-28
 
-État : **terminé hors imprimante ; architecture choisie, implémentation et
-production fermées**
+État : **architecture choisie et surface S12 confirmée en lecture seule ;
+implémentation, effets physiques et production fermés**
+
+Mise à jour du 28 août 2026 : la gate S12 est close dans le document 44. Le
+chargeur et le binaire exacts n'ont pas dérivé, l'objet `box` est actif, les
+commandes et rappels attendus sont présents et les deux CFS `1.1.3` répondent.
+Cette preuve permet de préparer le moteur hors imprimante ; elle ne qualifie
+encore aucune primitive d'effet.
 
 ## Réponse concrète
 
@@ -227,10 +233,10 @@ technique fiable, pas une validation de la mauvaise séquence stock.
 
 | Point | Pourquoi il bloque | Comment on l’évite |
 | --- | --- | --- |
-| Helix a analysé une image K1 S11, notre machine est S12 | un nom identique ne prouve pas le même binaire | inventaire exact S12 en lecture seule |
-| le runout stock peut lancer des callbacks internes | deux propriétaires pourraient agir | cartographier callbacks et drapeaux avant tout code d’effet |
+| Helix a analysé une image K1 S11, notre machine est S12 | résolu pour la surface hors effet : binaire et chargeur exacts liés à la carte publique | garder chaque effet derrière sa gate physique |
+| le runout stock peut lancer des callbacks internes | les noms et drapeaux S12 sont maintenant cartographiés, pas leurs effets physiques | construire l'exclusion à un seul propriétaire hors imprimante puis la qualifier séparément |
 | une fin de bobine laisse encore un segment dans le tube et la tête | couper aveuglément ou relancer la grosse purge stock serait faux | qualifier séparément la recette « consommer ou retirer la fin » |
-| la fin de print stock nettoie mappings et états de reprise | ne pas l’appeler peut laisser un état sale ; l’appeler rend le cycle au stock | cartographier puis posséder explicitement ces nettoyages |
+| la fin de print stock nettoie mappings et états de reprise | les chemins S12 sont repérés, mais appeler `BOX_END_PRINT` rendrait le cycle au stock | posséder explicitement ces nettoyages sans appeler la grosse fin stock |
 | les petites phases peuvent échouer sans lever une erreur claire | un retour HTTP OK ne prouve rien | états avant/après, capteurs, une seule tentative |
 | `BOX_CUT_MATERIAL` peut déplacer la tête | risque de collision avec la pièce | gate séparée avec position et trajet bornés |
 | le changement entre deux CFS n’est pas prouvé localement | route ou reconnexion ambiguë | essai unitaire puis essai inter-boîtiers |
@@ -239,15 +245,13 @@ technique fiable, pas une validation de la mauvaise séquence stock.
 
 ## Prochaine gate
 
-La prochaine étape raisonnable n’est pas encore un chargement.
+Le préflight S12 est maintenant clos sans effet. La prochaine étape raisonnable
+n'est toujours pas un chargement : c'est
+`G4-K1-CONTROL-CFS-OWNER-CORE-OFFLINE-V1`.
 
-Il faut préparer
-`G4-K1-CONTROL-CFS-S12-OWNER-PREFLIGHT-V1`, puis obtenir un nouveau GO exact
-pour une seule lecture de cette K1 Max. Elle doit relever les symboles,
-arguments, fichiers, callbacks de runout, états publics et hashes exacts. Elle
-n’enverra aucun G-code, ne chauffera, ne bougera, ne modifiera aucun fichier
-distant et ne redémarrera aucun service.
-
-Une fois cette carte S12 obtenue, nous pourrons coder le propriétaire hors
-imprimante contre des réponses enregistrées, puis ouvrir une gate physique par
-phase. Aucun des anciens essais valables ne sera rejoué.
+Après un nouveau GO exact, elle construira le propriétaire pur hors imprimante
+contre la réponse S12 enregistrée : un seul propriétaire, états avant/après,
+auto-remplacement d'une bobine identique, refus des ambiguïtés, aucune reprise
+automatique et journal explicite. Elle n'aura aucun transport K1 et n'autorisera
+aucune pose. Les chargements, retraits, coupes et fins de bobine resteront des
+gates physiques distinctes. Aucun ancien essai valable ne sera rejoué.

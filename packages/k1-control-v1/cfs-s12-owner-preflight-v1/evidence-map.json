@@ -1,0 +1,84 @@
+{
+  "schema": 1,
+  "mission": "G4-K1-CONTROL-CFS-S12-OWNER-PREFLIGHT-V1",
+  "private_source": {
+    "path": "inventory/raw/20260828-g4-k1-control-cfs-s12-owner-preflight-v1/cfs-s12-owner-preflight-v1.safe.json",
+    "sha256": "c7ffd84a6f1e27efcf770c4a2bcf4035df29c894a5c25dff57f6228293c511c4",
+    "versioned": false,
+    "identity_values_exported": false,
+    "remote_sanitization": true
+  },
+  "safe_result_sha256": "32808cbd4fd2f33282458cb2fe8ae69cb4d82f4f674113fab866aef5c748a26d",
+  "expected_status": "CLOSED_READ_ONLY_S12_SURFACE_CONFIRMED_EFFECTS_CLOSED",
+  "expected_checks": {
+    "read_only_boundary": true,
+    "identity_boundary": true,
+    "files_unchanged": true,
+    "historical_binary_and_loaders_match": true,
+    "server_ready": true,
+    "required_objects_present": true,
+    "safe_schema_stable": true,
+    "box_object_active": true,
+    "required_command_names_in_exact_loaded_binary": true,
+    "required_callbacks_in_binary": true,
+    "two_classic_cfs_units_connected": true,
+    "auto_refill_control_surface_present": true
+  },
+  "safe_observations": {
+    "printer_state": "standby",
+    "hotend_target_c": 0.0,
+    "bed_target_c": 0.0,
+    "active_mesh": "k1_p001_t055_r001_n11x11",
+    "connected_units": [
+      "T1",
+      "T2"
+    ],
+    "cfs_version_by_connected_unit": {
+      "T1": "1.1.3",
+      "T2": "1.1.3"
+    },
+    "t_command_active": false,
+    "stock_auto_refill_value": 1,
+    "stock_cfs_print_enable_value": 1,
+    "same_material_groups_without_identity": [
+      [
+        "T1A"
+      ],
+      [
+        "T1D"
+      ],
+      [
+        "T2A"
+      ],
+      [
+        "T2B"
+      ],
+      [
+        "T2C"
+      ],
+      [
+        "T2D"
+      ]
+    ],
+    "exact_binary_command_name_count": 66,
+    "reviewed_callback_markers_present": "17/17",
+    "active_config_box_call_count": 31,
+    "active_box_option_count": 24,
+    "stock_fallback_temperature_c": 220,
+    "objects_query_timings_ms": [
+      178.302,
+      152.912
+    ]
+  },
+  "boundaries": {
+    "remote_binary_copied": false,
+    "logs_read": false,
+    "gcode_sent": false,
+    "cfs_command_sent": false,
+    "remote_files_written": false,
+    "service_action": false,
+    "physical_action": false,
+    "effect_qualification": false,
+    "deployment_candidate": false
+  }
+}

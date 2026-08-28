@@ -25,7 +25,7 @@
     }
   ],
   "cfs_control_architecture": {
-    "status": "offline_architecture_accepted_implementation_closed",
+    "status": "s12_read_only_surface_confirmed_offline_owner_implementation_waits_for_separate_GO",
     "canonical_document": "docs/43-cartographie-canonique-pilotage-cfs-k1-max-v1.md",
     "source_map": "design/cfs-control-source-map-v1.json",
     "selected_owner": "K1_CONTROL_LIFECYCLE_OWNER_OVER_SELECTED_STOCK_BOX_PRIMITIVES",
@@ -37,9 +37,12 @@
     "auto_refill_owner": "K1_Control",
     "automatic_brushing": false,
     "Z_or_mesh_recalibration_during_start_change_or_refill": false,
+    "s12_preflight": "packages/k1-control-v1/cfs-s12-owner-preflight-v1/evidence-map.json",
+    "exact_s12_binary_surface_confirmed": true,
+    "stock_identical_replacement_pair_present_at_capture": false,
     "implementation_authorized": false,
     "deployment_candidate": false,
-    "next_gate": "G4-K1-CONTROL-CFS-S12-OWNER-PREFLIGHT-V1_read_only_after_fresh_exact_GO"
+    "next_gate": "G4-K1-CONTROL-CFS-OWNER-CORE-OFFLINE-V1_after_fresh_exact_GO"
   },
   "target": {
     "printer": "Creality K1 Max S12 structure 0",

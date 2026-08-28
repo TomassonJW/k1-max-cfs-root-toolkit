@@ -19,7 +19,10 @@ class CfsControlSourceMapV1Tests(unittest.TestCase):
 
     def test_architecture_is_offline_and_cannot_authorize_effects(self):
         authority = self.source_map["authority"]
-        self.assertEqual("offline_architecture_accepted_implementation_closed", self.source_map["status"])
+        self.assertEqual(
+            "s12_read_only_surface_confirmed_effects_and_implementation_closed",
+            self.source_map["status"],
+        )
         self.assertFalse(authority["printer_connection_authorized"])
         self.assertFalse(authority["printer_mutation_authorized"])
         self.assertFalse(authority["physical_action_authorized"])
@@ -178,9 +181,20 @@ class CfsControlSourceMapV1Tests(unittest.TestCase):
         )
         self.assertIn("known_start_defects", rollback["truthful_limit"])
 
-    def test_next_gate_is_read_only_and_every_physical_gap_stays_separate(self):
+    def test_s12_preflight_is_closed_and_next_gate_is_offline_only(self):
+        preflight = self.source_map["s12_preflight"]
+        self.assertEqual(
+            "CLOSED_READ_ONLY_S12_SURFACE_CONFIRMED_EFFECTS_CLOSED",
+            preflight["status"],
+        )
+        self.assertTrue(preflight["exact_binary_matches_historical_capture"])
+        self.assertTrue(preflight["required_command_names_present"])
+        self.assertTrue(preflight["required_callback_markers_present"])
+        self.assertFalse(preflight["stock_identical_replacement_pair_present_at_capture"])
         next_gate = self.source_map["next_gate"]
-        self.assertEqual("G4-K1-CONTROL-CFS-S12-OWNER-PREFLIGHT-V1", next_gate["id"])
+        self.assertEqual("G4-K1-CONTROL-CFS-OWNER-CORE-OFFLINE-V1", next_gate["id"])
+        self.assertFalse(next_gate["printer_connection"])
+        self.assertFalse(next_gate["implementation_authorized"])
         for field in ("gcode", "heat", "motion", "CFS_effect", "remote_write", "service_restart"):
             self.assertFalse(next_gate[field])
         gaps = self.source_map["open_gaps_in_order"]

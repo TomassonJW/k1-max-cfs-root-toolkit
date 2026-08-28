@@ -49,8 +49,10 @@ crée aucun Goal supplémentaire. ADR-032 et la cartographie canonique
 locales, le binaire stock, HelixScreen, FrederickAlt, CFSTool et les principaux
 retours K1/CFS. Elles choisissent K1 Control comme unique propriétaire du cycle
 au-dessus de petites primitives stock qualifiées séparément. Le changement
-automatique vers une bobine identique est conservé dans ce propriétaire, mais
-aucune primitive d'effet, implémentation ou pose n'est encore autorisée.
+automatique vers une bobine identique est conservé dans ce propriétaire. Le
+préflight S12 est désormais clos en lecture seule : binaire et chargeur exacts,
+commandes, rappels internes, états et deux CFS sont liés à la carte publique.
+Aucune primitive d'effet, implémentation ou pose n'est encore autorisée.
 
 ## Goal 1 — Terminer le système hors imprimante
 
@@ -130,9 +132,9 @@ Identifiant : `GOAL-P4-PHYSICAL-SLICES-QUALIFICATION-V1`
 État : **en cours ; `2/7` exigences passées ; nettoyage automatique clos KO et
 remplacé par une gate manuelle obligatoire ; la conservation réelle de `T1A`
 est prouvée ; le départ stock est KO ; START-SEQUENCE-OWNER-V1 est préparé hors
-imprimante ; l'architecture complète CFS est choisie, mais attend d'abord le
-préflight S12 en lecture seule avant toute implémentation ou nouvelle
-qualification physique**.
+imprimante ; l'architecture complète CFS est choisie et le préflight S12 est
+clos en lecture seule ; le moteur propriétaire hors imprimante attend un GO
+séparé avant toute implémentation ou nouvelle qualification physique**.
 
 Le checkpoint C a référencé XYZ, rechargé le `11 × 11`, commandé `Z=50 mm` et
 attendu la fin. Un premier faux KO local a confondu la position physique
@@ -159,8 +161,9 @@ actif. CLEAN-MOTION-V1 est donc clos OK.
 
 Ce qui sera réellement fait, une petite tranche à la fois :
 
-- cartographier en lecture seule le binaire S12, les arguments, les callbacks
-  de runout et l'exclusion du propriétaire stock ;
+- la cartographie en lecture seule du binaire S12, des arguments publics
+  corrélés, des callbacks de runout et de l'exclusion du propriétaire stock est
+  maintenant close sans effet ;
 - implémenter hors imprimante le propriétaire K1 Control contre des réponses
   enregistrées, sans recopier les projets GPL ;
 - installer avec sauvegarde et retour arrière ;
@@ -217,22 +220,16 @@ repousser la clôture.
 
 ## Démarrage recommandé
 
-La nomenclature de cette ancienne gate est obsolète. La correction
-`G4-K1-CONTROL-BEST-CURRENT-MESH-RESTORE-V1` est close OK : une seule commande
-a remis `k1_p001_t055_r001_n11x11`, aucun rollback n'a été nécessaire et deux
-lectures indépendantes ont confirmé le profil et sa matrice.
+La prochaine mission proposée est
+`G4-K1-CONTROL-CFS-OWNER-CORE-OFFLINE-V1`. Elle ne joindra pas la K1. Elle
+construira le moteur pur à partir de la capture S12 nettoyée, des cartes
+publiques épinglées et des anciennes preuves locales, avec l'auto-remplacement
+d'une bobine identique conservé mais aucun retry ou resume stock automatique.
+Un nouveau GO exact est nécessaire parce que le GO du préflight est consommé.
 
-La première tranche physique est cadrée dans
-`packages/k1-control-v1/clean-motion-v1` et le document 42. Une capture live en
-lecture seule a qualifié les limites machine et la zone de nettoyage déclarée
-par le logiciel stock, sans exporter son code complet. Thomas a confirmé le
-plateau libre, la brosse visible, la buse observable et l'arrêt immédiat
-possible. Le checkpoint C a été exécuté une fois, sa validation technique
-corrigée est verte et Thomas l'a accepté. Aucun mouvement ne doit être rejoué ;
-le prochain incrément est un rapprochement lent distinct.
-
-La présence humaine est acquise pour le démarrage, mais chaque rapprochement
-reste un checkpoint humain. `gpt-5.6-terra` avec raisonnement `high` est
-conseillé pour piloter les arrêts et les preuves ; l'option `medium` est moins
-coûteuse mais augmente le risque de reprise si un checkpoint physique est mal
-interprété.
+Le choix optimal est `gpt-5.6-sol` avec raisonnement `max` : cette tranche est
+hors imprimante, mais elle concentre le graphe runout, les deux CFS, les erreurs,
+le rollback et les futures frontières physiques. L'option plus économique
+`gpt-5.6-terra` en `high` reste raisonnable si l'on accepte davantage de relecture
+avant de figer le contrat ; un modèle plus léger augmenterait le risque de
+réintroduire un second propriétaire ou une reprise cachée.
