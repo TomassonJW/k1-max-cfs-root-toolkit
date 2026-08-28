@@ -23,6 +23,12 @@
     "normal_layer_nozzle_c": 195,
     "maximum_allowed_nozzle_target_c": 200.5,
     "bed_c": 55,
+    "direct_model_motion_envelope_mm": {
+      "x": [100, 200],
+      "y": [100, 200],
+      "z": [0, 1]
+    },
+    "relative_positioning_forbidden": true,
     "safe_end": [
       "KCTRL_START_ABORT_V1",
       "KCTRL_CLEAR_MANUAL_NOZZLE_CLEAN_V1",
@@ -64,6 +70,7 @@
     "T0",
     "stock_START_PRINT",
     "stock_END_PRINT",
+    "G91",
     "brush_motion",
     "mesh_calibration",
     "cfs_route_change",

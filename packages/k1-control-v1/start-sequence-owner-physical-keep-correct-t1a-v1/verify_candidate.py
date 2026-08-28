@@ -61,6 +61,21 @@ def verify():
     for token in ("BED=55", "PROBE_NOZZLE=140", "FIRST_NOZZLE=190"):
         if token not in owned_start:
             raise ValueError("owned_start_temperature_mismatch:%s" % token)
+    if any(line == "G91" or line.startswith("G91 ") for line in lines):
+        raise ValueError("relative_positioning_forbidden")
+    coordinates = {axis: [] for axis in "XYZ"}
+    for line in lines:
+        if not re.match(r"^G(?:0|1)\b", line):
+            continue
+        for axis, raw_value in re.findall(r"\b([XYZ])(-?(?:\d+(?:\.\d*)?|\.\d+))", line):
+            coordinates[axis].append(float(raw_value))
+    envelopes = {"X": (100.0, 200.0), "Y": (100.0, 200.0), "Z": (0.0, 1.0)}
+    direct_motion_bounds = {}
+    for axis, (minimum, maximum) in envelopes.items():
+        values = coordinates[axis]
+        if not values or min(values) < minimum or max(values) > maximum:
+            raise ValueError("direct_motion_out_of_bounds:%s" % axis)
+        direct_motion_bounds[axis.lower()] = [min(values), max(values)]
     for source, name in ((trial, "remote_trial.py"), (installer, "remote_install.py"), (analyzer, "analyze_capture.py")):
         ast.parse(source, filename=name, feature_version=(3, 8))
     if digest(PACKAGE / "remote_trial.py") not in runner:
@@ -80,6 +95,7 @@ def verify():
         "installer_sha256": digest(PACKAGE / "remote_install.py"),
         "automatic_retry": False,
         "human_verdict_required": True,
+        "direct_motion_bounds_mm": direct_motion_bounds,
     }
 
 
