@@ -1,4 +1,7 @@
-# Handoff — garde d’exclusion du propriétaire CFS hors imprimante
+# Archive — garde d’exclusion du propriétaire CFS hors imprimante
+
+Cette passation est historique. La reprise canonique est désormais
+`docs/HANDOFF-CFS-OWNER-EXCLUSION-LIVE-READ-ONLY-2026-08-28.md`.
 
 Date de clôture : 2026-08-28
 

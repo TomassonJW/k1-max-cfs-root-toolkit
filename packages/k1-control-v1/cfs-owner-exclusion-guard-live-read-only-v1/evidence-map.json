@@ -1,0 +1,42 @@
+{
+  "schema": 1,
+  "mission": "G4-K1-CONTROL-CFS-OWNER-EXCLUSION-GUARD-LIVE-READ-ONLY-V1",
+  "status": "closed_read_only_blocked_connection_epoch_and_effective_z_source",
+  "private_source": {
+    "path": "inventory/raw/20260828-190631-g4-k1-control-cfs-owner-exclusion-guard-live-read-only-v1/owner-exclusion-guard-live-read-only-v1.safe.jsonl",
+    "sha256": "090a09409a2fb23e262e000c2fe7481b100b1ddf0e4105e063195da47c162bdc",
+    "versioned": false,
+    "identity_values_exported": false
+  },
+  "reviewed_artifacts": {
+    "capture_live_read_only.ps1": "e2830c7bc3bba97881d7ea7cff928d8cef9b08da1d9dc58828f5c1f0f4e5c893",
+    "validate_private_capture.py": "3c636f7d3ab81385e7903bd96a2e0a51de9f6209e9d3ea83da8617e875cc45e1",
+    "contract.json": "5985745864541ee57362e26bfb7ed32b3ba517e01b682d2af44c4019b262d28c"
+  },
+  "safe_result": {
+    "status": "OK",
+    "verdict": "CLOSED_READ_ONLY_BLOCKED_CONNECTION_EPOCH_AND_EFFECTIVE_Z_SOURCE",
+    "live_snapshots": 2,
+    "live_state_stable": true,
+    "safe_idle_observed": true,
+    "connected_units": ["T1", "T2"],
+    "engaged_routes": [],
+    "stock_auto_refill": 1,
+    "stock_cfs_print_enable": 1,
+    "active_mesh_profile": "k1_p001_t055_r001_n11x11",
+    "observed_homing_origin_z_mm": -2.7755575615628914e-17,
+    "accepted_z_revision_stable": true,
+    "accepted_z_value_observable": false,
+    "effective_z_source_qualified": false,
+    "configuration_hashes_unchanged": true,
+    "adapter_called": true,
+    "adapter_blockers": ["connection_epoch_invalid", "effective_z_source_unqualified"],
+    "guard_adapter_ready": false,
+    "connection_epoch_observable": false,
+    "same_state_reconnect_between_queries_detectable": false,
+    "guard_imported_or_called": false,
+    "gcode_sent": false,
+    "remote_write": false,
+    "physical_action": false
+  }
+}

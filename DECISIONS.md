@@ -1758,3 +1758,29 @@ gate humaine séparée.
 
 Voir `docs/46-garde-exclusion-proprietaire-cfs-hors-imprimante-v1.md` et
 `packages/k1-control-v1/cfs-owner-exclusion-guard-offline-v1/`.
+
+## D-084 — Une lecture stable ne remplace ni une époque de connexion ni le Z accepté
+
+Date: 2026-08-28
+
+Status: validation live close en lecture seule ; adaptateur bloqué
+
+Deux lectures réelles, nettoyées sur la K1, confirment un état stable et sûr,
+les deux CFS connectés, aucune route engagée et les configurations inchangées.
+Elles ne qualifient pourtant pas le passage au chemin d'effet.
+
+Les objets lus n'exposent aucune époque de connexion. Une déconnexion suivie
+d'une reconnexion au même état entre les sondages resterait invisible. Cette
+valeur ne sera ni inventée ni déduite d'une simple égalité des réponses.
+
+L'empreinte du stockage Z accepté reste stable, mais sa valeur n'est pas
+présente dans la projection. `gcode_move.homing_origin[2]`, observé proche de
+zéro, n'est pas le Z accepté `−0,04 mm` et ne peut pas lui être substitué. Le
+garde refuse donc avec `connection_epoch_invalid` et
+`effective_z_source_unqualified`.
+
+La capture V1 est consommée et ne doit pas être rejouée. La prochaine mission
+est un adaptateur d'observabilité V2 hors imprimante ; toute nouvelle connexion
+ou tout effet réel restera une gate séparée.
+
+Voir `docs/47-validation-live-lecture-seule-garde-exclusion-proprietaire-cfs-v1.md`.

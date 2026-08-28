@@ -81,9 +81,11 @@ garde `CFS-OWNER-EXCLUSION-GUARD-OFFLINE-V1` est
 maintenant clos avec `25/25` scénarios et `15/15` tests ciblés. Il sauvegarde la
 valeur stock, limite désactivation et restauration à une tentative, exige deux
 lectures stables et refuse tout acquittement sans effet. Aucun transport ni
-effet réel n'est qualifié. La prochaine mission proposée est
-`G4-K1-CONTROL-CFS-OWNER-EXCLUSION-GUARD-LIVE-READ-ONLY-V1`, validation de forme live
-strictement en lecture seule ;
+effet réel n'est qualifié. Sa validation live en lecture seule est close après
+deux lectures stables et sans effet, mais l'adaptateur reste bloqué par
+l'absence d'époque de connexion observable et de vraie valeur Z acceptée. V1
+ne doit pas être rejouée. La prochaine mission proposée est
+`G4-K1-CONTROL-CFS-OWNER-OBSERVABILITY-ADAPTER-OFFLINE-V2`, hors imprimante ;
 GATEWAY-PRIVATE-LAN-NO-AUTH-V1 est installé et validé : le port `4409` ne
 demande plus de mot de passe, reste limité aux réseaux IPv4 privés, et présente
 uniquement son proxy local approuvé à Moonraker ; production remains closed**.

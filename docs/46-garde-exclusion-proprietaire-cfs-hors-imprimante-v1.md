@@ -63,10 +63,11 @@ une lecture live de cette gate. Ce vert ne modifie pas le Goal 3, qui reste à
 
 ## Suite bornée
 
+La mission live V1 a ensuite pris exactement deux lectures fraîches et nettoyées
+sans appeler le chemin d’effet. Elle est close, mais l’adaptateur reste bloqué :
+l’époque de connexion n’est pas observable et la vraie valeur Z acceptée n’est
+pas présente dans la projection. V1 ne doit pas être rejouée.
+
 La prochaine mission proposée est
-`G4-K1-CONTROL-CFS-OWNER-EXCLUSION-GUARD-LIVE-READ-ONLY-V1`. Elle devra seulement
-prendre deux lectures fraîches, retirer les identifiants privés avant retour
-local et vérifier que leur forme entre dans l’adaptateur sans l’appeler sur un
-chemin d’effet. Elle exigera une autorité distincte de connexion en lecture
-seule. Toute désactivation réelle, même unique, restera une autre gate avec
-Thomas devant la K1.
+`G4-K1-CONTROL-CFS-OWNER-OBSERVABILITY-ADAPTER-OFFLINE-V2`, hors imprimante.
+Toute nouvelle lecture ou désactivation réelle restera une autre gate.

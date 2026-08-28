@@ -221,8 +221,12 @@ stables, une tentative maximale, refus d'un acquittement sans effet et
 restauration exacte. Toutes ses intentions restent non exécutables et aucun
 comportement matériel n'est promu.
 
+La gate live V1 est ensuite close après exactement deux lectures fraîches,
+nettoyées, stables et sans effet. Elles ne qualifient pas l'adaptateur : aucune
+époque de connexion n'est observable et la vraie valeur Z acceptée n'est pas
+présente dans la projection. `homing_origin` ne peut pas lui être substitué.
+
 La prochaine gate proposée est
-`G4-K1-CONTROL-CFS-OWNER-EXCLUSION-GUARD-LIVE-READ-ONLY-V1`. Après une nouvelle
-autorité de lecture seule, elle vérifiera seulement la forme de deux lectures
-fraîches et nettoyées. Elle n'appellera pas le garde, n'enverra aucune commande
-et ne qualifiera pas l'effet réel.
+`G4-K1-CONTROL-CFS-OWNER-OBSERVABILITY-ADAPTER-OFFLINE-V2`. Elle reste hors
+imprimante ; elle doit résoudre ces deux sources avant toute nouvelle lecture
+live ou tout effet réel.

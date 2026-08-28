@@ -226,15 +226,17 @@ clos avec `25/25` scénarios et `15/15` tests ciblés, sans connexion K1. Il
 sauvegarde la valeur stock, borne désactivation et restauration à une tentative
 et exige deux lectures stables avant d'ouvrir ou fermer le propriétaire.
 
-La prochaine mission proposée est
-`G4-K1-CONTROL-CFS-OWNER-EXCLUSION-GUARD-LIVE-READ-ONLY-V1`. Elle prendra deux
-lectures fraîches et nettoyées pour vérifier la forme réelle attendue par
-l'adaptateur, sans appeler le garde ni envoyer de commande. Elle exige une
-nouvelle autorité de connexion en lecture seule. L'essai réel restera une gate
-humaine distincte.
+La mission live V1 est maintenant close après exactement deux lectures. Elles sont
+stables et sans effet, mais ne fournissent ni époque de connexion observable ni
+vraie valeur Z acceptée. V1 ne doit pas être rejouée.
 
-Le choix optimal est `gpt-5.6-terra` avec raisonnement `high` : la lecture est
-petite mais touche une machine de production et doit préserver les données
-privées tout en prouvant l'absence d'effet. L'option économique raisonnable est
-`gpt-5.6-terra` en `medium`, avec davantage de risque de manquer une ambiguïté
-de forme ou de fraîcheur.
+La prochaine mission proposée est
+`G4-K1-CONTROL-CFS-OWNER-OBSERVABILITY-ADAPTER-OFFLINE-V2`. Elle corrigera
+uniquement l'adaptateur et ses tests hors imprimante. Aucune connexion K1,
+commande, pose ou action physique n'est incluse.
+
+Le choix optimal est `gpt-5.6-terra` avec raisonnement `high` : le volume est
+modéré, mais les règles de refus sûr autour de la reconnexion et du Z demandent
+une lecture contractuelle précise. L'option économique raisonnable est le même
+modèle en `medium`, avec davantage de risque de confondre empreinte stable,
+fraîcheur de connexion et valeur Z réellement observée.

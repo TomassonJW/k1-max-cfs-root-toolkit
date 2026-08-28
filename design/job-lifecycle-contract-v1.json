@@ -25,7 +25,7 @@
     }
   ],
   "cfs_control_architecture": {
-    "status": "offline_owner_exclusion_guard_complete_effects_and_deployment_closed",
+    "status": "owner_exclusion_live_read_only_closed_observability_adapter_blocked",
     "canonical_document": "docs/43-cartographie-canonique-pilotage-cfs-k1-max-v1.md",
     "source_map": "design/cfs-control-source-map-v1.json",
     "selected_owner": "K1_CONTROL_LIFECYCLE_OWNER_OVER_SELECTED_STOCK_BOX_PRIMITIVES",
@@ -47,8 +47,11 @@
     "offline_owner_exclusion_guard_completed": true,
     "offline_owner_exclusion_guard_contract": "packages/k1-control-v1/cfs-owner-exclusion-guard-offline-v1/contract.json",
     "offline_owner_exclusion_guard_scenarios": "25/25",
+    "live_owner_exclusion_read_only_completed": true,
+    "live_owner_exclusion_read_only_contract": "packages/k1-control-v1/cfs-owner-exclusion-guard-live-read-only-v1/contract.json",
+    "live_owner_exclusion_read_only_verdict": "CLOSED_READ_ONLY_BLOCKED_CONNECTION_EPOCH_AND_EFFECTIVE_Z_SOURCE",
     "deployment_candidate": false,
-    "next_gate": "G4-K1-CONTROL-CFS-OWNER-EXCLUSION-GUARD-LIVE-READ-ONLY-V1_after_fresh_read_only_authority"
+    "next_gate": "G4-K1-CONTROL-CFS-OWNER-OBSERVABILITY-ADAPTER-OFFLINE-V2"
   },
   "target": {
     "printer": "Creality K1 Max S12 structure 0",
@@ -430,7 +433,27 @@
     "real_connector_present": false,
     "deployment_candidate": false,
     "physical_test_authorized": false,
-    "next_design_branch": "G4-K1-CONTROL-CFS-OWNER-EXCLUSION-GUARD-LIVE-READ-ONLY-V1"
+    "next_design_branch": "closed_by_G4-K1-CONTROL-CFS-OWNER-EXCLUSION-GUARD-LIVE-READ-ONLY-V1"
+  },
+  "cfs_owner_exclusion_guard_live_read_only": {
+    "candidate": "K1-CONTROL-CFS-OWNER-EXCLUSION-GUARD-LIVE-READ-ONLY-V1",
+    "mission": "G4-K1-CONTROL-CFS-OWNER-EXCLUSION-GUARD-LIVE-READ-ONLY-V1",
+    "status": "closed_read_only_blocked_connection_epoch_and_effective_z_source",
+    "contract": "packages/k1-control-v1/cfs-owner-exclusion-guard-live-read-only-v1/contract.json",
+    "evidence_map": "packages/k1-control-v1/cfs-owner-exclusion-guard-live-read-only-v1/evidence-map.json",
+    "canonical_document": "docs/47-validation-live-lecture-seule-garde-exclusion-proprietaire-cfs-v1.md",
+    "live_snapshots": 2,
+    "live_state_stable": true,
+    "configuration_hashes_unchanged": true,
+    "connection_epoch_observable": false,
+    "accepted_z_value_observable": false,
+    "effective_z_source_qualified": false,
+    "guard_effect_path_called": false,
+    "printer_connection_closed": true,
+    "remote_write": false,
+    "physical_action": false,
+    "rerun_authorized": false,
+    "next_design_branch": "G4-K1-CONTROL-CFS-OWNER-OBSERVABILITY-ADAPTER-OFFLINE-V2"
   },
   "k1_read_only_qualification": {
     "candidate": "GOAL-P4-K1-READ-ONLY-QUALIFICATION-V1",

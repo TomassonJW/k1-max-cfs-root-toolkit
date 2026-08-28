@@ -17,10 +17,10 @@ class CfsControlSourceMapV1Tests(unittest.TestCase):
     def setUp(self):
         self.source_map = load_json(MAP_PATH)
 
-    def test_architecture_has_offline_guard_but_cannot_authorize_effects(self):
+    def test_architecture_has_closed_live_read_only_gate_but_cannot_authorize_effects(self):
         authority = self.source_map["authority"]
         self.assertEqual(
-            "owner_exclusion_guard_offline_complete_effects_and_deployment_closed",
+            "owner_exclusion_live_read_only_closed_observability_adapter_blocked",
             self.source_map["status"],
         )
         self.assertFalse(authority["printer_connection_authorized"])
@@ -29,6 +29,7 @@ class CfsControlSourceMapV1Tests(unittest.TestCase):
         self.assertFalse(authority["implementation_authorized"])
         self.assertTrue(authority["offline_owner_core_completed"])
         self.assertTrue(authority["offline_owner_exclusion_guard_completed"])
+        self.assertTrue(authority["live_owner_exclusion_read_only_completed"])
         self.assertFalse(authority["deployment_candidate"])
 
     def test_required_evidence_sources_are_pinned_and_ranked(self):
@@ -183,7 +184,7 @@ class CfsControlSourceMapV1Tests(unittest.TestCase):
         )
         self.assertIn("known_start_defects", rollback["truthful_limit"])
 
-    def test_s12_core_and_offline_guard_are_closed_before_live_read_only_gate(self):
+    def test_live_read_only_gate_is_closed_and_next_adapter_is_offline(self):
         preflight = self.source_map["s12_preflight"]
         self.assertEqual(
             "CLOSED_READ_ONLY_S12_SURFACE_CONFIRMED_EFFECTS_CLOSED",
@@ -221,13 +222,26 @@ class CfsControlSourceMapV1Tests(unittest.TestCase):
         self.assertFalse(guard["printer_connection"])
         self.assertFalse(guard["physical_action"])
         self.assertFalse(guard["deployment_candidate"])
+        live = self.source_map["owner_exclusion_guard_live_read_only"]
+        self.assertEqual(
+            "CLOSED_READ_ONLY_BLOCKED_CONNECTION_EPOCH_AND_EFFECTIVE_Z_SOURCE",
+            live["status"],
+        )
+        self.assertEqual(2, live["live_snapshots"])
+        self.assertTrue(live["live_state_stable"])
+        self.assertTrue(live["configuration_hashes_unchanged"])
+        self.assertFalse(live["connection_epoch_observable"])
+        self.assertFalse(live["accepted_z_value_observable"])
+        self.assertFalse(live["effective_z_source_qualified"])
+        self.assertFalse(live["guard_effect_path_called"])
+        self.assertFalse(live["rerun_authorized"])
         next_gate = self.source_map["next_gate"]
         self.assertEqual(
-            "G4-K1-CONTROL-CFS-OWNER-EXCLUSION-GUARD-LIVE-READ-ONLY-V1",
+            "G4-K1-CONTROL-CFS-OWNER-OBSERVABILITY-ADAPTER-OFFLINE-V2",
             next_gate["id"],
         )
-        self.assertTrue(next_gate["printer_connection"])
-        self.assertTrue(next_gate["read_only"])
+        self.assertFalse(next_gate["printer_connection"])
+        self.assertFalse(next_gate["read_only"])
         self.assertFalse(next_gate["guard_effect_path_called"])
         self.assertFalse(next_gate["implementation_authorized"])
         for field in ("gcode", "heat", "motion", "CFS_effect", "remote_write", "service_restart"):
@@ -271,6 +285,18 @@ class CfsControlSourceMapV1Tests(unittest.TestCase):
         self.assertFalse(guard["printer_connection"])
         self.assertFalse(guard["real_connector_present"])
         self.assertFalse(guard["deployment_candidate"])
+        live = lifecycle["cfs_owner_exclusion_guard_live_read_only"]
+        self.assertEqual(
+            "closed_read_only_blocked_connection_epoch_and_effective_z_source",
+            live["status"],
+        )
+        self.assertEqual(2, live["live_snapshots"])
+        self.assertTrue(live["configuration_hashes_unchanged"])
+        self.assertFalse(live["connection_epoch_observable"])
+        self.assertFalse(live["accepted_z_value_observable"])
+        self.assertFalse(live["effective_z_source_qualified"])
+        self.assertFalse(live["guard_effect_path_called"])
+        self.assertFalse(live["rerun_authorized"])
 
 
 if __name__ == "__main__":

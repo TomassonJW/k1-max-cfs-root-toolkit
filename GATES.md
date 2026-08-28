@@ -441,10 +441,9 @@ tentative. Un acquittement seul ne vaut jamais preuve. Les tests ciblés obtienn
 `15/15`.
 
 Aucune connexion K1, commande, chauffe, mouvement, écriture distante, restart
-ou action CFS n'a eu lieu. La prochaine gate proposée est
-`G4-K1-CONTROL-CFS-OWNER-EXCLUSION-GUARD-LIVE-READ-ONLY-V1` : vérifier deux
-lectures fraîches et nettoyées contre l'adaptateur pur, sans appeler le chemin
-d'effet. Elle exige une autorité distincte de connexion en lecture seule.
+ou action CFS n'a eu lieu dans cette gate hors imprimante. Sa gate live V1 est
+maintenant close après deux lectures sans effet ; son résultat est détaillé
+plus bas et dans le document 47.
 
 ### Reprise physique `MESH-EDGE-DIAGNOSTIC-V1`
 
@@ -1502,3 +1501,18 @@ disponibles et intégrés au traceur passif. Cela lève le manque d'identité du
 profil actif, mais pas la frontière CFS compilée : aucun propriétaire de
 température ou paquet de bascule production n'est encore suffisamment prouvé
 pour recevoir un GO.
+
+### `G4-K1-CONTROL-CFS-OWNER-EXCLUSION-GUARD-LIVE-READ-ONLY-V1`
+
+Gate close le 2026-08-28 avec
+`CLOSED_READ_ONLY_BLOCKED_CONNECTION_EPOCH_AND_EFFECTIVE_Z_SOURCE`.
+Deux lectures live nettoyées sont stables et sans effet. Elles confirment
+`standby`, chauffes zéro, `T1/T2` connectés, aucune route, le mesh `11 × 11` et
+les configurations inchangées. Elles ne rendent pas observable une époque de
+connexion et ne fournissent pas la vraie valeur Z acceptée. Le garde reste
+fermé, V1 ne doit pas être rejouée et aucun effet réel n'est autorisé.
+
+La prochaine gate proposée est
+`G4-K1-CONTROL-CFS-OWNER-OBSERVABILITY-ADAPTER-OFFLINE-V2`. Elle est strictement
+locale : zéro connexion imprimante, G-code, chauffe, mouvement, effet CFS,
+fichier distant, service ou candidat de pose.

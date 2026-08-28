@@ -1280,3 +1280,17 @@ P3 has reached its exit condition. The P4 foundation slice is installed,
 observed and retained. The three failed Z/mesh attempts are completely rolled
 back. The corrected runtime is now installed and independently validated; its
 empty state remains fail-closed until a separately authorised calibration.
+
+## Mise à jour 2026-08-28 — exclusion propriétaire CFS live V1
+
+`G4-K1-CONTROL-CFS-OWNER-EXCLUSION-GUARD-LIVE-READ-ONLY-V1` est close avec le
+verdict `CLOSED_READ_ONLY_BLOCKED_CONNECTION_EPOCH_AND_EFFECTIVE_Z_SOURCE`.
+Exactement deux lectures nettoyées ont montré un état stable, `T1/T2`
+connectés, aucune route, chauffes zéro, profil `11 × 11` actif et configurations
+inchangées. Aucun effet n'a eu lieu.
+
+La projection ne peut pas ouvrir le garde : l'époque de connexion n'est pas
+observable et la vraie valeur Z acceptée n'est pas exposée. `homing_origin` ne
+la remplace pas. V1 est consommée et ne doit pas être rejouée. La prochaine
+mission unique est
+`G4-K1-CONTROL-CFS-OWNER-OBSERVABILITY-ADAPTER-OFFLINE-V2`, hors imprimante.

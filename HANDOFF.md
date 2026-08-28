@@ -2,11 +2,18 @@
 
 La passation canonique de la session est désormais :
 
-`docs/HANDOFF-CFS-OWNER-EXCLUSION-GUARD-2026-08-28.md`
+`docs/HANDOFF-CFS-OWNER-EXCLUSION-LIVE-READ-ONLY-2026-08-28.md`
 
 Lire ce document en premier. Le contenu ci-dessous est conservé comme archive
-des clôtures antérieures ; il ne décrit plus l'état live actuel et ne doit pas
+des clôtures antérieures ; il ne décrit plus l'état actuel et ne doit pas
 piloter la prochaine action.
+
+`G4-K1-CONTROL-CFS-OWNER-EXCLUSION-GUARD-LIVE-READ-ONLY-V1` est close après
+exactement deux lectures nettoyées. L’état est stable et sans effet, mais la
+projection reste bloquée par l’absence d’époque de connexion observable et de
+vraie valeur Z acceptée. V1 ne doit pas être rejouée. La prochaine mission
+unique est `G4-K1-CONTROL-CFS-OWNER-OBSERVABILITY-ADAPTER-OFFLINE-V2`, hors
+imprimante et sans transport.
 
 `GOAL-P4-OFFLINE-CYCLE-CFS-V1` est terminé hors imprimante et
 `GOAL-P4-K1-READ-ONLY-QUALIFICATION-V1` est terminé en lecture seule. La capture

@@ -257,9 +257,12 @@ sont maintenant clos. Le garde obtient `25/25`, exige deux lectures stables,
 borne chaque future commande à une tentative et refuse l'acquittement comme
 preuve.
 
+La lecture live V1 est désormais close après deux états frais, stables et
+nettoyés. Elle n'a appelé aucun chemin d'effet. Elle révèle deux manques : pas
+d'époque de connexion observable et pas de vraie valeur Z acceptée dans la
+projection. V1 ne doit pas être rejouée.
+
 La prochaine étape raisonnable n'est toujours pas un chargement : c'est
-`G4-K1-CONTROL-CFS-OWNER-EXCLUSION-GUARD-LIVE-READ-ONLY-V1`. Après une nouvelle
-autorité de connexion en lecture seule, elle vérifiera seulement deux états
-frais et nettoyés contre l'adaptateur pur. Elle n'appellera aucun chemin d'effet.
-L'essai réel du garde, puis les chargements, retraits, coupes et fins de bobine,
-resteront des gates séparées. Aucun ancien essai valable ne sera rejoué.
+`G4-K1-CONTROL-CFS-OWNER-OBSERVABILITY-ADAPTER-OFFLINE-V2`. Elle corrigera ces
+deux sources hors imprimante. L'essai réel du garde, puis les chargements,
+retraits, coupes et fins de bobine, resteront des gates séparées.

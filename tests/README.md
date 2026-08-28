@@ -124,6 +124,7 @@ tentative unique et la restauration exacte sans transport :
 
 ```powershell
 python -m unittest tests.test_cfs_owner_exclusion_guard_offline_v1 -v
+python -m unittest tests.test_cfs_owner_exclusion_guard_live_read_only_v1 -v
 python packages\k1-control-v1\cfs-owner-exclusion-guard-offline-v1\run_scenarios.py
 ```
 

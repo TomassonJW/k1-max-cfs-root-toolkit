@@ -1,0 +1,62 @@
+{
+  "contract_id": "cfs-owner-exclusion-guard-live-read-only-v1",
+  "schema": 1,
+  "mission": "G4-K1-CONTROL-CFS-OWNER-EXCLUSION-GUARD-LIVE-READ-ONLY-V1",
+  "status": "closed_read_only_blocked_connection_epoch_and_effective_z_source",
+  "authority": "strict_read_only",
+  "source_pins": {
+    "offline_guard_contract": "packages/k1-control-v1/cfs-owner-exclusion-guard-offline-v1/contract.json",
+    "offline_guard_contract_sha256": "2040b036507ae5e161aec0a86b94d7f0fc0c0527f237888eac0fd2428b6c1043"
+  },
+  "capture": {
+    "ssh_sessions": 1,
+    "object_queries": 2,
+    "query_interval_s": 2.0,
+    "per_request_timeout_s": 5.0,
+    "http_methods": ["GET"],
+    "remote_sanitization_before_local_return": true,
+    "identity_values_exported": false,
+    "configuration_hashes_before_and_after": 3
+  },
+  "projection": {
+    "printer_state": "print_stats.state",
+    "connected_units": "box.T1..T4.state",
+    "active_command": "empty_or_sha256_marker_of_box.t_command",
+    "stock_auto_refill": "box.auto_refill",
+    "stock_cfs_print_enable": "box.enable",
+    "engaged_routes": "box.T1..T4.filament",
+    "mapping_revision": "sha256_of_sanitized_route_mapping",
+    "connection_epoch": "required_but_not_exposed_by_current_K1_objects",
+    "mesh_profile": "bed_mesh.profile_name",
+    "accepted_z_revision": "sha256_of_sanitized_k1_control_store_Z_state",
+    "effective_z_offset_mm": "unqualified_in_v1_gcode_move.homing_origin[2]_is_not_the_accepted_Z_value",
+    "homed_axes": "toolhead.homed_axes",
+    "nozzle_target_c": "extruder.target",
+    "bed_target_c": "heater_bed.target"
+  },
+  "qualification_rules": {
+    "pure_adapter_may_be_called": true,
+    "guard_may_be_imported_or_called": false,
+    "connection_epoch_may_be_invented": false,
+    "same_state_reconnect_between_queries_detectable": false,
+    "missing_connection_epoch_blocks_adapter_qualification": true,
+    "accepted_z_value_must_be_observed_not_only_hashed": true,
+    "homing_origin_may_substitute_for_accepted_z": false,
+    "effect_path_authorized": false
+  },
+  "boundaries": {
+    "printer_connection": true,
+    "network_get_only": true,
+    "gcode_sent": false,
+    "heater_action": false,
+    "motion_action": false,
+    "cfs_action": false,
+    "remote_file_write": false,
+    "service_restart": false,
+    "deployment_candidate": false,
+    "production_authorized": false
+  },
+  "capture_consumed": "20260828-190631-g4-k1-control-cfs-owner-exclusion-guard-live-read-only-v1",
+  "rerun_authorized": false,
+  "verdict": "CLOSED_READ_ONLY_BLOCKED_CONNECTION_EPOCH_AND_EFFECTIVE_Z_SOURCE"
+}
