@@ -3,18 +3,32 @@
   "mission": "G4-K1-CONTROL-START-SEQUENCE-OWNER-PHYSICAL-KEEP-CORRECT-T1A-V1",
   "goal": "GOAL-P4-PHYSICAL-SLICES-QUALIFICATION-V1",
   "physical_requirement": "owned_start_keep_correct_t1a",
-  "status": "PREPARED_NOT_RUN",
+  "status": "SAFE_END_CORRECTION_PREPARED_NOT_RUN",
   "route": "T1A",
   "automatic_retry": false,
+  "live_end_macro_read_only_evidence": {
+    "capture_id": "20260829-goal3-start-owner-safe-end-readonly-v1",
+    "sha256": "fb68030d27f7cf202995f69a43ff31e9132d355674e1efc3fc06f4ece407a735",
+    "effects": false,
+    "finding": "stock_END_PRINT_calls_BOX_END_and_BOX_END_PRINT"
+  },
   "gcode": {
     "private_path": "inventory/raw/20260828-goal3-start-owner-physical-keep-correct-t1a-v1/K1-START-OWNER-T1A-2LAYER.gcode",
     "remote_name": "K1-START-OWNER-T1A-2LAYER.gcode",
-    "sha256": "eeaf9822a7016f89da45be83e4435f68c1d28441c469a9cde078c9645fcbf429",
-    "bytes": 90552,
+    "sha256": "d98c2a7fe9bb9bc1620cd3cc622edd4a48eaa7bd9c507bd0573de7bc5dab9f7f",
+    "bytes": 90616,
     "layers": 2,
     "max_z_mm": 0.4,
     "first_layer_nozzle_c": 190,
-    "bed_c": 55
+    "bed_c": 55,
+    "safe_end": [
+      "KCTRL_START_ABORT_V1",
+      "KCTRL_CLEAR_MANUAL_NOZZLE_CLEAN_V1",
+      "M107 P1",
+      "M107 P2",
+      "M84"
+    ],
+    "stock_end_print_removed": true
   },
   "human_gates": [
     "plate_clear_and_installed",
@@ -32,6 +46,7 @@
   "forbidden": [
     "T0",
     "stock_START_PRINT",
+    "stock_END_PRINT",
     "brush_motion",
     "mesh_calibration",
     "cfs_route_change",

@@ -24,10 +24,10 @@ param(
 
 $ErrorActionPreference = 'Stop'
 $Mission = 'G4-K1-CONTROL-START-SEQUENCE-OWNER-PHYSICAL-KEEP-CORRECT-T1A-V1'
-$ExpectedGcodeSha256 = 'eeaf9822a7016f89da45be83e4435f68c1d28441c469a9cde078c9645fcbf429'
-$ExpectedGcodeBytes = 90552
+$ExpectedGcodeSha256 = 'd98c2a7fe9bb9bc1620cd3cc622edd4a48eaa7bd9c507bd0573de7bc5dab9f7f'
+$ExpectedGcodeBytes = 90616
 $ExpectedTrialSha256 = '9ca8bfc7fdc2cd457346fc8a13a9f749d6c92fdd98306e35032c8c6617f12fbc'
-$ExpectedInstallerSha256 = '6b2b7d3d82928d1f34e52adca877e33f0d6c9a6c8f5ccdca2a73f004e4625b3b'
+$ExpectedInstallerSha256 = 'ff84e23462dc642d916bc7d83cfca0eea53414253b7ad940c1cb46be56a5ffa0'
 $WorkspaceRoot = (Resolve-Path (Join-Path $PSScriptRoot '..\..\..')).Path
 $RawRoot = Join-Path $WorkspaceRoot 'inventory\raw'
 $SessionDirectory = Join-Path $RawRoot $CaptureId

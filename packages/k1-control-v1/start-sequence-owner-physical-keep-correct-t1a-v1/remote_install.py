@@ -10,6 +10,7 @@ import sys
 
 ROOT = "/usr/data/printer_data/gcodes"
 NAME = "K1-START-OWNER-T1A-2LAYER.gcode"
+REPLACEABLE_PREVIOUS_SHA256 = "eeaf9822a7016f89da45be83e4435f68c1d28441c469a9cde078c9645fcbf429"
 
 
 def digest(path):
@@ -35,10 +36,23 @@ def main():
     if not os.path.isfile(stage) or digest(stage) != expected:
         raise RuntimeError("stage_hash_mismatch")
     if os.path.exists(target):
-        if not os.path.isfile(target) or digest(target) != expected:
+        if not os.path.isfile(target):
             raise RuntimeError("different_target_already_exists")
-        os.unlink(stage)
-        print(json.dumps({"status": "GCODE_ALREADY_EXACT", "sha256": expected}, sort_keys=True))
+        current = digest(target)
+        if current == expected:
+            os.unlink(stage)
+            print(json.dumps({"status": "GCODE_ALREADY_EXACT", "sha256": expected}, sort_keys=True))
+            return 0
+        if current != REPLACEABLE_PREVIOUS_SHA256:
+            raise RuntimeError("different_target_already_exists")
+        os.replace(stage, target)
+        if digest(target) != expected:
+            raise RuntimeError("replacement_hash_mismatch")
+        print(json.dumps({
+            "status": "GCODE_REPLACED_EXACT_REVIEWED_PREVIOUS",
+            "previous_sha256": current,
+            "sha256": expected,
+        }, sort_keys=True))
         return 0
     os.replace(stage, target)
     if digest(target) != expected:

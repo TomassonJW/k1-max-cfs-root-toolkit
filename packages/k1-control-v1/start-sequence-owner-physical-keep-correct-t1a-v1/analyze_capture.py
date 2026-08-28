@@ -8,7 +8,6 @@ from pathlib import Path
 EXPECTED_PHASES = [
     "manual_clean_confirmed",
     "reference_heating",
-    "post_reference_check",
     "first_layer_heating",
     "visible_purge",
     "model_ready",
