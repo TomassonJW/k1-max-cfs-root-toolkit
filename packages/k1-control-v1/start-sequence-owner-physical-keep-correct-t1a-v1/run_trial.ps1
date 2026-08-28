@@ -119,6 +119,7 @@ elseif ($Action -eq 'Upload') {
     $StageName = ".k1-control-stage-$CaptureId.gcode"
     $RemoteStage = "$PrinterHost`:/usr/data/printer_data/gcodes/$StageName"
     & scp.exe `
+        -O `
         -o 'BatchMode=yes' `
         -o 'PasswordAuthentication=no' `
         -o 'KbdInteractiveAuthentication=no' `
