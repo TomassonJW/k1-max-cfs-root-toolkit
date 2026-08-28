@@ -2,11 +2,11 @@
 
 La passation canonique de la session est désormais :
 
-`docs/HANDOFF-SESSION-COMPLETE-2026-08-27.md`
+`docs/HANDOFF-CFS-OWNER-S12-2026-08-28.md`
 
 Lire ce document en premier. Le contenu ci-dessous est conservé comme archive
-de la clôture antérieure du Goal 2 ; il ne décrit plus l'état live actuel et ne
-doit pas piloter la prochaine action.
+des clôtures antérieures ; il ne décrit plus l'état live actuel et ne doit pas
+piloter la prochaine action.
 
 `GOAL-P4-OFFLINE-CYCLE-CFS-V1` est terminé hors imprimante et
 `GOAL-P4-K1-READ-ONLY-QUALIFICATION-V1` est terminé en lecture seule. La capture
