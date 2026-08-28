@@ -37,6 +37,21 @@
     "visible_purge_verdict",
     "first_layer_verdict"
   ],
+  "required_terminal_state": {
+    "print_state": ["complete", "standby"],
+    "route": "T1A",
+    "active_cfs_command": "",
+    "heater_targets_zero": true,
+    "active_profile": "k1_p001_t055_r001_n11x11",
+    "accepted_z_offset": -0.04,
+    "low_moves_armed": 0,
+    "armed_mesh_profile": "none",
+    "start_owner_phase": "idle",
+    "watchdog_armed": 0,
+    "manual_clean_token": 0,
+    "axes_released": true,
+    "configuration_hashes_exact": true
+  },
   "allowed_automatic_effects": [
     "upload_exact_gcode",
     "manual_clean_confirmation_token_once",

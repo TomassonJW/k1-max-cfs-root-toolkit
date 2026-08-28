@@ -17,6 +17,26 @@ def load(name):
 
 
 class PhysicalKeepCorrectT1ATests(unittest.TestCase):
+    def terminal_snapshot(self):
+        return {
+            "print": {"state": "complete"},
+            "nozzle": {"target": 0.0},
+            "bed": {"target": 0.0},
+            "calibration": {
+                "active_profile": "k1_p001_t055_r001_n11x11",
+                "accepted_z_valid": 1,
+                "accepted_z_offset": -0.04,
+                "low_moves_armed": 0,
+                "armed_mesh_profile": "none",
+            },
+            "owner": {"phase": "idle", "watchdog_armed": 0, "manual_clean_token": 0},
+            "motion": {"homed_axes": ""},
+            "cfs": {
+                "state": "connect", "T1_state": "connect", "T2_state": "connect",
+                "active_command": "", "engaged_routes": ["T1A"],
+            },
+        }
+
     def test_candidate_is_frozen(self):
         result = load("verify_candidate").verify()
         self.assertEqual(result["status"], "KEEP_CORRECT_T1A_PHYSICAL_CANDIDATE_OK")
@@ -30,9 +50,29 @@ class PhysicalKeepCorrectT1ATests(unittest.TestCase):
                 "kind": "snapshot", "owner": {"phase": phase},
                 "nozzle": {"target": 190}, "bed": {"target": 55},
                 "cfs": {"engaged_routes": ["T1A"], "active_command": ""},
+                "print": {"state": "printing"},
+                "calibration": {
+                    "active_profile": "k1_p001_t055_r001_n11x11",
+                    "low_moves_armed": 1,
+                    "armed_mesh_profile": "k1_p001_t055_r001_n11x11",
+                },
+                "motion": {"homed_axes": "xyz"},
             })
         entries[0]["nozzle"]["target"] = 0
         entries[0]["bed"]["target"] = 0
+        entries.append({
+            "kind": "snapshot",
+            "owner": {"phase": "idle", "watchdog_armed": 0, "manual_clean_token": 0},
+            "nozzle": {"target": 0}, "bed": {"target": 0},
+            "cfs": {"engaged_routes": ["T1A"], "active_command": ""},
+            "print": {"state": "complete"},
+            "calibration": {
+                "active_profile": "k1_p001_t055_r001_n11x11",
+                "low_moves_armed": 0,
+                "armed_mesh_profile": "none",
+            },
+            "motion": {"homed_axes": ""},
+        })
         entries.extend([
             {"kind": "effect", "effect": "manual_clean_token_once"},
             {"kind": "effect", "effect": "print_start_once"},
@@ -62,6 +102,17 @@ class PhysicalKeepCorrectT1ATests(unittest.TestCase):
         self.assertEqual(source.count('"effect": "manual_clean_token_once"'), 1)
         self.assertNotIn("BOX_EXTRUDE", source)
         self.assertNotIn("BED_MESH_CALIBRATE", source)
+
+    def test_terminal_validator_requires_complete_safe_return(self):
+        remote = load("remote_trial")
+        remote.validate_terminal(self.terminal_snapshot())
+
+    def test_terminal_validator_rejects_axes_still_homed(self):
+        remote = load("remote_trial")
+        snapshot = self.terminal_snapshot()
+        snapshot["motion"]["homed_axes"] = "xyz"
+        with self.assertRaisesRegex(remote.GateError, "axes_not_released_after_run"):
+            remote.validate_terminal(snapshot)
 
 
 if __name__ == "__main__":

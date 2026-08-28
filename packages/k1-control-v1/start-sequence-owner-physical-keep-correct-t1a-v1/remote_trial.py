@@ -184,6 +184,30 @@ def validate_preflight(item, expected_gcode_sha):
         raise GateError("gcode_hash_mismatch")
 
 
+def validate_terminal(item):
+    validate_common(item)
+    if item["print"].get("state") not in ("complete", "standby"):
+        raise GateError("print_not_terminal")
+    if finite(item["nozzle"].get("target"), "nozzle_target_invalid") != 0.0:
+        raise GateError("nozzle_target_not_zero_after_run")
+    if finite(item["bed"].get("target"), "bed_target_invalid") != 0.0:
+        raise GateError("bed_target_not_zero_after_run")
+    if item["calibration"]["active_profile"] != BEST_PROFILE:
+        raise GateError("active_profile_drift_after_run")
+    if item["calibration"]["low_moves_armed"] not in (0, 0.0):
+        raise GateError("low_moves_still_armed_after_run")
+    if item["calibration"]["armed_mesh_profile"] not in (None, "", "none"):
+        raise GateError("armed_mesh_profile_not_cleared_after_run")
+    if item["owner"].get("phase") != "idle":
+        raise GateError("start_owner_not_idle_after_run")
+    if item["owner"].get("watchdog_armed") not in (0, 0.0):
+        raise GateError("watchdog_still_armed_after_run")
+    if item["owner"].get("manual_clean_token") not in (0, 0.0):
+        raise GateError("manual_clean_token_not_cleared_after_run")
+    if item["motion"]["homed_axes"] not in (None, ""):
+        raise GateError("axes_not_released_after_run")
+
+
 def preflight(expected_gcode_sha):
     item = snapshot(0.0)
     validate_preflight(item, expected_gcode_sha)
@@ -265,8 +289,7 @@ def execute(expected_gcode_sha, duration_s):
     final_hashes = hashes()
     if final_hashes != EXPECTED_HASHES:
         raise GateError("configuration_hash_drift_after_run")
-    if finite(last["nozzle"].get("target"), "nozzle_target_invalid") != 0.0 or finite(last["bed"].get("target"), "bed_target_invalid") != 0.0:
-        raise GateError("heater_targets_not_zero_after_run")
+    validate_terminal(last)
     emit({
         "kind": "footer", "status": "KEEP_CORRECT_T1A_PHYSICAL_AUTOMATION_OK",
         "automatic_retry": False, "hashes_after": final_hashes, "final_snapshot": last,
