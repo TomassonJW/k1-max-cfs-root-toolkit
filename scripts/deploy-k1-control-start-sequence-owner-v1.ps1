@@ -26,7 +26,7 @@ $RemoteAdmin = Join-Path $PackageRoot 'remote_admin.py'
 $RemoteJinja = Join-Path $PackageRoot 'remote_jinja_validate.py'
 
 $ExpectedConfigHash = '25291e1534f0ba100d3171b983796089a24cd49fdfcef76817406d325e6d8e03'
-$ExpectedRemoteAdminHash = '21a74a47c1709fb98a7bc37bfeaa49db877fe38ed24bc52f67719d2f8e006688'
+$ExpectedRemoteAdminHash = 'e81b3810f675f9a3b8985ee6feedb04a8aea12a64e636ee56f7916c0d8943d52'
 $ExpectedRemoteJinjaHash = 'b372d4d57602ad68cca801ee46c7b385e6ad3af5deb48f467c3a1625fd5cc0a4'
 $ExpectedPrinterHash = 'f88d6b52477592805384fca2b4d7abd00298deecd82227af2fa580085fe26fa2'
 $ExpectedNextPrinterHash = 'a79c8c917d8eee2575939ade4907640c2b2cf7ff59283d28def895b020e127af'
@@ -119,7 +119,7 @@ function Invoke-RemoteStdin {
 }
 
 function Invoke-RemoteAdmin {
-    param([Parameter(Mandatory = $true)][ValidateSet('objects', 'snapshot', 'restart', 'selftest', 'reset')][string]$AdminAction)
+    param([Parameter(Mandatory = $true)][ValidateSet('objects', 'generation', 'snapshot', 'restart', 'restore_mesh', 'selftest', 'reset')][string]$AdminAction)
 
     $program = [IO.File]::ReadAllText($RemoteAdmin).Replace("`r`n", "`n")
     $output = Invoke-RemoteStdin "/usr/share/klippy-env/bin/python -B - '$AdminAction'" $program
@@ -314,6 +314,75 @@ function Wait-StartOwnerSnapshot {
     throw "Etat Klipper non stabilise : $lastError"
 }
 
+function Wait-KlipperAdminReady {
+    param([int]$Attempts = 60)
+
+    $lastError = 'snapshot not available'
+    for ($attempt = 1; $attempt -le $Attempts; $attempt++) {
+        try {
+            $snapshot = Invoke-RemoteAdmin 'snapshot'
+            if ($snapshot.webhooks.state -eq 'ready' -and $snapshot.print_state -eq 'standby') {
+                return $snapshot
+            }
+            $lastError = "state=$($snapshot.webhooks.state) print=$($snapshot.print_state)"
+        }
+        catch { $lastError = $_.Exception.Message }
+        if ($attempt -lt $Attempts) { Start-Sleep -Seconds 1 }
+    }
+    throw "Socket Klipper non stabilise apres restart : $lastError"
+}
+
+function Wait-KlipperRestartCompleted {
+    param(
+        [Parameter(Mandatory = $true)]$PreviousGeneration,
+        [int]$Attempts = 60
+    )
+
+    $transitionObserved = $false
+    $lastError = 'restart transition not observed'
+    for ($attempt = 1; $attempt -le $Attempts; $attempt++) {
+        try {
+            $generation = Invoke-RemoteAdmin 'generation'
+            if ([string]$generation.socket_inode -ne [string]$PreviousGeneration.socket_inode -or
+                [string]$generation.socket_mtime_ns -ne [string]$PreviousGeneration.socket_mtime_ns) {
+                $transitionObserved = $true
+            }
+            $snapshot = Invoke-RemoteAdmin 'snapshot'
+            if ($transitionObserved -and $snapshot.webhooks.state -eq 'ready' -and $snapshot.print_state -eq 'standby') {
+                return $snapshot
+            }
+            $lastError = "transition=$transitionObserved state=$($snapshot.webhooks.state) print=$($snapshot.print_state)"
+        }
+        catch {
+            $transitionObserved = $true
+            $lastError = $_.Exception.Message
+        }
+        if ($attempt -lt $Attempts) { Start-Sleep -Seconds 1 }
+    }
+    throw "Restart Klipper non confirme : $lastError"
+}
+
+function Invoke-KlipperRestartAndWait {
+    [void](Wait-KlipperAdminReady -Attempts 60)
+    $generation = Invoke-RemoteAdmin 'generation'
+    Invoke-RemoteAdmin 'restart' | Out-Null
+    return Wait-KlipperRestartCompleted -PreviousGeneration $generation -Attempts 60
+}
+
+function Restore-BestCurrentMeshAfterRestart {
+    Invoke-RemoteAdmin 'restore_mesh' | Out-Null
+    $lastProfile = 'unknown'
+    for ($attempt = 1; $attempt -le 10; $attempt++) {
+        $snapshot = Invoke-RemoteAdmin 'snapshot'
+        $lastProfile = [string]$snapshot.mesh_profile
+        if ($lastProfile -eq 'k1_p001_t055_r001_n11x11') {
+            return $snapshot
+        }
+        if ($attempt -lt 10) { Start-Sleep -Seconds 1 }
+    }
+    throw "Le meilleur mesh courant n est pas actif apres sa commande unique : $lastProfile"
+}
+
 function Assert-InstalledHashes {
     if ((Get-RemoteHash $PrinterConfig) -ne $ExpectedNextPrinterHash -or
         (Get-RemoteHash $StartOwnerConfig) -ne $ExpectedConfigHash) {
@@ -391,7 +460,8 @@ function Invoke-StartOwnerRollback {
         catch { if (-not $BestEffort) { throw } }
     }
     try {
-        Invoke-RemoteAdmin 'restart' | Out-Null
+        Invoke-KlipperRestartAndWait | Out-Null
+        Restore-BestCurrentMeshAfterRestart | Out-Null
         $snapshot = Wait-StartOwnerSnapshot -Attempts 60
         if ((Get-RemoteHash $PrinterConfig) -ne $ExpectedPrinterHash) { throw 'Rollback printer.cfg incomplet.' }
         Assert-ImmutableDependencyHashes
@@ -456,7 +526,8 @@ if ($Action -eq 'Deploy') {
         $MutationStarted = $true
         Invoke-Remote "cp '$staging/k1-control-start-sequence-owner-v1.cfg' '$StartOwnerConfig.next' && chmod 600 '$StartOwnerConfig.next' && mv '$StartOwnerConfig.next' '$StartOwnerConfig'" | Out-Null
         Invoke-Remote "cp '$staging/printer.cfg.next' '$PrinterConfig.next' && mv '$PrinterConfig.next' '$PrinterConfig' && sync" | Out-Null
-        Invoke-RemoteAdmin 'restart' | Out-Null
+        Invoke-KlipperRestartAndWait | Out-Null
+        Restore-BestCurrentMeshAfterRestart | Out-Null
         Invoke-InstalledValidation | Out-Null
         Write-Output "DEPLOY_START_SEQUENCE_OWNER_V1_OK capture=$CaptureId"
     }

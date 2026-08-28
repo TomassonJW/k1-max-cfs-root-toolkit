@@ -1,15 +1,15 @@
 {
   "schema": 1,
   "mission": "G4-K1-CONTROL-START-SEQUENCE-OWNER-V1",
-  "status": "PREFLIGHT_QUALIFIED_DEPLOYMENT_CANDIDATE_NOT_AUTHORIZED",
-  "deployment_candidate": true,
+  "status": "INSTALLED_VALIDATED_COLD_PHYSICAL_TRIAL_BLOCKED_NO_T1A",
+  "deployment_candidate": false,
   "deployment_authorized": false,
   "printer_connection_authorized": false,
   "authority": {
     "received_go": "G4-K1-CONTROL-START-SEQUENCE-OWNER-V1",
-    "go_consumed_by": "live_read_only_preflight_before_final_package_freeze",
+    "go_consumed_by": "corrected_additive_deployment_restart_mesh_restore_and_cold_validation",
     "current_remote_authority": "NONE",
-    "renewed_exact_go_required_for_deployment": true,
+    "renewed_exact_go_required_for_deployment": false,
     "physical_start_trial_requires_a_later_distinct_gate": true
   },
   "scope": {
@@ -120,21 +120,21 @@
     "fallback_to_stock_start": false,
     "fallback_to_hidden_temperature": false
   },
-  "predeployment_requirements": [
-    "freeze_the_corrected_package_then_obtain_a_renewed_exact_human_GO_for_deployment",
-    "run_the_cold_no_motion_watchdog_self_test_after_install",
-    "obtain_a_distinct_human_gate_for_the_later_physical_start_trial"
-  ],
+  "predeployment_requirements": [],
   "predeployment_completed": [
     "parsed_all_13_Jinja_templates_with_the_exact_K1_Python_and_Klipper_environment",
     "proved_include_and_macro_name_compatibility_without_physical_effect",
     "proved_the_bounded_watchdog_with_8_offline_scenarios",
     "reviewed_the_prime_line_against_live_K1_bounds",
     "prepared_exact_backup_rollback_and_validation_commands",
-    "exported_and_inspected_a_two_layer_0.4_mm_sacrificial_Orca_Gcode"
+    "exported_and_inspected_a_two_layer_0.4_mm_sacrificial_Orca_Gcode",
+    "installed_the_additive_file_and_single_include_with_exact_backup",
+    "observed_a_real_Klipper_restart_transition_before_reloading_the_best_current_mesh",
+    "reloaded_and_read_back_k1_p001_t055_r001_n11x11",
+    "passed_the_cold_watchdog_self_test_and_independent_validation"
   ],
   "live_read_only_preflight": {
-    "capture_id": "20260828-203739-g4-k1-control-start-sequence-owner-v1",
+    "capture_id": "20260828-220525-g4-k1-control-start-sequence-owner-v1",
     "status": "PASS_BLOCKED_NO_T1A",
     "prospective_printer_cfg_sha256": "a79c8c917d8eee2575939ade4907640c2b2cf7ff59283d28def895b020e127af",
     "route_count": 0,
@@ -142,20 +142,30 @@
     "prime_line_inside_live_bounds": true,
     "configurations_unchanged": true
   },
+  "deployment_result": {
+    "capture_id": "20260828-220525-g4-k1-control-start-sequence-owner-v1",
+    "status": "INSTALLED_VALIDATED_COLD",
+    "printer_cfg_sha256": "a79c8c917d8eee2575939ade4907640c2b2cf7ff59283d28def895b020e127af",
+    "start_owner_cfg_sha256": "25291e1534f0ba100d3171b983796089a24cd49fdfcef76817406d325e6d8e03",
+    "active_mesh": "k1_p001_t055_r001_n11x11",
+    "watchdog_loaded": true,
+    "cold_self_test_passed": true,
+    "rollback_restart_transition_guarded": true,
+    "physical_effect": false
+  },
   "physical_trial": {
     "authorized": false,
     "ready": false,
     "blocker": "BLOCKED_NO_ENGAGED_T1A",
     "required_before_trial": [
-      "install_and_validate_the_frozen_additive_candidate_under_a_renewed_exact_GO",
       "reestablish_and_read_back_one_unique_T1A_route_under_a_separate_load_authority",
       "review_a_short_sacrificial_job_then_obtain_a_distinct_physical_trial_GO"
     ]
   },
   "effects": {
     "printer_connection": true,
-    "remote_write": false,
-    "service_action": false,
+    "remote_write": true,
+    "service_action": true,
     "heating": false,
     "motion": false,
     "extrusion": false,

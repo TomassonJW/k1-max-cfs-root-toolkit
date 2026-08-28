@@ -146,7 +146,11 @@ seul fonctionnement quotidien :
 17. prochain Goal prêt : comparaison en lecture seule avec un état K1 frais,
     sous autorité séparée et sans effet ;
 18. contrat Orca final et retrait atomique prouvé de l'ancien post-traitement
-    `+0,27 mm`.
+    `+0,27 mm` ;
+19. `START-SEQUENCE-OWNER-V1` installé et validé à froid : restart réellement
+    observé, `11 × 11` restauré et relu, surveillant vert, chauffes zéro, aucun
+    mouvement ni effet CFS. La prochaine gate doit charger puis relire une seule
+    route `T1A` sans lancer d'impression.
 
 Le rollback exact de `MESH-EDGE-DIAGNOSTIC-V1` et sa validation finale sont
 verts. Aucun acte physique suivant n'est automatiquement autorisé. La reprise

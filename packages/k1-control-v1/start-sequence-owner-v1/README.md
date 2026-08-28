@@ -1,7 +1,7 @@
 # START-SEQUENCE-OWNER-V1
 
-Statut : **candidat de pose qualifié par préflight, non installé et non
-autorisé**.
+Statut : **installé et validé à froid ; essai physique bloqué tant que `T1A`
+n'est pas chargé et relu**.
 
 Ce paquet reprend uniquement le demarrage quotidien deja observe avec le bon
 filament `T1A` engage. Il remplace le point d'entree constructeur
@@ -35,9 +35,8 @@ filament `T1A` engage. Il remplace le point d'entree constructeur
 - Les délais maximaux sont `600 s` pour la chauffe de référence, `120 s` après
   la référence, `180 s` pour la chauffe de première couche et `60 s` pour la
   purge.
-- Après une future pose, un test froid volontairement expiré devra prouver ce
-  surveillant sans chauffe, mouvement ni extrusion avant que le fichier soit
-  retenu.
+- Le test froid volontairement expiré a prouvé ce surveillant sans chauffe,
+  mouvement ni extrusion avant que le fichier soit retenu.
 
 Le seul temps d'attente volontaire avant la reference Z sert a retrouver la
 meme fenetre thermique que celle du Z accepte. Une reference faite a une
@@ -46,16 +45,20 @@ sur la buse.
 
 ## Preuves obtenues
 
-Le préflight réel
-`20260828-203739-g4-k1-control-start-sequence-owner-v1` a confirmé :
+La capture réelle
+`20260828-220525-g4-k1-control-start-sequence-owner-v1` a confirmé :
 
 - les treize templates Jinja passent dans le Python et le Klipper exacts de la
   K1 ;
 - la ligne de purge `X15 / Y20..180 / Z0,3..5` reste dans les courses lues ;
 - le `11 × 11`, le Z `−0,04 mm`, les cibles à zéro, les axes libérés et les
   empreintes des configurations sont conformes ;
-- aucun fichier distant, restart, chauffage, mouvement, extrusion ou ordre CFS
-  n'a été produit.
+- le backup exact, l'ajout du fichier et de l'include, puis le restart Klipper ;
+- une vraie transition du socket avant la reprise des contrôles ;
+- la restauration unique et la relecture du `11 × 11` après restart ;
+- le propriétaire et son surveillant chargés, le test froid vert et la phase
+  finale `idle` ;
+- aucun chauffage, mouvement, extrusion ou ordre CFS.
 
 L'export sacrificiel Orca 2.4.2 contient deux couches et mesure `0,4 mm` de
 haut. Le profil temporaire retire l'ancien post-traitement, vide le G-code de
@@ -70,7 +73,7 @@ un appel du propriétaire et aucun `Tn`, `START_PRINT`, brossage, recalibration,
 - Le chargement de `T1A` ne fait pas partie de cette gate.
 - Une panne complète du processus Klippy reste couverte par la sécurité hôte/MCU
   de niveau inférieur, pas par le surveillant Klipper lui-même.
-- Le fichier de macros n'est toujours ni posé, ni inclus, ni appelé sur la K1.
+- Le fichier de macros est posé et inclus ; seul son test froid a été appelé.
 
 ## Fichiers
 
@@ -86,10 +89,6 @@ un appel du propriétaire et aucun `Tn`, `START_PRINT`, brossage, recalibration,
 - `scripts/deploy-k1-control-start-sequence-owner-v1.ps1` : plan, préflight,
   pose, validation et rollback fermés par gate exacte.
 
-Le GO reçu a servi au préflight, puis le candidat et ses commandes ont été
-corrigés. Une pose exige donc un nouveau GO exact
-`G4-K1-CONTROL-START-SEQUENCE-OWNER-V1` sur ce paquet figé. Ce GO autorisera
-concrètement l'ajout d'un fichier, d'un include et un restart Klipper suivi du
-test froid ; il n'autorisera ni chargement de filament, ni chauffe, ni
-mouvement, ni impression. L'essai physique viendra ensuite sous une gate
-distincte, seulement après avoir rétabli et relu une route unique `T1A`.
+La pose est close et son autorisation est consommée. La gate suivante doit
+rétablir puis relire une route unique `T1A`, sans lancer d'impression. L'essai
+physique viendra ensuite sous une autre gate, avec Thomas présent devant la K1.

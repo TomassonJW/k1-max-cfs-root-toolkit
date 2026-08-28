@@ -20,7 +20,7 @@ class CfsControlSourceMapV1Tests(unittest.TestCase):
     def test_architecture_has_qualified_exact_live_restore_but_grants_no_open_authority(self):
         authority = self.source_map["authority"]
         self.assertEqual(
-            "owner_exclusion_live_effect_closed_exact_restore_start_owner_next",
+            "start_owner_installed_validated_cold_T1A_route_next",
             self.source_map["status"],
         )
         self.assertFalse(authority["printer_connection_authorized"])
@@ -33,6 +33,8 @@ class CfsControlSourceMapV1Tests(unittest.TestCase):
         self.assertTrue(authority["offline_owner_observability_v2_completed"])
         self.assertTrue(authority["live_owner_observability_v2_completed"])
         self.assertTrue(authority["live_owner_exclusion_effect_completed"])
+        self.assertTrue(authority["start_owner_installed"])
+        self.assertTrue(authority["start_owner_cold_validation_completed"])
         self.assertFalse(authority["deployment_candidate"])
 
     def test_required_evidence_sources_are_pinned_and_ranked(self):
@@ -271,17 +273,20 @@ class CfsControlSourceMapV1Tests(unittest.TestCase):
         self.assertFalse(effect["rerun_authorized"])
         next_gate = self.source_map["next_gate"]
         self.assertEqual(
-            "G4-K1-CONTROL-START-SEQUENCE-OWNER-V1",
+            "G4-K1-CONTROL-START-SEQUENCE-T1A-ROUTE-V1",
             next_gate["id"],
         )
         self.assertTrue(next_gate["printer_connection"])
         self.assertFalse(next_gate["read_only"])
         self.assertFalse(next_gate["guard_effect_path_called"])
         self.assertFalse(next_gate["implementation_authorized"])
-        for field in ("gcode", "heat", "motion", "CFS_effect"):
-            self.assertFalse(next_gate[field])
-        self.assertTrue(next_gate["remote_write"])
-        self.assertEqual("Klipper_host_RESTART_only", next_gate["service_restart"])
+        self.assertTrue(next_gate["gcode"])
+        self.assertTrue(next_gate["heat"])
+        self.assertFalse(next_gate["motion"])
+        self.assertTrue(next_gate["extrusion"])
+        self.assertTrue(next_gate["CFS_effect"])
+        self.assertFalse(next_gate["remote_write"])
+        self.assertFalse(next_gate["service_restart"])
         self.assertTrue(next_gate["renewed_exact_go_required"])
         self.assertFalse(next_gate["physical_start_trial"])
         self.assertEqual("BLOCKED_NO_ENGAGED_T1A", next_gate["physical_trial_blocker"])
@@ -318,7 +323,9 @@ class CfsControlSourceMapV1Tests(unittest.TestCase):
             "CLOSED_OK_EXCLUSION_AND_EXACT_RESTORE_QUALIFIED",
             architecture["live_owner_exclusion_effect_verdict"],
         )
-        self.assertTrue(architecture["deployment_candidate"])
+        self.assertFalse(architecture["deployment_candidate"])
+        self.assertTrue(architecture["start_owner_installed"])
+        self.assertEqual("PASS", architecture["start_owner_cold_validation"])
         self.assertTrue(architecture["start_owner_live_read_only_preflight_completed"])
         self.assertEqual(
             "PASS_BLOCKED_NO_T1A",

@@ -52,8 +52,8 @@ entièrement silencieux.
 
 ## Suite
 
-La tranche `G4-K1-CONTROL-START-SEQUENCE-OWNER-V1` a depuis reçu son surveillant
-borné, son parse K1 exact, ses coordonnées de purge relues, son backup et son
-rollback. Son préflight réel est vert sans effet, mais aucune route n'est
-engagée. Le candidat est donc présentable pour une pose additive sous un nouveau
-GO exact ; le chargement de `T1A` et l'essai physique restent exclus.
+La tranche `G4-K1-CONTROL-START-SEQUENCE-OWNER-V1` est depuis installée et
+validée à froid avec son surveillant borné, son parse K1 exact, ses coordonnées
+de purge relues, son backup et son rollback. Le restart attend une vraie
+transition du socket, puis restaure et relit le `11 × 11`. Aucune route n'est
+engagée. Le chargement de `T1A` et l'essai physique restent deux gates séparées.

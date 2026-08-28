@@ -1,15 +1,19 @@
 {
   "schema": 1,
   "mission": "G4-K1-CONTROL-START-SEQUENCE-OWNER-V1",
-  "capture_id": "20260828-203739-g4-k1-control-start-sequence-owner-v1",
-  "scope": "LIVE_READ_ONLY_PREFLIGHT",
-  "status": "PASS_BLOCKED_NO_T1A",
-  "private_directory": "inventory/raw/20260828-203739-g4-k1-control-start-sequence-owner-v1",
+  "capture_id": "20260828-220525-g4-k1-control-start-sequence-owner-v1",
+  "scope": "ADDITIVE_DEPLOYMENT_AND_COLD_VALIDATION",
+  "status": "INSTALLED_VALIDATED_COLD_BLOCKED_NO_T1A",
+  "private_directory": "inventory/raw/20260828-220525-g4-k1-control-start-sequence-owner-v1",
   "files": {
     "preflight-hashes.txt": "4c75febffb480a7c2eb888c4000892c62b9688245ce4edb325307665f4c2b3e1",
     "preflight-jinja.txt": "9a4cf32847c9cde162212c48bda28fe6e00567e3116a0c94ae4fca489a1474b8",
     "preflight-prospective-printer-sha256.txt": "e5a7217dff5b70400f153c9e22f0669c5310b5ffbc7b2fecacdc3fd292dc058a",
-    "preflight-safe.json": "47d4051a29649693a308772868f3ae94a697a8666e8cd7b52083963de94775a8"
+    "preflight-safe.json": "a94f4abd8c4f49e223b2aba183c4be724d3ade4f48b51580ffa82a34fa08dcad",
+    "remote-backup-sha256.txt": "92c3e34d660a8dc7703ccc006344072114b47580ba9a1b0b3d8a3a5de1ad20f2",
+    "validation-before.json": "1884b7f56b15c4b562f0fc041cb47dc43b67ffe567cd6992e2b55226ff5659f1",
+    "validation-watchdog-aborted.json": "c219343366f9b9440623640e6a7654d3fba72b4ec8cdc04725e848a741dc4afe",
+    "validation-final.json": "7a6a3c36f5907f29d3e7e83eecb1910c0467e30c7d68a518d3f12600a8cbeb3e"
   },
   "observed": {
     "klippy_ready": true,
@@ -17,17 +21,23 @@
     "heater_targets_zero": true,
     "axes_released": true,
     "active_mesh": "k1_p001_t055_r001_n11x11",
+    "start_owner_loaded": true,
+    "watchdog_loaded": true,
+    "owner_phase": "idle",
     "accepted_z_offset_mm": -0.04,
     "T1_connected": true,
     "T2_connected": true,
     "route_count": 0,
     "T1A_engaged": false,
     "prime_line_inside_live_bounds": true,
-    "configurations_unchanged": true
+    "installed_printer_cfg_sha256": "a79c8c917d8eee2575939ade4907640c2b2cf7ff59283d28def895b020e127af",
+    "installed_start_owner_cfg_sha256": "25291e1534f0ba100d3171b983796089a24cd49fdfcef76817406d325e6d8e03",
+    "immutable_dependency_hashes_unchanged": true,
+    "cold_watchdog_self_test": "PASS"
   },
   "effects": {
-    "remote_write": false,
-    "service_action": false,
+    "remote_write": true,
+    "service_action": "Klipper_host_RESTART_only",
     "heating": false,
     "motion": false,
     "extrusion": false,

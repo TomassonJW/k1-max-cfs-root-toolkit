@@ -85,15 +85,18 @@ désactivé une fois l'auto-remplacement stock, prouvé deux fois `0`, restauré
 fois la valeur précédente `1` et prouvé deux fois ce retour exact. Elle est
 close avec `CLOSED_OK_EXCLUSION_AND_EXACT_RESTORE_QUALIFIED`, sans mouvement de
 filament, chauffe, mouvement, écriture distante ni service. Les captures sont
-consommées. `START-SEQUENCE-OWNER-V1` est maintenant renforcé par un
-surveillant borné, un jeton manuel de cinq minutes, un backup et un rollback
-exacts. Son préflight live en lecture seule parse treize templates dans
-l'environnement K1, confirme les courses de purge et les empreintes sans aucun
-effet, mais trouve zéro route engagée. Un export Orca 2.4.2 de deux couches est
-qualifié sans `T0` ni ordre interdit. Le candidat est installable mais non
-autorisé ; le prochain GO exact couvrira seulement la pose additive, le restart
-Klipper et le test froid. Le chargement de `T1A` et l'essai physique resteront
-deux gates distinctes ;
+consommées. `START-SEQUENCE-OWNER-V1` est maintenant installé et validé à froid
+sous la capture `20260828-220525-g4-k1-control-start-sequence-owner-v1`. Son
+surveillant borné, son jeton manuel de cinq minutes, son backup et son rollback
+sont retenus. Le déployeur exige une vraie transition du socket après restart,
+restaure ensuite une seule fois le `11 × 11` et applique la même règle au
+rollback. Le propriétaire et le surveillant sont chargés, la phase finale est
+`idle`, les cibles sont à zéro, les axes sont libérés, les deux CFS sont
+connectés et aucune route n'est engagée. Le test froid est vert ; aucune chauffe,
+aucun mouvement, aucune extrusion et aucune action CFS n'ont eu lieu. Un export
+Orca 2.4.2 de deux couches reste qualifié sans `T0` ni ordre interdit. La pose
+est close ; le chargement et la relecture de `T1A`, puis l'essai physique,
+restent deux gates distinctes ;
 GATEWAY-PRIVATE-LAN-NO-AUTH-V1 est installé et validé : le port `4409` ne
 demande plus de mot de passe, reste limité aux réseaux IPv4 privés, et présente
 uniquement son proxy local approuvé à Moonraker ; production remains closed**.

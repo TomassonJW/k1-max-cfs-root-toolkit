@@ -262,12 +262,13 @@ seule connexion Moonraker le vrai Z accepté et l'absence de transition CFS. La
 gate d'effet qualifie ensuite exactement `1 -> 0 -> 1` pour l'auto-remplacement
 stock, une tentative par commande et deux preuves d'état après chacune.
 
-`G4-K1-CONTROL-START-SEQUENCE-OWNER-V1` est maintenant surveillé, réversible et
-qualifié par un préflight réel sans effet. Les treize templates K1, les courses
-de purge, les empreintes, le backup, le rollback et un export Orca sacrificiel
-sont revus. La lecture a toutefois trouvé zéro route engagée.
+`G4-K1-CONTROL-START-SEQUENCE-OWNER-V1` est maintenant installé, surveillé,
+réversible et validé à froid. Les treize templates K1, les courses de purge, les
+empreintes, le backup, le rollback et un export Orca sacrificiel sont revus. Le
+restart exige une vraie transition du socket, puis restaure et relit le
+`11 × 11`. Le test froid est vert sans chauffe, mouvement ni extrusion. La
+lecture finale a toutefois trouvé zéro route engagée.
 
-La prochaine étape n'est donc toujours pas un chargement ni une impression :
-c'est un nouveau GO exact pour poser seulement le candidat additif et exécuter
-son test froid sans mouvement. Le rétablissement de `T1A`, puis le premier
-démarrage physique, resteront deux tranches séparées.
+La prochaine étape est donc une gate distincte qui rétablit puis relit une seule
+route `T1A`, sans impression. Le premier démarrage physique restera une tranche
+encore séparée avec Thomas devant la K1.

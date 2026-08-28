@@ -32,15 +32,15 @@ def load_module(name, filename):
 
 
 class StartSequenceOwnerV1Tests(unittest.TestCase):
-    def test_candidate_is_preflight_qualified_and_not_authorized(self):
+    def test_installed_payload_still_passes_candidate_checks(self):
         result = load_verifier().verify()
-        self.assertEqual("START_SEQUENCE_OWNER_V1_PREFLIGHT_QUALIFIED_OK", result["status"])
+        self.assertEqual("START_SEQUENCE_OWNER_V1_INSTALLED_PAYLOAD_OK", result["status"])
         self.assertEqual(1, result["g28_xy_only"])
         self.assertEqual(1, result["accurate_z_references"])
         self.assertEqual(0, result["automatic_brush_commands"])
         self.assertEqual(0, result["mesh_calibration_commands"])
         self.assertEqual(0, result["cfs_effect_commands"])
-        self.assertTrue(result["deployment_candidate"])
+        self.assertFalse(result["deployment_candidate"])
         self.assertEqual("BLOCKED_NO_ENGAGED_T1A", result["physical_trial"])
         self.assertEqual("8/8", result["watchdog_scenarios"])
         self.assertEqual(300, result["manual_clean_token_validity_s"])
@@ -112,20 +112,29 @@ class StartSequenceOwnerV1Tests(unittest.TestCase):
 
     def test_deployment_manifest_pins_every_reviewed_file(self):
         manifest = json.loads((PACKAGE / "deployment-manifest.json").read_text(encoding="utf-8"))
-        self.assertEqual("PREPARED_NOT_AUTHORIZED", manifest["status"])
+        self.assertEqual("INSTALLED_VALIDATED_COLD", manifest["status"])
         self.assertFalse(manifest["deployment_authorized"])
+        self.assertTrue(manifest["deployment_completed"])
+        self.assertTrue(manifest["authorization_consumed"])
         pins = dict(manifest["payload"])
         pins.update(manifest["reviewed_support_files"])
         for relative, expected in pins.items():
             actual = hashlib.sha256((ROOT / relative).read_bytes()).hexdigest()
             self.assertEqual(expected, actual, relative)
 
-    def test_live_evidence_map_is_read_only_and_blocks_the_trial(self):
+    def test_live_evidence_map_proves_install_and_blocks_the_trial(self):
         evidence = json.loads((PACKAGE / "evidence-map.json").read_text(encoding="utf-8"))
-        self.assertEqual("PASS_BLOCKED_NO_T1A", evidence["status"])
+        self.assertEqual("INSTALLED_VALIDATED_COLD_BLOCKED_NO_T1A", evidence["status"])
         self.assertEqual(0, evidence["observed"]["route_count"])
         self.assertFalse(evidence["observed"]["T1A_engaged"])
-        self.assertFalse(any(evidence["effects"].values()))
+        self.assertTrue(evidence["observed"]["start_owner_loaded"])
+        self.assertTrue(evidence["observed"]["watchdog_loaded"])
+        self.assertTrue(evidence["effects"]["remote_write"])
+        self.assertEqual("Klipper_host_RESTART_only", evidence["effects"]["service_action"])
+        self.assertFalse(evidence["effects"]["heating"])
+        self.assertFalse(evidence["effects"]["motion"])
+        self.assertFalse(evidence["effects"]["extrusion"])
+        self.assertFalse(evidence["effects"]["cfs_action"])
 
     def test_python_sources_parse_as_k1_python_3_8(self):
         for name in (
@@ -140,6 +149,30 @@ class StartSequenceOwnerV1Tests(unittest.TestCase):
                 filename=name,
                 feature_version=(3, 8),
             )
+
+    def test_deployer_restores_best_mesh_after_every_restart(self):
+        deployer = (ROOT / "scripts" / "deploy-k1-control-start-sequence-owner-v1.ps1").read_text(
+            encoding="utf-8"
+        )
+        self.assertIn("'generation'", deployer)
+        self.assertIn("Wait-KlipperRestartCompleted", deployer)
+        self.assertIn("$transitionObserved", deployer)
+        self.assertIn("'restore_mesh'", deployer)
+        self.assertIn("BED_MESH_PROFILE LOAD=%s", (PACKAGE / "remote_admin.py").read_text(encoding="utf-8"))
+        self.assertEqual(2, deployer.count("Invoke-KlipperRestartAndWait | Out-Null"))
+        self.assertEqual(2, deployer.count("Restore-BestCurrentMeshAfterRestart | Out-Null"))
+        self.assertLess(
+            deployer.index("Restore-BestCurrentMeshAfterRestart | Out-Null"),
+            deployer.index("$snapshot = Wait-StartOwnerSnapshot -Attempts 60"),
+        )
+
+    def test_remote_admin_proves_restart_generation_and_watchdog_from_config(self):
+        remote_admin = (PACKAGE / "remote_admin.py").read_text(encoding="utf-8")
+
+        self.assertIn('"generation"', remote_admin)
+        self.assertIn('"socket_inode"', remote_admin)
+        self.assertIn('"socket_mtime_ns"', remote_admin)
+        self.assertIn('"delayed_gcode kctrl_start_watchdog_v1" in config', remote_admin)
 
 
 if __name__ == "__main__":

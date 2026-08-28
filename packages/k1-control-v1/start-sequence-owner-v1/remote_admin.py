@@ -1,13 +1,23 @@
 from __future__ import print_function
 
 import json
+import os
 import socket
 import sys
 import time
 
 
 SOCKET_PATH = "/tmp/klippy_uds"
-ALLOWED_ACTIONS = {"objects", "snapshot", "restart", "selftest", "reset"}
+ALLOWED_ACTIONS = {
+    "objects",
+    "generation",
+    "snapshot",
+    "restart",
+    "restore_mesh",
+    "selftest",
+    "reset",
+}
+BEST_CURRENT_PROFILE = "k1_p001_t055_r001_n11x11"
 
 
 def rpc(method, params=None, wait_response=True):
@@ -37,6 +47,14 @@ def rpc(method, params=None, wait_response=True):
 
 def object_names():
     return sorted(rpc("objects/list").get("objects", []))
+
+
+def generation():
+    socket_stat = os.stat(SOCKET_PATH)
+    return {
+        "socket_inode": socket_stat.st_ino,
+        "socket_mtime_ns": socket_stat.st_mtime_ns,
+    }
 
 
 def _box_projection(box):
@@ -103,7 +121,7 @@ def snapshot():
             "kctrl_production_arm": "gcode_macro KCTRL_PRODUCTION_ARM" in names,
             "kctrl_production_assert_armed": "gcode_macro KCTRL_PRODUCTION_ASSERT_ARMED" in names,
             "start_owner_loaded": "gcode_macro KCTRL_START_OWNER_STATE" in names,
-            "watchdog_loaded": "delayed_gcode KCTRL_START_WATCHDOG_V1" in names,
+            "watchdog_loaded": "delayed_gcode kctrl_start_watchdog_v1" in config,
         },
         "identity_values_exported": False,
     }
@@ -120,14 +138,20 @@ def main():
     action = sys.argv[1]
     if action == "objects":
         result = object_names()
+    elif action == "generation":
+        result = generation()
     elif action == "snapshot":
         result = snapshot()
     elif action == "restart":
         result = gcode("RESTART", wait_response=False)
+    elif action == "restore_mesh":
+        result = gcode("BED_MESH_PROFILE LOAD=%s" % BEST_CURRENT_PROFILE)
     elif action == "selftest":
         result = gcode("KCTRL_START_WATCHDOG_SELFTEST_V1")
-    else:
+    elif action == "reset":
         result = gcode("KCTRL_RESET_START_OWNER_V1")
+    else:
+        raise RuntimeError("unsupported_action")
     print(json.dumps(result, sort_keys=True))
 
 

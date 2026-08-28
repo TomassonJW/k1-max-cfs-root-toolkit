@@ -25,7 +25,7 @@
     }
   ],
   "cfs_control_architecture": {
-    "status": "start_owner_preflight_qualified_deployment_not_authorized_no_T1A",
+    "status": "start_owner_installed_validated_cold_no_T1A",
     "canonical_document": "docs/43-cartographie-canonique-pilotage-cfs-k1-max-v1.md",
     "source_map": "design/cfs-control-source-map-v1.json",
     "selected_owner": "K1_CONTROL_LIFECYCLE_OWNER_OVER_SELECTED_STOCK_BOX_PRIMITIVES",
@@ -60,9 +60,12 @@
     "start_owner_contract": "packages/k1-control-v1/start-sequence-owner-v1/contract.json",
     "start_owner_live_read_only_preflight_completed": true,
     "start_owner_live_read_only_preflight_verdict": "PASS_BLOCKED_NO_T1A",
-    "deployment_candidate": true,
-    "next_gate": "G4-K1-CONTROL-START-SEQUENCE-OWNER-V1",
-    "next_gate_scope": "renewed_exact_GO_for_additive_install_and_cold_no_motion_validation_only"
+    "deployment_candidate": false,
+    "start_owner_installed": true,
+    "start_owner_cold_validation": "PASS",
+    "start_owner_capture": "20260828-220525-g4-k1-control-start-sequence-owner-v1",
+    "next_gate": "G4-K1-CONTROL-START-SEQUENCE-T1A-ROUTE-V1",
+    "next_gate_scope": "restore_and_read_back_one_unique_T1A_route_without_starting_a_print"
   },
   "target": {
     "printer": "Creality K1 Max S12 structure 0",
@@ -511,7 +514,7 @@
     "remote_write": false,
     "service_restart": false,
     "rerun_authorized": false,
-    "next_design_branch": "G4-K1-CONTROL-START-SEQUENCE-OWNER-V1"
+    "next_design_branch": "G4-K1-CONTROL-START-SEQUENCE-T1A-ROUTE-V1"
   },
   "k1_read_only_qualification": {
     "candidate": "GOAL-P4-K1-READ-ONLY-QUALIFICATION-V1",

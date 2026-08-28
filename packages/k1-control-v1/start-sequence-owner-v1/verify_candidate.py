@@ -61,14 +61,19 @@ def verify() -> dict[str, object]:
     if contract["status"] not in {
         "OFFLINE_HARDENED_LIVE_PREFLIGHT_PENDING",
         "PREFLIGHT_QUALIFIED_DEPLOYMENT_CANDIDATE_NOT_AUTHORIZED",
+        "INSTALLED_VALIDATED_COLD_PHYSICAL_TRIAL_BLOCKED_NO_T1A",
     }:
         raise ValueError("candidate_status_opened")
-    if (
-        not contract["deployment_candidate"]
-        or contract["deployment_authorized"]
-        or contract["printer_connection_authorized"]
-    ):
+    installed = contract["status"] == "INSTALLED_VALIDATED_COLD_PHYSICAL_TRIAL_BLOCKED_NO_T1A"
+    if contract["deployment_authorized"] or contract["printer_connection_authorized"]:
         raise ValueError("candidate_authority_too_broad")
+    if installed:
+        if contract["deployment_candidate"]:
+            raise ValueError("installed_payload_still_marked_candidate")
+        if contract["deployment_result"]["status"] != "INSTALLED_VALIDATED_COLD":
+            raise ValueError("installed_payload_has_no_closed_result")
+    elif not contract["deployment_candidate"]:
+        raise ValueError("candidate_not_marked_deployable")
     if contract["live_read_only_preflight"]["status"] != "PASS_BLOCKED_NO_T1A":
         raise ValueError("live_preflight_not_closed")
     if contract["physical_trial"]["blocker"] != "BLOCKED_NO_ENGAGED_T1A":
@@ -177,7 +182,7 @@ def verify() -> dict[str, object]:
         raise ValueError("hidden_temperature_or_offset")
 
     return {
-        "status": "START_SEQUENCE_OWNER_V1_PREFLIGHT_QUALIFIED_OK",
+        "status": "START_SEQUENCE_OWNER_V1_INSTALLED_PAYLOAD_OK" if installed else "START_SEQUENCE_OWNER_V1_PREFLIGHT_QUALIFIED_OK",
         "owned_orca_lines": len(orca_lines),
         "g28_xy_only": len(g28_xy),
         "accurate_z_references": len(accurate),

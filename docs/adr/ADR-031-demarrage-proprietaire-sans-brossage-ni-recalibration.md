@@ -94,8 +94,8 @@ doit pas retarder la reprise de contrôle du démarrage.
 
 ## État de la gate au 28 août 2026
 
-Le candidat `G4-K1-CONTROL-START-SEQUENCE-OWNER-V1` est maintenant renforcé et
-qualifié par un préflight réel en lecture seule. Il ajoute un surveillant
+`G4-K1-CONTROL-START-SEQUENCE-OWNER-V1` est maintenant installé, renforcé et
+validé à froid. Il ajoute un surveillant
 thermique borné, une confirmation de nettoyage valable cinq minutes, un backup
 exact, un rollback automatique et une validation froide sans mouvement. Les
 treize templates Jinja passent dans l'environnement exact de la K1 et la ligne
@@ -107,10 +107,11 @@ de sélection d'outil, est indispensable : sans lui, Orca ajoutait encore un
 `T0` après le démarrage possédé. L'export final contient un seul appel du
 propriétaire et aucun des ordres interdits ci-dessus.
 
-Le préflight n'a écrit aucun fichier distant, n'a redémarré aucun service et
-n'a produit ni chauffe, ni mouvement, ni extrusion, ni action CFS. Il a toutefois
-constaté qu'aucune route n'est engagée : `T1A` est absent. La pose n'est donc
-pas autorisée par le GO déjà consommé, car le paquet et les commandes ont été
-corrigés après ce GO. Il faut d'abord une nouvelle autorisation exacte pour la
-pose additive et son test froid. Le chargement de `T1A`, puis l'essai physique
-du démarrage, resteront deux autorisations séparées.
+La capture `20260828-220525-g4-k1-control-start-sequence-owner-v1` a sauvegardé
+la base exacte, posé le fichier et son include, observé une vraie transition du
+socket au restart, restauré puis relu le `11 × 11` et terminé le test froid. Le
+propriétaire et le surveillant sont chargés, la phase est `idle`, les chauffes
+sont à zéro et les axes sont libérés. Aucune chauffe, aucun mouvement, aucune
+extrusion et aucune action CFS n'ont eu lieu. Aucune route n'est engagée : le
+chargement et la relecture de `T1A`, puis l'essai physique du démarrage,
+resteront deux autorisations séparées.

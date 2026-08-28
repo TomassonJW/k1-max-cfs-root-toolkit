@@ -2,7 +2,7 @@
   "map_id": "K1-CONTROL-CFS-SOURCE-MAP-V1",
   "schema": 1,
   "as_of": "2026-08-28",
-  "status": "owner_exclusion_live_effect_closed_exact_restore_start_owner_next",
+  "status": "start_owner_installed_validated_cold_T1A_route_next",
   "authority": {
     "printer_connection_authorized": false,
     "printer_mutation_authorized": false,
@@ -14,6 +14,8 @@
     "offline_owner_observability_v2_completed": true,
     "live_owner_observability_v2_completed": true,
     "live_owner_exclusion_effect_completed": true,
+    "start_owner_installed": true,
+    "start_owner_cold_validation_completed": true,
     "deployment_candidate": false
   },
   "target": {
@@ -706,22 +708,23 @@
     "rerun_authorized": false
   },
   "next_gate": {
-    "id": "G4-K1-CONTROL-START-SEQUENCE-OWNER-V1",
-    "scope": "renewed_exact_GO_for_additive_install_and_cold_no_motion_watchdog_validation_of_the_frozen_preflight_qualified_candidate",
-    "preflight_completed": true,
-    "preflight_capture": "20260828-203739-g4-k1-control-start-sequence-owner-v1",
-    "preflight_verdict": "PASS_BLOCKED_NO_T1A",
+    "id": "G4-K1-CONTROL-START-SEQUENCE-T1A-ROUTE-V1",
+    "scope": "one_attempt_restore_and_readback_of_one_unique_T1A_route_without_starting_a_print",
+    "preflight_completed": false,
+    "preflight_capture": null,
+    "preflight_verdict": null,
     "renewed_exact_go_required": true,
     "printer_connection": true,
     "read_only": false,
     "guard_effect_path_called": false,
     "implementation_authorized": false,
-    "gcode": false,
-    "heat": false,
+    "gcode": true,
+    "heat": true,
     "motion": false,
-    "CFS_effect": false,
-    "remote_write": true,
-    "service_restart": "Klipper_host_RESTART_only",
+    "extrusion": true,
+    "CFS_effect": true,
+    "remote_write": false,
+    "service_restart": false,
     "physical_start_trial": false,
     "physical_trial_blocker": "BLOCKED_NO_ENGAGED_T1A"
   }
