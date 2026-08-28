@@ -47,14 +47,14 @@ class Goal3PhysicalCompletionRegistryTests(unittest.TestCase):
         self.assertIn("final_project_closure", boundary)
         self.assertEqual(4, self.contract["macro_goal_count"])
 
-    def test_current_gate_follows_safe_t1a_recovery_and_effect_is_blocked(self):
+    def test_current_gate_waits_for_manual_clean_with_safe_file_installed(self):
         gate = self.matrix["current_human_gate"]
         self.assertEqual(
-            "T1A_ROUTE_ESTABLISHED_AFTER_KO_OPERATOR_AND_SAFE_RECOVERY",
+            "SAFE_TWO_LAYER_KEEP_CORRECT_T1A_TRIAL_AWAITING_MANUAL_CLEAN",
             gate["checkpoint"],
         )
-        self.assertIn("T1A_ROUTE_GATE_KO_WRONG_BUTTON", gate["technical_status"])
-        self.assertIn("RECOVERY_OK", gate["technical_status"])
+        self.assertIn("T1A_ENGAGED", gate["technical_status"])
+        self.assertIn("SAFE_END_GCODE_INSTALLED_EXACT_NOT_RUN", gate["technical_status"])
         self.assertEqual(
             "G4-K1-CONTROL-START-SEQUENCE-OWNER-PHYSICAL-KEEP-CORRECT-T1A-V1",
             gate["active_gate"],

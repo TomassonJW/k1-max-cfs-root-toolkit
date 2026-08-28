@@ -53,3 +53,15 @@ Le registre est à `passed=2`, `remaining=5`. L'identifiant automatique
 historique reste visible, mais ADR-030 et la politique versionnée prouvent sa
 résolution : voie automatique rejetée, nettoyage manuel obligatoire et actions
 automatiques techniquement bloquées.
+
+## Reprise actuelle au 29 août 2026
+
+`T1A` est engagé et l'état sûr a été restauré. Le petit fichier de deux couches
+utilise le départ possédé et une fin bornée sans `END_PRINT`, `BOX_END` ni
+`BOX_END_PRINT`; son empreinte corrigée a remplacé atomiquement l'ancienne
+version distante, qui n'a jamais été lancée. La gate attend le nettoyage manuel
+de la buse et la présence de Thomas.
+
+La gate passive suivante `T1A → T2C` est déjà préparée hors imprimante, sans
+commande d'effet et sans retry. Elle ne sera utilisée qu'après le verdict du
+petit essai.

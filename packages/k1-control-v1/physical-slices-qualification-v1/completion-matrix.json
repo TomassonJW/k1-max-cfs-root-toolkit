@@ -1,14 +1,14 @@
 {
   "schema": 1,
   "contract_id": "GOAL-P4-PHYSICAL-SLICES-QUALIFICATION-V1",
-  "updated_at": "2026-08-28",
+  "updated_at": "2026-08-29",
   "goal_status": "IN_PROGRESS",
   "completion_audit_evidence": null,
   "current_human_gate": {
     "requirement_id": "CFS_START_STATES_AND_TEMPERATURE_OWNER",
-    "checkpoint": "T1A_ROUTE_ESTABLISHED_AFTER_KO_OPERATOR_AND_SAFE_RECOVERY",
+    "checkpoint": "SAFE_TWO_LAYER_KEEP_CORRECT_T1A_TRIAL_AWAITING_MANUAL_CLEAN",
     "active_gate": "G4-K1-CONTROL-START-SEQUENCE-OWNER-PHYSICAL-KEEP-CORRECT-T1A-V1",
-    "technical_status": "T1A_ROUTE_GATE_KO_WRONG_BUTTON_ROUTE_ESTABLISHED_RECOVERY_OK_START_OWNER_READY_FOR_SHORT_TRIAL_PREPARATION",
+    "technical_status": "T1A_ENGAGED_11X11_RESTORED_SAFE_END_GCODE_INSTALLED_EXACT_NOT_RUN_720_TESTS_GREEN",
     "required_human_verdict": "MANUAL_NOZZLE_CLEAN_AND_SHORT_FIRST_LAYER_OBSERVATION",
     "next_effect_blocked": true
   },
@@ -53,6 +53,8 @@
       "evidence": "packages/k1-control-v1/cfs-temp-owner-v1/contract.json",
       "latest_checkpoint_evidence": "packages/k1-control-v1/cfs-temp-owner-v1/keep-correct-t1a-r5-evidence.json",
       "corrective_design": "packages/k1-control-v1/start-sequence-owner-v1/contract.json",
+      "active_physical_gate": "packages/k1-control-v1/start-sequence-owner-physical-keep-correct-t1a-v1/contract.json",
+      "next_checkpoint_candidate": "packages/k1-control-v1/wrong-change-t1a-to-t2c-v1/contract.json",
       "required_proofs": [
         "correct_engaged_filament_is_kept",
         "wrong_engaged_filament_is_changed_once",
