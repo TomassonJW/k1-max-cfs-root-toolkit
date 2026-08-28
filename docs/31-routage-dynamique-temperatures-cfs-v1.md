@@ -4,6 +4,12 @@ Date : 2026-08-26
 Statut : **conception et simulation closes hors imprimante ; aucun transport K1 ;
 aucune validation physique ; production fermée**
 
+Mise à jour du 28 août 2026 : ADR-032 précise la forme du propriétaire minimal.
+Il s'agit de K1 Control au-dessus de petites phases `BOX_*` stock qualifiées
+une par une, et non d'un remplacement immédiat du pilote RS485. Le propriétaire
+série direct reste fermé. Voir
+`docs/43-cartographie-canonique-pilotage-cfs-k1-max-v1.md`.
+
 ## Résultat court
 
 La cible thermique doit être portée par un ticket de phase avant le premier

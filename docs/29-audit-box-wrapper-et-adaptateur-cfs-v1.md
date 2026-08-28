@@ -4,6 +4,12 @@ Date : 2026-08-26
 Statut : audit en lecture seule clos ; adaptateur fermé hors imprimante ;
 production fermée
 
+Mise à jour du 28 août 2026 : la cartographie publique recoupée dans
+`design/cfs-control-source-map-v1.json` identifie plusieurs petites primitives
+stock comme candidates. Elle ne contredit pas ce KO local et ne les rend pas
+appelables : le binaire S12 exact et chaque effet restent à qualifier selon
+ADR-032.
+
 ## Résultat court
 
 Le `220 °C` n'est pas venu de la consigne `TEMP=190` de la purge. Le chemin de

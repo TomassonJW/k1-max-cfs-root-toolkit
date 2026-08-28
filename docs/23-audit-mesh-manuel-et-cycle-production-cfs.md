@@ -8,6 +8,11 @@ officielles et retours communautaires ciblés.
 
 Aucune connexion ni mutation de la K1 n'a été effectuée pour cet audit.
 
+Mise à jour du 28 août 2026 : la partie « production » est désormais précisée
+par `docs/43-cartographie-canonique-pilotage-cfs-k1-max-v1.md` et ADR-032.
+Le présent audit reste une preuve historique ; il ne faut plus l'utiliser seul
+pour choisir une primitive CFS ou une séquence de démarrage.
+
 ## Conclusion opérationnelle
 
 Les deux familles demandées sont réalisables, mais pas par un petit réglage

@@ -44,7 +44,13 @@ puis corriger temporairement le Z de `−0,04` à `−0,19 mm` pour obtenir une
 première couche à peine correcte. ADR-031 impose donc un départ possédé, sans
 brosse ni recalibration, avec une seule référence Z propre avant tout effet
 filament. Son candidat est préparé uniquement hors imprimante. Ce registre ne
-crée aucun Goal supplémentaire.
+crée aucun Goal supplémentaire. ADR-032 et la cartographie canonique
+`design/cfs-control-source-map-v1.json` réutilisent maintenant les captures
+locales, le binaire stock, HelixScreen, FrederickAlt, CFSTool et les principaux
+retours K1/CFS. Elles choisissent K1 Control comme unique propriétaire du cycle
+au-dessus de petites primitives stock qualifiées séparément. Le changement
+automatique vers une bobine identique est conservé dans ce propriétaire, mais
+aucune primitive d'effet, implémentation ou pose n'est encore autorisée.
 
 ## Goal 1 — Terminer le système hors imprimante
 
@@ -123,8 +129,10 @@ Identifiant : `GOAL-P4-PHYSICAL-SLICES-QUALIFICATION-V1`
 
 État : **en cours ; `2/7` exigences passées ; nettoyage automatique clos KO et
 remplacé par une gate manuelle obligatoire ; la conservation réelle de `T1A`
-est prouvée, mais le départ stock est KO et doit être remplacé par le candidat
-hors imprimante START-SEQUENCE-OWNER-V1 avant toute nouvelle qualification**.
+est prouvée ; le départ stock est KO ; START-SEQUENCE-OWNER-V1 est préparé hors
+imprimante ; l'architecture complète CFS est choisie, mais attend d'abord le
+préflight S12 en lecture seule avant toute implémentation ou nouvelle
+qualification physique**.
 
 Le checkpoint C a référencé XYZ, rechargé le `11 × 11`, commandé `Z=50 mm` et
 attendu la fin. Un premier faux KO local a confondu la position physique
@@ -151,10 +159,15 @@ actif. CLEAN-MOTION-V1 est donc clos OK.
 
 Ce qui sera réellement fait, une petite tranche à la fois :
 
+- cartographier en lecture seule le binaire S12, les arguments, les callbacks
+  de runout et l'exclusion du propriétaire stock ;
+- implémenter hors imprimante le propriétaire K1 Control contre des réponses
+  enregistrées, sans recopier les projets GPL ;
 - installer avec sauvegarde et retour arrière ;
-- qualifier le nettoyage et les mouvements sans collision ;
+- qualifier le départ sans brosse, avec une seule référence Z propre ;
 - qualifier un retrait unique et l'arrêt réel des chauffes ;
-- vérifier changement de filament, runout, pause, reprise, annulation et fin ;
+- vérifier chargement sans flush stock, changement de filament, runout entre
+  les deux CFS, pause, reprise, annulation et fin ;
 - reprendre le diagnostic des bords seulement après une route fraîche et une
   purge réellement visible ;
 - corriger les bords point par point depuis la source `11 × 11`, puis tester un

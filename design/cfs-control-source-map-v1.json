@@ -1,0 +1,543 @@
+{
+  "map_id": "K1-CONTROL-CFS-SOURCE-MAP-V1",
+  "schema": 1,
+  "as_of": "2026-08-28",
+  "status": "offline_architecture_accepted_implementation_closed",
+  "authority": {
+    "printer_connection_authorized": false,
+    "printer_mutation_authorized": false,
+    "physical_action_authorized": false,
+    "implementation_authorized": false,
+    "deployment_candidate": false
+  },
+  "target": {
+    "printer": "Creality K1 Max S12 structure 0",
+    "firmware": "2.3.5.34",
+    "cfs_units": 2,
+    "cfs_ui_version": "1.1.3",
+    "moonraker_ui": "Mainsail plus installed K1 Control",
+    "best_current_mesh": "k1_p001_t055_r001_n11x11"
+  },
+  "evidence_precedence": [
+    "exact_local_physical_capture",
+    "exact_local_binary_config_or_hash",
+    "exact_vendor_artifact_for_same_family",
+    "public_reverse_engineering_with_reproducible_evidence",
+    "community_real_hardware_report",
+    "community_configuration_or_hypothesis"
+  ],
+  "sources": [
+    {
+      "id": "LOCAL-K1-CONTROL-EVIDENCE",
+      "kind": "exact_local_physical_capture",
+      "revision": "repository_main_at_26a051d",
+      "license_use": "project_owned_evidence",
+      "references": [
+        "packages/k1-control-v1/cfs-temp-owner-v1/empty-load-t1a-evidence.json",
+        "packages/k1-control-v1/cfs-temp-owner-v1/keep-correct-t1a-r5-evidence.json",
+        "docs/adr/ADR-031-demarrage-proprietaire-sans-brossage-ni-recalibration.md"
+      ],
+      "accepted_use": [
+        "truth_for_this_exact_machine",
+        "mesh_and_Z_start_failure",
+        "T1A_load_and_keep_behavior",
+        "temperature_and_route_observation"
+      ],
+      "limits": [
+        "does_not_map_unobserved_CFS_primitives",
+        "does_not_prove_auto_refill_or_second_unit_effects"
+      ]
+    },
+    {
+      "id": "LOCAL-BOX-WRAPPER",
+      "kind": "exact_local_binary_config_or_hash",
+      "revision": "sha256:af630c02ccdb51b57585114e5be2be7fcf91fdb10d88872eb6a0c65f048de777",
+      "license_use": "local_runtime_observation_only",
+      "references": [
+        "docs/29-audit-box-wrapper-et-adaptateur-cfs-v1.md",
+        "design/job-lifecycle-contract-v1.json"
+      ],
+      "accepted_use": [
+        "bind_public_command_map_to_the_local_wrapper_only_after_exact_S12_inventory",
+        "detect_binary_drift"
+      ],
+      "limits": [
+        "hash_alone_does_not_reveal_symbols_or_behavior"
+      ]
+    },
+    {
+      "id": "HELIXSCREEN-CFS-INTERNALS",
+      "kind": "public_reverse_engineering_with_reproducible_evidence",
+      "url": "https://github.com/prestonbrown/helixscreen",
+      "revision": "192eb3babd2946d3e868e9c259da8037262529d5",
+      "license": "GPL-3.0",
+      "license_use": "facts_interfaces_and_test_ideas_only_no_code_copy",
+      "references": [
+        "https://github.com/prestonbrown/helixscreen/blob/192eb3babd2946d3e868e9c259da8037262529d5/docs/devel/CREALITY_CFS_INTERNALS.md",
+        "https://github.com/prestonbrown/helixscreen/blob/192eb3babd2946d3e868e9c259da8037262529d5/docs/devel/FILAMENT_BACKEND_CFS.md",
+        "https://github.com/prestonbrown/helixscreen/issues/968"
+      ],
+      "accepted_use": [
+        "K1_BOX_command_surface",
+        "hidden_side_effect_map",
+        "error_and_resume_traps",
+        "K1_versus_K2_dialect_split",
+        "state_parser_test_ideas"
+      ],
+      "rejected_use": [
+        "install_HelixScreen_as_lifecycle_owner",
+        "copy_K1_load_swap_sequences",
+        "treat_S11_OTA_analysis_as_exact_S12_runtime_proof"
+      ],
+      "limits": [
+        "project_states_CFS_behavior_was_not_validated_on_a_running_K1_plus_CFS",
+        "current_K1_load_and_swap_paths_call_brush_and_implicit_flush",
+        "open_hardware_validation_issue_968"
+      ]
+    },
+    {
+      "id": "FREDERICKALT-BOX-WRAPPER",
+      "kind": "public_reverse_engineering_with_reproducible_evidence",
+      "url": "https://github.com/FrederickAlt/CREALITY-K1-AND-K1-MAX-CFS-RETRUDE-BEFORE-CUT-MOD",
+      "revision": "083c5a5679d5f7d3f3cfff9a6303b6d224347c29",
+      "license": "GPL-3.0",
+      "license_use": "facts_interfaces_and_state_machine_ideas_only_no_code_copy",
+      "references": [
+        "https://github.com/FrederickAlt/CREALITY-K1-AND-K1-MAX-CFS-RETRUDE-BEFORE-CUT-MOD/blob/083c5a5679d5f7d3f3cfff9a6303b6d224347c29/docs/klipper-macros.md",
+        "https://github.com/FrederickAlt/CREALITY-K1-AND-K1-MAX-CFS-RETRUDE-BEFORE-CUT-MOD/blob/083c5a5679d5f7d3f3cfff9a6303b6d224347c29/docs/auto-refill.md",
+        "https://github.com/FrederickAlt/CREALITY-K1-AND-K1-MAX-CFS-RETRUDE-BEFORE-CUT-MOD/blob/083c5a5679d5f7d3f3cfff9a6303b6d224347c29/docs/compatibility-caveats.md"
+      ],
+      "accepted_use": [
+        "wrapper_phase_map",
+        "auto_refill_policy_map",
+        "same_material_exact_match_rules",
+        "command_side_effect_cross_check"
+      ],
+      "rejected_use": [
+        "replace_local_binary",
+        "adopt_stock_retry_or_resume_flow",
+        "copy_implementation"
+      ],
+      "limits": [
+        "decompilation_is_not_a_live_proof_on_this_machine",
+        "stock_auto_refill_inherits_hidden_flush_clean_and_resume_behavior"
+      ]
+    },
+    {
+      "id": "CREALITY-OFFICIAL-SOURCES",
+      "kind": "exact_vendor_artifact_for_same_family",
+      "url": "https://github.com/CrealityOfficial/CrealityPrint",
+      "revision": "24b9395c131a9849724c5bf098cba140a207e877",
+      "license_use": "behavioral_reference_only",
+      "references": [
+        "https://github.com/CrealityOfficial/CrealityPrint/blob/24b9395c131a9849724c5bf098cba140a207e877/resources/profiles/Creality/machine/Creality%20K1_CFS-C%200.4%20nozzle.json",
+        "https://github.com/CrealityOfficial/CrealityPrint/issues/506",
+        "https://github.com/CrealityOfficial/CrealityPrint/issues/561"
+      ],
+      "accepted_use": [
+        "confirm_split_slicer_and_firmware_ownership",
+        "confirm_real_K1_Max_CFS_temperature_and_tool_selection_failures_exist"
+      ],
+      "rejected_use": [
+        "treat_K1_CFS_C_profile_as_exact_K1_Max_profile",
+        "reuse_stock_START_PRINT_or_Tn_flow"
+      ],
+      "limits": [
+        "public_profile_is_not_the_exact_K1_Max_S12_configuration"
+      ]
+    },
+    {
+      "id": "CFSTOOL",
+      "kind": "community_real_hardware_report",
+      "url": "https://github.com/Lamar1007/CFSTool",
+      "revision": "a20798036fca1417fa7ccb4c1c0ea1e8fffee87b",
+      "license": "MIT",
+      "license_use": "facts_and_diagnostic_ideas",
+      "accepted_use": [
+        "classic_CFS_generation_and_CH340_RS485_identity",
+        "firmware_query_and_diagnostic_reference",
+        "two_original_CFS_units_on_K1_series_corroboration"
+      ],
+      "rejected_use": [
+        "runtime_motion_owner",
+        "CFS_firmware_update_in_current_scope"
+      ],
+      "limits": [
+        "diagnostic_and_firmware_tool_not_a_print_lifecycle_driver"
+      ]
+    },
+    {
+      "id": "GITSTONELABS-OPEN-DRIVER",
+      "kind": "public_reverse_engineering_with_reproducible_evidence",
+      "url": "https://github.com/gitstonelabs/creality-cfs-klipper",
+      "revision": "16309d8547215e8137b00e5037ea8ec61d6b2a6b",
+      "license": "GPL-3.0",
+      "license_use": "protocol_and_state_machine_ideas_only_no_code_copy",
+      "accepted_use": [
+        "nonblocking_state_machine_ideas",
+        "sensor_gating_ideas",
+        "multi_unit_topology_reference"
+      ],
+      "rejected_use": [
+        "install_as_K1_driver",
+        "assume_operational_opcodes_on_K1"
+      ],
+      "limits": [
+        "operational_K1_opcode_mapping_not_confirmed_on_this_machine"
+      ]
+    },
+    {
+      "id": "SLICK1MAX",
+      "kind": "community_real_hardware_report",
+      "url": "https://github.com/crazyslicster/SLICK1MAX",
+      "revision": "9d9686896ba714db3cab612e7fc43b6d6a38cdf1",
+      "license_use": "behavioral_comparison_only",
+      "accepted_use": [
+        "corroborate_real_K1_Max_CFS_Z_and_start_sequence_failures",
+        "corroborate_that_wipe_macros_can_be_neutralized"
+      ],
+      "rejected_use": [
+        "copy_full_configuration",
+        "KAMP_mesh_at_every_start",
+        "plate_scraping_or_layer_change_purge"
+      ],
+      "limits": [
+        "personal_work_in_progress",
+        "contains_explicit_plate_scrape_warning",
+        "does_not_own_the_full_CFS_lifecycle"
+      ]
+    },
+    {
+      "id": "NIK-OLI-HELPER-SCRIPT",
+      "kind": "community_configuration_or_hypothesis",
+      "url": "https://github.com/Nik-oli/Creality-Helper-Script-K1-CFS",
+      "revision": "6b9236873a7fcf18743912fbf634a1487ee6a591",
+      "license_use": "behavioral_comparison_only",
+      "accepted_use": [
+        "corroborate_rooted_K1_Moonraker_and_Mainsail_feasibility",
+        "document_stock_purge_before_load_failure"
+      ],
+      "rejected_use": [
+        "reuse_START_PRINT",
+        "reuse_BOX_START_PRINT_or_CX_NOZZLE_CLEAR",
+        "per_print_mesh_calibration"
+      ],
+      "limits": [
+        "retains_the_stock_sequences_rejected_by_local_evidence"
+      ]
+    },
+    {
+      "id": "ORCASLICER-ISSUE-14191",
+      "kind": "community_real_hardware_report",
+      "url": "https://github.com/OrcaSlicer/OrcaSlicer/issues/14191",
+      "revision": "open_issue_observed_2026-08-28",
+      "license_use": "interface_design_reference_only",
+      "accepted_use": [
+        "slot_mapping_UI_pattern",
+        "Moonraker_box_object_detection",
+        "real_K1_series_CFS_slot_read_corroboration"
+      ],
+      "rejected_use": [
+        "depend_on_unmerged_Orca_feature",
+        "rewrite_Tn_lines_as_the_owned_runtime_contract"
+      ],
+      "limits": [
+        "proposal_is_not_merged",
+        "verified_hardware_is_K1_SE_not_this_K1_Max"
+      ]
+    }
+  ],
+  "command_decisions": {
+    "forbidden_owned_entry_points": [
+      "START_PRINT",
+      "BOX_START_PRINT",
+      "BOX_START_PRINT_EXTRUDE_MATERIAL",
+      "Tn",
+      "CX_ROUGH_G28",
+      "CX_NOZZLE_CLEAR",
+      "CX_PRINT_LEVELING_CALIBRATION",
+      "CHECK_BED_MESH",
+      "G29",
+      "BED_MESH_CALIBRATE"
+    ],
+    "forbidden_automatic_CFS_commands": [
+      "BOX_NOZZLE_CLEAN",
+      "BOX_MATERIAL_FLUSH",
+      "BOX_MATERIAL_CHANGE_FLUSH",
+      "BOX_ERROR_CLEAR",
+      "BOX_TNN_RETRY_PROCESS",
+      "BOX_CHECK_MATERIAL_REFILL",
+      "BOX_EXTRUSION_ALL_MATERIALS",
+      "BOX_RESUME_EXTRUDE",
+      "BOX_END_PRINT",
+      "BOX_RETRUDE_MATERIAL_WITH_TNN"
+    ],
+    "read_only_candidates": [
+      "BOX_GET_FILAMENT_SENSOR_STATE",
+      "BOX_GET_BUFFER_STATE",
+      "BOX_SHOW_TNN_INNER_DATA",
+      "Moonraker_box_object_query"
+    ],
+    "bounded_effect_candidates_not_yet_qualified": [
+      {
+        "command": "BOX_EXTRUDE_MATERIAL",
+        "role": "box_side_feed",
+        "requirements": [
+          "exact_S12_symbol_and_argument_inventory",
+          "explicit_TNN",
+          "fresh_route",
+          "pre_and_post_sensor_checks",
+          "single_attempt_no_retry"
+        ]
+      },
+      {
+        "command": "BOX_EXTRUDER_EXTRUDE",
+        "role": "toolhead_side_grab",
+        "requirements": [
+          "exact_S12_symbol_and_argument_inventory",
+          "explicit_TNN",
+          "post_phase_sensor_check",
+          "single_attempt_no_retry"
+        ]
+      },
+      {
+        "command": "BOX_CUT_MATERIAL",
+        "role": "cut_current_filament",
+        "requirements": [
+          "exact_S12_motion_inventory",
+          "collision_free_pause_position",
+          "no_hidden_Z_reference",
+          "post_cut_state_check",
+          "single_attempt_no_retry"
+        ]
+      },
+      {
+        "command": "BOX_RETRUDE_MATERIAL",
+        "role": "retract_current_filament",
+        "requirements": [
+          "exact_S12_state_inventory",
+          "known_current_route",
+          "post_retract_sensor_and_route_check",
+          "single_attempt_no_retry"
+        ]
+      },
+      {
+        "command": "BOX_ENABLE_AUTO_REFILL",
+        "role": "exclude_or_restore_stock_auto_refill_owner",
+        "requirements": [
+          "read_current_runtime_value",
+          "set_explicit_0_or_1_only",
+          "verify_effect",
+          "restore_previous_value_on_rollback"
+        ]
+      }
+    ],
+    "native_KCTRL_owned_actions": [
+      "explicit_hotend_temperature",
+      "explicit_bed_temperature",
+      "single_clean_Z_reference_at_start_only",
+      "exact_mesh_load_and_verify",
+      "accepted_Z_load_and_verify",
+      "custom_purge_without_brush",
+      "pause_park_and_resume_position",
+      "heater_shutdown"
+    ]
+  },
+  "selected_architecture": {
+    "id": "K1_CONTROL_LIFECYCLE_OWNER_OVER_SELECTED_STOCK_BOX_PRIMITIVES",
+    "decision_record": "docs/adr/ADR-032-proprietaire-cycle-cfs-sur-primitives-stock.md",
+    "canonical_document": "docs/43-cartographie-canonique-pilotage-cfs-k1-max-v1.md",
+    "layers": [
+      {
+        "name": "Orca_profile_clone",
+        "owns": "versioned_job_intent_only",
+        "forbidden": "direct_START_PRINT_Tn_or_hidden_Z"
+      },
+      {
+        "name": "K1_Control_Moonraker_component",
+        "owns": "lifecycle_state_machine_owner_lease_UI_audit_and_rollback"
+      },
+      {
+        "name": "KCTRL_Klipper_macro_layer",
+        "owns": "narrow_versioned_actuation_and_fail_closed_guards"
+      },
+      {
+        "name": "stock_box_wrapper",
+        "owns": "selected_low_level_CFS_hardware_phases_only",
+        "forbidden": "job_start_temperature_mesh_Z_purge_resume_or_end_policy"
+      },
+      {
+        "name": "classic_CFS_units",
+        "owns": "motors_sensors_and_RS485_device_state"
+      }
+    ],
+    "one_owner_rule": {
+      "owner_lease_required": true,
+      "stock_auto_refill_disabled_while_custom_owner_active": true,
+      "stock_auto_refill_previous_value_saved": true,
+      "stock_CFS_print_enable_value": "unchanged_until_exact_runout_mapping_proves_required_action",
+      "stock_Tn_and_full_cycle_macros_called": false,
+      "ambiguous_owner_state": "block_without_filament_effect"
+    },
+    "direct_RS485_driver_for_v1": false,
+    "HelixScreen_as_owner": false,
+    "reason": "reuse_the_installed_transport_and_state_surface_while_replacing_hidden_lifecycle_policy"
+  },
+  "owned_start": {
+    "status": "offline_candidate_already_prepared",
+    "candidate": "packages/k1-control-v1/start-sequence-owner-v1",
+    "sequence": [
+      "manual_clean_confirmation_once",
+      "start_explicit_bed_and_probe_heat",
+      "home_XY_while_heating",
+      "wait_for_140_55_reference_window",
+      "one_ACCURATE_G28_only",
+      "load_and_verify_11x11_mesh",
+      "load_and_verify_accepted_Z",
+      "resolve_filament_without_Tn",
+      "set_explicit_first_layer_temperature",
+      "custom_visible_purge_without_brush",
+      "print_without_hidden_offset"
+    ],
+    "mesh_calibration_at_start": false,
+    "automatic_brushing": false,
+    "additional_Z_reference_after_filament_effect": false
+  },
+  "owned_auto_refill": {
+    "feature_preserved": true,
+    "provided_by": "K1_Control_lifecycle_owner",
+    "stock_auto_refill_used_for_job": false,
+    "identical_filament_requires": [
+      "same_user_approved_material_reference_id",
+      "same_material_type",
+      "same_color_value",
+      "same_diameter",
+      "compatible_explicit_thermal_recipe",
+      "replacement_slot_live_material_sensor_present",
+      "fresh_mapping_revision"
+    ],
+    "sequence": [
+      "pause_and_latch_job_state_before_any_change",
+      "preserve_XYZ_resume_position_mesh_Z_and_active_print_temperature",
+      "mark_exhausted_physical_slot_unavailable_for_this_job",
+      "select_one_and_only_one_identical_live_replacement",
+      "classify_the_remaining_filament_segment_from_fresh_sensors",
+      "execute_one_qualified_bounded_tail_consume_or_retract_recipe",
+      "load_the_replacement_once",
+      "purge_with_explicit_temperature_and_length_without_brush",
+      "verify_route_CFS_state_sensors_mesh_Z_and_temperature",
+      "resume_without_homing_or_Z_reference"
+    ],
+    "never_during_refill": [
+      "brush",
+      "homing",
+      "Z_reference",
+      "mesh_clear_load_or_calibration",
+      "implicit_220_celsius",
+      "automatic_retry",
+      "stock_resume_command"
+    ],
+    "ambiguous_or_failed_state": "remain_paused_heaters_follow_explicit_safe_policy_no_automatic_resume"
+  },
+  "control_surface": {
+    "daily_UI": "existing_K1_Control_page_linked_from_Mainsail",
+    "expert_UI": "Mainsail_status_and_explicit_KCTRL_macros",
+    "slicer": "cloned_Orca_profile_using_one_versioned_KCTRL_job_entry",
+    "stock_screen_retained": true,
+    "custom_firmware_replacement_required": false
+  },
+  "rollback": {
+    "required": true,
+    "stock_macro_bodies_modified": false,
+    "direct_RS485_driver_installed": false,
+    "future_additive_changes_only": [
+      "one_versioned_KCTRL_include",
+      "one_pinned_Moonraker_component",
+      "K1_Control_UI_extension",
+      "cloned_Orca_profile"
+    ],
+    "backup_before_enable": [
+      "printer.cfg",
+      "gcode_macro.cfg",
+      "box.cfg",
+      "moonraker.conf",
+      "K1_Control_component_and_UI_hashes",
+      "stock_auto_refill_runtime_value",
+      "active_mesh_and_accepted_Z",
+      "previous_Orca_profile"
+    ],
+    "rollback_sequence": [
+      "refuse_rollback_during_active_filament_effect",
+      "place_machine_in_safe_idle_or_cancelled_state",
+      "disable_custom_owner_and_block_new_KCTRL_jobs",
+      "restore_exact_local_files_and_includes",
+      "restart_only_required_services",
+      "restore_previous_stock_auto_refill_runtime_value",
+      "select_previous_Orca_profile",
+      "verify_hashes_routes_heaters_mesh_Z_and_service_health"
+    ],
+    "truthful_limit": "rollback_restores_the_known_previous_stock_behavior_including_its_known_start_defects"
+  },
+  "open_gaps_in_order": [
+    {
+      "id": "GAP-S12-COMMAND-INVENTORY",
+      "kind": "read_only",
+      "needs": "exact_symbols_arguments_config_and_hashes_on_this_K1_Max_S12",
+      "next_gate": "G4-K1-CONTROL-CFS-S12-OWNER-PREFLIGHT-V1",
+      "allows_effect": false
+    },
+    {
+      "id": "GAP-RUNOUT-OWNER-EXCLUSION",
+      "kind": "read_only",
+      "needs": "exact_runout_callbacks_notifications_runtime_flags_and_stock_resume_paths",
+      "next_gate": "same_read_only_preflight_if_reviewed",
+      "allows_effect": false
+    },
+    {
+      "id": "GAP-END-AND-RECOVERY-STATE",
+      "kind": "read_only",
+      "needs": "exact_BOX_END_PRINT_mapping_power_loss_sensor_enable_and_recovery_cleanup_paths",
+      "next_gate": "same_read_only_preflight_if_reviewed",
+      "allows_effect": false
+    },
+    {
+      "id": "GAP-LOAD-WITHOUT-STOCK-FLUSH",
+      "kind": "bounded_physical",
+      "needs": "prove_BOX_EXTRUDE_MATERIAL_plus_BOX_EXTRUDER_EXTRUDE_can_finish_with_custom_purge_and_no_brush",
+      "next_gate": "separate_human_present_single_load_gate",
+      "allows_effect": true
+    },
+    {
+      "id": "GAP-CUT-AND-RETRACT-GEOMETRY",
+      "kind": "bounded_physical",
+      "needs": "prove_exact_motion_state_and_safe_pause_geometry_without_Z_or_mesh_change",
+      "next_gate": "separate_human_present_single_unload_gate",
+      "allows_effect": true
+    },
+    {
+      "id": "GAP-RUNOUT-ENDING-MATERIAL",
+      "kind": "bounded_physical",
+      "needs": "prove_how_the_remaining_tail_is_consumed_or_retracted_without_stock_flush_brush_retry_or_resume",
+      "next_gate": "separate_human_present_tail_transition_gate",
+      "allows_effect": true
+    },
+    {
+      "id": "GAP-TWO-CFS-REFILL",
+      "kind": "bounded_physical",
+      "needs": "prove_cross_unit_mapping_reconnect_error_and_identical_spool_replacement",
+      "next_gate": "separate_runout_simulation_after_single_unit_phases_pass",
+      "allows_effect": true
+    }
+  ],
+  "next_gate": {
+    "id": "G4-K1-CONTROL-CFS-S12-OWNER-PREFLIGHT-V1",
+    "scope": "prepare_then_run_exact_read_only_inventory_only_after_fresh_GO",
+    "printer_connection_requires_fresh_exact_GO": true,
+    "gcode": false,
+    "heat": false,
+    "motion": false,
+    "CFS_effect": false,
+    "remote_write": false,
+    "service_restart": false
+  }
+}

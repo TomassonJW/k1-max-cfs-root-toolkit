@@ -16,8 +16,31 @@
       "path": "packages/k1-control-v1/start-sequence-owner-v1/contract.json",
       "decision_record": "docs/adr/ADR-031-demarrage-proprietaire-sans-brossage-ni-recalibration.md",
       "effect": "stock_START_PRINT_rough_reference_brushing_and_start_mesh_calibration_are_replaced_by_one_owned_clean_Z_reference_before_any_filament_effect"
+    },
+    {
+      "id": "CFS-CONTROL-SOURCE-MAP-V1",
+      "path": "design/cfs-control-source-map-v1.json",
+      "decision_record": "docs/adr/ADR-032-proprietaire-cycle-cfs-sur-primitives-stock.md",
+      "effect": "K1_Control_owns_the_full_lifecycle_above_individually_qualified_stock_BOX_primitives_with_custom_auto_refill_and_exact_rollback"
     }
   ],
+  "cfs_control_architecture": {
+    "status": "offline_architecture_accepted_implementation_closed",
+    "canonical_document": "docs/43-cartographie-canonique-pilotage-cfs-k1-max-v1.md",
+    "source_map": "design/cfs-control-source-map-v1.json",
+    "selected_owner": "K1_CONTROL_LIFECYCLE_OWNER_OVER_SELECTED_STOCK_BOX_PRIMITIVES",
+    "stock_box_wrapper_role": "selected_low_level_hardware_phases_only_after_exact_S12_and_physical_qualification",
+    "full_stock_sequences_in_owned_path": false,
+    "direct_RS485_driver_for_v1": false,
+    "HelixScreen_installed_as_owner": false,
+    "auto_refill_feature_preserved": true,
+    "auto_refill_owner": "K1_Control",
+    "automatic_brushing": false,
+    "Z_or_mesh_recalibration_during_start_change_or_refill": false,
+    "implementation_authorized": false,
+    "deployment_candidate": false,
+    "next_gate": "G4-K1-CONTROL-CFS-S12-OWNER-PREFLIGHT-V1_read_only_after_fresh_exact_GO"
+  },
   "target": {
     "printer": "Creality K1 Max S12 structure 0",
     "firmware": "2.3.5.34",
