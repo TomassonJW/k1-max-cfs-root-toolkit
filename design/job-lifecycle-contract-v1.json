@@ -25,7 +25,7 @@
     }
   ],
   "cfs_control_architecture": {
-    "status": "owner_exclusion_live_read_only_closed_observability_adapter_blocked",
+    "status": "owner_exclusion_live_effect_closed_exact_restore_start_owner_next",
     "canonical_document": "docs/43-cartographie-canonique-pilotage-cfs-k1-max-v1.md",
     "source_map": "design/cfs-control-source-map-v1.json",
     "selected_owner": "K1_CONTROL_LIFECYCLE_OWNER_OVER_SELECTED_STOCK_BOX_PRIMITIVES",
@@ -50,8 +50,15 @@
     "live_owner_exclusion_read_only_completed": true,
     "live_owner_exclusion_read_only_contract": "packages/k1-control-v1/cfs-owner-exclusion-guard-live-read-only-v1/contract.json",
     "live_owner_exclusion_read_only_verdict": "CLOSED_READ_ONLY_BLOCKED_CONNECTION_EPOCH_AND_EFFECTIVE_Z_SOURCE",
+    "offline_owner_observability_v2_completed": true,
+    "offline_owner_observability_v2_contract": "packages/k1-control-v1/cfs-owner-observability-adapter-offline-v2/contract.json",
+    "live_owner_observability_v2_completed": true,
+    "live_owner_observability_v2_contract": "packages/k1-control-v1/cfs-owner-observability-live-read-only-v2/contract.json",
+    "live_owner_exclusion_effect_completed": true,
+    "live_owner_exclusion_effect_contract": "packages/k1-control-v1/cfs-owner-exclusion-guard-live-effect-v1/contract.json",
+    "live_owner_exclusion_effect_verdict": "CLOSED_OK_EXCLUSION_AND_EXACT_RESTORE_QUALIFIED",
     "deployment_candidate": false,
-    "next_gate": "G4-K1-CONTROL-CFS-OWNER-OBSERVABILITY-ADAPTER-OFFLINE-V2"
+    "next_gate": "G4-K1-CONTROL-START-SEQUENCE-OWNER-V1"
   },
   "target": {
     "printer": "Creality K1 Max S12 structure 0",
@@ -453,7 +460,54 @@
     "remote_write": false,
     "physical_action": false,
     "rerun_authorized": false,
-    "next_design_branch": "G4-K1-CONTROL-CFS-OWNER-OBSERVABILITY-ADAPTER-OFFLINE-V2"
+    "next_design_branch": "closed_by_G4-K1-CONTROL-CFS-OWNER-OBSERVABILITY-ADAPTER-OFFLINE-V2"
+  },
+  "cfs_owner_observability_adapter_offline_v2": {
+    "mission": "G4-K1-CONTROL-CFS-OWNER-OBSERVABILITY-ADAPTER-OFFLINE-V2",
+    "status": "closed_offline_12_of_12_live_subscription_separately_qualified",
+    "contract": "packages/k1-control-v1/cfs-owner-observability-adapter-offline-v2/contract.json",
+    "scenario_matrix": "12/12",
+    "accepted_z_source": "gcode_macro KCTRL_STATE.accepted_z_offset",
+    "persistent_moonraker_observer_required": true,
+    "reported_cfs_transition_invalidates_pair": true,
+    "silent_same_state_driver_reconnect_claimed_detectable": false,
+    "printer_connection": false,
+    "deployment_candidate": false
+  },
+  "cfs_owner_observability_live_read_only_v2": {
+    "mission": "G4-K1-CONTROL-CFS-OWNER-OBSERVABILITY-LIVE-READ-ONLY-V2",
+    "status": "closed_read_only_observability_v2_qualified_effects_closed",
+    "contract": "packages/k1-control-v1/cfs-owner-observability-live-read-only-v2/contract.json",
+    "evidence_map": "packages/k1-control-v1/cfs-owner-observability-live-read-only-v2/evidence-map.json",
+    "capture_session": "20260828-194319-g4-k1-control-cfs-owner-observability-live-read-only-v2",
+    "live_snapshots": 2,
+    "moonraker_connections": 1,
+    "reported_cfs_transitions": 0,
+    "accepted_z_offset_mm": -0.04,
+    "configuration_hashes_unchanged": true,
+    "all_effects_false": true,
+    "rerun_authorized": false
+  },
+  "cfs_owner_exclusion_guard_live_effect_v1": {
+    "mission": "G4-K1-CONTROL-CFS-OWNER-EXCLUSION-GUARD-LIVE-EFFECT-V1",
+    "status": "closed_ok_exclusion_and_exact_restore_qualified",
+    "contract": "packages/k1-control-v1/cfs-owner-exclusion-guard-live-effect-v1/contract.json",
+    "evidence_map": "packages/k1-control-v1/cfs-owner-exclusion-guard-live-effect-v1/evidence-map.json",
+    "capture_session": "20260828-195248-g4-k1-control-cfs-owner-exclusion-guard-live-effect-v1",
+    "saved_stock_value": 1,
+    "disabled_value_proved": 0,
+    "restored_value_proved": 1,
+    "disable_attempts": 1,
+    "restore_attempts": 1,
+    "same_observer_connection": true,
+    "reported_cfs_transitions": 0,
+    "filament_action": false,
+    "heater_action": false,
+    "motion_action": false,
+    "remote_write": false,
+    "service_restart": false,
+    "rerun_authorized": false,
+    "next_design_branch": "G4-K1-CONTROL-START-SEQUENCE-OWNER-V1"
   },
   "k1_read_only_qualification": {
     "candidate": "GOAL-P4-K1-READ-ONLY-QUALIFICATION-V1",

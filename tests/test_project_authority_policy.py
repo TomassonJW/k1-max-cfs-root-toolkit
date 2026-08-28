@@ -29,18 +29,15 @@ class ProjectAuthorityPolicyTests(unittest.TestCase):
         self.assertIn(
             "Aucune impression, G-code, écriture distante", current_header
         )
-        self.assertIn("HANDOFF-CFS-OWNER-EXCLUSION-LIVE-READ-ONLY-2026-08-28.md", current_header)
+        self.assertIn("HANDOFF-CFS-OWNER-EXCLUSION-LIVE-EFFECT-2026-08-28.md", current_header)
         self.assertIn("G4-K1-CONTROL-CFS-OWNER-EXCLUSION-GUARD-OFFLINE-V1", current_header)
         self.assertIn("25/25", current_header)
         self.assertIn("15/15", current_header)
         self.assertIn("2/7", current_header)
-        self.assertIn(
-            "G4-K1-CONTROL-CFS-OWNER-OBSERVABILITY-ADAPTER-OFFLINE-V2",
-            current_header,
-        )
-        self.assertIn("exactement deux lectures", current_header)
-        self.assertIn("ne doit pas être rejouée", current_header)
-        self.assertIn("hors imprimante", current_header)
+        self.assertIn("G4-K1-CONTROL-START-SEQUENCE-OWNER-V1", current_header)
+        self.assertIn("CLOSED_OK_EXCLUSION_AND_EXACT_RESTORE_QUALIFIED", current_header)
+        self.assertIn("ne doivent pas être rejouées", current_header)
+        self.assertIn("installable et réversible", current_header)
         self.assertIn("rollback", handoff)
 
     def test_adr_and_decision_preserve_technical_safety_controls(self):

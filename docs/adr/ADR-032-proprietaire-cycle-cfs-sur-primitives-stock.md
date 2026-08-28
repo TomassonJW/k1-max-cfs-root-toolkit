@@ -221,12 +221,15 @@ stables, une tentative maximale, refus d'un acquittement sans effet et
 restauration exacte. Toutes ses intentions restent non exécutables et aucun
 comportement matériel n'est promu.
 
-La gate live V1 est ensuite close après exactement deux lectures fraîches,
-nettoyées, stables et sans effet. Elles ne qualifient pas l'adaptateur : aucune
-époque de connexion n'est observable et la vraie valeur Z acceptée n'est pas
-présente dans la projection. `homing_origin` ne peut pas lui être substitué.
+La V1 live reste une preuve historique bloquée. L'adaptateur V2 qualifie ensuite
+une connexion Moonraker persistante, les transitions CFS rapportées et le vrai
+Z accepté fourni par `KCTRL_STATE`. Sa lecture live V2 confirme la projection
+sans effet.
 
-La prochaine gate proposée est
-`G4-K1-CONTROL-CFS-OWNER-OBSERVABILITY-ADAPTER-OFFLINE-V2`. Elle reste hors
-imprimante ; elle doit résoudre ces deux sources avant toute nouvelle lecture
-live ou tout effet réel.
+La gate d'effet qualifie enfin la frontière prévue par cette ADR : valeur stock
+`1` sauvegardée, une désactivation prouvée à `0`, puis une restauration exacte
+prouvée à `1`, sous le même observateur et sans transition CFS. Cette preuve
+n'installe pas le propriétaire et ne qualifie aucune primitive filament.
+
+La prochaine gate est `G4-K1-CONTROL-START-SEQUENCE-OWNER-V1`, d'abord hors
+imprimante afin de rendre le candidat installable, surveillé et réversible.

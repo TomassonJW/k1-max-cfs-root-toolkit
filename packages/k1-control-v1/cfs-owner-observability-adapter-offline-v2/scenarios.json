@@ -1,0 +1,18 @@
+{
+  "schema": 1,
+  "mission": "G4-K1-CONTROL-CFS-OWNER-OBSERVABILITY-ADAPTER-OFFLINE-V2",
+  "scenarios": [
+    {"id": "stable_observation_projects_to_guard_snapshot", "expected": "pass"},
+    {"id": "observer_connection_change_rejected", "expected": "observer_connection_changed"},
+    {"id": "observer_connection_closed_rejected", "expected": "observer_connection_not_live"},
+    {"id": "reported_cfs_transition_rejected", "expected": "cfs_connection_transition_observed"},
+    {"id": "transition_digest_drift_rejected", "expected": "connection_witness_inconsistent"},
+    {"id": "eventtime_order_rejected", "expected": "observer_eventtime_not_increasing"},
+    {"id": "interval_too_long_rejected", "expected": "observation_interval_too_long"},
+    {"id": "runtime_z_missing_rejected", "expected": "runtime_accepted_z_offset_mm_invalid"},
+    {"id": "store_integrity_invalid_rejected", "expected": "accepted_z_store_integrity_invalid"},
+    {"id": "store_shape_drift_rejected", "expected": "accepted_z_store_shape_invalid"},
+    {"id": "homing_origin_substitution_rejected", "expected": "protected_fields_invalid"},
+    {"id": "unknown_field_rejected", "expected": "observation_fields_invalid"}
+  ]
+}

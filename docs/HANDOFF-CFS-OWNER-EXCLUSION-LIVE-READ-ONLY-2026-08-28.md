@@ -1,4 +1,7 @@
-# Passation — exclusion propriétaire CFS, lecture live V1
+# Archive — exclusion propriétaire CFS, lecture live V1
+
+Cette passation est historique. Lire désormais
+`docs/HANDOFF-CFS-OWNER-EXCLUSION-LIVE-EFFECT-2026-08-28.md`.
 
 Date : 2026-08-28
 Mission close : `G4-K1-CONTROL-CFS-OWNER-EXCLUSION-GUARD-LIVE-READ-ONLY-V1`

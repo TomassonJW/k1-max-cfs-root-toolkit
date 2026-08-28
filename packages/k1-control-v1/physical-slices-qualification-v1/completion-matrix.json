@@ -6,9 +6,9 @@
   "completion_audit_evidence": null,
   "current_human_gate": {
     "requirement_id": "CFS_START_STATES_AND_TEMPERATURE_OWNER",
-    "checkpoint": "START_SEQUENCE_OWNER_OFFLINE_CORRECTIVE",
+    "checkpoint": "OWNER_EXCLUSION_QUALIFIED_START_SEQUENCE_OWNER_OFFLINE_CORRECTIVE",
     "active_gate": "G4-K1-CONTROL-START-SEQUENCE-OWNER-V1",
-    "technical_status": "KEEP_CORRECT_T1A_ROUTE_PASSED_STOCK_START_KO_EFFECTIVE_Z_MINUS_0_19",
+    "technical_status": "KEEP_CORRECT_T1A_ROUTE_PASSED_STOCK_START_KO_OWNER_EXCLUSION_AND_EXACT_RESTORE_QUALIFIED",
     "required_human_verdict": null,
     "next_effect_blocked": true
   },

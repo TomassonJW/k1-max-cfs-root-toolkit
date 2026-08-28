@@ -17,10 +17,10 @@ class CfsControlSourceMapV1Tests(unittest.TestCase):
     def setUp(self):
         self.source_map = load_json(MAP_PATH)
 
-    def test_architecture_has_closed_live_read_only_gate_but_cannot_authorize_effects(self):
+    def test_architecture_has_qualified_exact_live_restore_but_grants_no_open_authority(self):
         authority = self.source_map["authority"]
         self.assertEqual(
-            "owner_exclusion_live_read_only_closed_observability_adapter_blocked",
+            "owner_exclusion_live_effect_closed_exact_restore_start_owner_next",
             self.source_map["status"],
         )
         self.assertFalse(authority["printer_connection_authorized"])
@@ -30,6 +30,9 @@ class CfsControlSourceMapV1Tests(unittest.TestCase):
         self.assertTrue(authority["offline_owner_core_completed"])
         self.assertTrue(authority["offline_owner_exclusion_guard_completed"])
         self.assertTrue(authority["live_owner_exclusion_read_only_completed"])
+        self.assertTrue(authority["offline_owner_observability_v2_completed"])
+        self.assertTrue(authority["live_owner_observability_v2_completed"])
+        self.assertTrue(authority["live_owner_exclusion_effect_completed"])
         self.assertFalse(authority["deployment_candidate"])
 
     def test_required_evidence_sources_are_pinned_and_ranked(self):
@@ -184,7 +187,7 @@ class CfsControlSourceMapV1Tests(unittest.TestCase):
         )
         self.assertIn("known_start_defects", rollback["truthful_limit"])
 
-    def test_live_read_only_gate_is_closed_and_next_adapter_is_offline(self):
+    def test_observability_v2_and_exact_live_restore_are_closed(self):
         preflight = self.source_map["s12_preflight"]
         self.assertEqual(
             "CLOSED_READ_ONLY_S12_SURFACE_CONFIRMED_EFFECTS_CLOSED",
@@ -235,9 +238,40 @@ class CfsControlSourceMapV1Tests(unittest.TestCase):
         self.assertFalse(live["effective_z_source_qualified"])
         self.assertFalse(live["guard_effect_path_called"])
         self.assertFalse(live["rerun_authorized"])
+        adapter = self.source_map["owner_observability_adapter_offline_v2"]
+        self.assertEqual("12/12", adapter["scenario_matrix"])
+        self.assertEqual(
+            "gcode_macro KCTRL_STATE.accepted_z_offset",
+            adapter["accepted_z_source"],
+        )
+        self.assertFalse(adapter["homing_origin_substitution_allowed"])
+        self.assertFalse(adapter["silent_same_state_driver_reconnect_claimed_detectable"])
+        live_v2 = self.source_map["owner_observability_live_read_only_v2"]
+        self.assertEqual(
+            "CLOSED_READ_ONLY_OBSERVABILITY_V2_QUALIFIED_EFFECTS_CLOSED",
+            live_v2["status"],
+        )
+        self.assertEqual(1, live_v2["moonraker_connections"])
+        self.assertEqual(2, live_v2["live_snapshots"])
+        self.assertEqual(0, live_v2["reported_cfs_transitions"])
+        self.assertEqual(-0.04, live_v2["accepted_z_offset_mm"])
+        self.assertTrue(live_v2["all_effects_false"])
+        effect = self.source_map["owner_exclusion_guard_live_effect_v1"]
+        self.assertEqual(
+            "CLOSED_OK_EXCLUSION_AND_EXACT_RESTORE_QUALIFIED",
+            effect["status"],
+        )
+        self.assertEqual(1, effect["saved_value"])
+        self.assertEqual(0, effect["disabled_value_proved"])
+        self.assertEqual(1, effect["restored_value_proved"])
+        self.assertEqual(1, effect["disable_attempts"])
+        self.assertEqual(1, effect["restore_attempts"])
+        self.assertTrue(effect["same_observer_connection"])
+        self.assertEqual(0, effect["reported_cfs_transitions"])
+        self.assertFalse(effect["rerun_authorized"])
         next_gate = self.source_map["next_gate"]
         self.assertEqual(
-            "G4-K1-CONTROL-CFS-OWNER-OBSERVABILITY-ADAPTER-OFFLINE-V2",
+            "G4-K1-CONTROL-START-SEQUENCE-OWNER-V1",
             next_gate["id"],
         )
         self.assertFalse(next_gate["printer_connection"])
@@ -247,8 +281,10 @@ class CfsControlSourceMapV1Tests(unittest.TestCase):
         for field in ("gcode", "heat", "motion", "CFS_effect", "remote_write", "service_restart"):
             self.assertFalse(next_gate[field])
         gaps = self.source_map["open_gaps_in_order"]
+        self.assertEqual("read_only", gaps[0]["kind"])
+        self.assertEqual("resolved", gaps[1]["kind"])
+        self.assertEqual("read_only", gaps[2]["kind"])
         for gap in gaps[:3]:
-            self.assertEqual("read_only", gap["kind"])
             self.assertFalse(gap["allows_effect"])
         for gap in gaps[3:]:
             self.assertEqual("bounded_physical", gap["kind"])
@@ -270,6 +306,13 @@ class CfsControlSourceMapV1Tests(unittest.TestCase):
         self.assertEqual("21/21", architecture["offline_owner_core_scenarios"])
         self.assertTrue(architecture["offline_owner_exclusion_guard_completed"])
         self.assertEqual("25/25", architecture["offline_owner_exclusion_guard_scenarios"])
+        self.assertTrue(architecture["offline_owner_observability_v2_completed"])
+        self.assertTrue(architecture["live_owner_observability_v2_completed"])
+        self.assertTrue(architecture["live_owner_exclusion_effect_completed"])
+        self.assertEqual(
+            "CLOSED_OK_EXCLUSION_AND_EXACT_RESTORE_QUALIFIED",
+            architecture["live_owner_exclusion_effect_verdict"],
+        )
         self.assertFalse(architecture["deployment_candidate"])
         owner = lifecycle["cfs_owner_core_offline"]
         self.assertEqual("21/21", owner["scenario_matrix"])
@@ -297,6 +340,21 @@ class CfsControlSourceMapV1Tests(unittest.TestCase):
         self.assertFalse(live["effective_z_source_qualified"])
         self.assertFalse(live["guard_effect_path_called"])
         self.assertFalse(live["rerun_authorized"])
+        adapter = lifecycle["cfs_owner_observability_adapter_offline_v2"]
+        self.assertEqual("12/12", adapter["scenario_matrix"])
+        self.assertTrue(adapter["persistent_moonraker_observer_required"])
+        self.assertFalse(adapter["silent_same_state_driver_reconnect_claimed_detectable"])
+        live_v2 = lifecycle["cfs_owner_observability_live_read_only_v2"]
+        self.assertEqual(-0.04, live_v2["accepted_z_offset_mm"])
+        self.assertEqual(0, live_v2["reported_cfs_transitions"])
+        self.assertTrue(live_v2["all_effects_false"])
+        effect = lifecycle["cfs_owner_exclusion_guard_live_effect_v1"]
+        self.assertEqual(1, effect["saved_stock_value"])
+        self.assertEqual(0, effect["disabled_value_proved"])
+        self.assertEqual(1, effect["restored_value_proved"])
+        self.assertEqual(1, effect["disable_attempts"])
+        self.assertEqual(1, effect["restore_attempts"])
+        self.assertFalse(effect["rerun_authorized"])
 
 
 if __name__ == "__main__":

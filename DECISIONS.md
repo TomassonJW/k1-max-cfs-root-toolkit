@@ -1784,3 +1784,30 @@ est un adaptateur d'observabilité V2 hors imprimante ; toute nouvelle connexion
 ou tout effet réel restera une gate séparée.
 
 Voir `docs/47-validation-live-lecture-seule-garde-exclusion-proprietaire-cfs-v1.md`.
+
+## D-085 — L'exclusion stock exige une observation continue et une restitution exacte
+
+Date: 2026-08-28
+
+Status: observabilité V2 et effet réel clos OK ; production fermée
+
+L'époque utilisable par le garde est la connexion WebSocket Moonraker
+persistante accompagnée de la séquence des transitions CFS rapportées. Le Z
+accepté vient uniquement de `gcode_macro KCTRL_STATE.accepted_z_offset`, avec le
+stockage `k1_control_store` comme témoin d'intégrité. `homing_origin` ne peut pas
+le remplacer. Une reconnexion de l'observateur ou une transition rapportée
+invalide les lectures ; une reconnexion interne totalement silencieuse n'est
+pas prétendue détectable.
+
+Sous cette observation continue, la valeur stock `1` a été sauvegardée,
+désactivée une fois, prouvée deux fois à `0`, puis restaurée une fois et prouvée
+deux fois à `1`. Un acquittement n'a jamais servi de preuve. Le garde hors
+imprimante rejoue exactement la trace et passe par `owner_granted` avant de
+terminer `closed_safe`.
+
+Cette preuve qualifie la frontière d'exclusion et de restitution ; elle
+n'installe pas le propriétaire et ne qualifie aucune primitive filament. La
+suite revient au démarrage possédé `START-SEQUENCE-OWNER-V1`, qui doit être
+rendu installable et réversible avant une nouvelle gate physique.
+
+Voir `docs/48-observabilite-et-exclusion-proprietaire-cfs-v2.md`.

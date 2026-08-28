@@ -1,0 +1,50 @@
+{
+  "contract_id": "cfs-owner-observability-live-read-only-v2",
+  "schema": 2,
+  "mission": "G4-K1-CONTROL-CFS-OWNER-OBSERVABILITY-LIVE-READ-ONLY-V2",
+  "status": "closed_read_only_observability_v2_qualified_effects_closed",
+  "authority": "strict_read_only",
+  "source_pins": {
+    "offline_adapter_contract": "packages/k1-control-v1/cfs-owner-observability-adapter-offline-v2/contract.json",
+    "guard_contract": "packages/k1-control-v1/cfs-owner-exclusion-guard-offline-v1/contract.json"
+  },
+  "capture": {
+    "ssh_sessions": 1,
+    "moonraker_connections": 1,
+    "state_reads": 2,
+    "observation_window_s": 2.0,
+    "rpc_methods": [
+      "server.websocket.id",
+      "printer.objects.subscribe",
+      "printer.objects.query"
+    ],
+    "remote_sanitization_before_local_return": true,
+    "identity_values_exported": false,
+    "configuration_hashes_before_and_after": 3
+  },
+  "boundaries": {
+    "printer_connection": true,
+    "network_read_only": true,
+    "gcode_sent": false,
+    "heater_action": false,
+    "motion_action": false,
+    "cfs_action": false,
+    "remote_file_write": false,
+    "service_restart": false,
+    "guard_imported_or_called": false,
+    "deployment_candidate": false,
+    "production_authorized": false
+  },
+  "success": {
+    "single_observer_connection": true,
+    "reported_cfs_transition_count": 0,
+    "offline_adapter_accepts_pair": true,
+    "accepted_z_value_stable": true,
+    "accepted_z_store_integrity_qualified": true,
+    "configuration_hashes_unchanged": true,
+    "all_effects_false": true
+  },
+  "rerun_authorized": false,
+  "capture_consumed": "20260828-194319-g4-k1-control-cfs-owner-observability-live-read-only-v2",
+  "verdict": "CLOSED_READ_ONLY_OBSERVABILITY_V2_QUALIFIED_EFFECTS_CLOSED"
+}

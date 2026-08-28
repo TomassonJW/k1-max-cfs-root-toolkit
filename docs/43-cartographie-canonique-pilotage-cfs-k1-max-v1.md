@@ -241,7 +241,7 @@ technique fiable, pas une validation de la mauvaise séquence stock.
 | Point | Pourquoi il bloque | Comment on l’évite |
 | --- | --- | --- |
 | Helix a analysé une image K1 S11, notre machine est S12 | résolu pour la surface hors effet : binaire et chargeur exacts liés à la carte publique | garder chaque effet derrière sa gate physique |
-| le runout stock peut lancer des callbacks internes | le cœur bloque les rappels et le garde hors imprimante borne maintenant désactivation/restauration, mais l'effet réel n'est pas qualifié | valider d'abord la forme live en lecture seule, puis qualifier l'effet séparément |
+| le runout stock peut lancer des callbacks internes | le cœur bloque les rappels ; l'observation continue et le passage réel `1 -> 0 -> 1` de l'auto-remplacement sont maintenant qualifiés | conserver le même verrou avant toute primitive filament et invalider sur transition rapportée |
 | une fin de bobine laisse encore un segment dans le tube et la tête | couper aveuglément ou relancer la grosse purge stock serait faux | qualifier séparément la recette « consommer ou retirer la fin » |
 | la fin de print stock nettoie mappings et états de reprise | les chemins S12 sont repérés, mais appeler `BOX_END_PRINT` rendrait le cycle au stock | posséder explicitement ces nettoyages sans appeler la grosse fin stock |
 | les petites phases peuvent échouer sans lever une erreur claire | un retour HTTP OK ne prouve rien | états avant/après, capteurs, une seule tentative |
@@ -257,12 +257,11 @@ sont maintenant clos. Le garde obtient `25/25`, exige deux lectures stables,
 borne chaque future commande à une tentative et refuse l'acquittement comme
 preuve.
 
-La lecture live V1 est désormais close après deux états frais, stables et
-nettoyés. Elle n'a appelé aucun chemin d'effet. Elle révèle deux manques : pas
-d'époque de connexion observable et pas de vraie valeur Z acceptée dans la
-projection. V1 ne doit pas être rejouée.
+L'adaptateur V2 est clos avec `12/12`, puis la lecture live V2 qualifie sous une
+seule connexion Moonraker le vrai Z accepté et l'absence de transition CFS. La
+gate d'effet qualifie ensuite exactement `1 -> 0 -> 1` pour l'auto-remplacement
+stock, une tentative par commande et deux preuves d'état après chacune.
 
-La prochaine étape raisonnable n'est toujours pas un chargement : c'est
-`G4-K1-CONTROL-CFS-OWNER-OBSERVABILITY-ADAPTER-OFFLINE-V2`. Elle corrigera ces
-deux sources hors imprimante. L'essai réel du garde, puis les chargements,
-retraits, coupes et fins de bobine, resteront des gates séparées.
+La prochaine étape raisonnable n'est toujours pas un chargement : c'est rendre
+`G4-K1-CONTROL-START-SEQUENCE-OWNER-V1` installable, surveillé et réversible
+hors imprimante. Sa pose puis son premier essai resteront des tranches séparées.

@@ -1,0 +1,39 @@
+{
+  "schema": 1,
+  "mission": "G4-K1-CONTROL-CFS-OWNER-OBSERVABILITY-LIVE-READ-ONLY-V2",
+  "status": "closed_read_only_observability_v2_qualified_effects_closed",
+  "private_source": {
+    "path": "inventory/raw/20260828-194319-g4-k1-control-cfs-owner-observability-live-read-only-v2/owner-observability-live-read-only-v2.safe.jsonl",
+    "sha256": "8ce30f5bc3b3ddb4accbcf04a9e99043f99912cd440df997d380c4b4b2eecf9e",
+    "versioned": false,
+    "identity_values_exported": false
+  },
+  "executed_artifacts": {
+    "remote_observer.py": "7355190447c9d2284502d117c1400dc2420c9c19fa651a8265ede669cc6202f5",
+    "capture_live_read_only.ps1": "d4b459c85a40c4d51e77d8562b78f9b75a41e5b03750282f718819344f0fa39f"
+  },
+  "safe_result": {
+    "status": "OK",
+    "verdict": "CLOSED_READ_ONLY_OBSERVABILITY_V2_QUALIFIED_EFFECTS_CLOSED",
+    "live_observations": 2,
+    "observer_connection_id_observed": true,
+    "observer_connection_stable": true,
+    "reported_cfs_transition_count": 0,
+    "accepted_z_offset_mm": -0.04,
+    "accepted_z_value_stable": true,
+    "accepted_z_store_integrity_qualified": true,
+    "connection_epoch": "moonraker-ws-1950203472:cfs-0:6e46a8be47371fb4a440e5edc286b8ab18e020eb26ed83671063f24f2c90c6c0",
+    "stock_auto_refill": 1,
+    "stock_cfs_print_enable": 1,
+    "connected_units": ["T1", "T2"],
+    "engaged_routes": [],
+    "active_mesh_profile": "k1_p001_t055_r001_n11x11",
+    "configuration_hashes_unchanged": true,
+    "offline_adapter_accepted": true,
+    "silent_same_state_driver_reconnect_detectable": false,
+    "guard_imported_or_called": false,
+    "gcode_sent": false,
+    "remote_write": false,
+    "physical_action": false
+  }
+}

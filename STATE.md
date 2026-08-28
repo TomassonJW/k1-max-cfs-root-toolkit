@@ -1294,3 +1294,24 @@ observable et la vraie valeur Z acceptée n'est pas exposée. `homing_origin` ne
 la remplace pas. V1 est consommée et ne doit pas être rejouée. La prochaine
 mission unique est
 `G4-K1-CONTROL-CFS-OWNER-OBSERVABILITY-ADAPTER-OFFLINE-V2`, hors imprimante.
+
+## Mise à jour 2026-08-28 — observabilité V2 et exclusion réelle
+
+L'adaptateur V2 obtient `12/12` scénarios et distingue une connexion Moonraker
+persistante des transitions CFS rapportées. Il lit le vrai Z accepté dans
+`KCTRL_STATE` et refuse toute substitution par `homing_origin`.
+
+La capture live
+`20260828-194319-g4-k1-control-cfs-owner-observability-live-read-only-v2`
+qualifie cette projection sans effet. La capture
+`20260828-195248-g4-k1-control-cfs-owner-exclusion-guard-live-effect-v1`
+qualifie ensuite une désactivation exacte `1 -> 0` et une restauration exacte
+`0 -> 1`, une tentative chacune et deux preuves stables après chaque commande.
+Le verdict est `CLOSED_OK_EXCLUSION_AND_EXACT_RESTORE_QUALIFIED`.
+
+L'état final est `standby`, chauffes zéro, axes libérés, `T1/T2` connectés,
+aucune route, Z accepté `−0,04 mm`, mesh `11 × 11` et configurations inchangées.
+Aucun filament, mouvement, fichier distant ou service n'a été touché. Les
+captures sont consommées. La prochaine tranche est
+`G4-K1-CONTROL-START-SEQUENCE-OWNER-V1`, d'abord hors imprimante pour rendre le
+candidat installable, surveillé et réversible.

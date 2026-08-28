@@ -1,0 +1,66 @@
+{
+  "contract_id": "cfs-owner-observability-adapter-offline-v2",
+  "schema": 2,
+  "mission": "G4-K1-CONTROL-CFS-OWNER-OBSERVABILITY-ADAPTER-OFFLINE-V2",
+  "authority": "offline_only",
+  "status": "closed_offline_12_of_12_live_subscription_separately_qualified",
+  "source_pins": {
+    "guard_contract": "packages/k1-control-v1/cfs-owner-exclusion-guard-offline-v1/contract.json",
+    "guard_contract_sha256": "2040b036507ae5e161aec0a86b94d7f0fc0c0527f237888eac0fd2428b6c1043",
+    "blocked_live_v1_contract": "packages/k1-control-v1/cfs-owner-exclusion-guard-live-read-only-v1/contract.json",
+    "moonraker_docs_revision": "985c1d0bbeb90bc057d34a232c9dc3b05e0c6c8d"
+  },
+  "observation": {
+    "stable_reads": 2,
+    "maximum_interval_s": 10.0,
+    "accepted_z_tolerance_mm": 0.0005,
+    "accepted_z_min_mm": -1.0,
+    "accepted_z_max_mm": 1.0,
+    "connection_source": "moonraker_persistent_websocket_id_plus_reported_box_transition_sequence",
+    "accepted_z_value_source": "gcode_macro KCTRL_STATE.accepted_z_offset",
+    "accepted_z_persistence_witness": "k1_control_store.integrity_ok_with_null_runtime_fields"
+  },
+  "boundaries": {
+    "printer_connection": false,
+    "network_transport": false,
+    "gcode_sent": false,
+    "heater_action": false,
+    "motion_action": false,
+    "cfs_action": false,
+    "remote_file_write": false,
+    "service_restart": false,
+    "deployment_candidate": false,
+    "production_authorized": false
+  },
+  "proof_rules": {
+    "observer_connection_id_must_be_observed": true,
+    "observer_connection_must_remain_open": true,
+    "reported_cfs_transition_invalidates_pair": true,
+    "silent_driver_reconnect_claimed_detectable": false,
+    "runtime_z_must_be_valid_and_finite": true,
+    "store_integrity_and_null_shape_must_match_installed_contract": true,
+    "homing_origin_may_substitute_for_accepted_z": false,
+    "unknown_fields_rejected": true
+  },
+  "required_scenarios": [
+    "stable_observation_projects_to_guard_snapshot",
+    "observer_connection_change_rejected",
+    "observer_connection_closed_rejected",
+    "reported_cfs_transition_rejected",
+    "transition_digest_drift_rejected",
+    "eventtime_order_rejected",
+    "interval_too_long_rejected",
+    "runtime_z_missing_rejected",
+    "store_integrity_invalid_rejected",
+    "store_shape_drift_rejected",
+    "homing_origin_substitution_rejected",
+    "unknown_field_rejected"
+  ],
+  "truthful_limits": {
+    "reported_box_transitions_detectable": true,
+    "observer_reconnect_detectable": true,
+    "silent_same_state_driver_reconnect_detectable": false,
+    "live_subscription_qualified": true,
+    "real_stock_exclusion_qualified": true
+  }
+}

@@ -133,9 +133,10 @@ Identifiant : `GOAL-P4-PHYSICAL-SLICES-QUALIFICATION-V1`
 remplacé par une gate manuelle obligatoire ; la conservation réelle de `T1A`
 est prouvée ; le départ stock est KO ; START-SEQUENCE-OWNER-V1 est préparé hors
 imprimante ; l'architecture complète CFS est choisie, le préflight S12 est clos
-en lecture seule et le cœur propriétaire obtient `21/21` hors imprimante ; le
-garde d'exclusion du propriétaire stock reste à préparer avant toute nouvelle
-qualification physique**.
+en lecture seule et le cœur propriétaire obtient `21/21` hors imprimante ;
+l'observabilité V2 et l'exclusion réelle du propriétaire stock sont closes OK ;
+la prochaine tranche rend START-SEQUENCE-OWNER-V1 installable avant toute
+nouvelle qualification physique**.
 
 Le checkpoint C a référencé XYZ, rechargé le `11 × 11`, commandé `Z=50 mm` et
 attendu la fin. Un premier faux KO local a confondu la position physique
@@ -226,17 +227,19 @@ clos avec `25/25` scénarios et `15/15` tests ciblés, sans connexion K1. Il
 sauvegarde la valeur stock, borne désactivation et restauration à une tentative
 et exige deux lectures stables avant d'ouvrir ou fermer le propriétaire.
 
-La mission live V1 est maintenant close après exactement deux lectures. Elles sont
-stables et sans effet, mais ne fournissent ni époque de connexion observable ni
-vraie valeur Z acceptée. V1 ne doit pas être rejouée.
+L'adaptateur V2 obtient `12/12`, puis sa gate live qualifie le vrai Z accepté
+`−0,04 mm` sous une seule connexion Moonraker persistante. La gate d'effet
+désactive ensuite l'auto-remplacement stock une fois, prouve `0`, restaure la
+valeur exacte précédente `1` une fois et la prouve. Les deux captures sont
+consommées et ne doivent pas être rejouées.
 
 La prochaine mission proposée est
-`G4-K1-CONTROL-CFS-OWNER-OBSERVABILITY-ADAPTER-OFFLINE-V2`. Elle corrigera
-uniquement l'adaptateur et ses tests hors imprimante. Aucune connexion K1,
-commande, pose ou action physique n'est incluse.
+`G4-K1-CONTROL-START-SEQUENCE-OWNER-V1`. Elle rendra d'abord le candidat hors
+imprimante installable : surveillant thermique borné, parse K1 exact, ligne de
+purge revue, sauvegardes, rollback et validation indépendante. La pose et
+l'essai physique resteront une tranche distincte.
 
 Le choix optimal est `gpt-5.6-terra` avec raisonnement `high` : le volume est
-modéré, mais les règles de refus sûr autour de la reconnexion et du Z demandent
-une lecture contractuelle précise. L'option économique raisonnable est le même
-modèle en `medium`, avec davantage de risque de confondre empreinte stable,
-fraîcheur de connexion et valeur Z réellement observée.
+modéré, mais Klipper/Jinja, le surveillant thermique et le rollback demandent
+une revue précise. L'option économique raisonnable est le même modèle en
+`medium`, avec davantage de risque de reprise sur les chemins d'échec.

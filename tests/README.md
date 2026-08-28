@@ -128,6 +128,17 @@ python -m unittest tests.test_cfs_owner_exclusion_guard_live_read_only_v1 -v
 python packages\k1-control-v1\cfs-owner-exclusion-guard-offline-v1\run_scenarios.py
 ```
 
+L'observabilité V2 et la gate réelle d'exclusion ajoutent le vrai Z accepté,
+une connexion Moonraker persistante, le refus des transitions et la preuve
+exacte `1 -> 0 -> 1` sans rejouer les captures :
+
+```powershell
+python -m unittest tests.test_cfs_owner_observability_adapter_offline_v2 -v
+python -m unittest tests.test_cfs_owner_observability_live_read_only_v2 -v
+python -m unittest tests.test_cfs_owner_exclusion_guard_live_effect_v1 -v
+python packages\k1-control-v1\cfs-owner-observability-adapter-offline-v2\run_scenarios.py
+```
+
 La suite complète doit être lancée avec un dossier de découverte explicite :
 
 ```powershell

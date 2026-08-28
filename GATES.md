@@ -1516,3 +1516,27 @@ La prochaine gate proposée est
 `G4-K1-CONTROL-CFS-OWNER-OBSERVABILITY-ADAPTER-OFFLINE-V2`. Elle est strictement
 locale : zéro connexion imprimante, G-code, chauffe, mouvement, effet CFS,
 fichier distant, service ou candidat de pose.
+
+### `G4-K1-CONTROL-CFS-OWNER-OBSERVABILITY-ADAPTER-OFFLINE-V2`
+
+Gate close le 2026-08-28 avec `12/12` scénarios. La connexion observée vient
+d'une WebSocket Moonraker persistante et des transitions CFS rapportées. Le vrai
+Z accepté vient de `KCTRL_STATE.accepted_z_offset` ; `homing_origin` ne peut pas
+le remplacer. Aucun transport ou effet K1 n'est inclus.
+
+### `G4-K1-CONTROL-CFS-OWNER-OBSERVABILITY-LIVE-READ-ONLY-V2`
+
+Gate close avec
+`CLOSED_READ_ONLY_OBSERVABILITY_V2_QUALIFIED_EFFECTS_CLOSED`. Une session SSH,
+une connexion Moonraker et deux lectures confirment Z `−0,04 mm`, `T1/T2`,
+aucune route, chauffes zéro, `11 × 11` et configurations inchangées. Aucun
+effet n'a lieu et la capture ne doit pas être rejouée.
+
+### `G4-K1-CONTROL-CFS-OWNER-EXCLUSION-GUARD-LIVE-EFFECT-V1`
+
+Gate close avec `CLOSED_OK_EXCLUSION_AND_EXACT_RESTORE_QUALIFIED`. La valeur
+stock `1` a été sauvegardée, désactivée une fois et prouvée à `0`, puis restaurée
+une fois et prouvée à `1`. Le même observateur est resté ouvert, sans transition
+CFS, filament, chauffe, mouvement, fichier distant ou service. La capture est
+consommée. La suite est `G4-K1-CONTROL-START-SEQUENCE-OWNER-V1`, d'abord hors
+imprimante pour rendre le candidat installable et réversible.

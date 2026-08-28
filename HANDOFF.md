@@ -2,18 +2,18 @@
 
 La passation canonique de la session est désormais :
 
-`docs/HANDOFF-CFS-OWNER-EXCLUSION-LIVE-READ-ONLY-2026-08-28.md`
+`docs/HANDOFF-CFS-OWNER-EXCLUSION-LIVE-EFFECT-2026-08-28.md`
 
 Lire ce document en premier. Le contenu ci-dessous est conservé comme archive
 des clôtures antérieures ; il ne décrit plus l'état actuel et ne doit pas
 piloter la prochaine action.
 
-`G4-K1-CONTROL-CFS-OWNER-EXCLUSION-GUARD-LIVE-READ-ONLY-V1` est close après
-exactement deux lectures nettoyées. L’état est stable et sans effet, mais la
-projection reste bloquée par l’absence d’époque de connexion observable et de
-vraie valeur Z acceptée. V1 ne doit pas être rejouée. La prochaine mission
-unique est `G4-K1-CONTROL-CFS-OWNER-OBSERVABILITY-ADAPTER-OFFLINE-V2`, hors
-imprimante et sans transport.
+L'observabilité V2 est qualifiée hors imprimante puis sur la vraie K1. La gate
+d'effet a ensuite désactivé une fois l'auto-remplacement stock, prouvé deux fois
+la valeur `0`, restauré une fois la valeur précédente `1` et prouvé deux fois
+ce retour exact. Le verdict final est
+`CLOSED_OK_EXCLUSION_AND_EXACT_RESTORE_QUALIFIED`. Les captures sont consommées
+et ne doivent pas être rejouées.
 
 `GOAL-P4-OFFLINE-CYCLE-CFS-V1` est terminé hors imprimante et
 `GOAL-P4-K1-READ-ONLY-QUALIFICATION-V1` est terminé en lecture seule. La capture
@@ -30,18 +30,15 @@ exige deux lectures qui prouvent l'effet puis restaure exactement la valeur
 précédente. Un acquittement seul ne prouve rien et un résultat incertain n'est
 jamais rejoué.
 
-Les signatures S12 `BOX_ENABLE_AUTO_REFILL ENABLE=0/1` restent présentes comme
-intentions `dispatchable=false`. Aucune impression, G-code, écriture distante,
-connexion K1, chauffe, mouvement ou action CFS n'a été produit par cette
-mission. Le Goal 3 reste à `2/7`.
+Le vrai Z accepté `−0,04 mm` vient de `KCTRL_STATE`, sous une connexion
+Moonraker persistante. `T1/T2`, l'absence de route, les chauffes zéro, le mesh
+`11 × 11` et les configurations sont inchangés. Aucun filament, mouvement,
+chauffage, fichier distant ou service n'a été touché. Le Goal 3 reste à `2/7`.
 
-La prochaine mission unique proposée est
-`G4-K1-CONTROL-CFS-OWNER-EXCLUSION-GUARD-LIVE-READ-ONLY-V1`. Elle exige une
-nouvelle autorisation explicite de connexion en lecture seule. Elle prendra
-deux lectures fraîches et nettoyées pour vérifier la forme réelle, sans appeler
-le garde ni envoyer de commande. L'essai réel, les primitives filament et la
-production restent fermés, avec rollback exact obligatoire avant toute future
-mutation.
+La prochaine mission unique est `G4-K1-CONTROL-START-SEQUENCE-OWNER-V1`.
+Il faut d'abord rendre son candidat hors imprimante installable et réversible ;
+la pose et l'essai physique resteront une tranche distincte. La production et
+les primitives filament non qualifiées restent fermées.
 
 ## Archive historique — clôture initiale du Goal 2
 

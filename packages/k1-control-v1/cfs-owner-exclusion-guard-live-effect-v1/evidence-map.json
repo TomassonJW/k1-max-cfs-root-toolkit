@@ -1,0 +1,37 @@
+{
+  "schema": 1,
+  "mission": "G4-K1-CONTROL-CFS-OWNER-EXCLUSION-GUARD-LIVE-EFFECT-V1",
+  "status": "closed_ok_exclusion_and_exact_restore_qualified",
+  "private_source": {
+    "path": "inventory/raw/20260828-195248-g4-k1-control-cfs-owner-exclusion-guard-live-effect-v1/owner-exclusion-guard-live-effect-v1.safe.jsonl",
+    "sha256": "ce4b3d375f5e302e4259e734689072512ceff5a78c325fb9d082c4c51a1112c0",
+    "versioned": false,
+    "identity_values_exported": false
+  },
+  "executed_artifacts": {
+    "remote_observer_effect_support_v1.py": "f300a3282882c069b0b943a9ef7595534ac8f5d8a9d764f61b6c87606651395d",
+    "remote_effect_gate.py": "2915f2b7f9e002f7132ecc0af1b4a1ea8f944b357a93907bd18d319c3c57e80c",
+    "run_live_effect.executed-v1.ps1": "f2b161aa44550b64e3044dfbb6b985f54a91478996e981dd62a925fad1e3ee11"
+  },
+  "safe_result": {
+    "status": "OK",
+    "verdict": "CLOSED_OK_EXCLUSION_AND_EXACT_RESTORE_QUALIFIED",
+    "saved_stock_auto_refill": 1,
+    "disabled_value_proved": 0,
+    "restored_value_proved": 1,
+    "attempts": {"disable": 1, "restore": 1},
+    "owner_granted_then_released": true,
+    "connection_epoch_stable": true,
+    "reported_cfs_transition_count": 0,
+    "accepted_z_offset_mm": -0.04,
+    "active_mesh_profile": "k1_p001_t055_r001_n11x11",
+    "connected_units": ["T1", "T2"],
+    "engaged_routes": [],
+    "configuration_hashes_unchanged": true,
+    "filament_action": false,
+    "heater_action": false,
+    "motion_action": false,
+    "remote_write": false,
+    "service_action": false
+  }
+}
