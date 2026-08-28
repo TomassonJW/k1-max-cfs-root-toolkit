@@ -1,7 +1,7 @@
 {
   "schema": 1,
   "mission": "G4-K1-CONTROL-START-SEQUENCE-T1A-ROUTE-V1",
-  "status": "PREFLIGHT_OK_PHYSICAL_ACTION_NOT_EXECUTED",
+  "status": "CLOSED_KO_WRONG_STOCK_BUTTON_T1A_ESTABLISHED_RECOVERY_OK",
   "preflight": {
     "capture_id": "20260828-goal3-start-sequence-t1a-route-v1-preflight",
     "private_capture_sha256": "0c2b4b6b566a23e12cdcd31e6255b3a5ae7bd60113f216ce38777f89d949da98",
@@ -26,5 +26,43 @@
     "remote_write": false,
     "service_action": false
   },
-  "next_human_action": "load_T1A_once_from_stock_ui_during_reviewed_capture"
+  "attempt": {
+    "capture_id": "20260828-goal3-start-sequence-t1a-route-v1-run",
+    "private_capture_sha256": "d0110aa14c67ef8e3197c7d31657e8791e7d1411a21bf7fc60f7bd57f8711da3",
+    "verdict": "KO_OPERATOR_WRONG_STOCK_BUTTON",
+    "wrong_stock_action_started_at_s": 89.559,
+    "wrong_stock_action": "filament_check",
+    "wrong_action_homed_axes": "xyz",
+    "wrong_action_mesh_result": "default",
+    "wrong_action_nozzle_target_c": 200,
+    "T1A_load_started_at_s": 165.022,
+    "T1A_route_observed_at_s": 198.719,
+    "T1A_load_nozzle_target_c": 220,
+    "route_states": [[], ["T1A"]],
+    "route_transition_count": 1,
+    "cfs_command_states": [""],
+    "configuration_unchanged": true,
+    "accepted_z_offset_mm": -0.04,
+    "human_visible_flow": true,
+    "automatic_retry": false
+  },
+  "recovery": {
+    "capture_id": "20260828-goal3-start-sequence-t1a-route-v1-recovery",
+    "private_capture_sha256": "03957c0f20caddfa8c0434d8287c501d571f4f1c0849c45ab913c1b8f6b86839",
+    "status": "START_SEQUENCE_T1A_ROUTE_V1_RECOVERY_OK",
+    "attempted_commands": [
+      "BED_MESH_PROFILE LOAD=k1_p001_t055_r001_n11x11",
+      "M84"
+    ],
+    "response_errors": [],
+    "stable_readbacks": 2,
+    "final_engaged_routes": ["T1A"],
+    "final_active_command": "",
+    "final_heater_targets_c": [0, 0],
+    "final_active_mesh": "k1_p001_t055_r001_n11x11",
+    "final_axes_released": true,
+    "final_accepted_z_offset_mm": -0.04,
+    "configuration_hashes_exact": true
+  },
+  "next_human_action": "manual_nozzle_clean_then_short_owned_start_trial"
 }

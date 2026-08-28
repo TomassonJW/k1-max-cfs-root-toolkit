@@ -122,6 +122,18 @@ class StartSequenceT1ARouteV1Tests(unittest.TestCase):
         self.assertFalse(contract["print_start"])
         self.assertTrue(contract["failure_policy"]["no_automatic_print_trial"])
 
+    def test_recovery_is_bounded_to_mesh_restore_and_motor_release(self):
+        recovery = (PACKAGE / "remote_recovery.py").read_text(encoding="utf-8")
+        self.assertIn('"BED_MESH_PROFILE LOAD=%s" % BEST_PROFILE', recovery)
+        self.assertIn('"M84"', recovery)
+        for forbidden in ("TURN_OFF_HEATERS", "BOX_", "START_PRINT", "RESTART", "SAVE_CONFIG"):
+            self.assertNotIn(forbidden, recovery)
+        contract = json.loads((PACKAGE / "contract.json").read_text(encoding="utf-8"))
+        bounded = contract["failure_policy"]["wrong_stock_button_recovery"]
+        self.assertEqual(1, bounded["maximum_attempts_each"])
+        self.assertTrue(bounded["requires_T1A_readback_before_recovery"])
+        self.assertTrue(bounded["cfs_effect_forbidden"])
+
 
 if __name__ == "__main__":
     unittest.main()

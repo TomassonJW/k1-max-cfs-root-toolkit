@@ -295,7 +295,12 @@ class CfsControlSourceMapV1Tests(unittest.TestCase):
         self.assertFalse(next_gate["service_restart"])
         self.assertFalse(next_gate["renewed_exact_go_required"])
         self.assertFalse(next_gate["physical_start_trial"])
-        self.assertEqual("BLOCKED_NO_ENGAGED_T1A", next_gate["physical_trial_blocker"])
+        self.assertIsNone(next_gate["physical_trial_blocker"])
+        self.assertEqual("T1A", next_gate["route_established"])
+        self.assertEqual(
+            "G4-K1-CONTROL-START-SEQUENCE-OWNER-PHYSICAL-KEEP-CORRECT-T1A-V1",
+            next_gate["next_gate"],
+        )
         gaps = self.source_map["open_gaps_in_order"]
         self.assertEqual("read_only", gaps[0]["kind"])
         self.assertEqual("resolved", gaps[1]["kind"])

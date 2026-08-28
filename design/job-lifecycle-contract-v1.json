@@ -69,7 +69,11 @@
     "next_gate_preflight_completed": true,
     "next_gate_preflight_capture": "20260828-goal3-start-sequence-t1a-route-v1-preflight",
     "next_gate_preflight_verdict": "START_SEQUENCE_T1A_ROUTE_V1_PREFLIGHT_OK",
-    "next_gate_human_action_pending": "load_T1A_once_from_stock_ui"
+    "next_gate_human_action_pending": "manual_nozzle_clean_then_short_owned_start_trial",
+    "T1A_route_gate_result": "KO_OPERATOR_WRONG_BUTTON_ROUTE_ESTABLISHED_RECOVERY_OK",
+    "T1A_route_engaged": true,
+    "T1A_route_recovery_capture": "20260828-goal3-start-sequence-t1a-route-v1-recovery",
+    "next_gate_after_recovery": "G4-K1-CONTROL-START-SEQUENCE-OWNER-PHYSICAL-KEEP-CORRECT-T1A-V1"
   },
   "target": {
     "printer": "Creality K1 Max S12 structure 0",

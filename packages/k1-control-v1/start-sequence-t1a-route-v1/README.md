@@ -17,6 +17,11 @@ Si l'effet est incertain, le chargement n'est jamais relancé. Si une cible de
 chauffe reste active, la gate s'arrête et demande une coupure thermique sûre
 séparée avant toute autre action.
 
+Si un mauvais bouton stock lance un référencement ou remplace le mesh alors
+que `T1A` est néanmoins chargé, la récupération ne rejoue jamais le chargement.
+Elle peut seulement recharger une fois le `11 × 11`, envoyer une fois `M84`,
+puis exiger deux relectures finales identiques.
+
 ## Commandes
 
 Vérification locale du candidat :

@@ -2,7 +2,7 @@
   "schema": 1,
   "mission": "G4-K1-CONTROL-START-SEQUENCE-T1A-ROUTE-V1",
   "goal": "GOAL-P4-PHYSICAL-SLICES-QUALIFICATION-V1",
-  "status": "PREFLIGHT_OK_AWAITING_HUMAN_STOCK_UI_ACTION",
+  "status": "CLOSED_KO_WRONG_STOCK_BUTTON_T1A_ESTABLISHED_RECOVERY_OK",
   "scope": "restore_and_read_back_one_unique_T1A_route_without_starting_a_print",
   "authority": "goal3_go_with_session_tas_human_physical_checkpoint_retained",
   "automatic_effect_connector": false,
@@ -41,11 +41,50 @@
     "mesh_and_accepted_z_unchanged": true,
     "configuration_hashes_unchanged": true
   },
+  "execution_result": {
+    "capture_id": "20260828-goal3-start-sequence-t1a-route-v1-run",
+    "verdict": "KO_OPERATOR_WRONG_STOCK_BUTTON",
+    "wrong_action": "stock_filament_check",
+    "wrong_action_effects": [
+      "XYZ_homing",
+      "nozzle_target_200_c",
+      "active_mesh_replaced_by_default"
+    ],
+    "T1A_route_established": true,
+    "T1A_route_transition_count": 1,
+    "T1A_load_nozzle_target_c": 220,
+    "human_visible_flow": true,
+    "automatic_retry": false,
+    "load_replayed": false
+  },
+  "recovery_result": {
+    "capture_id": "20260828-goal3-start-sequence-t1a-route-v1-recovery",
+    "status": "START_SEQUENCE_T1A_ROUTE_V1_RECOVERY_OK",
+    "attempted_commands": [
+      "BED_MESH_PROFILE LOAD=k1_p001_t055_r001_n11x11",
+      "M84"
+    ],
+    "stable_readbacks": 2,
+    "final_route": "T1A",
+    "final_mesh": "k1_p001_t055_r001_n11x11",
+    "final_axes_released": true,
+    "final_heater_targets_c": [0, 0]
+  },
   "failure_policy": {
     "stop_on_first_ambiguity": true,
     "never_repeat_load_after_uncertain_effect": true,
     "nonzero_terminal_heater_target_requires_separate_safe_shutdown": true,
-    "no_automatic_print_trial": true
+    "no_automatic_print_trial": true,
+    "wrong_stock_button_recovery": {
+      "allowed_commands": [
+        "BED_MESH_PROFILE LOAD=k1_p001_t055_r001_n11x11",
+        "M84"
+      ],
+      "maximum_attempts_each": 1,
+      "requires_T1A_readback_before_recovery": true,
+      "requires_heater_targets_zero": true,
+      "cfs_effect_forbidden": true
+    }
   },
-  "next_gate_only_if_passed": "G4-K1-CONTROL-START-SEQUENCE-OWNER-PHYSICAL-KEEP-CORRECT-T1A-V1"
+  "next_gate_after_safe_recovery": "G4-K1-CONTROL-START-SEQUENCE-OWNER-PHYSICAL-KEEP-CORRECT-T1A-V1"
 }

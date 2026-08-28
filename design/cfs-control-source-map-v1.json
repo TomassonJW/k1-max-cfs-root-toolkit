@@ -726,6 +726,10 @@
     "remote_write": false,
     "service_restart": false,
     "physical_start_trial": false,
-    "physical_trial_blocker": "BLOCKED_NO_ENGAGED_T1A"
+    "physical_trial_blocker": null,
+    "execution_status": "CLOSED_KO_WRONG_STOCK_BUTTON_T1A_ESTABLISHED_RECOVERY_OK",
+    "route_established": "T1A",
+    "recovery_capture": "20260828-goal3-start-sequence-t1a-route-v1-recovery",
+    "next_gate": "G4-K1-CONTROL-START-SEQUENCE-OWNER-PHYSICAL-KEEP-CORRECT-T1A-V1"
   }
 }
