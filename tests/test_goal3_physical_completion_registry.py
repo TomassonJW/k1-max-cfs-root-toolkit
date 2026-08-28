@@ -54,7 +54,7 @@ class Goal3PhysicalCompletionRegistryTests(unittest.TestCase):
             gate["checkpoint"],
         )
         self.assertIn("200_SECOND_COLD_NOZZLE_SOAK", gate["technical_status"])
-        self.assertIn("4_TARGETED_TESTS_OK", gate["technical_status"])
+        self.assertIn("5_TARGETED_TESTS_OK", gate["technical_status"])
         self.assertEqual(
             "G4-K1-CONTROL-Z-THERMAL-STABILIZATION-DIAGNOSTIC-V1",
             gate["active_gate"],

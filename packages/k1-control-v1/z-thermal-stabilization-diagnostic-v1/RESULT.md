@@ -9,7 +9,7 @@ différence fonctionnelle avant `KCTRL_JOB_BEGIN` est l'ajout exact de :
 - `M190 S55` ;
 - `G4 P200000`.
 
-Le vérificateur du candidat est vert et les quatre tests ciblés sont verts.
+Le vérificateur du candidat est vert et les cinq tests ciblés sont verts.
 L'essai conserve `T1A`, ne permet aucun réglage Z avant le verdict visuel et
 n'autorise aucun retry automatique.
 

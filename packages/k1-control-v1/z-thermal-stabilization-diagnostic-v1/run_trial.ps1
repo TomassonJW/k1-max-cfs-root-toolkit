@@ -28,7 +28,7 @@ $ExpectedGcodeSha256 = '657db94f006a92b5f4b68ee3afd4674f56963208f90c145892cc1205
 $ExpectedGcodeBytes = 90735
 $ExpectedBaseTrialSha256 = '5f461db624acaa8682ec20bcd3eed001da39688f1e19a880d8096685c350a68f'
 $ExpectedBaseInstallerSha256 = 'ff84e23462dc642d916bc7d83cfca0eea53414253b7ad940c1cb46be56a5ffa0'
-$ExpectedDerivedTrialSha256 = '73cf0aca9b757140a3064677cc3cd2cbebdcb0efc55488657f353403214021a1'
+$ExpectedDerivedTrialSha256 = '709918700cb3c791113667506964236429d20107f92063507f7b2b67847e4bf4'
 $ExpectedDerivedInstallerSha256 = 'bf7d7e0d67b5598645c927dfbe7c2e17989877c4b4fc4a1ba51b8c840d9453a7'
 $OldMission = 'G4-K1-CONTROL-START-SEQUENCE-OWNER-PHYSICAL-KEEP-CORRECT-T1A-V1'
 $OldGcodeName = 'K1-START-OWNER-T1A-2LAYER.gcode'
@@ -102,6 +102,24 @@ $TrialProgram = Get-Content -LiteralPath $BaseTrialPath -Raw
 $TrialProgram = $TrialProgram.Replace($OldMission, $Mission)
 $TrialProgram = $TrialProgram.Replace($OldGcodeName, $GcodeName)
 $TrialProgram = $TrialProgram.Replace('KEEP_CORRECT_T1A_PHYSICAL_', 'Z_THERMAL_STABILIZATION_DIAGNOSTIC_')
+$OldPreflightPrintGuard = @(
+    '    if item["print"].get("state") != "standby" or item["print"].get("filename"):'
+    '        raise GateError("printer_not_standby")'
+) -join "`n"
+$NewPreflightPrintGuard = @(
+    '    print_state = item["print"].get("state")'
+    '    print_filename = item["print"].get("filename")'
+    '    if print_state not in ("standby", "complete"):'
+    '        raise GateError("printer_not_terminal")'
+    '    if print_state == "standby" and print_filename:'
+    '        raise GateError("standby_filename_present")'
+    '    if print_state == "complete" and not print_filename:'
+    '        raise GateError("complete_filename_missing")'
+) -join "`n"
+if (-not $TrialProgram.Contains($OldPreflightPrintGuard)) {
+    throw 'Le garde terminal de base a dérivé.'
+}
+$TrialProgram = $TrialProgram.Replace($OldPreflightPrintGuard, $NewPreflightPrintGuard)
 $InstallerProgram = Get-Content -LiteralPath $BaseInstallerPath -Raw
 $InstallerProgram = $InstallerProgram.Replace($OldGcodeName, $GcodeName)
 $InstallerProgram = $InstallerProgram.Replace('eeaf9822a7016f89da45be83e4435f68c1d28441c469a9cde078c9645fcbf429', ('0' * 64))

@@ -46,6 +46,14 @@ class ZThermalStabilizationDiagnosticV1Tests(unittest.TestCase):
         self.assertIn("if (-not $Execute -or $Gate -cne $Mission)", runner)
         self.assertIn("automatic_retry = $false", runner)
 
+    def test_derived_preflight_accepts_only_safe_terminal_print_states(self):
+        trial, _ = self.verifier.builder.derive_programs()
+        source = trial.decode("utf-8")
+        self.assertIn('print_state not in ("standby", "complete")', source)
+        self.assertIn('print_state == "standby" and print_filename', source)
+        self.assertIn('print_state == "complete" and not print_filename', source)
+        self.assertNotIn('printer_not_standby', source)
+
     def test_analyzer_accepts_a_complete_soak_trace(self):
         records = [
             {"kind": "snapshot", "elapsed_s": 0.0, "print": {"state": "standby"}, "owner": {"phase": "idle"}, "bed": {"target": 0.0, "temperature": 30.0}, "nozzle": {"target": 0.0}, "cfs": {"engaged_routes": ["T1A"], "active_command": ""}},

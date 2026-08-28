@@ -19,6 +19,16 @@ OLD_MISSION = "G4-K1-CONTROL-START-SEQUENCE-OWNER-PHYSICAL-KEEP-CORRECT-T1A-V1"
 MISSION = "G4-K1-CONTROL-Z-THERMAL-STABILIZATION-DIAGNOSTIC-V1"
 OLD_GCODE_NAME = "K1-START-OWNER-T1A-2LAYER.gcode"
 GCODE_NAME = "K1-Z-THERMAL-SOAK-200S-T1A-2LAYER.gcode"
+OLD_PREFLIGHT_PRINT_GUARD = '''    if item["print"].get("state") != "standby" or item["print"].get("filename"):
+        raise GateError("printer_not_standby")'''
+NEW_PREFLIGHT_PRINT_GUARD = '''    print_state = item["print"].get("state")
+    print_filename = item["print"].get("filename")
+    if print_state not in ("standby", "complete"):
+        raise GateError("printer_not_terminal")
+    if print_state == "standby" and print_filename:
+        raise GateError("standby_filename_present")
+    if print_state == "complete" and not print_filename:
+        raise GateError("complete_filename_missing")'''
 START = b"KCTRL_JOB_BEGIN_KEEP_CORRECT_V1 BED=55 PROBE_NOZZLE=140 FIRST_NOZZLE=190 PLATE=1 PROBE_REV=1 NOZZLE_ID=1 CONFIG_ID=1 X_COUNT=11 Y_COUNT=11"
 PRELUDE_LINES = (
     b"; K1_CONTROL_THERMAL_SOAK_DIAGNOSTIC_V1_BEGIN",
@@ -42,6 +52,9 @@ def derive_programs() -> tuple[bytes, bytes]:
     trial_text = trial_text.replace(OLD_MISSION, MISSION)
     trial_text = trial_text.replace(OLD_GCODE_NAME, GCODE_NAME)
     trial_text = trial_text.replace("KEEP_CORRECT_T1A_PHYSICAL_", "Z_THERMAL_STABILIZATION_DIAGNOSTIC_")
+    if trial_text.count(OLD_PREFLIGHT_PRINT_GUARD) != 1:
+        raise ValueError("base_preflight_print_guard_drift")
+    trial_text = trial_text.replace(OLD_PREFLIGHT_PRINT_GUARD, NEW_PREFLIGHT_PRINT_GUARD)
     installer_text = installer.decode("utf-8")
     installer_text = installer_text.replace(OLD_GCODE_NAME, GCODE_NAME)
     installer_text = installer_text.replace(

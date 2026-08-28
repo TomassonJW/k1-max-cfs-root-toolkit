@@ -31,7 +31,7 @@
   },
   "derived_remote_programs": {
     "base_trial_sha256": "5f461db624acaa8682ec20bcd3eed001da39688f1e19a880d8096685c350a68f",
-    "derived_trial_sha256": "73cf0aca9b757140a3064677cc3cd2cbebdcb0efc55488657f353403214021a1",
+    "derived_trial_sha256": "709918700cb3c791113667506964236429d20107f92063507f7b2b67847e4bf4",
     "base_installer_sha256": "ff84e23462dc642d916bc7d83cfca0eea53414253b7ad940c1cb46be56a5ffa0",
     "derived_installer_sha256": "bf7d7e0d67b5598645c927dfbe7c2e17989877c4b4fc4a1ba51b8c840d9453a7"
   },
