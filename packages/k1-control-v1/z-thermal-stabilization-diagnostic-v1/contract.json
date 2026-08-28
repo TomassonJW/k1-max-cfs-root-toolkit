@@ -1,0 +1,70 @@
+{
+  "schema": 1,
+  "mission": "G4-K1-CONTROL-Z-THERMAL-STABILIZATION-DIAGNOSTIC-V1",
+  "goal": "GOAL-P4-PHYSICAL-SLICES-QUALIFICATION-V1",
+  "purpose": "isolate_the_200_second_bed_stabilization_hypothesis_before_any_Z_recalibration",
+  "authority": "gated_private_gcode_upload_and_single_human_observed_run",
+  "automatic_retry": false,
+  "source": {
+    "private_path": "inventory/raw/20260828-goal3-start-owner-physical-keep-correct-t1a-v1/K1-START-OWNER-T1A-2LAYER.gcode",
+    "sha256": "d98c2a7fe9bb9bc1620cd3cc622edd4a48eaa7bd9c507bd0573de7bc5dab9f7f",
+    "bytes": 90616
+  },
+  "candidate": {
+    "private_path": "inventory/raw/20260829-goal3-z-thermal-stabilization-diagnostic-v1/K1-Z-THERMAL-SOAK-200S-T1A-2LAYER.gcode",
+    "remote_name": "K1-Z-THERMAL-SOAK-200S-T1A-2LAYER.gcode",
+    "sha256": "657db94f006a92b5f4b68ee3afd4674f56963208f90c145892cc1205a2582ce1",
+    "bytes": 90735
+  },
+  "only_inserted_executable_commands": [
+    "M140 S55",
+    "M190 S55",
+    "G4 P200000"
+  ],
+  "thermal_comparison": {
+    "bed_target_c": 55,
+    "soak_seconds": 200,
+    "nozzle_target_during_soak_c": 0,
+    "accepted_z_offset_mm": -0.04,
+    "mesh_profile": "k1_p001_t055_r001_n11x11",
+    "manual_live_Z_adjustment_before_verdict": false
+  },
+  "derived_remote_programs": {
+    "base_trial_sha256": "5f461db624acaa8682ec20bcd3eed001da39688f1e19a880d8096685c350a68f",
+    "derived_trial_sha256": "73cf0aca9b757140a3064677cc3cd2cbebdcb0efc55488657f353403214021a1",
+    "base_installer_sha256": "ff84e23462dc642d916bc7d83cfca0eea53414253b7ad940c1cb46be56a5ffa0",
+    "derived_installer_sha256": "bf7d7e0d67b5598645c927dfbe7c2e17989877c4b4fc4a1ba51b8c840d9453a7"
+  },
+  "entry_requirements": [
+    "human_present",
+    "plate_clear",
+    "manual_nozzle_clean_confirmed",
+    "immediate_stop_available",
+    "T1A_is_the_unique_engaged_route",
+    "printer_standby_targets_zero_axes_released",
+    "best_current_11x11_active",
+    "accepted_Z_minus_0_04_unchanged",
+    "configuration_hashes_exact"
+  ],
+  "decision": {
+    "first_layer_good_without_live_adjustment": "THERMAL_STABILIZATION_HYPOTHESIS_SUPPORTED_PREPARE_START_OWNER_SOAK_CORRECTION",
+    "first_layer_still_too_high": "THERMAL_STABILIZATION_HYPOTHESIS_REJECTED_PREPARE_BOUNDED_Z_RECALIBRATION",
+    "ambiguous_or_intervened_before_verdict": "INCONCLUSIVE_STOP_WITHOUT_RETRY"
+  },
+  "terminal_requirements": [
+    "heater_targets_zero",
+    "T1A_still_unique_and_no_CFS_command",
+    "11x11_active",
+    "owner_idle_and_low_moves_disarmed",
+    "axes_released",
+    "configuration_hashes_unchanged"
+  ],
+  "out_of_scope": [
+    "persistent_Z_write",
+    "mesh_measurement_or_persistence",
+    "CFS_cut_unload_load_or_rewind",
+    "automatic_retry",
+    "production_end_qualification",
+    "production_print"
+  ]
+}
