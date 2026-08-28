@@ -60,7 +60,7 @@ function Invoke-RemoteProgram {
         -o 'ServerAliveInterval=10' `
         -o 'ServerAliveCountMax=35' `
         $PrinterHost `
-        $Command 2>&1 | Tee-Object -FilePath $OutputPath
+        $Command 2>&1 | Tee-Object -FilePath $OutputPath | ForEach-Object { Write-Host $_ }
     return $LASTEXITCODE
 }
 
