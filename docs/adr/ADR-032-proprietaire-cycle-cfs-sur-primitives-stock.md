@@ -2,8 +2,8 @@
 
 Date : 2026-08-28
 
-Statut : **décision d’architecture acceptée hors imprimante ; aucune connexion,
-implémentation, pose ou action physique autorisée**
+Statut : **décision acceptée et cœur propriétaire implémenté hors imprimante ;
+aucune connexion, pose ou action physique autorisée**
 
 ## Contexte
 
@@ -208,8 +208,16 @@ rappels de runout et de reprise, les états publics et les configurations à
 cette S12 exacte. Les signatures d'arguments publiques sont corrélées à cette
 surface, mais aucun effet n'est qualifié.
 
+La gate `G4-K1-CONTROL-CFS-OWNER-CORE-OFFLINE-V1` est maintenant close. Son
+moteur pur obtient `21/21` scénarios : verrou à un seul propriétaire, décisions
+de départ, remplacement strictement identique entre `T1` et `T2`, invalidation
+sur reconnexion ou rappel stock, aucune reprise d'un effet incertain et
+restauration exacte de la valeur précédente d'auto-remplacement. Toutes les
+intentions restent non exécutables et aucun comportement matériel n'est promu.
+
 La prochaine gate proposée est
-`G4-K1-CONTROL-CFS-OWNER-CORE-OFFLINE-V1`. Après un nouveau GO exact, elle ne
-construira que le moteur pur contre les réponses enregistrées. Elle n'aura
+`G4-K1-CONTROL-CFS-OWNER-EXCLUSION-GUARD-OFFLINE-V1`. Après une nouvelle
+autorité de mission, elle préparera encore hors imprimante le garde exact pour
+désactiver, vérifier puis restaurer l'auto-remplacement stock. Elle n'aura
 aucune connexion K1, aucun G-code, aucun chauffage, aucun mouvement, aucun
 fichier distant et aucun candidat de pose.

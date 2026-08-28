@@ -2,7 +2,7 @@
 
 La passation canonique de la session est désormais :
 
-`docs/HANDOFF-CFS-OWNER-S12-2026-08-28.md`
+`docs/HANDOFF-CFS-OWNER-CORE-2026-08-28.md`
 
 Lire ce document en premier. Le contenu ci-dessous est conservé comme archive
 des clôtures antérieures ; il ne décrit plus l'état live actuel et ne doit pas
@@ -11,49 +11,28 @@ piloter la prochaine action.
 `GOAL-P4-OFFLINE-CYCLE-CFS-V1` est terminé hors imprimante et
 `GOAL-P4-K1-READ-ONLY-QUALIFICATION-V1` est terminé en lecture seule. La capture
 canonique de ce second Goal reste
-`20260827-142853-goal-p4-k1-read-only-qualification-v1`. Aucune impression, G-code, écriture distante,
-chauffe ou mouvement n'a été produit par ce Goal.
+`20260827-142853-goal-p4-k1-read-only-qualification-v1`. Le Goal 3 reste en
+cours à `2/7` ; le nettoyage automatique est clos KO et le nettoyage manuel
+est obligatoire.
 
-État courant corrigé : tous les profils actuels ont des défauts de bord et
-aucun n'est qualifié robuste. Le `11 × 11`, meilleur profil observé, est actif
-et revérifié après `G4-K1-CONTROL-BEST-CURRENT-MESH-RESTORE-V1 = RESTORE_OK`.
-L'ancien chargement du `6 × 6` reste une preuve technique historique, mais son
-classement produit est annulé par ADR-029. L'éditeur hors ligne permet déjà la
-correction point par point sur une copie versionnée du `11 × 11` immuable.
+`G4-K1-CONTROL-CFS-OWNER-CORE-OFFLINE-V1` est maintenant clos avec `21/21`
+scénarios. Le moteur pur impose un seul propriétaire, distingue conserver,
+charger et changer, choisit un unique remplacement strictement identique entre
+les deux CFS, bloque tout rappel stock et refuse de rejouer un effet incertain.
+Il restaure exactement la valeur précédente de l'auto-remplacement stock.
 
-`G4-K1-CONTROL-CLEAN-MOTION-V1` est clos OK. Après C, D1, D2 et D3, deux
-captures manuelles ont fixé la grande brosse autour de
-`X66..99 / Y303..307 / Z2` et la seconde autour de
-`X203..206 / Y303..305 / Z32`. E2 a validé le balayage de la grande brosse.
-E3-R2 a validé l'approche resserrée de la seconde et E4 son carré exact
-`X203..206 / Y304..305`, avec retour à `X203 Y273 Z32`. Thomas a donné
-`E4 OK`. Les chauffes sont à zéro, aucune route CFS n'est engagée, les
-configurations sont inchangées et le meilleur profil actuel `11 × 11` reste
-actif.
+La capture S12 ne contenait aucune paire identique réelle : le passage simulé
+de `T1A` à `T2A` est une preuve logique, pas une validation matérielle. Toutes
+les intentions produites sont non exécutables. Aucune impression, G-code,
+écriture distante, connexion K1, chauffe, mouvement ou action CFS n'a été
+produit par cette mission.
 
-Le registre canonique de complétude du Goal 3 est maintenant
-`packages/k1-control-v1/physical-slices-qualification-v1/completion-matrix.json`.
-Il couvre exactement sept exigences, en compte actuellement `1/7` close et
-sépare strictement la bascule/validation production du Goal 4. Il n'autorise
-aucun effet et ne crée aucun cinquième Goal.
-
-La prochaine exigence est `AUTOMATIC_CLEAN_AND_FINAL_REFERENCE`, sous
-`G4-K1-CONTROL-CLEAN-AND-REFERENCE-V1` : recette versionnée issue de la
-géométrie qualifiée, purge visible dans le réceptacle, nettoyage à chaud borné,
-une référence Z finale avec buse propre, puis arrêt thermique et état sûr
-relus.
-
-Le pilote complet et son arrêt thermique sont prêts. Thomas a confirmé le
-Geetech et `220 °C`. Un premier passage a chauffé puis a été arrêté sans
-nettoyage faute de verdict reçu ; la coupure a remis les deux cibles à zéro.
-Le défaut de protocole est corrigé : il n'existe plus d'action de chauffe seule.
-Le cycle atomique fait six allers-retours rapides, coupe la chauffe, frotte
-lentement dans E4 en remontant de `Z32` à `Z34` selon la température mesurée,
-puis finit chauffes à zéro autour de `140 °C`. Son préflight frais sans effet
-est vert à `X204,5 Y304,5 Z35`, configurations conformes et `11 × 11` exact.
-Il attend Thomas devant la K1 et le verdict
-`GEETECH_220_CYCLE_CONFIRMED`. La référence finale n'est autorisée qu'après
-`FINAL_NOZZLE_CLEAN_OK`.
+La prochaine mission unique est
+`G4-K1-CONTROL-CFS-OWNER-EXCLUSION-GUARD-OFFLINE-V1`. Elle préparera seulement
+sur le PC le garde une tentative / vérification / restauration de la politique
+stock. Elle exige une nouvelle autorisation explicite de mission. La connexion,
+l'essai réel, les primitives filament et la production resteront fermés, avec
+rollback exact obligatoire avant toute future mutation.
 
 ## Archive historique — clôture initiale du Goal 2
 

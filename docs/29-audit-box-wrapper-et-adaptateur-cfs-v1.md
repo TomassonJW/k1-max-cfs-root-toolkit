@@ -115,6 +115,7 @@ future pose ou un essai physique devra être une mission distincte avec fichiers
 commandes, backup, rollback et critères OK/KO relus.
 
 Mise à jour : ADR-032 a depuis choisi le propriétaire K1 Control au-dessus des
-petites primitives stock. Le préflight S12 est clos sans effet ; la prochaine
-mission canonique est désormais `G4-K1-CONTROL-CFS-OWNER-CORE-OFFLINE-V1` après
-un GO exact séparé.
+petites primitives stock. Le préflight S12 est clos sans effet et le cœur
+propriétaire obtient `21/21` hors imprimante. La prochaine mission canonique est
+désormais `G4-K1-CONTROL-CFS-OWNER-EXCLUSION-GUARD-OFFLINE-V1` ; elle reste sans
+connexion K1.

@@ -5,6 +5,12 @@ Date : 2026-08-28
 Statut : **clos en lecture seule ; surface S12 confirmée ; tous les effets et la
 production restent fermés**
 
+Mise à jour : le successeur hors imprimante
+`G4-K1-CONTROL-CFS-OWNER-CORE-OFFLINE-V1` est désormais clos avec `21/21`
+scénarios. Voir le document 45. La prochaine mission proposée est le garde
+d'exclusion stock hors imprimante ; cette note ne modifie pas la preuve live du
+présent préflight.
+
 ## Résultat en langage courant
 
 Nous n'avons pas remplacé le firmware et nous n'avons rien fait bouger. Une
@@ -71,8 +77,8 @@ Aucune commande CFS n'a été envoyée. Aucun G-code, chauffage, mouvement,
 fichier distant, journal ou redémarrage n'a été utilisé. Aucun chargement,
 retrait, cutter, purge, runout, retry, reprise ou fin d'impression n'est qualifié.
 
-La prochaine mission proposée est
-`G4-K1-CONTROL-CFS-OWNER-CORE-OFFLINE-V1`. Elle construira seulement le moteur
-hors imprimante contre la réponse enregistrée et les cartes publiques épinglées.
-Elle exigera un nouveau GO exact et ne donnera toujours aucune autorité de pose
-ou d'effet physique.
+À la clôture de ce préflight, la mission proposée était
+`G4-K1-CONTROL-CFS-OWNER-CORE-OFFLINE-V1`. Elle a depuis construit le moteur
+hors imprimante contre la réponse enregistrée et les cartes publiques épinglées,
+sans autorité de pose ou d'effet physique. L'étape courante se trouve dans le
+document 45 et dans `HANDOFF.md`.

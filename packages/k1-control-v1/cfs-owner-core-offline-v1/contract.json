@@ -1,0 +1,209 @@
+{
+  "contract_id": "K1-CONTROL-CFS-OWNER-CORE-OFFLINE-V1",
+  "schema": 1,
+  "mission": "G4-K1-CONTROL-CFS-OWNER-CORE-OFFLINE-V1",
+  "goal": "GOAL-P4-PHYSICAL-SLICES-QUALIFICATION-V1",
+  "status": "offline_owner_core_closed_green_effects_unqualified",
+  "authority": "offline_only",
+  "sources": {
+    "architecture": "docs/adr/ADR-032-proprietaire-cycle-cfs-sur-primitives-stock.md",
+    "source_map": "design/cfs-control-source-map-v1.json",
+    "lifecycle_contract": "design/job-lifecycle-contract-v1.json",
+    "s12_safe_evidence": "packages/k1-control-v1/cfs-s12-owner-preflight-v1/evidence-map.json",
+    "s12_private_capture_sha256": "c7ffd84a6f1e27efcf770c4a2bcf4035df29c894a5c25dff57f6228293c511c4",
+    "s12_safe_result_sha256": "32808cbd4fd2f33282458cb2fe8ae69cb4d82f4f674113fab866aef5c748a26d"
+  },
+  "boundaries": {
+    "printer_connection": false,
+    "printer_mutation": false,
+    "gcode": false,
+    "heat": false,
+    "motion": false,
+    "cfs_effect": false,
+    "remote_write": false,
+    "service_action": false,
+    "real_connector_present": false,
+    "command_encoder_present": false,
+    "deployment_candidate": false
+  },
+  "topology": {
+    "required_connected_units": ["T1", "T2"],
+    "allowed_routes": [
+      "T1A",
+      "T1B",
+      "T1C",
+      "T1D",
+      "T2A",
+      "T2B",
+      "T2C",
+      "T2D"
+    ],
+    "freshness_keys": ["mapping_revision", "connection_epoch"],
+    "connection_epoch_change": "invalidate_lease_plan_and_resume",
+    "multiple_engaged_routes": "block_before_new_intent"
+  },
+  "owner_lease": {
+    "single_owner": "k1_control",
+    "stock_auto_refill_previous_value_saved": true,
+    "stock_auto_refill_must_be_verified_zero_before_active": true,
+    "stock_cfs_print_enable_is_not_changed": true,
+    "stock_full_cycle_entry_points_allowed": false,
+    "stock_callbacks_while_active": "owner_conflict_block",
+    "release_restores_exact_previous_auto_refill_value": true,
+    "release_during_unknown_effect": false
+  },
+  "material_identity": {
+    "required_exact_fields": [
+      "reference_id",
+      "material_type",
+      "color",
+      "diameter_mm",
+      "thermal_recipe_id"
+    ],
+    "user_approval_required": true,
+    "slot_sensor_must_show_material": true,
+    "stock_same_material_group_is_sufficient": false,
+    "zero_identical_candidates": "remain_paused",
+    "multiple_identical_candidates": "remain_paused"
+  },
+  "protected_state": {
+    "required_fields": [
+      "mesh_profile",
+      "accepted_z_revision",
+      "effective_z_offset_mm",
+      "homed_axes",
+      "nozzle_target_c",
+      "bed_target_c"
+    ],
+    "compared_directly_on_every_fresh_observation": true,
+    "boolean_unchanged_claim_is_sufficient": false
+  },
+  "runout_pause": {
+    "required_context_fields": [
+      "resume_position_xyz_mm",
+      "motion_modes",
+      "extruder_e_position",
+      "protected",
+      "fans",
+      "speed_factor_percent",
+      "flow_factor_percent",
+      "pressure_advance",
+      "logical_tool",
+      "engaged_route",
+      "head_sensor_present",
+      "after_cutter_sensor_present",
+      "mapping_revision",
+      "connection_epoch"
+    ],
+    "compared_directly_before_owned_resume": true,
+    "boolean_complete_claim_is_sufficient": false
+  },
+  "states": [
+    "idle",
+    "lease_pending",
+    "owned_idle",
+    "start_plan_pending",
+    "start_plan_observed",
+    "filament_ready",
+    "printing",
+    "paused_runout",
+    "refill_plan_pending",
+    "refill_plan_observed",
+    "resume_ready",
+    "release_pending",
+    "closed_safe",
+    "cancelled_safe",
+    "blocked_safe"
+  ],
+  "abstract_intents": {
+    "verify_stock_auto_refill_disabled": {
+      "dispatchable": false,
+      "maximum_attempts": 0,
+      "next_gate": "G4-K1-CONTROL-CFS-OWNER-EXCLUSION-GUARD-OFFLINE-V1"
+    },
+    "exclude_stock_auto_refill": {
+      "dispatchable": false,
+      "maximum_attempts": 1,
+      "next_gate": "G4-K1-CONTROL-CFS-OWNER-EXCLUSION-GUARD-OFFLINE-V1"
+    },
+    "cut_current_filament": {
+      "dispatchable": false,
+      "maximum_attempts": 1,
+      "next_gate": "separate_human_present_cut_gate"
+    },
+    "retract_current_filament": {
+      "dispatchable": false,
+      "maximum_attempts": 1,
+      "next_gate": "separate_human_present_retract_gate"
+    },
+    "load_selected_route": {
+      "dispatchable": false,
+      "maximum_attempts": 1,
+      "next_gate": "separate_human_present_load_gate"
+    },
+    "purge_visible": {
+      "dispatchable": false,
+      "maximum_attempts": 1,
+      "next_gate": "separate_human_present_custom_purge_gate"
+    },
+    "resolve_runout_tail": {
+      "dispatchable": false,
+      "maximum_attempts": 1,
+      "next_gate": "separate_human_present_tail_transition_gate"
+    },
+    "restore_stock_auto_refill": {
+      "dispatchable": false,
+      "maximum_attempts": 1,
+      "next_gate": "G4-K1-CONTROL-CFS-OWNER-EXCLUSION-GUARD-OFFLINE-V1"
+    }
+  },
+  "execution_rules": {
+    "intent_ids_unique": true,
+    "intent_order_strict": true,
+    "unknown_effect_replay_allowed": false,
+    "automatic_retry": false,
+    "automatic_stock_resume": false,
+    "stock_error_clear": false,
+    "stock_end_print": false,
+    "owned_resume_requires_full_verification": true,
+    "owned_resume_forbids_homing_z_reference_and_mesh_mutation": true,
+    "journal_is_append_only_in_memory": true
+  },
+  "required_scenarios": [
+    "s12_snapshot_requests_stock_owner_exclusion",
+    "lease_activates_only_after_verified_exclusion",
+    "lease_rejects_active_cfs_command",
+    "start_keeps_confirmed_route_without_cut_or_load",
+    "start_absent_plans_load_then_purge",
+    "start_wrong_plans_cut_retract_load_purge",
+    "start_unknown_material_blocks",
+    "multiple_engaged_routes_block",
+    "runout_requires_latched_pause",
+    "runout_selects_unique_identical_cross_cfs",
+    "runout_rejects_no_identical_candidate",
+    "runout_rejects_multiple_identical_candidates",
+    "runout_rejects_near_match",
+    "stale_mapping_blocks_before_plan",
+    "connection_epoch_change_invalidates_lease",
+    "stock_callback_conflict_blocks",
+    "unknown_effect_never_retries",
+    "completed_intent_cannot_replay",
+    "owned_resume_requires_full_verification",
+    "lease_release_restores_saved_stock_policy",
+    "lease_release_preserves_pre_disabled_stock_policy"
+  ],
+  "truthful_limits": {
+    "recorded_s12_identical_pair_present": false,
+    "synthetic_identical_pairs_are_physical_proof": false,
+    "primitive_physically_qualified_by_this_package": false,
+    "runtime_owner_installed": false,
+    "production_authorized": false
+  },
+  "next_gate": {
+    "id": "G4-K1-CONTROL-CFS-OWNER-EXCLUSION-GUARD-OFFLINE-V1",
+    "scope": "prepare_the_exact_one_shot_disable_verify_and_restore_guard_for_stock_auto_refill_without_connecting_to_the_K1",
+    "printer_connection": false,
+    "printer_action": false,
+    "deployment_candidate": false
+  }
+}

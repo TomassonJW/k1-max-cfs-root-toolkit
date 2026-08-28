@@ -64,20 +64,21 @@ avec contact qualifié à `Z2`, et la brosse du bac occupe
 E2 a qualifié un balayage principal à `5 mm/s`, puis E3, E3-R2 et E4 ont affiné
 la seconde brosse. Le cycle carré final E4 fait un aller-retour à `Y305`, puis
 un autre à `Y304`, entre `X203` et `X206`, à `3 mm/s`; Thomas a confirmé
-`E4 OK`. L'état final est `X203 Y273 Z32`, `standby`, chauffes zéro, aucune
-route CFS, configurations inchangées et `11 × 11` actif. Le registre local
-`physical-slices-qualification-v1` fixe exactement sept exigences internes au
-Goal 3, en compte désormais `1/7` close et place
-`G4-K1-CONTROL-CLEAN-AND-REFERENCE-V1` comme exigence active. Son pilote
-physique complet est prêt et son préflight live sans effet est vert à
-la position sûre `X204,5 Y304,5 Z35`, chauffes zéro et `11 × 11` exact. Thomas
-a confirmé le Geetech et `220 °C`. Un premier passage s'est arrêté après la
-chauffe et avant tout nettoyage ; la coupure de sécurité a remis les deux
-cibles à zéro. La chauffe seule est supprimée. Le cycle atomique suivant fait
-six allers-retours rapides dans E4, refroidit en frottant lentement et en
-remontant de `Z32` à `Z34` selon la température mesurée, puis finit chauffes à
-zéro autour de `140 °C`. Il attend Thomas devant la K1 et le verdict
-`GEETECH_220_CYCLE_CONFIRMED` ;
+`E4 OK`. L'état final de cette cartographie était `X203 Y273 Z32`, `standby`,
+chauffes zéro, aucune route CFS, configurations inchangées et `11 × 11` actif.
+Le registre `physical-slices-qualification-v1` fixe exactement sept exigences
+du Goal 3 et en compte maintenant `2/7` closes. Les essais chauds ont fermé le
+nettoyage automatique en KO ; ADR-030 impose désormais le nettoyage manuel.
+`EMPTY_LOAD/T1A` puis `KEEP_CORRECT_T1A` ont qualifié le chargement stock et la
+conservation du bon filament, mais `START_PRINT` a encore remplacé le mesh et
+lancé le mauvais brossage. ADR-031 prépare donc un départ possédé sans brosse
+ni recalibration. ADR-032 retient K1 Control comme propriétaire complet au-dessus
+de petites primitives stock. Le préflight S12 est clos en lecture seule et le
+cœur `CFS-OWNER-CORE-OFFLINE-V1` obtient `21/21` scénarios sans connexion : un
+seul propriétaire, remplacement strictement identique entre les deux CFS,
+aucun retry ou resume stock et restitution exacte de l'auto-remplacement. Aucun
+effet réel n'est qualifié. La prochaine mission est le garde d'exclusion stock,
+encore hors imprimante ;
 GATEWAY-PRIVATE-LAN-NO-AUTH-V1 est installé et validé : le port `4409` ne
 demande plus de mot de passe, reste limité aux réseaux IPv4 privés, et présente
 uniquement son proxy local approuvé à Moonraker ; production remains closed**.

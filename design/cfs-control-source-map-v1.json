@@ -2,12 +2,13 @@
   "map_id": "K1-CONTROL-CFS-SOURCE-MAP-V1",
   "schema": 1,
   "as_of": "2026-08-28",
-  "status": "s12_read_only_surface_confirmed_effects_and_implementation_closed",
+  "status": "owner_core_offline_complete_effects_and_deployment_closed",
   "authority": {
     "printer_connection_authorized": false,
     "printer_mutation_authorized": false,
     "physical_action_authorized": false,
     "implementation_authorized": false,
+    "offline_owner_core_completed": true,
     "deployment_candidate": false
   },
   "target": {
@@ -486,7 +487,10 @@
       "automatic_retry",
       "stock_resume_command"
     ],
-    "ambiguous_or_failed_state": "remain_paused_heaters_follow_explicit_safe_policy_no_automatic_resume"
+    "ambiguous_or_failed_state": "remain_paused_heaters_follow_explicit_safe_policy_no_automatic_resume",
+    "offline_owner_core": "packages/k1-control-v1/cfs-owner-core-offline-v1/contract.json",
+    "offline_scenario_matrix": "21/21",
+    "stock_resume_command_used": false
   },
   "control_surface": {
     "daily_UI": "existing_K1_Control_page_linked_from_Mainsail",
@@ -535,25 +539,25 @@
       "needs": "exact_symbols_arguments_config_and_hashes_on_this_K1_Max_S12",
       "resolution": "exact_loaded_binary_loader_config_runtime_commands_and_callbacks_bound_to_pinned_public_argument_signatures",
       "truthful_limit": "public_argument_signatures_are_correlated_but_each_effect_still_requires_a_physical_gate",
-      "next_gate": "G4-K1-CONTROL-CFS-OWNER-CORE-OFFLINE-V1",
+      "next_gate": "G4-K1-CONTROL-CFS-OWNER-EXCLUSION-GUARD-OFFLINE-V1",
       "allows_effect": false
     },
     {
       "id": "GAP-RUNOUT-OWNER-EXCLUSION",
       "kind": "read_only",
-      "status": "surface_mapped_offline_state_machine_pending",
+      "status": "offline_owner_state_machine_resolved_live_exclusion_unqualified",
       "needs": "exact_runout_callbacks_notifications_runtime_flags_and_stock_resume_paths",
-      "resolution": "runtime_flags_command_names_and_callback_markers_are_bound_to_the_exact_S12_binary",
-      "next_gate": "G4-K1-CONTROL-CFS-OWNER-CORE-OFFLINE-V1",
+      "resolution": "runtime_flags_command_names_and_callback_markers_are_bound_to_the_exact_S12_binary_and_the_pure_owner_now_blocks_stock_callbacks_stale_mappings_and_hidden_resume",
+      "next_gate": "G4-K1-CONTROL-CFS-OWNER-EXCLUSION-GUARD-OFFLINE-V1",
       "allows_effect": false
     },
     {
       "id": "GAP-END-AND-RECOVERY-STATE",
       "kind": "read_only",
-      "status": "surface_mapped_offline_state_machine_pending",
+      "status": "offline_owner_state_machine_resolved_physical_end_behavior_unqualified",
       "needs": "exact_BOX_END_PRINT_mapping_power_loss_sensor_enable_and_recovery_cleanup_paths",
-      "resolution": "end_power_loss_retry_and_mapping_cleanup_names_are_present_in_the_exact_S12_binary",
-      "next_gate": "G4-K1-CONTROL-CFS-OWNER-CORE-OFFLINE-V1",
+      "resolution": "end_power_loss_retry_and_mapping_cleanup_names_are_present_in_the_exact_S12_binary_and_the_pure_owner_refuses_stock_end_retry_and_resume_callbacks",
+      "next_gate": "future_separate_end_and_recovery_physical_gate",
       "allows_effect": false
     },
     {
@@ -585,9 +589,28 @@
       "allows_effect": true
     }
   ],
+  "owner_core_offline": {
+    "mission": "G4-K1-CONTROL-CFS-OWNER-CORE-OFFLINE-V1",
+    "status": "OFFLINE_OWNER_CORE_CLOSED_GREEN_EFFECTS_UNQUALIFIED",
+    "contract": "packages/k1-control-v1/cfs-owner-core-offline-v1/contract.json",
+    "canonical_document": "docs/45-coeur-proprietaire-cfs-hors-imprimante-v1.md",
+    "scenario_matrix": "21/21",
+    "single_owner_lease_modeled": true,
+    "exact_material_identity_fields": 5,
+    "cross_cfs_identical_replacement_modeled": true,
+    "recorded_s12_identical_pair_present": false,
+    "automatic_retry": false,
+    "stock_resume_command": false,
+    "unknown_effect_replay": false,
+    "full_pause_context_compared_before_resume": true,
+    "abstract_intents_dispatchable": false,
+    "printer_connection": false,
+    "physical_action": false,
+    "deployment_candidate": false
+  },
   "next_gate": {
-    "id": "G4-K1-CONTROL-CFS-OWNER-CORE-OFFLINE-V1",
-    "scope": "build_pure_offline_owner_state_machine_against_recorded_sanitized_S12_responses_after_fresh_exact_GO",
+    "id": "G4-K1-CONTROL-CFS-OWNER-EXCLUSION-GUARD-OFFLINE-V1",
+    "scope": "prepare_the_exact_one_shot_disable_verify_and_restore_guard_for_stock_auto_refill_without_connecting_to_the_K1",
     "printer_connection": false,
     "implementation_authorized": false,
     "gcode": false,

@@ -1692,3 +1692,41 @@ baseline V1, la documentation et la fermeture Git.
 Quand le Goal 4 passe, le projet est terminé : aucune gate obligatoire, P5 ou P6
 ne reste ouverte. Les améliorations communautaires éventuelles deviennent un
 backlog optionnel extérieur au projet et ne peuvent pas repousser sa clôture.
+
+## D-082 — Le propriétaire CFS décide hors transport et refuse toute reprise ambiguë
+
+Date: 2026-08-28
+
+Status: cœur propriétaire clos hors imprimante ; effets, pose et production
+fermés
+
+ADR-032 reste la décision d'architecture : K1 Control possède le cycle complet
+et le pilote Creality ne pourra exécuter que de petites primitives qualifiées
+séparément. `G4-K1-CONTROL-CFS-OWNER-CORE-OFFLINE-V1` rend cette règle
+exécutable sans connecter la K1.
+
+Le verrou enregistre la valeur précédente de l'auto-remplacement stock, exige
+sa désactivation prouvée avant de devenir actif et sa restitution exacte à la
+fin. Un rappel stock, une cartographie périmée ou une nouvelle époque de
+connexion invalide le travail. Chaque intention est ordonnée, unique, non
+exécutable et limitée à une tentative ; un résultat inconnu n'est jamais rejoué.
+
+L'auto-remplacement K1 Control exige une seule bobine approuvée avec même
+référence, type, couleur, diamètre et recette thermique. Zéro ou plusieurs
+candidats restent en pause. La matrice synthétique qualifie le choix logique de
+`T1A` vers `T2A`, mais la capture S12 ne contenait aucune paire identique réelle
+et aucune primitive physique n'est promue.
+
+La reprise ne peut pas être autorisée par un booléen « état complet ». Le cœur
+conserve puis compare le contexte structuré de pause : position de retour,
+modes de mouvement, extrusion, mesh, Z, cibles thermiques, ventilateurs,
+facteurs vitesse/débit, pressure advance, outil logique, route, capteurs et
+fraîcheur de cartographie.
+
+La prochaine mission est
+`G4-K1-CONTROL-CFS-OWNER-EXCLUSION-GUARD-OFFLINE-V1`. Elle préparera seulement
+le garde de désactivation, vérification et restauration de la politique stock,
+sans connexion ni candidat de pose.
+
+Voir ADR-032, `docs/45-coeur-proprietaire-cfs-hors-imprimante-v1.md` et
+`packages/k1-control-v1/cfs-owner-core-offline-v1/`.

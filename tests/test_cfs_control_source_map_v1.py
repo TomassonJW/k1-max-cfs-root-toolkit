@@ -17,16 +17,17 @@ class CfsControlSourceMapV1Tests(unittest.TestCase):
     def setUp(self):
         self.source_map = load_json(MAP_PATH)
 
-    def test_architecture_is_offline_and_cannot_authorize_effects(self):
+    def test_architecture_has_offline_core_but_cannot_authorize_effects(self):
         authority = self.source_map["authority"]
         self.assertEqual(
-            "s12_read_only_surface_confirmed_effects_and_implementation_closed",
+            "owner_core_offline_complete_effects_and_deployment_closed",
             self.source_map["status"],
         )
         self.assertFalse(authority["printer_connection_authorized"])
         self.assertFalse(authority["printer_mutation_authorized"])
         self.assertFalse(authority["physical_action_authorized"])
         self.assertFalse(authority["implementation_authorized"])
+        self.assertTrue(authority["offline_owner_core_completed"])
         self.assertFalse(authority["deployment_candidate"])
 
     def test_required_evidence_sources_are_pinned_and_ranked(self):
@@ -181,7 +182,7 @@ class CfsControlSourceMapV1Tests(unittest.TestCase):
         )
         self.assertIn("known_start_defects", rollback["truthful_limit"])
 
-    def test_s12_preflight_is_closed_and_next_gate_is_offline_only(self):
+    def test_s12_preflight_and_owner_core_are_closed_and_next_gate_is_offline_only(self):
         preflight = self.source_map["s12_preflight"]
         self.assertEqual(
             "CLOSED_READ_ONLY_S12_SURFACE_CONFIRMED_EFFECTS_CLOSED",
@@ -191,8 +192,25 @@ class CfsControlSourceMapV1Tests(unittest.TestCase):
         self.assertTrue(preflight["required_command_names_present"])
         self.assertTrue(preflight["required_callback_markers_present"])
         self.assertFalse(preflight["stock_identical_replacement_pair_present_at_capture"])
+        owner = self.source_map["owner_core_offline"]
+        self.assertEqual(
+            "OFFLINE_OWNER_CORE_CLOSED_GREEN_EFFECTS_UNQUALIFIED",
+            owner["status"],
+        )
+        self.assertEqual("21/21", owner["scenario_matrix"])
+        self.assertTrue(owner["single_owner_lease_modeled"])
+        self.assertTrue(owner["cross_cfs_identical_replacement_modeled"])
+        self.assertFalse(owner["recorded_s12_identical_pair_present"])
+        self.assertTrue(owner["full_pause_context_compared_before_resume"])
+        self.assertFalse(owner["abstract_intents_dispatchable"])
+        self.assertFalse(owner["printer_connection"])
+        self.assertFalse(owner["physical_action"])
+        self.assertFalse(owner["deployment_candidate"])
         next_gate = self.source_map["next_gate"]
-        self.assertEqual("G4-K1-CONTROL-CFS-OWNER-CORE-OFFLINE-V1", next_gate["id"])
+        self.assertEqual(
+            "G4-K1-CONTROL-CFS-OWNER-EXCLUSION-GUARD-OFFLINE-V1",
+            next_gate["id"],
+        )
         self.assertFalse(next_gate["printer_connection"])
         self.assertFalse(next_gate["implementation_authorized"])
         for field in ("gcode", "heat", "motion", "CFS_effect", "remote_write", "service_restart"):
@@ -205,7 +223,7 @@ class CfsControlSourceMapV1Tests(unittest.TestCase):
             self.assertEqual("bounded_physical", gap["kind"])
             self.assertTrue(gap["allows_effect"])
 
-    def test_lifecycle_contract_links_the_new_decision_without_promoting_it(self):
+    def test_lifecycle_contract_links_the_offline_core_without_promoting_it(self):
         lifecycle = load_json(LIFECYCLE_PATH)
         amendments = {item["id"]: item for item in lifecycle["amendments"]}
         amendment = amendments["CFS-CONTROL-SOURCE-MAP-V1"]
@@ -217,7 +235,16 @@ class CfsControlSourceMapV1Tests(unittest.TestCase):
         architecture = lifecycle["cfs_control_architecture"]
         self.assertTrue(architecture["auto_refill_feature_preserved"])
         self.assertFalse(architecture["implementation_authorized"])
+        self.assertTrue(architecture["offline_owner_core_completed"])
+        self.assertEqual("21/21", architecture["offline_owner_core_scenarios"])
         self.assertFalse(architecture["deployment_candidate"])
+        owner = lifecycle["cfs_owner_core_offline"]
+        self.assertEqual("21/21", owner["scenario_matrix"])
+        self.assertFalse(owner["recorded_s12_identical_pair_present"])
+        self.assertTrue(owner["full_pause_context_compared_before_resume"])
+        self.assertFalse(owner["printer_connection"])
+        self.assertFalse(owner["real_connector_present"])
+        self.assertFalse(owner["deployment_candidate"])
 
 
 if __name__ == "__main__":

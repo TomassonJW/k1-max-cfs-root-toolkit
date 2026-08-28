@@ -132,9 +132,10 @@ Identifiant : `GOAL-P4-PHYSICAL-SLICES-QUALIFICATION-V1`
 État : **en cours ; `2/7` exigences passées ; nettoyage automatique clos KO et
 remplacé par une gate manuelle obligatoire ; la conservation réelle de `T1A`
 est prouvée ; le départ stock est KO ; START-SEQUENCE-OWNER-V1 est préparé hors
-imprimante ; l'architecture complète CFS est choisie et le préflight S12 est
-clos en lecture seule ; le moteur propriétaire hors imprimante attend un GO
-séparé avant toute implémentation ou nouvelle qualification physique**.
+imprimante ; l'architecture complète CFS est choisie, le préflight S12 est clos
+en lecture seule et le cœur propriétaire obtient `21/21` hors imprimante ; le
+garde d'exclusion du propriétaire stock reste à préparer avant toute nouvelle
+qualification physique**.
 
 Le checkpoint C a référencé XYZ, rechargé le `11 × 11`, commandé `Z=50 mm` et
 attendu la fin. Un premier faux KO local a confondu la position physique
@@ -221,15 +222,15 @@ repousser la clôture.
 ## Démarrage recommandé
 
 La prochaine mission proposée est
-`G4-K1-CONTROL-CFS-OWNER-CORE-OFFLINE-V1`. Elle ne joindra pas la K1. Elle
-construira le moteur pur à partir de la capture S12 nettoyée, des cartes
-publiques épinglées et des anciennes preuves locales, avec l'auto-remplacement
-d'une bobine identique conservé mais aucun retry ou resume stock automatique.
-Un nouveau GO exact est nécessaire parce que le GO du préflight est consommé.
+`G4-K1-CONTROL-CFS-OWNER-EXCLUSION-GUARD-OFFLINE-V1`. Elle ne joindra pas la
+K1. Elle préparera le garde exact qui sauvegarde la valeur stock
+d'auto-remplacement, permet au plus une désactivation, exige sa preuve puis
+restaure exactement la valeur précédente. Elle n'ajoutera toujours aucun
+connecteur ou candidat de pose. Une nouvelle autorité de mission est nécessaire
+car la mission du cœur propriétaire est close.
 
-Le choix optimal est `gpt-5.6-sol` avec raisonnement `max` : cette tranche est
-hors imprimante, mais elle concentre le graphe runout, les deux CFS, les erreurs,
-le rollback et les futures frontières physiques. L'option plus économique
-`gpt-5.6-terra` en `high` reste raisonnable si l'on accepte davantage de relecture
-avant de figer le contrat ; un modèle plus léger augmenterait le risque de
-réintroduire un second propriétaire ou une reprise cachée.
+Le choix optimal est `gpt-5.6-terra` avec raisonnement `high` : la tranche est
+petite et hors imprimante, mais elle doit verrouiller les états inconnus et le
+rollback avant une future action réelle. L'option économique raisonnable est
+`gpt-5.6-terra` en `medium`, avec davantage de risque de reprise si un retour
+HTTP ambigu ou une valeur stock inattendue n'est pas modélisé.

@@ -2,6 +2,10 @@
 
 Date de clôture : 2026-08-28
 
+Mise à jour : cette passation est historique. Le cœur propriétaire qui y était
+proposé est maintenant clos ; la passation courante est
+`docs/HANDOFF-CFS-OWNER-CORE-2026-08-28.md`.
+
 État de reprise : **ATTENDRE_GO**
 
 Nouvelle tâche créée : non

@@ -1113,10 +1113,36 @@ Thomas explicitly rejected further sacrificial print campaigns on 2026-08-21.
 The V3 + PATHS-V1 observation remains useful coexistence evidence but no longer
 blocks offline product construction. L'autorité globale du Goal couvre la
 campagne de calibration dans la tâche active et son préflight est désormais
-vert. Production et G5 restent fermées.
+vert. La production et le Goal 4 restent fermés.
 
 Do not remove or disable the current Orca `+0.27 mm` post-processor. Its
 retirement remains atomic with the later proven machine/Orca replacement.
+
+Mise à jour du 28 août 2026 : les Goals 1 et 2 sont clos. Le Goal 3 reste en
+cours à `2/7` exigences physiques passées. Le nettoyage automatique est clos
+KO et remplacé par le nettoyage manuel obligatoire. Le `11 × 11` est le meilleur
+profil actuel, mais aucun profil n'est qualifié robuste.
+
+ADR-032 choisit K1 Control comme propriétaire complet du cycle CFS au-dessus de
+petites primitives stock qualifiées séparément. Le préflight S12 a confirmé en
+lecture seule le chargeur, le binaire, les commandes, les rappels, les deux CFS
+et la valeur stock d'auto-remplacement à `1`, sans paire identique réelle.
+
+`G4-K1-CONTROL-CFS-OWNER-CORE-OFFLINE-V1` est maintenant clos OK. Le moteur pur
+obtient `21/21`, les tests ciblés `21/21` et la suite complète exécute `654`
+tests, dont `651` verts et `3` ignorés connus. Il modèle un seul propriétaire,
+les départs conserver/charger/changer, un remplacement identique entre les deux
+CFS, l'absence de retry, le refus des rappels stock et la restitution exacte de
+la valeur précédente. Avant une reprise, il compare aussi le contexte complet
+de pause au lieu d'accepter un simple indicateur. Toutes ses intentions restent
+non exécutables. Aucune connexion K1, commande, chauffe, mouvement, écriture
+distante ou action CFS n'a eu lieu.
+
+La prochaine mission proposée est
+`G4-K1-CONTROL-CFS-OWNER-EXCLUSION-GUARD-OFFLINE-V1`. Elle préparera encore sur
+le PC le garde qui désactive au plus une fois l'auto-remplacement stock, vérifie
+l'effet puis restaure exactement la valeur précédente. La connexion et l'essai
+réel resteront une gate distincte.
 
 ## Not authorised yet
 
@@ -1172,9 +1198,15 @@ retirement remains atomic with the later proven machine/Orca replacement.
 - Toute connexion, tout G-code ou essai réel issu de
   `G4-K1-CONTROL-CFS-STOCK-UNLOAD-GUARD-TRANSPORT-OFFLINE-V1` et
   `GOAL-P4-OFFLINE-CYCLE-CFS-V1`, désormais clos hors imprimante.
-- Toute connexion du prochain `GOAL-P4-K1-READ-ONLY-QUALIFICATION-V1` sans son
-  autorité séparée ; même autorisé, ce Goal exclura G-code, écriture distante,
-  restart, chauffe, mouvement et retrait.
+- Toute connexion, commande, pose ou qualification physique issue de
+  `G4-K1-CONTROL-CFS-OWNER-CORE-OFFLINE-V1`, désormais clos hors imprimante ;
+  ses intentions ne sont pas exécutables.
+- Toute connexion ou action K1 de la prochaine gate
+  `G4-K1-CONTROL-CFS-OWNER-EXCLUSION-GUARD-OFFLINE-V1`, qui restera une
+  préparation locale seulement.
+- Toute répétition ou extension de
+  `GOAL-P4-K1-READ-ONLY-QUALIFICATION-V1`, désormais clos ; son ancienne
+  autorité de lecture seule est consommée.
 - Any import or change of Orca fields on the workstation profile.
 - `G4-ZSAFE-START-V1` forever: this rejected name cannot receive a GO.
 - Any future `K1-CONTROL-V1` deployment until a new exact G4 package exists and

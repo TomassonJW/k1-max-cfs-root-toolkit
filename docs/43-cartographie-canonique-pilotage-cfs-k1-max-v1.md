@@ -2,14 +2,21 @@
 
 Date : 2026-08-28
 
-État : **architecture choisie et surface S12 confirmée en lecture seule ;
-implémentation, effets physiques et production fermés**
+État : **architecture choisie, surface S12 confirmée et cœur propriétaire clos
+hors imprimante ; effets physiques, pose et production fermés**
 
 Mise à jour du 28 août 2026 : la gate S12 est close dans le document 44. Le
 chargeur et le binaire exacts n'ont pas dérivé, l'objet `box` est actif, les
 commandes et rappels attendus sont présents et les deux CFS `1.1.3` répondent.
 Cette preuve permet de préparer le moteur hors imprimante ; elle ne qualifie
 encore aucune primitive d'effet.
+
+Mise à jour de la même journée : le moteur pur
+`CFS-OWNER-CORE-OFFLINE-V1` est maintenant clos avec `21/21` scénarios. Il
+modélise le verrou à un seul propriétaire, les départs conserver/charger/changer,
+le remplacement strictement identique entre les deux CFS, le refus des retries
+et la restitution exacte de l'auto-remplacement stock. Ses intentions ne sont
+pas exécutables et aucun effet réel n'est promu par ce résultat.
 
 ## Réponse concrète
 
@@ -234,7 +241,7 @@ technique fiable, pas une validation de la mauvaise séquence stock.
 | Point | Pourquoi il bloque | Comment on l’évite |
 | --- | --- | --- |
 | Helix a analysé une image K1 S11, notre machine est S12 | résolu pour la surface hors effet : binaire et chargeur exacts liés à la carte publique | garder chaque effet derrière sa gate physique |
-| le runout stock peut lancer des callbacks internes | les noms et drapeaux S12 sont maintenant cartographiés, pas leurs effets physiques | construire l'exclusion à un seul propriétaire hors imprimante puis la qualifier séparément |
+| le runout stock peut lancer des callbacks internes | le cœur hors imprimante bloque maintenant tout rappel stock, mais la désactivation/restauration réelle n'est pas qualifiée | préparer le garde exact d'exclusion, puis le qualifier séparément |
 | une fin de bobine laisse encore un segment dans le tube et la tête | couper aveuglément ou relancer la grosse purge stock serait faux | qualifier séparément la recette « consommer ou retirer la fin » |
 | la fin de print stock nettoie mappings et états de reprise | les chemins S12 sont repérés, mais appeler `BOX_END_PRINT` rendrait le cycle au stock | posséder explicitement ces nettoyages sans appeler la grosse fin stock |
 | les petites phases peuvent échouer sans lever une erreur claire | un retour HTTP OK ne prouve rien | états avant/après, capteurs, une seule tentative |
@@ -245,13 +252,13 @@ technique fiable, pas une validation de la mauvaise séquence stock.
 
 ## Prochaine gate
 
-Le préflight S12 est maintenant clos sans effet. La prochaine étape raisonnable
-n'est toujours pas un chargement : c'est
-`G4-K1-CONTROL-CFS-OWNER-CORE-OFFLINE-V1`.
+Le préflight S12 et le cœur propriétaire hors imprimante sont maintenant clos.
+La prochaine étape raisonnable n'est toujours pas un chargement : c'est
+`G4-K1-CONTROL-CFS-OWNER-EXCLUSION-GUARD-OFFLINE-V1`.
 
-Après un nouveau GO exact, elle construira le propriétaire pur hors imprimante
-contre la réponse S12 enregistrée : un seul propriétaire, états avant/après,
-auto-remplacement d'une bobine identique, refus des ambiguïtés, aucune reprise
-automatique et journal explicite. Elle n'aura aucun transport K1 et n'autorisera
-aucune pose. Les chargements, retraits, coupes et fins de bobine resteront des
-gates physiques distinctes. Aucun ancien essai valable ne sera rejoué.
+Après une nouvelle autorité de mission, elle préparera seulement le garde qui
+encadrera la valeur stock d'auto-remplacement : lecture et sauvegarde, une seule
+tentative de désactivation, vérification, puis restauration exacte. Elle restera
+hors imprimante, sans connecteur ni pose. La connexion et l'essai réel de ce
+garde, puis les chargements, retraits, coupes et fins de bobine, resteront des
+gates séparées. Aucun ancien essai valable ne sera rejoué.

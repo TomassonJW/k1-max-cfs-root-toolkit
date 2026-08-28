@@ -1,0 +1,208 @@
+{
+  "schema": 1,
+  "matrix": "K1-CONTROL-CFS-OWNER-CORE-OFFLINE-V1",
+  "synthetic_only": true,
+  "scenarios": [
+    {
+      "id": "s12_snapshot_requests_stock_owner_exclusion",
+      "expected": {
+        "verdict": "pass_offline",
+        "phase": "lease_pending",
+        "saved_stock_auto_refill": 1,
+        "pending_operations": ["exclude_stock_auto_refill"]
+      }
+    },
+    {
+      "id": "lease_activates_only_after_verified_exclusion",
+      "expected": {
+        "verdict": "pass_offline",
+        "phase": "owned_idle",
+        "lease_active": true,
+        "pending_operations": []
+      }
+    },
+    {
+      "id": "lease_rejects_active_cfs_command",
+      "expected": {
+        "verdict": "blocked_safe",
+        "phase": "blocked_safe",
+        "reason_code": "cfs_command_active",
+        "lease_active": false
+      }
+    },
+    {
+      "id": "start_keeps_confirmed_route_without_cut_or_load",
+      "expected": {
+        "verdict": "pass_offline",
+        "phase": "start_plan_pending",
+        "active_route": "T1A",
+        "pending_operations": ["purge_visible"]
+      }
+    },
+    {
+      "id": "start_absent_plans_load_then_purge",
+      "expected": {
+        "verdict": "pass_offline",
+        "phase": "start_plan_pending",
+        "active_route": null,
+        "pending_operations": ["load_selected_route", "purge_visible"]
+      }
+    },
+    {
+      "id": "start_wrong_plans_cut_retract_load_purge",
+      "expected": {
+        "verdict": "pass_offline",
+        "phase": "start_plan_pending",
+        "active_route": "T1D",
+        "pending_operations": [
+          "cut_current_filament",
+          "retract_current_filament",
+          "load_selected_route",
+          "purge_visible"
+        ]
+      }
+    },
+    {
+      "id": "start_unknown_material_blocks",
+      "expected": {
+        "verdict": "blocked_safe",
+        "phase": "blocked_safe",
+        "reason_code": "engaged_material_identity_unproven",
+        "replay_allowed": false
+      }
+    },
+    {
+      "id": "multiple_engaged_routes_block",
+      "expected": {
+        "verdict": "blocked_safe",
+        "phase": "blocked_safe",
+        "reason_code": "multiple_engaged_routes",
+        "replay_allowed": false
+      }
+    },
+    {
+      "id": "runout_requires_latched_pause",
+      "expected": {
+        "verdict": "blocked_safe",
+        "phase": "blocked_safe",
+        "reason_code": "runout_pause_not_latched",
+        "replay_allowed": false
+      }
+    },
+    {
+      "id": "runout_selects_unique_identical_cross_cfs",
+      "expected": {
+        "verdict": "pass_offline",
+        "phase": "printing",
+        "active_route": "T2A",
+        "resume_eligible": false,
+        "simulated_observations": 4
+      }
+    },
+    {
+      "id": "runout_rejects_no_identical_candidate",
+      "expected": {
+        "verdict": "blocked_safe",
+        "phase": "blocked_safe",
+        "reason_code": "identical_replacement_missing",
+        "replay_allowed": false
+      }
+    },
+    {
+      "id": "runout_rejects_multiple_identical_candidates",
+      "expected": {
+        "verdict": "blocked_safe",
+        "phase": "blocked_safe",
+        "reason_code": "identical_replacement_ambiguous",
+        "replay_allowed": false
+      }
+    },
+    {
+      "id": "runout_rejects_near_match",
+      "expected": {
+        "verdict": "blocked_safe",
+        "phase": "blocked_safe",
+        "reason_code": "identical_replacement_missing",
+        "replay_allowed": false
+      }
+    },
+    {
+      "id": "stale_mapping_blocks_before_plan",
+      "expected": {
+        "verdict": "blocked_safe",
+        "phase": "blocked_safe",
+        "reason_code": "mapping_revision_changed",
+        "pending_operations": []
+      }
+    },
+    {
+      "id": "connection_epoch_change_invalidates_lease",
+      "expected": {
+        "verdict": "blocked_safe",
+        "phase": "blocked_safe",
+        "reason_code": "connection_epoch_changed",
+        "replay_allowed": false,
+        "resume_eligible": false
+      }
+    },
+    {
+      "id": "stock_callback_conflict_blocks",
+      "expected": {
+        "verdict": "blocked_safe",
+        "phase": "blocked_safe",
+        "reason_code": "stock_owner_conflict",
+        "replay_allowed": false
+      }
+    },
+    {
+      "id": "unknown_effect_never_retries",
+      "expected": {
+        "verdict": "blocked_safe",
+        "phase": "blocked_safe",
+        "reason_code": "effect_outcome_unknown",
+        "replay_allowed": false,
+        "simulated_observations": 0
+      }
+    },
+    {
+      "id": "completed_intent_cannot_replay",
+      "expected": {
+        "verdict": "blocked_safe",
+        "phase": "blocked_safe",
+        "reason_code": "intent_replay_rejected",
+        "replay_allowed": false,
+        "simulated_observations": 1
+      }
+    },
+    {
+      "id": "owned_resume_requires_full_verification",
+      "expected": {
+        "verdict": "blocked_safe",
+        "phase": "blocked_safe",
+        "reason_code": "owned_resume_invalid",
+        "replay_allowed": false,
+        "resume_eligible": false
+      }
+    },
+    {
+      "id": "lease_release_restores_saved_stock_policy",
+      "expected": {
+        "verdict": "closed_safe",
+        "phase": "closed_safe",
+        "saved_stock_auto_refill": 1,
+        "lease_active": false,
+        "lease_release_required": false
+      }
+    },
+    {
+      "id": "lease_release_preserves_pre_disabled_stock_policy",
+      "expected": {
+        "verdict": "closed_safe",
+        "phase": "closed_safe",
+        "saved_stock_auto_refill": 0,
+        "lease_active": false,
+        "lease_release_required": false
+      }
+    }
+  ]
+}

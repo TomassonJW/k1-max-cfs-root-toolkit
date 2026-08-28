@@ -390,6 +390,46 @@ un état K1 frais et comparer forme, valeurs et délais au modèle. Elle exige u
 autorité séparée et n'autorisera aucun G-code, fichier distant, restart, chauffe,
 mouvement ou retrait.
 
+### `GOAL-P4-K1-READ-ONLY-QUALIFICATION-V1`
+
+Statut : **Goal 2 clos en lecture seule ; collecteur qualifié ; production
+fermée**.
+
+Deux réponses nettoyées et stables ont qualifié la forme, la traduction et les
+délais de lecture sans effet. La dérive de mesh alors observée a ensuite été
+corrigée par une gate distincte ; ADR-029 établit désormais que le `11 × 11`
+est le meilleur profil actuel sans être robuste. Cette gate n'a produit aucun
+G-code, fichier distant, restart, chauffe, mouvement ou effet CFS.
+
+### `G4-K1-CONTROL-CFS-S12-OWNER-PREFLIGHT-V1`
+
+Statut : **clos OK en lecture seule ; surface S12 exacte confirmée ; effets
+fermés**.
+
+Le chargeur, le binaire, les 66 noms `BOX_*`, les commandes nécessaires et les
+rappels internes correspondent aux empreintes locales. Les deux CFS `1.1.3`
+étaient connectés, l'auto-remplacement stock valait `1` et aucune paire identique
+n'était présente dans la capture. Aucun effet ou candidat de pose n'a été créé.
+
+### `G4-K1-CONTROL-CFS-OWNER-CORE-OFFLINE-V1`
+
+Statut : **clos OK hors imprimante ; `21/21` ; toutes les intentions restent
+non exécutables**.
+
+Le moteur pur impose un seul propriétaire, garde puis restaure la valeur stock,
+sépare conserver/charger/changer et choisit un unique remplacement strictement
+identique entre `T1` et `T2`. Il bloque les cartographies périmées, reconnexions,
+rappels stock, résultats incertains et doublons. Le contexte complet de pause
+est comparé avant la reprise. Les tests ciblés obtiennent `21/21` et la suite
+complète exécute `654` tests, dont `651` verts et `3`
+ignorés connus.
+
+Aucune connexion K1, commande, chauffe, mouvement, écriture distante ou action
+CFS n'a eu lieu. La prochaine gate proposée est
+`G4-K1-CONTROL-CFS-OWNER-EXCLUSION-GUARD-OFFLINE-V1` : préparer seulement le
+garde une tentative / vérification / restauration de l'auto-remplacement stock,
+toujours sans connexion ni pose.
+
 ### Reprise physique `MESH-EDGE-DIAGNOSTIC-V1`
 
 Avant toute reprise physique restante : route filament fraîchement résolue,
@@ -436,8 +476,10 @@ cycle et n'ouvre pas la production.
 L'ordre est : `PRODUCTION-SEQUENCE-AUDIT-V2`,
 `JOB-LIFECYCLE-OFFLINE-V1`, `CLEAN-MOTION-V1`,
 `CLEAN-AND-REFERENCE-V1`, `CFS-TEMP-OWNER-V1`,
+`CFS-S12-OWNER-PREFLIGHT-V1`, `CFS-OWNER-CORE-OFFLINE-V1`,
+`CFS-OWNER-EXCLUSION-GUARD-OFFLINE-V1`,
 `TOOL-CHANGE-AND-RUNOUT-V1`, `PAUSE-RESUME-SEMANTICS-V1`,
-`END-SEQUENCE-V1`, puis `ORCA-CUTOVER-V1` et G5.
+`END-SEQUENCE-V1`, puis `ORCA-CUTOVER-V1` et la validation finale du Goal 4.
 
 Le cutover Orca retire le départ historique et le `+0,27 mm` dans une seule
 transaction. Aucun paquet précédent ne doit les retirer. Une pause normale doit
