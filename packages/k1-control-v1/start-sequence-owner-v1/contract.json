@@ -1,9 +1,17 @@
 {
   "schema": 1,
   "mission": "G4-K1-CONTROL-START-SEQUENCE-OWNER-V1",
-  "status": "OFFLINE_CANDIDATE_NOT_DEPLOYABLE",
-  "deployment_candidate": false,
+  "status": "PREFLIGHT_QUALIFIED_DEPLOYMENT_CANDIDATE_NOT_AUTHORIZED",
+  "deployment_candidate": true,
+  "deployment_authorized": false,
   "printer_connection_authorized": false,
+  "authority": {
+    "received_go": "G4-K1-CONTROL-START-SEQUENCE-OWNER-V1",
+    "go_consumed_by": "live_read_only_preflight_before_final_package_freeze",
+    "current_remote_authority": "NONE",
+    "renewed_exact_go_required_for_deployment": true,
+    "physical_start_trial_requires_a_later_distinct_gate": true
+  },
   "scope": {
     "supported_branch": "KEEP_CORRECT_T1A",
     "required_engaged_route": "T1A",
@@ -20,6 +28,7 @@
     "operator": "HUMAN",
     "required_confirmation": "KCTRL_CONFIRM_MANUAL_NOZZLE_CLEAN_V1",
     "token_use_count": 1,
+    "token_validity_s": 300,
     "automatic_brushing": false
   },
   "fixed_context": {
@@ -59,6 +68,21 @@
     "CFS_command": 0,
     "automatic_retry": 0
   },
+  "thermal_watchdog": {
+    "implementation": "Klipper delayed_gcode KCTRL_START_WATCHDOG_V1",
+    "poll_interval_s": 5,
+    "phase_deadlines_s": {
+      "reference_heating": 600,
+      "post_reference_check": 120,
+      "first_layer_heating": 180,
+      "visible_purge": 60
+    },
+    "abort_on_non_printing_state": true,
+    "heater_shutdown_command": "TURN_OFF_HEATERS",
+    "disarm_only_after_model_ready": true,
+    "cold_no_motion_self_test": "KCTRL_START_WATCHDOG_SELFTEST_V1",
+    "scenario_matrix": "8/8"
+  },
   "prime_line": {
     "start_mm": [15.0, 20.0, 0.3],
     "end_mm": [15.0, 180.0, 0.3],
@@ -91,21 +115,45 @@
   "failure_policy": {
     "before_physical_effect": "RAISE_AND_BLOCK",
     "known_guard_failure_after_heating_started": "TURN_OFF_HEATERS_THEN_RAISE_AND_BLOCK",
-    "unexpected_klipper_or_nested_macro_failure": "DEPLOYMENT_BLOCKED_UNTIL_A_WATCHDOG_PROVES_HEATER_SHUTDOWN",
+    "unexpected_nested_macro_failure": "BOUNDED_DELAYED_GCODE_WATCHDOG_REQUESTS_TURN_OFF_HEATERS",
+    "unexpected_klippy_process_loss": "MCU_HOST_TIMEOUT_REMAINS_THE_LOWER_LEVEL_HEATER_CUTOFF_AND_MUST_BE_PRESENT_IN_PREFLIGHT",
     "fallback_to_stock_start": false,
     "fallback_to_hidden_temperature": false
   },
   "predeployment_requirements": [
-    "parse_every_Jinja_template_with_the_exact_K1_Python_and_Klipper_environment",
-    "prove_include_and_macro_name_compatibility_without_physical_effect",
-    "add_and_test_a_bounded_watchdog_for_unexpected_macro_failure",
-    "review_prime_line_coordinates_against_the_live_bed_bounds",
-    "prepare_exact_backup_rollback_and_validation_commands",
-    "export_and_inspect_a_short_sacrificial_first_layer_Gcode",
-    "obtain_a_separate_exact_human_GO"
+    "freeze_the_corrected_package_then_obtain_a_renewed_exact_human_GO_for_deployment",
+    "run_the_cold_no_motion_watchdog_self_test_after_install",
+    "obtain_a_distinct_human_gate_for_the_later_physical_start_trial"
   ],
+  "predeployment_completed": [
+    "parsed_all_13_Jinja_templates_with_the_exact_K1_Python_and_Klipper_environment",
+    "proved_include_and_macro_name_compatibility_without_physical_effect",
+    "proved_the_bounded_watchdog_with_8_offline_scenarios",
+    "reviewed_the_prime_line_against_live_K1_bounds",
+    "prepared_exact_backup_rollback_and_validation_commands",
+    "exported_and_inspected_a_two_layer_0.4_mm_sacrificial_Orca_Gcode"
+  ],
+  "live_read_only_preflight": {
+    "capture_id": "20260828-203739-g4-k1-control-start-sequence-owner-v1",
+    "status": "PASS_BLOCKED_NO_T1A",
+    "prospective_printer_cfg_sha256": "a79c8c917d8eee2575939ade4907640c2b2cf7ff59283d28def895b020e127af",
+    "route_count": 0,
+    "T1A_engaged": false,
+    "prime_line_inside_live_bounds": true,
+    "configurations_unchanged": true
+  },
+  "physical_trial": {
+    "authorized": false,
+    "ready": false,
+    "blocker": "BLOCKED_NO_ENGAGED_T1A",
+    "required_before_trial": [
+      "install_and_validate_the_frozen_additive_candidate_under_a_renewed_exact_GO",
+      "reestablish_and_read_back_one_unique_T1A_route_under_a_separate_load_authority",
+      "review_a_short_sacrificial_job_then_obtain_a_distinct_physical_trial_GO"
+    ]
+  },
   "effects": {
-    "printer_connection": false,
+    "printer_connection": true,
     "remote_write": false,
     "service_action": false,
     "heating": false,

@@ -1,0 +1,10 @@
+[
+  {"id":"not_armed_noop","snapshot":{"armed":false,"phase":"idle","printer_state":"standby","now":10.0,"deadline":0.0},"action":"NOOP"},
+  {"id":"active_before_deadline_reschedules","snapshot":{"armed":true,"phase":"reference_heating","printer_state":"printing","now":20.0,"deadline":620.0},"action":"RESCHEDULE"},
+  {"id":"reference_deadline_aborts","snapshot":{"armed":true,"phase":"reference_heating","printer_state":"printing","now":620.0,"deadline":620.0},"action":"ABORT"},
+  {"id":"post_reference_deadline_aborts","snapshot":{"armed":true,"phase":"post_reference_check","printer_state":"printing","now":141.0,"deadline":140.0},"action":"ABORT"},
+  {"id":"print_state_loss_aborts","snapshot":{"armed":true,"phase":"first_layer_heating","printer_state":"error","now":30.0,"deadline":210.0},"action":"ABORT"},
+  {"id":"pause_aborts","snapshot":{"armed":true,"phase":"visible_purge","printer_state":"paused","now":30.0,"deadline":90.0},"action":"ABORT"},
+  {"id":"selftest_cold_standby_aborts","snapshot":{"armed":true,"phase":"selftest_active","printer_state":"standby","now":5.0,"deadline":6.0},"action":"ABORT"},
+  {"id":"model_ready_disarms_without_cutting_job_heat","snapshot":{"armed":true,"phase":"model_ready","printer_state":"printing","now":50.0,"deadline":90.0},"action":"DISARM"}
+]

@@ -25,7 +25,7 @@
     }
   ],
   "cfs_control_architecture": {
-    "status": "owner_exclusion_live_effect_closed_exact_restore_start_owner_next",
+    "status": "start_owner_preflight_qualified_deployment_not_authorized_no_T1A",
     "canonical_document": "docs/43-cartographie-canonique-pilotage-cfs-k1-max-v1.md",
     "source_map": "design/cfs-control-source-map-v1.json",
     "selected_owner": "K1_CONTROL_LIFECYCLE_OWNER_OVER_SELECTED_STOCK_BOX_PRIMITIVES",
@@ -57,8 +57,12 @@
     "live_owner_exclusion_effect_completed": true,
     "live_owner_exclusion_effect_contract": "packages/k1-control-v1/cfs-owner-exclusion-guard-live-effect-v1/contract.json",
     "live_owner_exclusion_effect_verdict": "CLOSED_OK_EXCLUSION_AND_EXACT_RESTORE_QUALIFIED",
-    "deployment_candidate": false,
-    "next_gate": "G4-K1-CONTROL-START-SEQUENCE-OWNER-V1"
+    "start_owner_contract": "packages/k1-control-v1/start-sequence-owner-v1/contract.json",
+    "start_owner_live_read_only_preflight_completed": true,
+    "start_owner_live_read_only_preflight_verdict": "PASS_BLOCKED_NO_T1A",
+    "deployment_candidate": true,
+    "next_gate": "G4-K1-CONTROL-START-SEQUENCE-OWNER-V1",
+    "next_gate_scope": "renewed_exact_GO_for_additive_install_and_cold_no_motion_validation_only"
   },
   "target": {
     "printer": "Creality K1 Max S12 structure 0",

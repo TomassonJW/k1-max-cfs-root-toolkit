@@ -1,0 +1,53 @@
+{
+  "schema": 1,
+  "mission": "G4-K1-CONTROL-START-SEQUENCE-OWNER-V1",
+  "status": "PREPARED_NOT_AUTHORIZED",
+  "deployment_authorized": false,
+  "payload": {
+    "packages/k1-control-v1/start-sequence-owner-v1/k1-control-start-sequence-owner-v1.cfg": "25291e1534f0ba100d3171b983796089a24cd49fdfcef76817406d325e6d8e03",
+    "packages/k1-control-v1/start-sequence-owner-v1/remote_admin.py": "21a74a47c1709fb98a7bc37bfeaa49db877fe38ed24bc52f67719d2f8e006688",
+    "packages/k1-control-v1/start-sequence-owner-v1/remote_jinja_validate.py": "b372d4d57602ad68cca801ee46c7b385e6ad3af5deb48f467c3a1625fd5cc0a4"
+  },
+  "reviewed_support_files": {
+    "packages/k1-control-v1/start-sequence-owner-v1/orca-start.gcode": "c0b5ff3cab898e90667bd60910724485b8c3dd1db7762b9ec7e228bc7b2a640d",
+    "packages/k1-control-v1/start-sequence-owner-v1/watchdog_model.py": "695fafcf919ff18440489753ad7b601a98f1bf2da10e86ad0aea1a5dbe76b024",
+    "packages/k1-control-v1/start-sequence-owner-v1/watchdog-scenarios.json": "8ac70bac0f93cc130750926c44bcbe57f47d0194464bfd97bfd55b9f39dc2d8f",
+    "packages/k1-control-v1/start-sequence-owner-v1/run_watchdog_scenarios.py": "00984c22a1aae2991e260048cccbe81d1e2a63e8f962032054921718fbdc768a",
+    "packages/k1-control-v1/start-sequence-owner-v1/verify_sacrificial_gcode.py": "979c2869e31f94532696ce6d87cdb2dfad0393a208c5eebba6feb06213bfb0ef",
+    "packages/k1-control-v1/start-sequence-owner-v1/sacrificial-gcode-inspection.json": "f69942ab21ccd8fd8f773f5aaf1aed9b057d008f2a8a73fd954b3100e9f007ea",
+    "scripts/deploy-k1-control-start-sequence-owner-v1.ps1": "ab82d025336bbc75905f0a4e55375f5c846d433546445c53ad3f041de2dc3b2c"
+  },
+  "remote_baseline": {
+    "/usr/data/printer_data/config/printer.cfg": "f88d6b52477592805384fca2b4d7abd00298deecd82227af2fa580085fe26fa2",
+    "/usr/data/printer_data/config/box.cfg": "e7a6b26df58a9fa8e49d3af6845f5a0937a790c8ef494b96ec72fd7392abc7a7",
+    "/usr/data/printer_data/config/gcode_macro.cfg": "864fedde88fbb345c220ae5658f7b04779b3981bd78d68eda6fa63c59c79a04f",
+    "/usr/data/printer_data/config/k1-control-z-mesh.cfg": "dd7fa02a8b7b9bd46850c90cf2a85afa71ce27cfa263c120ef4e9cca6b48c113",
+    "/usr/data/printer_data/config/k1-control-calibration-path.cfg": "825aadac8679e0d0e9be140cc5ba4e7656b2bff0d197d1683a73d2b5be4e364e",
+    "/usr/share/klipper/klippy/extras/k1_control_store.py": "696eabec936bd81300acb4e6882d141c1a9ce2494df3bd1f686ff4ee8cbb8ede"
+  },
+  "planned_change": {
+    "add_file": "/usr/data/printer_data/config/k1-control-start-sequence-owner-v1.cfg",
+    "add_include": "[include k1-control-start-sequence-owner-v1.cfg]",
+    "expected_printer_cfg_sha256": "a79c8c917d8eee2575939ade4907640c2b2cf7ff59283d28def895b020e127af",
+    "service_action": "Klipper host RESTART only",
+    "cold_validation": "arm the watchdog self-test, prove heater targets and positions unchanged, then reset to idle",
+    "physical_start_trial": false
+  },
+  "backup": {
+    "directory": "/usr/data/k1-control-v1/backups/<capture-id>/start-sequence-owner-v1",
+    "files": ["printer.cfg.before", "checksums.sha256"]
+  },
+  "rollback": {
+    "restore": "exact printer.cfg.before",
+    "remove": ["/usr/data/printer_data/config/k1-control-start-sequence-owner-v1.cfg"],
+    "service_action": "Klipper host RESTART only",
+    "final_printer_cfg_sha256": "f88d6b52477592805384fca2b4d7abd00298deecd82227af2fa580085fe26fa2"
+  },
+  "exact_commands": {
+    "plan": ".\\scripts\\deploy-k1-control-start-sequence-owner-v1.ps1 -Action Plan",
+    "preflight": ".\\scripts\\deploy-k1-control-start-sequence-owner-v1.ps1 -Action Preflight -Gate G4-K1-CONTROL-START-SEQUENCE-OWNER-V1 -EvidenceDirectory <workspace-evidence> -Execute",
+    "deploy": ".\\scripts\\deploy-k1-control-start-sequence-owner-v1.ps1 -Action Deploy -Gate G4-K1-CONTROL-START-SEQUENCE-OWNER-V1 -CaptureId <capture-id> -EvidenceDirectory <workspace-evidence> -Execute",
+    "validate": ".\\scripts\\deploy-k1-control-start-sequence-owner-v1.ps1 -Action Validate -Gate G4-K1-CONTROL-START-SEQUENCE-OWNER-V1 -EvidenceDirectory <workspace-evidence> -Execute",
+    "rollback": ".\\scripts\\deploy-k1-control-start-sequence-owner-v1.ps1 -Action Rollback -Gate G4-K1-CONTROL-START-SEQUENCE-OWNER-V1 -CaptureId <capture-id> -EvidenceDirectory <workspace-evidence> -Execute"
+  }
+}

@@ -274,12 +274,17 @@ class CfsControlSourceMapV1Tests(unittest.TestCase):
             "G4-K1-CONTROL-START-SEQUENCE-OWNER-V1",
             next_gate["id"],
         )
-        self.assertFalse(next_gate["printer_connection"])
+        self.assertTrue(next_gate["printer_connection"])
         self.assertFalse(next_gate["read_only"])
         self.assertFalse(next_gate["guard_effect_path_called"])
         self.assertFalse(next_gate["implementation_authorized"])
-        for field in ("gcode", "heat", "motion", "CFS_effect", "remote_write", "service_restart"):
+        for field in ("gcode", "heat", "motion", "CFS_effect"):
             self.assertFalse(next_gate[field])
+        self.assertTrue(next_gate["remote_write"])
+        self.assertEqual("Klipper_host_RESTART_only", next_gate["service_restart"])
+        self.assertTrue(next_gate["renewed_exact_go_required"])
+        self.assertFalse(next_gate["physical_start_trial"])
+        self.assertEqual("BLOCKED_NO_ENGAGED_T1A", next_gate["physical_trial_blocker"])
         gaps = self.source_map["open_gaps_in_order"]
         self.assertEqual("read_only", gaps[0]["kind"])
         self.assertEqual("resolved", gaps[1]["kind"])
@@ -313,7 +318,12 @@ class CfsControlSourceMapV1Tests(unittest.TestCase):
             "CLOSED_OK_EXCLUSION_AND_EXACT_RESTORE_QUALIFIED",
             architecture["live_owner_exclusion_effect_verdict"],
         )
-        self.assertFalse(architecture["deployment_candidate"])
+        self.assertTrue(architecture["deployment_candidate"])
+        self.assertTrue(architecture["start_owner_live_read_only_preflight_completed"])
+        self.assertEqual(
+            "PASS_BLOCKED_NO_T1A",
+            architecture["start_owner_live_read_only_preflight_verdict"],
+        )
         owner = lifecycle["cfs_owner_core_offline"]
         self.assertEqual("21/21", owner["scenario_matrix"])
         self.assertFalse(owner["recorded_s12_identical_pair_present"])

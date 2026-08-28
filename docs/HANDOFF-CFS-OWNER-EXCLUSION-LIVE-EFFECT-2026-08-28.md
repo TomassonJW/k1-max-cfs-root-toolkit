@@ -2,7 +2,8 @@
 
 Date : 2026-08-28
 
-État : **mission close OK ; captures consommées ; production fermée**.
+État : **HISTORIQUE — remplacé par
+`docs/HANDOFF-START-SEQUENCE-OWNER-2026-08-28.md`**.
 
 ## Résultat à reprendre
 

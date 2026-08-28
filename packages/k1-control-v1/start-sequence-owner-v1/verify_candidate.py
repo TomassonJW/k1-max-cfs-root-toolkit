@@ -10,10 +10,14 @@ PACKAGE = Path(__file__).resolve().parent
 
 
 def _macro_body(text: str, name: str) -> str:
-    marker = "[gcode_macro %s]" % name
+    return _section_body(text, "gcode_macro %s" % name)
+
+
+def _section_body(text: str, section: str) -> str:
+    marker = "[%s]" % section
     start = text.find(marker)
     if start < 0:
-        raise ValueError("missing_macro:%s" % name)
+        raise ValueError("missing_section:%s" % section)
     body_start = text.find("\n", start) + 1
     end = text.find("\n[", body_start)
     if end < 0:
@@ -54,10 +58,21 @@ def verify() -> dict[str, object]:
         if line.strip() and not line.lstrip().startswith("#")
     ]
 
-    if contract["status"] != "OFFLINE_CANDIDATE_NOT_DEPLOYABLE":
+    if contract["status"] not in {
+        "OFFLINE_HARDENED_LIVE_PREFLIGHT_PENDING",
+        "PREFLIGHT_QUALIFIED_DEPLOYMENT_CANDIDATE_NOT_AUTHORIZED",
+    }:
         raise ValueError("candidate_status_opened")
-    if contract["deployment_candidate"] or contract["printer_connection_authorized"]:
+    if (
+        not contract["deployment_candidate"]
+        or contract["deployment_authorized"]
+        or contract["printer_connection_authorized"]
+    ):
         raise ValueError("candidate_authority_too_broad")
+    if contract["live_read_only_preflight"]["status"] != "PASS_BLOCKED_NO_T1A":
+        raise ValueError("live_preflight_not_closed")
+    if contract["physical_trial"]["blocker"] != "BLOCKED_NO_ENGAGED_T1A":
+        raise ValueError("physical_trial_not_fail_closed")
     if len(orca_lines) != 1 or not orca_lines[0].startswith("KCTRL_JOB_BEGIN_KEEP_CORRECT_V1 "):
         raise ValueError("orca_entrypoint_not_single_owned_macro")
 
@@ -65,6 +80,8 @@ def verify() -> dict[str, object]:
     after_reference = _macro_body(cfg, "KCTRL_START_AFTER_REFERENCE_V1")
     after_arm = _macro_body(cfg, "KCTRL_START_AFTER_ARM_V1")
     purge = _macro_body(cfg, "KCTRL_START_VISIBLE_PURGE_V1")
+    watchdog = _section_body(cfg, "delayed_gcode KCTRL_START_WATCHDOG_V1")
+    confirm = _macro_body(cfg, "KCTRL_CONFIRM_MANUAL_NOZZLE_CLEAN_V1")
 
     _ordered(
         begin,
@@ -81,6 +98,16 @@ def verify() -> dict[str, object]:
         "begin",
     )
     _ordered(
+        begin,
+        [
+            "watchdog_armed VALUE=1",
+            "watchdog_deadline VALUE={now + 600.0}",
+            "UPDATE_DELAYED_GCODE ID=KCTRL_START_WATCHDOG_V1 DURATION=5",
+            "M140 S{bed}",
+        ],
+        "watchdog_before_heat",
+    )
+    _ordered(
         after_reference,
         ["KCTRL_PRODUCTION_ARM", "KCTRL_START_AFTER_ARM_V1"],
         "after_reference",
@@ -92,9 +119,32 @@ def verify() -> dict[str, object]:
     )
     _ordered(
         purge,
-        ["KCTRL_PRODUCTION_ASSERT_ARMED", "G1 Z5", "G1 X15 Y20", "G1 Z0.30", "G1 Y180 E18"],
+        [
+            "KCTRL_PRODUCTION_ASSERT_ARMED",
+            "watchdog_deadline VALUE={now + 60.0}",
+            "G1 Z5",
+            "G1 X15 Y20",
+            "G1 Z0.30",
+            "G1 Y180 E18",
+            "watchdog_armed VALUE=0",
+            "phase VALUE='\"model_ready\"'",
+        ],
         "purge",
     )
+    _ordered(
+        watchdog,
+        [
+            'printer.print_stats.state|string != "printing"',
+            "TURN_OFF_HEATERS",
+            "watchdog_armed VALUE=0",
+            "phase VALUE='\"watchdog_aborted\"'",
+        ],
+        "watchdog_abort",
+    )
+    if "manual_clean_deadline VALUE={now + 300.0}" not in confirm:
+        raise ValueError("manual_clean_confirmation_has_no_deadline")
+    if "now > owner.manual_clean_deadline|float" not in begin:
+        raise ValueError("expired_manual_clean_confirmation_not_rejected")
 
     active = _active_gcode_lines(cfg)
     all_g28 = [line for line in active if re.match(r"^G28(?:\s|$)", line)]
@@ -127,7 +177,7 @@ def verify() -> dict[str, object]:
         raise ValueError("hidden_temperature_or_offset")
 
     return {
-        "status": "START_SEQUENCE_OWNER_V1_OFFLINE_OK",
+        "status": "START_SEQUENCE_OWNER_V1_PREFLIGHT_QUALIFIED_OK",
         "owned_orca_lines": len(orca_lines),
         "g28_xy_only": len(g28_xy),
         "accurate_z_references": len(accurate),
@@ -137,7 +187,10 @@ def verify() -> dict[str, object]:
         "explicit_temperatures_c": [55, 140, 190],
         "supported_branch": contract["scope"]["supported_branch"],
         "deployment_candidate": contract["deployment_candidate"],
-        "exact_Jinja_parser": "required_before_deployment_not_available_in_local_python",
+        "watchdog_scenarios": contract["thermal_watchdog"]["scenario_matrix"],
+        "manual_clean_token_validity_s": contract["manual_cleaning"]["token_validity_s"],
+        "exact_Jinja_parser": "13_sections_passed_in_live_read_only_preflight",
+        "physical_trial": contract["physical_trial"]["blocker"],
     }
 
 

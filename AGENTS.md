@@ -85,8 +85,15 @@ désactivé une fois l'auto-remplacement stock, prouvé deux fois `0`, restauré
 fois la valeur précédente `1` et prouvé deux fois ce retour exact. Elle est
 close avec `CLOSED_OK_EXCLUSION_AND_EXACT_RESTORE_QUALIFIED`, sans mouvement de
 filament, chauffe, mouvement, écriture distante ni service. Les captures sont
-consommées. La prochaine mission est de rendre `START-SEQUENCE-OWNER-V1`
-installable et réversible avant toute gate physique ;
+consommées. `START-SEQUENCE-OWNER-V1` est maintenant renforcé par un
+surveillant borné, un jeton manuel de cinq minutes, un backup et un rollback
+exacts. Son préflight live en lecture seule parse treize templates dans
+l'environnement K1, confirme les courses de purge et les empreintes sans aucun
+effet, mais trouve zéro route engagée. Un export Orca 2.4.2 de deux couches est
+qualifié sans `T0` ni ordre interdit. Le candidat est installable mais non
+autorisé ; le prochain GO exact couvrira seulement la pose additive, le restart
+Klipper et le test froid. Le chargement de `T1A` et l'essai physique resteront
+deux gates distinctes ;
 GATEWAY-PRIVATE-LAN-NO-AUTH-V1 est installé et validé : le port `4409` ne
 demande plus de mot de passe, reste limité aux réseaux IPv4 privés, et présente
 uniquement son proxy local approuvé à Moonraker ; production remains closed**.

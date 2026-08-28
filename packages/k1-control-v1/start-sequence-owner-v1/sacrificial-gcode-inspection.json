@@ -1,0 +1,29 @@
+{
+  "schema": 1,
+  "status": "PASS_LOCAL_NOT_PRINTED",
+  "date": "2026-08-28",
+  "source_3mf": {
+    "path": "inventory/raw/user-inputs/20260820-full-system-audit/02-projects-3mf/test-suite-20260820/P1-SINGLE.3mf",
+    "sha256": "b38e80f57f9469f76ab9d59454a9e1997cf6c72675a0d5c9ece08fa0de27edcc"
+  },
+  "temporary_profile_changes": {
+    "machine_start_gcode": "KCTRL_JOB_BEGIN_KEEP_CORRECT_V1 BED=55 PROBE_NOZZLE=140 FIRST_NOZZLE=190 PLATE=1 PROBE_REV=1 NOZZLE_ID=1 CONFIG_ID=1 X_COUNT=11 Y_COUNT=11",
+    "post_process": [],
+    "filament_start_gcode": [],
+    "manual_filament_change": 1
+  },
+  "derived_3mf_sha256": "c185957afbbde91e79fc83fb545ad386b98bf0242b61ad612c9eb84eca623273",
+  "orca": {
+    "version": "2.4.2",
+    "command_shape": "orca-slicer.exe --slice 0 --allow-newer-file --outputdir <workspace-temp> <derived-3mf>"
+  },
+  "gcode": {
+    "sha256": "226b3f3b5b5e416b2a7fb5df81e44e51572b7d04fdff74fd8240340426f1bf3d",
+    "bytes": 90553,
+    "layers": 2,
+    "max_z_mm": 0.4,
+    "owner_start_call_count": 1,
+    "forbidden_executable_hits": [],
+    "printed": false
+  }
+}

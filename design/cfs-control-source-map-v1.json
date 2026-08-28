@@ -707,8 +707,12 @@
   },
   "next_gate": {
     "id": "G4-K1-CONTROL-START-SEQUENCE-OWNER-V1",
-    "scope": "make_the_existing_offline_start_candidate_installable_with_bounded_thermal_watchdog_exact_K1_parse_prime_line_review_backup_and_rollback_before_any_physical_trial",
-    "printer_connection": false,
+    "scope": "renewed_exact_GO_for_additive_install_and_cold_no_motion_watchdog_validation_of_the_frozen_preflight_qualified_candidate",
+    "preflight_completed": true,
+    "preflight_capture": "20260828-203739-g4-k1-control-start-sequence-owner-v1",
+    "preflight_verdict": "PASS_BLOCKED_NO_T1A",
+    "renewed_exact_go_required": true,
+    "printer_connection": true,
     "read_only": false,
     "guard_effect_path_called": false,
     "implementation_authorized": false,
@@ -716,7 +720,9 @@
     "heat": false,
     "motion": false,
     "CFS_effect": false,
-    "remote_write": false,
-    "service_restart": false
+    "remote_write": true,
+    "service_restart": "Klipper_host_RESTART_only",
+    "physical_start_trial": false,
+    "physical_trial_blocker": "BLOCKED_NO_ENGAGED_T1A"
   }
 }

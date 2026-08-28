@@ -52,8 +52,8 @@ entièrement silencieux.
 
 ## Suite
 
-La prochaine tranche est `G4-K1-CONTROL-START-SEQUENCE-OWNER-V1`. Son candidat
-hors imprimante doit d'abord recevoir un surveillant borné, être parsé dans
-l'environnement K1 exact, figer les coordonnées de purge, les sauvegardes et le
-rollback, puis seulement être présenté comme candidat installable. Aucun essai
-physique n'est inclus dans la présente clôture.
+La tranche `G4-K1-CONTROL-START-SEQUENCE-OWNER-V1` a depuis reçu son surveillant
+borné, son parse K1 exact, ses coordonnées de purge relues, son backup et son
+rollback. Son préflight réel est vert sans effet, mais aucune route n'est
+engagée. Le candidat est donc présentable pour une pose additive sous un nouveau
+GO exact ; le chargement de `T1A` et l'essai physique restent exclus.

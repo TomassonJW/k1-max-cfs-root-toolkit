@@ -262,6 +262,12 @@ seule connexion Moonraker le vrai Z accepté et l'absence de transition CFS. La
 gate d'effet qualifie ensuite exactement `1 -> 0 -> 1` pour l'auto-remplacement
 stock, une tentative par commande et deux preuves d'état après chacune.
 
-La prochaine étape raisonnable n'est toujours pas un chargement : c'est rendre
-`G4-K1-CONTROL-START-SEQUENCE-OWNER-V1` installable, surveillé et réversible
-hors imprimante. Sa pose puis son premier essai resteront des tranches séparées.
+`G4-K1-CONTROL-START-SEQUENCE-OWNER-V1` est maintenant surveillé, réversible et
+qualifié par un préflight réel sans effet. Les treize templates K1, les courses
+de purge, les empreintes, le backup, le rollback et un export Orca sacrificiel
+sont revus. La lecture a toutefois trouvé zéro route engagée.
+
+La prochaine étape n'est donc toujours pas un chargement ni une impression :
+c'est un nouveau GO exact pour poser seulement le candidat additif et exécuter
+son test froid sans mouvement. Le rétablissement de `T1A`, puis le premier
+démarrage physique, resteront deux tranches séparées.
