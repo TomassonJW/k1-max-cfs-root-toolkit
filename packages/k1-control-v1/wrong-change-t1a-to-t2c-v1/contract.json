@@ -1,0 +1,45 @@
+{
+  "schema": 1,
+  "mission": "G4-K1-CONTROL-WRONG-CHANGE-T1A-TO-T2C-V1",
+  "goal": "GOAL-P4-PHYSICAL-SLICES-QUALIFICATION-V1",
+  "requirement": "CFS_START_STATES_AND_TEMPERATURE_OWNER",
+  "reused_by": "TOOL_CHANGE_AND_RUNOUT",
+  "status": "PREPARED_NOT_RUN",
+  "authority": "passive_observer_with_one_human_stock_ui_action",
+  "starting_route": "T1A",
+  "target_route": "T2C",
+  "human_action": "stock_ui_change_T1A_to_T2C_once",
+  "automatic_retry": false,
+  "human_requirements": [
+    "T2C_identity_and_material_confirmed",
+    "operator_present",
+    "immediate_stop_available",
+    "visible_purge_verdict"
+  ],
+  "automatic_requirements": [
+    "T1A_is_the_unique_starting_route",
+    "T1A_is_released_once",
+    "T2C_is_engaged_once",
+    "no_other_route_is_observed",
+    "positive_nozzle_target_is_seen_before_release_and_after_engagement",
+    "both_CFS_units_remain_connected",
+    "mesh_and_accepted_Z_remain_exact",
+    "heater_targets_return_to_zero",
+    "configuration_hashes_remain_exact"
+  ],
+  "observer_effects": {
+    "gcode": false,
+    "cfs_action": false,
+    "heating": false,
+    "motion": false,
+    "remote_write": false,
+    "service_action": false
+  },
+  "forbidden": [
+    "automatic_CFS_action",
+    "automatic_retry",
+    "second_human_attempt",
+    "hidden_human_verdict",
+    "configuration_write"
+  ]
+}
