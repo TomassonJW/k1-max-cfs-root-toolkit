@@ -34,8 +34,13 @@ diagonaux à `F12000`. Thomas a donc choisi le nettoyage manuel obligatoire.
 Cette résolution reste attachée à l'identifiant historique de l'exigence : le
 KO automatique n'est ni supprimé ni présenté comme un succès. Les actions
 automatiques sont désormais bloquées. L'exigence courante est la qualification
-CFS ; sa première fenêtre `EMPTY_LOAD/T1A` n'a vu aucune action stock et reste
-non probante. Ce registre ne crée aucun Goal supplémentaire.
+CFS. `EMPTY_LOAD/T1A` est passé avec purge visible et retour des chauffes à
+zéro. `KEEP_CORRECT_T1A` est ensuite clos KO avec arrêt sûr : le départ Orca
+historique a remplacé le `11 × 11` par `default`, puis l'annulation a laissé
+`cancelled/T0` sans route malgré les chauffes à zéro. Thomas a annoncé qu'il
+allait éteindre la K1 ; la
+reprise est un préflight à froid en lecture seule. Ce registre ne crée aucun
+Goal supplémentaire.
 
 ## Goal 1 — Terminer le système hors imprimante
 
@@ -115,7 +120,7 @@ Identifiant : `GOAL-P4-PHYSICAL-SLICES-QUALIFICATION-V1`
 État : **en cours ; `2/7` exigences passées ; nettoyage automatique clos KO et
 remplacé par une gate manuelle obligatoire ; prochaine exigence : qualification
 des états de départ CFS et des températures ; meilleur profil actuel `11 × 11`
-actif**.
+à restaurer et revérifier après le prochain démarrage à froid**.
 
 Le checkpoint C a référencé XYZ, rechargé le `11 × 11`, commandé `Z=50 mm` et
 attendu la fin. Un premier faux KO local a confondu la position physique

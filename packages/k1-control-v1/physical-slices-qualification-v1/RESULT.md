@@ -25,9 +25,13 @@ chauffe, mouvement ni écriture. Il pourra enregistrer la préparation manuelle
 du filament puis les futurs checkpoints CFS, sans jamais les déclencher ni les
 valider à la place de Thomas.
 
-Une première fenêtre `EMPTY_LOAD` destinée au chargement manuel de `T1A` n'a vu
-aucune action stock pendant 120 secondes. Elle est non probante et attend la
-clarification humaine avant reprise.
+La reprise `EMPTY_LOAD/T1A` est close OK : chargement unique, purge visible,
+cible `220 °C`, retour des chauffes à zéro et configurations inchangées. Le
+checkpoint suivant `KEEP_CORRECT_T1A` a conservé la route sans transition mais
+a échoué sur le départ historique Orca : profil passé de `11 × 11` à `default`,
+`T0` encore actif, puis annulation sûre. La dernière lecture avait les chauffes
+à zéro mais restait `cancelled/T0`, sans route engagée. Thomas a choisi
+l'extinction ; la reprise doit commencer à froid en lecture seule.
 
 Le Goal 3 ne pourra passer à `PASSED` qu'après preuves physiques pour les sept
 exigences, audit transversal des deux CFS, chauffes, Z, mesh, retours sûrs et

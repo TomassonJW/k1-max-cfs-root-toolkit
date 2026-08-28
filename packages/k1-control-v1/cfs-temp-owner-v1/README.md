@@ -53,6 +53,12 @@ transition vers `T1A`, cible de buse à `220 °C`, purge visible confirmée par
 Thomas, puis cibles zéro et configurations inchangées. `T1A` reste engagé pour
 le checkpoint suivant `KEEP_CORRECT_T1A`. La campagne physique est à `1/4`.
 
+Le premier `KEEP_CORRECT_T1A` a ensuite échoué proprement avant qualification :
+le préfixe Orca historique `G28/T0/START_PRINT` a conservé `T1A` sans transition,
+mais a remplacé le `11 × 11` par `default`. Après annulation, les chauffes sont
+à zéro mais l'état interne reste `cancelled/T0`, sans route engagée. Thomas a
+choisi l'extinction et la reprise à froid. Aucun retry ni restart n'a été lancé.
+
 L'adaptateur de décision ne commande rien. Il refuse plusieurs routes, une
 commande CFS active, un segment présent dont la route résiduelle n'a pas été
 confirmée et toute route engagée dont la matière n'a pas été confirmée. Il

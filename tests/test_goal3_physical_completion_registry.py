@@ -47,10 +47,10 @@ class Goal3PhysicalCompletionRegistryTests(unittest.TestCase):
         self.assertIn("final_project_closure", boundary)
         self.assertEqual(4, self.contract["macro_goal_count"])
 
-    def test_current_gate_is_keep_correct_t1a_and_effect_is_blocked(self):
+    def test_current_gate_is_cold_boot_preflight_and_effect_is_blocked(self):
         gate = self.matrix["current_human_gate"]
-        self.assertEqual("CFS_KEEP_CORRECT_T1A_REPRESENTATIVE_JOB_REQUIRED", gate["checkpoint"])
-        self.assertEqual("CFS_KEEP_CORRECT_T1A_OK", gate["required_human_verdict"])
+        self.assertEqual("COLD_BOOT_READ_ONLY_PREFLIGHT_BEFORE_KEEP_CORRECT_RERUN", gate["checkpoint"])
+        self.assertEqual("COLD_BOOT_COMPLETE_READY_FOR_READ_ONLY_PREFLIGHT", gate["required_human_verdict"])
         self.assertTrue(gate["next_effect_blocked"])
 
     def test_current_ledger_verifies_as_in_progress_without_effect(self):

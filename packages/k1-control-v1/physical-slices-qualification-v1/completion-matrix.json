@@ -6,10 +6,10 @@
   "completion_audit_evidence": null,
   "current_human_gate": {
     "requirement_id": "CFS_START_STATES_AND_TEMPERATURE_OWNER",
-    "checkpoint": "CFS_KEEP_CORRECT_T1A_REPRESENTATIVE_JOB_REQUIRED",
+    "checkpoint": "COLD_BOOT_READ_ONLY_PREFLIGHT_BEFORE_KEEP_CORRECT_RERUN",
     "active_gate": "G4-K1-CONTROL-CFS-TEMP-OWNER-V1",
-    "technical_status": "EMPTY_LOAD_T1A_PASSED_CFS_CAMPAIGN_1_OF_4",
-    "required_human_verdict": "CFS_KEEP_CORRECT_T1A_OK",
+    "technical_status": "EMPTY_LOAD_PASSED_KEEP_CORRECT_KO_SAFE_STOP_CANCELLED_T0_DEFAULT_MESH",
+    "required_human_verdict": "COLD_BOOT_COMPLETE_READY_FOR_READ_ONLY_PREFLIGHT",
     "next_effect_blocked": true
   },
   "requirements": [

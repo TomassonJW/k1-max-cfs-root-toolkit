@@ -1,0 +1,77 @@
+{
+  "schema": 1,
+  "mission": "G4-K1-CONTROL-CFS-TEMP-OWNER-V1",
+  "checkpoint": "KEEP_CORRECT_T1A",
+  "qualification_status": "KO_SAFE_STOP_COLD_BOOT_REQUIRED",
+  "attempt": {
+    "capture_id": "20260828-goal3-cfs-keep-correct-t1a-r2",
+    "capture_sha256": "4575117c438ea947b280b05734c23d52601e526dfca7dcb8c50123d1b19a8394",
+    "analysis_sha256": "90412881e5e00a205a7d078ec69e071cb870d8a9c8f134c8c71a3ac8ea8e32e8",
+    "snapshot_count": 393,
+    "source_gcode": {
+      "remote_display_name": "Languettes_3 LU Bin Fit - Bin-To-Bin Clicking Lite Rail - (5.5 MU Rail)_PLA_4h8m",
+      "generated_by": "OrcaSlicer 2.4.2",
+      "generated_on": "2026-08-28",
+      "start_prefix": ["G28", "T0", "START_PRINT EXTRUDER_TEMP=190 BED_TEMP=55", "SET_GCODE_OFFSET Z=0 MOVE=1 MOVE_SPEED=5"],
+      "filament": "Geeetech PLA",
+      "slicer_z_offset_mm": 0.0
+    },
+    "observed": {
+      "print_states": ["standby", "printing"],
+      "route_states": [["T1A"]],
+      "route_transition_count": 0,
+      "active_command_states": ["", "T0"],
+      "active_profile_before": "k1_p001_t055_r001_n11x11",
+      "active_profile_at_capture_end": "default",
+      "maximum_nozzle_target_c": 220.0,
+      "maximum_bed_target_c": 55.0,
+      "final_nozzle_target_c": 220.0,
+      "final_bed_target_c": 50.0,
+      "configuration_unchanged": true,
+      "observer_effect": false
+    },
+    "partial_positive_proof": "T1A_remained_selected_without_route_transition_during_observed_start",
+    "ko_reasons": [
+      "best_current_11x11_profile_replaced_by_default",
+      "duplicate_pre_START_PRINT_G28_and_T0_ownership",
+      "capture_ended_during_active_T0_before_first_layer_human_verdict"
+    ]
+  },
+  "safe_stop": {
+    "human_action": "cancel_from_stock_interface",
+    "last_fresh_read_only_state_before_human_power_off": {
+      "print_state": "cancelled",
+      "nozzle_target_c": 0.0,
+      "bed_target_c": 0.0,
+      "active_profile": "default",
+      "cfs_active_command": "T0",
+      "engaged_routes": [],
+      "screen_reported_stopped": true
+    },
+    "fresh_preflight_capture_id": "20260828-goal3-cfs-keep-correct-t1a-r3-preflight",
+    "fresh_preflight_capture_sha256": "d5a47a0bcae692c62f9dbc8132771560d2b2398850e92d857d91d3ff942e108f",
+    "fresh_preflight_result": "KO_PRINTER_NOT_STANDBY",
+    "printer_restart_sent": false,
+    "additional_printer_command_after_power_off_decision": false
+  },
+  "corrected_gcode_prepared_but_not_launched": {
+    "remote_display_name": "Languettes_3 LU Bin Fit - Bin-To-Bin Clicking Lite Rail - (5.5 MU Rail)_PLA_4h6m",
+    "verified_command_order": [
+      "START_PRINT EXTRUDER_TEMP=190 BED_TEMP=55",
+      "SET_GCODE_OFFSET Z=0 MOVE=1 MOVE_SPEED=5",
+      "KCTRL_PRODUCTION_ARM PLATE=1 TEMP_BAND=55 PROBE_REV=1 NOZZLE_ID=1 CONFIG_ID=1 X_COUNT=11 Y_COUNT=11",
+      "M104 S190",
+      "M109 S190"
+    ],
+    "pre_start_G28_present": false,
+    "pre_start_Tn_present": false,
+    "end_command": "END_PRINT",
+    "remote_file_hash_captured": false
+  },
+  "interpretation": {
+    "confirmed": "stock_start_and_cancel_left_a_residual_cancelled_T0_default_mesh_state",
+    "not_confirmed": "generic_Klipper_core_failure",
+    "automatic_retry": false
+  },
+  "next_gate": "COLD_BOOT_READ_ONLY_PREFLIGHT_THEN_RESTORE_11X11_AND_RELOAD_T1A"
+}

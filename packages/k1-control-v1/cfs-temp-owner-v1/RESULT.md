@@ -42,3 +42,17 @@ lectures a retrouvé le segment détecté dans la tête, aucune route engagée,
 cibles zéro et configurations inchangées. Le décideur renvoie
 `BLOCK/SEGMENT_PRESENT_WITHOUT_UNIQUE_ROUTE` avec zéro effet. La confirmation
 humaine d'absence d'effet reste nécessaire pour passer le quatrième checkpoint.
+
+Le premier essai réel `KEEP_CORRECT_T1A` est clos KO avec arrêt sûr. `T1A` est
+resté sélectionné sans transition pendant la capture, mais l'ancien préfixe
+Orca `G28/T0/START_PRINT` a remplacé le profil `11 × 11` par `default` et la
+capture s'est terminée pendant un `T0` encore actif, avant verdict de première
+couche. Thomas a annulé depuis l'interface stock. Les chauffes sont revenues à
+zéro, mais la dernière lecture avant extinction restait `cancelled`, sans route,
+avec `T0` résiduel et mesh `default`. Aucun restart n'a été envoyé.
+
+Un fichier corrigé `…PLA_4h6m` est présent sur la K1 mais n'a pas été lancé. Son
+ordre vérifié retire les `G28/Tn` préalables et place
+`KCTRL_PRODUCTION_ARM … X_COUNT=11 Y_COUNT=11` après `START_PRINT`. La reprise
+doit commencer après démarrage à froid par une lecture seule fraîche ; elle ne
+doit pas supposer que le cœur Klipper est fautif ni rejouer automatiquement.

@@ -3,7 +3,7 @@
   "campaign_id": "CFS-TEMP-OWNER-PHYSICAL-CAMPAIGN-V1",
   "goal": "GOAL-P4-PHYSICAL-SLICES-QUALIFICATION-V1",
   "requirement": "CFS_START_STATES_AND_TEMPERATURE_OWNER",
-  "status": "EMPTY_LOAD_T1A_PASSED_KEEP_CORRECT_PENDING",
+  "status": "KEEP_CORRECT_KO_SAFE_STOP_COLD_BOOT_REQUIRED",
   "authority": "human_stock_actions_with_passive_observers",
   "automatic_retry": false,
   "observer": "packages/k1-control-v1/cfs-temp-owner-v1/capture_observation.ps1",
@@ -69,7 +69,18 @@
         "TOOL_CHANGE_AND_RUNOUT",
         "CANCEL_END_AND_SEPARATE_DISENGAGE"
       ],
-      "evidence_status": "NOT_STARTED"
+      "evidence_status": "KO_SAFE_STOP_COLD_BOOT_REQUIRED",
+      "evidence": "packages/k1-control-v1/cfs-temp-owner-v1/keep-correct-t1a-ko-evidence.json",
+      "attempt_capture_id": "20260828-goal3-cfs-keep-correct-t1a-r2",
+      "rerun_candidate_remote_display_name": "Languettes_3 LU Bin Fit - Bin-To-Bin Clicking Lite Rail - (5.5 MU Rail)_PLA_4h6m",
+      "rerun_requires": [
+        "cold_boot_fresh_read_only_preflight",
+        "no_stale_CFS_command",
+        "best_current_11x11_profile_restored",
+        "T1A_reloaded_and_visible_purge_confirmed",
+        "manual_nozzle_cleaning",
+        "fresh_human_presence_and_immediate_stop"
+      ]
     },
     {
       "order": 3,
