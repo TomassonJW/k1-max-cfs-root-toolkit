@@ -8,6 +8,11 @@ Le nettoyage de buse reste manuel. Le pilote n'envoie ensuite qu'un jeton de
 confirmation, puis démarre le fichier exact une fois. Il surveille le filament,
 les températures et les phases du propriétaire. Il ne relance jamais l'essai.
 
+Le départ vise `140 °C` pour la référence Z, `190 °C` pour la purge et la
+première couche, puis l'unique seconde couche demande `195 °C`. Le surveillant
+ferme l'essai si la consigne de buse dépasse `200,5 °C` ou si le plateau dépasse
+`55,5 °C`.
+
 La macro stock `END_PRINT` a été retirée avant le premier lancement réel après
 lecture de son corps installé : elle appelait encore `BOX_END` et
 `BOX_END_PRINT`. La fin bornée coupe les chauffes, désarme et remet le

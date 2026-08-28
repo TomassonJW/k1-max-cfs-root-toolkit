@@ -3,6 +3,7 @@
 import ast
 import hashlib
 import json
+import re
 from pathlib import Path
 
 
@@ -48,6 +49,18 @@ def verify():
     ):
         if lines.count(required) != 1:
             raise ValueError("safe_end_token_count:%s" % required)
+    direct_temperature_commands = [
+        line for line in lines if re.match(r"^M(?:104|109|140|190)\s", line)
+    ]
+    if direct_temperature_commands != [
+        "M104 S195 ; set nozzle temperature",
+        "M140 S55 ; set bed temperature",
+    ]:
+        raise ValueError("direct_temperature_commands_mismatch")
+    owned_start = next(line for line in lines if line.startswith("KCTRL_JOB_BEGIN_KEEP_CORRECT_V1 "))
+    for token in ("BED=55", "PROBE_NOZZLE=140", "FIRST_NOZZLE=190"):
+        if token not in owned_start:
+            raise ValueError("owned_start_temperature_mismatch:%s" % token)
     for source, name in ((trial, "remote_trial.py"), (installer, "remote_install.py"), (analyzer, "analyze_capture.py")):
         ast.parse(source, filename=name, feature_version=(3, 8))
     if digest(PACKAGE / "remote_trial.py") not in runner:

@@ -20,6 +20,8 @@
     "layers": 2,
     "max_z_mm": 0.4,
     "first_layer_nozzle_c": 190,
+    "normal_layer_nozzle_c": 195,
+    "maximum_allowed_nozzle_target_c": 200.5,
     "bed_c": 55,
     "safe_end": [
       "KCTRL_START_ABORT_V1",
