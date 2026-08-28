@@ -1,0 +1,51 @@
+{
+  "schema": 1,
+  "mission": "G4-K1-CONTROL-START-SEQUENCE-T1A-ROUTE-V1",
+  "goal": "GOAL-P4-PHYSICAL-SLICES-QUALIFICATION-V1",
+  "status": "PREFLIGHT_OK_AWAITING_HUMAN_STOCK_UI_ACTION",
+  "scope": "restore_and_read_back_one_unique_T1A_route_without_starting_a_print",
+  "authority": "goal3_go_with_session_tas_human_physical_checkpoint_retained",
+  "automatic_effect_connector": false,
+  "deployment_candidate": false,
+  "remote_write": false,
+  "service_action": false,
+  "print_start": false,
+  "operator_action": {
+    "owner": "human_operator_stock_ui",
+    "action": "load_T1A_once",
+    "maximum_attempts": 1,
+    "automatic_retry": false,
+    "operator_presence_required": true,
+    "immediate_stop_required": true
+  },
+  "preflight": {
+    "status": "PASSED_READ_ONLY",
+    "capture_id": "20260828-goal3-start-sequence-t1a-route-v1-preflight",
+    "printer_state": "standby",
+    "heater_targets_c": [0, 0],
+    "engaged_routes": [],
+    "active_cfs_command": "",
+    "both_cfs_connected": true,
+    "active_mesh": "k1_p001_t055_r001_n11x11",
+    "accepted_z_offset_mm": -0.04,
+    "start_owner_phase": "idle",
+    "configuration_hashes_exact": true
+  },
+  "required_technical_result": {
+    "route_transition_count": 1,
+    "final_engaged_routes": ["T1A"],
+    "final_active_cfs_command": "",
+    "final_heater_targets_c": [0, 0],
+    "print_state_unchanged": "standby",
+    "xyz_motion_forbidden": true,
+    "mesh_and_accepted_z_unchanged": true,
+    "configuration_hashes_unchanged": true
+  },
+  "failure_policy": {
+    "stop_on_first_ambiguity": true,
+    "never_repeat_load_after_uncertain_effect": true,
+    "nonzero_terminal_heater_target_requires_separate_safe_shutdown": true,
+    "no_automatic_print_trial": true
+  },
+  "next_gate_only_if_passed": "G4-K1-CONTROL-START-SEQUENCE-OWNER-PHYSICAL-KEEP-CORRECT-T1A-V1"
+}

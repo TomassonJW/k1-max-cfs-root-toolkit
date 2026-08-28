@@ -65,7 +65,11 @@
     "start_owner_cold_validation": "PASS",
     "start_owner_capture": "20260828-220525-g4-k1-control-start-sequence-owner-v1",
     "next_gate": "G4-K1-CONTROL-START-SEQUENCE-T1A-ROUTE-V1",
-    "next_gate_scope": "restore_and_read_back_one_unique_T1A_route_without_starting_a_print"
+    "next_gate_scope": "restore_and_read_back_one_unique_T1A_route_without_starting_a_print",
+    "next_gate_preflight_completed": true,
+    "next_gate_preflight_capture": "20260828-goal3-start-sequence-t1a-route-v1-preflight",
+    "next_gate_preflight_verdict": "START_SEQUENCE_T1A_ROUTE_V1_PREFLIGHT_OK",
+    "next_gate_human_action_pending": "load_T1A_once_from_stock_ui"
   },
   "target": {
     "printer": "Creality K1 Max S12 structure 0",

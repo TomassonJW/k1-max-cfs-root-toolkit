@@ -1,0 +1,30 @@
+{
+  "schema": 1,
+  "mission": "G4-K1-CONTROL-START-SEQUENCE-T1A-ROUTE-V1",
+  "status": "PREFLIGHT_OK_PHYSICAL_ACTION_NOT_EXECUTED",
+  "preflight": {
+    "capture_id": "20260828-goal3-start-sequence-t1a-route-v1-preflight",
+    "private_capture_sha256": "0c2b4b6b566a23e12cdcd31e6255b3a5ae7bd60113f216ce38777f89d949da98",
+    "verdict": "START_SEQUENCE_T1A_ROUTE_V1_PREFLIGHT_OK",
+    "printer_state": "standby",
+    "heater_targets_c": [0, 0],
+    "engaged_routes": [],
+    "active_cfs_command": "",
+    "cfs_units_connected": ["T1", "T2"],
+    "active_mesh": "k1_p001_t055_r001_n11x11",
+    "accepted_z_offset_mm": -0.04,
+    "start_owner_phase": "idle",
+    "start_owner_watchdog_armed": 0,
+    "configuration_hashes_exact": true
+  },
+  "effects": {
+    "gcode": false,
+    "heating": false,
+    "motion": false,
+    "extrusion": false,
+    "cfs_action": false,
+    "remote_write": false,
+    "service_action": false
+  },
+  "next_human_action": "load_T1A_once_from_stock_ui_during_reviewed_capture"
+}

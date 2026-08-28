@@ -47,16 +47,17 @@ class Goal3PhysicalCompletionRegistryTests(unittest.TestCase):
         self.assertIn("final_project_closure", boundary)
         self.assertEqual(4, self.contract["macro_goal_count"])
 
-    def test_current_gate_follows_cold_install_and_effect_is_blocked(self):
+    def test_current_gate_follows_green_t1a_preflight_and_effect_is_blocked(self):
         gate = self.matrix["current_human_gate"]
         self.assertEqual(
-            "START_SEQUENCE_OWNER_INSTALLED_VALIDATED_COLD_NO_T1A",
+            "T1A_ROUTE_PREFLIGHT_OK_AWAITING_HUMAN_STOCK_UI_LOAD",
             gate["checkpoint"],
         )
         self.assertIn("START_OWNER_INSTALLED_VALIDATED_COLD", gate["technical_status"])
+        self.assertIn("T1A_ROUTE_PREFLIGHT_OK", gate["technical_status"])
         self.assertIn("ROUTE_CURRENTLY_EMPTY", gate["technical_status"])
         self.assertEqual("G4-K1-CONTROL-START-SEQUENCE-T1A-ROUTE-V1", gate["active_gate"])
-        self.assertIsNone(gate["required_human_verdict"])
+        self.assertEqual("HUMAN_PRESENT_READY_TO_LOAD_T1A_ONCE", gate["required_human_verdict"])
         self.assertTrue(gate["next_effect_blocked"])
 
     def test_current_ledger_verifies_as_in_progress_without_effect(self):

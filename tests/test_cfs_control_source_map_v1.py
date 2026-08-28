@@ -279,7 +279,13 @@ class CfsControlSourceMapV1Tests(unittest.TestCase):
         self.assertTrue(next_gate["printer_connection"])
         self.assertFalse(next_gate["read_only"])
         self.assertFalse(next_gate["guard_effect_path_called"])
-        self.assertFalse(next_gate["implementation_authorized"])
+        self.assertTrue(next_gate["implementation_authorized"])
+        self.assertTrue(next_gate["preflight_completed"])
+        self.assertEqual(
+            "START_SEQUENCE_T1A_ROUTE_V1_PREFLIGHT_OK",
+            next_gate["preflight_verdict"],
+        )
+        self.assertFalse(next_gate["renewed_exact_go_required"])
         self.assertTrue(next_gate["gcode"])
         self.assertTrue(next_gate["heat"])
         self.assertFalse(next_gate["motion"])
@@ -287,7 +293,7 @@ class CfsControlSourceMapV1Tests(unittest.TestCase):
         self.assertTrue(next_gate["CFS_effect"])
         self.assertFalse(next_gate["remote_write"])
         self.assertFalse(next_gate["service_restart"])
-        self.assertTrue(next_gate["renewed_exact_go_required"])
+        self.assertFalse(next_gate["renewed_exact_go_required"])
         self.assertFalse(next_gate["physical_start_trial"])
         self.assertEqual("BLOCKED_NO_ENGAGED_T1A", next_gate["physical_trial_blocker"])
         gaps = self.source_map["open_gaps_in_order"]
