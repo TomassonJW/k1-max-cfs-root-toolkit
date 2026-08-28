@@ -1,0 +1,58 @@
+{
+  "schema": 1,
+  "mission": "G4-K1-CONTROL-Z-THERMAL-STABILIZATION-DIAGNOSTIC-V1",
+  "date": "2026-08-29",
+  "first_preflight": {
+    "status": "CLOSED_KO_BEFORE_EFFECT",
+    "reason": "printer_not_standby",
+    "actual_safe_terminal_state_found_by_separate_read_only_capture": "complete_with_filename",
+    "effects": {
+      "gcode": false,
+      "print_start": false,
+      "remote_write": false,
+      "physical_action": false
+    }
+  },
+  "guard_correction": {
+    "commit": "f9855e2",
+    "accepted_terminal_states": [
+      "standby_without_filename",
+      "complete_with_filename"
+    ],
+    "active_or_incoherent_states_remain_blocked": true
+  },
+  "corrected_preflight": {
+    "status": "Z_THERMAL_STABILIZATION_DIAGNOSTIC_PREFLIGHT_OK",
+    "print_state": "complete",
+    "heater_targets_zero": true,
+    "axes_released": true,
+    "unique_engaged_route": "T1A",
+    "active_cfs_command": "",
+    "owner_idle": true,
+    "accepted_z_offset_mm": -0.04,
+    "active_mesh_profile": "k1_p001_t055_r001_n11x11",
+    "configuration_hashes_exact": true,
+    "effects": {
+      "gcode": false,
+      "print_start": false,
+      "remote_write": false,
+      "physical_action": false
+    }
+  },
+  "upload": {
+    "status": "GCODE_INSTALL_OK",
+    "remote_name": "K1-Z-THERMAL-SOAK-200S-T1A-2LAYER.gcode",
+    "sha256": "657db94f006a92b5f4b68ee3afd4674f56963208f90c145892cc1205a2582ce1",
+    "post_upload_preflight_ok": true,
+    "remote_file_written": true,
+    "print_started": false,
+    "physical_action": false
+  },
+  "next_effect_blocked_until": [
+    "human_present",
+    "plate_clear",
+    "manual_nozzle_clean_confirmed",
+    "immediate_stop_available",
+    "no_live_Z_adjustment_before_first_layer_verdict"
+  ]
+}

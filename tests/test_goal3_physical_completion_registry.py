@@ -47,20 +47,20 @@ class Goal3PhysicalCompletionRegistryTests(unittest.TestCase):
         self.assertIn("final_project_closure", boundary)
         self.assertEqual(4, self.contract["macro_goal_count"])
 
-    def test_current_gate_has_a_verified_offline_z_thermal_candidate(self):
+    def test_current_gate_waits_for_the_human_z_thermal_run(self):
         gate = self.matrix["current_human_gate"]
         self.assertEqual(
-            "Z_THERMAL_STABILIZATION_DIAGNOSTIC_OFFLINE_CANDIDATE_OK",
+            "Z_THERMAL_STABILIZATION_DIAGNOSTIC_PREFLIGHT_AND_UPLOAD_OK_AWAITING_HUMAN_RUN",
             gate["checkpoint"],
         )
-        self.assertIn("200_SECOND_COLD_NOZZLE_SOAK", gate["technical_status"])
-        self.assertIn("5_TARGETED_TESTS_OK", gate["technical_status"])
+        self.assertIn("POST_UPLOAD_PREFLIGHT_OK", gate["technical_status"])
+        self.assertIn("6_TARGETED_TESTS_OK", gate["technical_status"])
         self.assertEqual(
             "G4-K1-CONTROL-Z-THERMAL-STABILIZATION-DIAGNOSTIC-V1",
             gate["active_gate"],
         )
         self.assertEqual(
-            "AFTER_FRESH_PREFLIGHT_CONFIRM_PLATE_CLEAR_MANUAL_NOZZLE_CLEAN_AND_NO_Z_ADJUSTMENT_BEFORE_FIRST_LAYER_VERDICT",
+            "CONFIRM_PLATE_CLEAR_MANUAL_NOZZLE_CLEAN_IMMEDIATE_STOP_AVAILABLE_AND_NO_Z_ADJUSTMENT_BEFORE_FIRST_LAYER_VERDICT",
             gate["required_human_verdict"],
         )
         self.assertTrue(gate["next_effect_blocked"])

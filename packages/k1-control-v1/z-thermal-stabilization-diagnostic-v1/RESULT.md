@@ -1,6 +1,6 @@
 # Résultat
 
-Statut actuel : `CANDIDATE_PRIVATE_BUILD_AND_OFFLINE_VALIDATION_OK`.
+Statut actuel : `PREFLIGHT_AND_UPLOAD_OK_AWAITING_HUMAN_PHYSICAL_CHECKPOINT`.
 
 Le candidat privé est dérivé du G-code physique déjà qualifié. La seule
 différence fonctionnelle avant `KCTRL_JOB_BEGIN` est l'ajout exact de :
@@ -9,11 +9,16 @@ différence fonctionnelle avant `KCTRL_JOB_BEGIN` est l'ajout exact de :
 - `M190 S55` ;
 - `G4 P200000`.
 
-Le vérificateur du candidat est vert et les cinq tests ciblés sont verts.
+Le vérificateur du candidat est vert et les six tests ciblés sont verts.
 L'essai conserve `T1A`, ne permet aucun réglage Z avant le verdict visuel et
 n'autorise aucun retry automatique.
 
-Aucune connexion K1, chauffe, extrusion, mesure ou écriture distante n'est
-encore produite par cette gate. Le prochain effet reste bloqué jusqu'au
-préflight frais, à l'envoi contrôlé du fichier et à la confirmation humaine du
-plateau libre et de la buse nettoyée.
+Le premier préflight a bloqué sans effet sur le statut terminal sûr `complete`,
+puis une double lecture seule a prouvé l'état stable. Le garde corrigé accepte
+désormais seulement `standby` sans fichier ou `complete` avec fichier. Le
+préflight R2 est vert. Le G-code a été envoyé sous un nouveau nom et son
+empreinte distante est exacte. Aucune chauffe, extrusion, mesure, impression
+ou action CFS n'a eu lieu.
+
+Le prochain effet reste bloqué jusqu'à la confirmation humaine du plateau
+libre, de la buse nettoyée et de la possibilité d'arrêter immédiatement.

@@ -39,6 +39,16 @@ class ZThermalStabilizationDiagnosticV1Tests(unittest.TestCase):
         self.assertIn("persistent_Z_write", self.contract["out_of_scope"])
         self.assertIn("mesh_measurement_or_persistence", self.contract["out_of_scope"])
 
+    def test_live_preflight_and_upload_evidence_keep_the_run_blocked(self):
+        evidence = json.loads((PACKAGE / "preflight-evidence.json").read_text(encoding="utf-8"))
+        self.assertEqual("Z_THERMAL_STABILIZATION_DIAGNOSTIC_PREFLIGHT_OK", evidence["corrected_preflight"]["status"])
+        self.assertTrue(evidence["corrected_preflight"]["heater_targets_zero"])
+        self.assertTrue(evidence["corrected_preflight"]["axes_released"])
+        self.assertEqual("T1A", evidence["corrected_preflight"]["unique_engaged_route"])
+        self.assertEqual(self.contract["candidate"]["sha256"], evidence["upload"]["sha256"])
+        self.assertFalse(evidence["upload"]["print_started"])
+        self.assertIn("plate_clear", evidence["next_effect_blocked_until"])
+
     def test_runner_requires_all_human_physical_guards(self):
         runner = (PACKAGE / "run_trial.ps1").read_text(encoding="utf-8")
         for guard in ("HumanPresent", "PlateClear", "ManualNozzleCleanConfirmed", "ImmediateStopAvailable"):
