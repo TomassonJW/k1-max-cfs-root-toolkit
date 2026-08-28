@@ -5,6 +5,13 @@ Date : 2026-08-24 ; contrat détaillé figé le 2026-08-26
 Statut : **décision et contrat V1 figés hors imprimante ; implémentation et
 production toujours fermées**
 
+Amendement du 2026-08-28 : ADR-030 et ADR-031 remplacent les anciennes étapes
+de référence grossière et de nettoyage automatique décrites plus bas. Le
+démarrage cible exige désormais le nettoyage manuel confirmé, référence X/Y
+sans Z pendant la chauffe, fenêtre `140/55 °C`, une seule référence Z précise,
+puis seulement l'armement mesh/Z et les effets filament. Aucun brossage ni
+recalibration de mesh n'appartient au démarrage.
+
 ## Contexte
 
 La séquence stock observée sur cette K1 Max avec deux CFS ne constitue pas un

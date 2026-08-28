@@ -4,7 +4,7 @@
   "goal": "GOAL-P4-PHYSICAL-SLICES-QUALIFICATION-V1",
   "requirement": "CFS_START_STATES_AND_TEMPERATURE_OWNER",
   "authority": "passive_live_observer_only",
-  "status": "KEEP_CORRECT_KO_SAFE_STOP_COLD_BOOT_REQUIRED",
+  "status": "KEEP_CORRECT_ROUTE_PROVED_START_SEQUENCE_KO_OFFLINE_OWNER_REQUIRED",
   "deployment_candidate": false,
   "physical_campaign": {
     "manifest": "packages/k1-control-v1/cfs-temp-owner-v1/physical-campaign.json",
@@ -168,6 +168,23 @@
       "configuration_unchanged": true,
       "observer_effect": false,
       "evidence": "packages/k1-control-v1/cfs-temp-owner-v1/keep-correct-t1a-ko-evidence.json"
+    },
+    {
+      "checkpoint": "KEEP_CORRECT",
+      "capture_id": "20260828-goal3-cfs-keep-correct-t1a-r5",
+      "capture_sha256": "e370eddaadfcf2bf80d8aa92351627b51560cdea37c6f5de6ba2eef3d60f5bb3",
+      "snapshot_count": 393,
+      "route_transition_count": 0,
+      "route_states": [["T1A"]],
+      "active_command_states": [""],
+      "maximum_nozzle_target_c": 190.0,
+      "hidden_220_target_observed": false,
+      "active_profile_sequence": ["k1_p001_t055_r001_n11x11", "", "default", "", "default"],
+      "classification": "CFS_KEEP_CORRECT_PASSED_START_SEQUENCE_KO_NO_TERMINAL_VERDICT",
+      "configuration_unchanged": true,
+      "observer_effect": false,
+      "evidence": "packages/k1-control-v1/cfs-temp-owner-v1/keep-correct-t1a-r5-evidence.json",
+      "corrective_gate": "G4-K1-CONTROL-START-SEQUENCE-OWNER-V1"
     }
   ],
   "effects": {

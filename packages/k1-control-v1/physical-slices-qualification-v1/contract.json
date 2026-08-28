@@ -24,7 +24,9 @@
     "design/job-lifecycle-contract-v1.json",
     "packages/k1-control-v1/job-lifecycle-offline-v1/future-deployment-blueprint.json",
     "design/manual-nozzle-cleaning-policy-v1.json",
-    "docs/adr/ADR-030-nettoyage-buse-manuel-obligatoire.md"
+    "docs/adr/ADR-030-nettoyage-buse-manuel-obligatoire.md",
+    "docs/adr/ADR-031-demarrage-proprietaire-sans-brossage-ni-recalibration.md",
+    "packages/k1-control-v1/start-sequence-owner-v1/contract.json"
   ],
   "goal4_boundary": [
     "atomic_orca_cutover",

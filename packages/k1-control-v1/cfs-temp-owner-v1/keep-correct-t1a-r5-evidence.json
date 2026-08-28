@@ -1,0 +1,77 @@
+{
+  "schema": 1,
+  "mission": "G4-K1-CONTROL-CFS-TEMP-OWNER-V1",
+  "checkpoint": "KEEP_CORRECT_T1A",
+  "qualification_status": "CFS_KEEP_CORRECT_PASSED_START_SEQUENCE_KO_NO_TERMINAL_VERDICT",
+  "capture": {
+    "capture_id": "20260828-goal3-cfs-keep-correct-t1a-r5",
+    "capture_sha256": "e370eddaadfcf2bf80d8aa92351627b51560cdea37c6f5de6ba2eef3d60f5bb3",
+    "snapshot_count": 393,
+    "source_gcode_sha256": "46853d3aaa7dc40f87e64a54d187fcc94058124120bd9124b4749879013597d0",
+    "observer_effect": false,
+    "configuration_unchanged": true
+  },
+  "confirmed_cfs_result": {
+    "engaged_route_states": [["T1A"]],
+    "route_transition_count": 0,
+    "active_command_states": [""],
+    "maximum_nozzle_target_c": 190.0,
+    "maximum_bed_target_c": 55.0,
+    "hidden_220_target_observed": false,
+    "no_cut_unload_or_reload_observed": true
+  },
+  "confirmed_start_sequence_result": {
+    "profile_sequence_during_stock_start": [
+      "k1_p001_t055_r001_n11x11",
+      "",
+      "default",
+      "",
+      "default"
+    ],
+    "stock_low_purge_seen_before_kctrl_production_arm": true,
+    "automatic_brush_human_verdict": "KO_FILAMENT_LEFT_ON_NOZZLE_MANUAL_CLEANING_REQUIRED",
+    "human_manual_cleaning_during_start": true,
+    "stock_start_sequence_accepted": false
+  },
+  "later_live_read_only_state": {
+    "capture_id": "20260828-goal3-keep-correct-human-z-adjust-r1",
+    "capture_sha256": "9fbadb7a71254087c1c522cd56deb5bcc5c5a18d6487ef0fbcc623a907049aac",
+    "print_state": "printing",
+    "active_profile": "k1_p001_t055_r001_n11x11",
+    "active_profile_matrix_sha256": "58fd96c55129bf7a17ba890d309cb3cd5e2926ec271d735b60392f8369da0a61",
+    "accepted_z_offset_mm": -0.04,
+    "effective_live_homing_origin_z_mm": -0.19,
+    "live_delta_from_accepted_mm": -0.15,
+    "route": "T1A",
+    "active_cfs_command": "",
+    "nozzle_target_c": 190.0,
+    "bed_target_c": 55.0
+  },
+  "human_first_layer_verdict": {
+    "result": "BARELY_ACCEPTABLE_ONLY_AFTER_LIVE_Z_MINUS_0_19",
+    "print_was_continued_by_human": true,
+    "terminal_state_not_captured": true
+  },
+  "interpretation": {
+    "confirmed": [
+      "the_current_11x11_profile_was_exactly_active_during_the_later_first_layer",
+      "the_persisted_accepted_z_record_remained_minus_0_04",
+      "the_stock_start_temporarily_replaced_the_requested_mesh_before_its_low_purge",
+      "the_stock_automatic_brush_left_visible_filament_on_the_nozzle",
+      "the_effective_live_Z_needed_an_additional_minus_0_15_adjustment"
+    ],
+    "plausible_not_metrologically_proven": "the_post_clean_reference_was_shifted_by_nozzle_residue",
+    "not_proven": [
+      "persistent_mesh_geometry_is_the_cause_of_the_uniform_Z_shift",
+      "the_accepted_Z_record_changed",
+      "the_print_reached_a_safe_terminal_state"
+    ]
+  },
+  "decision": {
+    "record": "docs/adr/ADR-031-demarrage-proprietaire-sans-brossage-ni-recalibration.md",
+    "offline_candidate": "packages/k1-control-v1/start-sequence-owner-v1/contract.json",
+    "scope": "OWN_START_KEEP_T1A_NO_BRUSH_NO_MESH_CALIBRATION_ONE_CLEAN_Z_REFERENCE_EXPLICIT_TEMPERATURE",
+    "printer_mutation_authorized": false,
+    "automatic_retry": false
+  }
+}

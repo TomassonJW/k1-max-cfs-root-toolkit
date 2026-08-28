@@ -10,6 +10,12 @@
       "path": "design/manual-nozzle-cleaning-policy-v1.json",
       "decision_record": "docs/adr/ADR-030-nettoyage-buse-manuel-obligatoire.md",
       "effect": "controlled_nozzle_clean_is_replaced_by_a_human_manual_clean_confirmation_gate"
+    },
+    {
+      "id": "START-SEQUENCE-OWNER-V1",
+      "path": "packages/k1-control-v1/start-sequence-owner-v1/contract.json",
+      "decision_record": "docs/adr/ADR-031-demarrage-proprietaire-sans-brossage-ni-recalibration.md",
+      "effect": "stock_START_PRINT_rough_reference_brushing_and_start_mesh_calibration_are_replaced_by_one_owned_clean_Z_reference_before_any_filament_effect"
     }
   ],
   "target": {
@@ -491,17 +497,17 @@
   "start_sequence": [
     {"id": "validate_job_contract", "kind": "guard", "sets": ["contract_valid"]},
     {"id": "reconcile_filament_state", "kind": "guard", "requires": ["contract_valid"], "sets": ["filament_state_classified"]},
-    {"id": "start_bed_heating", "kind": "thermal", "requires": ["contract_valid", "filament_state_classified"], "sets": ["bed_heating"]},
-    {"id": "rough_reference", "kind": "controlled_probe_path", "requires": ["bed_heating"], "sets": ["rough_reference"]},
-    {"id": "controlled_nozzle_clean", "kind": "controlled_cleaning_path", "requires": ["rough_reference"], "sets": ["nozzle_clean"]},
-    {"id": "wait_bed_and_probe_temperature", "kind": "thermal", "requires": ["nozzle_clean", "bed_heating"], "sets": ["thermal_reference_ready"]},
-    {"id": "final_z_reference", "kind": "controlled_probe_path", "requires": ["nozzle_clean", "thermal_reference_ready"], "sets": ["final_reference"]},
+    {"id": "confirm_manual_nozzle_clean", "kind": "human_gate", "requires": ["contract_valid", "filament_state_classified"], "sets": ["nozzle_clean"]},
+    {"id": "start_reference_heating", "kind": "thermal", "requires": ["nozzle_clean"], "sets": ["bed_heating", "probe_nozzle_heating"]},
+    {"id": "home_xy_only", "kind": "controlled_motion", "requires": ["bed_heating", "nozzle_clean"], "sets": ["xy_referenced"]},
+    {"id": "wait_bed_and_probe_temperature", "kind": "thermal", "requires": ["nozzle_clean", "bed_heating", "probe_nozzle_heating"], "sets": ["thermal_reference_ready"]},
+    {"id": "final_z_reference", "kind": "controlled_probe_path", "requires": ["nozzle_clean", "xy_referenced", "thermal_reference_ready"], "maximum_execution_count": 1, "sets": ["final_reference"]},
     {"id": "resolve_mesh_policy", "kind": "mesh", "requires": ["final_reference"], "sets": ["mesh_ready"]},
     {"id": "resolve_effective_z", "kind": "z_state", "requires": ["final_reference", "mesh_ready"], "sets": ["effective_z_ready"]},
     {"id": "arm_production_low_moves", "kind": "guard", "requires": ["final_reference", "mesh_ready", "effective_z_ready"], "sets": ["production_low_moves_armed"]},
     {"id": "resolve_initial_filament", "kind": "cfs", "requires": ["production_low_moves_armed", "filament_state_classified"], "hazard": "cut_load_or_extrusion", "branches": ["keep_correct", "change_wrong", "load_absent", "unknown"], "sets_on_success": ["initial_filament_ready"]},
-    {"id": "purge_to_chute_and_verify_flow", "kind": "purge", "requires": ["production_low_moves_armed", "initial_filament_ready"], "hazard": "extrusion_or_low_production_move", "sets": ["flow_proven"]},
-    {"id": "prime_line", "kind": "prime", "requires": ["production_low_moves_armed", "flow_proven"], "hazard": "extrusion_or_low_production_move", "sets": ["pressure_primed"]},
+    {"id": "purge_and_verify_flow", "kind": "purge", "requires": ["production_low_moves_armed", "initial_filament_ready"], "hazard": "extrusion_or_low_production_move", "branches": ["keep_correct_visible_prime_line", "load_or_change_transition_purge"], "sets": ["flow_proven"]},
+    {"id": "prime_line", "kind": "prime", "requires": ["production_low_moves_armed", "flow_proven"], "hazard": "extrusion_or_low_production_move", "may_be_satisfied_by": "keep_correct_visible_prime_line", "sets": ["pressure_primed"]},
     {"id": "print_model", "kind": "print", "requires": ["production_low_moves_armed", "flow_proven", "pressure_primed"], "hazard": "extrusion_or_low_production_move"},
     {"id": "end_and_record_filament", "kind": "end", "requires": ["contract_valid"], "sets": ["job_closed"]},
     {"id": "end_without_calibration_commit", "kind": "guard", "requires": ["job_closed"]}

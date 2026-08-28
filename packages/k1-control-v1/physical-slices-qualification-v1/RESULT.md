@@ -5,10 +5,10 @@ les actions du Goal 4. Il n'ajoute ni mission obligatoire, ni transport, ni
 effet sur la K1.
 
 État réel : **deux exigences sur sept sont closes**. CLEAN-MOTION-V1 conserve les
-deux géométries observées à froid. La grande brosse est la seule candidate au
-nettoyage automatique. La brosse du bac est désormais condamnée : le cycle
-chaud ultérieur a montré qu'elle recollait le filament sur la buse. Sa
-géométrie reste une preuve historique, pas une validation fonctionnelle.
+deux géométries observées à froid. La grande brosse avait été la dernière
+candidate automatique ; son essai chaud a lui aussi été rejeté. La brosse du
+bac avait déjà recollé le filament sur la buse. Les deux géométries restent des
+preuves historiques, pas des recettes fonctionnelles.
 
 Les cinq tranches du cycle impression/CFS ne sont pas encore qualifiées
 physiquement. Après le KO de la brosse du bac, le V2 non probant et un V3 à huit
@@ -26,12 +26,24 @@ du filament puis les futurs checkpoints CFS, sans jamais les déclencher ni les
 valider à la place de Thomas.
 
 La reprise `EMPTY_LOAD/T1A` est close OK : chargement unique, purge visible,
-cible `220 °C`, retour des chauffes à zéro et configurations inchangées. Le
-checkpoint suivant `KEEP_CORRECT_T1A` a conservé la route sans transition mais
-a échoué sur le départ historique Orca : profil passé de `11 × 11` à `default`,
-`T0` encore actif, puis annulation sûre. La dernière lecture avait les chauffes
-à zéro mais restait `cancelled/T0`, sans route engagée. Thomas a choisi
-l'extinction ; la reprise doit commencer à froid en lecture seule.
+cible `220 °C`, retour des chauffes à zéro et configurations inchangées. La
+seconde reprise `KEEP_CORRECT_T1A` a ensuite conservé `T1A` sans transition ni
+commande CFS et n'a jamais demandé la cible cachée `220 °C`. Le chemin CFS
+« garder le bon filament » est donc techniquement prouvé pendant ce départ
+observé. Le checkpoint complet reste non passé faute d'état terminal et de
+première couche acceptable sans correction humaine.
+
+Le départ complet reste KO. `START_PRINT` a vidé ou remplacé le `11 × 11`
+pendant ses mouvements bas, puis son brossage a laissé du filament sur la buse.
+Thomas a nettoyé manuellement et a dû passer temporairement de `−0,04` à
+`−0,19 mm` pour une première couche à peine correcte. Le `11 × 11` exact était
+bien actif lors de cette lecture et le Z accepté stocké était resté à `−0,04` :
+la forme du mesh n'explique pas à elle seule ce décalage uniforme. Le résidu
+pendant la nouvelle référence Z est l'explication principale, sans être promu
+en preuve métrologique absolue. ADR-031 et START-SEQUENCE-OWNER-V1 préparent
+donc hors imprimante le remplacement atomique du départ stock : nettoyage
+manuel, une seule référence Z propre, aucun brossage, aucune mesure de mesh,
+températures explicites et purge après armement mesh/Z.
 
 Le Goal 3 ne pourra passer à `PASSED` qu'après preuves physiques pour les sept
 exigences, audit transversal des deux CFS, chauffes, Z, mesh, retours sûrs et

@@ -49,13 +49,21 @@ class CfsPhysicalCampaignTests(unittest.TestCase):
         self.assertEqual([], ambiguous["expected_effects"])
         self.assertTrue(ambiguous["requires_read_only_decision_adapter"])
 
-    def test_keep_correct_ko_is_retained_and_not_counted_as_passed(self):
+    def test_keep_correct_cfs_proof_and_start_ko_are_both_retained_without_premature_pass(self):
         checkpoint = self.campaign["checkpoints"][1]
         evidence = json.loads((ROOT / checkpoint["evidence"]).read_text(encoding="utf-8"))
-        self.assertEqual("KO_SAFE_STOP_COLD_BOOT_REQUIRED", checkpoint["evidence_status"])
-        self.assertEqual("default", evidence["attempt"]["observed"]["active_profile_at_capture_end"])
-        self.assertEqual("T0", evidence["safe_stop"]["last_fresh_read_only_state_before_human_power_off"]["cfs_active_command"])
-        self.assertFalse(evidence["safe_stop"]["printer_restart_sent"])
+        previous = json.loads((ROOT / checkpoint["previous_ko_evidence"]).read_text(encoding="utf-8"))
+        self.assertEqual(
+            "CFS_KEEP_CORRECT_PASSED_START_SEQUENCE_KO_NO_TERMINAL_VERDICT",
+            checkpoint["evidence_status"],
+        )
+        self.assertTrue(evidence["confirmed_cfs_result"]["no_cut_unload_or_reload_observed"])
+        self.assertEqual(0, evidence["confirmed_cfs_result"]["route_transition_count"])
+        self.assertFalse(evidence["confirmed_cfs_result"]["hidden_220_target_observed"])
+        self.assertEqual(-0.19, evidence["later_live_read_only_state"]["effective_live_homing_origin_z_mm"])
+        self.assertEqual("default", previous["attempt"]["observed"]["active_profile_at_capture_end"])
+        self.assertEqual("T0", previous["safe_stop"]["last_fresh_read_only_state_before_human_power_off"]["cfs_active_command"])
+        self.assertFalse(previous["safe_stop"]["printer_restart_sent"])
 
     def test_empty_load_t1a_has_technical_and_human_evidence(self):
         first = self.campaign["checkpoints"][0]

@@ -110,6 +110,13 @@ class ProductionControlContractTests(unittest.TestCase):
         for stage_id in ("final_z_reference", "resolve_mesh_policy", "resolve_effective_z"):
             self.assertLess(self.position(stage_id), arm)
 
+    def test_owned_start_has_manual_clean_and_one_z_reference_without_rough_reference(self) -> None:
+        self.assertLess(self.position("confirm_manual_nozzle_clean"), self.position("final_z_reference"))
+        self.assertLess(self.position("final_z_reference"), self.position("resolve_initial_filament"))
+        self.assertEqual(1, self.stage("final_z_reference")["maximum_execution_count"])
+        self.assertFalse(any(stage["id"] == "rough_reference" for stage in self.sequence))
+        self.assertFalse(any(stage["id"] == "controlled_nozzle_clean" for stage in self.sequence))
+
     def test_no_production_hazard_occurs_before_arm_and_flow_proof_precedes_print(self) -> None:
         arm = self.position("arm_production_low_moves")
         hazards = [stage for stage in self.sequence if stage.get("hazard")]
@@ -117,7 +124,7 @@ class ProductionControlContractTests(unittest.TestCase):
         for stage in hazards:
             self.assertIn("production_low_moves_armed", stage.get("requires", []), stage["id"])
             self.assertGreater(self.position(stage["id"]), arm)
-        self.assertLess(self.position("purge_to_chute_and_verify_flow"), self.position("prime_line"))
+        self.assertLess(self.position("purge_and_verify_flow"), self.position("prime_line"))
         self.assertLess(self.position("prime_line"), self.position("print_model"))
 
     def test_initial_filament_branches_keep_change_load_or_block(self) -> None:
@@ -127,7 +134,7 @@ class ProductionControlContractTests(unittest.TestCase):
         self.assertIn("explicit_transition_purge", branches["change_wrong"])
         self.assertIn("block", branches["unknown"])
         self.assertIn("unknown", self.stage("resolve_initial_filament")["branches"])
-        self.assertIn("initial_filament_ready", self.stage("purge_to_chute_and_verify_flow")["requires"])
+        self.assertIn("initial_filament_ready", self.stage("purge_and_verify_flow")["requires"])
 
     def test_mid_print_change_preserves_full_state_and_forbids_homing(self) -> None:
         change = self.contract["mid_print_change"]

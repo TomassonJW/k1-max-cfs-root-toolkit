@@ -35,12 +35,16 @@ Cette résolution reste attachée à l'identifiant historique de l'exigence : le
 KO automatique n'est ni supprimé ni présenté comme un succès. Les actions
 automatiques sont désormais bloquées. L'exigence courante est la qualification
 CFS. `EMPTY_LOAD/T1A` est passé avec purge visible et retour des chauffes à
-zéro. `KEEP_CORRECT_T1A` est ensuite clos KO avec arrêt sûr : le départ Orca
-historique a remplacé le `11 × 11` par `default`, puis l'annulation a laissé
-`cancelled/T0` sans route malgré les chauffes à zéro. Thomas a annoncé qu'il
-allait éteindre la K1 ; la
-reprise est un préflight à froid en lecture seule. Ce registre ne crée aucun
-Goal supplémentaire.
+zéro. La reprise `KEEP_CORRECT_T1A` a ensuite prouvé que `T1A` restait engagé,
+sans transition, sans commande CFS active et sans cible cachée à `220 °C`.
+Elle a aussi prouvé que `START_PRINT` remplaçait encore le `11 × 11` par
+`default` pendant ses mouvements bas et lançait le mauvais brossage avant que
+K1 Control puisse réarmer la géométrie. Thomas a dû nettoyer la buse à la main,
+puis corriger temporairement le Z de `−0,04` à `−0,19 mm` pour obtenir une
+première couche à peine correcte. ADR-031 impose donc un départ possédé, sans
+brosse ni recalibration, avec une seule référence Z propre avant tout effet
+filament. Son candidat est préparé uniquement hors imprimante. Ce registre ne
+crée aucun Goal supplémentaire.
 
 ## Goal 1 — Terminer le système hors imprimante
 
@@ -118,9 +122,9 @@ ont depuis reçu leur autorité distincte.
 Identifiant : `GOAL-P4-PHYSICAL-SLICES-QUALIFICATION-V1`
 
 État : **en cours ; `2/7` exigences passées ; nettoyage automatique clos KO et
-remplacé par une gate manuelle obligatoire ; prochaine exigence : qualification
-des états de départ CFS et des températures ; meilleur profil actuel `11 × 11`
-à restaurer et revérifier après le prochain démarrage à froid**.
+remplacé par une gate manuelle obligatoire ; la conservation réelle de `T1A`
+est prouvée, mais le départ stock est KO et doit être remplacé par le candidat
+hors imprimante START-SEQUENCE-OWNER-V1 avant toute nouvelle qualification**.
 
 Le checkpoint C a référencé XYZ, rechargé le `11 × 11`, commandé `Z=50 mm` et
 attendu la fin. Un premier faux KO local a confondu la position physique

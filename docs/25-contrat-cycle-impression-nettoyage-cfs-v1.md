@@ -14,7 +14,7 @@ Ce document fixe le comportement attendu de K1 Control pour :
 - la fin d'impression et le retrait manuel sur commande ;
 - le choix du mesh et les calibrations qui nécessitent ou non du filament.
 
-Il complète ADR-016 et ADR-030. En cas d'écart, la règle la plus sûre de ce
+Il complète ADR-016, ADR-030 et ADR-031. En cas d'écart, la règle la plus sûre de ce
 document ferme la phase. Il ne remplace pas une gate physique, un préflight
 frais, un backup ou un rollback.
 
@@ -185,25 +185,34 @@ suintement ne peut pas être garantie autrement.
 1. Valider le contrat et l'absence d'offset Z caché.
 2. Interroger machine, deux CFS, mapping des slots et capteurs.
 3. Classer l'état filament. Toute contradiction ferme le départ.
-4. Lancer immédiatement la chauffe plateau à la cible du contrat.
-5. Si nécessaire, faire la référence grossière permettant de circuler.
-6. Obtenir la confirmation humaine que la buse a été nettoyée manuellement et
-   est visiblement propre.
-7. Attendre la cible plateau et la stabilité bornée requise, puis revenir à la
-   température de palpage qualifiée.
-8. Faire une seule référence Z précise avec la buse propre.
-9. Charger le profil mesh qualifié après toute macro pouvant le vider, appliquer
+4. Obtenir une confirmation humaine consommable une seule fois que la buse a
+   été nettoyée à la main et est visiblement propre.
+5. Lancer immédiatement la chauffe du plateau et la cible de référence de la
+   buse. Référencer X/Y pendant cette montée, sans palper Z.
+6. Atteindre la fenêtre thermique liée au Z accepté. Pour le contexte actuel,
+   elle vaut `140/55 °C` ; elle n'est pas remplacée par une température variable.
+7. Faire exactement une référence Z précise avec la buse propre.
+8. Charger le profil mesh qualifié après cette référence, appliquer
    le Z accepté et relire les deux états effectifs.
-10. Résoudre le filament : conserver, changer, charger ou bloquer.
-11. Aller au réceptacle arrière et purger dans tous les cas.
+9. Résoudre le filament seulement maintenant : conserver, changer, charger ou
+   bloquer. Aucun effet CFS, chargement ou purge ne précède la référence Z.
+10. Atteindre la température explicite de la première couche ou de la transition.
+11. Purger visiblement. Pour le bon filament déjà engagé, la ligne d'amorçage
+    peut constituer cette petite purge unique ; un chargement ou changement
+    garde sa purge de transition séparée. Il faut donc purger dans tous les cas,
+    mais jamais deux fois par habitude.
 12. Prouver le débit par capteurs cohérents, transition CFS finie et sortie
     réellement visible. Sans capteur de débit qualifié, cette dernière preuve
     reste humaine ou caméra.
-13. Attendre les températures première couche exactes du contrat.
-14. Faire la ligne d'amorçage dans une zone de plaque physiquement qualifiée,
+13. Faire la ligne d'amorçage si elle n'a pas déjà servi de purge visible, dans
+    une zone de plaque physiquement qualifiée,
     jamais sur une coordonnée mécanique `0` supposée sûre.
-15. Vérifier outil, CFS, températures, mesh, Z, capteurs et absence de transition,
+14. Vérifier outil, CFS, températures, mesh, Z, capteurs et absence de transition,
     puis seulement rendre la main au modèle.
+
+Ce départ n'appelle jamais `START_PRINT`, une brosse, une référence Z grossière
+avant la référence précise, ni une calibration de mesh. Le mesh et le Z accepté
+restent des données persistantes ; leur recalibration est une action séparée.
 
 ## 7. Décision filament au démarrage
 
@@ -423,6 +432,7 @@ sous une autorité séparée.
 - [ADR-021 — protocole minimal fermé en KO borné](adr/ADR-021-fermer-le-protocole-minimal-cfs-en-ko-borne.md)
 - [ADR-027 — cycle hors imprimante avant connecteur réel](adr/ADR-027-fermer-le-cycle-hors-imprimante-avant-tout-connecteur-reel.md)
 - [ADR-030 — nettoyage de buse manuel obligatoire](adr/ADR-030-nettoyage-buse-manuel-obligatoire.md)
+- [ADR-031 — démarrage propriétaire sans brossage ni recalibration](adr/ADR-031-demarrage-proprietaire-sans-brossage-ni-recalibration.md)
 - [Audit mesh et cycle CFS](23-audit-mesh-manuel-et-cycle-production-cfs.md)
 - [Klipper — capteurs filament](https://www.klipper3d.org/Config_Reference.html#filament-sensors)
 - [Klipper — profils bed mesh](https://www.klipper3d.org/Bed_Mesh.html#profiles)

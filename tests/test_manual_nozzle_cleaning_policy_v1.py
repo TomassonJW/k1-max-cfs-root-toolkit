@@ -35,6 +35,9 @@ class ManualNozzleCleaningPolicyTests(unittest.TestCase):
         self.assertFalse(self.policy["automatic_cleaning"]["allowed"])
         self.assertEqual("human_gate", self.policy["start_sequence_override"]["kind"])
         self.assertEqual([], self.policy["start_sequence_override"]["automatic_effects"])
+        self.assertTrue(self.policy["start_sequence_override"]["one_shot_confirmation"])
+        self.assertFalse(self.policy["start_sequence_override"]["automatic_reference_after_filament_effect"])
+        self.assertFalse(self.policy["start_sequence_override"]["automatic_mesh_calibration_at_start"])
 
     def test_historical_requirement_is_retained_with_truthful_resolution(self):
         self.assertEqual("AUTOMATIC_CLEAN_AND_FINAL_REFERENCE", self.policy["historical_requirement_id"])

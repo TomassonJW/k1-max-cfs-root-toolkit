@@ -1,0 +1,116 @@
+{
+  "schema": 1,
+  "mission": "G4-K1-CONTROL-START-SEQUENCE-OWNER-V1",
+  "status": "OFFLINE_CANDIDATE_NOT_DEPLOYABLE",
+  "deployment_candidate": false,
+  "printer_connection_authorized": false,
+  "scope": {
+    "supported_branch": "KEEP_CORRECT_T1A",
+    "required_engaged_route": "T1A",
+    "unsupported_branches": [
+      "EMPTY_LOAD",
+      "WRONG_ROUTE_CHANGE",
+      "AMBIGUOUS_ROUTE",
+      "RUNOUT",
+      "MID_PRINT_CHANGE"
+    ]
+  },
+  "manual_cleaning": {
+    "policy": "design/manual-nozzle-cleaning-policy-v1.json",
+    "operator": "HUMAN",
+    "required_confirmation": "KCTRL_CONFIRM_MANUAL_NOZZLE_CLEAN_V1",
+    "token_use_count": 1,
+    "automatic_brushing": false
+  },
+  "fixed_context": {
+    "plate": 1,
+    "temperature_band_c": 55,
+    "probe_revision": 1,
+    "nozzle_id": 1,
+    "config_id": 1,
+    "mesh_x_count": 11,
+    "mesh_y_count": 11,
+    "mesh_profile": "k1_p001_t055_r001_n11x11",
+    "mesh_matrix_sha256": "58fd96c55129bf7a17ba890d309cb3cd5e2926ec271d735b60392f8369da0a61",
+    "reference_nozzle_c": 140,
+    "reference_bed_c": 55,
+    "first_layer_nozzle_c": 190
+  },
+  "ordered_phases": [
+    "consume_manual_clean_confirmation",
+    "verify_unique_T1A_and_empty_cfs_command",
+    "start_reference_heating",
+    "home_XY_only_while_heating",
+    "wait_for_140_55_reference_window",
+    "one_accurate_Z_reference",
+    "load_and_verify_persistent_mesh_and_accepted_Z",
+    "reverify_unique_T1A_without_cfs_effect",
+    "wait_for_explicit_first_layer_temperature",
+    "assert_mesh_and_Z_again",
+    "visible_prime_line",
+    "model_gcode"
+  ],
+  "exact_execution_counts": {
+    "G28_XY_only": 1,
+    "ACCURATE_G28": 1,
+    "Z_reference_total": 1,
+    "BED_MESH_CALIBRATE": 0,
+    "automatic_brush": 0,
+    "CFS_command": 0,
+    "automatic_retry": 0
+  },
+  "prime_line": {
+    "start_mm": [15.0, 20.0, 0.3],
+    "end_mm": [15.0, 180.0, 0.3],
+    "extrusion_mm": 18.0,
+    "feedrate_mm_per_min": 1200,
+    "requires_armed_mesh_and_Z": true,
+    "requires_explicit_temperature": true,
+    "requires_live_coordinate_review_before_deployment": true
+  },
+  "forbidden_commands": [
+    "START_PRINT",
+    "BOX_START_PRINT",
+    "BOX_START_PRINT_EXTRUDE_MATERIAL",
+    "CX_ROUGH_G28",
+    "CX_NOZZLE_CLEAR",
+    "NOZZLE_CLEAR",
+    "G29",
+    "BED_MESH_CALIBRATE",
+    "CX_PRINT_LEVELING_CALIBRATION",
+    "CHECK_BED_MESH",
+    "T0",
+    "T1",
+    "T2",
+    "T3",
+    "M104 S220",
+    "M109 S220",
+    "SET_GCODE_OFFSET Z_ADJUST=0.27",
+    "SAVE_CONFIG"
+  ],
+  "failure_policy": {
+    "before_physical_effect": "RAISE_AND_BLOCK",
+    "known_guard_failure_after_heating_started": "TURN_OFF_HEATERS_THEN_RAISE_AND_BLOCK",
+    "unexpected_klipper_or_nested_macro_failure": "DEPLOYMENT_BLOCKED_UNTIL_A_WATCHDOG_PROVES_HEATER_SHUTDOWN",
+    "fallback_to_stock_start": false,
+    "fallback_to_hidden_temperature": false
+  },
+  "predeployment_requirements": [
+    "parse_every_Jinja_template_with_the_exact_K1_Python_and_Klipper_environment",
+    "prove_include_and_macro_name_compatibility_without_physical_effect",
+    "add_and_test_a_bounded_watchdog_for_unexpected_macro_failure",
+    "review_prime_line_coordinates_against_the_live_bed_bounds",
+    "prepare_exact_backup_rollback_and_validation_commands",
+    "export_and_inspect_a_short_sacrificial_first_layer_Gcode",
+    "obtain_a_separate_exact_human_GO"
+  ],
+  "effects": {
+    "printer_connection": false,
+    "remote_write": false,
+    "service_action": false,
+    "heating": false,
+    "motion": false,
+    "extrusion": false,
+    "cfs_action": false
+  }
+}
