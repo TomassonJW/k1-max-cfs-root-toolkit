@@ -1,0 +1,42 @@
+{
+  "schema": 1,
+  "mission": "G4-K1-CONTROL-START-SEQUENCE-OWNER-PHYSICAL-KEEP-CORRECT-T1A-V1",
+  "goal": "GOAL-P4-PHYSICAL-SLICES-QUALIFICATION-V1",
+  "physical_requirement": "owned_start_keep_correct_t1a",
+  "status": "PREPARED_NOT_RUN",
+  "route": "T1A",
+  "automatic_retry": false,
+  "gcode": {
+    "private_path": "inventory/raw/20260828-goal3-start-owner-physical-keep-correct-t1a-v1/K1-START-OWNER-T1A-2LAYER.gcode",
+    "remote_name": "K1-START-OWNER-T1A-2LAYER.gcode",
+    "sha256": "eeaf9822a7016f89da45be83e4435f68c1d28441c469a9cde078c9645fcbf429",
+    "bytes": 90552,
+    "layers": 2,
+    "max_z_mm": 0.4,
+    "first_layer_nozzle_c": 190,
+    "bed_c": 55
+  },
+  "human_gates": [
+    "plate_clear_and_installed",
+    "nozzle_manually_cleaned",
+    "operator_present_with_immediate_stop",
+    "visible_purge_verdict",
+    "first_layer_verdict"
+  ],
+  "allowed_automatic_effects": [
+    "upload_exact_gcode",
+    "manual_clean_confirmation_token_once",
+    "start_exact_gcode_once",
+    "cancel_and_safe_stop_once_on_failure"
+  ],
+  "forbidden": [
+    "T0",
+    "stock_START_PRINT",
+    "brush_motion",
+    "mesh_calibration",
+    "cfs_route_change",
+    "automatic_retry",
+    "configuration_write",
+    "service_restart"
+  ]
+}
