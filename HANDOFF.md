@@ -2,7 +2,7 @@
 
 La passation canonique de la session est désormais :
 
-`docs/HANDOFF-CFS-OWNER-CORE-2026-08-28.md`
+`docs/HANDOFF-CFS-OWNER-EXCLUSION-GUARD-2026-08-28.md`
 
 Lire ce document en premier. Le contenu ci-dessous est conservé comme archive
 des clôtures antérieures ; il ne décrit plus l'état live actuel et ne doit pas
@@ -15,24 +15,26 @@ canonique de ce second Goal reste
 cours à `2/7` ; le nettoyage automatique est clos KO et le nettoyage manuel
 est obligatoire.
 
-`G4-K1-CONTROL-CFS-OWNER-CORE-OFFLINE-V1` est maintenant clos avec `21/21`
-scénarios. Le moteur pur impose un seul propriétaire, distingue conserver,
-charger et changer, choisit un unique remplacement strictement identique entre
-les deux CFS, bloque tout rappel stock et refuse de rejouer un effet incertain.
-Il restaure exactement la valeur précédente de l'auto-remplacement stock.
+`G4-K1-CONTROL-CFS-OWNER-CORE-OFFLINE-V1` reste clos avec `21/21` scénarios.
+Son successeur `G4-K1-CONTROL-CFS-OWNER-EXCLUSION-GUARD-OFFLINE-V1` est
+maintenant clos avec `25/25` scénarios et `15/15` tests ciblés. Le garde pur
+sauvegarde la valeur stock, prépare au plus une désactivation non exécutable,
+exige deux lectures qui prouvent l'effet puis restaure exactement la valeur
+précédente. Un acquittement seul ne prouve rien et un résultat incertain n'est
+jamais rejoué.
 
-La capture S12 ne contenait aucune paire identique réelle : le passage simulé
-de `T1A` à `T2A` est une preuve logique, pas une validation matérielle. Toutes
-les intentions produites sont non exécutables. Aucune impression, G-code,
-écriture distante, connexion K1, chauffe, mouvement ou action CFS n'a été
-produit par cette mission.
+Les signatures S12 `BOX_ENABLE_AUTO_REFILL ENABLE=0/1` restent présentes comme
+intentions `dispatchable=false`. Aucune impression, G-code, écriture distante,
+connexion K1, chauffe, mouvement ou action CFS n'a été produit par cette
+mission. Le Goal 3 reste à `2/7`.
 
-La prochaine mission unique est
-`G4-K1-CONTROL-CFS-OWNER-EXCLUSION-GUARD-OFFLINE-V1`. Elle préparera seulement
-sur le PC le garde une tentative / vérification / restauration de la politique
-stock. Elle exige une nouvelle autorisation explicite de mission. La connexion,
-l'essai réel, les primitives filament et la production resteront fermés, avec
-rollback exact obligatoire avant toute future mutation.
+La prochaine mission unique proposée est
+`G4-K1-CONTROL-CFS-OWNER-EXCLUSION-GUARD-LIVE-READ-ONLY-V1`. Elle exige une
+nouvelle autorisation explicite de connexion en lecture seule. Elle prendra
+deux lectures fraîches et nettoyées pour vérifier la forme réelle, sans appeler
+le garde ni envoyer de commande. L'essai réel, les primitives filament et la
+production restent fermés, avec rollback exact obligatoire avant toute future
+mutation.
 
 ## Archive historique — clôture initiale du Goal 2
 

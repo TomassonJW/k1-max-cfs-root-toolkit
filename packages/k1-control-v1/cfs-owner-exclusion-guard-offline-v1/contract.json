@@ -1,0 +1,97 @@
+{
+  "contract_id": "cfs-owner-exclusion-guard-offline-v1",
+  "schema": 1,
+  "authority": "offline_only",
+  "status": "offline_exclusion_guard_closed_green_effects_unqualified",
+  "source_pins": {
+    "owner_core_contract_sha256": "a2f7c4a91692ebf346ec1ab863be2a3487d059530ea774b88507e27a23254cab",
+    "s12_preflight_contract_sha256": "817840ac234167c33250004a9ba93d25dd695a25cd679d7e85e8ac9dd61822e2",
+    "s12_evidence_map_sha256": "b5c65c78613c14d479377b3afe16f76f5b39f271ca1b398bb3c60be49a0e2ac0"
+  },
+  "boundaries": {
+    "printer_connection": false,
+    "network_transport": false,
+    "gcode_sent": false,
+    "heater_action": false,
+    "motion_action": false,
+    "cfs_action": false,
+    "remote_file_write": false,
+    "service_restart": false,
+    "deployment_candidate": false,
+    "production_authorized": false
+  },
+  "snapshot": {
+    "required_fields": [
+      "schema", "sample_seq", "mapping_revision", "connection_epoch",
+      "printer_state", "connected_units", "active_command",
+      "stock_auto_refill", "stock_cfs_print_enable", "engaged_routes", "protected"
+    ],
+    "protected_fields": [
+      "mesh_profile", "accepted_z_revision", "effective_z_offset_mm",
+      "homed_axes", "nozzle_target_c", "bed_target_c"
+    ],
+    "required_printer_state": "standby",
+    "required_connected_units": ["T1", "T2"],
+    "stable_reads": 2,
+    "maximum_engaged_routes": 1
+  },
+  "reviewed_intents": {
+    "disable_stock_auto_refill": {
+      "command": "BOX_ENABLE_AUTO_REFILL ENABLE=0",
+      "dispatchable": false,
+      "maximum_attempts": 1
+    },
+    "restore_stock_auto_refill": {
+      "command_template": "BOX_ENABLE_AUTO_REFILL ENABLE={saved_value}",
+      "allowed_saved_values": [0, 1],
+      "dispatchable": false,
+      "maximum_attempts": 1
+    }
+  },
+  "proof_rules": {
+    "acknowledgement_is_proof": false,
+    "two_stable_reads_required_before_effect": true,
+    "two_stable_reads_required_after_effect": true,
+    "non_target_drift_allowed": false,
+    "mapping_or_epoch_drift_allowed": false,
+    "retry_after_unknown_effect": false,
+    "owner_granted_only_after_verified_zero": true,
+    "release_closed_only_after_verified_saved_value": true
+  },
+  "required_scenarios": [
+    "already_disabled_grants_without_intent",
+    "enabled_prepares_single_disable",
+    "disable_verified_grants_owner",
+    "disable_ack_without_effect_blocks",
+    "disable_rejected_unchanged_closes_safe",
+    "disable_unknown_then_zero_prepares_rollback",
+    "disable_unknown_then_prior_closes_safe",
+    "disable_retry_forbidden",
+    "release_restores_saved_one",
+    "release_saved_zero_closes_without_intent",
+    "restore_verified_closes_safe",
+    "restore_ack_without_effect_blocks",
+    "restore_unknown_then_saved_closes_safe_ko",
+    "restore_unknown_then_zero_blocks",
+    "restore_retry_forbidden",
+    "missing_field_rejected",
+    "unknown_field_rejected",
+    "boolean_policy_rejected",
+    "unstable_pair_rejected",
+    "printer_busy_rejected",
+    "unit_disconnect_rejected",
+    "active_command_rejected",
+    "multiple_routes_rejected",
+    "protected_drift_blocks",
+    "mapping_epoch_or_print_policy_drift_blocks"
+  ],
+  "truthful_limits": {
+    "stock_command_signature_reviewed": true,
+    "stock_command_effect_physically_qualified": false,
+    "live_snapshot_adapter_qualified": false,
+    "runtime_owner_installed": false,
+    "rollback_physically_qualified": false,
+    "production_authorized": false
+  },
+  "next_gate": "G4-K1-CONTROL-CFS-OWNER-EXCLUSION-GUARD-LIVE-READ-ONLY-V1"
+}

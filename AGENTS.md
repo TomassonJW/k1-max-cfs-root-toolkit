@@ -76,9 +76,14 @@ ni recalibration. ADR-032 retient K1 Control comme propriétaire complet au-dess
 de petites primitives stock. Le préflight S12 est clos en lecture seule et le
 cœur `CFS-OWNER-CORE-OFFLINE-V1` obtient `21/21` scénarios sans connexion : un
 seul propriétaire, remplacement strictement identique entre les deux CFS,
-aucun retry ou resume stock et restitution exacte de l'auto-remplacement. Aucun
-effet réel n'est qualifié. La prochaine mission est le garde d'exclusion stock,
-encore hors imprimante ;
+aucun retry ou resume stock et restitution exacte de l'auto-remplacement. Le
+garde `CFS-OWNER-EXCLUSION-GUARD-OFFLINE-V1` est
+maintenant clos avec `25/25` scénarios et `15/15` tests ciblés. Il sauvegarde la
+valeur stock, limite désactivation et restauration à une tentative, exige deux
+lectures stables et refuse tout acquittement sans effet. Aucun transport ni
+effet réel n'est qualifié. La prochaine mission proposée est
+`G4-K1-CONTROL-CFS-OWNER-EXCLUSION-GUARD-LIVE-READ-ONLY-V1`, validation de forme live
+strictement en lecture seule ;
 GATEWAY-PRIVATE-LAN-NO-AUTH-V1 est installé et validé : le port `4409` ne
 demande plus de mot de passe, reste limité aux réseaux IPv4 privés, et présente
 uniquement son proxy local approuvé à Moonraker ; production remains closed**.

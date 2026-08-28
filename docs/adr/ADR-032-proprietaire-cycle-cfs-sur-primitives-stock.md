@@ -215,9 +215,14 @@ sur reconnexion ou rappel stock, aucune reprise d'un effet incertain et
 restauration exacte de la valeur précédente d'auto-remplacement. Toutes les
 intentions restent non exécutables et aucun comportement matériel n'est promu.
 
+La gate `G4-K1-CONTROL-CFS-OWNER-EXCLUSION-GUARD-OFFLINE-V1` est maintenant
+close. Son garde pur obtient `25/25` scénarios : sauvegarde exacte, deux lectures
+stables, une tentative maximale, refus d'un acquittement sans effet et
+restauration exacte. Toutes ses intentions restent non exécutables et aucun
+comportement matériel n'est promu.
+
 La prochaine gate proposée est
-`G4-K1-CONTROL-CFS-OWNER-EXCLUSION-GUARD-OFFLINE-V1`. Après une nouvelle
-autorité de mission, elle préparera encore hors imprimante le garde exact pour
-désactiver, vérifier puis restaurer l'auto-remplacement stock. Elle n'aura
-aucune connexion K1, aucun G-code, aucun chauffage, aucun mouvement, aucun
-fichier distant et aucun candidat de pose.
+`G4-K1-CONTROL-CFS-OWNER-EXCLUSION-GUARD-LIVE-READ-ONLY-V1`. Après une nouvelle
+autorité de lecture seule, elle vérifiera seulement la forme de deux lectures
+fraîches et nettoyées. Elle n'appellera pas le garde, n'enverra aucune commande
+et ne qualifiera pas l'effet réel.

@@ -425,10 +425,26 @@ complète exécute `654` tests, dont `651` verts et `3`
 ignorés connus.
 
 Aucune connexion K1, commande, chauffe, mouvement, écriture distante ou action
-CFS n'a eu lieu. La prochaine gate proposée est
+CFS n'a eu lieu. La gate suivante était
 `G4-K1-CONTROL-CFS-OWNER-EXCLUSION-GUARD-OFFLINE-V1` : préparer seulement le
 garde une tentative / vérification / restauration de l'auto-remplacement stock,
 toujours sans connexion ni pose.
+
+### `G4-K1-CONTROL-CFS-OWNER-EXCLUSION-GUARD-OFFLINE-V1`
+
+Statut : **clos OK hors imprimante ; `25/25` ; effets et pose fermés**.
+
+Le garde pur sauvegarde exactement la valeur stock, prépare au plus une
+désactivation et une restauration non exécutables, exige deux lectures stables
+avant et après, compare tous les états protégés et refuse toute seconde
+tentative. Un acquittement seul ne vaut jamais preuve. Les tests ciblés obtiennent
+`15/15`.
+
+Aucune connexion K1, commande, chauffe, mouvement, écriture distante, restart
+ou action CFS n'a eu lieu. La prochaine gate proposée est
+`G4-K1-CONTROL-CFS-OWNER-EXCLUSION-GUARD-LIVE-READ-ONLY-V1` : vérifier deux
+lectures fraîches et nettoyées contre l'adaptateur pur, sans appeler le chemin
+d'effet. Elle exige une autorité distincte de connexion en lecture seule.
 
 ### Reprise physique `MESH-EDGE-DIAGNOSTIC-V1`
 

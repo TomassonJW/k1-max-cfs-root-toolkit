@@ -221,16 +221,20 @@ repousser la clôture.
 
 ## Démarrage recommandé
 
-La prochaine mission proposée est
-`G4-K1-CONTROL-CFS-OWNER-EXCLUSION-GUARD-OFFLINE-V1`. Elle ne joindra pas la
-K1. Elle préparera le garde exact qui sauvegarde la valeur stock
-d'auto-remplacement, permet au plus une désactivation, exige sa preuve puis
-restaure exactement la valeur précédente. Elle n'ajoutera toujours aucun
-connecteur ou candidat de pose. Une nouvelle autorité de mission est nécessaire
-car la mission du cœur propriétaire est close.
+Le garde `G4-K1-CONTROL-CFS-OWNER-EXCLUSION-GUARD-OFFLINE-V1` est maintenant
+clos avec `25/25` scénarios et `15/15` tests ciblés, sans connexion K1. Il
+sauvegarde la valeur stock, borne désactivation et restauration à une tentative
+et exige deux lectures stables avant d'ouvrir ou fermer le propriétaire.
 
-Le choix optimal est `gpt-5.6-terra` avec raisonnement `high` : la tranche est
-petite et hors imprimante, mais elle doit verrouiller les états inconnus et le
-rollback avant une future action réelle. L'option économique raisonnable est
-`gpt-5.6-terra` en `medium`, avec davantage de risque de reprise si un retour
-HTTP ambigu ou une valeur stock inattendue n'est pas modélisé.
+La prochaine mission proposée est
+`G4-K1-CONTROL-CFS-OWNER-EXCLUSION-GUARD-LIVE-READ-ONLY-V1`. Elle prendra deux
+lectures fraîches et nettoyées pour vérifier la forme réelle attendue par
+l'adaptateur, sans appeler le garde ni envoyer de commande. Elle exige une
+nouvelle autorité de connexion en lecture seule. L'essai réel restera une gate
+humaine distincte.
+
+Le choix optimal est `gpt-5.6-terra` avec raisonnement `high` : la lecture est
+petite mais touche une machine de production et doit préserver les données
+privées tout en prouvant l'absence d'effet. L'option économique raisonnable est
+`gpt-5.6-terra` en `medium`, avec davantage de risque de manquer une ambiguïté
+de forme ou de fraîcheur.

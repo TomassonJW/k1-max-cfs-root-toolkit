@@ -17,10 +17,10 @@ class CfsControlSourceMapV1Tests(unittest.TestCase):
     def setUp(self):
         self.source_map = load_json(MAP_PATH)
 
-    def test_architecture_has_offline_core_but_cannot_authorize_effects(self):
+    def test_architecture_has_offline_guard_but_cannot_authorize_effects(self):
         authority = self.source_map["authority"]
         self.assertEqual(
-            "owner_core_offline_complete_effects_and_deployment_closed",
+            "owner_exclusion_guard_offline_complete_effects_and_deployment_closed",
             self.source_map["status"],
         )
         self.assertFalse(authority["printer_connection_authorized"])
@@ -28,6 +28,7 @@ class CfsControlSourceMapV1Tests(unittest.TestCase):
         self.assertFalse(authority["physical_action_authorized"])
         self.assertFalse(authority["implementation_authorized"])
         self.assertTrue(authority["offline_owner_core_completed"])
+        self.assertTrue(authority["offline_owner_exclusion_guard_completed"])
         self.assertFalse(authority["deployment_candidate"])
 
     def test_required_evidence_sources_are_pinned_and_ranked(self):
@@ -182,7 +183,7 @@ class CfsControlSourceMapV1Tests(unittest.TestCase):
         )
         self.assertIn("known_start_defects", rollback["truthful_limit"])
 
-    def test_s12_preflight_and_owner_core_are_closed_and_next_gate_is_offline_only(self):
+    def test_s12_core_and_offline_guard_are_closed_before_live_read_only_gate(self):
         preflight = self.source_map["s12_preflight"]
         self.assertEqual(
             "CLOSED_READ_ONLY_S12_SURFACE_CONFIRMED_EFFECTS_CLOSED",
@@ -206,12 +207,28 @@ class CfsControlSourceMapV1Tests(unittest.TestCase):
         self.assertFalse(owner["printer_connection"])
         self.assertFalse(owner["physical_action"])
         self.assertFalse(owner["deployment_candidate"])
+        guard = self.source_map["owner_exclusion_guard_offline"]
+        self.assertEqual(
+            "OFFLINE_EXCLUSION_GUARD_CLOSED_GREEN_EFFECTS_UNQUALIFIED",
+            guard["status"],
+        )
+        self.assertEqual("25/25", guard["scenario_matrix"])
+        self.assertEqual("15/15", guard["targeted_tests"])
+        self.assertTrue(guard["saved_value_restored_exactly"])
+        self.assertFalse(guard["acknowledgement_is_proof"])
+        self.assertFalse(guard["automatic_retry"])
+        self.assertFalse(guard["reviewed_intents_dispatchable"])
+        self.assertFalse(guard["printer_connection"])
+        self.assertFalse(guard["physical_action"])
+        self.assertFalse(guard["deployment_candidate"])
         next_gate = self.source_map["next_gate"]
         self.assertEqual(
-            "G4-K1-CONTROL-CFS-OWNER-EXCLUSION-GUARD-OFFLINE-V1",
+            "G4-K1-CONTROL-CFS-OWNER-EXCLUSION-GUARD-LIVE-READ-ONLY-V1",
             next_gate["id"],
         )
-        self.assertFalse(next_gate["printer_connection"])
+        self.assertTrue(next_gate["printer_connection"])
+        self.assertTrue(next_gate["read_only"])
+        self.assertFalse(next_gate["guard_effect_path_called"])
         self.assertFalse(next_gate["implementation_authorized"])
         for field in ("gcode", "heat", "motion", "CFS_effect", "remote_write", "service_restart"):
             self.assertFalse(next_gate[field])
@@ -237,6 +254,8 @@ class CfsControlSourceMapV1Tests(unittest.TestCase):
         self.assertFalse(architecture["implementation_authorized"])
         self.assertTrue(architecture["offline_owner_core_completed"])
         self.assertEqual("21/21", architecture["offline_owner_core_scenarios"])
+        self.assertTrue(architecture["offline_owner_exclusion_guard_completed"])
+        self.assertEqual("25/25", architecture["offline_owner_exclusion_guard_scenarios"])
         self.assertFalse(architecture["deployment_candidate"])
         owner = lifecycle["cfs_owner_core_offline"]
         self.assertEqual("21/21", owner["scenario_matrix"])
@@ -245,6 +264,13 @@ class CfsControlSourceMapV1Tests(unittest.TestCase):
         self.assertFalse(owner["printer_connection"])
         self.assertFalse(owner["real_connector_present"])
         self.assertFalse(owner["deployment_candidate"])
+        guard = lifecycle["cfs_owner_exclusion_guard_offline"]
+        self.assertEqual("25/25", guard["scenario_matrix"])
+        self.assertTrue(guard["stock_auto_refill_previous_value_restored_exactly"])
+        self.assertFalse(guard["acknowledgement_is_proof"])
+        self.assertFalse(guard["printer_connection"])
+        self.assertFalse(guard["real_connector_present"])
+        self.assertFalse(guard["deployment_candidate"])
 
 
 if __name__ == "__main__":

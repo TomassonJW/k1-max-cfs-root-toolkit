@@ -25,7 +25,7 @@
     }
   ],
   "cfs_control_architecture": {
-    "status": "offline_owner_core_complete_effects_and_deployment_closed",
+    "status": "offline_owner_exclusion_guard_complete_effects_and_deployment_closed",
     "canonical_document": "docs/43-cartographie-canonique-pilotage-cfs-k1-max-v1.md",
     "source_map": "design/cfs-control-source-map-v1.json",
     "selected_owner": "K1_CONTROL_LIFECYCLE_OWNER_OVER_SELECTED_STOCK_BOX_PRIMITIVES",
@@ -44,8 +44,11 @@
     "offline_owner_core_completed": true,
     "offline_owner_core_contract": "packages/k1-control-v1/cfs-owner-core-offline-v1/contract.json",
     "offline_owner_core_scenarios": "21/21",
+    "offline_owner_exclusion_guard_completed": true,
+    "offline_owner_exclusion_guard_contract": "packages/k1-control-v1/cfs-owner-exclusion-guard-offline-v1/contract.json",
+    "offline_owner_exclusion_guard_scenarios": "25/25",
     "deployment_candidate": false,
-    "next_gate": "G4-K1-CONTROL-CFS-OWNER-EXCLUSION-GUARD-OFFLINE-V1_after_fresh_mission_authority"
+    "next_gate": "G4-K1-CONTROL-CFS-OWNER-EXCLUSION-GUARD-LIVE-READ-ONLY-V1_after_fresh_read_only_authority"
   },
   "target": {
     "printer": "Creality K1 Max S12 structure 0",
@@ -407,7 +410,27 @@
     "real_connector_present": false,
     "deployment_candidate": false,
     "physical_test_authorized": false,
-    "next_design_branch": "G4-K1-CONTROL-CFS-OWNER-EXCLUSION-GUARD-OFFLINE-V1"
+    "next_design_branch": "closed_by_G4-K1-CONTROL-CFS-OWNER-EXCLUSION-GUARD-OFFLINE-V1"
+  },
+  "cfs_owner_exclusion_guard_offline": {
+    "candidate": "K1-CONTROL-CFS-OWNER-EXCLUSION-GUARD-OFFLINE-V1",
+    "mission": "G4-K1-CONTROL-CFS-OWNER-EXCLUSION-GUARD-OFFLINE-V1",
+    "status": "offline_exclusion_guard_closed_green_effects_unqualified",
+    "contract": "packages/k1-control-v1/cfs-owner-exclusion-guard-offline-v1/contract.json",
+    "canonical_document": "docs/46-garde-exclusion-proprietaire-cfs-hors-imprimante-v1.md",
+    "scenario_matrix": "25/25",
+    "targeted_tests": "15/15",
+    "stock_auto_refill_previous_value_restored_exactly": true,
+    "stable_reads_required_before_and_after": 2,
+    "acknowledgement_is_proof": false,
+    "automatic_retry": false,
+    "unknown_effect_replay": false,
+    "reviewed_intents_dispatchable": false,
+    "printer_connection": false,
+    "real_connector_present": false,
+    "deployment_candidate": false,
+    "physical_test_authorized": false,
+    "next_design_branch": "G4-K1-CONTROL-CFS-OWNER-EXCLUSION-GUARD-LIVE-READ-ONLY-V1"
   },
   "k1_read_only_qualification": {
     "candidate": "GOAL-P4-K1-READ-ONLY-QUALIFICATION-V1",

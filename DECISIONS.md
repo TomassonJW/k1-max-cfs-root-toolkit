@@ -1723,10 +1723,38 @@ modes de mouvement, extrusion, mesh, Z, cibles thermiques, ventilateurs,
 facteurs vitesse/débit, pressure advance, outil logique, route, capteurs et
 fraîcheur de cartographie.
 
-La prochaine mission est
-`G4-K1-CONTROL-CFS-OWNER-EXCLUSION-GUARD-OFFLINE-V1`. Elle préparera seulement
-le garde de désactivation, vérification et restauration de la politique stock,
-sans connexion ni candidat de pose.
+La mission suivante était
+`G4-K1-CONTROL-CFS-OWNER-EXCLUSION-GUARD-OFFLINE-V1`. Elle devait préparer
+seulement le garde de désactivation, vérification et restauration de la
+politique stock, sans connexion ni candidat de pose. Elle est désormais close
+par D-083.
 
 Voir ADR-032, `docs/45-coeur-proprietaire-cfs-hors-imprimante-v1.md` et
 `packages/k1-control-v1/cfs-owner-core-offline-v1/`.
+
+## D-083 — Une preuve d’état, jamais un acquittement, ouvre ou ferme le propriétaire CFS
+
+Date: 2026-08-28
+
+Status: garde d’exclusion clos hors imprimante ; effet réel non qualifié
+
+`G4-K1-CONTROL-CFS-OWNER-EXCLUSION-GUARD-OFFLINE-V1` matérialise la frontière
+prévue par ADR-032. La valeur stock d’auto-remplacement est lue deux fois et
+sauvegardée. Une désactivation n’est préparée qu’une fois si cette valeur vaut
+`1`. Le propriétaire n’est accordé qu’après deux lectures à `0`. La fermeture
+restaure de la même manière la valeur exacte précédente.
+
+Un retour HTTP ou un acquittement ne compte pas comme preuve. Une issue inconnue
+n’est jamais rejouée. Si l’effet est ensuite observé, seul le rollback exact est
+préparé et le propriétaire reste fermé. La cartographie, l’époque de connexion,
+la politique d’impression, le mesh, le Z, les axes, les chauffes, les routes et
+l’activité stock sont comparés ; toute dérive ferme le chemin.
+
+Le paquet obtient `25/25` scénarios et `15/15` tests ciblés. Ses intentions sont
+`dispatchable=false`, il n’importe aucun transport et n’est pas un candidat de
+pose. La prochaine mission proposée est une validation live strictement en
+lecture seule de la forme des états. La première commande réelle restera une
+gate humaine séparée.
+
+Voir `docs/46-garde-exclusion-proprietaire-cfs-hors-imprimante-v1.md` et
+`packages/k1-control-v1/cfs-owner-exclusion-guard-offline-v1/`.

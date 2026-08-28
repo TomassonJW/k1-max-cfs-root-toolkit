@@ -2,7 +2,7 @@
 
 Date de clôture : 2026-08-28
 
-État de reprise : **ATTENDRE_GO**
+État de reprise : **HISTORIQUE — remplacé par HANDOFF-CFS-OWNER-EXCLUSION-GUARD-2026-08-28.md**
 
 Nouvelle tâche créée : non
 

@@ -1138,11 +1138,19 @@ de pause au lieu d'accepter un simple indicateur. Toutes ses intentions restent
 non exécutables. Aucune connexion K1, commande, chauffe, mouvement, écriture
 distante ou action CFS n'a eu lieu.
 
+`G4-K1-CONTROL-CFS-OWNER-EXCLUSION-GUARD-OFFLINE-V1` est maintenant clos OK.
+Sa matrice obtient `25/25`, ses tests ciblés `15/15` et la suite complète
+exécute `669` tests, dont `666` réussis et `3` ignorés connus. Le garde pur
+mémorise la valeur stock, borne désactivation et restauration à une tentative, exige deux
+lectures stables et ferme toute issue ambiguë sans retry. Toutes les intentions
+restent non exécutables. Aucune connexion K1, commande, chauffe, mouvement,
+écriture distante ou action CFS n'a eu lieu.
+
 La prochaine mission proposée est
-`G4-K1-CONTROL-CFS-OWNER-EXCLUSION-GUARD-OFFLINE-V1`. Elle préparera encore sur
-le PC le garde qui désactive au plus une fois l'auto-remplacement stock, vérifie
-l'effet puis restaure exactement la valeur précédente. La connexion et l'essai
-réel resteront une gate distincte.
+`G4-K1-CONTROL-CFS-OWNER-EXCLUSION-GUARD-LIVE-READ-ONLY-V1`. Elle vérifiera la
+forme de deux lectures fraîches et nettoyées sans appeler le garde ni produire
+d'effet. Elle exige une autorité distincte de connexion en lecture seule ; le
+premier essai réel restera une autre gate avec Thomas devant la K1.
 
 ## Not authorised yet
 
@@ -1201,9 +1209,13 @@ réel resteront une gate distincte.
 - Toute connexion, commande, pose ou qualification physique issue de
   `G4-K1-CONTROL-CFS-OWNER-CORE-OFFLINE-V1`, désormais clos hors imprimante ;
   ses intentions ne sont pas exécutables.
-- Toute connexion ou action K1 de la prochaine gate
-  `G4-K1-CONTROL-CFS-OWNER-EXCLUSION-GUARD-OFFLINE-V1`, qui restera une
-  préparation locale seulement.
+- Toute connexion, commande ou action K1 issue de
+  `G4-K1-CONTROL-CFS-OWNER-EXCLUSION-GUARD-OFFLINE-V1`, désormais clos hors
+  imprimante et sans transport.
+- Toute connexion de
+  `G4-K1-CONTROL-CFS-OWNER-EXCLUSION-GUARD-LIVE-READ-ONLY-V1` sans une nouvelle
+  autorité explicite ; même autorisée, cette gate ne pourra envoyer aucune
+  commande ni appeler le chemin d'effet.
 - Toute répétition ou extension de
   `GOAL-P4-K1-READ-ONLY-QUALIFICATION-V1`, désormais clos ; son ancienne
   autorité de lecture seule est consommée.

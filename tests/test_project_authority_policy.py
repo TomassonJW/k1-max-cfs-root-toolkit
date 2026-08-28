@@ -29,12 +29,13 @@ class ProjectAuthorityPolicyTests(unittest.TestCase):
         self.assertIn(
             "Aucune impression, G-code, écriture distante", current_header
         )
-        self.assertIn("HANDOFF-CFS-OWNER-CORE-2026-08-28.md", current_header)
-        self.assertIn("G4-K1-CONTROL-CFS-OWNER-CORE-OFFLINE-V1", current_header)
-        self.assertIn("21/21", current_header)
+        self.assertIn("HANDOFF-CFS-OWNER-EXCLUSION-GUARD-2026-08-28.md", current_header)
+        self.assertIn("G4-K1-CONTROL-CFS-OWNER-EXCLUSION-GUARD-OFFLINE-V1", current_header)
+        self.assertIn("25/25", current_header)
+        self.assertIn("15/15", current_header)
         self.assertIn("2/7", current_header)
         self.assertIn(
-            "G4-K1-CONTROL-CFS-OWNER-EXCLUSION-GUARD-OFFLINE-V1",
+            "G4-K1-CONTROL-CFS-OWNER-EXCLUSION-GUARD-LIVE-READ-ONLY-V1",
             current_header,
         )
         self.assertIn("exige une nouvelle", handoff)

@@ -2,13 +2,14 @@
   "map_id": "K1-CONTROL-CFS-SOURCE-MAP-V1",
   "schema": 1,
   "as_of": "2026-08-28",
-  "status": "owner_core_offline_complete_effects_and_deployment_closed",
+  "status": "owner_exclusion_guard_offline_complete_effects_and_deployment_closed",
   "authority": {
     "printer_connection_authorized": false,
     "printer_mutation_authorized": false,
     "physical_action_authorized": false,
     "implementation_authorized": false,
     "offline_owner_core_completed": true,
+    "offline_owner_exclusion_guard_completed": true,
     "deployment_candidate": false
   },
   "target": {
@@ -539,16 +540,16 @@
       "needs": "exact_symbols_arguments_config_and_hashes_on_this_K1_Max_S12",
       "resolution": "exact_loaded_binary_loader_config_runtime_commands_and_callbacks_bound_to_pinned_public_argument_signatures",
       "truthful_limit": "public_argument_signatures_are_correlated_but_each_effect_still_requires_a_physical_gate",
-      "next_gate": "G4-K1-CONTROL-CFS-OWNER-EXCLUSION-GUARD-OFFLINE-V1",
+      "next_gate": "G4-K1-CONTROL-CFS-OWNER-EXCLUSION-GUARD-LIVE-READ-ONLY-V1",
       "allows_effect": false
     },
     {
       "id": "GAP-RUNOUT-OWNER-EXCLUSION",
       "kind": "read_only",
-      "status": "offline_owner_state_machine_resolved_live_exclusion_unqualified",
+      "status": "offline_owner_and_exclusion_guard_resolved_live_reads_and_effect_unqualified",
       "needs": "exact_runout_callbacks_notifications_runtime_flags_and_stock_resume_paths",
-      "resolution": "runtime_flags_command_names_and_callback_markers_are_bound_to_the_exact_S12_binary_and_the_pure_owner_now_blocks_stock_callbacks_stale_mappings_and_hidden_resume",
-      "next_gate": "G4-K1-CONTROL-CFS-OWNER-EXCLUSION-GUARD-OFFLINE-V1",
+      "resolution": "the_pure_guard_saves_disables_verifies_and_restores_the_stock_policy_with_one_shot_non_dispatchable_intents_and_fail_closed_recovery",
+      "next_gate": "G4-K1-CONTROL-CFS-OWNER-EXCLUSION-GUARD-LIVE-READ-ONLY-V1",
       "allows_effect": false
     },
     {
@@ -608,10 +609,29 @@
     "physical_action": false,
     "deployment_candidate": false
   },
-  "next_gate": {
-    "id": "G4-K1-CONTROL-CFS-OWNER-EXCLUSION-GUARD-OFFLINE-V1",
-    "scope": "prepare_the_exact_one_shot_disable_verify_and_restore_guard_for_stock_auto_refill_without_connecting_to_the_K1",
+  "owner_exclusion_guard_offline": {
+    "mission": "G4-K1-CONTROL-CFS-OWNER-EXCLUSION-GUARD-OFFLINE-V1",
+    "status": "OFFLINE_EXCLUSION_GUARD_CLOSED_GREEN_EFFECTS_UNQUALIFIED",
+    "contract": "packages/k1-control-v1/cfs-owner-exclusion-guard-offline-v1/contract.json",
+    "canonical_document": "docs/46-garde-exclusion-proprietaire-cfs-hors-imprimante-v1.md",
+    "scenario_matrix": "25/25",
+    "targeted_tests": "15/15",
+    "stable_reads_before_and_after": 2,
+    "saved_value_restored_exactly": true,
+    "acknowledgement_is_proof": false,
+    "automatic_retry": false,
+    "unknown_effect_replay": false,
+    "reviewed_intents_dispatchable": false,
     "printer_connection": false,
+    "physical_action": false,
+    "deployment_candidate": false
+  },
+  "next_gate": {
+    "id": "G4-K1-CONTROL-CFS-OWNER-EXCLUSION-GUARD-LIVE-READ-ONLY-V1",
+    "scope": "collect_two_fresh_sanitized_read_only_snapshots_and_bind_their_real_shape_to_the_pure_guard_adapter_without_calling_any_effect_path",
+    "printer_connection": true,
+    "read_only": true,
+    "guard_effect_path_called": false,
     "implementation_authorized": false,
     "gcode": false,
     "heat": false,

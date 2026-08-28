@@ -119,6 +119,14 @@ python -m unittest tests.test_k1_read_only_qualification_v1 -v
 python packages\k1-control-v1\k1-read-only-qualification-v1\analyze_capture.py
 ```
 
+Le garde d'exclusion du propriétaire stock vérifie les doubles lectures, la
+tentative unique et la restauration exacte sans transport :
+
+```powershell
+python -m unittest tests.test_cfs_owner_exclusion_guard_offline_v1 -v
+python packages\k1-control-v1\cfs-owner-exclusion-guard-offline-v1\run_scenarios.py
+```
+
 La suite complète doit être lancée avec un dossier de découverte explicite :
 
 ```powershell

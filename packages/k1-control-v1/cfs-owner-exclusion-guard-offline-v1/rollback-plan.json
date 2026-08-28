@@ -1,0 +1,16 @@
+{
+  "schema": 1,
+  "status": "inert_offline_plan",
+  "trigger": "disable outcome unknown and later stable reads prove stock_auto_refill=0 while saved value was 1",
+  "steps": [
+    "keep the owner closed",
+    "do not retry the disable command",
+    "prepare one non-dispatchable restore intent with the exact saved value",
+    "require two stable reads proving the saved value and unchanged protected state",
+    "close safe but unqualified when the restore acknowledgement is uncertain"
+  ],
+  "remote_commands": [],
+  "connector": false,
+  "dispatchable": false,
+  "physically_qualified": false
+}

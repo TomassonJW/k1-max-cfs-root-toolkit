@@ -1,0 +1,30 @@
+{
+  "schema": 1,
+  "scenarios": [
+    {"id": "already_disabled_grants_without_intent", "phase": "owner_granted"},
+    {"id": "enabled_prepares_single_disable", "phase": "disable_pending"},
+    {"id": "disable_verified_grants_owner", "phase": "owner_granted"},
+    {"id": "disable_ack_without_effect_blocks", "phase": "blocked_unknown", "reason_code": "disable_result_not_proven"},
+    {"id": "disable_rejected_unchanged_closes_safe", "phase": "closed_safe_ko", "reason_code": "disable_rejected"},
+    {"id": "disable_unknown_then_zero_prepares_rollback", "phase": "rollback_pending"},
+    {"id": "disable_unknown_then_prior_closes_safe", "phase": "closed_safe_ko"},
+    {"id": "disable_retry_forbidden", "phase": "blocked_unknown", "reason_code": "disable_retry_forbidden"},
+    {"id": "release_restores_saved_one", "phase": "restore_pending"},
+    {"id": "release_saved_zero_closes_without_intent", "phase": "closed_safe"},
+    {"id": "restore_verified_closes_safe", "phase": "closed_safe"},
+    {"id": "restore_ack_without_effect_blocks", "phase": "blocked_unknown", "reason_code": "restore_result_not_proven"},
+    {"id": "restore_unknown_then_saved_closes_safe_ko", "phase": "closed_safe_ko"},
+    {"id": "restore_unknown_then_zero_blocks", "phase": "blocked_unknown"},
+    {"id": "restore_retry_forbidden", "phase": "blocked_unknown", "reason_code": "restore_retry_forbidden"},
+    {"id": "missing_field_rejected", "phase": "blocked_safe", "reason_code": "snapshot_incomplete"},
+    {"id": "unknown_field_rejected", "phase": "blocked_safe", "reason_code": "snapshot_unknown_field"},
+    {"id": "boolean_policy_rejected", "phase": "blocked_safe", "reason_code": "stock_auto_refill_invalid"},
+    {"id": "unstable_pair_rejected", "phase": "blocked_safe", "reason_code": "stable_pair_changed"},
+    {"id": "printer_busy_rejected", "phase": "blocked_safe", "reason_code": "printer_not_idle"},
+    {"id": "unit_disconnect_rejected", "phase": "blocked_safe", "reason_code": "connected_units_invalid"},
+    {"id": "active_command_rejected", "phase": "blocked_safe", "reason_code": "stock_command_active"},
+    {"id": "multiple_routes_rejected", "phase": "blocked_safe", "reason_code": "multiple_engaged_routes"},
+    {"id": "protected_drift_blocks", "phase": "blocked_unknown", "reason_code": "non_target_state_changed"},
+    {"id": "mapping_epoch_or_print_policy_drift_blocks", "phase": "blocked_unknown", "reason_code": "owner_identity_changed"}
+  ]
+}

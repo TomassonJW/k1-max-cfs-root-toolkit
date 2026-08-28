@@ -241,7 +241,7 @@ technique fiable, pas une validation de la mauvaise séquence stock.
 | Point | Pourquoi il bloque | Comment on l’évite |
 | --- | --- | --- |
 | Helix a analysé une image K1 S11, notre machine est S12 | résolu pour la surface hors effet : binaire et chargeur exacts liés à la carte publique | garder chaque effet derrière sa gate physique |
-| le runout stock peut lancer des callbacks internes | le cœur hors imprimante bloque maintenant tout rappel stock, mais la désactivation/restauration réelle n'est pas qualifiée | préparer le garde exact d'exclusion, puis le qualifier séparément |
+| le runout stock peut lancer des callbacks internes | le cœur bloque les rappels et le garde hors imprimante borne maintenant désactivation/restauration, mais l'effet réel n'est pas qualifié | valider d'abord la forme live en lecture seule, puis qualifier l'effet séparément |
 | une fin de bobine laisse encore un segment dans le tube et la tête | couper aveuglément ou relancer la grosse purge stock serait faux | qualifier séparément la recette « consommer ou retirer la fin » |
 | la fin de print stock nettoie mappings et états de reprise | les chemins S12 sont repérés, mais appeler `BOX_END_PRINT` rendrait le cycle au stock | posséder explicitement ces nettoyages sans appeler la grosse fin stock |
 | les petites phases peuvent échouer sans lever une erreur claire | un retour HTTP OK ne prouve rien | états avant/après, capteurs, une seule tentative |
@@ -252,13 +252,14 @@ technique fiable, pas une validation de la mauvaise séquence stock.
 
 ## Prochaine gate
 
-Le préflight S12 et le cœur propriétaire hors imprimante sont maintenant clos.
-La prochaine étape raisonnable n'est toujours pas un chargement : c'est
-`G4-K1-CONTROL-CFS-OWNER-EXCLUSION-GUARD-OFFLINE-V1`.
+Le préflight S12, le cœur propriétaire et son garde d'exclusion hors imprimante
+sont maintenant clos. Le garde obtient `25/25`, exige deux lectures stables,
+borne chaque future commande à une tentative et refuse l'acquittement comme
+preuve.
 
-Après une nouvelle autorité de mission, elle préparera seulement le garde qui
-encadrera la valeur stock d'auto-remplacement : lecture et sauvegarde, une seule
-tentative de désactivation, vérification, puis restauration exacte. Elle restera
-hors imprimante, sans connecteur ni pose. La connexion et l'essai réel de ce
-garde, puis les chargements, retraits, coupes et fins de bobine, resteront des
-gates séparées. Aucun ancien essai valable ne sera rejoué.
+La prochaine étape raisonnable n'est toujours pas un chargement : c'est
+`G4-K1-CONTROL-CFS-OWNER-EXCLUSION-GUARD-LIVE-READ-ONLY-V1`. Après une nouvelle
+autorité de connexion en lecture seule, elle vérifiera seulement deux états
+frais et nettoyés contre l'adaptateur pur. Elle n'appellera aucun chemin d'effet.
+L'essai réel du garde, puis les chargements, retraits, coupes et fins de bobine,
+resteront des gates séparées. Aucun ancien essai valable ne sera rejoué.

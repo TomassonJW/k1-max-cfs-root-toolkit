@@ -88,11 +88,12 @@ retrait, chargement, purge ou fin de bobine n’est qualifiée par ce vert. Aucu
 connexion K1, commande, chauffe, mouvement, écriture distante ou pose n’a eu
 lieu.
 
-## Prochaine mission
+## Suite historique
 
-La prochaine tranche proposée est
-`G4-K1-CONTROL-CFS-OWNER-EXCLUSION-GUARD-OFFLINE-V1`. Elle préparera, toujours
-sur le PC, le garde exact qui encadrera une future désactivation puis
+La tranche suivante était
+`G4-K1-CONTROL-CFS-OWNER-EXCLUSION-GUARD-OFFLINE-V1`. Elle devait préparer,
+toujours sur le PC, le garde exact qui encadrerait une future désactivation puis
 restauration de l’auto-remplacement stock : une tentative maximum, lecture avant
 et après, refus de tout écart et aucun effet filament. La connexion et l’essai
-réel resteront une gate différente.
+réel restaient une gate différente. Cette tranche est désormais close ; voir le
+document 46 et la passation actuelle.
