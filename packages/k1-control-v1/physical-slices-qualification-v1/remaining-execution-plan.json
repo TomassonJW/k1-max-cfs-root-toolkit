@@ -1,0 +1,252 @@
+{
+  "schema": 1,
+  "plan_id": "GOAL-P4-PHYSICAL-SLICES-REMAINING-EXECUTION-V1",
+  "goal": "GOAL-P4-PHYSICAL-SLICES-QUALIFICATION-V1",
+  "status": "IN_PROGRESS_WAITING_FOR_T1A_REENGAGEMENT",
+  "purpose": "finish_all_five_remaining_physical_requirements_without_hiding_route_or_human_dependencies",
+  "current_observation": {
+    "physical_filament_left_in_head_overnight": "T1A_user_confirmed",
+    "logical_routes_after_power_cycle": [],
+    "active_mesh_after_power_cycle": "default",
+    "accepted_z_offset_mm": -0.04,
+    "current_human_action": "stock_ui_extrusion_T1A_once_not_filament_verification"
+  },
+  "sequencing_decision": {
+    "installed_owner_supports_only": "unique_T1A_keep_correct",
+    "all_T1A_owned_start_checkpoints_before_first_persistent_T2C_exit": true,
+    "ambiguous_identity_block_between_T1A_disengage_and_reengagement": true,
+    "tool_change_and_runout_share_one_later_long_active_job_but_keep_distinct_gates": true,
+    "reason": "avoid_unreviewed_start_on_T2C_and_avoid_extra_hidden_route_transitions"
+  },
+  "global_rules": {
+    "one_physical_effect_family_per_exact_gate": true,
+    "human_present_for_every_physical_gate": true,
+    "immediate_stop_available": true,
+    "automatic_retry": false,
+    "stop_on_first_KO_or_uncertain_effect": true,
+    "manual_nozzle_clean_before_owned_start": true,
+    "best_current_mesh_before_low_move": "k1_p001_t055_r001_n11x11",
+    "accepted_z_mm": -0.04,
+    "telemetry_never_replaces_human_verdict": true
+  },
+  "stages": [
+    {
+      "order": 1,
+      "id": "REENGAGE_T1A_AFTER_POWER_CYCLE",
+      "requirement": "CFS_START_STATES_AND_TEMPERATURE_OWNER",
+      "status": "HUMAN_PENDING",
+      "route_before": [],
+      "route_after": ["T1A"],
+      "action": "stock_ui_extrusion_T1A_once",
+      "human_gate": true,
+      "automatic_retry": false,
+      "artifact": null
+    },
+    {
+      "order": 2,
+      "id": "RESTORE_BEST_CURRENT_11X11_COLD",
+      "requirement": "CFS_START_STATES_AND_TEMPERATURE_OWNER",
+      "status": "OFFLINE_READY_WAITING_EXACT_GATE",
+      "route_before": ["T1A"],
+      "route_after": ["T1A"],
+      "action": "one_BED_MESH_PROFILE_load_with_exact_prior_profile_rollback",
+      "human_gate": true,
+      "automatic_retry": false,
+      "artifact": "packages/k1-control-v1/best-current-mesh-restore-after-power-cycle-v1/contract.json"
+    },
+    {
+      "order": 3,
+      "id": "THERMAL_STABILIZATION_R2_TWO_LAYER",
+      "requirement": "CFS_START_STATES_AND_TEMPERATURE_OWNER",
+      "status": "OFFLINE_READY_WAITING_PRIOR_STAGES",
+      "route_before": ["T1A"],
+      "route_after": ["T1A"],
+      "action": "one_200s_bed_soak_then_owned_R2_two_layer_trial",
+      "human_gate": true,
+      "automatic_retry": false,
+      "artifact": "packages/k1-control-v1/z-thermal-stabilization-diagnostic-v1/contract.json",
+      "branch_on_KO": "prepare_separate_Z_recalibration_gate_before_any_other_print"
+    },
+    {
+      "order": 4,
+      "id": "EDGE_SOURCE_PATTERN_T1A",
+      "requirement": "EDGE_PROFILE_POINT_EDIT_AND_PHYSICAL_QUALIFICATION",
+      "status": "OFFLINE_PATTERN_READY_PROFILE_INSTALL_AND_PHYSICAL_GATE_CLOSED",
+      "route_before": ["T1A"],
+      "route_after": ["T1A"],
+      "action": "one_source_11x11_owned_R2_pattern",
+      "human_gate": true,
+      "automatic_retry": false,
+      "artifact": "packages/k1-control-v1/mesh-edge-diagnostic-owned-start-r2-v1/contract.json"
+    },
+    {
+      "order": 5,
+      "id": "EDGE_CORRECTED_PATTERN_T1A",
+      "requirement": "EDGE_PROFILE_POINT_EDIT_AND_PHYSICAL_QUALIFICATION",
+      "status": "BLOCKED_UNTIL_SOURCE_EXPLOITABLE_AND_DERIVED_PROFILE_INSTALLED",
+      "route_before": ["T1A"],
+      "route_after": ["T1A"],
+      "action": "one_corrected_X34_Y266_owned_R2_pattern",
+      "human_gate": true,
+      "automatic_retry": false,
+      "artifact": "packages/k1-control-v1/mesh-edge-diagnostic-owned-start-r2-v1/contract.json"
+    },
+    {
+      "order": 6,
+      "id": "PAUSE_RESUME_T1A",
+      "requirement": "PAUSE_AND_RESUME",
+      "status": "OBSERVER_READY_TEST_JOB_DEPENDS_ON_THERMAL_VERDICT",
+      "route_before": ["T1A"],
+      "route_after": ["T1A"],
+      "action": "one_pause_then_one_resume_without_CFS_transition",
+      "human_gate": true,
+      "automatic_retry": false,
+      "artifact": "packages/k1-control-v1/job-lifecycle-observer-v1/contract.json"
+    },
+    {
+      "order": 7,
+      "id": "CANCEL_T1A",
+      "requirement": "CANCEL_END_AND_SEPARATE_DISENGAGE",
+      "status": "OBSERVER_READY_TEST_JOB_DEPENDS_ON_THERMAL_VERDICT",
+      "route_before": ["T1A"],
+      "route_after": ["T1A"],
+      "action": "one_cancel_during_short_owned_job",
+      "human_gate": true,
+      "automatic_retry": false,
+      "artifact": "packages/k1-control-v1/job-lifecycle-observer-v1/contract.json"
+    },
+    {
+      "order": 8,
+      "id": "NORMAL_END_KEEP_T1A",
+      "requirement": "CANCEL_END_AND_SEPARATE_DISENGAGE",
+      "status": "OBSERVER_READY_TEST_JOB_DEPENDS_ON_THERMAL_VERDICT",
+      "route_before": ["T1A"],
+      "route_after": ["T1A"],
+      "action": "one_normal_end_with_safe_park_and_T1A_kept",
+      "human_gate": true,
+      "automatic_retry": false,
+      "artifact": "packages/k1-control-v1/job-lifecycle-observer-v1/contract.json"
+    },
+    {
+      "order": 9,
+      "id": "SEPARATE_DISENGAGE_T1A",
+      "requirement": "CANCEL_END_AND_SEPARATE_DISENGAGE",
+      "status": "GUARD_OFFLINE_READY_LIVE_EFFECT_NOT_YET_AUTHORIZED",
+      "route_before": ["T1A"],
+      "route_after": [],
+      "action": "one_explicit_disengage_and_heater_shutdown",
+      "human_gate": true,
+      "automatic_retry": false,
+      "artifact": "packages/k1-control-v1/cfs-stock-unload-guard-v1/contract.json"
+    },
+    {
+      "order": 10,
+      "id": "AMBIGUOUS_IDENTITY_BLOCK_WITHOUT_ROUTE",
+      "requirement": "CFS_START_STATES_AND_TEMPERATURE_OWNER",
+      "status": "TECHNICAL_BLOCK_READY_HUMAN_NO_EFFECT_VERDICT_PENDING",
+      "route_before": [],
+      "route_after": [],
+      "action": "request_start_decision_and_prove_block_before_effect",
+      "human_gate": true,
+      "automatic_retry": false,
+      "artifact": "packages/k1-control-v1/cfs-temp-owner-v1/physical-campaign.json"
+    },
+    {
+      "order": 11,
+      "id": "REENGAGE_T1A_FOR_CROSS_CFS_CAMPAIGN",
+      "requirement": "CFS_START_STATES_AND_TEMPERATURE_OWNER",
+      "status": "WAITING_PRIOR_STAGES",
+      "route_before": [],
+      "route_after": ["T1A"],
+      "action": "stock_ui_extrusion_T1A_once",
+      "human_gate": true,
+      "automatic_retry": false,
+      "artifact": null
+    },
+    {
+      "order": 12,
+      "id": "WRONG_CHANGE_T1A_TO_T2C",
+      "requirement": "CFS_START_STATES_AND_TEMPERATURE_OWNER",
+      "status": "OBSERVER_READY_WAITING_T2C_IDENTITY_AND_PRIOR_STAGES",
+      "route_before": ["T1A"],
+      "route_after": ["T2C"],
+      "action": "one_human_stock_change_T1A_to_T2C",
+      "human_gate": true,
+      "automatic_retry": false,
+      "artifact": "packages/k1-control-v1/wrong-change-t1a-to-t2c-v1/contract.json"
+    },
+    {
+      "order": 13,
+      "id": "RETURN_T2C_TO_T1A_BEFORE_ACTIVE_CAMPAIGN",
+      "requirement": "TOOL_CHANGE_AND_RUNOUT",
+      "status": "SEPARATE_PASSIVE_REVERSE_GATE_NOT_PREPARED",
+      "route_before": ["T2C"],
+      "route_after": ["T1A"],
+      "action": "one_reviewed_human_stock_change_T2C_to_T1A",
+      "human_gate": true,
+      "automatic_retry": false,
+      "artifact": null
+    },
+    {
+      "order": 14,
+      "id": "START_LONG_T1A_OWNED_TEST_JOB",
+      "requirement": "TOOL_CHANGE_AND_RUNOUT",
+      "status": "BLOCKED_UNTIL_THERMAL_VERDICT_AND_JOB_CANDIDATE",
+      "route_before": ["T1A"],
+      "route_after": ["T1A"],
+      "action": "start_one_sacrificial_job_long_enough_for_two_distinct_checkpoints",
+      "human_gate": true,
+      "automatic_retry": false,
+      "artifact": null
+    },
+    {
+      "order": 15,
+      "id": "MID_PRINT_TOOL_CHANGE_T1A_TO_T2C",
+      "requirement": "TOOL_CHANGE_AND_RUNOUT",
+      "status": "OBSERVER_READY_WAITING_ACTIVE_JOB_AND_T2C_IDENTITY",
+      "route_before": ["T1A"],
+      "route_after": ["T2C"],
+      "action": "one_mid_print_change_under_TOOL_CHANGE_checkpoint",
+      "human_gate": true,
+      "automatic_retry": false,
+      "artifact": "packages/k1-control-v1/job-lifecycle-observer-v1/contract.json"
+    },
+    {
+      "order": 16,
+      "id": "EQUIVALENT_RUNOUT_RECOVERY_ON_T2",
+      "requirement": "TOOL_CHANGE_AND_RUNOUT",
+      "status": "BLOCKED_NO_EXACT_EQUIVALENT_REPLACEMENT_SLOT_PROOF",
+      "route_before": ["T2C"],
+      "route_after": "resolved_equivalent_T2_slot",
+      "action": "one_runout_then_one_equivalent_replacement_and_resume",
+      "human_gate": true,
+      "automatic_retry": false,
+      "artifact": "packages/k1-control-v1/job-lifecycle-observer-v1/contract.json",
+      "blocked_until": "human_confirms_exact_equivalent_spool_slot_material_color_diameter_and_thermal_recipe"
+    },
+    {
+      "order": 17,
+      "id": "GOAL3_REQUIREMENT_BY_REQUIREMENT_COMPLETION_AUDIT",
+      "requirement": "ALL_SEVEN",
+      "status": "BLOCKED_UNTIL_ALL_PHYSICAL_EVIDENCE_EXISTS",
+      "route_before": "actual_terminal_route",
+      "route_after": "same_actual_terminal_route",
+      "action": "verify_all_seven_requirements_and_no_hidden_human_verdict",
+      "human_gate": false,
+      "automatic_retry": false,
+      "artifact": "packages/k1-control-v1/physical-slices-qualification-v1/contract.json"
+    }
+  ],
+  "unresolved_human_inputs": [
+    "T2C_exact_material_identity_before_any_T2C_effect",
+    "exact_equivalent_runout_replacement_slot_and_spool_identity",
+    "human_visible_purge_and_physical_verdict_at_each_relevant_checkpoint"
+  ],
+  "effects_of_this_plan": {
+    "printer_connection": false,
+    "gcode": false,
+    "remote_write": false,
+    "service_action": false,
+    "physical_action": false
+  }
+}

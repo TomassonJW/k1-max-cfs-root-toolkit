@@ -24,6 +24,7 @@ class Goal3PhysicalCompletionRegistryTests(unittest.TestCase):
     def setUpClass(cls):
         cls.contract = json.loads((PACKAGE / "contract.json").read_text(encoding="utf-8"))
         cls.matrix = json.loads((PACKAGE / "completion-matrix.json").read_text(encoding="utf-8"))
+        cls.remaining_plan = json.loads((PACKAGE / "remaining-execution-plan.json").read_text(encoding="utf-8"))
 
     def test_registry_is_offline_and_cannot_mutate_the_printer(self):
         self.assertEqual("offline_completion_registry_only", self.contract["authority"])
@@ -75,6 +76,20 @@ class Goal3PhysicalCompletionRegistryTests(unittest.TestCase):
         self.assertEqual(2, result["passed_count"])
         self.assertEqual(5, result["pending_count"])
         self.assertTrue(all(value is False for value in result["effects"].values()))
+
+    def test_remaining_plan_keeps_T1A_only_work_before_cross_CFS_exit(self):
+        stages = {stage["id"]: stage for stage in self.remaining_plan["stages"]}
+        self.assertLess(stages["EDGE_SOURCE_PATTERN_T1A"]["order"], stages["WRONG_CHANGE_T1A_TO_T2C"]["order"])
+        self.assertLess(stages["PAUSE_RESUME_T1A"]["order"], stages["WRONG_CHANGE_T1A_TO_T2C"]["order"])
+        self.assertEqual(["T2C"], stages["WRONG_CHANGE_T1A_TO_T2C"]["route_after"])
+        self.assertEqual(["T1A"], stages["RETURN_T2C_TO_T1A_BEFORE_ACTIVE_CAMPAIGN"]["route_after"])
+
+    def test_ambiguity_window_and_runout_human_dependency_are_explicit(self):
+        stages = {stage["id"]: stage for stage in self.remaining_plan["stages"]}
+        self.assertEqual([], stages["SEPARATE_DISENGAGE_T1A"]["route_after"])
+        self.assertEqual([], stages["AMBIGUOUS_IDENTITY_BLOCK_WITHOUT_ROUTE"]["route_before"])
+        self.assertIn("exact_equivalent", stages["EQUIVALENT_RUNOUT_RECOVERY_ON_T2"]["blocked_until"])
+        self.assertFalse(any(self.remaining_plan["effects_of_this_plan"].values()))
 
     def test_completion_policy_cannot_hide_missing_physical_evidence(self):
         policy = self.contract["completion_policy"]

@@ -8,6 +8,7 @@ PACKAGE = Path(__file__).resolve().parent
 ROOT = PACKAGE.parents[2]
 CONTRACT = PACKAGE / "contract.json"
 MATRIX = PACKAGE / "completion-matrix.json"
+REMAINING_PLAN = PACKAGE / "remaining-execution-plan.json"
 MANUAL_CLEANING_POLICY = ROOT / "design" / "manual-nozzle-cleaning-policy-v1.json"
 
 EXPECTED_REQUIREMENTS = [
@@ -50,10 +51,33 @@ def require(condition: bool, code: str) -> None:
 def verify() -> dict:
     contract = load_json(CONTRACT)
     matrix = load_json(MATRIX)
+    remaining_plan = load_json(REMAINING_PLAN)
     require(contract["contract_id"] == matrix["contract_id"], "contract_id_mismatch")
     require(contract["goal_number"] == 3, "goal_number_mismatch")
     require(contract["macro_goal_count"] == 4, "macro_goal_count_mismatch")
     require(contract["deployment_candidate"] is False, "registry_must_not_deploy")
+    require(remaining_plan["goal"] == contract["contract_id"], "remaining_plan_goal_mismatch")
+    require(not any(remaining_plan["effects_of_this_plan"].values()), "remaining_plan_must_be_effect_free")
+    stages = remaining_plan["stages"]
+    require([stage["order"] for stage in stages] == list(range(1, len(stages) + 1)), "remaining_plan_order_mismatch")
+    require(len({stage["id"] for stage in stages}) == len(stages), "remaining_plan_duplicate_stage")
+    for stage in stages:
+        require(stage["automatic_retry"] is False, f"remaining_plan_retry_enabled:{stage['id']}")
+        if stage["human_gate"]:
+            require(stage["id"] != "GOAL3_REQUIREMENT_BY_REQUIREMENT_COMPLETION_AUDIT", "audit_cannot_be_human_effect_gate")
+        artifact = stage["artifact"]
+        if artifact is not None:
+            require((ROOT / artifact).is_file(), f"remaining_plan_artifact_missing:{stage['id']}")
+    stage_order = {stage["id"]: stage["order"] for stage in stages}
+    require(stage_order["EDGE_SOURCE_PATTERN_T1A"] < stage_order["WRONG_CHANGE_T1A_TO_T2C"], "edge_must_precede_T2C_exit")
+    require(stage_order["PAUSE_RESUME_T1A"] < stage_order["WRONG_CHANGE_T1A_TO_T2C"], "pause_must_precede_T2C_exit")
+    require(stage_order["NORMAL_END_KEEP_T1A"] < stage_order["WRONG_CHANGE_T1A_TO_T2C"], "normal_end_must_precede_T2C_exit")
+    require(stage_order["SEPARATE_DISENGAGE_T1A"] < stage_order["AMBIGUOUS_IDENTITY_BLOCK_WITHOUT_ROUTE"], "disengage_must_create_ambiguity_window")
+    require(stage_order["AMBIGUOUS_IDENTITY_BLOCK_WITHOUT_ROUTE"] < stage_order["REENGAGE_T1A_FOR_CROSS_CFS_CAMPAIGN"], "ambiguity_must_be_tested_before_reengagement")
+    require(stage_order["START_LONG_T1A_OWNED_TEST_JOB"] < stage_order["MID_PRINT_TOOL_CHANGE_T1A_TO_T2C"], "tool_change_requires_active_job")
+    require(stage_order["MID_PRINT_TOOL_CHANGE_T1A_TO_T2C"] < stage_order["EQUIVALENT_RUNOUT_RECOVERY_ON_T2"], "runout_must_follow_cross_CFS_change")
+    runout = next(stage for stage in stages if stage["id"] == "EQUIVALENT_RUNOUT_RECOVERY_ON_T2")
+    require(bool(runout.get("blocked_until")), "runout_equivalence_proof_missing")
     for key in ("remote_commands", "gcode_commands", "service_actions"):
         require(contract[key] == [], f"registry_effect_not_empty:{key}")
 

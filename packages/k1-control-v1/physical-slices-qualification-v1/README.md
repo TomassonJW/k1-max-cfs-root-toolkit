@@ -39,3 +39,10 @@ python.exe packages/k1-control-v1/physical-slices-qualification-v1/verify_comple
 
 Résultat attendu aujourd'hui : `GOAL3_LEDGER_OK_IN_PROGRESS`, avec
 `passed=2`, `remaining=5` et zéro effet déclaré par ce registre local.
+
+Le fichier `remaining-execution-plan.json` fixe maintenant les dix-sept étapes
+restantes et leur ordre sûr. Tous les checkpoints dépendant du propriétaire
+actuel `T1A` précèdent le premier départ durable vers `T2C`. Le désengagement
+crée ensuite volontairement la fenêtre sans route utilisée pour qualifier le
+blocage d'identité ambiguë. La campagne runout reste explicitement bloquée tant
+qu'un slot et une bobine de secours réellement équivalents ne sont pas nommés.

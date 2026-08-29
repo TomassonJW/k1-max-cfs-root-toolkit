@@ -62,13 +62,20 @@ automatiques techniquement bloquées.
 
 ## Reprise actuelle au 29 août 2026
 
-`T1A` est engagé et l'état sûr a été restauré. Le petit fichier de deux couches
-a terminé sans `END_PRINT`, `BOX_END` ni `BOX_END_PRINT`. Sa fin minimale a bien
-coupé les chauffes et libéré les moteurs, mais n'a ni parqué la tête ni présenté
-le plateau. Ce constat alimente l'exigence 6 sans la faire passer. Le filament
-est volontairement resté engagé ; son retrait appartient au bouton séparé
-`Désengager et nettoyer`.
+L'extinction nocturne a conservé physiquement le filament dans la tête, mais a
+effacé la route logique et remis le profil actif à `default`. Deux lectures
+fraîches l'ont prouvé sans effet. Le successeur de remise du meilleur `11 × 11`
+est préparé et attend d'abord le réengagement stock explicite de `T1A`.
 
-La gate passive `T1A → T2C` est déjà préparée hors imprimante, sans commande
-d'effet et sans retry. Avant de l'utiliser, le prochain verrou est un diagnostic
-Z avec la même stabilisation thermique que la calibration.
+Le diagnostic thermique R2 reste ensuite le prochain essai chaud : plateau
+stabilisé `200 s` avant création du jeton manuel, puis une seule impression de
+deux couches avec purge de bord et fin sûre. Les observateurs passifs des
+checkpoints pause/runout/fin et le nouveau motif mesh possédé R2 sont prêts hors
+imprimante, mais ne constituent aucune preuve physique.
+
+Le plan d'exécution restant est désormais versionné et vérifié. Il empêche de
+quitter `T1A` avant les essais qui dépendent du propriétaire installé, place le
+blocage ambigu entre désengagement et réengagement, puis sépare changement
+d'outil et runout dans un même futur job long. L'identité réelle de `T2C` et un
+slot de secours réellement équivalent restent deux informations humaines
+obligatoires avant cette dernière campagne.
