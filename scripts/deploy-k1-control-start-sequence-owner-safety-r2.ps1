@@ -206,8 +206,9 @@ function Assert-SafeSnapshot {
         $Snapshot.box.units.T1.state -ne 'connect' -or $Snapshot.box.units.T2.state -ne 'connect') {
         throw 'Etat CFS non stable.'
     }
-    if ((Get-RouteCount $Snapshot.box) -ne 1 -or [string]$Snapshot.box.units.T1.filament -ne 'A') {
-        throw 'La route unique T1A doit etre conservee.'
+    $routeCount = Get-RouteCount $Snapshot.box
+    if ($routeCount -gt 1 -or ($routeCount -eq 1 -and [string]$Snapshot.box.units.T1.filament -ne 'A')) {
+        throw 'La route CFS est multiple ou differente de T1A.'
     }
     if (-not [bool]$Snapshot.object_requirements.start_owner_loaded -or
         -not [bool]$Snapshot.object_requirements.watchdog_loaded) {
@@ -297,13 +298,15 @@ function Invoke-Preflight {
     Assert-ExactRemoteJinjaSyntax
     $snapshot = Invoke-RemoteAdmin 'snapshot'
     Assert-SafeSnapshot $snapshot
+    $routeCount = Get-RouteCount $snapshot.box
     Save-Evidence 'preflight-safe.json' $snapshot
     Save-Evidence 'preflight-hashes.txt' "printer_cfg=$ExpectedPrinterHash`nold_start_owner=$ExpectedOldConfigHash`nnew_start_owner=$ExpectedNewConfigHash"
     return [pscustomobject]@{
         status = 'PREFLIGHT_START_SEQUENCE_OWNER_SAFETY_R2_OK'
         old_config_sha256 = $ExpectedOldConfigHash
         new_config_sha256 = $ExpectedNewConfigHash
-        route = 'T1A'
+        route = $(if ($routeCount -eq 1) { 'T1A' } else { 'NONE' })
+        route_count = $routeCount
         active_mesh = $snapshot.mesh_profile
         accepted_z_offset_mm = [double]$snapshot.runtime.accepted_z_offset
         remote_write = $false

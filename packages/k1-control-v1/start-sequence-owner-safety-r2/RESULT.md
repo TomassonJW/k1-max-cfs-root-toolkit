@@ -17,7 +17,14 @@ de son empreinte. Le correctif R2 est uniquement local : purge constructeur
 aller-retour `X0,1/X0,4`, de `Y20` à `Y180`, `F3000`, rétraction `1,2 mm`,
 remontée `Z5`, puis fin sûre à `Z50` et `X203 Y273` avant `M84`.
 
-La pose live et la qualification physique de la nouvelle purge restent
-fermées. Le déployeur de remplacement exact, son backup, son restart surveillé,
-la restauration du `11 × 11`, sa validation froide et son rollback sont prêts
-hors imprimante. Aucun nouveau fichier d'impression n'est présent sur la K1.
+La première pose live a rencontré un KO borné après restart : l'association
+logique `T1A` avait disparu. Le rollback a effectivement restauré V1 et
+`printer.cfg` à leurs empreintes exactes, même si son validateur a annoncé KO
+sur la même absence de route. Deux lectures finales confirment `ready`,
+`standby`, chauffes zéro, axes libérés, mesh `11 × 11`, Z `−0,04`, propriétaire
+`idle`, deux CFS connectés et aucune route logique.
+
+Le déployeur corrigé sépare maintenant la pose froide de la future condition
+physique `T1A`. Il a changé après le GO consommé : une nouvelle pose et la
+qualification physique restent fermées. Aucun nouveau fichier d'impression
+n'est présent sur la K1.

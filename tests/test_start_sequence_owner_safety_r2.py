@@ -73,6 +73,19 @@ class StartSequenceOwnerSafetyR2Tests(unittest.TestCase):
         self.assertTrue(evidence["unsafe_thermal_gcode"]["removed_after_exact_hash_check"])
         self.assertFalse(evidence["automatic_retry"])
 
+    def test_first_deploy_attempt_is_truthfully_rolled_back_and_requires_new_go(self):
+        attempt = json.loads((PACKAGE / "deployment-attempt.json").read_text(encoding="utf-8"))
+        self.assertEqual("ROLLED_BACK_SAFE_BLOCKED_NO_LOGICAL_ROUTE", attempt["status"])
+        self.assertTrue(attempt["rollback"]["v1_file_restored"])
+        self.assertTrue(attempt["final_two_read_only_snapshots"]["stable"])
+        self.assertEqual("NONE", attempt["final_two_read_only_snapshots"]["logical_route"])
+        self.assertFalse(attempt["final_two_read_only_snapshots"]["physical_filament_position_inferred"])
+        self.assertFalse(attempt["effects"]["heating"])
+        self.assertFalse(attempt["effects"]["motion"])
+        self.assertFalse(attempt["effects"]["extrusion"])
+        self.assertFalse(attempt["effects"]["cfs_command"])
+        self.assertTrue(attempt["deployer_correction"]["renewed_exact_go_required"])
+
 
 if __name__ == "__main__":
     unittest.main()

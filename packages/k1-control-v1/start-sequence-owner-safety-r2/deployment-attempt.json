@@ -1,0 +1,56 @@
+{
+  "schema": 1,
+  "capture_id": "20260829-024155-g4-k1-control-start-sequence-owner-safety-r2",
+  "status": "ROLLED_BACK_SAFE_BLOCKED_NO_LOGICAL_ROUTE",
+  "authorized_scope": "cold_install_and_validation_only",
+  "preflight": {
+    "status": "PASS",
+    "installed_config_sha256": "25291e1534f0ba100d3171b983796089a24cd49fdfcef76817406d325e6d8e03",
+    "route": "T1A",
+    "active_mesh": "k1_p001_t055_r001_n11x11",
+    "accepted_z_offset_mm": -0.04,
+    "heater_targets_zero": true,
+    "axes_released": true
+  },
+  "deployment": {
+    "backup_verified": true,
+    "r2_file_replaced_once": true,
+    "klipper_restart_requested_once": true,
+    "blocked_reason": "logical_T1A_route_absent_after_restart"
+  },
+  "rollback": {
+    "v1_file_restored": true,
+    "restored_config_sha256": "25291e1534f0ba100d3171b983796089a24cd49fdfcef76817406d325e6d8e03",
+    "backup_config_sha256": "25291e1534f0ba100d3171b983796089a24cd49fdfcef76817406d325e6d8e03",
+    "printer_cfg_sha256": "a79c8c917d8eee2575939ade4907640c2b2cf7ff59283d28def895b020e127af",
+    "klipper_restart_requested_once": true,
+    "validator_message": "KO because the same logical route was still absent"
+  },
+  "final_two_read_only_snapshots": {
+    "stable": true,
+    "webhooks_state": "ready",
+    "print_state": "standby",
+    "heater_targets_zero": true,
+    "axes_released": true,
+    "active_mesh": "k1_p001_t055_r001_n11x11",
+    "accepted_z_offset_mm": -0.04,
+    "start_owner_phase": "idle",
+    "cfs_connected": true,
+    "logical_route": "NONE",
+    "physical_filament_position_inferred": false
+  },
+  "effects": {
+    "remote_file_write": true,
+    "klipper_restart": true,
+    "heating": false,
+    "motion": false,
+    "extrusion": false,
+    "cfs_command": false,
+    "automatic_retry": false
+  },
+  "deployer_correction": {
+    "reason": "cold installation must allow zero logical route; T1A is a later physical-trial precondition",
+    "changed_after_authorization": true,
+    "renewed_exact_go_required": true
+  }
+}

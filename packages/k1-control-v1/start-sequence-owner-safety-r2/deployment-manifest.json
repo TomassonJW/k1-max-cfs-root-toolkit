@@ -8,7 +8,7 @@
   "physical_trial_authorized": false,
   "payload": {
     "packages/k1-control-v1/start-sequence-owner-safety-r2/k1-control-start-sequence-owner-safety-r2.cfg": "678582e808d74f6b720ef3d6b52dc2c443c7a0652a62c484319e2b22fba7b0bc",
-    "scripts/deploy-k1-control-start-sequence-owner-safety-r2.ps1": "288319f51c3875defcab907fc70f17c8d91f27daf70e51f11161d57f43ef9a7a",
+    "scripts/deploy-k1-control-start-sequence-owner-safety-r2.ps1": "bb8ffd0c4e573497f3f0eab78614ce27c2f92cb62cb539678c36dfcd296ac9cc",
     "packages/k1-control-v1/start-sequence-owner-v1/remote_admin.py": "e81b3810f675f9a3b8985ee6feedb04a8aea12a64e636ee56f7916c0d8943d52",
     "packages/k1-control-v1/start-sequence-owner-v1/remote_jinja_validate.py": "b372d4d57602ad68cca801ee46c7b385e6ad3af5deb48f467c3a1625fd5cc0a4"
   },
@@ -23,7 +23,7 @@
     "service_action": "Klipper host RESTART only after an exact backup",
     "restart_guard": "observe a real Klipper socket generation transition",
     "post_restart_mesh_restore": "load k1_p001_t055_r001_n11x11 once and read it back",
-    "cold_validation": "watchdog self-test and reset with heaters zero and no motion",
+    "cold_validation": "zero or one unique T1A route, watchdog self-test and reset with heaters zero and no motion",
     "physical_trial": false
   },
   "backup": {
@@ -37,7 +37,7 @@
     "restore_sha256": "25291e1534f0ba100d3171b983796089a24cd49fdfcef76817406d325e6d8e03",
     "service_action": "Klipper host RESTART only",
     "post_restart_mesh_restore": "load k1_p001_t055_r001_n11x11 once and read it back",
-    "final_validation": "T1A unique, heaters zero, axes released, accepted Z -0.04, owner idle"
+    "final_validation": "zero or one unique T1A route, heaters zero, axes released, accepted Z -0.04, owner idle"
   },
   "exact_commands": {
     "plan": ".\\scripts\\deploy-k1-control-start-sequence-owner-safety-r2.ps1 -Action Plan",

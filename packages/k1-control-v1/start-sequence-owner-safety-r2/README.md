@@ -33,4 +33,15 @@ seule fois le mesh `11 × 11` et exécute le self-test froid du surveillant. Au
 premier écart après mutation, il restaure exactement V1, redémarre Klipper et
 revérifie le même état sûr.
 
-Cette préparation n'autorise ni connexion K1, ni pose, ni purge physique.
+La première pose autorisée a été rollbackée : le restart Klipper a fait
+disparaître l'association logique `T1A`, et le validateur exigeait à tort sa
+conservation pendant une pose froide. V1 et `printer.cfg` ont été restaurés à
+leurs empreintes exactes. Deux lectures finales stables confirment un état froid
+et sûr, mais aucune route logique engagée. Cela ne prouve pas la position
+physique du filament.
+
+Le déployeur corrigé accepte désormais zéro route ou une route unique `T1A`
+pendant la pose froide ; toute autre route ou ambiguïté reste bloquée. La
+présence de `T1A` redevient, correctement, un préalable séparé du futur essai
+physique. Comme le déployeur a changé après l'autorisation consommée, cette
+nouvelle préparation n'autorise ni connexion K1, ni nouvelle pose, ni purge.
