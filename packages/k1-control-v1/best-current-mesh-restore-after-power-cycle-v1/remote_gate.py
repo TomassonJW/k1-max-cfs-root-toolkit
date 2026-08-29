@@ -290,7 +290,18 @@ def effects(attempted):
 
 def run_preflight():
     before = capture_snapshot()
-    prior_profile = validate_prior(before)
+    try:
+        prior_profile = validate_prior(before)
+    except Exception as exc:
+        return {
+            "schema": 1,
+            "mission": MISSION,
+            "action": "preflight",
+            "status": "PREFLIGHT_KO",
+            "error": "%s:%s" % (type(exc).__name__, exc),
+            "before": before,
+            "effects": effects([]),
+        }
     return {
         "schema": 1,
         "mission": MISSION,

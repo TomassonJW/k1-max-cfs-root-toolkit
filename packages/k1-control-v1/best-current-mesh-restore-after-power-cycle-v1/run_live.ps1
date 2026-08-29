@@ -15,7 +15,7 @@ param(
 
 $ErrorActionPreference = 'Stop'
 $RequiredGate = 'G4-K1-CONTROL-BEST-CURRENT-MESH-RESTORE-AFTER-POWER-CYCLE-V1'
-$ExpectedProgramSha256 = 'cc9efc77fadf35a4e4590c84b49a6c70102f10c69294ad268bf796935e977b1e'
+$ExpectedProgramSha256 = '2b5a3aedab6e502fb904460e7db211f5b1c7b257f4bb0abe601d0604224faee6'
 $WorkspaceRoot = (Resolve-Path (Join-Path $PSScriptRoot '..\..\..')).Path
 $RawRoot = Join-Path $WorkspaceRoot 'inventory\raw'
 $SessionDirectory = Join-Path $RawRoot $CaptureId

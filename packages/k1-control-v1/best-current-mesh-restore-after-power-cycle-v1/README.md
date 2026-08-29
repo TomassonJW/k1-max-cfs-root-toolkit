@@ -32,3 +32,8 @@ Le plan reste entièrement local :
 
 Le préflight est en lecture seule et ne prend pas de drapeau de mutation. La
 remise réelle exige l'autorisation exacte du contrat figé.
+
+Depuis la reprise diagnostique du 29 août, un préflight refusé conserve aussi
+la projection sûre complète lue avant le refus. Cette projection permet de
+distinguer l'état des axes, la route CFS, le profil actif et les gardes sans
+ajouter de seconde connexion ni relâcher la moindre condition de sécurité.

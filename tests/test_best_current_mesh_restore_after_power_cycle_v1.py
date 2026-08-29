@@ -181,6 +181,16 @@ class BestCurrentMeshRestoreAfterPowerCycleV1Tests(unittest.TestCase):
                 with self.assertRaisesRegex(gate.GateError, error):
                     gate.validate_prior(snapshot)
 
+    def test_preflight_KO_keeps_the_safe_snapshot_without_effect(self):
+        snapshot = safe_snapshot()
+        snapshot["toolhead"]["homed_axes"] = "xyz"
+        with patch.object(gate, "capture_snapshot", return_value=snapshot):
+            result = gate.run_preflight()
+        self.assertEqual("PREFLIGHT_KO", result["status"])
+        self.assertEqual("GateError:axes_still_homed", result["error"])
+        self.assertEqual(snapshot, result["before"])
+        self.assertEqual([], result["effects"]["gcode_commands_attempted"])
+
     def test_hash_drift_fails_before_any_gcode(self):
         snapshot = safe_snapshot()
         snapshot["hashes"]["/usr/data/printer_data/config/printer.cfg"] = "drift"

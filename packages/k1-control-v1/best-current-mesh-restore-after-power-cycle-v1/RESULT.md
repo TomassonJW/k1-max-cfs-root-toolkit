@@ -19,6 +19,11 @@ n'a produit aucun effet sur l'imprimante. La prochaine tentative exige donc un
 redémarrage électrique humain qui efface la référence des axes, suivi d'une
 unique action stock `Extrusion T1A` pour recréer explicitement la route logique.
 
+Le préflight a depuis été renforcé hors imprimante : lors d'un prochain refus,
+il restituera la projection sûre complète capturée avant la première garde en
+échec. Aucune condition n'est retirée et aucune nouvelle action distante n'est
+ajoutée.
+
 Prochaine gate : après le nouveau préflight vert, autoriser exactement
 `G4-K1-CONTROL-BEST-CURRENT-MESH-RESTORE-AFTER-POWER-CYCLE-V1` sur le commit
 figé. Cette gate ne couvre toujours pas l'essai chaud de deux couches.
