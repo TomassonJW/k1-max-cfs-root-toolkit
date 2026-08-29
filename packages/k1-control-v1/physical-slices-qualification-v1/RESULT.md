@@ -79,3 +79,8 @@ blocage ambigu entre désengagement et réengagement, puis sépare changement
 d'outil et runout dans un même futur job long. L'identité réelle de `T2C` et un
 slot de secours réellement équivalent restent deux informations humaines
 obligatoires avant cette dernière campagne.
+
+Le retour `T2C -> T1A` n'est plus une transition cachée du plan : le paquet
+`return-t2c-to-t1a-v1` est prêt hors imprimante. Il ne fait qu'observer une
+action humaine unique, vérifie le retour thermique, le mesh, le Z et l'arrêt
+final, et n'autorise aucun retry automatique.

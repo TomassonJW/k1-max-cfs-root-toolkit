@@ -83,6 +83,12 @@ class Goal3PhysicalCompletionRegistryTests(unittest.TestCase):
         self.assertLess(stages["PAUSE_RESUME_T1A"]["order"], stages["WRONG_CHANGE_T1A_TO_T2C"]["order"])
         self.assertEqual(["T2C"], stages["WRONG_CHANGE_T1A_TO_T2C"]["route_after"])
         self.assertEqual(["T1A"], stages["RETURN_T2C_TO_T1A_BEFORE_ACTIVE_CAMPAIGN"]["route_after"])
+        reverse = stages["RETURN_T2C_TO_T1A_BEFORE_ACTIVE_CAMPAIGN"]
+        self.assertEqual(
+            "PASSIVE_OBSERVER_READY_WAITING_T2C_IDENTITY_AND_PRIOR_STAGES",
+            reverse["status"],
+        )
+        self.assertTrue((ROOT / reverse["artifact"]).is_file())
 
     def test_ambiguity_window_and_runout_human_dependency_are_explicit(self):
         stages = {stage["id"]: stage for stage in self.remaining_plan["stages"]}

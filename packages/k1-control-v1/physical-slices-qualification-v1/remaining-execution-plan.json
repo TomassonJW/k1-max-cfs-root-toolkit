@@ -179,13 +179,13 @@
       "order": 13,
       "id": "RETURN_T2C_TO_T1A_BEFORE_ACTIVE_CAMPAIGN",
       "requirement": "TOOL_CHANGE_AND_RUNOUT",
-      "status": "SEPARATE_PASSIVE_REVERSE_GATE_NOT_PREPARED",
+      "status": "PASSIVE_OBSERVER_READY_WAITING_T2C_IDENTITY_AND_PRIOR_STAGES",
       "route_before": ["T2C"],
       "route_after": ["T1A"],
       "action": "one_reviewed_human_stock_change_T2C_to_T1A",
       "human_gate": true,
       "automatic_retry": false,
-      "artifact": null
+      "artifact": "packages/k1-control-v1/return-t2c-to-t1a-v1/contract.json"
     },
     {
       "order": 14,

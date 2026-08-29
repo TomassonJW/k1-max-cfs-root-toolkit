@@ -1,0 +1,51 @@
+{
+  "schema": 1,
+  "mission": "G4-K1-CONTROL-RETURN-T2C-TO-T1A-V1",
+  "goal": "GOAL-P4-PHYSICAL-SLICES-QUALIFICATION-V1",
+  "requirement": "TOOL_CHANGE_AND_RUNOUT",
+  "status": "OFFLINE_PASSIVE_GATE_READY_WAITING_PRIOR_T1A_TO_T2C_CHECKPOINT",
+  "purpose": "restore_the_only_route_supported_by_the_installed_owned_start_before_the_long_active_campaign",
+  "authority": "passive_observer_with_one_human_stock_ui_action",
+  "starting_route": "T2C",
+  "target_route": "T1A",
+  "human_action": "stock_ui_change_T2C_to_T1A_once",
+  "automatic_retry": false,
+  "authority_boundaries": {
+    "plan": "local_without_gate_or_printer_connection",
+    "preflight": "read_only_without_mutation_gate",
+    "observe": "exact_gate_operator_present_and_one_human_stock_ui_action"
+  },
+  "human_requirements": [
+    "prior_T1A_to_T2C_checkpoint_passed",
+    "T2C_identity_confirmed",
+    "T1A_identity_confirmed",
+    "operator_present",
+    "immediate_stop_available",
+    "visible_purge_verdict"
+  ],
+  "automatic_requirements": [
+    "T2C_is_the_unique_starting_route",
+    "T2C_is_released_once",
+    "T1A_is_engaged_once",
+    "no_other_route_is_observed",
+    "positive_nozzle_target_is_seen_before_release_and_after_engagement",
+    "both_CFS_units_remain_connected",
+    "mesh_and_accepted_Z_remain_exact",
+    "start_owner_and_low_moves_remain_disarmed",
+    "heater_targets_return_to_zero",
+    "configuration_hashes_remain_exact"
+  ],
+  "observer": {
+    "program": "packages/k1-control-v1/return-t2c-to-t1a-v1/remote_observer.py",
+    "sha256": "90813b446b951ff0208e2492274a9bed9d882afd1fd24736a076b949826d89f2",
+    "maximum_duration_s": 600,
+    "stable_terminal_reads_required": 4,
+    "gcode": false,
+    "cfs_action": false,
+    "heating": false,
+    "motion": false,
+    "remote_write": false,
+    "service_action": false
+  },
+  "production_authorized": false
+}

@@ -46,3 +46,6 @@ actuel `T1A` précèdent le premier départ durable vers `T2C`. Le désengagemen
 crée ensuite volontairement la fenêtre sans route utilisée pour qualifier le
 blocage d'identité ambiguë. La campagne runout reste explicitement bloquée tant
 qu'un slot et une bobine de secours réellement équivalents ne sont pas nommés.
+Le retour intermédiaire `T2C -> T1A` dispose maintenant de sa gate passive
+séparée : elle observe une unique action humaine depuis l'interface stock, sans
+commander l'imprimante ni relancer automatiquement le changement.
