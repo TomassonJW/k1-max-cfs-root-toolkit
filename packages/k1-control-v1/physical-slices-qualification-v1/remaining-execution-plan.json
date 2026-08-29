@@ -2,14 +2,16 @@
   "schema": 1,
   "plan_id": "GOAL-P4-PHYSICAL-SLICES-REMAINING-EXECUTION-V1",
   "goal": "GOAL-P4-PHYSICAL-SLICES-QUALIFICATION-V1",
-  "status": "IN_PROGRESS_WAITING_FOR_T1A_REENGAGEMENT",
+  "status": "IN_PROGRESS_WAITING_FOR_POWER_CYCLE_AXIS_CLEAR_AND_T1A_REENGAGEMENT",
   "purpose": "finish_all_five_remaining_physical_requirements_without_hiding_route_or_human_dependencies",
   "current_observation": {
     "physical_filament_left_in_head_overnight": "T1A_user_confirmed",
     "logical_routes_after_power_cycle": [],
     "active_mesh_after_power_cycle": "default",
     "accepted_z_offset_mm": -0.04,
-    "current_human_action": "stock_ui_extrusion_T1A_once_not_filament_verification"
+    "latest_read_only_preflight": "KO_axes_still_homed_no_effect",
+    "logical_route_not_reaccepted_by_latest_preflight": true,
+    "current_human_action": "power_cycle_then_stock_ui_extrusion_T1A_once_not_filament_verification"
   },
   "sequencing_decision": {
     "installed_owner_supports_only": "unique_T1A_keep_correct",
@@ -34,7 +36,7 @@
       "order": 1,
       "id": "REENGAGE_T1A_AFTER_POWER_CYCLE",
       "requirement": "CFS_START_STATES_AND_TEMPERATURE_OWNER",
-      "status": "HUMAN_PENDING",
+      "status": "HUMAN_PENDING_POWER_CYCLE_AXIS_CLEAR_THEN_T1A_EXTRUSION",
       "route_before": [],
       "route_after": ["T1A"],
       "action": "stock_ui_extrusion_T1A_once",

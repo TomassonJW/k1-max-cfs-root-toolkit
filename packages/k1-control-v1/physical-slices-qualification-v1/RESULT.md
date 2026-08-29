@@ -65,7 +65,11 @@ automatiques techniquement bloquées.
 L'extinction nocturne a conservé physiquement le filament dans la tête, mais a
 effacé la route logique et remis le profil actif à `default`. Deux lectures
 fraîches l'ont prouvé sans effet. Le successeur de remise du meilleur `11 × 11`
-est préparé et attend d'abord le réengagement stock explicite de `T1A`.
+est préparé. Son nouveau préflight en lecture seule s'est arrêté sans effet sur
+`axes_still_homed` : la K1 se considère encore référencée, et la route `T1A`
+n'a donc pas été réacceptée par cette gate. Il faut maintenant éteindre puis
+rallumer réellement la K1, exécuter une seule fois `Extrusion T1A` depuis
+l'écran stock, puis refaire le préflight avant toute remise du mesh.
 
 Le diagnostic thermique R2 reste ensuite le prochain essai chaud : plateau
 stabilisé `200 s` avant création du jeton manuel, puis une seule impression de
