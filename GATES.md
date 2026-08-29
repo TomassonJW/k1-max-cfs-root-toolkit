@@ -1538,5 +1538,26 @@ Gate close avec `CLOSED_OK_EXCLUSION_AND_EXACT_RESTORE_QUALIFIED`. La valeur
 stock `1` a été sauvegardée, désactivée une fois et prouvée à `0`, puis restaurée
 une fois et prouvée à `1`. Le même observateur est resté ouvert, sans transition
 CFS, filament, chauffe, mouvement, fichier distant ou service. La capture est
-consommée. La suite est `G4-K1-CONTROL-START-SEQUENCE-OWNER-V1`, d'abord hors
-imprimante pour rendre le candidat installable et réversible.
+consommée. Cette suite a depuis été installée, puis invalidée physiquement par
+le run R5 ci-dessous.
+
+### `G4-K1-CONTROL-Z-THERMAL-STABILIZATION-DIAGNOSTIC-V1` — run R5
+
+Status: **clos KO physique, aucun retry**.
+
+Le run `20260829-goal3-thermal-r5-run-6174bcc` a bien terminé la stabilisation
+du plateau, mais son départ physique est invalide. Thomas a observé une purge
+hors du bac, aucun aller-retour de décrochage de la boule et une impression
+visuellement proche de `10 mm` au-dessus du plateau. Les coordonnées internes
+ne peuvent pas exclure une référence Z faussée par du filament sous la buse.
+
+L'impression est confirmée `cancelled`, les deux cibles sont à zéro, les axes
+sont libérés, la tête est haute, le `11 × 11` reste actif et aucune route CFS
+n'est engagée. L'image caméra tardive prouve seulement cet état final sûr.
+
+La gate suivante unique est
+`G4-K1-CONTROL-CAMERA-REFERENCE-LIBRARY-AND-R3-COLD-VALIDATION-V1`. Elle est
+hors effet : préparer quelques images de référence, valider le pilote de
+comparaison et les deux pauses de R3 à froid. Toute chauffe, extrusion, homing
+ou nouvel essai reste fermé tant que la buse, le plateau et T1A n'ont pas été
+réellement remis en état.

@@ -1,0 +1,69 @@
+{
+  "mission": "G4-K1-CONTROL-START-SEQUENCE-OWNER-CAMERA-PURGE-R3",
+  "status": "OFFLINE_CANDIDATE_PHYSICAL_RUN_BLOCKED",
+  "supersedes": [
+    "G4-K1-CONTROL-START-SEQUENCE-OWNER-SAFETY-R2"
+  ],
+  "incident": {
+    "date": "2026-08-29",
+    "failed_run": "20260829-goal3-thermal-r5-run-6174bcc",
+    "verdict": "KO_PURGE_NOT_IN_BIN_BLOB_RELEASE_MISSING_Z_REFERENCE_NOT_VISUALLY_TRUSTWORTHY",
+    "automatic_retry": false
+  },
+  "machine_facts": {
+    "mechanical_x_min_mm": -2.0,
+    "cfs_bin_purge_position_mm": [185.5, 305.0, 30.0],
+    "qualified_blob_release_z_mm": 32.0,
+    "qualified_blob_release_first_lane": [[203.0, 305.0], [206.0, 305.0], [203.0, 305.0]],
+    "qualified_blob_release_second_lane": [[203.0, 304.0], [206.0, 304.0], [203.0, 304.0]],
+    "outside_bed_prime_first_x_mm": -1.7,
+    "outside_bed_prime_return_x_mm": -1.3,
+    "outside_bed_prime_y_mm": [20.0, 150.0],
+    "camera_snapshot_url_template": "http://PRINTER_IPV4:8080/?action=snapshot"
+  },
+  "required_order": [
+    "rough_xy_reference",
+    "bed_55_and_nozzle_140",
+    "rough_z_reference",
+    "nozzle_190",
+    "purge_20mm_into_cfs_bin",
+    "cool_to_140",
+    "qualified_two_lane_blob_release",
+    "pause_base_camera_clean_check",
+    "camera_confirmed_clean",
+    "accurate_z_reference",
+    "restore_11x11_and_accepted_z",
+    "outside_bed_prime_line",
+    "camera_prime_check",
+    "resume_base_model"
+  ],
+  "camera_gates": {
+    "before_precise_z": {
+      "phase": "camera_clean_check",
+      "required_visible_facts": [
+        "purge_is_in_bin",
+        "purge_blob_is_released",
+        "no_filament_is_attached_under_nozzle"
+      ]
+    },
+    "before_model": {
+      "phase": "camera_prime_check",
+      "required_visible_facts": [
+        "prime_line_is_outside_printable_bed",
+        "prime_line_is_continuous",
+        "no_filament_is_attached_under_nozzle"
+      ]
+    }
+  },
+  "forbidden": [
+    "START_PRINT",
+    "BOX_START_PRINT",
+    "BOX_MATERIAL_FLUSH",
+    "BOX_NOZZLE_CLEAN",
+    "CX_NOZZLE_CLEAR",
+    "model_resume_without_both_camera_gates",
+    "automatic_retry"
+  ],
+  "deployment_candidate": false,
+  "physical_run_authorized": false
+}

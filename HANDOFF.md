@@ -2,7 +2,7 @@
 
 La passation canonique de la session est désormais :
 
-`docs/HANDOFF-CFS-OWNER-EXCLUSION-LIVE-EFFECT-2026-08-28.md`
+`docs/HANDOFF-GOAL3-CAMERA-PILOT-2026-08-29.md`
 
 Lire ce document en premier. Le contenu ci-dessous est conservé comme archive
 des clôtures antérieures ; il ne décrit plus l'état actuel et ne doit pas

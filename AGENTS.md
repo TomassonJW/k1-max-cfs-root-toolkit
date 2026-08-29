@@ -6,6 +6,21 @@ Build a reproducible, evidence-driven and reversible way to diagnose and improve
 
 The printer is production hardware. It is never treated as a disposable sandbox.
 
+## Pilotage caméra canonique
+
+Lire `docs/49-pilotage-camera-simple-et-autonome-v1.md` avant toute nouvelle
+action physique. La caméra locale est désormais un capteur obligatoire : une
+phase Klipper ne prouve ni l'emplacement de la purge, ni le décrochage de la
+boule, ni la bonne hauteur de première couche. Codex capture et compare les
+images, pilote l'arrêt et ne demande à Thomas que les vrais gestes manuels.
+ADR-033 et le candidat R3 restent hors imprimante. Le LiDAR n'est pas requis.
+
+Mise à jour prioritaire du 29 août 2026 : le run thermique R5 est clos KO sans
+retry. L'état final observé est `cancelled`, chauffes zéro, axes libérés, tête
+haute, `11 × 11` actif et aucune route CFS engagée. Aucun nouvel essai chaud ne
+part avant la validation froide du pilote caméra/R3 puis les vrais gestes de
+remise en état demandés en langage courant.
+
 ## Current authority and phase
 
 The active phase is **P4 — V1 and V2 foundations are closed; V3, PATHS-V1, the

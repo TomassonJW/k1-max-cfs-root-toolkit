@@ -114,3 +114,15 @@ et la consigne persistante « fais le job » autorisent la continuation sur les
 commits techniques tant que Thomas ne touche pas à la machine et que l'état
 physique ne change pas. Aucun nouveau texte d'autorisation n'est requis ; seule
 une modification physique sensible imposera un arrêt pour constat humain.
+
+## Run R5 — clôture physique KO
+
+Le successeur a bien prouvé la stabilisation machine, puis R5 a lancé le départ
+possédé. Thomas a immédiatement invalidé la phase physique : la purge n'est pas
+tombée dans le bac, l'aller-retour de décrochage n'a pas eu lieu et le modèle
+semblait imprimé près de `10 mm` au-dessus du plateau. R5 est annulé, sans retry,
+et ne qualifie pas l'effet thermique sur le Z.
+
+La relecture finale confirme `cancelled`, cibles zéro, axes libérés, tête haute,
+`11 × 11` actif et aucune route CFS. La reprise thermique directe est remplacée
+par ADR-033, le pilote caméra du document 49 et le candidat R3 hors imprimante.

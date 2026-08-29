@@ -6,11 +6,11 @@
   "completion_audit_evidence": null,
   "current_human_gate": {
     "requirement_id": "CFS_START_STATES_AND_TEMPERATURE_OWNER",
-    "checkpoint": "THERMAL_RUN_3027F59_CLOSED_KO_AFTER_MACHINE_SIDE_SOAK_NO_PRINT_OR_PURGE_SAFE_FINAL_PROVED_SPLIT_SUCCESSOR_VALIDATING",
-    "active_gate": "G4-K1-CONTROL-Z-THERMAL-STABILIZATION-DIAGNOSTIC-V1",
-    "technical_status": "R4_MACHINE_SIDE_SOAK_COMPLETED_AND_BED_TARGET_RETURNED_ZERO_NO_PRINT_OR_PURGE_SPLIT_HEAT_AND_DWELL_SOCKET_FIX_VALIDATING_OFFLINE_CONTINUATION_AUTHORITY_ACTIVE",
-    "required_human_verdict": "VISUAL_TWO_LAYER_VERDICT_ONLY_AFTER_AUTOMATIC_TRIAL_UNLESS_A_MATERIAL_SENSITIVE_PHYSICAL_CHANGE_OCCURS_FIRST",
-    "next_effect_blocked": false
+    "checkpoint": "THERMAL_RUN_R5_CLOSED_PHYSICAL_KO_PURGE_OUTSIDE_BIN_BLOB_RELEASE_MISSING_Z_REFERENCE_UNTRUSTWORTHY",
+    "active_gate": "G4-K1-CONTROL-CAMERA-REFERENCE-LIBRARY-AND-R3-COLD-VALIDATION-V1",
+    "technical_status": "R5_CANCELLED_TARGETS_ZERO_AXES_RELEASED_11X11_ACTIVE_NO_CFS_ROUTE_R3_OFFLINE_ONLY",
+    "required_human_verdict": "NONE_DURING_OFFLINE_AND_COLD_CAMERA_PILOT_WORK_NEXT_REAL_INPUT_IS_ONLY_PHYSICAL_CLEANUP_AND_T1A_REENGAGEMENT_BEFORE_A_FUTURE_HOT_RUN",
+    "next_effect_blocked": true
   },
   "requirements": [
     {
@@ -48,12 +48,13 @@
     {
       "order": 3,
       "id": "CFS_START_STATES_AND_TEMPERATURE_OWNER",
-      "status": "PHYSICAL_CHECKPOINTS_2_OF_4_PASSED_Z_FOLLOWUP_REQUIRED",
+      "status": "PHYSICAL_CHECKPOINTS_2_OF_4_PASSED_R5_KO_CAMERA_PURGE_CORRECTION_REQUIRED",
       "slice_id": "CFS-TEMP-OWNER-V1",
       "evidence": "packages/k1-control-v1/cfs-temp-owner-v1/contract.json",
-      "latest_checkpoint_evidence": "packages/k1-control-v1/cfs-temp-owner-v1/keep-correct-t1a-owned-start-evidence.json",
-      "corrective_design": "packages/k1-control-v1/start-sequence-owner-v1/contract.json",
-      "active_physical_gate": "packages/k1-control-v1/start-sequence-owner-physical-keep-correct-t1a-v1/contract.json",
+      "latest_checkpoint_evidence": "packages/k1-control-v1/start-sequence-owner-camera-purge-r3/incident-evidence.json",
+      "corrective_design": "packages/k1-control-v1/start-sequence-owner-camera-purge-r3/contract.json",
+      "active_physical_gate": null,
+      "cold_validation_candidate": "packages/k1-control-v1/start-sequence-owner-camera-purge-r3/contract.json",
       "power_cycle_recovery_candidate": "packages/k1-control-v1/best-current-mesh-restore-after-power-cycle-v1/contract.json",
       "next_checkpoint_candidate": "packages/k1-control-v1/wrong-change-t1a-to-t2c-v1/contract.json",
       "required_proofs": [

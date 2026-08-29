@@ -51,18 +51,20 @@ Aucune nouvelle authentification ni action physique n'a eu lieu.
 **P4 — Goals 1 et 2 clos ; meilleur profil observé `11 × 11` actif et
 revérifié ; tous les profils actuels ont des défauts de bord ; aucun profil
 actuel n'est qualifié robuste ; éditeur point par point disponible hors ligne ;
-Goal 3 a clos CLEAN-MOTION-V1 avec les deux brosses qualifiées à froid et
-compte `1/7` exigence physique passée ; cycle CFS clos
-hors imprimante ; production volontairement bloquée**
+Goal 3 compte `2/7` exigences passées ; le run thermique R5 est clos KO après
+une purge hors bac, sans décrochage de la boule, et une hauteur physique
+incohérente ; la caméra locale est maintenant un capteur canonique ; production
+volontairement bloquée**
 
 Le registre local
 `packages/k1-control-v1/physical-slices-qualification-v1/` fixe désormais les
 sept exigences physiques déjà prévues et la frontière du Goal 4. Son contrôle
-retourne `GOAL3_LEDGER_OK_IN_PROGRESS`, avec `1/7` exigence close et aucun
-effet K1. Il interdit de déclarer le Goal 3 terminé en remplaçant une preuve
+retourne `GOAL3_LEDGER_OK_IN_PROGRESS`, avec `2/7` exigences closes. Il interdit
+de déclarer le Goal 3 terminé en remplaçant une preuve
 humaine par des tests ou en déplaçant une exigence vers un nouveau Goal.
 
-Le pilote `G4-K1-CONTROL-CLEAN-AND-REFERENCE-V1` reprend exactement le carré E4.
+Le pilote historique `G4-K1-CONTROL-CLEAN-AND-REFERENCE-V1` reprend exactement
+le carré E4.
 Thomas a fixé Geetech et `220 °C`, six allers-retours rapides, puis un frottement
 lent piloté par la température réelle avec remontée de `Z32` à `Z34`. Un premier
 passage s'est arrêté après chauffe, sans nettoyage, puis les chauffes ont été
@@ -70,8 +72,16 @@ coupées. La chauffe séparée est supprimée : le cycle atomique finit autour d
 `140 °C` avec les deux cibles à zéro, sans attendre de verdict. Son nouveau
 préflight live sans effet est vert à la position sûre `X204,5 Y304,5 Z35`, avec
 le `11 × 11` exact et les configurations conformes. Le cycle physique attend
-seulement Thomas devant la K1 ; la référence Z restera séparée jusqu'au verdict
-visuel « buse propre ».
+seulement Thomas devant la K1 ; son nettoyage automatique reste clos KO.
+ADR-033 réutilise seulement le mouvement E4 qualifié pour décrocher la boule
+après une purge explicite dans le bac, sous deux contrôles caméra bloquants.
+
+La caméra `1280 × 720` est accessible en lecture seule sur le service local de
+la K1. L'image prise après l'annulation R5 montre le plateau descendu et la tête
+garée haute à droite ; elle est rangée dans l'inventaire brut privé. Cette image
+ne prouve pas la purge passée. Le document 49 fixe la petite bibliothèque à
+apprendre lors de la reprise et interdit de remplacer une image par un marqueur
+logiciel.
 
 `G4-K1-CONTROL-GATEWAY-PRIVATE-LAN-NO-AUTH-V1` est installé et validé. Le mot
 de passe HTTP Basic n'est plus utilisé sur `4409`. Nginx continue de limiter
@@ -1312,6 +1322,25 @@ Le verdict est `CLOSED_OK_EXCLUSION_AND_EXACT_RESTORE_QUALIFIED`.
 L'état final est `standby`, chauffes zéro, axes libérés, `T1/T2` connectés,
 aucune route, Z accepté `−0,04 mm`, mesh `11 × 11` et configurations inchangées.
 Aucun filament, mouvement, fichier distant ou service n'a été touché. Les
-captures sont consommées. La prochaine tranche est
-`G4-K1-CONTROL-START-SEQUENCE-OWNER-V1`, d'abord hors imprimante pour rendre le
-candidat installable, surveillé et réversible.
+captures sont consommées. Cette ancienne prochaine tranche a depuis été
+installée, puis invalidée physiquement par R5.
+
+## Mise à jour 2026-08-29 — incident R5 et pilotage caméra
+
+Le run `20260829-goal3-thermal-r5-run-6174bcc` est clos KO sans retry. Thomas a
+observé la purge hors du bac, l'absence du mouvement de décrochage et une
+impression proche de `10 mm` au-dessus du plateau. L'annulation finale est
+confirmée : état `cancelled`, cibles buse/plateau à zéro, axes libérés, tête
+haute, `11 × 11` actif et aucune route CFS engagée.
+
+ADR-033 remplace la partie « sans brosse » du départ possédé. Le candidat R3
+reste hors imprimante et impose : référence grossière, purge dans le bac,
+mouvement E4, image caméra propre, référence Z précise, ligne hors plateau,
+seconde image, puis modèle. Le document 49 répartit clairement le travail entre
+Codex et Thomas et prépare une future calibration Z assistée par image.
+
+La prochaine tranche unique est
+`G4-K1-CONTROL-CAMERA-REFERENCE-LIBRARY-AND-R3-COLD-VALIDATION-V1`, hors
+imprimante puis à froid seulement. Elle doit construire le pilote caméra simple,
+relire le candidat R3 et prouver ses deux pauses sans chauffe, extrusion ni
+mouvement physique. Le LiDAR reste hors périmètre.

@@ -129,3 +129,18 @@ fenêtre couche 3 puis une fenêtre couche 6 et une fin sûre unique. Il ne
 contient aucun connecteur ni ordre automatique CFS et reste bloqué tant que le
 verdict thermique, `T2C` et son remplacement strictement équivalent ne sont pas
 confirmés.
+
+## Clôture R5 et nouvelle reprise canonique
+
+Le run `20260829-goal3-thermal-r5-run-6174bcc` a finalement exécuté la
+stabilisation, puis a été annulé sur un KO physique : purge hors du bac, absence
+du mouvement qui décroche la boule et impression visuellement proche de
+`10 mm` au-dessus du plateau. Il ne qualifie ni la purge, ni le Z, ni les deux
+couches. Aucun retry n'est permis.
+
+L'état final est sûr et relu : `cancelled`, cibles zéro, axes libérés, tête
+haute, `11 × 11` actif et aucune route CFS. ADR-033, le document 49 et le
+candidat R3 remplacent donc la reprise thermique directe. La prochaine tranche
+est seulement le pilote caméra simple et la validation froide de R3. Les vrais
+gestes manuels requis avant un futur essai chaud seront demandés au moment utile :
+nettoyer buse/plateau et réengager T1A par la fonction officielle.

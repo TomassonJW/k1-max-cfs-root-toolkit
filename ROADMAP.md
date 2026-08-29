@@ -147,10 +147,11 @@ seul fonctionnement quotidien :
     sous autorité séparée et sans effet ;
 18. contrat Orca final et retrait atomique prouvé de l'ancien post-traitement
     `+0,27 mm` ;
-19. `START-SEQUENCE-OWNER-V1` installé et validé à froid : restart réellement
-    observé, `11 × 11` restauré et relu, surveillant vert, chauffes zéro, aucun
-    mouvement ni effet CFS. La prochaine gate doit charger puis relire une seule
-    route `T1A` sans lancer d'impression.
+19. `START-SEQUENCE-OWNER-V1` a été installé et validé à froid, puis sa campagne
+    physique a révélé un défaut majeur : R5 a purgé hors bac, sans décrocher la
+    boule, et la référence Z physique n'était pas fiable. R5 est clos KO sans
+    retry. ADR-033 et le document 49 imposent maintenant purge dans le bac,
+    mouvement E4 et deux contrôles caméra bloquants. R3 reste hors imprimante.
 
 Le rollback exact de `MESH-EDGE-DIAGNOSTIC-V1` et sa validation finale sont
 verts. Aucun acte physique suivant n'est automatiquement autorisé. La reprise

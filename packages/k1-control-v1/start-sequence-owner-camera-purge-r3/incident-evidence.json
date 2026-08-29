@@ -1,0 +1,34 @@
+{
+  "date": "2026-08-29",
+  "run": "20260829-goal3-thermal-r5-run-6174bcc",
+  "human_observation": {
+    "purge_in_bin": false,
+    "blob_release_motion_seen": false,
+    "apparent_nozzle_gap": "approximately_10_mm",
+    "verdict": "immediate_physical_ko"
+  },
+  "controller_evidence": {
+    "final_print_state": "cancelled",
+    "extruder_target_c": 0.0,
+    "bed_target_c": 0.0,
+    "homed_axes": "",
+    "active_mesh": "k1_p001_t055_r001_n11x11",
+    "accepted_z_offset_mm": -0.04,
+    "engaged_routes": [],
+    "automatic_retry": false
+  },
+  "camera_evidence": {
+    "snapshot_sha256": "db0d21de4288c522f0c132f4ae8df1e5fc5c9d46062da584e255577e1382029d",
+    "snapshot_bytes": 127856,
+    "observation": "after cancellation the bed is lowered and the toolhead is parked high at the right; this late image cannot validate the purge"
+  },
+  "root_cause": {
+    "confirmed": [
+      "R2 had no purge into the configured CFS bin",
+      "R2 had no qualified two-lane purge-blob release motion",
+      "R2 used a precise Z reference before any hot filament cleanup",
+      "R2 internal phase markers were incorrectly treated as physical visual proof"
+    ],
+    "plausible_chain": "hot filament or a retained blob contaminated the precise Z reference, so controller coordinates could look normal while the physical nozzle-to-bed gap was wrong"
+  }
+}

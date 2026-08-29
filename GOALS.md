@@ -1,6 +1,6 @@
 # GOALS — pilotage macro
 
-Date de mise à jour : 2026-08-28
+Date de mise à jour : 2026-08-29
 
 Ce fichier sert d'index rapide pour les grandes sessions de travail. Les noms
 ci-dessous regroupent les petites gates déjà définies dans `GATES.md` ; ils ne
@@ -13,7 +13,10 @@ sera ajouté. Les Goals 1 et 2 sont clos. ADR-029
 `11 × 11`, meilleur profil observé, est actif et revérifié. CLEAN-MOTION-V1 est
 clos OK après les validations humaines C, D1, D2, D3, E2, E3-R2 et E4. ADR-030
 ferme ensuite le nettoyage automatique en KO et rend le nettoyage manuel
-obligatoire. Le Goal 3 compte désormais deux exigences résolues sur sept.
+obligatoire. Le Goal 3 compte désormais deux exigences résolues sur sept. Le
+run thermique R5 est clos KO : la purge n'est pas tombée dans le bac, le
+mouvement de décrochage n'a pas eu lieu et la référence Z n'est pas fiable
+physiquement. ADR-033 et le document 49 rendent désormais la caméra obligatoire.
 
 ## Vue rapide
 
@@ -21,7 +24,7 @@ obligatoire. Le Goal 3 compte désormais deux exigences résolues sur sept.
 | --- | --- | --- | --- |
 | 1 | `GOAL-P4-OFFLINE-CYCLE-CFS-V1` | terminé hors imprimante | système logiciel complet simulé et plan futur inerte vérifié |
 | 2 | `GOAL-P4-K1-READ-ONLY-QUALIFICATION-V1` | terminé en lecture seule ; écart de mesh alors observé, corrigé par une gate distincte | réponses et délais réels qualifiés sans commande ni impression |
-| 3 | `GOAL-P4-PHYSICAL-SLICES-QUALIFICATION-V1` | en cours ; nettoyage manuel canonique, `2/7` exigences passées | toutes les fonctions physiques et le profil de bord validés séparément |
+| 3 | `GOAL-P4-PHYSICAL-SLICES-QUALIFICATION-V1` | en cours ; `2/7`, R5 clos KO, effets physiques suspendus pendant la correction caméra/purge | toutes les fonctions physiques et le profil de bord validés séparément |
 | 4 | `GOAL-P4-DAILY-CUTOVER-V1` | prévu après Goal 3 | bascule unifiée, validation production et clôture définitive du projet |
 
 Le registre exécutable
@@ -41,9 +44,14 @@ Elle a aussi prouvé que `START_PRINT` remplaçait encore le `11 × 11` par
 `default` pendant ses mouvements bas et lançait le mauvais brossage avant que
 K1 Control puisse réarmer la géométrie. Thomas a dû nettoyer la buse à la main,
 puis corriger temporairement le Z de `−0,04` à `−0,19 mm` pour obtenir une
-première couche à peine correcte. ADR-031 impose donc un départ possédé, sans
-brosse ni recalibration, avec une seule référence Z propre avant tout effet
-filament. Son candidat est préparé uniquement hors imprimante. Ce registre ne
+première couche à peine correcte. Le run R5 du 29 août a ensuite invalidé la
+partie « sans brosse » : une purge de bord ne remplace pas la purge dans le bac
+ni l'aller-retour qui décroche la boule. L'impression observée très au-dessus du
+plateau rend la référence Z de R5 non fiable malgré une télémétrie ordinaire.
+ADR-033 impose maintenant un départ possédé avec purge explicite dans le bac,
+mouvement E4, deux contrôles caméra bloquants et référence Z précise seulement
+après preuve visuelle de buse propre. Son candidat R3 est préparé uniquement
+hors imprimante. Ce registre ne
 crée aucun Goal supplémentaire. ADR-032 et la cartographie canonique
 `design/cfs-control-source-map-v1.json` réutilisent maintenant les captures
 locales, le binaire stock, HelixScreen, FrederickAlt, CFSTool et les principaux
@@ -131,12 +139,14 @@ Identifiant : `GOAL-P4-PHYSICAL-SLICES-QUALIFICATION-V1`
 
 État : **en cours ; `2/7` exigences passées ; nettoyage automatique clos KO et
 remplacé par une gate manuelle obligatoire ; la conservation réelle de `T1A`
-est prouvée ; le départ stock est KO ; START-SEQUENCE-OWNER-V1 est préparé hors
-imprimante ; l'architecture complète CFS est choisie, le préflight S12 est clos
+est prouvée ; le départ stock est KO ; START-SEQUENCE-OWNER-V1 a été installé
+puis invalidé physiquement par R5 ; R3 reste hors imprimante ; l'architecture
+complète CFS est choisie, le préflight S12 est clos
 en lecture seule et le cœur propriétaire obtient `21/21` hors imprimante ;
 l'observabilité V2 et l'exclusion réelle du propriétaire stock sont closes OK ;
-la prochaine tranche rend START-SEQUENCE-OWNER-V1 installable avant toute
-nouvelle qualification physique**.
+le run thermique R5 est clos KO et sans retry ; le candidat correctif R3 reste
+hors imprimante ; la prochaine tranche construit le pilote caméra simple et
+valide R3 à froid avant toute nouvelle qualification physique**.
 
 Le checkpoint C a référencé XYZ, rechargé le `11 × 11`, commandé `Z=50 mm` et
 attendu la fin. Un premier faux KO local a confondu la position physique
@@ -169,7 +179,8 @@ Ce qui sera réellement fait, une petite tranche à la fois :
 - implémenter hors imprimante le propriétaire K1 Control contre des réponses
   enregistrées, sans recopier les projets GPL ;
 - installer avec sauvegarde et retour arrière ;
-- qualifier le départ sans brosse, avec une seule référence Z propre ;
+- qualifier le départ avec purge dans le bac, décrochage E4, contrôles caméra
+  bloquants et référence Z précise seulement après image propre ;
 - qualifier un retrait unique et l'arrêt réel des chauffes ;
 - vérifier chargement sans flush stock, changement de filament, runout entre
   les deux CFS, pause, reprise, annulation et fin ;
@@ -178,8 +189,10 @@ Ce qui sera réellement fait, une petite tranche à la fois :
 - corriger les bords point par point depuis la source `11 × 11`, puis tester un
   candidat dérivé sans écraser les profils existants.
 
-Limite : chaque tranche conserve sa gate, ses critères OK/KO et son autorisation
-exacte. Aucun retry automatique et aucune poursuite après un KO.
+Limite : chaque tranche conserve ses critères OK/KO. Aucun retry automatique et
+aucune poursuite après un KO. Codex pilote les lectures, images, commandes et
+arrêts ; Thomas n'intervient que pour un acte matériel réellement nécessaire,
+décrit en langage courant, sans texte d'autorisation à recopier.
 
 Fin attendue : toutes les fonctions physiques nécessaires sont validées
 séparément et réversibles ; l'ancien démarrage Orca reste encore disponible.
