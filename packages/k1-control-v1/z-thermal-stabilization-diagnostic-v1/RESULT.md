@@ -1,6 +1,6 @@
 # Résultat
 
-Statut actuel : `BLOCKED_CORRECTIVE_R2_REQUIRED_BEFORE_NEW_UPLOAD`.
+Statut actuel : `OFFLINE_READY_WAITING_FOR_T1A_AND_EXACT_PHYSICAL_GO`.
 
 Le candidat privé est dérivé du G-code physique déjà qualifié. La seule
 différence fonctionnelle avant `KCTRL_JOB_BEGIN` est l'ajout exact de :
@@ -20,6 +20,14 @@ préflight R2 était vert. Après le retour humain sur la mauvaise fin et le fil
 de purge, ce fichier a été invalidé puis supprimé de la K1 sous contrôle de son
 empreinte exacte.
 
-Le candidat local R2 ajoute maintenant la fin sûre `Z50 / X203 Y273 / M84`,
-mais il reste bloqué tant que la macro de purge corrigée n'est pas posée et que
-son trajet inversé vers `X5 Y20` n'a pas reçu de verdict humain.
+Le propriétaire R2 est maintenant installé et validé à froid. Sa purge suit le
+tracé constructeur `X0,1/X0,4`, `Y20..180`, à `F3000`, avec remontée `Z5`.
+Le candidat local ajoute la fin sûre `Z50 / X203 Y273 / M84`.
+
+Le pilote de l'essai attend désormais l'empreinte R2 exacte. Son arrêt
+d'urgence baisse aussi le plateau à `Z50` et parque la tête à `X203 Y273` avant
+de libérer les axes lorsqu'ils sont encore référencés. La validation terminale
+exige réellement cette position, en plus des chauffes zéro et des axes libérés.
+
+Aucun fichier n'a été renvoyé sur la K1. L'essai attend le rechargement et la
+relecture de `T1A`, puis une autorisation physique distincte avec Thomas présent.

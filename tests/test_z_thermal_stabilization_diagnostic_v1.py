@@ -69,6 +69,17 @@ class ZThermalStabilizationDiagnosticV1Tests(unittest.TestCase):
         self.assertIn('print_state == "complete" and not print_filename', source)
         self.assertNotIn('printer_not_standby', source)
 
+    def test_derived_trial_pins_r2_and_proves_the_safe_terminal_position(self):
+        trial, _ = self.verifier.builder.derive_programs()
+        source = trial.decode("utf-8")
+        self.assertIn(self.contract["installed_start_owner"]["sha256"], source)
+        self.assertNotIn(self.verifier.builder.OLD_START_OWNER_SHA256, source)
+        self.assertIn('"physical_position": child(status, "toolhead").get("position")', source)
+        self.assertIn('G1 Z50 F600\\nG1 X203 Y273 F1200\\nM400\\nM84', source)
+        self.assertIn('raise GateError("final_park_x_invalid")', source)
+        self.assertIn('raise GateError("final_park_y_invalid")', source)
+        self.assertIn('raise GateError("final_bed_clearance_invalid")', source)
+
     def test_analyzer_accepts_a_complete_soak_trace(self):
         records = [
             {"kind": "snapshot", "elapsed_s": 0.0, "print": {"state": "standby"}, "owner": {"phase": "idle"}, "bed": {"target": 0.0, "temperature": 30.0}, "nozzle": {"target": 0.0}, "cfs": {"engaged_routes": ["T1A"], "active_command": ""}},

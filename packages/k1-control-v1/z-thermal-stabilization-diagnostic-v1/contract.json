@@ -4,6 +4,7 @@
   "goal": "GOAL-P4-PHYSICAL-SLICES-QUALIFICATION-V1",
   "purpose": "isolate_the_200_second_bed_stabilization_hypothesis_before_any_Z_recalibration",
   "authority": "gated_private_gcode_upload_and_single_human_observed_run",
+  "offline_plan_command": ".\\packages\\k1-control-v1\\z-thermal-stabilization-diagnostic-v1\\run_trial.ps1 -Action Plan -CaptureId offline-plan -Execute -Gate G4-K1-CONTROL-Z-THERMAL-STABILIZATION-DIAGNOSTIC-V1",
   "automatic_retry": false,
   "source": {
     "private_path": "inventory/raw/20260828-goal3-start-owner-physical-keep-correct-t1a-v1/K1-START-OWNER-T1A-2LAYER.gcode",
@@ -32,7 +33,7 @@
   },
   "derived_remote_programs": {
     "base_trial_sha256": "5f461db624acaa8682ec20bcd3eed001da39688f1e19a880d8096685c350a68f",
-    "derived_trial_sha256": "709918700cb3c791113667506964236429d20107f92063507f7b2b67847e4bf4",
+    "derived_trial_sha256": "3c8cc762738619216dd86859564c1a2189c202b7d4cb30af97d69134d8103242",
     "base_installer_sha256": "ff84e23462dc642d916bc7d83cfca0eea53414253b7ad940c1cb46be56a5ffa0",
     "derived_installer_sha256": "bf7d7e0d67b5598645c927dfbe7c2e17989877c4b4fc4a1ba51b8c840d9453a7"
   },
@@ -47,6 +48,10 @@
     "accepted_Z_minus_0_04_unchanged",
     "configuration_hashes_exact"
   ],
+  "installed_start_owner": {
+    "version": "SAFETY_R2",
+    "sha256": "678582e808d74f6b720ef3d6b52dc2c443c7a0652a62c484319e2b22fba7b0bc"
+  },
   "decision": {
     "first_layer_good_without_live_adjustment": "THERMAL_STABILIZATION_HYPOTHESIS_SUPPORTED_PREPARE_START_OWNER_SOAK_CORRECTION",
     "first_layer_still_too_high": "THERMAL_STABILIZATION_HYPOTHESIS_REJECTED_PREPARE_BOUNDED_Z_RECALIBRATION",
@@ -57,7 +62,9 @@
     "T1A_still_unique_and_no_CFS_command",
     "11x11_active",
     "owner_idle_and_low_moves_disarmed",
-    "axes_released",
+    "bed_at_or_below_Z50_clearance",
+    "head_parked_at_X203_Y273",
+    "axes_released_after_park",
     "configuration_hashes_unchanged"
   ],
   "out_of_scope": [

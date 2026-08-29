@@ -17,6 +17,8 @@ SAFE_PACKAGE = ROOT / "packages" / "k1-control-v1" / "start-sequence-owner-safet
 SAFE_END_TEMPLATE = SAFE_PACKAGE / "orca-end.gcode"
 BASE_TRIAL_SHA256 = "5f461db624acaa8682ec20bcd3eed001da39688f1e19a880d8096685c350a68f"
 BASE_INSTALLER_SHA256 = "ff84e23462dc642d916bc7d83cfca0eea53414253b7ad940c1cb46be56a5ffa0"
+OLD_START_OWNER_SHA256 = "25291e1534f0ba100d3171b983796089a24cd49fdfcef76817406d325e6d8e03"
+R2_START_OWNER_SHA256 = "678582e808d74f6b720ef3d6b52dc2c443c7a0652a62c484319e2b22fba7b0bc"
 OLD_MISSION = "G4-K1-CONTROL-START-SEQUENCE-OWNER-PHYSICAL-KEEP-CORRECT-T1A-V1"
 MISSION = "G4-K1-CONTROL-Z-THERMAL-STABILIZATION-DIAGNOSTIC-V1"
 OLD_GCODE_NAME = "K1-START-OWNER-T1A-2LAYER.gcode"
@@ -31,6 +33,38 @@ NEW_PREFLIGHT_PRINT_GUARD = '''    print_state = item["print"].get("state")
         raise GateError("standby_filename_present")
     if print_state == "complete" and not print_filename:
         raise GateError("complete_filename_missing")'''
+OLD_MOTION_PROJECTION = '''        "motion": {
+            "homed_axes": child(status, "toolhead").get("homed_axes"),
+            "gcode_position": child(status, "gcode_move").get("gcode_position"),'''
+NEW_MOTION_PROJECTION = '''        "motion": {
+            "homed_axes": child(status, "toolhead").get("homed_axes"),
+            "physical_position": child(status, "toolhead").get("position"),
+            "gcode_position": child(status, "gcode_move").get("gcode_position"),'''
+OLD_SAFETY_GCODE = '''        request_json("/printer/gcode/script", method="POST", payload={"script": "TURN_OFF_HEATERS\\nM84"})
+        actions.append("turn_off_heaters_and_release_axes_once")'''
+NEW_SAFETY_GCODE = '''        current = snapshot(0.0)
+        homed_axes = current["motion"].get("homed_axes") or ""
+        if "xyz" in homed_axes:
+            stop_script = "TURN_OFF_HEATERS\\nG90\\nG1 Z50 F600\\nG1 X203 Y273 F1200\\nM400\\nM84"
+            stop_action = "turn_off_heaters_safe_park_and_release_once"
+        else:
+            stop_script = "TURN_OFF_HEATERS\\nM84"
+            stop_action = "turn_off_heaters_and_release_unhomed_axes_once"
+        request_json("/printer/gcode/script", method="POST", payload={"script": stop_script})
+        actions.append(stop_action)'''
+OLD_TERMINAL_RELEASE_CHECK = '''    if item["motion"]["homed_axes"] not in (None, ""):
+        raise GateError("axes_not_released_after_run")'''
+NEW_TERMINAL_RELEASE_CHECK = '''    if item["motion"]["homed_axes"] not in (None, ""):
+        raise GateError("axes_not_released_after_run")
+    position = item["motion"].get("physical_position")
+    if not isinstance(position, list) or len(position) < 3:
+        raise GateError("final_physical_position_missing")
+    if abs(finite(position[0], "final_physical_position_invalid") - 203.0) > 0.5:
+        raise GateError("final_park_x_invalid")
+    if abs(finite(position[1], "final_physical_position_invalid") - 273.0) > 0.5:
+        raise GateError("final_park_y_invalid")
+    if finite(position[2], "final_physical_position_invalid") < 49.5:
+        raise GateError("final_bed_clearance_invalid")'''
 START = b"KCTRL_JOB_BEGIN_KEEP_CORRECT_V1 BED=55 PROBE_NOZZLE=140 FIRST_NOZZLE=190 PLATE=1 PROBE_REV=1 NOZZLE_ID=1 CONFIG_ID=1 X_COUNT=11 Y_COUNT=11"
 PRELUDE_LINES = (
     b"; K1_CONTROL_THERMAL_SOAK_DIAGNOSTIC_V1_BEGIN",
@@ -61,9 +95,20 @@ def derive_programs() -> tuple[bytes, bytes]:
     trial_text = trial_text.replace(OLD_MISSION, MISSION)
     trial_text = trial_text.replace(OLD_GCODE_NAME, GCODE_NAME)
     trial_text = trial_text.replace("KEEP_CORRECT_T1A_PHYSICAL_", "Z_THERMAL_STABILIZATION_DIAGNOSTIC_")
+    if trial_text.count(OLD_START_OWNER_SHA256) != 1:
+        raise ValueError("base_start_owner_hash_drift")
+    trial_text = trial_text.replace(OLD_START_OWNER_SHA256, R2_START_OWNER_SHA256)
     if trial_text.count(OLD_PREFLIGHT_PRINT_GUARD) != 1:
         raise ValueError("base_preflight_print_guard_drift")
     trial_text = trial_text.replace(OLD_PREFLIGHT_PRINT_GUARD, NEW_PREFLIGHT_PRINT_GUARD)
+    for old, new, code in (
+        (OLD_MOTION_PROJECTION, NEW_MOTION_PROJECTION, "base_motion_projection_drift"),
+        (OLD_SAFETY_GCODE, NEW_SAFETY_GCODE, "base_safety_stop_drift"),
+        (OLD_TERMINAL_RELEASE_CHECK, NEW_TERMINAL_RELEASE_CHECK, "base_terminal_release_check_drift"),
+    ):
+        if trial_text.count(old) != 1:
+            raise ValueError(code)
+        trial_text = trial_text.replace(old, new)
     installer_text = installer.decode("utf-8")
     installer_text = installer_text.replace(OLD_GCODE_NAME, GCODE_NAME)
     installer_text = installer_text.replace(
@@ -98,8 +143,12 @@ def build() -> dict:
     if digest(source) != SOURCE_SHA256:
         raise ValueError("source_gcode_hash_drift")
     candidate = derive_gcode(source)
-    OUTPUT.parent.mkdir(parents=True, exist_ok=True)
-    OUTPUT.write_bytes(candidate)
+    if OUTPUT.is_file():
+        if OUTPUT.read_bytes() != candidate:
+            raise ValueError("persisted_candidate_drift")
+    else:
+        OUTPUT.parent.mkdir(parents=True, exist_ok=True)
+        OUTPUT.write_bytes(candidate)
     trial, installer = derive_programs()
     return {
         "status": "Z_THERMAL_STABILIZATION_DIAGNOSTIC_BUILD_OK",

@@ -91,6 +91,9 @@
       "mesh_recalibration_in_scope": false,
       "corrective_gate": "G4-K1-CONTROL-START-SEQUENCE-OWNER-V1",
       "z_followup_gate": "G4-K1-CONTROL-Z-THERMAL-STABILIZATION-DIAGNOSTIC-V1",
+      "z_followup_status": "OFFLINE_READY_WAITING_FOR_T1A_AND_EXACT_PHYSICAL_GO",
+      "installed_start_owner_evidence": "packages/k1-control-v1/start-sequence-owner-safety-r2/deployment-result.json",
+      "z_followup_contract": "packages/k1-control-v1/z-thermal-stabilization-diagnostic-v1/contract.json",
       "end_presentation_reused_as_pass_evidence": false
     },
     {
