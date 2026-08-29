@@ -1,6 +1,6 @@
 # Résultat — BEST-CURRENT-MESH-RESTORE-AFTER-POWER-CYCLE-V1
 
-Statut actuel : `R2_OFFLINE_READY_AFTER_DIAGNOSTIC_SAFE_PARK_PROOF`.
+Statut actuel : `R2_LIVE_PREFLIGHT_OK_WAITING_EXACT_ONE_COMMAND_GATE`.
 
 Le paquet corrige quatre défauts de l'ancienne gate historique :
 
@@ -29,6 +29,10 @@ profil `default`, les chauffes à zéro et une tête parquée à
 `X210 / Y291,5 / Z66,8915`. R2 accepte désormais uniquement ce type de parc
 haut borné, ou des axes non référencés. Le chargement du mesh reste sans
 mouvement ; toutes les autres positions référencées sont refusées.
+
+Le préflight R2 figé a ensuite obtenu `PREFLIGHT_OK` sur cette projection
+exacte. Il n'a envoyé aucun G-code et n'a produit aucun effet. La commande de
+remise n'a pas été appelée.
 
 Prochaine gate : après le nouveau préflight R2 vert, autoriser exactement
 `G4-K1-CONTROL-BEST-CURRENT-MESH-RESTORE-AFTER-POWER-CYCLE-V1-R2` sur le commit
