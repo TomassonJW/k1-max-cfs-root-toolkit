@@ -2,7 +2,7 @@
   "schema": 1,
   "plan_id": "GOAL-P4-PHYSICAL-SLICES-REMAINING-EXECUTION-V1",
   "goal": "GOAL-P4-PHYSICAL-SLICES-QUALIFICATION-V1",
-  "status": "IN_PROGRESS_THERMAL_RUN_94CC4B6_SAFE_KO_SUCCESSOR_READY_WAITING_RENEWED_TWO_LAYER_GATE",
+  "status": "IN_PROGRESS_THERMAL_RUN_3027F59_SAFE_KO_SPLIT_SUCCESSOR_VALIDATING_CONTINUATION_AUTHORITY_ACTIVE",
   "purpose": "finish_all_five_remaining_physical_requirements_without_hiding_route_or_human_dependencies",
   "current_observation": {
     "physical_filament_left_in_head_overnight": "T1A_user_confirmed",
@@ -18,8 +18,10 @@
     "thermal_preflight_on_39a1364": "CLOSED_KO_axes_not_released_before_any_effect",
     "thermal_safe_park_guard_fix": "OFFLINE_VALIDATED_accept_released_or_exact_qualified_safe_park_only",
     "thermal_run_on_94cc4b6": "CLOSED_KO_before_soak_marker_print_or_purge_with_safe_final_readback",
-    "thermal_completion_polling_fix": "OFFLINE_VALIDATED_ordered_script_bed_off_queued_real_heat_and_soak_observation",
-    "current_human_action": "renew_exact_thermal_two_layer_gate_on_successor_commit_without_live_Z_adjustment"
+    "thermal_run_on_3027f59": "CLOSED_KO_local_socket_timeout_while_machine_side_soak_completed_no_print_or_purge_safe_final_readback",
+    "thermal_completion_polling_fix": "OFFLINE_VALIDATING_two_ordered_scripts_real_heat_poll_230s_dwell_wait_bed_off_queued",
+    "continuation_authority": "FAIS_LE_JOB_persists_across_technical_commits_while_physical_conditions_are_unchanged",
+    "current_human_action": "none_before_visual_two_layer_verdict_unless_material_sensitive_physical_change_occurs"
   },
   "sequencing_decision": {
     "installed_owner_supports_only": "unique_T1A_keep_correct",
@@ -68,7 +70,7 @@
       "order": 3,
       "id": "THERMAL_STABILIZATION_R2_TWO_LAYER",
       "requirement": "CFS_START_STATES_AND_TEMPERATURE_OWNER",
-      "status": "RUN_94CC4B6_KO_SAFE_BEFORE_SOAK_PRINT_OR_PURGE_SUCCESSOR_CORRECTED_OFFLINE_WAITING_RENEWED_EXACT_PHYSICAL_GATE",
+      "status": "RUN_3027F59_KO_SAFE_AFTER_MACHINE_SIDE_SOAK_NO_PRINT_OR_PURGE_SPLIT_SUCCESSOR_VALIDATING_CONTINUATION_AUTHORITY_ACTIVE",
       "route_before": ["T1A"],
       "route_after": ["T1A"],
       "action": "one_200s_bed_soak_then_owned_R2_two_layer_trial",

@@ -109,10 +109,17 @@ se fermer sur un contrôle trop précoce de la température. Aucun marqueur de
 stabilisation, départ d'impression ou purge n'a eu lieu. L'arrêt sûr et une
 relecture indépendante confirment cibles zéro, `X203 / Y273 / Z50,23`, moteurs
 libérés, `T1A`, `11 × 11`, Z `−0,04` et propriétaire au repos. Le successeur
-hors imprimante met désormais `M140 / M190 / G4 200 s / M140 S0` dans un seul
-script ordonné et observe réellement la chauffe puis au moins `195 s`; son
-lanceur est compatible PowerShell 5/7. Aucun retry physique n'est autorisé sans
-une nouvelle gate exacte sur le commit corrigé ;
+hors imprimante a ensuite mis `M140 / M190 / G4 200 s / M140 S0` dans un seul
+script ordonné. La capture `20260829-goal3-thermal-r4-run-3027f59` a montré que
+`M190` répond avant la chauffe complète mais que `G4` bloque la réponse : le
+délai local a expiré, tandis que la K1 a terminé les 200 s et remis elle-même le
+plateau à zéro. Aucun jeton, départ ou purge n'a eu lieu. Les lectures finales
+confirment cibles zéro, parc sûr, axes libérés, `T1A`, `11 × 11` et Z `−0,04`.
+Le successeur sépare maintenant la montée observée du script `G4 200 s / M140
+S0`, attendu jusqu'à 230 s. Thomas a fixé « fais le job » comme autorité
+persistante sur les commits techniques tant qu'il ne touche pas à la machine et
+que l'état physique reste inchangé ; aucun nouveau texte d'autorisation n'est
+requis, sauf changement physique réellement sensible nécessitant son constat ;
 GATEWAY-PRIVATE-LAN-NO-AUTH-V1 est installé et validé : le port `4409` ne
 demande plus de mot de passe, reste limité aux réseaux IPv4 privés, et présente
 uniquement son proxy local approuvé à Moonraker ; production remains closed**.

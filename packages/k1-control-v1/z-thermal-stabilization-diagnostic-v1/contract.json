@@ -1,10 +1,10 @@
 {
-  "schema": 4,
+  "schema": 5,
   "mission": "G4-K1-CONTROL-Z-THERMAL-STABILIZATION-DIAGNOSTIC-V1",
   "goal": "GOAL-P4-PHYSICAL-SLICES-QUALIFICATION-V1",
   "purpose": "isolate_the_200_second_bed_stabilization_hypothesis_before_any_Z_recalibration",
   "authority": "gated_private_gcode_upload_and_single_human_observed_run",
-  "latest_run_evidence": "packages/k1-control-v1/z-thermal-stabilization-diagnostic-v1/run-evidence-94cc4b6.json",
+  "latest_run_evidence": "packages/k1-control-v1/z-thermal-stabilization-diagnostic-v1/run-evidence-3027f59.json",
   "offline_plan_command": ".\\packages\\k1-control-v1\\z-thermal-stabilization-diagnostic-v1\\run_trial.ps1 -Action Plan -CaptureId offline-plan -Execute -Gate G4-K1-CONTROL-Z-THERMAL-STABILIZATION-DIAGNOSTIC-V1",
   "automatic_retry": false,
   "source": {
@@ -37,14 +37,15 @@
   },
   "derived_remote_programs": {
     "base_trial_sha256": "5f461db624acaa8682ec20bcd3eed001da39688f1e19a880d8096685c350a68f",
-    "derived_trial_sha256": "081c65afa4a96c9bbc7b81a7a9cb92fc544ddc21795ce8634f7dd5d5d7c8a557",
+    "derived_trial_sha256": "218b4b76d61cac2d46b2443cfca0641a2b7a4bfa4c88c9c3a6f190cbcc38799c",
     "base_installer_sha256": "ff84e23462dc642d916bc7d83cfca0eea53414253b7ad940c1cb46be56a5ffa0",
     "derived_installer_sha256": "bf7d7e0d67b5598645c927dfbe7c2e17989877c4b4fc4a1ba51b8c840d9453a7"
   },
   "thermal_script_observation": {
-    "submitted_as_one_ordered_klipper_script": true,
-    "socket_response_means": "accepted_not_completed",
-    "bed_off_is_queued_after_the_200_second_dwell": true,
+    "ordered_klipper_script_count": 2,
+    "heat_script_response_means": "accepted_before_heat_completion",
+    "soak_script_response_means": "returns_after_dwell_completion",
+    "bed_off_is_queued_in_the_same_script_after_the_200_second_dwell": true,
     "heat_target_observed_before_soak_marker": true,
     "minimum_observed_soak_seconds": 195,
     "maximum_heat_wait_seconds": 360,

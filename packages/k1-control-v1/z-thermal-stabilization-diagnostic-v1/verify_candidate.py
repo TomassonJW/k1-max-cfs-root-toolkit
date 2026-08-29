@@ -45,7 +45,8 @@ def verify() -> dict:
     trial, installer = builder.derive_programs()
     trial_text = trial.decode("utf-8")
     reviewed_runner_commands = (
-        'submit_gcode_script("M140 S55\\nM190 S55\\nG4 P200000\\nM140 S0", 30.0)',
+        'submit_gcode_script("M140 S55\\nM190 S55", 30.0)',
+        'submit_gcode_script("G4 P200000\\nM140 S0", 230.0)',
     )
     for command in reviewed_runner_commands:
         if trial_text.count(command) != 1:
@@ -56,10 +57,9 @@ def verify() -> dict:
         raise ValueError("terminal_state_normalization_drift")
     for marker in (
         'heat_deadline = time.monotonic() + 360.0',
-        'soak_deadline = soak_start + 230.0',
         'if soak_elapsed < 195.0:',
         'raise GateError("soak_completed_too_early")',
-        'raise GateError("soak_completion_timeout")',
+        'raise GateError("bed_target_not_zero_after_soak")',
     ):
         if trial_text.count(marker) != 1:
             raise ValueError("thermal_observation_guard_drift")

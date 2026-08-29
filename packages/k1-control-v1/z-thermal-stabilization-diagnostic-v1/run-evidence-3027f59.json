@@ -1,0 +1,78 @@
+{
+  "schema": 1,
+  "mission": "G4-K1-CONTROL-Z-THERMAL-STABILIZATION-DIAGNOSTIC-V1",
+  "authorized_commit": "3027f59",
+  "date": "2026-08-29",
+  "plan": {
+    "capture_id": "20260829-goal3-thermal-r4-plan-3027f59",
+    "status": "Z_THERMAL_STABILIZATION_DIAGNOSTIC_PLAN_OK"
+  },
+  "preflight": {
+    "capture_id": "20260829-goal3-thermal-r4-preflight-3027f59",
+    "status": "Z_THERMAL_STABILIZATION_DIAGNOSTIC_PREFLIGHT_OK",
+    "unique_route": "T1A",
+    "active_mesh": "k1_p001_t055_r001_n11x11",
+    "accepted_z_mm": -0.04,
+    "initial_position_mm": [203.0, 273.0, 50.23],
+    "axes_released": true
+  },
+  "upload": {
+    "capture_id": "20260829-goal3-thermal-r4-upload-3027f59",
+    "status": "GCODE_ALREADY_EXACT",
+    "sha256": "c4ce0bf765db36322594ed6e3a608a15c9b1f57b6421553c46f4bdcdd4fc574f"
+  },
+  "run": {
+    "capture_id": "20260829-goal3-thermal-r4-run-3027f59",
+    "status": "Z_THERMAL_STABILIZATION_DIAGNOSTIC_KO",
+    "reason": "socket_timeout_during_combined_heat_and_dwell_script",
+    "root_cause": "M190_response_precedes_heat_completion_but_G4_response_waits_for_dwell_completion",
+    "machine_side_script_continued_after_local_timeout": true,
+    "safety_stop_request": "timeout_behind_active_G4",
+    "manual_clean_token_created": false,
+    "print_started": false,
+    "purge_started": false
+  },
+  "live_read_only_observations": {
+    "during_dwell": {
+      "bed_target_c": 55.0,
+      "bed_temperature_range_c": [55.52, 56.16],
+      "nozzle_target_c": 0.0,
+      "print_state": "standby",
+      "position_mm": [203.0, 273.0, 50.23]
+    },
+    "machine_side_completion": {
+      "eventtime": 11298.973013999,
+      "bed_target_c": 0.0,
+      "print_state": "standby",
+      "position_mm": [203.0, 273.0, 50.23]
+    },
+    "final_complete_readback": {
+      "eventtime": 11431.296251999,
+      "bed_target_c": 0.0,
+      "bed_temperature_c": 51.26,
+      "nozzle_target_c": 0.0,
+      "nozzle_temperature_c": 34.2,
+      "axes_released": true,
+      "position_mm": [203.0, 273.0, 50.23],
+      "unique_route": "T1A",
+      "active_mesh": "k1_p001_t055_r001_n11x11",
+      "accepted_z_mm": -0.04,
+      "owner_phase": "idle",
+      "low_moves_armed": 0,
+      "manual_clean_token": 0
+    }
+  },
+  "successor_offline_correction": {
+    "ordered_klipper_script_count": 2,
+    "heat_script": ["M140 S55", "M190 S55"],
+    "heat_completion_observed_by_polling": true,
+    "soak_script": ["G4 P200000", "M140 S0"],
+    "soak_socket_timeout_seconds": 230,
+    "minimum_observed_soak_seconds": 195
+  },
+  "continuation_authority": {
+    "policy": "FAIS_LE_JOB_PERSISTS_ACROSS_TECHNICAL_COMMITS_WHILE_PHYSICAL_CONDITIONS_ARE_UNCHANGED",
+    "new_copy_paste_gate_required": false,
+    "human_notice_required_only_for_material_sensitive_physical_change": true
+  }
+}

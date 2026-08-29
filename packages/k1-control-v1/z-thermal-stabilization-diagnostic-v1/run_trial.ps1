@@ -28,7 +28,7 @@ $ExpectedGcodeSha256 = 'c4ce0bf765db36322594ed6e3a608a15c9b1f57b6421553c46f4bdcd
 $ExpectedGcodeBytes = 90673
 $ExpectedBaseTrialSha256 = '5f461db624acaa8682ec20bcd3eed001da39688f1e19a880d8096685c350a68f'
 $ExpectedBaseInstallerSha256 = 'ff84e23462dc642d916bc7d83cfca0eea53414253b7ad940c1cb46be56a5ffa0'
-$ExpectedDerivedTrialSha256 = '081c65afa4a96c9bbc7b81a7a9cb92fc544ddc21795ce8634f7dd5d5d7c8a557'
+$ExpectedDerivedTrialSha256 = '218b4b76d61cac2d46b2443cfca0641a2b7a4bfa4c88c9c3a6f190cbcc38799c'
 $ExpectedDerivedInstallerSha256 = 'bf7d7e0d67b5598645c927dfbe7c2e17989877c4b4fc4a1ba51b8c840d9453a7'
 $OldStartOwnerSha256 = '25291e1534f0ba100d3171b983796089a24cd49fdfcef76817406d325e6d8e03'
 $R2StartOwnerSha256 = '678582e808d74f6b720ef3d6b52dc2c443c7a0652a62c484319e2b22fba7b0bc'
@@ -279,7 +279,7 @@ $NewExecutionPreamble = @'
         validate_preflight(first, expected_gcode_sha)
         emit({"kind": "effect", "effect": "terminal_print_state_clear_once"})
         emit(first)
-    submit_gcode_script("M140 S55\nM190 S55\nG4 P200000\nM140 S0", 30.0)
+    submit_gcode_script("M140 S55\nM190 S55", 30.0)
     heat_deadline = time.monotonic() + 360.0
     while True:
         at_target = snapshot(time.monotonic() - start)
@@ -300,34 +300,18 @@ $NewExecutionPreamble = @'
     emit({"kind": "effect", "effect": "bed_thermal_soak_started_once", "requested_soak_s": 200.0})
     emit(at_target)
     soak_start = time.monotonic()
-    soak_deadline = soak_start + 230.0
-    last_stable = at_target
-    while True:
-        current = snapshot(time.monotonic() - start)
-        validate_common(current)
-        if current["print"].get("state") != "standby":
-            raise GateError("soak_requires_standby")
-        if finite(current["nozzle"].get("target"), "nozzle_target_invalid") != 0.0:
-            raise GateError("nozzle_target_nonzero_during_soak")
-        bed_target = finite(current["bed"].get("target"), "bed_target_invalid")
-        bed_temperature = finite(current["bed"].get("temperature"), "bed_temperature_invalid")
-        if bed_target == 55.0:
-            if bed_temperature < 54.5:
-                raise GateError("bed_not_stable_during_soak")
-            if bed_temperature >= 54.8:
-                last_stable = current
-        elif bed_target == 0.0:
-            soak_elapsed = time.monotonic() - soak_start
-            if soak_elapsed < 195.0:
-                raise GateError("soak_completed_too_early")
-            released = current
-            break
-        else:
-            raise GateError("bed_target_invalid_during_soak")
-        if time.monotonic() >= soak_deadline:
-            raise GateError("soak_completion_timeout")
-        time.sleep(POLL_S)
-    emit(last_stable)
+    submit_gcode_script("G4 P200000\nM140 S0", 230.0)
+    soak_elapsed = time.monotonic() - soak_start
+    if soak_elapsed < 195.0:
+        raise GateError("soak_completed_too_early")
+    released = snapshot(time.monotonic() - start)
+    validate_common(released)
+    if released["print"].get("state") != "standby":
+        raise GateError("soak_requires_standby")
+    if finite(released["nozzle"].get("target"), "nozzle_target_invalid") != 0.0:
+        raise GateError("nozzle_target_nonzero_during_soak")
+    if finite(released["bed"].get("target"), "bed_target_invalid") != 0.0:
+        raise GateError("bed_target_not_zero_after_soak")
     validate_preflight(released, expected_gcode_sha)
     emit({"kind": "effect", "effect": "bed_thermal_soak_completed_once", "requested_soak_s": 200.0, "observed_soak_s": round(soak_elapsed, 3)})
     emit(released)

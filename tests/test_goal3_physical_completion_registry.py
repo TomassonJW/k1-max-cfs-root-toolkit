@@ -48,25 +48,25 @@ class Goal3PhysicalCompletionRegistryTests(unittest.TestCase):
         self.assertIn("final_project_closure", boundary)
         self.assertEqual(4, self.contract["macro_goal_count"])
 
-    def test_current_gate_records_the_safe_run_ko_and_waits_for_a_renewed_gate(self):
+    def test_current_gate_records_the_safe_run_ko_and_persistent_continuation_authority(self):
         gate = self.matrix["current_human_gate"]
         self.assertEqual(
-            "THERMAL_RUN_94CC4B6_CLOSED_KO_BEFORE_SOAK_PRINT_OR_PURGE_SAFE_FINAL_PROVED_SUCCESSOR_CORRECTED_OFFLINE_WAITING_RENEWED_GATE",
+            "THERMAL_RUN_3027F59_CLOSED_KO_AFTER_MACHINE_SIDE_SOAK_NO_PRINT_OR_PURGE_SAFE_FINAL_PROVED_SPLIT_SUCCESSOR_VALIDATING",
             gate["checkpoint"],
         )
-        self.assertIn("PLAN_PREFLIGHT_UPLOAD_OK", gate["technical_status"])
-        self.assertIn("RUN_KO_BED_COMPLETION_CHECK_TOO_EARLY", gate["technical_status"])
-        self.assertIn("SAFETY_STOP_AND_FINAL_READBACK_OK_NO_RETRY", gate["technical_status"])
-        self.assertIn("ORDERED_THERMAL_SCRIPT_AND_REAL_POLLING_READY_OFFLINE", gate["technical_status"])
+        self.assertIn("MACHINE_SIDE_SOAK_COMPLETED", gate["technical_status"])
+        self.assertIn("NO_PRINT_OR_PURGE", gate["technical_status"])
+        self.assertIn("SPLIT_HEAT_AND_DWELL_SOCKET_FIX_VALIDATING_OFFLINE", gate["technical_status"])
+        self.assertIn("CONTINUATION_AUTHORITY_ACTIVE", gate["technical_status"])
         self.assertEqual(
             "G4-K1-CONTROL-Z-THERMAL-STABILIZATION-DIAGNOSTIC-V1",
             gate["active_gate"],
         )
         self.assertEqual(
-            "AUTHORIZE_ONE_200S_SOAK_AND_TWO_LAYER_R2_TRIAL_WITH_HUMAN_PRESENT_PLATE_CLEAR_NOZZLE_CLEAN_IMMEDIATE_STOP_AND_NO_LIVE_Z_ADJUSTMENT",
+            "VISUAL_TWO_LAYER_VERDICT_ONLY_AFTER_AUTOMATIC_TRIAL_UNLESS_A_MATERIAL_SENSITIVE_PHYSICAL_CHANGE_OCCURS_FIRST",
             gate["required_human_verdict"],
         )
-        self.assertTrue(gate["next_effect_blocked"])
+        self.assertFalse(gate["next_effect_blocked"])
 
     def test_current_ledger_verifies_as_in_progress_without_effect(self):
         result = verifier.verify()

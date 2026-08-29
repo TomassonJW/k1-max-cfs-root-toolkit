@@ -1,6 +1,6 @@
 # Résultat
 
-Statut actuel : `RUN_94CC4B6_CLOSED_KO_SAFE_SUCCESSOR_CORRECTED_OFFLINE_WAITING_RENEWED_EXACT_PHYSICAL_GO`.
+Statut actuel : `RUN_3027F59_CLOSED_KO_SAFE_SPLIT_SUCCESSOR_VALIDATING_OFFLINE_CONTINUATION_AUTHORITY_ACTIVE`.
 
 Le candidat privé est dérivé du G-code physique déjà qualifié. Sa différence
 est uniquement la fin sûre. La stabilisation n'est plus placée dans le fichier
@@ -92,12 +92,25 @@ ensuite confirmé les deux cibles à zéro, `X203 / Y273 / Z50,23`, les moteurs
 libérés, `T1A` unique, le `11 × 11`, le Z `−0,04`, le propriétaire au repos et
 les configurations exactes. Aucun retry physique n'a été lancé.
 
-La cause est maintenant explicite : la réponse du socket Klipper confirmait
-l'acceptation du script, pas la fin de `M190` ou `G4`. Le successeur corrigé
-soumet les quatre ordres thermiques dans un seul script ordonné, avec `M140 S0`
-déjà placé après `G4 P200000`. Il observe réellement le plateau à `55 °C`, puis
-au moins `195 s` avant de créer le jeton et de lancer le fichier. Le lanceur
-local calcule aussi les SHA sans `Get-FileHash`, normalise les fins de ligne et
-compte les motifs de façon identique sous PowerShell 5 et 7. Le plan gardé est
-vert hors imprimante. Une nouvelle gate exacte reste requise pour un nouvel
-essai physique.
+La cause de `94cc4b6` était explicite : la réponse du socket Klipper confirmait
+l'acceptation du script, pas la fin de `M190` ou `G4`. Le premier successeur a
+donc soumis les quatre ordres dans un seul script. La capture
+`20260829-goal3-thermal-r4-run-3027f59` a révélé la sémantique plus précise :
+`M190` répond avant la fin de chauffe, tandis que `G4` bloque la réponse pendant
+la temporisation. Le délai local de 30 s a expiré, mais le script déjà engagé a
+continué sur la K1 et a remis lui-même le plateau à zéro après les 200 s.
+
+Les lectures sans effet pendant et après ce cycle prouvent une température de
+plateau entre `55,52` et `56,16 °C`, la buse à cible zéro, aucun mouvement,
+aucun jeton manuel, aucune impression et aucune purge. La lecture finale
+confirme les deux cibles à zéro, `X203 / Y273 / Z50,23`, moteurs libérés, `T1A`
+unique, `11 × 11`, Z `−0,04` et propriétaire au repos.
+
+Le successeur est maintenant séparé en deux scripts ordonnés : `M140/M190`
+avec observation réelle de la montée, puis `G4 200 s/M140 S0` avec une attente
+socket de 230 s. Il exige au moins `195 s` réellement écoulées et le retour de
+la cible plateau à zéro avant le jeton et l'impression. Le cadre `$session-tas`
+et la consigne persistante « fais le job » autorisent la continuation sur les
+commits techniques tant que Thomas ne touche pas à la machine et que l'état
+physique ne change pas. Aucun nouveau texte d'autorisation n'est requis ; seule
+une modification physique sensible imposera un arrêt pour constat humain.
