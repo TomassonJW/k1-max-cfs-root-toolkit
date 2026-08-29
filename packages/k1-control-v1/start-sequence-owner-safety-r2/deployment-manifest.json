@@ -1,9 +1,12 @@
 {
   "schema": 1,
   "mission": "G4-K1-CONTROL-START-SEQUENCE-OWNER-SAFETY-R2",
-  "status": "PREPARED_NOT_AUTHORIZED",
-  "deployment_candidate": true,
+  "status": "INSTALLED_VALIDATED_COLD_ZERO_ROUTE",
+  "deployment_candidate": false,
   "deployment_authorized": false,
+  "deployment_completed": true,
+  "authorization_consumed": true,
+  "deployment_capture_id": "20260829-024919-g4-k1-control-start-sequence-owner-safety-r2",
   "printer_connection_authorized": false,
   "physical_trial_authorized": false,
   "payload": {
@@ -39,6 +42,7 @@
     "post_restart_mesh_restore": "load k1_p001_t055_r001_n11x11 once and read it back",
     "final_validation": "zero or one unique T1A route, heaters zero, axes released, accepted Z -0.04, owner idle"
   },
+  "deployment_result": "packages/k1-control-v1/start-sequence-owner-safety-r2/deployment-result.json",
   "exact_commands": {
     "plan": ".\\scripts\\deploy-k1-control-start-sequence-owner-safety-r2.ps1 -Action Plan",
     "preflight": ".\\scripts\\deploy-k1-control-start-sequence-owner-safety-r2.ps1 -Action Preflight -Gate G4-K1-CONTROL-START-SEQUENCE-OWNER-SAFETY-R2 -EvidenceDirectory <workspace-evidence> -Execute",

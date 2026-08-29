@@ -50,17 +50,18 @@ class Goal3PhysicalCompletionRegistryTests(unittest.TestCase):
     def test_current_gate_waits_for_start_owner_safety_r2(self):
         gate = self.matrix["current_human_gate"]
         self.assertEqual(
-            "START_OWNER_SAFETY_R2_STOCK_EDGE_PURGE_AND_SAFE_END_OFFLINE_CORRECTION",
+            "START_OWNER_SAFETY_R2_INSTALLED_COLD_ZERO_ROUTE_AWAIT_T1A_AND_PHYSICAL_PURGE",
             gate["checkpoint"],
         )
-        self.assertIn("FIRST_R2_DEPLOY_ROLLED_BACK", gate["technical_status"])
-        self.assertIn("FINAL_SAFE_NO_LOGICAL_ROUTE", gate["technical_status"])
+        self.assertIn("R2_INSTALLED_EXACT", gate["technical_status"])
+        self.assertIn("TWO_COLD_VALIDATIONS_PASS", gate["technical_status"])
+        self.assertIn("FINAL_SAFE_ZERO_ROUTE", gate["technical_status"])
         self.assertEqual(
             "G4-K1-CONTROL-START-SEQUENCE-OWNER-SAFETY-R2",
             gate["active_gate"],
         )
         self.assertEqual(
-            "RENEW_EXACT_GO_FOR_CORRECTED_COLD_INSTALL_THEN_REESTABLISH_T1A_UNDER_A_SEPARATE_PHYSICAL_GATE",
+            "REESTABLISH_AND_READ_BACK_T1A_UNDER_A_SEPARATE_PHYSICAL_GATE_THEN_CONFIRM_STOCK_EDGE_PURGE_AND_SAFE_END",
             gate["required_human_verdict"],
         )
         self.assertTrue(gate["next_effect_blocked"])

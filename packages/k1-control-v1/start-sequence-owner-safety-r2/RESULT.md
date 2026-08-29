@@ -25,6 +25,16 @@ sur la même absence de route. Deux lectures finales confirment `ready`,
 `idle`, deux CFS connectés et aucune route logique.
 
 Le déployeur corrigé sépare maintenant la pose froide de la future condition
-physique `T1A`. Il a changé après le GO consommé : une nouvelle pose et la
-qualification physique restent fermées. Aucun nouveau fichier d'impression
-n'est présent sur la K1.
+physique `T1A`. Après une autorisation renouvelée sur `8abbed2`, R2 est installée
+et validée à froid sous la capture
+`20260829-024919-g4-k1-control-start-sequence-owner-safety-r2`.
+
+Le fichier distant porte l'empreinte R2 exacte, `printer.cfg` est inchangé et
+le backup V1 est exact. La transition Klipper et la restauration unique du mesh
+ont été observées. La validation intégrée puis une validation indépendante sont
+vertes. L'état final est `ready`, `standby`, chauffes zéro, axes libérés, mesh
+`11 × 11`, Z `−0,04`, propriétaire `idle`, deux CFS connectés et zéro route
+logique. Aucun nouveau fichier d'impression n'est présent sur la K1.
+
+Le chargement `T1A` et l'essai physique de la purge R2 restent deux actions
+distinctes non autorisées par cette pose.

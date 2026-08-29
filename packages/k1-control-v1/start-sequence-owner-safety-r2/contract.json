@@ -2,8 +2,8 @@
   "schema": 1,
   "mission": "G4-K1-CONTROL-START-SEQUENCE-OWNER-SAFETY-R2",
   "goal": "GOAL-P4-PHYSICAL-SLICES-QUALIFICATION-V1",
-  "status": "ROLLED_BACK_SAFE_CORRECTED_DEPLOYER_REQUIRES_RENEWED_EXACT_GO",
-  "deployment_candidate": true,
+  "status": "INSTALLED_VALIDATED_COLD_ZERO_ROUTE_PHYSICAL_PURGE_NOT_STARTED",
+  "deployment_candidate": false,
   "printer_connection_authorized": false,
   "source": {
     "path": "packages/k1-control-v1/start-sequence-owner-v1/k1-control-start-sequence-owner-v1.cfg",
@@ -53,5 +53,6 @@
     "restart_required": true,
     "physical_effect_during_install": false
   },
-  "first_deployment_attempt": "packages/k1-control-v1/start-sequence-owner-safety-r2/deployment-attempt.json"
+  "first_deployment_attempt": "packages/k1-control-v1/start-sequence-owner-safety-r2/deployment-attempt.json",
+  "deployment_result": "packages/k1-control-v1/start-sequence-owner-safety-r2/deployment-result.json"
 }

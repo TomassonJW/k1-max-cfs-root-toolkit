@@ -43,5 +43,10 @@ physique du filament.
 Le déployeur corrigé accepte désormais zéro route ou une route unique `T1A`
 pendant la pose froide ; toute autre route ou ambiguïté reste bloquée. La
 présence de `T1A` redevient, correctement, un préalable séparé du futur essai
-physique. Comme le déployeur a changé après l'autorisation consommée, cette
-nouvelle préparation n'autorise ni connexion K1, ni nouvelle pose, ni purge.
+physique.
+
+La nouvelle autorisation sur le commit `8abbed2` a ensuite installé R2 sous la
+capture `20260829-024919-g4-k1-control-start-sequence-owner-safety-r2`. Le
+backup V1, le remplacement, la vraie transition Klipper, la restauration unique
+du mesh et deux validations froides sont verts. L'état final conserve zéro
+route logique. Cette capture n'autorise ni chargement `T1A`, ni purge physique.

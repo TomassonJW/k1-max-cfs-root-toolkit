@@ -1,0 +1,55 @@
+{
+  "schema": 1,
+  "capture_id": "20260829-024919-g4-k1-control-start-sequence-owner-safety-r2",
+  "status": "INSTALLED_VALIDATED_COLD_ZERO_ROUTE",
+  "authorized_commit": "8abbed2",
+  "preflight": {
+    "status": "PASS",
+    "installed_v1_sha256": "25291e1534f0ba100d3171b983796089a24cd49fdfcef76817406d325e6d8e03",
+    "logical_route": "NONE",
+    "active_mesh": "k1_p001_t055_r001_n11x11",
+    "accepted_z_offset_mm": -0.04,
+    "heater_targets_zero": true,
+    "axes_released": true
+  },
+  "deployment": {
+    "backup_verified": true,
+    "backup_v1_sha256": "25291e1534f0ba100d3171b983796089a24cd49fdfcef76817406d325e6d8e03",
+    "installed_r2_sha256": "678582e808d74f6b720ef3d6b52dc2c443c7a0652a62c484319e2b22fba7b0bc",
+    "printer_cfg_sha256": "a79c8c917d8eee2575939ade4907640c2b2cf7ff59283d28def895b020e127af",
+    "klipper_restart_count": 1,
+    "restart_transition_observed": true,
+    "mesh_restore_command_count": 1,
+    "active_mesh_read_back": "k1_p001_t055_r001_n11x11"
+  },
+  "validation": {
+    "deployment_validation": "PASS",
+    "independent_validation": "PASS",
+    "cold_watchdog_selftest_count": 2,
+    "final_webhooks_state": "ready",
+    "final_print_state": "standby",
+    "final_heater_targets_zero": true,
+    "final_axes_released": true,
+    "final_active_mesh": "k1_p001_t055_r001_n11x11",
+    "final_accepted_z_offset_mm": -0.04,
+    "final_start_owner_phase": "idle",
+    "final_watchdog_armed": false,
+    "final_cfs_connected": true,
+    "final_logical_route": "NONE"
+  },
+  "effects": {
+    "remote_file_write": true,
+    "klipper_restart": true,
+    "heating": false,
+    "motion": false,
+    "extrusion": false,
+    "cfs_command": false,
+    "physical_purge": false
+  },
+  "next_gate": {
+    "required": true,
+    "first_step": "reestablish and read back T1A under a separate physical authority",
+    "second_step": "qualify the R2 stock-edge purge and safe end with the operator present",
+    "authorized_by_this_capture": false
+  }
+}

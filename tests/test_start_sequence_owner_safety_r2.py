@@ -46,7 +46,7 @@ class StartSequenceOwnerSafetyR2Tests(unittest.TestCase):
         self.assertEqual("M84", lines[-1])
         self.assertFalse(any(line.startswith("G28") for line in lines))
 
-    def test_candidate_remains_blocked_before_live_install_and_human_run(self):
+    def test_completed_cold_install_does_not_authorize_a_human_run(self):
         manifest = json.loads((PACKAGE / "deployment-manifest.json").read_text(encoding="utf-8"))
         deployer = ROOT / "scripts" / "deploy-k1-control-start-sequence-owner-safety-r2.ps1"
         self.assertFalse(self.contract["deployment_authorized"])
@@ -54,7 +54,9 @@ class StartSequenceOwnerSafetyR2Tests(unittest.TestCase):
         self.assertFalse(self.contract["physical_run_authorized"])
         self.assertTrue(self.contract["purge_correction"]["human_physical_qualification_required"])
         self.assertFalse(self.contract["automatic_retry"])
-        self.assertEqual("PREPARED_NOT_AUTHORIZED", manifest["status"])
+        self.assertEqual("INSTALLED_VALIDATED_COLD_ZERO_ROUTE", manifest["status"])
+        self.assertTrue(manifest["deployment_completed"])
+        self.assertTrue(manifest["authorization_consumed"])
         self.assertFalse(manifest["deployment_authorized"])
         self.assertFalse(manifest["physical_trial_authorized"])
         self.assertFalse(manifest["planned_change"]["printer_cfg_change"])
@@ -85,6 +87,27 @@ class StartSequenceOwnerSafetyR2Tests(unittest.TestCase):
         self.assertFalse(attempt["effects"]["extrusion"])
         self.assertFalse(attempt["effects"]["cfs_command"])
         self.assertTrue(attempt["deployer_correction"]["renewed_exact_go_required"])
+
+    def test_second_deploy_is_installed_cold_without_claiming_a_physical_purge(self):
+        result = json.loads((PACKAGE / "deployment-result.json").read_text(encoding="utf-8"))
+        manifest = json.loads((PACKAGE / "deployment-manifest.json").read_text(encoding="utf-8"))
+        self.assertEqual("INSTALLED_VALIDATED_COLD_ZERO_ROUTE", result["status"])
+        self.assertEqual("8abbed2", result["authorized_commit"])
+        self.assertTrue(result["deployment"]["backup_verified"])
+        self.assertTrue(result["deployment"]["restart_transition_observed"])
+        self.assertEqual(1, result["deployment"]["mesh_restore_command_count"])
+        self.assertEqual("PASS", result["validation"]["deployment_validation"])
+        self.assertEqual("PASS", result["validation"]["independent_validation"])
+        self.assertEqual("NONE", result["validation"]["final_logical_route"])
+        self.assertFalse(result["effects"]["heating"])
+        self.assertFalse(result["effects"]["motion"])
+        self.assertFalse(result["effects"]["extrusion"])
+        self.assertFalse(result["effects"]["cfs_command"])
+        self.assertFalse(result["effects"]["physical_purge"])
+        self.assertTrue(manifest["deployment_completed"])
+        self.assertTrue(manifest["authorization_consumed"])
+        self.assertFalse(manifest["deployment_candidate"])
+        self.assertFalse(manifest["physical_trial_authorized"])
 
 
 if __name__ == "__main__":
