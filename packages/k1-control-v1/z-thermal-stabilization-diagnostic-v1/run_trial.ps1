@@ -28,7 +28,7 @@ $ExpectedGcodeSha256 = 'c4ce0bf765db36322594ed6e3a608a15c9b1f57b6421553c46f4bdcd
 $ExpectedGcodeBytes = 90673
 $ExpectedBaseTrialSha256 = '5f461db624acaa8682ec20bcd3eed001da39688f1e19a880d8096685c350a68f'
 $ExpectedBaseInstallerSha256 = 'ff84e23462dc642d916bc7d83cfca0eea53414253b7ad940c1cb46be56a5ffa0'
-$ExpectedDerivedTrialSha256 = 'beb2801e0bd7b848a0c86206e35ef4974d8d13d48003559d2218c1664e6b1a77'
+$ExpectedDerivedTrialSha256 = '081c65afa4a96c9bbc7b81a7a9cb92fc544ddc21795ce8634f7dd5d5d7c8a557'
 $ExpectedDerivedInstallerSha256 = 'bf7d7e0d67b5598645c927dfbe7c2e17989877c4b4fc4a1ba51b8c840d9453a7'
 $OldStartOwnerSha256 = '25291e1534f0ba100d3171b983796089a24cd49fdfcef76817406d325e6d8e03'
 $R2StartOwnerSha256 = '678582e808d74f6b720ef3d6b52dc2c443c7a0652a62c484319e2b22fba7b0bc'
@@ -49,7 +49,15 @@ $MetadataPath = Join-Path $SessionDirectory 'local-metadata.json'
 
 function Get-LocalSha256 {
     param([Parameter(Mandatory = $true)][string]$Path)
-    return (Get-FileHash -LiteralPath $Path -Algorithm SHA256).Hash.ToLowerInvariant()
+    $Stream = [IO.File]::OpenRead($Path)
+    $Hasher = [Security.Cryptography.SHA256]::Create()
+    try {
+        return -join ($Hasher.ComputeHash($Stream) | ForEach-Object { $_.ToString('x2') })
+    }
+    finally {
+        $Hasher.Dispose()
+        $Stream.Dispose()
+    }
 }
 
 function Get-TextSha256 {
@@ -62,6 +70,23 @@ function Get-TextSha256 {
     finally {
         $Hasher.Dispose()
     }
+}
+
+function Get-LiteralOccurrenceCount {
+    param(
+        [Parameter(Mandatory = $true)][string]$Text,
+        [Parameter(Mandatory = $true)][string]$Needle
+    )
+    if ($Needle.Length -eq 0) {
+        throw 'Le motif de comptage ne peut pas être vide.'
+    }
+    $Count = 0
+    $Index = 0
+    while (($Index = $Text.IndexOf($Needle, $Index, [StringComparison]::Ordinal)) -ge 0) {
+        $Count += 1
+        $Index += $Needle.Length
+    }
+    return $Count
 }
 
 function Invoke-RemoteProgram {
@@ -100,19 +125,19 @@ if ((Get-LocalSha256 $BaseInstallerPath) -cne $ExpectedBaseInstallerSha256) {
     throw "L'installateur distant de base a dérivé."
 }
 
-$TrialProgram = Get-Content -LiteralPath $BaseTrialPath -Raw
+$TrialProgram = (Get-Content -LiteralPath $BaseTrialPath -Raw).Replace("`r`n", "`n")
 $TrialProgram = $TrialProgram.Replace($OldMission, $Mission)
 $TrialProgram = $TrialProgram.Replace($OldGcodeName, $GcodeName)
 $TrialProgram = $TrialProgram.Replace('KEEP_CORRECT_T1A_PHYSICAL_', 'Z_THERMAL_STABILIZATION_DIAGNOSTIC_')
 $OldImports = "import os`nimport sys"
 $NewImports = "import os`nimport socket`nimport sys"
-if (($TrialProgram.Split($OldImports).Count - 1) -ne 1) {
+if ((Get-LiteralOccurrenceCount -Text $TrialProgram -Needle $OldImports) -ne 1) {
     throw "Le bloc d'imports du pilote de base a dérivé."
 }
 $TrialProgram = $TrialProgram.Replace($OldImports, $NewImports)
 $RemoteSocketHelper = @'
 
-def send_gcode_wait(script, timeout_s):
+def submit_gcode_script(script, timeout_s):
     request = {"id": 6501, "method": "gcode/script", "params": {"script": script}}
     client = socket.socket(socket.AF_UNIX, socket.SOCK_STREAM)
     client.settimeout(timeout_s)
@@ -136,7 +161,7 @@ def send_gcode_wait(script, timeout_s):
 '@
 $RemoteSocketHelper = "`n" + $RemoteSocketHelper + "`n"
 $SocketMarker = "`n`ndef hash_file(path):"
-if (($TrialProgram.Split($SocketMarker).Count - 1) -ne 1) {
+if ((Get-LiteralOccurrenceCount -Text $TrialProgram -Needle $SocketMarker) -ne 1) {
     throw "Le point d'insertion du socket Klipper a dérivé."
 }
 $TrialProgram = $TrialProgram.Replace($SocketMarker, $RemoteSocketHelper + $SocketMarker)
@@ -220,7 +245,7 @@ if (-not $TrialProgram.Contains($OldPreflightPrintGuard)) {
     throw 'Le garde terminal de base a dérivé.'
 }
 $TrialProgram = $TrialProgram.Replace($OldPreflightPrintGuard, $NewPreflightPrintGuard)
-if (($TrialProgram.Split($OldStartOwnerSha256).Count - 1) -ne 1) {
+if ((Get-LiteralOccurrenceCount -Text $TrialProgram -Needle $OldStartOwnerSha256) -ne 1) {
     throw "L'empreinte V1 du propriétaire a dérivé."
 }
 $TrialProgram = $TrialProgram.Replace($OldStartOwnerSha256, $R2StartOwnerSha256)
@@ -237,7 +262,7 @@ foreach ($Replacement in @(
 }
 $OldAllowedEffects = '"allowed_effects": ["manual_clean_token_once", "print_start_once", "safety_stop_once_on_failure"],'
 $NewAllowedEffects = '"allowed_effects": ["terminal_print_state_clear_once_if_needed", "bed_thermal_soak_once", "manual_clean_token_once", "print_start_once", "safety_stop_once_on_failure"],'
-if (($TrialProgram.Split($OldAllowedEffects).Count - 1) -ne 1) {
+if ((Get-LiteralOccurrenceCount -Text $TrialProgram -Needle $OldAllowedEffects) -ne 1) {
     throw "La liste d'effets du pilote de base a dérivé."
 }
 $TrialProgram = $TrialProgram.Replace($OldAllowedEffects, $NewAllowedEffects)
@@ -249,45 +274,71 @@ $OldExecutionPreamble = @'
 $NewExecutionPreamble = @'
     emit(first)
     if first["print"].get("state") == "complete":
-        send_gcode_wait("SDCARD_RESET_FILE", 30.0)
+        submit_gcode_script("SDCARD_RESET_FILE", 30.0)
         first = snapshot(time.monotonic() - start)
         validate_preflight(first, expected_gcode_sha)
         emit({"kind": "effect", "effect": "terminal_print_state_clear_once"})
         emit(first)
-    send_gcode_wait("M140 S55\nM190 S55", 360.0)
-    at_target = snapshot(time.monotonic() - start)
-    validate_common(at_target)
-    if at_target["print"].get("state") != "standby":
-        raise GateError("soak_requires_standby")
-    if finite(at_target["bed"].get("target"), "bed_target_invalid") != 55.0 or finite(at_target["bed"].get("temperature"), "bed_temperature_invalid") < 54.8:
-        raise GateError("bed_target_not_reached_before_soak")
-    if finite(at_target["nozzle"].get("target"), "nozzle_target_invalid") != 0.0:
-        raise GateError("nozzle_target_nonzero_before_soak")
+    submit_gcode_script("M140 S55\nM190 S55\nG4 P200000\nM140 S0", 30.0)
+    heat_deadline = time.monotonic() + 360.0
+    while True:
+        at_target = snapshot(time.monotonic() - start)
+        validate_common(at_target)
+        if at_target["print"].get("state") != "standby":
+            raise GateError("soak_requires_standby")
+        if finite(at_target["nozzle"].get("target"), "nozzle_target_invalid") != 0.0:
+            raise GateError("nozzle_target_nonzero_before_soak")
+        bed_target = finite(at_target["bed"].get("target"), "bed_target_invalid")
+        bed_temperature = finite(at_target["bed"].get("temperature"), "bed_temperature_invalid")
+        if bed_target == 55.0 and bed_temperature >= 54.8:
+            break
+        if bed_target not in (0.0, 55.0):
+            raise GateError("bed_target_invalid_while_heating")
+        if time.monotonic() >= heat_deadline:
+            raise GateError("bed_target_not_reached_before_soak")
+        time.sleep(POLL_S)
     emit({"kind": "effect", "effect": "bed_thermal_soak_started_once", "requested_soak_s": 200.0})
     emit(at_target)
     soak_start = time.monotonic()
-    send_gcode_wait("G4 P200000", 230.0)
-    soaked = snapshot(time.monotonic() - start)
-    validate_common(soaked)
-    soak_elapsed = time.monotonic() - soak_start
-    if finite(soaked["bed"].get("target"), "bed_target_invalid") != 55.0 or finite(soaked["bed"].get("temperature"), "bed_temperature_invalid") < 54.8:
-        raise GateError("bed_not_stable_after_soak")
-    if finite(soaked["nozzle"].get("target"), "nozzle_target_invalid") != 0.0:
-        raise GateError("nozzle_target_nonzero_during_soak")
-    emit(soaked)
-    send_gcode_wait("M140 S0", 30.0)
-    released = snapshot(time.monotonic() - start)
+    soak_deadline = soak_start + 230.0
+    last_stable = at_target
+    while True:
+        current = snapshot(time.monotonic() - start)
+        validate_common(current)
+        if current["print"].get("state") != "standby":
+            raise GateError("soak_requires_standby")
+        if finite(current["nozzle"].get("target"), "nozzle_target_invalid") != 0.0:
+            raise GateError("nozzle_target_nonzero_during_soak")
+        bed_target = finite(current["bed"].get("target"), "bed_target_invalid")
+        bed_temperature = finite(current["bed"].get("temperature"), "bed_temperature_invalid")
+        if bed_target == 55.0:
+            if bed_temperature < 54.5:
+                raise GateError("bed_not_stable_during_soak")
+            if bed_temperature >= 54.8:
+                last_stable = current
+        elif bed_target == 0.0:
+            soak_elapsed = time.monotonic() - soak_start
+            if soak_elapsed < 195.0:
+                raise GateError("soak_completed_too_early")
+            released = current
+            break
+        else:
+            raise GateError("bed_target_invalid_during_soak")
+        if time.monotonic() >= soak_deadline:
+            raise GateError("soak_completion_timeout")
+        time.sleep(POLL_S)
+    emit(last_stable)
     validate_preflight(released, expected_gcode_sha)
     emit({"kind": "effect", "effect": "bed_thermal_soak_completed_once", "requested_soak_s": 200.0, "observed_soak_s": round(soak_elapsed, 3)})
     emit(released)
     request_json("/printer/gcode/script", method="POST", payload={"script": "KCTRL_CONFIRM_MANUAL_NOZZLE_CLEAN_V1"})
     token = snapshot(time.monotonic() - start)
 '@
-if (($TrialProgram.Split($OldExecutionPreamble).Count - 1) -ne 1) {
+if ((Get-LiteralOccurrenceCount -Text $TrialProgram -Needle $OldExecutionPreamble) -ne 1) {
     throw "Le début d'exécution du pilote de base a dérivé."
 }
 $TrialProgram = $TrialProgram.Replace($OldExecutionPreamble, $NewExecutionPreamble)
-$InstallerProgram = Get-Content -LiteralPath $BaseInstallerPath -Raw
+$InstallerProgram = (Get-Content -LiteralPath $BaseInstallerPath -Raw).Replace("`r`n", "`n")
 $InstallerProgram = $InstallerProgram.Replace($OldGcodeName, $GcodeName)
 $InstallerProgram = $InstallerProgram.Replace('eeaf9822a7016f89da45be83e4435f68c1d28441c469a9cde078c9645fcbf429', ('0' * 64))
 $ActualDerivedTrialSha256 = Get-TextSha256 $TrialProgram

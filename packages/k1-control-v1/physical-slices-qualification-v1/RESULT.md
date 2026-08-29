@@ -91,6 +91,20 @@ ou le seul volume sûr déjà revu `X200..220 / Y270..300 / Z50..315`, et refuse
 tout le reste. Aucun upload, chauffage ou essai n'a eu lieu. Une nouvelle gate
 exacte sur le commit corrigé est nécessaire avant de reconnecter la K1.
 
+La gate renouvelée sur `94cc4b6` a ensuite passé le préflight et l'upload, puis
+le Run a demandé la chauffe une seule fois. Il a contrôlé la température trop
+tôt et s'est fermé avant le marqueur des `200 s`, l'impression et la purge. Son
+arrêt sûr a remis les cibles à zéro, parqué à `X203 / Y273 / Z50` et libéré les
+moteurs. La relecture finale sans effet confirme également `T1A`, le `11 × 11`,
+le Z `−0,04` et le propriétaire au repos. Aucun retry n'a eu lieu.
+
+Le successeur hors imprimante traite maintenant la réponse socket comme une
+acceptation et non une fin de commande. Le cycle complet est mis en file dans
+l'ordre `M140 / M190 / G4 200 s / M140 S0`, puis la température et la durée
+sont réellement observées avant toute impression. Le lanceur gardé est aussi
+compatible PowerShell 5/7. L'essai thermique reste donc le prochain checkpoint,
+avec une nouvelle gate exacte sur le commit corrigé.
+
 Le plan d'exécution restant est désormais versionné et vérifié. Il empêche de
 quitter `T1A` avant les essais qui dépendent du propriétaire installé, place le
 blocage ambigu entre désengagement et réengagement, puis sépare changement

@@ -90,7 +90,7 @@ OLD_END_LINES = (
 
 REMOTE_SOCKET_HELPER = '''
 
-def send_gcode_wait(script, timeout_s):
+def submit_gcode_script(script, timeout_s):
     request = {"id": 6501, "method": "gcode/script", "params": {"script": script}}
     client = socket.socket(socket.AF_UNIX, socket.SOCK_STREAM)
     client.settimeout(timeout_s)
@@ -119,34 +119,60 @@ OLD_EXECUTION_PREAMBLE = '''    emit(first)
 
 NEW_EXECUTION_PREAMBLE = '''    emit(first)
     if first["print"].get("state") == "complete":
-        send_gcode_wait("SDCARD_RESET_FILE", 30.0)
+        submit_gcode_script("SDCARD_RESET_FILE", 30.0)
         first = snapshot(time.monotonic() - start)
         validate_preflight(first, expected_gcode_sha)
         emit({"kind": "effect", "effect": "terminal_print_state_clear_once"})
         emit(first)
-    send_gcode_wait("M140 S55\\nM190 S55", 360.0)
-    at_target = snapshot(time.monotonic() - start)
-    validate_common(at_target)
-    if at_target["print"].get("state") != "standby":
-        raise GateError("soak_requires_standby")
-    if finite(at_target["bed"].get("target"), "bed_target_invalid") != 55.0 or finite(at_target["bed"].get("temperature"), "bed_temperature_invalid") < 54.8:
-        raise GateError("bed_target_not_reached_before_soak")
-    if finite(at_target["nozzle"].get("target"), "nozzle_target_invalid") != 0.0:
-        raise GateError("nozzle_target_nonzero_before_soak")
+    submit_gcode_script("M140 S55\\nM190 S55\\nG4 P200000\\nM140 S0", 30.0)
+    heat_deadline = time.monotonic() + 360.0
+    while True:
+        at_target = snapshot(time.monotonic() - start)
+        validate_common(at_target)
+        if at_target["print"].get("state") != "standby":
+            raise GateError("soak_requires_standby")
+        if finite(at_target["nozzle"].get("target"), "nozzle_target_invalid") != 0.0:
+            raise GateError("nozzle_target_nonzero_before_soak")
+        bed_target = finite(at_target["bed"].get("target"), "bed_target_invalid")
+        bed_temperature = finite(at_target["bed"].get("temperature"), "bed_temperature_invalid")
+        if bed_target == 55.0 and bed_temperature >= 54.8:
+            break
+        if bed_target not in (0.0, 55.0):
+            raise GateError("bed_target_invalid_while_heating")
+        if time.monotonic() >= heat_deadline:
+            raise GateError("bed_target_not_reached_before_soak")
+        time.sleep(POLL_S)
     emit({"kind": "effect", "effect": "bed_thermal_soak_started_once", "requested_soak_s": 200.0})
     emit(at_target)
     soak_start = time.monotonic()
-    send_gcode_wait("G4 P200000", 230.0)
-    soaked = snapshot(time.monotonic() - start)
-    validate_common(soaked)
-    soak_elapsed = time.monotonic() - soak_start
-    if finite(soaked["bed"].get("target"), "bed_target_invalid") != 55.0 or finite(soaked["bed"].get("temperature"), "bed_temperature_invalid") < 54.8:
-        raise GateError("bed_not_stable_after_soak")
-    if finite(soaked["nozzle"].get("target"), "nozzle_target_invalid") != 0.0:
-        raise GateError("nozzle_target_nonzero_during_soak")
-    emit(soaked)
-    send_gcode_wait("M140 S0", 30.0)
-    released = snapshot(time.monotonic() - start)
+    soak_deadline = soak_start + 230.0
+    last_stable = at_target
+    while True:
+        current = snapshot(time.monotonic() - start)
+        validate_common(current)
+        if current["print"].get("state") != "standby":
+            raise GateError("soak_requires_standby")
+        if finite(current["nozzle"].get("target"), "nozzle_target_invalid") != 0.0:
+            raise GateError("nozzle_target_nonzero_during_soak")
+        bed_target = finite(current["bed"].get("target"), "bed_target_invalid")
+        bed_temperature = finite(current["bed"].get("temperature"), "bed_temperature_invalid")
+        if bed_target == 55.0:
+            if bed_temperature < 54.5:
+                raise GateError("bed_not_stable_during_soak")
+            if bed_temperature >= 54.8:
+                last_stable = current
+        elif bed_target == 0.0:
+            soak_elapsed = time.monotonic() - soak_start
+            if soak_elapsed < 195.0:
+                raise GateError("soak_completed_too_early")
+            released = current
+            break
+        else:
+            raise GateError("bed_target_invalid_during_soak")
+        if time.monotonic() >= soak_deadline:
+            raise GateError("soak_completion_timeout")
+        time.sleep(POLL_S)
+    emit(last_stable)
     validate_preflight(released, expected_gcode_sha)
     emit({"kind": "effect", "effect": "bed_thermal_soak_completed_once", "requested_soak_s": 200.0, "observed_soak_s": round(soak_elapsed, 3)})
     emit(released)

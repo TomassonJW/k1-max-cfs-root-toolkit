@@ -1,6 +1,6 @@
 # Résultat
 
-Statut actuel : `SAFE_PARK_PREFLIGHT_CORRECTED_OFFLINE_WAITING_RENEWED_EXACT_PHYSICAL_GO`.
+Statut actuel : `RUN_94CC4B6_CLOSED_KO_SAFE_SUCCESSOR_CORRECTED_OFFLINE_WAITING_RENEWED_EXACT_PHYSICAL_GO`.
 
 Le candidat privé est dérivé du G-code physique déjà qualifié. Sa différence
 est uniquement la fin sûre. La stabilisation n'est plus placée dans le fichier
@@ -78,3 +78,26 @@ Y270..300 / Z50..315`. Toute origine partielle, position absente ou position
 hors de cette enveloppe reste refusée. Le G-code privé, sa fin sûre et les
 effets autorisés ne changent pas. Aucun nouveau préflight live n'a été lancé ;
 une nouvelle autorisation exacte sur le commit corrigé reste obligatoire.
+
+L'autorisation renouvelée sur `94cc4b6` a ensuite obtenu le plan, le préflight
+et l'upload verts. L'empreinte distante du G-code correspondait exactement au
+candidat. Le premier lancement gardé est resté local et n'a créé aucune
+capture : le PowerShell enfant ne disposait pas de `Get-FileHash`. Le lancement
+dans le shell courant a atteint la K1 une seule fois, puis s'est fermé KO avec
+`bed_target_not_reached_before_soak` avant tout marqueur de stabilisation,
+jeton manuel, départ d'impression ou purge.
+
+La capture prouve l'arrêt sûr unique. Une relecture indépendante sans effet a
+ensuite confirmé les deux cibles à zéro, `X203 / Y273 / Z50,23`, les moteurs
+libérés, `T1A` unique, le `11 × 11`, le Z `−0,04`, le propriétaire au repos et
+les configurations exactes. Aucun retry physique n'a été lancé.
+
+La cause est maintenant explicite : la réponse du socket Klipper confirmait
+l'acceptation du script, pas la fin de `M190` ou `G4`. Le successeur corrigé
+soumet les quatre ordres thermiques dans un seul script ordonné, avec `M140 S0`
+déjà placé après `G4 P200000`. Il observe réellement le plateau à `55 °C`, puis
+au moins `195 s` avant de créer le jeton et de lancer le fichier. Le lanceur
+local calcule aussi les SHA sans `Get-FileHash`, normalise les fins de ligne et
+compte les motifs de façon identique sous PowerShell 5 et 7. Le plan gardé est
+vert hors imprimante. Une nouvelle gate exacte reste requise pour un nouvel
+essai physique.

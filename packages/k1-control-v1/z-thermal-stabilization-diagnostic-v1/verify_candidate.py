@@ -45,17 +45,24 @@ def verify() -> dict:
     trial, installer = builder.derive_programs()
     trial_text = trial.decode("utf-8")
     reviewed_runner_commands = (
-        'send_gcode_wait("M140 S55\\nM190 S55", 360.0)',
-        'send_gcode_wait("G4 P200000", 230.0)',
-        'send_gcode_wait("M140 S0", 30.0)',
+        'submit_gcode_script("M140 S55\\nM190 S55\\nG4 P200000\\nM140 S0", 30.0)',
     )
     for command in reviewed_runner_commands:
         if trial_text.count(command) != 1:
             raise ValueError("runner_soak_command_count_drift")
     if trial_text.index('effect": "bed_thermal_soak_completed_once"') > trial_text.index('KCTRL_CONFIRM_MANUAL_NOZZLE_CLEAN_V1'):
         raise ValueError("manual_clean_token_precedes_soak_completion")
-    if trial_text.count('send_gcode_wait("SDCARD_RESET_FILE", 30.0)') != 1:
+    if trial_text.count('submit_gcode_script("SDCARD_RESET_FILE", 30.0)') != 1:
         raise ValueError("terminal_state_normalization_drift")
+    for marker in (
+        'heat_deadline = time.monotonic() + 360.0',
+        'soak_deadline = soak_start + 230.0',
+        'if soak_elapsed < 195.0:',
+        'raise GateError("soak_completed_too_early")',
+        'raise GateError("soak_completion_timeout")',
+    ):
+        if trial_text.count(marker) != 1:
+            raise ValueError("thermal_observation_guard_drift")
     remote = contract["derived_remote_programs"]
     if digest(trial) != remote["derived_trial_sha256"] or digest(installer) != remote["derived_installer_sha256"]:
         raise ValueError("derived_remote_program_drift")

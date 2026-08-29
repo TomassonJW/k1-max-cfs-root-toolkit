@@ -24,6 +24,7 @@ class ZThermalStabilizationDiagnosticV1Tests(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
         cls.contract = json.loads((PACKAGE / "contract.json").read_text(encoding="utf-8"))
+        cls.run_evidence = json.loads((PACKAGE / "run-evidence-94cc4b6.json").read_text(encoding="utf-8"))
         cls.verifier = load_module("z_thermal_candidate", PACKAGE / "verify_candidate.py")
         cls.analyzer = load_module("z_thermal_analyzer", PACKAGE / "analyze_capture.py")
 
@@ -49,6 +50,11 @@ class ZThermalStabilizationDiagnosticV1Tests(unittest.TestCase):
         self.assertEqual([200.0, 220.0], self.contract["initial_motion_state"]["qualified_safe_park"]["x_mm"])
         self.assertEqual([270.0, 300.0], self.contract["initial_motion_state"]["qualified_safe_park"]["y_mm"])
         self.assertEqual([50.0, 315.0], self.contract["initial_motion_state"]["qualified_safe_park"]["z_mm"])
+        observation = self.contract["thermal_script_observation"]
+        self.assertEqual("accepted_not_completed", observation["socket_response_means"])
+        self.assertTrue(observation["submitted_as_one_ordered_klipper_script"])
+        self.assertTrue(observation["bed_off_is_queued_after_the_200_second_dwell"])
+        self.assertEqual(195, observation["minimum_observed_soak_seconds"])
         self.assertIn("persistent_Z_write", self.contract["out_of_scope"])
         self.assertIn("mesh_measurement_or_persistence", self.contract["out_of_scope"])
 
@@ -66,6 +72,25 @@ class ZThermalStabilizationDiagnosticV1Tests(unittest.TestCase):
         self.assertEqual("t1a_route_not_unique", latest["reason"])
         self.assertTrue(all(latest[key] is False for key in ("gcode_sent", "remote_write", "heat", "motion", "extrusion", "cfs_action")))
         self.assertIn("plate_clear", evidence["next_effect_blocked_until"])
+
+    def test_94cc4b6_run_ko_has_a_complete_safe_final_proof_and_no_retry(self):
+        evidence = self.run_evidence
+        self.assertEqual("94cc4b6", evidence["authorized_commit"])
+        self.assertEqual("Z_THERMAL_STABILIZATION_DIAGNOSTIC_PREFLIGHT_OK", evidence["preflight"]["status"])
+        self.assertEqual("GCODE_INSTALL_OK", evidence["upload"]["status"])
+        self.assertEqual("Z_THERMAL_STABILIZATION_DIAGNOSTIC_KO", evidence["run"]["status"])
+        self.assertFalse(evidence["run"]["soak_started_marker"])
+        self.assertFalse(evidence["run"]["print_started"])
+        self.assertFalse(evidence["run"]["purge_started"])
+        self.assertFalse(evidence["run"]["automatic_retry"])
+        final = evidence["final_read_only_safety_proof"]
+        self.assertEqual(0.0, final["bed_target_c"])
+        self.assertEqual(0.0, final["nozzle_target_c"])
+        self.assertEqual([203.0, 273.0, 50.23], final["physical_position_mm"])
+        self.assertEqual("", final["homed_axes"])
+        self.assertEqual("T1A", final["unique_route"])
+        self.assertEqual("k1_p001_t055_r001_n11x11", final["active_mesh"])
+        self.assertTrue(final["configuration_hashes_exact"])
 
     def test_post_power_cycle_evidence_separates_physical_filament_from_logical_route(self):
         evidence = json.loads((PACKAGE / "post-power-cycle-preflight-evidence.json").read_text(encoding="utf-8"))
@@ -85,6 +110,11 @@ class ZThermalStabilizationDiagnosticV1Tests(unittest.TestCase):
             self.assertIn(guard, runner)
         self.assertIn("if (-not $Execute -or $Gate -cne $Mission)", runner)
         self.assertIn("automatic_retry = $false", runner)
+        self.assertNotIn("Get-FileHash", runner)
+        self.assertIn("[Security.Cryptography.SHA256]::Create()", runner)
+        self.assertNotIn("$TrialProgram.Split(", runner)
+        self.assertIn("Get-LiteralOccurrenceCount", runner)
+        self.assertIn('.Replace("`r`n", "`n")', runner)
 
     def test_derived_preflight_accepts_only_safe_terminal_print_states(self):
         trial, _ = self.verifier.builder.derive_programs()
@@ -97,6 +127,7 @@ class ZThermalStabilizationDiagnosticV1Tests(unittest.TestCase):
     def test_derived_trial_pins_r2_and_proves_the_safe_terminal_position(self):
         trial, _ = self.verifier.builder.derive_programs()
         source = trial.decode("utf-8")
+        compile(source, "<derived-z-thermal-trial>", "exec")
         self.assertIn(self.contract["installed_start_owner"]["sha256"], source)
         self.assertNotIn(self.verifier.builder.OLD_START_OWNER_SHA256, source)
         self.assertIn('"physical_position": child(status, "toolhead").get("position")', source)
@@ -104,10 +135,13 @@ class ZThermalStabilizationDiagnosticV1Tests(unittest.TestCase):
         self.assertIn('raise GateError("final_park_x_invalid")', source)
         self.assertIn('raise GateError("final_park_y_invalid")', source)
         self.assertIn('raise GateError("final_bed_clearance_invalid")', source)
-        self.assertIn('send_gcode_wait("M140 S55\\nM190 S55", 360.0)', source)
-        self.assertIn('send_gcode_wait("G4 P200000", 230.0)', source)
-        self.assertIn('send_gcode_wait("M140 S0", 30.0)', source)
-        self.assertIn('send_gcode_wait("SDCARD_RESET_FILE", 30.0)', source)
+        self.assertIn('submit_gcode_script("M140 S55\\nM190 S55\\nG4 P200000\\nM140 S0", 30.0)', source)
+        self.assertIn('submit_gcode_script("SDCARD_RESET_FILE", 30.0)', source)
+        self.assertIn('heat_deadline = time.monotonic() + 360.0', source)
+        self.assertIn('soak_deadline = soak_start + 230.0', source)
+        self.assertIn('if soak_elapsed < 195.0:', source)
+        self.assertIn('raise GateError("soak_completed_too_early")', source)
+        self.assertIn('raise GateError("soak_completion_timeout")', source)
         self.assertLess(
             source.index('effect": "bed_thermal_soak_completed_once"'),
             source.index('KCTRL_CONFIRM_MANUAL_NOZZLE_CLEAN_V1'),

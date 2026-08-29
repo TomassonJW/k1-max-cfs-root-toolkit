@@ -103,7 +103,16 @@ préflight thermique sur `39a1364` s'est fermé avant tout effet avec
 `X210 / Y291,5 / Z66,8915`. Le garde corrigé hors imprimante accepte désormais
 les axes libérés ou seulement le parc borné `X200..220 / Y270..300 /
 Z50..315`; tout autre état reste fermé. Aucun upload, chauffage ou essai n'a eu
-lieu et une autorisation exacte sur le commit corrigé reste nécessaire ;
+lieu à ce stade. La gate suivante sur `94cc4b6` a ensuite obtenu plan,
+préflight et upload verts, puis le Run a demandé la chauffe une fois avant de
+se fermer sur un contrôle trop précoce de la température. Aucun marqueur de
+stabilisation, départ d'impression ou purge n'a eu lieu. L'arrêt sûr et une
+relecture indépendante confirment cibles zéro, `X203 / Y273 / Z50,23`, moteurs
+libérés, `T1A`, `11 × 11`, Z `−0,04` et propriétaire au repos. Le successeur
+hors imprimante met désormais `M140 / M190 / G4 200 s / M140 S0` dans un seul
+script ordonné et observe réellement la chauffe puis au moins `195 s`; son
+lanceur est compatible PowerShell 5/7. Aucun retry physique n'est autorisé sans
+une nouvelle gate exacte sur le commit corrigé ;
 GATEWAY-PRIVATE-LAN-NO-AUTH-V1 est installé et validé : le port `4409` ne
 demande plus de mot de passe, reste limité aux réseaux IPv4 privés, et présente
 uniquement son proxy local approuvé à Moonraker ; production remains closed**.

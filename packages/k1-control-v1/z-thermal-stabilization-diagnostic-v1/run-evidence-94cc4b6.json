@@ -1,0 +1,71 @@
+{
+  "schema": 1,
+  "mission": "G4-K1-CONTROL-Z-THERMAL-STABILIZATION-DIAGNOSTIC-V1",
+  "authorized_commit": "94cc4b6",
+  "date": "2026-08-29",
+  "authorization": "ONE_200S_SOAK_AND_TWO_LAYER_TRIAL_NO_LIVE_Z_ADJUSTMENT",
+  "plan": {
+    "capture_id": "20260829-goal3-thermal-r3-plan-94cc4b6",
+    "status": "Z_THERMAL_STABILIZATION_DIAGNOSTIC_PLAN_OK",
+    "printer_connection": false
+  },
+  "preflight": {
+    "capture_id": "20260829-goal3-thermal-r3-preflight-94cc4b6",
+    "status": "Z_THERMAL_STABILIZATION_DIAGNOSTIC_PREFLIGHT_OK",
+    "unique_route": "T1A",
+    "active_mesh": "k1_p001_t055_r001_n11x11",
+    "accepted_z_mm": -0.04,
+    "initial_safe_park_mm": [210.0, 291.5, 66.89154721095261]
+  },
+  "upload": {
+    "capture_id": "20260829-goal3-thermal-r3-upload-94cc4b6",
+    "status": "GCODE_INSTALL_OK",
+    "remote_name": "K1-Z-THERMAL-SOAK-200S-T1A-2LAYER.gcode",
+    "sha256": "c4ce0bf765db36322594ed6e3a608a15c9b1f57b6421553c46f4bdcdd4fc574f",
+    "post_upload_preflight_ok": true
+  },
+  "guarded_wrapper_attempt": {
+    "status": "LOCAL_PROCESS_KO_BEFORE_CAPTURE_OR_K1_CONNECTION",
+    "reason": "Get-FileHash_not_available_in_child_Windows_PowerShell",
+    "capture_directory_created": false,
+    "physical_effect": false
+  },
+  "run": {
+    "capture_id": "20260829-goal3-thermal-r3-run-94cc4b6",
+    "status": "Z_THERMAL_STABILIZATION_DIAGNOSTIC_KO",
+    "reason": "bed_target_not_reached_before_soak",
+    "root_cause": "klipper_socket_gcode_script_response_confirmed_acceptance_not_command_completion",
+    "thermal_script_submission_attempted": true,
+    "soak_started_marker": false,
+    "manual_clean_token_created": false,
+    "print_started": false,
+    "purge_started": false,
+    "automatic_retry": false,
+    "captured_safety_stop": "turn_off_heaters_safe_park_and_release_once"
+  },
+  "final_read_only_safety_proof": {
+    "capture_id": "20260829-goal3-thermal-r3-post-ko-safety-readback-94cc4b6",
+    "status": "Z_THERMAL_STABILIZATION_DIAGNOSTIC_PREFLIGHT_OK",
+    "bed_target_c": 0.0,
+    "bed_temperature_c": 46.46,
+    "nozzle_target_c": 0.0,
+    "physical_position_mm": [203.0, 273.0, 50.23],
+    "homed_axes": "",
+    "unique_route": "T1A",
+    "active_mesh": "k1_p001_t055_r001_n11x11",
+    "accepted_z_mm": -0.04,
+    "owner_phase": "idle",
+    "configuration_hashes_exact": true,
+    "gcode_sent": false,
+    "remote_write": false
+  },
+  "successor_offline_correction": {
+    "socket_response_semantics_recorded": "accepted_not_completed",
+    "thermal_commands_submitted_as_one_ordered_script": true,
+    "bed_off_queued_after_dwell": true,
+    "heat_target_polled_until_reached": true,
+    "minimum_observed_soak_seconds": 195,
+    "runner_compatible_with_Windows_PowerShell_5_and_7": true,
+    "new_live_attempt_authorized": false
+  }
+}
