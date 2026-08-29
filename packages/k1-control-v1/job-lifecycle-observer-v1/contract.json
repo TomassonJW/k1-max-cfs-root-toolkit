@@ -17,11 +17,11 @@
   },
   "observer": {
     "program": "packages/k1-control-v1/job-lifecycle-observer-v1/observer.py",
-    "program_sha256": "5991f4ac0e9e6a780e46d601a8a85e6507d43a439a587e650af417af7422fa80",
+    "program_sha256": "0ad26d0ab3d53351373c0bbc2ce04860ff3941cca15ad749eac215297d2795dc",
     "runner": "packages/k1-control-v1/job-lifecycle-observer-v1/capture_observation.ps1",
-    "runner_sha256": "6f4f13900f827b5f4f44382ffcce8ad3dc0184129567f0b8b95e95149006e1d1",
+    "runner_sha256": "672a9e898efd162acd5ea5adfb63d1bbd2a010aa6948ac5145f9afaab50eb22e",
     "analyzer": "packages/k1-control-v1/job-lifecycle-observer-v1/analyze_observation.py",
-    "analyzer_sha256": "4fb0b47a3a2c817cb1b3d05774a6467b82bd2784628c276fe34701c6b469c1d9",
+    "analyzer_sha256": "df97786077be2e8096fc9ef125970216845d979a3ed76e2cccd2a40afd3249fd",
     "poll_interval_s": 0.25,
     "duration_bounds_s": [5, 900],
     "remote_file_write": false,
@@ -41,7 +41,8 @@
     "progress_layer_duration_and_filament_counters",
     "nozzle_and_bed_actual_and_target_temperatures",
     "toolhead_and_gcode_positions",
-    "active_mesh_and_accepted_z",
+    "active_mesh_accepted_z_low_move_arm_and_armed_mesh_profile",
+    "start_owner_phase_watchdog_and_manual_clean_token",
     "cfs_routes_command_and_connections",
     "head_and_after_cutter_sensors"
   ],
@@ -69,6 +70,12 @@
     "configuration_hashes_exact_before_capture": true,
     "configuration_hashes_unchanged_after_capture": true
   },
+  "checkpoint_analysis": {
+    "checkpoint_specific_automatic_checks": true,
+    "terminal_paths_require_owner_and_low_moves_disarmed": true,
+    "active_paths_require_model_ready_and_expected_mesh_armed": true,
+    "automatic_evidence_never_replaces_human_verdict": true
+  },
   "forbidden": [
     "GCODE",
     "MOONRAKER_POST",
@@ -83,7 +90,8 @@
     "AUTOMATED_HUMAN_VERDICT"
   ],
   "offline_verification": {
-    "synthetic_scenarios": 9,
+    "historical_synthetic_scenarios": 9,
+    "current_targeted_tests": 14,
     "status": "OK"
   },
   "live_read_only_baseline": {

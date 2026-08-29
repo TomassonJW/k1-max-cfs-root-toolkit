@@ -23,7 +23,7 @@ param(
 
 $ErrorActionPreference = 'Stop'
 $Mission = 'G4-K1-CONTROL-JOB-LIFECYCLE-OBSERVER-V1'
-$ExpectedProgramSha256 = '5991f4ac0e9e6a780e46d601a8a85e6507d43a439a587e650af417af7422fa80'
+$ExpectedProgramSha256 = '0ad26d0ab3d53351373c0bbc2ce04860ff3941cca15ad749eac215297d2795dc'
 $WorkspaceRoot = (Resolve-Path (Join-Path $PSScriptRoot '..\..\..')).Path
 $RawRoot = Join-Path $WorkspaceRoot 'inventory\raw'
 $SessionDirectory = Join-Path $RawRoot $CaptureId

@@ -52,7 +52,8 @@ QUERY_PATH = (
     "&box=state,t_command,T1,T2"
     "&filament_switch_sensor+filament_sensor=filament_detected,enabled"
     "&filament_switch_sensor+filament_sensor_2=filament_detected,enabled"
-    "&gcode_macro+KCTRL_STATE=accepted_z_valid,accepted_z_offset"
+    "&gcode_macro+KCTRL_STATE=accepted_z_valid,accepted_z_offset,low_moves_armed,armed_mesh_profile"
+    "&gcode_macro+KCTRL_START_OWNER_STATE=phase,watchdog_armed,manual_clean_token"
 )
 
 
@@ -157,6 +158,13 @@ def safe_snapshot(elapsed_s, payload):
             "active_profile": child(status, "bed_mesh").get("profile_name"),
             "accepted_z_valid": child(status, "gcode_macro KCTRL_STATE").get("accepted_z_valid"),
             "accepted_z_offset": child(status, "gcode_macro KCTRL_STATE").get("accepted_z_offset"),
+            "low_moves_armed": child(status, "gcode_macro KCTRL_STATE").get("low_moves_armed"),
+            "armed_mesh_profile": child(status, "gcode_macro KCTRL_STATE").get("armed_mesh_profile"),
+        },
+        "start_owner": {
+            "phase": child(status, "gcode_macro KCTRL_START_OWNER_STATE").get("phase"),
+            "watchdog_armed": child(status, "gcode_macro KCTRL_START_OWNER_STATE").get("watchdog_armed"),
+            "manual_clean_token": child(status, "gcode_macro KCTRL_START_OWNER_STATE").get("manual_clean_token"),
         },
         "cfs": {
             "state": box.get("state"),
@@ -182,12 +190,22 @@ def validate_preflight(server, snapshot, hashes, checkpoint):
     if checkpoint == "FULL_CYCLE":
         if state != "standby" or homed_axes not in (None, "", "xyz"):
             raise ObserverError("full_cycle_entry_invalid")
+        if snapshot["start_owner"]["phase"] != "idle" or snapshot["calibration"]["low_moves_armed"] not in (0, 0.0):
+            raise ObserverError("full_cycle_owner_entry_invalid")
     elif checkpoint == "DISENGAGE":
         if state not in ("standby", "complete") or homed_axes not in (None, "", "xyz"):
             raise ObserverError("disengage_entry_invalid")
+        if snapshot["start_owner"]["phase"] != "idle" or snapshot["calibration"]["low_moves_armed"] not in (0, 0.0):
+            raise ObserverError("disengage_owner_entry_invalid")
     else:
         if state not in ("printing", "paused") or homed_axes != "xyz":
             raise ObserverError("active_checkpoint_entry_invalid")
+        if snapshot["start_owner"]["phase"] != "model_ready" or snapshot["calibration"]["low_moves_armed"] not in (1, 1.0):
+            raise ObserverError("active_checkpoint_owner_entry_invalid")
+    if snapshot["start_owner"]["watchdog_armed"] not in (0, 0.0):
+        raise ObserverError("start_watchdog_armed")
+    if snapshot["start_owner"]["manual_clean_token"] not in (0, 0.0):
+        raise ObserverError("manual_clean_token_active")
     if snapshot["cfs"]["state"] != "connect":
         raise ObserverError("cfs_root_disconnected")
     if snapshot["cfs"]["T1_state"] != "connect" or snapshot["cfs"]["T2_state"] != "connect":

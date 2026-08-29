@@ -5,8 +5,9 @@ runout, pause/reprise, annulation, fin normale et désengagement séparé.
 
 Il lit quatre fois par seconde les états d'impression et de pause, progression,
 couches, chauffes, position, mesh, Z accepté, routes CFS, commande active et
-capteurs. Le nom du fichier imprimé et les identités matérielles ne sont jamais
-exportés.
+capteurs. Il suit aussi l'armement des mouvements bas, le profil effectivement
+armé et l'état du propriétaire R2. Le nom du fichier imprimé et les identités
+matérielles ne sont jamais exportés.
 
 Le programme ne contient aucun chemin de commande : aucun G-code, contrôle du
 job, mouvement, chauffage, effet CFS, fichier distant ou service. Les actions
@@ -18,6 +19,10 @@ désormais un GO exact, la présence humaine et un arrêt immédiat pour toute v
 capture. Le préflight distingue l'entrée d'un cycle complet, un checkpoint en
 cours d'impression et le désengagement séparé après fin. Son mode `Plan` reste
 strictement local et sans connexion K1.
+
+L'analyse par checkpoint distingue maintenant une fin réellement désarmée
+d'une simple fin apparente. Elle peut marquer la preuve automatique incomplète,
+mais ne transforme toujours jamais la télémétrie en verdict physique humain.
 
 La baseline réelle historique est verte : onze lectures sur cinq secondes, machine au
 repos, cibles zéro, deux CFS connectés, profil `11 × 11`, Z `−0,04 mm` et
