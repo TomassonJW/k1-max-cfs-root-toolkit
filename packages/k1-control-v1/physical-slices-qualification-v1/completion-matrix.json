@@ -111,9 +111,10 @@
     {
       "order": 7,
       "id": "EDGE_PROFILE_POINT_EDIT_AND_PHYSICAL_QUALIFICATION",
-      "status": "OFFLINE_EDITOR_READY_PHYSICAL_NOT_STARTED",
+      "status": "OFFLINE_EDITOR_AND_OWNED_START_R2_PATTERNS_READY_PHYSICAL_NOT_STARTED",
       "slice_id": "MESH-EDGE-DIAGNOSTIC-V1",
       "evidence": "packages/k1-control-v1/mesh-editor-offline-v1/mesh-editor-contract.json",
+      "owned_start_r2_candidate": "packages/k1-control-v1/mesh-edge-diagnostic-owned-start-r2-v1/contract.json",
       "required_proofs": [
         "immutable_11x11_source_is_preserved",
         "edge_defects_are_mapped_to_exact_points",
