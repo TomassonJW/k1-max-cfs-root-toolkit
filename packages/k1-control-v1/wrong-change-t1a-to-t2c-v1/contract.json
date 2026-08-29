@@ -6,7 +6,12 @@
   "reused_by": "TOOL_CHANGE_AND_RUNOUT",
   "status": "OFFLINE_READY_BLOCKED_BY_PRIOR_R2_PHYSICAL_TRIAL",
   "authority": "passive_observer_with_one_human_stock_ui_action",
-  "offline_plan_command": ".\\packages\\k1-control-v1\\wrong-change-t1a-to-t2c-v1\\capture_gate.ps1 -Action Plan -CaptureId offline-plan -Execute -Gate G4-K1-CONTROL-WRONG-CHANGE-T1A-TO-T2C-V1",
+  "offline_plan_command": ".\\packages\\k1-control-v1\\wrong-change-t1a-to-t2c-v1\\capture_gate.ps1 -Action Plan",
+  "authority_boundaries": {
+    "plan": "local_without_gate_or_printer_connection",
+    "preflight": "read_only_without_mutation_gate",
+    "observe": "exact_gate_operator_present_and_one_human_stock_ui_action"
+  },
   "starting_route": "T1A",
   "target_route": "T2C",
   "human_action": "stock_ui_change_T1A_to_T2C_once",

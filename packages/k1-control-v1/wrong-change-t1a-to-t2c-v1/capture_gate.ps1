@@ -4,9 +4,8 @@ param(
     [ValidateSet('Plan', 'Preflight', 'Observe')]
     [string]$Action,
 
-    [Parameter(Mandatory = $true)]
     [ValidatePattern('^[A-Za-z0-9._-]+$')]
-    [string]$CaptureId,
+    [string]$CaptureId = ((Get-Date -Format 'yyyyMMdd-HHmmss') + '-wrong-change-t1a-to-t2c-v1'),
 
     [ValidateRange(180, 600)]
     [int]$DurationSeconds = 420,
@@ -38,8 +37,11 @@ function Get-LocalSha256 {
     return (Get-FileHash -LiteralPath $Path -Algorithm SHA256).Hash.ToLowerInvariant()
 }
 
-if (-not $Execute -or $Gate -cne $Mission) {
-    throw "Action refusée : utilise -Execute -Gate '$Mission'."
+if ($Action -eq 'Observe' -and (-not $Execute -or $Gate -cne $Mission)) {
+    throw "Observation physique refusée : utilise -Execute -Gate '$Mission'."
+}
+if ($Action -in @('Plan', 'Preflight') -and ($Execute -or $Gate)) {
+    throw 'Plan et Preflight sont sans drapeau de mutation.'
 }
 if ((Get-LocalSha256 $ObserverPath) -cne $ExpectedObserverSha256) {
     throw "L'observateur ne correspond pas à la version revue."
@@ -56,6 +58,7 @@ if ($Action -eq 'Plan') {
         observer_gcode = $false
         observer_cfs_action = $false
         observer_remote_write = $false
+        exact_gate_required_for = 'Observe_only'
         automatic_retry = $false
     } | ConvertTo-Json
     exit 0

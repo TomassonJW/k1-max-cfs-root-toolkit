@@ -42,6 +42,18 @@ class WrongChangeT1AToT2CTests(unittest.TestCase):
         self.assertIn('item["print_state"] == "complete" and not item["filename_present"]', observer)
         self.assertEqual("OFFLINE_READY_BLOCKED_BY_PRIOR_R2_PHYSICAL_TRIAL", contract["status"])
 
+    def test_runner_reserves_the_exact_gate_for_physical_observation_only(self):
+        runner = (PACKAGE / "capture_gate.ps1").read_text(encoding="utf-8")
+        contract = json.loads((PACKAGE / "contract.json").read_text(encoding="utf-8"))
+        self.assertIn("$Action -eq 'Observe' -and (-not $Execute", runner)
+        self.assertIn("$Action -in @('Plan', 'Preflight') -and ($Execute -or $Gate)", runner)
+        self.assertIn("exact_gate_required_for = 'Observe_only'", runner)
+        self.assertNotIn("-Execute", contract["offline_plan_command"])
+        self.assertEqual(
+            "read_only_without_mutation_gate",
+            contract["authority_boundaries"]["preflight"],
+        )
+
     def test_complete_unique_change_is_automatically_green(self):
         entries = [
             snap(["T1A"], 0.0),
