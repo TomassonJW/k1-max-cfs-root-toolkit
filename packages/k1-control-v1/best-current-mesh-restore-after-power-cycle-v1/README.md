@@ -37,3 +37,9 @@ Depuis la reprise diagnostique du 29 août, un préflight refusé conserve aussi
 la projection sûre complète lue avant le refus. Cette projection permet de
 distinguer l'état des axes, la route CFS, le profil actif et les gardes sans
 ajouter de seconde connexion ni relâcher la moindre condition de sécurité.
+
+La révision R2 distingue maintenant des axes connus d'un mouvement : elle
+accepte soit des axes non référencés, soit exactement `xyz` avec la tête dans
+le parc borné `X200..220 / Y270..300 / Z50..315`. Tout autre état reste refusé.
+Le seul effet possible demeure le chargement du profil ; aucun `G28`, `M84` ou
+déplacement n'a été ajouté.

@@ -51,19 +51,19 @@ class Goal3PhysicalCompletionRegistryTests(unittest.TestCase):
     def test_current_gate_waits_for_t1a_and_the_frozen_power_cycle_restore_successor(self):
         gate = self.matrix["current_human_gate"]
         self.assertEqual(
-            "START_OWNER_SAFETY_R2_INSTALLED_SUCCESSOR_11X11_RESTORE_LIVE_PREFLIGHT_KO_AXES_STILL_HOMED_NO_EFFECT",
+            "START_OWNER_SAFETY_R2_INSTALLED_T1A_REENGAGED_DEFAULT_ACTIVE_SAFE_HIGH_PARK_PROVED_MESH_RESTORE_R2_OFFLINE_READY",
             gate["checkpoint"],
         )
-        self.assertIn("READ_ONLY_PREFLIGHT_CONNECTED", gate["technical_status"])
-        self.assertIn("STOPPED_BEFORE_EFFECT_ON_AXES_STILL_HOMED", gate["technical_status"])
-        self.assertIn("SUCCESSOR_STILL_REQUIRES_UNHOMED_AXES_UNIQUE_T1A", gate["technical_status"])
+        self.assertIn("READ_ONLY_DIAGNOSTIC_PROVES_UNIQUE_T1A", gate["technical_status"])
+        self.assertIn("SAFE_PARK_X210_Y291_5_Z66_8915", gate["technical_status"])
+        self.assertIn("R2_ACCEPTS_ONLY_UNHOMED_OR_BOUNDED_SAFE_PARK", gate["technical_status"])
         self.assertIn("EXACT_PRIOR_PROFILE_ROLLBACK", gate["technical_status"])
         self.assertEqual(
-            "G4-K1-CONTROL-BEST-CURRENT-MESH-RESTORE-AFTER-POWER-CYCLE-V1",
+            "G4-K1-CONTROL-BEST-CURRENT-MESH-RESTORE-AFTER-POWER-CYCLE-V1-R2",
             gate["active_gate"],
         )
         self.assertEqual(
-            "POWER_CYCLE_TO_CLEAR_HOMED_AXES_THEN_RUN_STOCK_UI_EXTRUSION_T1A_ONCE_AND_REQUEST_A_FRESH_READ_ONLY_PREFLIGHT",
+            "RUN_FRESH_R2_READ_ONLY_PREFLIGHT_THEN_AUTHORIZE_EXACT_ONE_COMMAND_11X11_RESTORE_ON_FROZEN_COMMIT",
             gate["required_human_verdict"],
         )
         self.assertTrue(gate["next_effect_blocked"])

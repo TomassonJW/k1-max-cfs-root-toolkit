@@ -65,11 +65,13 @@ automatiques techniquement bloquées.
 L'extinction nocturne a conservé physiquement le filament dans la tête, mais a
 effacé la route logique et remis le profil actif à `default`. Deux lectures
 fraîches l'ont prouvé sans effet. Le successeur de remise du meilleur `11 × 11`
-est préparé. Son nouveau préflight en lecture seule s'est arrêté sans effet sur
-`axes_still_homed` : la K1 se considère encore référencée, et la route `T1A`
-n'a donc pas été réacceptée par cette gate. Il faut maintenant éteindre puis
-rallumer réellement la K1, exécuter une seule fois `Extrusion T1A` depuis
-l'écran stock, puis refaire le préflight avant toute remise du mesh.
+est préparé. Après la nouvelle `Extrusion T1A`, la projection sûre complète a
+prouvé `T1A` unique, `default` actif, les cibles à zéro et une tête parquée très
+haut à `X210 / Y291,5 / Z66,8915`. Le seul KO venait de l'ancienne règle qui
+refusait tout axe encore connu. R2 accepte désormais soit des axes non
+référencés, soit exactement le parc haut borné, sans ajouter le moindre
+mouvement. Un nouveau préflight R2 doit encore être vert avant la commande
+unique de remise du `11 × 11`.
 
 Le diagnostic thermique R2 reste ensuite le prochain essai chaud : plateau
 stabilisé `200 s` avant création du jeton manuel, puis une seule impression de

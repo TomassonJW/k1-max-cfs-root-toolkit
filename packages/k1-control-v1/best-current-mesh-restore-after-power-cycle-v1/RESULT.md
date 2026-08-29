@@ -1,6 +1,6 @@
 # Résultat — BEST-CURRENT-MESH-RESTORE-AFTER-POWER-CYCLE-V1
 
-Statut actuel : `LIVE_PREFLIGHT_KO_AXES_STILL_HOMED_NO_EFFECT`.
+Statut actuel : `R2_OFFLINE_READY_AFTER_DIAGNOSTIC_SAFE_PARK_PROOF`.
 
 Le paquet corrige quatre défauts de l'ancienne gate historique :
 
@@ -24,6 +24,12 @@ il restituera la projection sûre complète capturée avant la première garde e
 échec. Aucune condition n'est retirée et aucune nouvelle action distante n'est
 ajoutée.
 
-Prochaine gate : après le nouveau préflight vert, autoriser exactement
-`G4-K1-CONTROL-BEST-CURRENT-MESH-RESTORE-AFTER-POWER-CYCLE-V1` sur le commit
+La projection fraîche après `Extrusion T1A` montre une route unique `T1A`, le
+profil `default`, les chauffes à zéro et une tête parquée à
+`X210 / Y291,5 / Z66,8915`. R2 accepte désormais uniquement ce type de parc
+haut borné, ou des axes non référencés. Le chargement du mesh reste sans
+mouvement ; toutes les autres positions référencées sont refusées.
+
+Prochaine gate : après le nouveau préflight R2 vert, autoriser exactement
+`G4-K1-CONTROL-BEST-CURRENT-MESH-RESTORE-AFTER-POWER-CYCLE-V1-R2` sur le commit
 figé. Cette gate ne couvre toujours pas l'essai chaud de deux couches.

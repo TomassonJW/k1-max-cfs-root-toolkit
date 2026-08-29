@@ -165,11 +165,10 @@ class BestCurrentMeshRestoreAfterPowerCycleV1Tests(unittest.TestCase):
                 with self.assertRaisesRegex(gate.GateError, "t1a_route_not_unique"):
                     gate.validate_prior(snapshot)
 
-    def test_hot_busy_homed_cfs_active_or_owner_active_fail_closed(self):
+    def test_hot_busy_cfs_active_or_owner_active_fail_closed(self):
         cases = (
             ("print", "state", "printing", "printer_not_standby"),
             ("heaters", "extruder_target", 220.0, "extruder_target_nonzero"),
-            ("toolhead", "homed_axes", "xyz", "axes_still_homed"),
             ("cfs", "active_command", "T1A", "cfs_command_active"),
             ("start_owner", "phase", "model_ready", "start_owner_not_idle"),
             ("start_owner", "watchdog_armed", 1, "start_watchdog_armed"),
@@ -181,13 +180,22 @@ class BestCurrentMeshRestoreAfterPowerCycleV1Tests(unittest.TestCase):
                 with self.assertRaisesRegex(gate.GateError, error):
                     gate.validate_prior(snapshot)
 
+    def test_safe_high_park_is_accepted_but_other_homed_positions_fail(self):
+        snapshot = safe_snapshot()
+        snapshot["toolhead"]["homed_axes"] = "xyz"
+        snapshot["toolhead"]["position"] = [210.0, 291.5, 66.89154721095261, 60.0]
+        self.assertEqual(gate.DEFAULT_PROFILE, gate.validate_prior(snapshot))
+        snapshot["toolhead"]["position"] = [210.0, 291.5, 10.0, 60.0]
+        with self.assertRaisesRegex(gate.GateError, "homed_position_not_safe_park"):
+            gate.validate_prior(snapshot)
+
     def test_preflight_KO_keeps_the_safe_snapshot_without_effect(self):
         snapshot = safe_snapshot()
         snapshot["toolhead"]["homed_axes"] = "xyz"
         with patch.object(gate, "capture_snapshot", return_value=snapshot):
             result = gate.run_preflight()
         self.assertEqual("PREFLIGHT_KO", result["status"])
-        self.assertEqual("GateError:axes_still_homed", result["error"])
+        self.assertEqual("GateError:homed_position_not_safe_park", result["error"])
         self.assertEqual(snapshot, result["before"])
         self.assertEqual([], result["effects"]["gcode_commands_attempted"])
 

@@ -4,19 +4,24 @@ from __future__ import print_function
 
 import hashlib
 import json
+import math
 import os
 import socket
 import sys
 from urllib.request import Request, urlopen
 
 
-MISSION = "G4-K1-CONTROL-BEST-CURRENT-MESH-RESTORE-AFTER-POWER-CYCLE-V1"
+MISSION = "G4-K1-CONTROL-BEST-CURRENT-MESH-RESTORE-AFTER-POWER-CYCLE-V1-R2"
 BASE_URL = "http://127.0.0.1:7125"
 TIMEOUT_S = 5.0
 DEFAULT_PROFILE = "default"
 DAILY_6X6_PROFILE = "k1_p001_t055_r001_n06x06"
 BEST_CURRENT_PROFILE = "k1_p001_t055_r001_n11x11"
 ALLOWED_PRIOR_PROFILES = (DEFAULT_PROFILE, DAILY_6X6_PROFILE)
+SAFE_PARK_X = (200.0, 220.0)
+SAFE_PARK_Y = (270.0, 300.0)
+SAFE_PARK_Z_MIN = 50.0
+SAFE_PARK_Z_MAX = 315.0
 DEFAULT_SHA256 = "ca13f9a7904fad990b8fc72f7e4ec5cf95b55694cc93b325850241ab1506b5f8"
 DAILY_6X6_SHA256 = "c3c7a2ba89f8094328bc5d8b3936b16dbd1de46f4a80bde87cba3d17cfab5f8f"
 BEST_CURRENT_SHA256 = "58fd96c55129bf7a17ba890d309cb3cd5e2926ec271d735b60392f8369da0a61"
@@ -177,6 +182,36 @@ def require_equal(actual, expected, code):
         raise GateError(code)
 
 
+def finite(value, code):
+    if isinstance(value, bool) or not isinstance(value, (int, float)):
+        raise GateError(code)
+    value = float(value)
+    if not math.isfinite(value):
+        raise GateError(code)
+    return value
+
+
+def validate_motion_state(snapshot):
+    homed_axes = snapshot["toolhead"]["homed_axes"]
+    if homed_axes in (None, "", []):
+        return "unhomed"
+    if homed_axes != "xyz":
+        raise GateError("homed_axes_state_not_reviewed")
+    position = snapshot["toolhead"].get("position")
+    if not isinstance(position, list) or len(position) < 3:
+        raise GateError("homed_position_invalid")
+    x = finite(position[0], "homed_position_invalid")
+    y = finite(position[1], "homed_position_invalid")
+    z = finite(position[2], "homed_position_invalid")
+    if not (
+        SAFE_PARK_X[0] <= x <= SAFE_PARK_X[1]
+        and SAFE_PARK_Y[0] <= y <= SAFE_PARK_Y[1]
+        and SAFE_PARK_Z_MIN <= z <= SAFE_PARK_Z_MAX
+    ):
+        raise GateError("homed_position_not_safe_park")
+    return "homed_safe_park"
+
+
 def validate_common(snapshot):
     require_equal(snapshot["server"]["klippy_state"], "ready", "klippy_not_ready")
     require_equal(snapshot["server"]["failed_components"], [], "failed_components")
@@ -185,8 +220,7 @@ def validate_common(snapshot):
     require_equal(snapshot["print"]["filename_present"], False, "print_filename_present")
     require_equal(float(snapshot["heaters"]["extruder_target"]), 0.0, "extruder_target_nonzero")
     require_equal(float(snapshot["heaters"]["bed_target"]), 0.0, "bed_target_nonzero")
-    if snapshot["toolhead"]["homed_axes"] not in (None, "", []):
-        raise GateError("axes_still_homed")
+    validate_motion_state(snapshot)
     require_equal(snapshot["runtime"]["ready"], 1, "runtime_not_ready")
     require_equal(snapshot["runtime"]["session_active"], 0, "runtime_session_active")
     require_equal(snapshot["runtime"]["accepted_z_valid"], 1, "accepted_z_invalid")

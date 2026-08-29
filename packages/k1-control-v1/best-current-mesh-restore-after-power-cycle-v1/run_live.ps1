@@ -14,8 +14,8 @@ param(
 )
 
 $ErrorActionPreference = 'Stop'
-$RequiredGate = 'G4-K1-CONTROL-BEST-CURRENT-MESH-RESTORE-AFTER-POWER-CYCLE-V1'
-$ExpectedProgramSha256 = '2b5a3aedab6e502fb904460e7db211f5b1c7b257f4bb0abe601d0604224faee6'
+$RequiredGate = 'G4-K1-CONTROL-BEST-CURRENT-MESH-RESTORE-AFTER-POWER-CYCLE-V1-R2'
+$ExpectedProgramSha256 = 'e90e41dfbdad9b56199803450440490fd6a49ae4025e0e3f06b3b663ab6ef6ad'
 $WorkspaceRoot = (Resolve-Path (Join-Path $PSScriptRoot '..\..\..')).Path
 $RawRoot = Join-Path $WorkspaceRoot 'inventory\raw'
 $SessionDirectory = Join-Path $RawRoot $CaptureId
@@ -41,6 +41,7 @@ if ($Action -ceq 'Plan') {
         accepted_prior_profiles = @('default', 'k1_p001_t055_r001_n06x06')
         target_profile = 'k1_p001_t055_r001_n11x11'
         exact_required_route = 'T1A'
+        accepted_motion_state = 'unhomed_or_exact_safe_park_X200_220_Y270_300_Z50_315'
         maximum_primary_attempts = 1
         rollback = 'exact_prior_profile_once_after_primary_uncertainty'
         printer_connection = $false
