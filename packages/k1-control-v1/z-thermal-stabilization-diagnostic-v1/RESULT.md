@@ -1,6 +1,6 @@
 # Résultat
 
-Statut actuel : `PREFLIGHT_AND_UPLOAD_OK_AWAITING_HUMAN_PHYSICAL_CHECKPOINT`.
+Statut actuel : `BLOCKED_CORRECTIVE_R2_REQUIRED_BEFORE_NEW_UPLOAD`.
 
 Le candidat privé est dérivé du G-code physique déjà qualifié. La seule
 différence fonctionnelle avant `KCTRL_JOB_BEGIN` est l'ajout exact de :
@@ -16,9 +16,10 @@ n'autorise aucun retry automatique.
 Le premier préflight a bloqué sans effet sur le statut terminal sûr `complete`,
 puis une double lecture seule a prouvé l'état stable. Le garde corrigé accepte
 désormais seulement `standby` sans fichier ou `complete` avec fichier. Le
-préflight R2 est vert. Le G-code a été envoyé sous un nouveau nom et son
-empreinte distante est exacte. Aucune chauffe, extrusion, mesure, impression
-ou action CFS n'a eu lieu.
+préflight R2 était vert. Après le retour humain sur la mauvaise fin et le filet
+de purge, ce fichier a été invalidé puis supprimé de la K1 sous contrôle de son
+empreinte exacte.
 
-Le prochain effet reste bloqué jusqu'à la confirmation humaine du plateau
-libre, de la buse nettoyée et de la possibilité d'arrêter immédiatement.
+Le candidat local R2 ajoute maintenant la fin sûre `Z50 / X203 Y273 / M84`,
+mais il reste bloqué tant que la macro de purge corrigée n'est pas posée et que
+son trajet inversé vers `X5 Y20` n'a pas reçu de verdict humain.

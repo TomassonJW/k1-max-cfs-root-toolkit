@@ -1,0 +1,36 @@
+{
+  "schema": 1,
+  "mission": "G4-K1-CONTROL-START-SEQUENCE-OWNER-SAFETY-R2",
+  "goal": "GOAL-P4-PHYSICAL-SLICES-QUALIFICATION-V1",
+  "status": "OFFLINE_CANDIDATE_OK_LIVE_INSTALL_AND_PHYSICAL_PURGE_NOT_STARTED",
+  "source": {
+    "path": "packages/k1-control-v1/start-sequence-owner-v1/k1-control-start-sequence-owner-v1.cfg",
+    "sha256": "25291e1534f0ba100d3171b983796089a24cd49fdfcef76817406d325e6d8e03"
+  },
+  "candidate": {
+    "private_path": "inventory/raw/20260829-goal3-start-sequence-owner-safety-r2/k1-control-start-sequence-owner-v1.cfg",
+    "sha256": "a026e0c07db6eb00161f9cb7d4a18d0d624a3795c24120822a82ee27bccea3e2",
+    "bytes": 16038
+  },
+  "purge_correction": {
+    "start_mm": [5.0, 180.0, 0.3],
+    "end_mm": [5.0, 20.0, 0.3],
+    "extrusion_mm": 18.0,
+    "retraction_mm": 1.2,
+    "lift_after_purge_mm": 5.0,
+    "human_physical_qualification_required": true,
+    "automatic_brush": false
+  },
+  "safe_end": {
+    "heater_targets_zero": true,
+    "bed_clearance_z_mm": 50.0,
+    "head_park_xy_mm": [203.0, 273.0],
+    "wait_for_motion": true,
+    "release_axes_last": true,
+    "end_homing": false,
+    "keep_correct_T1A_engaged": true
+  },
+  "automatic_retry": false,
+  "deployment_authorized": false,
+  "physical_run_authorized": false
+}

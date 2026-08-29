@@ -24,8 +24,8 @@ param(
 
 $ErrorActionPreference = 'Stop'
 $Mission = 'G4-K1-CONTROL-Z-THERMAL-STABILIZATION-DIAGNOSTIC-V1'
-$ExpectedGcodeSha256 = '657db94f006a92b5f4b68ee3afd4674f56963208f90c145892cc1205a2582ce1'
-$ExpectedGcodeBytes = 90735
+$ExpectedGcodeSha256 = '18861926e2a521746af833feac12af086f099fa2383806b366eca765a0122345'
+$ExpectedGcodeBytes = 90792
 $ExpectedBaseTrialSha256 = '5f461db624acaa8682ec20bcd3eed001da39688f1e19a880d8096685c350a68f'
 $ExpectedBaseInstallerSha256 = 'ff84e23462dc642d916bc7d83cfca0eea53414253b7ad940c1cb46be56a5ffa0'
 $ExpectedDerivedTrialSha256 = '709918700cb3c791113667506964236429d20107f92063507f7b2b67847e4bf4'

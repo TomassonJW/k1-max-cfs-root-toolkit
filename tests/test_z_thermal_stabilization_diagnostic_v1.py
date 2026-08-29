@@ -27,11 +27,14 @@ class ZThermalStabilizationDiagnosticV1Tests(unittest.TestCase):
         cls.verifier = load_module("z_thermal_candidate", PACKAGE / "verify_candidate.py")
         cls.analyzer = load_module("z_thermal_analyzer", PACKAGE / "analyze_capture.py")
 
-    def test_candidate_diff_is_only_the_exact_200_second_soak(self):
+    def test_candidate_adds_only_the_exact_soak_and_reviewed_safe_end(self):
         result = self.verifier.verify()
         self.assertEqual("Z_THERMAL_STABILIZATION_DIAGNOSTIC_CANDIDATE_OK", result["status"])
         self.assertEqual(200, result["soak_seconds"])
         self.assertEqual(["M140 S55", "M190 S55", "G4 P200000"], result["inserted_commands"])
+        candidate = self.verifier.builder.OUTPUT.read_text(encoding="utf-8")
+        safe_end = (ROOT / self.contract["safe_end_template"]).read_text(encoding="utf-8").strip()
+        self.assertIn(safe_end, candidate)
 
     def test_contract_keeps_recalibration_and_retry_closed(self):
         self.assertFalse(self.contract["automatic_retry"])
@@ -45,7 +48,9 @@ class ZThermalStabilizationDiagnosticV1Tests(unittest.TestCase):
         self.assertTrue(evidence["corrected_preflight"]["heater_targets_zero"])
         self.assertTrue(evidence["corrected_preflight"]["axes_released"])
         self.assertEqual("T1A", evidence["corrected_preflight"]["unique_engaged_route"])
-        self.assertEqual(self.contract["candidate"]["sha256"], evidence["upload"]["sha256"])
+        self.assertEqual(evidence["upload"]["sha256"], evidence["upload"]["removed_sha256"])
+        self.assertNotEqual(self.contract["candidate"]["sha256"], evidence["upload"]["sha256"])
+        self.assertTrue(evidence["upload"]["remote_file_removed"])
         self.assertFalse(evidence["upload"]["print_started"])
         self.assertIn("plate_clear", evidence["next_effect_blocked_until"])
 

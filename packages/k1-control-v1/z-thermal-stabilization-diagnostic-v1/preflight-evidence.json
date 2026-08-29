@@ -46,7 +46,10 @@
     "post_upload_preflight_ok": true,
     "remote_file_written": true,
     "print_started": false,
-    "physical_action": false
+    "physical_action": false,
+    "invalidated_after_human_end_and_purge_feedback": true,
+    "remote_file_removed": true,
+    "removed_sha256": "657db94f006a92b5f4b68ee3afd4674f56963208f90c145892cc1205a2582ce1"
   },
   "next_effect_blocked_until": [
     "human_present",

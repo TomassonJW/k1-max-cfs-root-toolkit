@@ -13,14 +13,15 @@
   "candidate": {
     "private_path": "inventory/raw/20260829-goal3-z-thermal-stabilization-diagnostic-v1/K1-Z-THERMAL-SOAK-200S-T1A-2LAYER.gcode",
     "remote_name": "K1-Z-THERMAL-SOAK-200S-T1A-2LAYER.gcode",
-    "sha256": "657db94f006a92b5f4b68ee3afd4674f56963208f90c145892cc1205a2582ce1",
-    "bytes": 90735
+    "sha256": "18861926e2a521746af833feac12af086f099fa2383806b366eca765a0122345",
+    "bytes": 90792
   },
   "only_inserted_executable_commands": [
     "M140 S55",
     "M190 S55",
     "G4 P200000"
   ],
+  "safe_end_template": "packages/k1-control-v1/start-sequence-owner-safety-r2/orca-end.gcode",
   "thermal_comparison": {
     "bed_target_c": 55,
     "soak_seconds": 200,

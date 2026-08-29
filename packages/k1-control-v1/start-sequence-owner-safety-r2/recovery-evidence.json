@@ -1,0 +1,52 @@
+{
+  "schema": 1,
+  "date": "2026-08-29",
+  "cause": {
+    "unsafe_test_end": "motors_released_at_layer_height_without_bed_clearance_or_head_park",
+    "purge_tail_feedback": "prime_line_ended_at_X15_Y180_and_left_a_thin_tail_in_the_printable_area"
+  },
+  "human_authorization": "J_AUTORISE_RECUPERATION_G28_Z50_PARC_X203_Y273_ARRET_IMMEDIAT_PRET",
+  "recovery": {
+    "single_effect_request": [
+      "TURN_OFF_HEATERS",
+      "G28",
+      "BED_MESH_PROFILE LOAD=k1_p001_t055_r001_n11x11",
+      "G90",
+      "G1 Z50 F600",
+      "G1 X203 Y273 F1200",
+      "M400",
+      "M84"
+    ],
+    "http_result": "TIMEOUT_AFTER_8_SECONDS_EFFECT_UNCERTAIN_NO_RETRY",
+    "first_read_only_inspection": {
+      "state": "INTERMEDIATE_AFTER_G28",
+      "heater_targets_zero": true,
+      "homed_axes": "xyz",
+      "position_mm": [156.107, 143.411, 0.0],
+      "active_mesh": ""
+    },
+    "continuation": {
+      "status": "BLOCKED_BEFORE_EFFECT",
+      "reason": "axes_not_homed_by_first_effect",
+      "interpretation": "the_original_request_had_continued_after_the_http_client_timeout"
+    },
+    "final_two_read_only_snapshots": {
+      "stable": true,
+      "print_state": "standby",
+      "heater_targets_zero": true,
+      "homed_axes": "",
+      "physical_position_mm": [203.0, 273.0, 50.23],
+      "active_mesh": "k1_p001_t055_r001_n11x11",
+      "unique_engaged_route": "T1A",
+      "active_cfs_command": "",
+      "accepted_z_offset_mm": -0.04,
+      "low_moves_armed": 0
+    }
+  },
+  "unsafe_thermal_gcode": {
+    "remote_name": "K1-Z-THERMAL-SOAK-200S-T1A-2LAYER.gcode",
+    "removed_after_exact_hash_check": true,
+    "removed_sha256": "657db94f006a92b5f4b68ee3afd4674f56963208f90c145892cc1205a2582ce1"
+  },
+  "automatic_retry": false
+}

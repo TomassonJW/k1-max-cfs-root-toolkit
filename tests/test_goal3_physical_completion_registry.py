@@ -47,20 +47,20 @@ class Goal3PhysicalCompletionRegistryTests(unittest.TestCase):
         self.assertIn("final_project_closure", boundary)
         self.assertEqual(4, self.contract["macro_goal_count"])
 
-    def test_current_gate_waits_for_the_human_z_thermal_run(self):
+    def test_current_gate_waits_for_start_owner_safety_r2(self):
         gate = self.matrix["current_human_gate"]
         self.assertEqual(
-            "Z_THERMAL_STABILIZATION_DIAGNOSTIC_PREFLIGHT_AND_UPLOAD_OK_AWAITING_HUMAN_RUN",
+            "START_OWNER_SAFETY_R2_OFFLINE_CORRECTION_AFTER_END_AND_PURGE_FEEDBACK",
             gate["checkpoint"],
         )
-        self.assertIn("POST_UPLOAD_PREFLIGHT_OK", gate["technical_status"])
-        self.assertIn("6_TARGETED_TESTS_OK", gate["technical_status"])
+        self.assertIn("RECOVERY_FINISHED_AT_Z50_X203_Y273", gate["technical_status"])
+        self.assertIn("UNSAFE_THERMAL_GCODE_REMOVED", gate["technical_status"])
         self.assertEqual(
             "G4-K1-CONTROL-Z-THERMAL-STABILIZATION-DIAGNOSTIC-V1",
             gate["active_gate"],
         )
         self.assertEqual(
-            "CONFIRM_PLATE_CLEAR_MANUAL_NOZZLE_CLEAN_IMMEDIATE_STOP_AVAILABLE_AND_NO_Z_ADJUSTMENT_BEFORE_FIRST_LAYER_VERDICT",
+            "AFTER_OFFLINE_AND_INSTALL_VALIDATION_CONFIRM_FRONT_LEFT_PURGE_TAIL_GEOMETRY_THEN_REOPEN_THERMAL_Z_DIAGNOSTIC",
             gate["required_human_verdict"],
         )
         self.assertTrue(gate["next_effect_blocked"])

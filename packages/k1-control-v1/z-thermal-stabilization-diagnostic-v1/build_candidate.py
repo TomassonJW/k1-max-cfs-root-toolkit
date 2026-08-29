@@ -13,6 +13,8 @@ SOURCE_SHA256 = "d98c2a7fe9bb9bc1620cd3cc622edd4a48eaa7bd9c507bd0573de7bc5dab9f7
 BASE_PACKAGE = ROOT / "packages" / "k1-control-v1" / "start-sequence-owner-physical-keep-correct-t1a-v1"
 BASE_TRIAL = BASE_PACKAGE / "remote_trial.py"
 BASE_INSTALLER = BASE_PACKAGE / "remote_install.py"
+SAFE_PACKAGE = ROOT / "packages" / "k1-control-v1" / "start-sequence-owner-safety-r2"
+SAFE_END_TEMPLATE = SAFE_PACKAGE / "orca-end.gcode"
 BASE_TRIAL_SHA256 = "5f461db624acaa8682ec20bcd3eed001da39688f1e19a880d8096685c350a68f"
 BASE_INSTALLER_SHA256 = "ff84e23462dc642d916bc7d83cfca0eea53414253b7ad940c1cb46be56a5ffa0"
 OLD_MISSION = "G4-K1-CONTROL-START-SEQUENCE-OWNER-PHYSICAL-KEEP-CORRECT-T1A-V1"
@@ -36,6 +38,13 @@ PRELUDE_LINES = (
     b"M190 S55",
     b"G4 P200000",
     b"; K1_CONTROL_THERMAL_SOAK_DIAGNOSTIC_V1_END",
+)
+OLD_END_LINES = (
+    b"KCTRL_START_ABORT_V1",
+    b"KCTRL_CLEAR_MANUAL_NOZZLE_CLEAN_V1",
+    b"M107 P1",
+    b"M107 P2",
+    b"M84",
 )
 
 
@@ -64,10 +73,7 @@ def derive_programs() -> tuple[bytes, bytes]:
     return trial_text.encode("utf-8"), installer_text.encode("utf-8")
 
 
-def build() -> dict:
-    source = SOURCE.read_bytes()
-    if digest(source) != SOURCE_SHA256:
-        raise ValueError("source_gcode_hash_drift")
+def derive_gcode(source: bytes) -> bytes:
     lines = source.splitlines(keepends=True)
     matches = [index for index, line in enumerate(lines) if line.rstrip(b"\r\n") == START]
     if len(matches) != 1:
@@ -79,6 +85,19 @@ def build() -> dict:
         raise ValueError("source_already_contains_soak")
     lines[index] = prelude + lines[index]
     candidate = b"".join(lines)
+    old_end = newline.join(OLD_END_LINES)
+    safe_end_lines = tuple(line.encode("utf-8") for line in SAFE_END_TEMPLATE.read_text(encoding="utf-8").splitlines() if line.strip())
+    safe_end = newline.join(safe_end_lines)
+    if candidate.count(old_end) != 1:
+        raise ValueError("old_unsafe_end_not_unique")
+    return candidate.replace(old_end, safe_end)
+
+
+def build() -> dict:
+    source = SOURCE.read_bytes()
+    if digest(source) != SOURCE_SHA256:
+        raise ValueError("source_gcode_hash_drift")
+    candidate = derive_gcode(source)
     OUTPUT.parent.mkdir(parents=True, exist_ok=True)
     OUTPUT.write_bytes(candidate)
     trial, installer = derive_programs()
