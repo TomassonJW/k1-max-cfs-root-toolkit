@@ -1,6 +1,6 @@
 # Résultat — BEST-CURRENT-MESH-RESTORE-AFTER-POWER-CYCLE-V1
 
-Statut actuel : `R2_LIVE_PREFLIGHT_OK_WAITING_EXACT_ONE_COMMAND_GATE`.
+Statut actuel : `R2_CLOSED_OK_11X11_RESTORED_COLD_NO_ROLLBACK`.
 
 Le paquet corrige quatre défauts de l'ancienne gate historique :
 
@@ -34,6 +34,10 @@ Le préflight R2 figé a ensuite obtenu `PREFLIGHT_OK` sur cette projection
 exacte. Il n'a envoyé aucun G-code et n'a produit aucun effet. La commande de
 remise n'a pas été appelée.
 
-Prochaine gate : après le nouveau préflight R2 vert, autoriser exactement
-`G4-K1-CONTROL-BEST-CURRENT-MESH-RESTORE-AFTER-POWER-CYCLE-V1-R2` sur le commit
-figé. Cette gate ne couvre toujours pas l'essai chaud de deux couches.
+La gate exacte a ensuite chargé une seule fois
+`k1_p001_t055_r001_n11x11`. La lecture immédiate confirme le profil, les onze
+lignes de onze points et l'empreinte exacte. `T1A`, les cibles zéro, le parc
+haut, les gardes et toutes les configurations sont inchangés. Aucun rollback
+n'a été nécessaire.
+
+Cette gate est close et ne couvre pas l'essai chaud de deux couches.

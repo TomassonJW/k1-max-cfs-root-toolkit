@@ -2,7 +2,7 @@
   "schema": 1,
   "plan_id": "GOAL-P4-PHYSICAL-SLICES-REMAINING-EXECUTION-V1",
   "goal": "GOAL-P4-PHYSICAL-SLICES-QUALIFICATION-V1",
-  "status": "IN_PROGRESS_R2_PREFLIGHT_OK_WAITING_FOR_EXACT_11X11_RESTORE_GATE",
+  "status": "IN_PROGRESS_11X11_RESTORED_WAITING_THERMAL_R2_TWO_LAYER_GATE",
   "purpose": "finish_all_five_remaining_physical_requirements_without_hiding_route_or_human_dependencies",
   "current_observation": {
     "physical_filament_left_in_head_overnight": "T1A_user_confirmed",
@@ -13,7 +13,9 @@
     "logical_route_after_stock_extrusion": ["T1A"],
     "safe_park_after_stock_extrusion_mm": [210.0, 291.5, 66.89154721095261],
     "fresh_R2_read_only_preflight": "PREFLIGHT_OK_no_effect",
-    "current_human_action": "authorize_exact_R2_11x11_restore_on_frozen_commit"
+    "mesh_restore_R2": "RESTORE_OK_one_load_no_rollback",
+    "active_mesh_after_restore": "k1_p001_t055_r001_n11x11",
+    "current_human_action": "authorize_one_thermal_R2_two_layer_trial_without_live_Z_adjustment"
   },
   "sequencing_decision": {
     "installed_owner_supports_only": "unique_T1A_keep_correct",
@@ -50,7 +52,7 @@
       "order": 2,
       "id": "RESTORE_BEST_CURRENT_11X11_COLD",
       "requirement": "CFS_START_STATES_AND_TEMPERATURE_OWNER",
-      "status": "R2_LIVE_PREFLIGHT_OK_WAITING_EXACT_GATE",
+      "status": "PASSED_COLD_RESTORE_OK_NO_ROLLBACK",
       "route_before": ["T1A"],
       "route_after": ["T1A"],
       "action": "one_BED_MESH_PROFILE_load_with_exact_prior_profile_rollback",
@@ -62,7 +64,7 @@
       "order": 3,
       "id": "THERMAL_STABILIZATION_R2_TWO_LAYER",
       "requirement": "CFS_START_STATES_AND_TEMPERATURE_OWNER",
-      "status": "OFFLINE_READY_WAITING_PRIOR_STAGES",
+      "status": "OFFLINE_READY_WAITING_EXACT_PHYSICAL_GATE",
       "route_before": ["T1A"],
       "route_after": ["T1A"],
       "action": "one_200s_bed_soak_then_owned_R2_two_layer_trial",

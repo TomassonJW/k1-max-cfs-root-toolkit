@@ -70,11 +70,12 @@ prouvé `T1A` unique, `default` actif, les cibles à zéro et une tête parquée
 haut à `X210 / Y291,5 / Z66,8915`. Le seul KO venait de l'ancienne règle qui
 refusait tout axe encore connu. R2 accepte désormais soit des axes non
 référencés, soit exactement le parc haut borné, sans ajouter le moindre
-mouvement. Le préflight R2 est maintenant vert sans effet. La K1 conserve
-exactement
-`T1A`, `default`, le parc haut, les cibles zéro et toutes les empreintes. La
-prochaine gate ne contient donc qu'un chargement du `11 × 11`, avec retour
-unique vers `default` si le résultat est ambigu.
+mouvement. Le préflight R2 a été vert sans effet avec `T1A`, `default`, le parc
+haut, les cibles zéro et toutes les empreintes exactes. La recharge froide est
+maintenant close OK : une seule commande, profil et
+matrice `11 × 11` exacts, `T1A` inchangé, cibles zéro, aucun mouvement et aucun
+rollback. Le prochain effet possible est l'essai thermique R2 de deux couches,
+toujours séparé.
 
 Le diagnostic thermique R2 reste ensuite le prochain essai chaud : plateau
 stabilisé `200 s` avant création du jeton manuel, puis une seule impression de

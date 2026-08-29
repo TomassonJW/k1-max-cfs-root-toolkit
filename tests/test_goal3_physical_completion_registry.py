@@ -51,19 +51,19 @@ class Goal3PhysicalCompletionRegistryTests(unittest.TestCase):
     def test_current_gate_waits_for_t1a_and_the_frozen_power_cycle_restore_successor(self):
         gate = self.matrix["current_human_gate"]
         self.assertEqual(
-            "START_OWNER_SAFETY_R2_INSTALLED_T1A_REENGAGED_MESH_RESTORE_R2_LIVE_PREFLIGHT_OK_WAITING_EXACT_ONE_COMMAND_GATE",
+            "T1A_UNIQUE_11X11_RESTORED_COLD_NO_ROLLBACK_WAITING_THERMAL_R2_TWO_LAYER_GATE",
             gate["checkpoint"],
         )
-        self.assertIn("R2_LIVE_PREFLIGHT_OK_UNIQUE_T1A", gate["technical_status"])
-        self.assertIn("SAFE_PARK_X210_Y291_5_Z66_8915", gate["technical_status"])
-        self.assertIn("NO_EFFECT_RESTORE_ONE_11X11_LOAD", gate["technical_status"])
-        self.assertIn("EXACT_DEFAULT_ROLLBACK", gate["technical_status"])
+        self.assertIn("MESH_RESTORE_R2_CLOSED_OK_ONE_11X11_LOAD", gate["technical_status"])
+        self.assertIn("EXACT_MATRIX_T1A_UNCHANGED", gate["technical_status"])
+        self.assertIn("TARGETS_ZERO_SAFE_HIGH_PARK_HASHES_EXACT", gate["technical_status"])
+        self.assertIn("NO_ROLLBACK_THERMAL_CANDIDATE_R2_READY", gate["technical_status"])
         self.assertEqual(
-            "G4-K1-CONTROL-BEST-CURRENT-MESH-RESTORE-AFTER-POWER-CYCLE-V1-R2",
+            "G4-K1-CONTROL-Z-THERMAL-STABILIZATION-DIAGNOSTIC-V1",
             gate["active_gate"],
         )
         self.assertEqual(
-            "AUTHORIZE_G4_K1_CONTROL_BEST_CURRENT_MESH_RESTORE_AFTER_POWER_CYCLE_V1_R2_ON_FROZEN_COMMIT_ONE_11X11_LOAD_ONLY_COLD_VALIDATION",
+            "AUTHORIZE_ONE_200S_SOAK_AND_TWO_LAYER_R2_TRIAL_WITH_HUMAN_PRESENT_PLATE_CLEAR_NOZZLE_CLEAN_IMMEDIATE_STOP_AND_NO_LIVE_Z_ADJUSTMENT",
             gate["required_human_verdict"],
         )
         self.assertTrue(gate["next_effect_blocked"])

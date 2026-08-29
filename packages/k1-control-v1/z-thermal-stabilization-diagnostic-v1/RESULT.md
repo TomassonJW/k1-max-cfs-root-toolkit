@@ -1,6 +1,6 @@
 # Résultat
 
-Statut actuel : `OFFLINE_CORRECTED_AND_TESTED_WAITING_FOR_T1A_AND_EXACT_PHYSICAL_GO`.
+Statut actuel : `T1A_AND_11X11_READY_WAITING_EXACT_PHYSICAL_GO`.
 
 Le candidat privé est dérivé du G-code physique déjà qualifié. Sa différence
 est uniquement la fin sûre. La stabilisation n'est plus placée dans le fichier
@@ -58,3 +58,9 @@ réengagement stock de `T1A`, puis la gate corrigée
 `G4-K1-CONTROL-BEST-CURRENT-MESH-RESTORE-AFTER-POWER-CYCLE-V1` pour le
 rechargement à froid du meilleur profil
 courant `11 × 11`, avant un nouveau préflight.
+
+Cette reprise est maintenant terminée : `T1A` est la route unique et le
+`11 × 11` exact est actif après une gate froide close sans rollback. L'essai
+thermique reste séparé, sans upload ni chauffe encore exécutés. Il exige Thomas
+présent, plateau libre, buse nettoyée, arrêt immédiat disponible et aucun
+ajustement Z avant le verdict visuel des deux couches.
