@@ -31,11 +31,12 @@ ALLOWED_CHECKPOINTS = (
     "DISENGAGE",
 )
 EXPECTED_HASHES = {
-    "/usr/data/printer_data/config/printer.cfg": "f88d6b52477592805384fca2b4d7abd00298deecd82227af2fa580085fe26fa2",
+    "/usr/data/printer_data/config/printer.cfg": "a79c8c917d8eee2575939ade4907640c2b2cf7ff59283d28def895b020e127af",
     "/usr/data/printer_data/config/box.cfg": "e7a6b26df58a9fa8e49d3af6845f5a0937a790c8ef494b96ec72fd7392abc7a7",
     "/usr/data/printer_data/config/gcode_macro.cfg": "864fedde88fbb345c220ae5658f7b04779b3981bd78d68eda6fa63c59c79a04f",
     "/usr/data/printer_data/config/k1-control-z-mesh.cfg": "dd7fa02a8b7b9bd46850c90cf2a85afa71ce27cfa263c120ef4e9cca6b48c113",
     "/usr/data/printer_data/config/k1-control-calibration-path.cfg": "825aadac8679e0d0e9be140cc5ba4e7656b2bff0d197d1683a73d2b5be4e364e",
+    "/usr/data/printer_data/config/k1-control-start-sequence-owner-v1.cfg": "678582e808d74f6b720ef3d6b52dc2c443c7a0652a62c484319e2b22fba7b0bc",
 }
 QUERY_PATH = (
     "/printer/objects/query?"
@@ -171,21 +172,28 @@ def safe_snapshot(elapsed_s, payload):
     }
 
 
-def validate_preflight(server, snapshot, hashes):
+def validate_preflight(server, snapshot, hashes, checkpoint):
     if server.get("klippy_state") != "ready":
         raise ObserverError("klippy_not_ready")
     if server.get("failed_components") != [] or server.get("warnings") != []:
         raise ObserverError("server_not_clean")
-    if snapshot["job"]["print_state"] not in ("standby", "printing", "paused"):
-        raise ObserverError("print_state_not_observable")
+    state = snapshot["job"]["print_state"]
+    homed_axes = snapshot["motion"]["homed_axes"]
+    if checkpoint == "FULL_CYCLE":
+        if state != "standby" or homed_axes not in (None, "", "xyz"):
+            raise ObserverError("full_cycle_entry_invalid")
+    elif checkpoint == "DISENGAGE":
+        if state not in ("standby", "complete") or homed_axes not in (None, "", "xyz"):
+            raise ObserverError("disengage_entry_invalid")
+    else:
+        if state not in ("printing", "paused") or homed_axes != "xyz":
+            raise ObserverError("active_checkpoint_entry_invalid")
     if snapshot["cfs"]["state"] != "connect":
         raise ObserverError("cfs_root_disconnected")
     if snapshot["cfs"]["T1_state"] != "connect" or snapshot["cfs"]["T2_state"] != "connect":
         raise ObserverError("cfs_unit_disconnected")
     if snapshot["cfs"]["active_command"] not in (None, ""):
         raise ObserverError("cfs_command_already_active")
-    if snapshot["motion"]["homed_axes"] != "xyz":
-        raise ObserverError("axes_not_homed_xyz")
     if snapshot["calibration"]["active_profile"] != BEST_PROFILE:
         raise ObserverError("active_profile_drift")
     if snapshot["calibration"]["accepted_z_valid"] != 1:
@@ -204,7 +212,7 @@ def run(duration_s, checkpoint):
     hashes_before = configuration_hashes()
     server = child(fetch_json("/server/info"), "result")
     first = safe_snapshot(0.0, fetch_json(QUERY_PATH))
-    validate_preflight(server, first, hashes_before)
+    validate_preflight(server, first, hashes_before, checkpoint)
     print(json.dumps({
         "kind": "header",
         "schema": 1,

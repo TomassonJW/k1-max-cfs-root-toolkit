@@ -8,13 +8,18 @@
     "CANCEL_END_AND_SEPARATE_DISENGAGE"
   ],
   "authority": "passive_live_observer_only",
-  "status": "PASSIVE_OBSERVER_READY_LIVE_BASELINE_OK_PHYSICAL_CHECKPOINTS_NOT_STARTED",
+  "status": "OFFLINE_R2_READY_PREVIOUS_LIVE_BASELINE_RETAINED_PHYSICAL_CHECKPOINTS_NOT_STARTED",
   "deployment_candidate": false,
+  "offline_plan_command": ".\\packages\\k1-control-v1\\job-lifecycle-observer-v1\\capture_observation.ps1 -Action Plan -Checkpoint FULL_CYCLE",
+  "installed_start_owner": {
+    "version": "SAFETY_R2",
+    "sha256": "678582e808d74f6b720ef3d6b52dc2c443c7a0652a62c484319e2b22fba7b0bc"
+  },
   "observer": {
     "program": "packages/k1-control-v1/job-lifecycle-observer-v1/observer.py",
-    "program_sha256": "6c59c3000ac68e7b2c10926467ae954063e394b0183daee19e59cfb883d8fed1",
+    "program_sha256": "5991f4ac0e9e6a780e46d601a8a85e6507d43a439a587e650af417af7422fa80",
     "runner": "packages/k1-control-v1/job-lifecycle-observer-v1/capture_observation.ps1",
-    "runner_sha256": "428c92321ed2f17850100eafb91efef2fab74c9e817a51b37b55d6aedb1f9539",
+    "runner_sha256": "6f4f13900f827b5f4f44382ffcce8ad3dc0184129567f0b8b95e95149006e1d1",
     "analyzer": "packages/k1-control-v1/job-lifecycle-observer-v1/analyze_observation.py",
     "analyzer_sha256": "4fb0b47a3a2c817cb1b3d05774a6467b82bd2784628c276fe34701c6b469c1d9",
     "poll_interval_s": 0.25,
@@ -51,10 +56,14 @@
   },
   "invariants": {
     "klippy_ready_before_capture": true,
-    "print_state_before_capture": ["standby", "printing", "paused"],
+    "entry_by_checkpoint": {
+      "FULL_CYCLE": "standby_with_axes_released_or_homed",
+      "TOOL_CHANGE_RUNOUT_PAUSE_CANCEL_NORMAL_END": "printing_or_paused_with_xyz_homed",
+      "DISENGAGE": "standby_or_complete_with_axes_released_or_homed"
+    },
     "both_cfs_connected_before_capture": true,
     "no_cfs_command_active_before_capture": true,
-    "axes_homed_xyz_before_capture": true,
+    "axes_requirement_is_checkpoint_specific": true,
     "active_profile": "k1_p001_t055_r001_n11x11",
     "accepted_z_offset": -0.04,
     "configuration_hashes_exact_before_capture": true,
@@ -78,6 +87,7 @@
     "status": "OK"
   },
   "live_read_only_baseline": {
+    "scope": "historical_pre_R2_transport_and_redaction_baseline_not_current_hash_preflight",
     "capture_id": "20260828-goal3-v3-live-position-readonly-v1",
     "sha256": "f5b7704f8471c081a8c14e2680ce02357073c72b9102e72f2943cbaadc2c289c",
     "snapshot_count": 11,

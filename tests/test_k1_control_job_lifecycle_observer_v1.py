@@ -157,6 +157,16 @@ class JobLifecycleObserverTests(unittest.TestCase):
         for checkpoint in self.contract["checkpoints"]:
             self.assertIn(checkpoint, runner)
 
+    def test_r2_hash_and_checkpoint_specific_entries_are_pinned(self):
+        source = (PACKAGE / "observer.py").read_text(encoding="utf-8")
+        runner = (PACKAGE / "capture_observation.ps1").read_text(encoding="utf-8")
+        self.assertIn(self.contract["installed_start_owner"]["sha256"], source)
+        self.assertIn('checkpoint == "FULL_CYCLE"', source)
+        self.assertIn('checkpoint == "DISENGAGE"', source)
+        self.assertIn('state not in ("printing", "paused")', source)
+        for guard in ("-not $Execute", "$Gate -cne $Mission", "-not $HumanPresent", "-not $ImmediateStopAvailable"):
+            self.assertIn(guard, runner)
+
     def test_contract_and_runner_are_pinned(self):
         observer = self.contract["observer"]
         self.assertEqual(sha256(PACKAGE / "observer.py"), observer["program_sha256"])

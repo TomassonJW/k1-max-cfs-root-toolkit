@@ -1,5 +1,8 @@
 [CmdletBinding()]
 param(
+    [ValidateSet('Plan', 'Observe')]
+    [string]$Action = 'Plan',
+
     [Parameter(Mandatory = $true)]
     [ValidateSet('FULL_CYCLE', 'TOOL_CHANGE', 'RUNOUT_RECOVERY', 'PAUSE_RESUME', 'CANCEL', 'NORMAL_END', 'DISENGAGE')]
     [string]$Checkpoint,
@@ -10,11 +13,17 @@ param(
     [ValidatePattern('^[A-Za-z0-9._-]+$')]
     [string]$CaptureId = ((Get-Date -Format 'yyyyMMdd-HHmmss') + '-job-lifecycle-observer-v1'),
 
-    [string]$PrinterHost = 'k1max-root'
+    [string]$PrinterHost = 'k1max-root',
+
+    [switch]$Execute,
+    [string]$Gate,
+    [switch]$HumanPresent,
+    [switch]$ImmediateStopAvailable
 )
 
 $ErrorActionPreference = 'Stop'
-$ExpectedProgramSha256 = '6c59c3000ac68e7b2c10926467ae954063e394b0183daee19e59cfb883d8fed1'
+$Mission = 'G4-K1-CONTROL-JOB-LIFECYCLE-OBSERVER-V1'
+$ExpectedProgramSha256 = '5991f4ac0e9e6a780e46d601a8a85e6507d43a439a587e650af417af7422fa80'
 $WorkspaceRoot = (Resolve-Path (Join-Path $PSScriptRoot '..\..\..')).Path
 $RawRoot = Join-Path $WorkspaceRoot 'inventory\raw'
 $SessionDirectory = Join-Path $RawRoot $CaptureId
@@ -47,6 +56,25 @@ $ActualProgramSha256 = Get-LocalSha256 -Path $RemoteProgramPath
 if ($ActualProgramSha256 -cne $ExpectedProgramSha256) {
     throw "Le programme observateur ne correspond pas à la version revue : $ActualProgramSha256"
 }
+if ($Action -eq 'Plan') {
+    [ordered]@{
+        status = 'JOB_LIFECYCLE_OBSERVER_PLAN_OK'
+        mission = $Mission
+        checkpoint = $Checkpoint
+        observer_sha256 = $ExpectedProgramSha256
+        installed_start_owner_sha256 = '678582e808d74f6b720ef3d6b52dc2c443c7a0652a62c484319e2b22fba7b0bc'
+        printer_connection = $false
+        gcode = $false
+        job_action = $false
+        cfs_action = $false
+        remote_write = $false
+        service_action = $false
+    } | ConvertTo-Json
+    exit 0
+}
+if (-not $Execute -or $Gate -cne $Mission -or -not $HumanPresent -or -not $ImmediateStopAvailable) {
+    throw "Observation réelle refusée : -Execute, -Gate '$Mission', présence humaine et arrêt immédiat sont obligatoires."
+}
 
 New-Item -ItemType Directory -Path $SessionDirectory | Out-Null
 $ResolvedRawRoot = (Resolve-Path -LiteralPath $RawRoot).Path
@@ -57,7 +85,7 @@ if (-not $ResolvedSession.StartsWith($ResolvedRawRoot + [IO.Path]::DirectorySepa
 
 $Metadata = [ordered]@{
     capture_id = $CaptureId
-    mission = 'G4-K1-CONTROL-JOB-LIFECYCLE-OBSERVER-V1'
+    mission = $Mission
     checkpoint = $Checkpoint
     duration_s = $DurationSeconds
     local_start = (Get-Date).ToString('o')
