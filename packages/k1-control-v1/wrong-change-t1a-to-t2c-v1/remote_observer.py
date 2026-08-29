@@ -23,7 +23,7 @@ EXPECTED_HASHES = {
     "/usr/data/printer_data/config/gcode_macro.cfg": "864fedde88fbb345c220ae5658f7b04779b3981bd78d68eda6fa63c59c79a04f",
     "/usr/data/printer_data/config/k1-control-z-mesh.cfg": "dd7fa02a8b7b9bd46850c90cf2a85afa71ce27cfa263c120ef4e9cca6b48c113",
     "/usr/data/printer_data/config/k1-control-calibration-path.cfg": "825aadac8679e0d0e9be140cc5ba4e7656b2bff0d197d1683a73d2b5be4e364e",
-    "/usr/data/printer_data/config/k1-control-start-sequence-owner-v1.cfg": "25291e1534f0ba100d3171b983796089a24cd49fdfcef76817406d325e6d8e03",
+    "/usr/data/printer_data/config/k1-control-start-sequence-owner-v1.cfg": "678582e808d74f6b720ef3d6b52dc2c443c7a0652a62c484319e2b22fba7b0bc",
 }
 QUERY = (
     "/printer/objects/query?print_stats=state,filename"
@@ -136,8 +136,12 @@ def snapshot(elapsed_s):
 
 
 def validate_static(item):
-    if item["print_state"] != "standby" or item["filename_present"]:
-        raise ObserverError("printer_not_standby")
+    if item["print_state"] not in ("standby", "complete"):
+        raise ObserverError("printer_not_terminal")
+    if item["print_state"] == "standby" and item["filename_present"]:
+        raise ObserverError("standby_filename_present")
+    if item["print_state"] == "complete" and not item["filename_present"]:
+        raise ObserverError("complete_filename_missing")
     if item["cfs"]["state"] != "connect" or item["cfs"]["T1_state"] != "connect" or item["cfs"]["T2_state"] != "connect":
         raise ObserverError("cfs_disconnected")
     if item["calibration"]["active_profile"] != BEST_PROFILE:

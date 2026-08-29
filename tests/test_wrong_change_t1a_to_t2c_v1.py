@@ -33,6 +33,15 @@ class WrongChangeT1AToT2CTests(unittest.TestCase):
         self.assertFalse(result["observer_effect"])
         self.assertFalse(result["automatic_retry"])
 
+    def test_observer_pins_r2_and_accepts_only_real_terminal_state_pairs(self):
+        observer = (PACKAGE / "remote_observer.py").read_text(encoding="utf-8")
+        contract = json.loads((PACKAGE / "contract.json").read_text(encoding="utf-8"))
+        self.assertIn(contract["installed_start_owner"]["sha256"], observer)
+        self.assertIn('item["print_state"] not in ("standby", "complete")', observer)
+        self.assertIn('item["print_state"] == "standby" and item["filename_present"]', observer)
+        self.assertIn('item["print_state"] == "complete" and not item["filename_present"]', observer)
+        self.assertEqual("OFFLINE_READY_BLOCKED_BY_PRIOR_R2_PHYSICAL_TRIAL", contract["status"])
+
     def test_complete_unique_change_is_automatically_green(self):
         entries = [
             snap(["T1A"], 0.0),

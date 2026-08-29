@@ -4,18 +4,24 @@
   "goal": "GOAL-P4-PHYSICAL-SLICES-QUALIFICATION-V1",
   "requirement": "CFS_START_STATES_AND_TEMPERATURE_OWNER",
   "reused_by": "TOOL_CHANGE_AND_RUNOUT",
-  "status": "PREPARED_NOT_RUN",
+  "status": "OFFLINE_READY_BLOCKED_BY_PRIOR_R2_PHYSICAL_TRIAL",
   "authority": "passive_observer_with_one_human_stock_ui_action",
+  "offline_plan_command": ".\\packages\\k1-control-v1\\wrong-change-t1a-to-t2c-v1\\capture_gate.ps1 -Action Plan -CaptureId offline-plan -Execute -Gate G4-K1-CONTROL-WRONG-CHANGE-T1A-TO-T2C-V1",
   "starting_route": "T1A",
   "target_route": "T2C",
   "human_action": "stock_ui_change_T1A_to_T2C_once",
   "automatic_retry": false,
   "human_requirements": [
+    "R2_stock_edge_purge_and_safe_end_physical_trial_passed",
     "T2C_identity_and_material_confirmed",
     "operator_present",
     "immediate_stop_available",
     "visible_purge_verdict"
   ],
+  "installed_start_owner": {
+    "version": "SAFETY_R2",
+    "sha256": "678582e808d74f6b720ef3d6b52dc2c443c7a0652a62c484319e2b22fba7b0bc"
+  },
   "automatic_requirements": [
     "T1A_is_the_unique_starting_route",
     "T1A_is_released_once",

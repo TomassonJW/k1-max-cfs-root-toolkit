@@ -1,7 +1,7 @@
 [CmdletBinding()]
 param(
     [Parameter(Mandatory = $true)]
-    [ValidateSet('Preflight', 'Observe')]
+    [ValidateSet('Plan', 'Preflight', 'Observe')]
     [string]$Action,
 
     [Parameter(Mandatory = $true)]
@@ -23,7 +23,7 @@ param(
 
 $ErrorActionPreference = 'Stop'
 $Mission = 'G4-K1-CONTROL-WRONG-CHANGE-T1A-TO-T2C-V1'
-$ExpectedObserverSha256 = '6293e71ffc61d512c701b4cf3d01e2ff66464e360a34a05f6d93b3d5eb979132'
+$ExpectedObserverSha256 = '3c91e8e77395cdab37443180d762bc78d76d55911049578584c110c3aba6738b'
 $WorkspaceRoot = (Resolve-Path (Join-Path $PSScriptRoot '..\..\..')).Path
 $RawRoot = Join-Path $WorkspaceRoot 'inventory\raw'
 $SessionDirectory = Join-Path $RawRoot $CaptureId
@@ -43,6 +43,22 @@ if (-not $Execute -or $Gate -cne $Mission) {
 }
 if ((Get-LocalSha256 $ObserverPath) -cne $ExpectedObserverSha256) {
     throw "L'observateur ne correspond pas à la version revue."
+}
+if ($Action -eq 'Plan') {
+    [ordered]@{
+        status = 'WRONG_CHANGE_T1A_TO_T2C_PLAN_OK'
+        mission = $Mission
+        observer_sha256 = $ExpectedObserverSha256
+        installed_start_owner_sha256 = '678582e808d74f6b720ef3d6b52dc2c443c7a0652a62c484319e2b22fba7b0bc'
+        starting_route = 'T1A'
+        target_route = 'T2C'
+        printer_connection = $false
+        observer_gcode = $false
+        observer_cfs_action = $false
+        observer_remote_write = $false
+        automatic_retry = $false
+    } | ConvertTo-Json
+    exit 0
 }
 if ($Action -eq 'Observe' -and (-not $HumanPresent -or -not $ImmediateStopAvailable -or -not $HumanConfirmedT2CIdentity)) {
     throw 'Observation réelle refusée : présence, arrêt immédiat et identité T2C doivent être confirmés.'
