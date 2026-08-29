@@ -81,6 +81,12 @@ class Goal3PhysicalCompletionRegistryTests(unittest.TestCase):
         self.assertLess(stages["PAUSE_RESUME_T1A"]["order"], stages["WRONG_CHANGE_T1A_TO_T2C"]["order"])
         self.assertEqual(["T2C"], stages["WRONG_CHANGE_T1A_TO_T2C"]["route_after"])
         self.assertEqual(["T1A"], stages["RETURN_T2C_TO_T1A_BEFORE_ACTIVE_CAMPAIGN"]["route_after"])
+        reengage = stages["REENGAGE_T1A_FOR_CROSS_CFS_CAMPAIGN"]
+        self.assertEqual(
+            "PASSIVE_OBSERVER_READY_WAITING_PRIOR_DISENGAGE_AND_AMBIGUITY_CHECKPOINT",
+            reengage["status"],
+        )
+        self.assertTrue((ROOT / reengage["artifact"]).is_file())
         reverse = stages["RETURN_T2C_TO_T1A_BEFORE_ACTIVE_CAMPAIGN"]
         self.assertEqual(
             "PASSIVE_OBSERVER_READY_WAITING_T2C_IDENTITY_AND_PRIOR_STAGES",

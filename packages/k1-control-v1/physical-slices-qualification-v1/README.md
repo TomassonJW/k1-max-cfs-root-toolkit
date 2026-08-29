@@ -49,3 +49,7 @@ qu'un slot et une bobine de secours réellement équivalents ne sont pas nommés
 Le retour intermédiaire `T2C -> T1A` dispose maintenant de sa gate passive
 séparée : elle observe une unique action humaine depuis l'interface stock, sans
 commander l'imprimante ni relancer automatiquement le changement.
+Le réengagement intermédiaire `aucune route -> T1A`, placé après le futur
+désengagement et la preuve de blocage ambigu, possède lui aussi une gate
+passive séparée. Elle ne s'applique pas au réengagement actuellement attendu
+après extinction.

@@ -157,13 +157,13 @@
       "order": 11,
       "id": "REENGAGE_T1A_FOR_CROSS_CFS_CAMPAIGN",
       "requirement": "CFS_START_STATES_AND_TEMPERATURE_OWNER",
-      "status": "WAITING_PRIOR_STAGES",
+      "status": "PASSIVE_OBSERVER_READY_WAITING_PRIOR_DISENGAGE_AND_AMBIGUITY_CHECKPOINT",
       "route_before": [],
       "route_after": ["T1A"],
       "action": "stock_ui_extrusion_T1A_once",
       "human_gate": true,
       "automatic_retry": false,
-      "artifact": null
+      "artifact": "packages/k1-control-v1/reengage-t1a-passive-v1/contract.json"
     },
     {
       "order": 12,

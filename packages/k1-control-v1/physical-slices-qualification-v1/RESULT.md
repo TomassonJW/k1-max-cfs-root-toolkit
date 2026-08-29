@@ -88,3 +88,9 @@ Le retour `T2C -> T1A` n'est plus une transition cachée du plan : le paquet
 `return-t2c-to-t1a-v1` est prêt hors imprimante. Il ne fait qu'observer une
 action humaine unique, vérifie le retour thermique, le mesh, le Z et l'arrêt
 final, et n'autorise aucun retry automatique.
+
+Le futur réengagement `aucune route -> T1A`, après le désengagement séparé et
+le checkpoint d'ambiguïté, dispose maintenant du même niveau de fermeture. Le
+paquet `reengage-t1a-passive-v1` refuse toute route initiale, exige un unique
+`T1A`, la chauffe observée avant et après l'engagement, puis le retour complet
+à zéro. Il ne déclenche lui-même aucune action.
