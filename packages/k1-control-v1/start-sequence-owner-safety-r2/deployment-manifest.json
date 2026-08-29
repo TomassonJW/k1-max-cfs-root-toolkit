@@ -1,0 +1,49 @@
+{
+  "schema": 1,
+  "mission": "G4-K1-CONTROL-START-SEQUENCE-OWNER-SAFETY-R2",
+  "status": "PREPARED_NOT_AUTHORIZED",
+  "deployment_candidate": true,
+  "deployment_authorized": false,
+  "printer_connection_authorized": false,
+  "physical_trial_authorized": false,
+  "payload": {
+    "packages/k1-control-v1/start-sequence-owner-safety-r2/k1-control-start-sequence-owner-safety-r2.cfg": "678582e808d74f6b720ef3d6b52dc2c443c7a0652a62c484319e2b22fba7b0bc",
+    "scripts/deploy-k1-control-start-sequence-owner-safety-r2.ps1": "288319f51c3875defcab907fc70f17c8d91f27daf70e51f11161d57f43ef9a7a",
+    "packages/k1-control-v1/start-sequence-owner-v1/remote_admin.py": "e81b3810f675f9a3b8985ee6feedb04a8aea12a64e636ee56f7916c0d8943d52",
+    "packages/k1-control-v1/start-sequence-owner-v1/remote_jinja_validate.py": "b372d4d57602ad68cca801ee46c7b385e6ad3af5deb48f467c3a1625fd5cc0a4"
+  },
+  "remote_baseline": {
+    "/usr/data/printer_data/config/printer.cfg": "a79c8c917d8eee2575939ade4907640c2b2cf7ff59283d28def895b020e127af",
+    "/usr/data/printer_data/config/k1-control-start-sequence-owner-v1.cfg": "25291e1534f0ba100d3171b983796089a24cd49fdfcef76817406d325e6d8e03"
+  },
+  "planned_change": {
+    "replace_file": "/usr/data/printer_data/config/k1-control-start-sequence-owner-v1.cfg",
+    "replacement_sha256": "678582e808d74f6b720ef3d6b52dc2c443c7a0652a62c484319e2b22fba7b0bc",
+    "printer_cfg_change": false,
+    "service_action": "Klipper host RESTART only after an exact backup",
+    "restart_guard": "observe a real Klipper socket generation transition",
+    "post_restart_mesh_restore": "load k1_p001_t055_r001_n11x11 once and read it back",
+    "cold_validation": "watchdog self-test and reset with heaters zero and no motion",
+    "physical_trial": false
+  },
+  "backup": {
+    "directory": "/usr/data/k1-control-v1/backups/<capture-id>/start-sequence-owner-safety-r2",
+    "files": [
+      "k1-control-start-sequence-owner-v1.cfg.before",
+      "checksums.sha256"
+    ]
+  },
+  "rollback": {
+    "restore_sha256": "25291e1534f0ba100d3171b983796089a24cd49fdfcef76817406d325e6d8e03",
+    "service_action": "Klipper host RESTART only",
+    "post_restart_mesh_restore": "load k1_p001_t055_r001_n11x11 once and read it back",
+    "final_validation": "T1A unique, heaters zero, axes released, accepted Z -0.04, owner idle"
+  },
+  "exact_commands": {
+    "plan": ".\\scripts\\deploy-k1-control-start-sequence-owner-safety-r2.ps1 -Action Plan",
+    "preflight": ".\\scripts\\deploy-k1-control-start-sequence-owner-safety-r2.ps1 -Action Preflight -Gate G4-K1-CONTROL-START-SEQUENCE-OWNER-SAFETY-R2 -EvidenceDirectory <workspace-evidence> -Execute",
+    "deploy": ".\\scripts\\deploy-k1-control-start-sequence-owner-safety-r2.ps1 -Action Deploy -Gate G4-K1-CONTROL-START-SEQUENCE-OWNER-SAFETY-R2 -CaptureId <capture-id> -EvidenceDirectory <workspace-evidence> -Execute",
+    "validate": ".\\scripts\\deploy-k1-control-start-sequence-owner-safety-r2.ps1 -Action Validate -Gate G4-K1-CONTROL-START-SEQUENCE-OWNER-SAFETY-R2 -EvidenceDirectory <workspace-evidence> -Execute",
+    "rollback": ".\\scripts\\deploy-k1-control-start-sequence-owner-safety-r2.ps1 -Action Rollback -Gate G4-K1-CONTROL-START-SEQUENCE-OWNER-SAFETY-R2 -CaptureId <capture-id> -EvidenceDirectory <workspace-evidence> -Execute"
+  }
+}

@@ -10,7 +10,7 @@ from pathlib import Path
 PACKAGE = Path(__file__).resolve().parent
 ROOT = PACKAGE.parents[2]
 SOURCE = ROOT / "packages" / "k1-control-v1" / "start-sequence-owner-v1" / "k1-control-start-sequence-owner-v1.cfg"
-OUTPUT = ROOT / "inventory" / "raw" / "20260829-goal3-start-sequence-owner-safety-r2" / "k1-control-start-sequence-owner-v1.cfg"
+OUTPUT = PACKAGE / "k1-control-start-sequence-owner-safety-r2.cfg"
 SOURCE_SHA256 = "25291e1534f0ba100d3171b983796089a24cd49fdfcef76817406d325e6d8e03"
 REPLACEMENTS = (
     ("    G1 X15 Y20 F9000", "    G1 X0.1 Y20 F6000"),

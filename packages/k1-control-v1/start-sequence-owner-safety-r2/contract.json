@@ -3,12 +3,14 @@
   "mission": "G4-K1-CONTROL-START-SEQUENCE-OWNER-SAFETY-R2",
   "goal": "GOAL-P4-PHYSICAL-SLICES-QUALIFICATION-V1",
   "status": "OFFLINE_CANDIDATE_OK_LIVE_INSTALL_AND_PHYSICAL_PURGE_NOT_STARTED",
+  "deployment_candidate": true,
+  "printer_connection_authorized": false,
   "source": {
     "path": "packages/k1-control-v1/start-sequence-owner-v1/k1-control-start-sequence-owner-v1.cfg",
     "sha256": "25291e1534f0ba100d3171b983796089a24cd49fdfcef76817406d325e6d8e03"
   },
   "candidate": {
-    "private_path": "inventory/raw/20260829-goal3-start-sequence-owner-safety-r2/k1-control-start-sequence-owner-v1.cfg",
+    "path": "packages/k1-control-v1/start-sequence-owner-safety-r2/k1-control-start-sequence-owner-safety-r2.cfg",
     "sha256": "678582e808d74f6b720ef3d6b52dc2c443c7a0652a62c484319e2b22fba7b0bc",
     "bytes": 16101
   },
@@ -42,5 +44,13 @@
   },
   "automatic_retry": false,
   "deployment_authorized": false,
-  "physical_run_authorized": false
+  "physical_run_authorized": false,
+  "prepared_update": {
+    "manifest": "packages/k1-control-v1/start-sequence-owner-safety-r2/deployment-manifest.json",
+    "deployer": "scripts/deploy-k1-control-start-sequence-owner-safety-r2.ps1",
+    "remote_file_replaced": "/usr/data/printer_data/config/k1-control-start-sequence-owner-v1.cfg",
+    "printer_cfg_unchanged": true,
+    "restart_required": true,
+    "physical_effect_during_install": false
+  }
 }

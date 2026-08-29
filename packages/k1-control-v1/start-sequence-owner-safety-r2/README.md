@@ -22,3 +22,15 @@ Le fichier thermique précédemment envoyé sur la K1 a été supprimé après
 vérification exacte de son empreinte. Aucun nouvel essai n'est permis avant la
 validation hors imprimante, la pose contrôlée de la macro corrigée et un
 préflight frais.
+
+## Mise à jour préparée
+
+Le déployeur R2 remplace seulement le fichier du propriétaire déjà inclus. Il
+ne modifie pas `printer.cfg`. Avant remplacement, il exige la version V1 exacte,
+un état sûr et `T1A` unique, puis sauvegarde le fichier avec son empreinte. Il
+attend une vraie transition du socket après le restart Klipper, recharge une
+seule fois le mesh `11 × 11` et exécute le self-test froid du surveillant. Au
+premier écart après mutation, il restaure exactement V1, redémarre Klipper et
+revérifie le même état sûr.
+
+Cette préparation n'autorise ni connexion K1, ni pose, ni purge physique.

@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import importlib.util
+import hashlib
 import json
 from pathlib import Path
 import sys
@@ -46,10 +47,21 @@ class StartSequenceOwnerSafetyR2Tests(unittest.TestCase):
         self.assertFalse(any(line.startswith("G28") for line in lines))
 
     def test_candidate_remains_blocked_before_live_install_and_human_run(self):
+        manifest = json.loads((PACKAGE / "deployment-manifest.json").read_text(encoding="utf-8"))
+        deployer = ROOT / "scripts" / "deploy-k1-control-start-sequence-owner-safety-r2.ps1"
         self.assertFalse(self.contract["deployment_authorized"])
+        self.assertFalse(self.contract["printer_connection_authorized"])
         self.assertFalse(self.contract["physical_run_authorized"])
         self.assertTrue(self.contract["purge_correction"]["human_physical_qualification_required"])
         self.assertFalse(self.contract["automatic_retry"])
+        self.assertEqual("PREPARED_NOT_AUTHORIZED", manifest["status"])
+        self.assertFalse(manifest["deployment_authorized"])
+        self.assertFalse(manifest["physical_trial_authorized"])
+        self.assertFalse(manifest["planned_change"]["printer_cfg_change"])
+        self.assertEqual(
+            manifest["payload"]["scripts/deploy-k1-control-start-sequence-owner-safety-r2.ps1"],
+            hashlib.sha256(deployer.read_bytes()).hexdigest(),
+        )
 
     def test_recovery_finished_but_uncertain_effect_was_never_retried(self):
         evidence = json.loads((PACKAGE / "recovery-evidence.json").read_text(encoding="utf-8"))
