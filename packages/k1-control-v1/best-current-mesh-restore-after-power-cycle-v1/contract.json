@@ -1,0 +1,37 @@
+{
+  "contract_id": "G4-K1-CONTROL-BEST-CURRENT-MESH-RESTORE-AFTER-POWER-CYCLE-V1",
+  "status": "offline_candidate_waiting_for_exact_live_gate",
+  "purpose": "restore_the_best_current_observed_profile_after_power_cycle_without_touching_the_fresh_T1A_route",
+  "remote_program_sha256": "cc9efc77fadf35a4e4590c84b49a6c70102f10c69294ad268bf796935e977b1e",
+  "preflight": {
+    "accepted_initial_profiles": [
+      "default",
+      "k1_p001_t055_r001_n06x06"
+    ],
+    "required_unique_route": "T1A",
+    "required_start_owner_phase": "idle",
+    "required_cold_idle_released_machine": true,
+    "required_installed_start_owner_sha256": "678582e808d74f6b720ef3d6b52dc2c443c7a0652a62c484319e2b22fba7b0bc"
+  },
+  "effect": {
+    "primary_command": "BED_MESH_PROFILE LOAD=k1_p001_t055_r001_n11x11",
+    "maximum_primary_attempts": 1,
+    "conditional_rollback": "load_the_exact_initial_profile_once",
+    "maximum_rollback_attempts": 1,
+    "remote_file_write": false,
+    "restart": false,
+    "heater_or_motion": false,
+    "homing_or_probe": false,
+    "extrusion_or_cfs_action": false,
+    "print": false,
+    "automatic_retry": false
+  },
+  "success": [
+    "fresh_safe_preflight_with_unique_T1A",
+    "best_current_profile_active",
+    "active_matrix_matches_exact_11x11_source",
+    "T1A_route_unchanged",
+    "all_reviewed_hashes_unchanged",
+    "machine_remains_idle_cold_and_released"
+  ]
+}

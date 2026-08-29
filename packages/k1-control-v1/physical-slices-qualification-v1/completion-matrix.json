@@ -6,10 +6,10 @@
   "completion_audit_evidence": null,
   "current_human_gate": {
     "requirement_id": "CFS_START_STATES_AND_TEMPERATURE_OWNER",
-    "checkpoint": "START_OWNER_SAFETY_R2_INSTALLED_POWER_CYCLE_PROVED_ROUTE_EMPTY_AND_MESH_DEFAULT_AWAIT_T1A_AND_11X11_RESTORE",
-    "active_gate": "G4-K1-CONTROL-START-SEQUENCE-OWNER-SAFETY-R2",
-    "technical_status": "R2_INSTALLED_EXACT_TWO_COLD_VALIDATIONS_PASS_THERMAL_TRIAL_RUNNER_SOAKS_BEFORE_MANUAL_TOKEN_POWER_CYCLE_READS_PROVE_ZERO_LOGICAL_ROUTE_AND_DEFAULT_ACTIVE_MESH_WITH_NO_EFFECT",
-    "required_human_verdict": "REENGAGE_T1A_THROUGH_STOCK_UI_AUTHORIZE_COLD_11X11_RESTORE_THEN_CONFIRM_STOCK_EDGE_PURGE_AND_SAFE_END",
+    "checkpoint": "START_OWNER_SAFETY_R2_INSTALLED_POWER_CYCLE_PROVED_ROUTE_EMPTY_AND_MESH_DEFAULT_SUCCESSOR_11X11_RESTORE_OFFLINE_READY_AWAIT_T1A",
+    "active_gate": "G4-K1-CONTROL-BEST-CURRENT-MESH-RESTORE-AFTER-POWER-CYCLE-V1",
+    "technical_status": "R2_INSTALLED_EXACT_TWO_COLD_VALIDATIONS_PASS_THERMAL_TRIAL_RUNNER_SOAKS_BEFORE_MANUAL_TOKEN_POWER_CYCLE_READS_PROVE_ZERO_LOGICAL_ROUTE_AND_DEFAULT_ACTIVE_MESH_SUCCESSOR_RESTORE_ACCEPTS_DEFAULT_REQUIRES_UNIQUE_T1A_AND_ROLLS_BACK_TO_EXACT_PRIOR_PROFILE_WITH_NO_OFFLINE_EFFECT",
+    "required_human_verdict": "REENGAGE_T1A_THROUGH_STOCK_UI_THEN_AUTHORIZE_THE_FROZEN_COLD_11X11_RESTORE_SUCCESSOR",
     "next_effect_blocked": true
   },
   "requirements": [
@@ -54,6 +54,7 @@
       "latest_checkpoint_evidence": "packages/k1-control-v1/cfs-temp-owner-v1/keep-correct-t1a-owned-start-evidence.json",
       "corrective_design": "packages/k1-control-v1/start-sequence-owner-v1/contract.json",
       "active_physical_gate": "packages/k1-control-v1/start-sequence-owner-physical-keep-correct-t1a-v1/contract.json",
+      "power_cycle_recovery_candidate": "packages/k1-control-v1/best-current-mesh-restore-after-power-cycle-v1/contract.json",
       "next_checkpoint_candidate": "packages/k1-control-v1/wrong-change-t1a-to-t2c-v1/contract.json",
       "required_proofs": [
         "correct_engaged_filament_is_kept",

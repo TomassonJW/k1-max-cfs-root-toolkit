@@ -54,5 +54,7 @@ connectés, mais `engaged_routes=[]`, tandis que le mesh actif est revenu à
 `default`. Le filament peut donc rester physiquement dans la tête sans que la
 route logique survive à l'extinction. Le Z accepté `−0,04 mm`, son stockage et
 les configurations restent conformes. La reprise exige maintenant un
-réengagement stock de `T1A`, puis le rechargement à froid du meilleur profil
+réengagement stock de `T1A`, puis la gate corrigée
+`G4-K1-CONTROL-BEST-CURRENT-MESH-RESTORE-AFTER-POWER-CYCLE-V1` pour le
+rechargement à froid du meilleur profil
 courant `11 × 11`, avant un nouveau préflight.

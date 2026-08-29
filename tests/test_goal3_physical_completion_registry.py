@@ -47,23 +47,24 @@ class Goal3PhysicalCompletionRegistryTests(unittest.TestCase):
         self.assertIn("final_project_closure", boundary)
         self.assertEqual(4, self.contract["macro_goal_count"])
 
-    def test_current_gate_waits_for_start_owner_safety_r2(self):
+    def test_current_gate_waits_for_t1a_and_the_frozen_power_cycle_restore_successor(self):
         gate = self.matrix["current_human_gate"]
         self.assertEqual(
-            "START_OWNER_SAFETY_R2_INSTALLED_POWER_CYCLE_PROVED_ROUTE_EMPTY_AND_MESH_DEFAULT_AWAIT_T1A_AND_11X11_RESTORE",
+            "START_OWNER_SAFETY_R2_INSTALLED_POWER_CYCLE_PROVED_ROUTE_EMPTY_AND_MESH_DEFAULT_SUCCESSOR_11X11_RESTORE_OFFLINE_READY_AWAIT_T1A",
             gate["checkpoint"],
         )
         self.assertIn("R2_INSTALLED_EXACT", gate["technical_status"])
         self.assertIn("TWO_COLD_VALIDATIONS_PASS", gate["technical_status"])
         self.assertIn("THERMAL_TRIAL_RUNNER_SOAKS_BEFORE_MANUAL_TOKEN", gate["technical_status"])
         self.assertIn("POWER_CYCLE_READS_PROVE_ZERO_LOGICAL_ROUTE_AND_DEFAULT_ACTIVE_MESH", gate["technical_status"])
-        self.assertIn("WITH_NO_EFFECT", gate["technical_status"])
+        self.assertIn("ROLLS_BACK_TO_EXACT_PRIOR_PROFILE", gate["technical_status"])
+        self.assertIn("WITH_NO_OFFLINE_EFFECT", gate["technical_status"])
         self.assertEqual(
-            "G4-K1-CONTROL-START-SEQUENCE-OWNER-SAFETY-R2",
+            "G4-K1-CONTROL-BEST-CURRENT-MESH-RESTORE-AFTER-POWER-CYCLE-V1",
             gate["active_gate"],
         )
         self.assertEqual(
-            "REENGAGE_T1A_THROUGH_STOCK_UI_AUTHORIZE_COLD_11X11_RESTORE_THEN_CONFIRM_STOCK_EDGE_PURGE_AND_SAFE_END",
+            "REENGAGE_T1A_THROUGH_STOCK_UI_THEN_AUTHORIZE_THE_FROZEN_COLD_11X11_RESTORE_SUCCESSOR",
             gate["required_human_verdict"],
         )
         self.assertTrue(gate["next_effect_blocked"])
