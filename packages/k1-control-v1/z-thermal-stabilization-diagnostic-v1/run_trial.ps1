@@ -24,11 +24,11 @@ param(
 
 $ErrorActionPreference = 'Stop'
 $Mission = 'G4-K1-CONTROL-Z-THERMAL-STABILIZATION-DIAGNOSTIC-V1'
-$ExpectedGcodeSha256 = '18861926e2a521746af833feac12af086f099fa2383806b366eca765a0122345'
-$ExpectedGcodeBytes = 90792
+$ExpectedGcodeSha256 = 'c4ce0bf765db36322594ed6e3a608a15c9b1f57b6421553c46f4bdcdd4fc574f'
+$ExpectedGcodeBytes = 90673
 $ExpectedBaseTrialSha256 = '5f461db624acaa8682ec20bcd3eed001da39688f1e19a880d8096685c350a68f'
 $ExpectedBaseInstallerSha256 = 'ff84e23462dc642d916bc7d83cfca0eea53414253b7ad940c1cb46be56a5ffa0'
-$ExpectedDerivedTrialSha256 = '3c8cc762738619216dd86859564c1a2189c202b7d4cb30af97d69134d8103242'
+$ExpectedDerivedTrialSha256 = 'bd11ce584ea3904332ed78132074b8b5fc3f89ef1b865618f5e1dd674870586d'
 $ExpectedDerivedInstallerSha256 = 'bf7d7e0d67b5598645c927dfbe7c2e17989877c4b4fc4a1ba51b8c840d9453a7'
 $OldStartOwnerSha256 = '25291e1534f0ba100d3171b983796089a24cd49fdfcef76817406d325e6d8e03'
 $R2StartOwnerSha256 = '678582e808d74f6b720ef3d6b52dc2c443c7a0652a62c484319e2b22fba7b0bc'
@@ -104,6 +104,42 @@ $TrialProgram = Get-Content -LiteralPath $BaseTrialPath -Raw
 $TrialProgram = $TrialProgram.Replace($OldMission, $Mission)
 $TrialProgram = $TrialProgram.Replace($OldGcodeName, $GcodeName)
 $TrialProgram = $TrialProgram.Replace('KEEP_CORRECT_T1A_PHYSICAL_', 'Z_THERMAL_STABILIZATION_DIAGNOSTIC_')
+$OldImports = "import os`nimport sys"
+$NewImports = "import os`nimport socket`nimport sys"
+if (($TrialProgram.Split($OldImports).Count - 1) -ne 1) {
+    throw "Le bloc d'imports du pilote de base a dérivé."
+}
+$TrialProgram = $TrialProgram.Replace($OldImports, $NewImports)
+$RemoteSocketHelper = @'
+
+def send_gcode_wait(script, timeout_s):
+    request = {"id": 6501, "method": "gcode/script", "params": {"script": script}}
+    client = socket.socket(socket.AF_UNIX, socket.SOCK_STREAM)
+    client.settimeout(timeout_s)
+    try:
+        client.connect("/tmp/klippy_uds")
+        client.sendall((json.dumps(request) + "\x03").encode("utf-8"))
+        data = b""
+        while b"\x03" not in data:
+            chunk = client.recv(65536)
+            if not chunk:
+                break
+            data += chunk
+    finally:
+        client.close()
+    if not data:
+        raise GateError("gcode_response_missing")
+    response = json.loads(data.split(b"\x03", 1)[0].decode("utf-8"))
+    if response.get("error"):
+        raise GateError("gcode_rejected")
+    return response
+'@
+$RemoteSocketHelper = "`n" + $RemoteSocketHelper + "`n"
+$SocketMarker = "`n`ndef hash_file(path):"
+if (($TrialProgram.Split($SocketMarker).Count - 1) -ne 1) {
+    throw "Le point d'insertion du socket Klipper a dérivé."
+}
+$TrialProgram = $TrialProgram.Replace($SocketMarker, $RemoteSocketHelper + $SocketMarker)
 $OldPreflightPrintGuard = @(
     '    if item["print"].get("state") != "standby" or item["print"].get("filename"):'
     '        raise GateError("printer_not_standby")'
@@ -180,11 +216,64 @@ foreach ($Replacement in @(
     }
     $TrialProgram = $TrialProgram.Replace($Replacement[0], $Replacement[1])
 }
+$OldAllowedEffects = '"allowed_effects": ["manual_clean_token_once", "print_start_once", "safety_stop_once_on_failure"],'
+$NewAllowedEffects = '"allowed_effects": ["terminal_print_state_clear_once_if_needed", "bed_thermal_soak_once", "manual_clean_token_once", "print_start_once", "safety_stop_once_on_failure"],'
+if (($TrialProgram.Split($OldAllowedEffects).Count - 1) -ne 1) {
+    throw "La liste d'effets du pilote de base a dérivé."
+}
+$TrialProgram = $TrialProgram.Replace($OldAllowedEffects, $NewAllowedEffects)
+$OldExecutionPreamble = @'
+    emit(first)
+    request_json("/printer/gcode/script", method="POST", payload={"script": "KCTRL_CONFIRM_MANUAL_NOZZLE_CLEAN_V1"})
+    token = snapshot(time.monotonic() - start)
+'@
+$NewExecutionPreamble = @'
+    emit(first)
+    if first["print"].get("state") == "complete":
+        send_gcode_wait("SDCARD_RESET_FILE", 30.0)
+        first = snapshot(time.monotonic() - start)
+        validate_preflight(first, expected_gcode_sha)
+        emit({"kind": "effect", "effect": "terminal_print_state_clear_once"})
+        emit(first)
+    send_gcode_wait("M140 S55\nM190 S55", 360.0)
+    at_target = snapshot(time.monotonic() - start)
+    validate_common(at_target)
+    if at_target["print"].get("state") != "standby":
+        raise GateError("soak_requires_standby")
+    if finite(at_target["bed"].get("target"), "bed_target_invalid") != 55.0 or finite(at_target["bed"].get("temperature"), "bed_temperature_invalid") < 54.8:
+        raise GateError("bed_target_not_reached_before_soak")
+    if finite(at_target["nozzle"].get("target"), "nozzle_target_invalid") != 0.0:
+        raise GateError("nozzle_target_nonzero_before_soak")
+    emit({"kind": "effect", "effect": "bed_thermal_soak_started_once", "requested_soak_s": 200.0})
+    emit(at_target)
+    soak_start = time.monotonic()
+    send_gcode_wait("G4 P200000", 230.0)
+    soaked = snapshot(time.monotonic() - start)
+    validate_common(soaked)
+    soak_elapsed = time.monotonic() - soak_start
+    if finite(soaked["bed"].get("target"), "bed_target_invalid") != 55.0 or finite(soaked["bed"].get("temperature"), "bed_temperature_invalid") < 54.8:
+        raise GateError("bed_not_stable_after_soak")
+    if finite(soaked["nozzle"].get("target"), "nozzle_target_invalid") != 0.0:
+        raise GateError("nozzle_target_nonzero_during_soak")
+    emit(soaked)
+    send_gcode_wait("M140 S0", 30.0)
+    released = snapshot(time.monotonic() - start)
+    validate_preflight(released, expected_gcode_sha)
+    emit({"kind": "effect", "effect": "bed_thermal_soak_completed_once", "requested_soak_s": 200.0, "observed_soak_s": round(soak_elapsed, 3)})
+    emit(released)
+    request_json("/printer/gcode/script", method="POST", payload={"script": "KCTRL_CONFIRM_MANUAL_NOZZLE_CLEAN_V1"})
+    token = snapshot(time.monotonic() - start)
+'@
+if (($TrialProgram.Split($OldExecutionPreamble).Count - 1) -ne 1) {
+    throw "Le début d'exécution du pilote de base a dérivé."
+}
+$TrialProgram = $TrialProgram.Replace($OldExecutionPreamble, $NewExecutionPreamble)
 $InstallerProgram = Get-Content -LiteralPath $BaseInstallerPath -Raw
 $InstallerProgram = $InstallerProgram.Replace($OldGcodeName, $GcodeName)
 $InstallerProgram = $InstallerProgram.Replace('eeaf9822a7016f89da45be83e4435f68c1d28441c469a9cde078c9645fcbf429', ('0' * 64))
-if ((Get-TextSha256 $TrialProgram) -cne $ExpectedDerivedTrialSha256) {
-    throw 'Le pilote distant dérivé ne correspond pas à la version revue.'
+$ActualDerivedTrialSha256 = Get-TextSha256 $TrialProgram
+if ($ActualDerivedTrialSha256 -cne $ExpectedDerivedTrialSha256) {
+    throw "Le pilote distant dérivé ne correspond pas à la version revue : actual=$ActualDerivedTrialSha256 expected=$ExpectedDerivedTrialSha256."
 }
 if ((Get-TextSha256 $InstallerProgram) -cne $ExpectedDerivedInstallerSha256) {
     throw "L'installateur distant dérivé ne correspond pas à la version revue."

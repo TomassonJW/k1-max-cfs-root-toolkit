@@ -51,6 +51,17 @@
     "remote_file_removed": true,
     "removed_sha256": "657db94f006a92b5f4b68ee3afd4674f56963208f90c145892cc1205a2582ce1"
   },
+  "latest_read_only_preflight": {
+    "capture_id": "20260829-resume-read-only-z-thermal-preflight",
+    "status": "CLOSED_KO_BEFORE_EFFECT",
+    "reason": "t1a_route_not_unique",
+    "gcode_sent": false,
+    "remote_write": false,
+    "heat": false,
+    "motion": false,
+    "extrusion": false,
+    "cfs_action": false
+  },
   "next_effect_blocked_until": [
     "human_present",
     "plate_clear",

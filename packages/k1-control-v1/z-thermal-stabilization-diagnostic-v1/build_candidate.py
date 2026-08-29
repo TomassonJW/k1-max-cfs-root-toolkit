@@ -66,13 +66,6 @@ NEW_TERMINAL_RELEASE_CHECK = '''    if item["motion"]["homed_axes"] not in (None
     if finite(position[2], "final_physical_position_invalid") < 49.5:
         raise GateError("final_bed_clearance_invalid")'''
 START = b"KCTRL_JOB_BEGIN_KEEP_CORRECT_V1 BED=55 PROBE_NOZZLE=140 FIRST_NOZZLE=190 PLATE=1 PROBE_REV=1 NOZZLE_ID=1 CONFIG_ID=1 X_COUNT=11 Y_COUNT=11"
-PRELUDE_LINES = (
-    b"; K1_CONTROL_THERMAL_SOAK_DIAGNOSTIC_V1_BEGIN",
-    b"M140 S55",
-    b"M190 S55",
-    b"G4 P200000",
-    b"; K1_CONTROL_THERMAL_SOAK_DIAGNOSTIC_V1_END",
-)
 OLD_END_LINES = (
     b"KCTRL_START_ABORT_V1",
     b"KCTRL_CLEAR_MANUAL_NOZZLE_CLEAN_V1",
@@ -80,6 +73,71 @@ OLD_END_LINES = (
     b"M107 P2",
     b"M84",
 )
+
+REMOTE_SOCKET_HELPER = '''
+
+def send_gcode_wait(script, timeout_s):
+    request = {"id": 6501, "method": "gcode/script", "params": {"script": script}}
+    client = socket.socket(socket.AF_UNIX, socket.SOCK_STREAM)
+    client.settimeout(timeout_s)
+    try:
+        client.connect("/tmp/klippy_uds")
+        client.sendall((json.dumps(request) + "\\x03").encode("utf-8"))
+        data = b""
+        while b"\\x03" not in data:
+            chunk = client.recv(65536)
+            if not chunk:
+                break
+            data += chunk
+    finally:
+        client.close()
+    if not data:
+        raise GateError("gcode_response_missing")
+    response = json.loads(data.split(b"\\x03", 1)[0].decode("utf-8"))
+    if response.get("error"):
+        raise GateError("gcode_rejected")
+    return response
+'''
+
+OLD_EXECUTION_PREAMBLE = '''    emit(first)
+    request_json("/printer/gcode/script", method="POST", payload={"script": "KCTRL_CONFIRM_MANUAL_NOZZLE_CLEAN_V1"})
+    token = snapshot(time.monotonic() - start)'''
+
+NEW_EXECUTION_PREAMBLE = '''    emit(first)
+    if first["print"].get("state") == "complete":
+        send_gcode_wait("SDCARD_RESET_FILE", 30.0)
+        first = snapshot(time.monotonic() - start)
+        validate_preflight(first, expected_gcode_sha)
+        emit({"kind": "effect", "effect": "terminal_print_state_clear_once"})
+        emit(first)
+    send_gcode_wait("M140 S55\\nM190 S55", 360.0)
+    at_target = snapshot(time.monotonic() - start)
+    validate_common(at_target)
+    if at_target["print"].get("state") != "standby":
+        raise GateError("soak_requires_standby")
+    if finite(at_target["bed"].get("target"), "bed_target_invalid") != 55.0 or finite(at_target["bed"].get("temperature"), "bed_temperature_invalid") < 54.8:
+        raise GateError("bed_target_not_reached_before_soak")
+    if finite(at_target["nozzle"].get("target"), "nozzle_target_invalid") != 0.0:
+        raise GateError("nozzle_target_nonzero_before_soak")
+    emit({"kind": "effect", "effect": "bed_thermal_soak_started_once", "requested_soak_s": 200.0})
+    emit(at_target)
+    soak_start = time.monotonic()
+    send_gcode_wait("G4 P200000", 230.0)
+    soaked = snapshot(time.monotonic() - start)
+    validate_common(soaked)
+    soak_elapsed = time.monotonic() - soak_start
+    if finite(soaked["bed"].get("target"), "bed_target_invalid") != 55.0 or finite(soaked["bed"].get("temperature"), "bed_temperature_invalid") < 54.8:
+        raise GateError("bed_not_stable_after_soak")
+    if finite(soaked["nozzle"].get("target"), "nozzle_target_invalid") != 0.0:
+        raise GateError("nozzle_target_nonzero_during_soak")
+    emit(soaked)
+    send_gcode_wait("M140 S0", 30.0)
+    released = snapshot(time.monotonic() - start)
+    validate_preflight(released, expected_gcode_sha)
+    emit({"kind": "effect", "effect": "bed_thermal_soak_completed_once", "requested_soak_s": 200.0, "observed_soak_s": round(soak_elapsed, 3)})
+    emit(released)
+    request_json("/printer/gcode/script", method="POST", payload={"script": "KCTRL_CONFIRM_MANUAL_NOZZLE_CLEAN_V1"})
+    token = snapshot(time.monotonic() - start)'''
 
 
 def digest(data: bytes) -> str:
@@ -95,6 +153,13 @@ def derive_programs() -> tuple[bytes, bytes]:
     trial_text = trial_text.replace(OLD_MISSION, MISSION)
     trial_text = trial_text.replace(OLD_GCODE_NAME, GCODE_NAME)
     trial_text = trial_text.replace("KEEP_CORRECT_T1A_PHYSICAL_", "Z_THERMAL_STABILIZATION_DIAGNOSTIC_")
+    if trial_text.count("import os\nimport sys") != 1:
+        raise ValueError("base_import_block_drift")
+    trial_text = trial_text.replace("import os\nimport sys", "import os\nimport socket\nimport sys")
+    socket_marker = "\n\ndef hash_file(path):"
+    if trial_text.count(socket_marker) != 1:
+        raise ValueError("base_socket_helper_marker_drift")
+    trial_text = trial_text.replace(socket_marker, REMOTE_SOCKET_HELPER + socket_marker)
     if trial_text.count(OLD_START_OWNER_SHA256) != 1:
         raise ValueError("base_start_owner_hash_drift")
     trial_text = trial_text.replace(OLD_START_OWNER_SHA256, R2_START_OWNER_SHA256)
@@ -109,6 +174,14 @@ def derive_programs() -> tuple[bytes, bytes]:
         if trial_text.count(old) != 1:
             raise ValueError(code)
         trial_text = trial_text.replace(old, new)
+    old_effects = '"allowed_effects": ["manual_clean_token_once", "print_start_once", "safety_stop_once_on_failure"],'
+    new_effects = '"allowed_effects": ["terminal_print_state_clear_once_if_needed", "bed_thermal_soak_once", "manual_clean_token_once", "print_start_once", "safety_stop_once_on_failure"],'
+    if trial_text.count(old_effects) != 1:
+        raise ValueError("base_allowed_effects_drift")
+    trial_text = trial_text.replace(old_effects, new_effects)
+    if trial_text.count(OLD_EXECUTION_PREAMBLE) != 1:
+        raise ValueError("base_execution_preamble_drift")
+    trial_text = trial_text.replace(OLD_EXECUTION_PREAMBLE, NEW_EXECUTION_PREAMBLE)
     installer_text = installer.decode("utf-8")
     installer_text = installer_text.replace(OLD_GCODE_NAME, GCODE_NAME)
     installer_text = installer_text.replace(
@@ -125,10 +198,6 @@ def derive_gcode(source: bytes) -> bytes:
         raise ValueError("executable_start_line_not_unique")
     index = matches[0]
     newline = b"\r\n" if lines[index].endswith(b"\r\n") else b"\n"
-    prelude = newline.join(PRELUDE_LINES) + newline
-    if PRELUDE_LINES[0] in source:
-        raise ValueError("source_already_contains_soak")
-    lines[index] = prelude + lines[index]
     candidate = b"".join(lines)
     old_end = newline.join(OLD_END_LINES)
     safe_end_lines = tuple(line.encode("utf-8") for line in SAFE_END_TEMPLATE.read_text(encoding="utf-8").splitlines() if line.strip())

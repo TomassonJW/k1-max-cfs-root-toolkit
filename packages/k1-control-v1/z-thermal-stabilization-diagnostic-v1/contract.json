@@ -1,5 +1,5 @@
 {
-  "schema": 1,
+  "schema": 2,
   "mission": "G4-K1-CONTROL-Z-THERMAL-STABILIZATION-DIAGNOSTIC-V1",
   "goal": "GOAL-P4-PHYSICAL-SLICES-QUALIFICATION-V1",
   "purpose": "isolate_the_200_second_bed_stabilization_hypothesis_before_any_Z_recalibration",
@@ -14,14 +14,17 @@
   "candidate": {
     "private_path": "inventory/raw/20260829-goal3-z-thermal-stabilization-diagnostic-v1/K1-Z-THERMAL-SOAK-200S-T1A-2LAYER.gcode",
     "remote_name": "K1-Z-THERMAL-SOAK-200S-T1A-2LAYER.gcode",
-    "sha256": "18861926e2a521746af833feac12af086f099fa2383806b366eca765a0122345",
-    "bytes": 90792
+    "sha256": "c4ce0bf765db36322594ed6e3a608a15c9b1f57b6421553c46f4bdcdd4fc574f",
+    "bytes": 90673
   },
-  "only_inserted_executable_commands": [
+  "candidate_difference": "reviewed_safe_end_only",
+  "runner_soak_commands": [
     "M140 S55",
     "M190 S55",
-    "G4 P200000"
+    "G4 P200000",
+    "M140 S0"
   ],
+  "soak_order": "bed_target_then_exact_200_second_wait_then_bed_target_zero_then_manual_clean_token_then_print_start",
   "safe_end_template": "packages/k1-control-v1/start-sequence-owner-safety-r2/orca-end.gcode",
   "thermal_comparison": {
     "bed_target_c": 55,
@@ -33,7 +36,7 @@
   },
   "derived_remote_programs": {
     "base_trial_sha256": "5f461db624acaa8682ec20bcd3eed001da39688f1e19a880d8096685c350a68f",
-    "derived_trial_sha256": "3c8cc762738619216dd86859564c1a2189c202b7d4cb30af97d69134d8103242",
+    "derived_trial_sha256": "bd11ce584ea3904332ed78132074b8b5fc3f89ef1b865618f5e1dd674870586d",
     "base_installer_sha256": "ff84e23462dc642d916bc7d83cfca0eea53414253b7ad940c1cb46be56a5ffa0",
     "derived_installer_sha256": "bf7d7e0d67b5598645c927dfbe7c2e17989877c4b4fc4a1ba51b8c840d9453a7"
   },

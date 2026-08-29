@@ -50,12 +50,13 @@ class Goal3PhysicalCompletionRegistryTests(unittest.TestCase):
     def test_current_gate_waits_for_start_owner_safety_r2(self):
         gate = self.matrix["current_human_gate"]
         self.assertEqual(
-            "START_OWNER_SAFETY_R2_INSTALLED_PHYSICAL_TRIAL_OFFLINE_READY_AWAIT_T1A",
+            "START_OWNER_SAFETY_R2_INSTALLED_THERMAL_TRIAL_CORRECTED_AND_TESTED_AWAIT_T1A",
             gate["checkpoint"],
         )
         self.assertIn("R2_INSTALLED_EXACT", gate["technical_status"])
         self.assertIn("TWO_COLD_VALIDATIONS_PASS", gate["technical_status"])
-        self.assertIn("PHYSICAL_TRIAL_PINS_R2_STOCK_EDGE_PURGE_SAFE_END_AND_SAFE_STOP", gate["technical_status"])
+        self.assertIn("THERMAL_TRIAL_RUNNER_SOAKS_BEFORE_MANUAL_TOKEN", gate["technical_status"])
+        self.assertIn("PINS_STOCK_EDGE_PURGE_SAFE_END_AND_SAFE_STOP", gate["technical_status"])
         self.assertIn("FINAL_SAFE_ZERO_ROUTE", gate["technical_status"])
         self.assertEqual(
             "G4-K1-CONTROL-START-SEQUENCE-OWNER-SAFETY-R2",

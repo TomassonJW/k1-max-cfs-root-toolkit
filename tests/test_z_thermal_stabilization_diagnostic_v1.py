@@ -27,14 +27,17 @@ class ZThermalStabilizationDiagnosticV1Tests(unittest.TestCase):
         cls.verifier = load_module("z_thermal_candidate", PACKAGE / "verify_candidate.py")
         cls.analyzer = load_module("z_thermal_analyzer", PACKAGE / "analyze_capture.py")
 
-    def test_candidate_adds_only_the_exact_soak_and_reviewed_safe_end(self):
+    def test_runner_owns_the_exact_soak_before_the_token_and_candidate_has_safe_end(self):
         result = self.verifier.verify()
         self.assertEqual("Z_THERMAL_STABILIZATION_DIAGNOSTIC_CANDIDATE_OK", result["status"])
         self.assertEqual(200, result["soak_seconds"])
-        self.assertEqual(["M140 S55", "M190 S55", "G4 P200000"], result["inserted_commands"])
+        self.assertEqual(["M140 S55", "M190 S55", "G4 P200000", "M140 S0"], result["runner_soak_commands"])
         candidate = self.verifier.builder.OUTPUT.read_text(encoding="utf-8")
         safe_end = (ROOT / self.contract["safe_end_template"]).read_text(encoding="utf-8").strip()
         self.assertIn(safe_end, candidate)
+        executable = candidate.split("; EXECUTABLE_BLOCK_END", 1)[0].splitlines()
+        for command in result["runner_soak_commands"]:
+            self.assertNotIn(command, executable)
 
     def test_contract_keeps_recalibration_and_retry_closed(self):
         self.assertFalse(self.contract["automatic_retry"])
@@ -52,6 +55,9 @@ class ZThermalStabilizationDiagnosticV1Tests(unittest.TestCase):
         self.assertNotEqual(self.contract["candidate"]["sha256"], evidence["upload"]["sha256"])
         self.assertTrue(evidence["upload"]["remote_file_removed"])
         self.assertFalse(evidence["upload"]["print_started"])
+        latest = evidence["latest_read_only_preflight"]
+        self.assertEqual("t1a_route_not_unique", latest["reason"])
+        self.assertTrue(all(latest[key] is False for key in ("gcode_sent", "remote_write", "heat", "motion", "extrusion", "cfs_action")))
         self.assertIn("plate_clear", evidence["next_effect_blocked_until"])
 
     def test_runner_requires_all_human_physical_guards(self):
@@ -79,17 +85,27 @@ class ZThermalStabilizationDiagnosticV1Tests(unittest.TestCase):
         self.assertIn('raise GateError("final_park_x_invalid")', source)
         self.assertIn('raise GateError("final_park_y_invalid")', source)
         self.assertIn('raise GateError("final_bed_clearance_invalid")', source)
+        self.assertIn('send_gcode_wait("M140 S55\\nM190 S55", 360.0)', source)
+        self.assertIn('send_gcode_wait("G4 P200000", 230.0)', source)
+        self.assertIn('send_gcode_wait("M140 S0", 30.0)', source)
+        self.assertIn('send_gcode_wait("SDCARD_RESET_FILE", 30.0)', source)
+        self.assertLess(
+            source.index('effect": "bed_thermal_soak_completed_once"'),
+            source.index('KCTRL_CONFIRM_MANUAL_NOZZLE_CLEAN_V1'),
+        )
 
     def test_analyzer_accepts_a_complete_soak_trace(self):
         records = [
             {"kind": "snapshot", "elapsed_s": 0.0, "print": {"state": "standby"}, "owner": {"phase": "idle"}, "bed": {"target": 0.0, "temperature": 30.0}, "nozzle": {"target": 0.0}, "cfs": {"engaged_routes": ["T1A"], "active_command": ""}},
-            {"kind": "snapshot", "elapsed_s": 10.0, "print": {"state": "printing"}, "owner": {"phase": "idle"}, "bed": {"target": 55.0, "temperature": 54.8}, "nozzle": {"target": 0.0}, "cfs": {"engaged_routes": ["T1A"], "active_command": ""}},
-            {"kind": "snapshot", "elapsed_s": 208.0, "print": {"state": "printing"}, "owner": {"phase": "idle"}, "bed": {"target": 55.0, "temperature": 55.0}, "nozzle": {"target": 0.0}, "cfs": {"engaged_routes": ["T1A"], "active_command": ""}},
-            {"kind": "snapshot", "elapsed_s": 208.5, "print": {"state": "printing"}, "owner": {"phase": "manual_clean_confirmed"}, "bed": {"target": 55.0}, "nozzle": {"target": 0.0}, "cfs": {"engaged_routes": ["T1A"], "active_command": ""}},
-            {"kind": "snapshot", "elapsed_s": 209.0, "print": {"state": "printing"}, "owner": {"phase": "reference_heating"}, "bed": {"target": 55.0}, "nozzle": {"target": 140.0}, "cfs": {"engaged_routes": ["T1A"], "active_command": ""}},
-            {"kind": "snapshot", "elapsed_s": 220.0, "print": {"state": "printing"}, "owner": {"phase": "visible_purge"}, "bed": {"target": 55.0}, "nozzle": {"target": 190.0}, "cfs": {"engaged_routes": ["T1A"], "active_command": ""}},
-            {"kind": "snapshot", "elapsed_s": 230.0, "print": {"state": "printing"}, "owner": {"phase": "model_ready"}, "bed": {"target": 55.0}, "nozzle": {"target": 190.0}, "cfs": {"engaged_routes": ["T1A"], "active_command": ""}},
-            {"kind": "snapshot", "elapsed_s": 240.0, "print": {"state": "complete"}, "owner": {"phase": "idle"}, "bed": {"target": 0.0}, "nozzle": {"target": 0.0}, "cfs": {"engaged_routes": ["T1A"], "active_command": ""}},
+            {"kind": "effect", "effect": "bed_thermal_soak_started_once", "requested_soak_s": 200.0},
+            {"kind": "snapshot", "elapsed_s": 10.0, "print": {"state": "standby"}, "owner": {"phase": "idle"}, "bed": {"target": 55.0, "temperature": 54.8}, "nozzle": {"target": 0.0}, "cfs": {"engaged_routes": ["T1A"], "active_command": ""}},
+            {"kind": "snapshot", "elapsed_s": 210.0, "print": {"state": "standby"}, "owner": {"phase": "idle"}, "bed": {"target": 55.0, "temperature": 55.0}, "nozzle": {"target": 0.0}, "cfs": {"engaged_routes": ["T1A"], "active_command": ""}},
+            {"kind": "effect", "effect": "bed_thermal_soak_completed_once", "requested_soak_s": 200.0, "observed_soak_s": 200.0},
+            {"kind": "snapshot", "elapsed_s": 210.5, "print": {"state": "standby"}, "owner": {"phase": "manual_clean_confirmed"}, "bed": {"target": 0.0}, "nozzle": {"target": 0.0}, "cfs": {"engaged_routes": ["T1A"], "active_command": ""}},
+            {"kind": "snapshot", "elapsed_s": 211.0, "print": {"state": "printing"}, "owner": {"phase": "reference_heating"}, "bed": {"target": 55.0}, "nozzle": {"target": 140.0}, "cfs": {"engaged_routes": ["T1A"], "active_command": ""}},
+            {"kind": "snapshot", "elapsed_s": 222.0, "print": {"state": "printing"}, "owner": {"phase": "visible_purge"}, "bed": {"target": 55.0}, "nozzle": {"target": 190.0}, "cfs": {"engaged_routes": ["T1A"], "active_command": ""}},
+            {"kind": "snapshot", "elapsed_s": 232.0, "print": {"state": "printing"}, "owner": {"phase": "model_ready"}, "bed": {"target": 55.0}, "nozzle": {"target": 190.0}, "cfs": {"engaged_routes": ["T1A"], "active_command": ""}},
+            {"kind": "snapshot", "elapsed_s": 242.0, "print": {"state": "complete"}, "owner": {"phase": "idle"}, "bed": {"target": 0.0}, "nozzle": {"target": 0.0}, "cfs": {"engaged_routes": ["T1A"], "active_command": ""}},
             {"kind": "footer", "status": "Z_THERMAL_STABILIZATION_DIAGNOSTIC_AUTOMATION_OK"},
         ]
         result = self.analyzer.analyze_records(records)

@@ -1,15 +1,25 @@
 # Résultat
 
-Statut actuel : `OFFLINE_READY_WAITING_FOR_T1A_AND_EXACT_PHYSICAL_GO`.
+Statut actuel : `OFFLINE_CORRECTED_AND_TESTED_WAITING_FOR_T1A_AND_EXACT_PHYSICAL_GO`.
 
-Le candidat privé est dérivé du G-code physique déjà qualifié. La seule
-différence fonctionnelle avant `KCTRL_JOB_BEGIN` est l'ajout exact de :
+Le candidat privé est dérivé du G-code physique déjà qualifié. Sa différence
+est uniquement la fin sûre. La stabilisation n'est plus placée dans le fichier
+d'impression : le pilote l'exécute avant de créer le jeton humain, dans cet
+ordre exact :
 
 - `M140 S55` ;
 - `M190 S55` ;
-- `G4 P200000`.
+- `G4 P200000` ;
+- `M140 S0` ;
+- confirmation consommable « buse nettoyée » ;
+- départ unique du fichier.
 
-Le vérificateur du candidat est vert et les six tests ciblés sont verts.
+Cette correction évite que le jeton de cinq minutes expire pendant la montée
+du plateau et les `200 s`. Elle normalise aussi un ancien état `complete` par
+`SDCARD_RESET_FILE` avant tout chauffage, uniquement si nécessaire.
+
+Le vérificateur du candidat, le plan hors imprimante et les sept tests ciblés
+sont verts.
 L'essai conserve `T1A`, ne permet aucun réglage Z avant le verdict visuel et
 n'autorise aucun retry automatique.
 
@@ -31,3 +41,8 @@ exige réellement cette position, en plus des chauffes zéro et des axes libér�
 
 Aucun fichier n'a été renvoyé sur la K1. L'essai attend le rechargement et la
 relecture de `T1A`, puis une autorisation physique distincte avec Thomas présent.
+
+Une lecture fraîche de reprise sous la capture
+`20260829-resume-read-only-z-thermal-preflight` a été refusée avant tout effet
+avec `t1a_route_not_unique`. Elle confirme que le redémarrage a effacé la route
+logique et que `T1A` doit être rechargé puis relu avant tout transfert ou essai.
