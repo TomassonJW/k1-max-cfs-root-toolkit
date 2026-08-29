@@ -28,7 +28,7 @@ $ExpectedGcodeSha256 = 'c4ce0bf765db36322594ed6e3a608a15c9b1f57b6421553c46f4bdcd
 $ExpectedGcodeBytes = 90673
 $ExpectedBaseTrialSha256 = '5f461db624acaa8682ec20bcd3eed001da39688f1e19a880d8096685c350a68f'
 $ExpectedBaseInstallerSha256 = 'ff84e23462dc642d916bc7d83cfca0eea53414253b7ad940c1cb46be56a5ffa0'
-$ExpectedDerivedTrialSha256 = 'bd11ce584ea3904332ed78132074b8b5fc3f89ef1b865618f5e1dd674870586d'
+$ExpectedDerivedTrialSha256 = 'beb2801e0bd7b848a0c86206e35ef4974d8d13d48003559d2218c1664e6b1a77'
 $ExpectedDerivedInstallerSha256 = 'bf7d7e0d67b5598645c927dfbe7c2e17989877c4b4fc4a1ba51b8c840d9453a7'
 $OldStartOwnerSha256 = '25291e1534f0ba100d3171b983796089a24cd49fdfcef76817406d325e6d8e03'
 $R2StartOwnerSha256 = '678582e808d74f6b720ef3d6b52dc2c443c7a0652a62c484319e2b22fba7b0bc'
@@ -165,6 +165,24 @@ $NewMotionProjection = @'
             "physical_position": child(status, "toolhead").get("position"),
             "gcode_position": child(status, "gcode_move").get("gcode_position"),
 '@
+$OldPreflightMotionGuard = @'
+    if item["motion"]["homed_axes"] not in (None, ""):
+        raise GateError("axes_not_released")
+'@
+$NewPreflightMotionGuard = @'
+    homed_axes = item["motion"].get("homed_axes")
+    if homed_axes not in (None, ""):
+        if homed_axes != "xyz":
+            raise GateError("homed_axes_state_not_reviewed")
+        position = item["motion"].get("physical_position")
+        if not isinstance(position, list) or len(position) < 3:
+            raise GateError("homed_position_invalid")
+        x = finite(position[0], "homed_position_invalid")
+        y = finite(position[1], "homed_position_invalid")
+        z = finite(position[2], "homed_position_invalid")
+        if not (200.0 <= x <= 220.0 and 270.0 <= y <= 300.0 and 50.0 <= z <= 315.0):
+            raise GateError("homed_position_not_safe_park")
+'@
 $OldSafetyGcode = @'
         request_json("/printer/gcode/script", method="POST", payload={"script": "TURN_OFF_HEATERS\nM84"})
         actions.append("turn_off_heaters_and_release_axes_once")
@@ -208,6 +226,7 @@ if (($TrialProgram.Split($OldStartOwnerSha256).Count - 1) -ne 1) {
 $TrialProgram = $TrialProgram.Replace($OldStartOwnerSha256, $R2StartOwnerSha256)
 foreach ($Replacement in @(
         @($OldMotionProjection, $NewMotionProjection, 'projection de position'),
+        @($OldPreflightMotionGuard, $NewPreflightMotionGuard, 'garde du parc sûr initial'),
         @($OldSafetyGcode, $NewSafetyGcode, "arrêt d'urgence"),
         @($OldTerminalReleaseCheck, $NewTerminalReleaseCheck, 'preuve de position finale')
     )) {

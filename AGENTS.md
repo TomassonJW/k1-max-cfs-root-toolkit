@@ -96,7 +96,14 @@ connectés et aucune route n'est engagée. Le test froid est vert ; aucune chauf
 aucun mouvement, aucune extrusion et aucune action CFS n'ont eu lieu. Un export
 Orca 2.4.2 de deux couches reste qualifié sans `T0` ni ordre interdit. La pose
 est close ; le chargement et la relecture de `T1A`, puis l'essai physique,
-restent deux gates distinctes ;
+restent deux gates distinctes. Après une extinction, `T1A` a été réengagé et le
+meilleur `11 × 11` restauré à froid en une commande sans rollback. Le premier
+préflight thermique sur `39a1364` s'est fermé avant tout effet avec
+`axes_not_released` : il refusait le parc haut `xyz` pourtant déjà qualifié à
+`X210 / Y291,5 / Z66,8915`. Le garde corrigé hors imprimante accepte désormais
+les axes libérés ou seulement le parc borné `X200..220 / Y270..300 /
+Z50..315`; tout autre état reste fermé. Aucun upload, chauffage ou essai n'a eu
+lieu et une autorisation exacte sur le commit corrigé reste nécessaire ;
 GATEWAY-PRIVATE-LAN-NO-AUTH-V1 est installé et validé : le port `4409` ne
 demande plus de mot de passe, reste limité aux réseaux IPv4 privés, et présente
 uniquement son proxy local approuvé à Moonraker ; production remains closed**.

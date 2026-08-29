@@ -42,6 +42,13 @@ class ZThermalStabilizationDiagnosticV1Tests(unittest.TestCase):
     def test_contract_keeps_recalibration_and_retry_closed(self):
         self.assertFalse(self.contract["automatic_retry"])
         self.assertFalse(self.contract["thermal_comparison"]["manual_live_Z_adjustment_before_verdict"])
+        self.assertEqual(
+            ["axes_released", "xyz_homed_inside_qualified_safe_park"],
+            self.contract["initial_motion_state"]["allowed"],
+        )
+        self.assertEqual([200.0, 220.0], self.contract["initial_motion_state"]["qualified_safe_park"]["x_mm"])
+        self.assertEqual([270.0, 300.0], self.contract["initial_motion_state"]["qualified_safe_park"]["y_mm"])
+        self.assertEqual([50.0, 315.0], self.contract["initial_motion_state"]["qualified_safe_park"]["z_mm"])
         self.assertIn("persistent_Z_write", self.contract["out_of_scope"])
         self.assertIn("mesh_measurement_or_persistence", self.contract["out_of_scope"])
 
@@ -105,6 +112,17 @@ class ZThermalStabilizationDiagnosticV1Tests(unittest.TestCase):
             source.index('effect": "bed_thermal_soak_completed_once"'),
             source.index('KCTRL_CONFIRM_MANUAL_NOZZLE_CLEAN_V1'),
         )
+
+    def test_derived_preflight_accepts_only_released_axes_or_the_qualified_safe_park(self):
+        trial, _ = self.verifier.builder.derive_programs()
+        source = trial.decode("utf-8")
+        self.assertNotIn('raise GateError("axes_not_released")', source)
+        self.assertIn('if homed_axes != "xyz"', source)
+        self.assertIn('raise GateError("homed_axes_state_not_reviewed")', source)
+        self.assertIn('200.0 <= x <= 220.0', source)
+        self.assertIn('270.0 <= y <= 300.0', source)
+        self.assertIn('50.0 <= z <= 315.0', source)
+        self.assertIn('raise GateError("homed_position_not_safe_park")', source)
 
     def test_analyzer_accepts_a_complete_soak_trace(self):
         records = [

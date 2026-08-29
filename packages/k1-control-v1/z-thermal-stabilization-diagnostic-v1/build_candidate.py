@@ -40,6 +40,20 @@ NEW_MOTION_PROJECTION = '''        "motion": {
             "homed_axes": child(status, "toolhead").get("homed_axes"),
             "physical_position": child(status, "toolhead").get("position"),
             "gcode_position": child(status, "gcode_move").get("gcode_position"),'''
+OLD_PREFLIGHT_MOTION_GUARD = '''    if item["motion"]["homed_axes"] not in (None, ""):
+        raise GateError("axes_not_released")'''
+NEW_PREFLIGHT_MOTION_GUARD = '''    homed_axes = item["motion"].get("homed_axes")
+    if homed_axes not in (None, ""):
+        if homed_axes != "xyz":
+            raise GateError("homed_axes_state_not_reviewed")
+        position = item["motion"].get("physical_position")
+        if not isinstance(position, list) or len(position) < 3:
+            raise GateError("homed_position_invalid")
+        x = finite(position[0], "homed_position_invalid")
+        y = finite(position[1], "homed_position_invalid")
+        z = finite(position[2], "homed_position_invalid")
+        if not (200.0 <= x <= 220.0 and 270.0 <= y <= 300.0 and 50.0 <= z <= 315.0):
+            raise GateError("homed_position_not_safe_park")'''
 OLD_SAFETY_GCODE = '''        request_json("/printer/gcode/script", method="POST", payload={"script": "TURN_OFF_HEATERS\\nM84"})
         actions.append("turn_off_heaters_and_release_axes_once")'''
 NEW_SAFETY_GCODE = '''        current = snapshot(0.0)
@@ -168,6 +182,7 @@ def derive_programs() -> tuple[bytes, bytes]:
     trial_text = trial_text.replace(OLD_PREFLIGHT_PRINT_GUARD, NEW_PREFLIGHT_PRINT_GUARD)
     for old, new, code in (
         (OLD_MOTION_PROJECTION, NEW_MOTION_PROJECTION, "base_motion_projection_drift"),
+        (OLD_PREFLIGHT_MOTION_GUARD, NEW_PREFLIGHT_MOTION_GUARD, "base_preflight_motion_guard_drift"),
         (OLD_SAFETY_GCODE, NEW_SAFETY_GCODE, "base_safety_stop_drift"),
         (OLD_TERMINAL_RELEASE_CHECK, NEW_TERMINAL_RELEASE_CHECK, "base_terminal_release_check_drift"),
     ):

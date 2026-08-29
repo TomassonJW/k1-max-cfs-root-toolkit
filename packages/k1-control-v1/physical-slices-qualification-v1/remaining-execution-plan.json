@@ -2,7 +2,7 @@
   "schema": 1,
   "plan_id": "GOAL-P4-PHYSICAL-SLICES-REMAINING-EXECUTION-V1",
   "goal": "GOAL-P4-PHYSICAL-SLICES-QUALIFICATION-V1",
-  "status": "IN_PROGRESS_11X11_RESTORED_WAITING_THERMAL_R2_TWO_LAYER_GATE",
+  "status": "IN_PROGRESS_THERMAL_PREFLIGHT_SAFE_PARK_FIX_WAITING_RENEWED_TWO_LAYER_GATE",
   "purpose": "finish_all_five_remaining_physical_requirements_without_hiding_route_or_human_dependencies",
   "current_observation": {
     "physical_filament_left_in_head_overnight": "T1A_user_confirmed",
@@ -15,7 +15,9 @@
     "fresh_R2_read_only_preflight": "PREFLIGHT_OK_no_effect",
     "mesh_restore_R2": "RESTORE_OK_one_load_no_rollback",
     "active_mesh_after_restore": "k1_p001_t055_r001_n11x11",
-    "current_human_action": "authorize_one_thermal_R2_two_layer_trial_without_live_Z_adjustment"
+    "thermal_preflight_on_39a1364": "CLOSED_KO_axes_not_released_before_any_effect",
+    "thermal_safe_park_guard_fix": "OFFLINE_VALIDATED_accept_released_or_exact_qualified_safe_park_only",
+    "current_human_action": "renew_exact_thermal_R2_two_layer_gate_on_corrected_commit_without_live_Z_adjustment"
   },
   "sequencing_decision": {
     "installed_owner_supports_only": "unique_T1A_keep_correct",
@@ -64,7 +66,7 @@
       "order": 3,
       "id": "THERMAL_STABILIZATION_R2_TWO_LAYER",
       "requirement": "CFS_START_STATES_AND_TEMPERATURE_OWNER",
-      "status": "OFFLINE_READY_WAITING_EXACT_PHYSICAL_GATE",
+      "status": "PREFLIGHT_39A1364_KO_BEFORE_EFFECT_SAFE_PARK_GUARD_CORRECTED_OFFLINE_WAITING_RENEWED_EXACT_PHYSICAL_GATE",
       "route_before": ["T1A"],
       "route_after": ["T1A"],
       "action": "one_200s_bed_soak_then_owned_R2_two_layer_trial",

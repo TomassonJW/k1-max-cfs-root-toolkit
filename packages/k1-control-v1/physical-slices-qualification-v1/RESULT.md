@@ -83,6 +83,14 @@ deux couches avec purge de bord et fin sûre. Les observateurs passifs des
 checkpoints pause/runout/fin et le nouveau motif mesh possédé R2 sont prêts hors
 imprimante, mais ne constituent aucune preuve physique.
 
+L'autorisation thermique sur `39a1364` a atteint le plan vert puis s'est arrêtée
+au préflight, avant tout effet, car son garde exigeait encore des axes libérés.
+Il refusait donc le parc haut `xyz` que la restauration froide venait pourtant
+de qualifier. Le correctif local ne déplace rien : il accepte les axes libérés
+ou le seul volume sûr déjà revu `X200..220 / Y270..300 / Z50..315`, et refuse
+tout le reste. Aucun upload, chauffage ou essai n'a eu lieu. Une nouvelle gate
+exacte sur le commit corrigé est nécessaire avant de reconnecter la K1.
+
 Le plan d'exécution restant est désormais versionné et vérifié. Il empêche de
 quitter `T1A` avant les essais qui dépendent du propriétaire installé, place le
 blocage ambigu entre désengagement et réengagement, puis sépare changement

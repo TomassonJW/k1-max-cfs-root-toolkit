@@ -1,6 +1,6 @@
 # Résultat
 
-Statut actuel : `T1A_AND_11X11_READY_WAITING_EXACT_PHYSICAL_GO`.
+Statut actuel : `SAFE_PARK_PREFLIGHT_CORRECTED_OFFLINE_WAITING_RENEWED_EXACT_PHYSICAL_GO`.
 
 Le candidat privé est dérivé du G-code physique déjà qualifié. Sa différence
 est uniquement la fin sûre. La stabilisation n'est plus placée dans le fichier
@@ -64,3 +64,17 @@ Cette reprise est maintenant terminée : `T1A` est la route unique et le
 thermique reste séparé, sans upload ni chauffe encore exécutés. Il exige Thomas
 présent, plateau libre, buse nettoyée, arrêt immédiat disponible et aucun
 ajustement Z avant le verdict visuel des deux couches.
+
+L'autorisation attachée au commit `39a1364` a ensuite été consommée par le
+préflight. Le plan local était vert, mais le préflight s'est fermé avant tout
+effet avec `axes_not_released`. Aucun G-code, transfert, chauffage, mouvement,
+extrusion ou effet CFS n'a été produit. Le garde avait conservé l'ancienne
+exigence « axes libérés » alors que la recharge froide venait de qualifier le
+parc haut `xyz` exact à `X210 / Y291,5 / Z66,8915`.
+
+La correction hors imprimante accepte désormais seulement deux états initiaux :
+axes libérés, ou axes `xyz` dans le parc sûr déjà qualifié `X200..220 /
+Y270..300 / Z50..315`. Toute origine partielle, position absente ou position
+hors de cette enveloppe reste refusée. Le G-code privé, sa fin sûre et les
+effets autorisés ne changent pas. Aucun nouveau préflight live n'a été lancé ;
+une nouvelle autorisation exacte sur le commit corrigé reste obligatoire.

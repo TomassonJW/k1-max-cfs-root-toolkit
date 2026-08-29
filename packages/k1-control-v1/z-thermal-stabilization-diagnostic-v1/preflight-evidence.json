@@ -1,5 +1,5 @@
 {
-  "schema": 1,
+  "schema": 2,
   "mission": "G4-K1-CONTROL-Z-THERMAL-STABILIZATION-DIAGNOSTIC-V1",
   "date": "2026-08-29",
   "first_preflight": {
@@ -63,6 +63,36 @@
     "cfs_action": false
   },
   "post_power_cycle_diagnosis": "packages/k1-control-v1/z-thermal-stabilization-diagnostic-v1/post-power-cycle-preflight-evidence.json",
+  "authorized_safe_park_preflight_attempt": {
+    "capture_id": "20260829-goal3-thermal-r2-preflight-39a1364",
+    "authorized_commit": "39a1364",
+    "status": "CLOSED_KO_BEFORE_EFFECT",
+    "reason": "axes_not_released",
+    "known_initial_motion_from_immediately_prior_cold_restore": {
+      "homed_axes": "xyz",
+      "physical_position_mm": [210.0, 291.5, 66.89154721095261],
+      "qualified_safe_park": true
+    },
+    "effects": {
+      "gcode": false,
+      "remote_write": false,
+      "heat": false,
+      "motion": false,
+      "extrusion": false,
+      "cfs_action": false
+    },
+    "automatic_retry": false
+  },
+  "safe_park_guard_correction": {
+    "status": "OFFLINE_VALIDATED_WAITING_RENEWED_EXACT_GATE",
+    "axes_released_still_accepted": true,
+    "homed_axes_required_when_not_released": "xyz",
+    "x_mm": [200.0, 220.0],
+    "y_mm": [270.0, 300.0],
+    "z_mm": [50.0, 315.0],
+    "any_other_homed_state_refused": true,
+    "printer_connection_after_correction": false
+  },
   "next_effect_blocked_until": [
     "human_present",
     "plate_clear",

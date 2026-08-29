@@ -48,16 +48,16 @@ class Goal3PhysicalCompletionRegistryTests(unittest.TestCase):
         self.assertIn("final_project_closure", boundary)
         self.assertEqual(4, self.contract["macro_goal_count"])
 
-    def test_current_gate_waits_for_t1a_and_the_frozen_power_cycle_restore_successor(self):
+    def test_current_gate_records_the_no_effect_preflight_ko_and_waits_for_a_renewed_gate(self):
         gate = self.matrix["current_human_gate"]
         self.assertEqual(
-            "T1A_UNIQUE_11X11_RESTORED_COLD_NO_ROLLBACK_WAITING_THERMAL_R2_TWO_LAYER_GATE",
+            "THERMAL_R2_PREFLIGHT_39A1364_CLOSED_KO_BEFORE_EFFECT_SAFE_PARK_GUARD_CORRECTED_OFFLINE_WAITING_RENEWED_GATE",
             gate["checkpoint"],
         )
-        self.assertIn("MESH_RESTORE_R2_CLOSED_OK_ONE_11X11_LOAD", gate["technical_status"])
-        self.assertIn("EXACT_MATRIX_T1A_UNCHANGED", gate["technical_status"])
-        self.assertIn("TARGETS_ZERO_SAFE_HIGH_PARK_HASHES_EXACT", gate["technical_status"])
-        self.assertIn("NO_ROLLBACK_THERMAL_CANDIDATE_R2_READY", gate["technical_status"])
+        self.assertIn("MESH_RESTORE_R2_CLOSED_OK", gate["technical_status"])
+        self.assertIn("THERMAL_PREFLIGHT_FALSE_REFUSAL_AXES_NOT_RELEASED_NO_EFFECT", gate["technical_status"])
+        self.assertIn("SAFE_PARK_RULE_CORRECTED_OFFLINE", gate["technical_status"])
+        self.assertIn("NO_NEW_K1_CONNECTION", gate["technical_status"])
         self.assertEqual(
             "G4-K1-CONTROL-Z-THERMAL-STABILIZATION-DIAGNOSTIC-V1",
             gate["active_gate"],

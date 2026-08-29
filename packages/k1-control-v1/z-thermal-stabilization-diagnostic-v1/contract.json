@@ -1,5 +1,5 @@
 {
-  "schema": 2,
+  "schema": 3,
   "mission": "G4-K1-CONTROL-Z-THERMAL-STABILIZATION-DIAGNOSTIC-V1",
   "goal": "GOAL-P4-PHYSICAL-SLICES-QUALIFICATION-V1",
   "purpose": "isolate_the_200_second_bed_stabilization_hypothesis_before_any_Z_recalibration",
@@ -36,9 +36,20 @@
   },
   "derived_remote_programs": {
     "base_trial_sha256": "5f461db624acaa8682ec20bcd3eed001da39688f1e19a880d8096685c350a68f",
-    "derived_trial_sha256": "bd11ce584ea3904332ed78132074b8b5fc3f89ef1b865618f5e1dd674870586d",
+    "derived_trial_sha256": "beb2801e0bd7b848a0c86206e35ef4974d8d13d48003559d2218c1664e6b1a77",
     "base_installer_sha256": "ff84e23462dc642d916bc7d83cfca0eea53414253b7ad940c1cb46be56a5ffa0",
     "derived_installer_sha256": "bf7d7e0d67b5598645c927dfbe7c2e17989877c4b4fc4a1ba51b8c840d9453a7"
+  },
+  "initial_motion_state": {
+    "allowed": [
+      "axes_released",
+      "xyz_homed_inside_qualified_safe_park"
+    ],
+    "qualified_safe_park": {
+      "x_mm": [200.0, 220.0],
+      "y_mm": [270.0, 300.0],
+      "z_mm": [50.0, 315.0]
+    }
   },
   "entry_requirements": [
     "human_present",
@@ -46,7 +57,7 @@
     "manual_nozzle_clean_confirmed",
     "immediate_stop_available",
     "T1A_is_the_unique_engaged_route",
-    "printer_standby_targets_zero_axes_released",
+    "printer_standby_targets_zero_axes_released_or_exact_qualified_safe_park",
     "best_current_11x11_active",
     "accepted_Z_minus_0_04_unchanged",
     "configuration_hashes_exact"
