@@ -60,6 +60,18 @@ class ZThermalStabilizationDiagnosticV1Tests(unittest.TestCase):
         self.assertTrue(all(latest[key] is False for key in ("gcode_sent", "remote_write", "heat", "motion", "extrusion", "cfs_action")))
         self.assertIn("plate_clear", evidence["next_effect_blocked_until"])
 
+    def test_post_power_cycle_evidence_separates_physical_filament_from_logical_route(self):
+        evidence = json.loads((PACKAGE / "post-power-cycle-preflight-evidence.json").read_text(encoding="utf-8"))
+        self.assertTrue(evidence["physical_report"]["T1A_left_physically_loaded_overnight"])
+        self.assertEqual("t1a_route_not_unique", evidence["bounded_preflight"]["reason"])
+        diagnosis = evidence["independent_route_diagnosis"]
+        self.assertEqual(["T1", "T2"], diagnosis["connected_units"])
+        self.assertEqual([], diagnosis["engaged_routes"])
+        self.assertEqual("default", diagnosis["active_mesh_profile"])
+        self.assertEqual(-0.04, diagnosis["accepted_z_offset_mm"])
+        self.assertTrue(diagnosis["configuration_hashes_unchanged"])
+        self.assertTrue(all(value is False for value in evidence["effects"].values()))
+
     def test_runner_requires_all_human_physical_guards(self):
         runner = (PACKAGE / "run_trial.ps1").read_text(encoding="utf-8")
         for guard in ("HumanPresent", "PlateClear", "ManualNozzleCleanConfirmed", "ImmediateStopAvailable"):

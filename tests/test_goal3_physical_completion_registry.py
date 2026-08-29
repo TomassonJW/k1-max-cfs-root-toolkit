@@ -50,20 +50,20 @@ class Goal3PhysicalCompletionRegistryTests(unittest.TestCase):
     def test_current_gate_waits_for_start_owner_safety_r2(self):
         gate = self.matrix["current_human_gate"]
         self.assertEqual(
-            "START_OWNER_SAFETY_R2_INSTALLED_THERMAL_TRIAL_CORRECTED_AND_TESTED_AWAIT_T1A",
+            "START_OWNER_SAFETY_R2_INSTALLED_POWER_CYCLE_PROVED_ROUTE_EMPTY_AND_MESH_DEFAULT_AWAIT_T1A_AND_11X11_RESTORE",
             gate["checkpoint"],
         )
         self.assertIn("R2_INSTALLED_EXACT", gate["technical_status"])
         self.assertIn("TWO_COLD_VALIDATIONS_PASS", gate["technical_status"])
         self.assertIn("THERMAL_TRIAL_RUNNER_SOAKS_BEFORE_MANUAL_TOKEN", gate["technical_status"])
-        self.assertIn("PINS_STOCK_EDGE_PURGE_SAFE_END_AND_SAFE_STOP", gate["technical_status"])
-        self.assertIn("FINAL_SAFE_ZERO_ROUTE", gate["technical_status"])
+        self.assertIn("POWER_CYCLE_READS_PROVE_ZERO_LOGICAL_ROUTE_AND_DEFAULT_ACTIVE_MESH", gate["technical_status"])
+        self.assertIn("WITH_NO_EFFECT", gate["technical_status"])
         self.assertEqual(
             "G4-K1-CONTROL-START-SEQUENCE-OWNER-SAFETY-R2",
             gate["active_gate"],
         )
         self.assertEqual(
-            "REESTABLISH_AND_READ_BACK_T1A_UNDER_A_SEPARATE_PHYSICAL_GATE_THEN_CONFIRM_STOCK_EDGE_PURGE_AND_SAFE_END",
+            "REENGAGE_T1A_THROUGH_STOCK_UI_AUTHORIZE_COLD_11X11_RESTORE_THEN_CONFIRM_STOCK_EDGE_PURGE_AND_SAFE_END",
             gate["required_human_verdict"],
         )
         self.assertTrue(gate["next_effect_blocked"])

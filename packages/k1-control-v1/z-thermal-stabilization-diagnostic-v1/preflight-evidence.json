@@ -62,6 +62,7 @@
     "extrusion": false,
     "cfs_action": false
   },
+  "post_power_cycle_diagnosis": "packages/k1-control-v1/z-thermal-stabilization-diagnostic-v1/post-power-cycle-preflight-evidence.json",
   "next_effect_blocked_until": [
     "human_present",
     "plate_clear",

@@ -1,0 +1,44 @@
+{
+  "schema": 1,
+  "mission": "G4-K1-CONTROL-Z-THERMAL-STABILIZATION-DIAGNOSTIC-V1",
+  "capture_id": "20260829-resume2-z-thermal-preflight-r2",
+  "physical_report": {
+    "T1A_left_physically_loaded_overnight": true,
+    "no_unload_requested": true,
+    "plate_clear": true,
+    "nozzle_manually_cleaned": true
+  },
+  "bounded_preflight": {
+    "private_path": "inventory/raw/20260829-resume2-z-thermal-preflight-r2/z-thermal-stabilization.safe.jsonl",
+    "sha256": "3f63b53cdb49d552ebfb9804a87bf0913e1cbdcd869aad60bbe30ddb224740cf",
+    "status": "CLOSED_KO_BEFORE_EFFECT",
+    "reason": "t1a_route_not_unique",
+    "automatic_retry": false
+  },
+  "independent_route_diagnosis": {
+    "private_path": "inventory/raw/20260829-resume2-z-thermal-preflight-r2/cfs-route-read-only.safe.jsonl",
+    "sha256": "34d8489c466abf9ed285f04e978c0d4bc123f8bb9b833dc658497dd06e79df5e",
+    "validator": "VALIDATE_CFS_OWNER_OBSERVABILITY_LIVE_READ_ONLY_V2_OK",
+    "live_observations": 2,
+    "connected_units": [
+      "T1",
+      "T2"
+    ],
+    "engaged_routes": [],
+    "active_mesh_profile": "default",
+    "accepted_z_offset_mm": -0.04,
+    "accepted_z_store_integrity_qualified": true,
+    "configuration_hashes_unchanged": true,
+    "reported_cfs_transition_count": 0
+  },
+  "effects": {
+    "gcode_sent": false,
+    "remote_write": false,
+    "heat": false,
+    "motion": false,
+    "extrusion": false,
+    "cfs_action": false
+  },
+  "conclusion": "PHYSICAL_FILAMENT_RETAINED_BUT_VOLATILE_LOGICAL_ROUTE_AND_ACTIVE_MESH_WERE_LOST_ACROSS_POWER_CYCLE",
+  "next_gate": "REENGAGE_T1A_THROUGH_STOCK_UI_THEN_RESTORE_BEST_CURRENT_11X11_AT_COLD_IDLE"
+}

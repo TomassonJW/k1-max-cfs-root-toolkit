@@ -46,3 +46,13 @@ Une lecture fraîche de reprise sous la capture
 `20260829-resume-read-only-z-thermal-preflight` a été refusée avant tout effet
 avec `t1a_route_not_unique`. Elle confirme que le redémarrage a effacé la route
 logique et que `T1A` doit être rechargé puis relu avant tout transfert ou essai.
+
+Après l'extinction nocturne, une seconde capture fraîche
+`20260829-resume2-z-thermal-preflight-r2` a reproduit ce refus sans effet. Deux
+lectures indépendantes ont ensuite établi la cause exacte : les deux CFS sont
+connectés, mais `engaged_routes=[]`, tandis que le mesh actif est revenu à
+`default`. Le filament peut donc rester physiquement dans la tête sans que la
+route logique survive à l'extinction. Le Z accepté `−0,04 mm`, son stockage et
+les configurations restent conformes. La reprise exige maintenant un
+réengagement stock de `T1A`, puis le rechargement à froid du meilleur profil
+courant `11 × 11`, avant un nouveau préflight.
