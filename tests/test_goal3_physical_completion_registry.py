@@ -93,6 +93,12 @@ class Goal3PhysicalCompletionRegistryTests(unittest.TestCase):
             reverse["status"],
         )
         self.assertTrue((ROOT / reverse["artifact"]).is_file())
+        long_job = stages["START_LONG_T1A_OWNED_TEST_JOB"]
+        self.assertEqual(
+            "OFFLINE_PRIVATE_CANDIDATE_READY_BLOCKED_THERMAL_T2_IDENTITY_AND_EQUIVALENT_RUNOUT_PROOF",
+            long_job["status"],
+        )
+        self.assertTrue((ROOT / long_job["artifact"]).is_file())
 
     def test_ambiguity_window_and_runout_human_dependency_are_explicit(self):
         stages = {stage["id"]: stage for stage in self.remaining_plan["stages"]}

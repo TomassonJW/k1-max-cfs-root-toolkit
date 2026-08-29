@@ -99,3 +99,10 @@ le checkpoint d'ambiguïté, dispose maintenant du même niveau de fermeture. Le
 paquet `reengage-t1a-passive-v1` refuse toute route initiale, exige un unique
 `T1A`, la chauffe observée avant et après l'engagement, puis le retour complet
 à zéro. Il ne déclenche lui-même aucune action.
+
+Le job long nécessaire aux checkpoints changement d'outil et runout n'est plus
+absent : un candidat privé de huit couches est dérivé du G-code R2, avec une
+fenêtre couche 3 puis une fenêtre couche 6 et une fin sûre unique. Il ne
+contient aucun connecteur ni ordre automatique CFS et reste bloqué tant que le
+verdict thermique, `T2C` et son remplacement strictement équivalent ne sont pas
+confirmés.

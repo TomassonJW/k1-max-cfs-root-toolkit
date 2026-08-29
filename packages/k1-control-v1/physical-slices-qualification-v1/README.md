@@ -53,3 +53,8 @@ Le réengagement intermédiaire `aucune route -> T1A`, placé après le futur
 désengagement et la preuve de blocage ambigu, possède lui aussi une gate
 passive séparée. Elle ne s'applique pas au réengagement actuellement attendu
 après extinction.
+
+Le futur job long possède maintenant un candidat privé déterministe de huit
+couches, avec deux fenêtres distinctes aux couches 3 et 6. Il reste sans
+runner et bloqué par le verdict thermique, l'identité réelle de `T2C` et la
+bobine de secours strictement équivalente.

@@ -1,0 +1,60 @@
+{
+  "schema": 1,
+  "mission": "G4-K1-CONTROL-LONG-CHECKPOINT-JOB-V1",
+  "goal": "GOAL-P4-PHYSICAL-SLICES-QUALIFICATION-V1",
+  "requirement": "TOOL_CHANGE_AND_RUNOUT",
+  "status": "OFFLINE_PRIVATE_CANDIDATE_READY_BLOCKED_THERMAL_AND_T2_DEPENDENCIES",
+  "authority": "offline_private_gcode_derivation_only",
+  "purpose": "keep_one_owned_T1A_job_active_long_enough_for_distinct_tool_change_and_runout_checkpoints",
+  "source": {
+    "private_path": "inventory/raw/20260829-goal3-z-thermal-stabilization-diagnostic-v1/K1-Z-THERMAL-SOAK-200S-T1A-2LAYER.gcode",
+    "sha256": "c4ce0bf765db36322594ed6e3a608a15c9b1f57b6421553c46f4bdcdd4fc574f",
+    "layers": 2,
+    "status": "R2_safe_end_source_not_yet_physically_accepted_for_Z"
+  },
+  "candidate": {
+    "private_path": "inventory/raw/20260829-goal3-long-checkpoint-job-v1/K1-LONG-CHECKPOINT-T1A-8LAYER.gcode",
+    "sha256": "9b79aae2e40585589f544afa2757b10cdef1702a8528e26d0408bad2bcd2fc77",
+    "bytes": 405156,
+    "layers": 8,
+    "layer_height_mm": 0.2,
+    "final_print_z_mm": 1.6,
+    "tool_change_window_layer": 3,
+    "runout_window_layer": 6,
+    "executable_T_commands": 0,
+    "automatic_retry": false
+  },
+  "owned_start": {
+    "entry": "KCTRL_JOB_BEGIN_KEEP_CORRECT_V1",
+    "required_route": "T1A",
+    "required_mesh": "k1_p001_t055_r001_n11x11",
+    "accepted_z_mm": -0.04,
+    "installed_owner_sha256": "678582e808d74f6b720ef3d6b52dc2c443c7a0652a62c484319e2b22fba7b0bc"
+  },
+  "safe_end": {
+    "heaters_zero": true,
+    "bed_clearance_z_mm": 50,
+    "park_x_mm": 203,
+    "park_y_mm": 273,
+    "wait_for_motion": true,
+    "release_axes": true,
+    "end_homing": false
+  },
+  "blocked_until": [
+    "thermal_two_layer_checkpoint_has_an_unambiguous_human_verdict",
+    "Z_is_accepted_without_live_adjustment_or_a_separate_recalibration_is_closed",
+    "T2C_exact_material_color_diameter_and_thermal_recipe_are_human_confirmed",
+    "T2_equivalent_runout_replacement_slot_and_spool_are_human_confirmed",
+    "a_separate_runner_upload_and_physical_gate_is_reviewed"
+  ],
+  "effects_of_this_package": {
+    "printer_connection": false,
+    "remote_upload": false,
+    "gcode_execution": false,
+    "heating": false,
+    "motion": false,
+    "cfs_action": false
+  },
+  "deployment_candidate": false,
+  "production_authorized": false
+}

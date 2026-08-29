@@ -195,13 +195,13 @@
       "order": 14,
       "id": "START_LONG_T1A_OWNED_TEST_JOB",
       "requirement": "TOOL_CHANGE_AND_RUNOUT",
-      "status": "BLOCKED_UNTIL_THERMAL_VERDICT_AND_JOB_CANDIDATE",
+      "status": "OFFLINE_PRIVATE_CANDIDATE_READY_BLOCKED_THERMAL_T2_IDENTITY_AND_EQUIVALENT_RUNOUT_PROOF",
       "route_before": ["T1A"],
       "route_after": ["T1A"],
       "action": "start_one_sacrificial_job_long_enough_for_two_distinct_checkpoints",
       "human_gate": true,
       "automatic_retry": false,
-      "artifact": null
+      "artifact": "packages/k1-control-v1/long-checkpoint-job-v1/contract.json"
     },
     {
       "order": 15,
