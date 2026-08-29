@@ -50,17 +50,18 @@ class Goal3PhysicalCompletionRegistryTests(unittest.TestCase):
     def test_current_gate_waits_for_start_owner_safety_r2(self):
         gate = self.matrix["current_human_gate"]
         self.assertEqual(
-            "START_OWNER_SAFETY_R2_OFFLINE_CORRECTION_AFTER_END_AND_PURGE_FEEDBACK",
+            "START_OWNER_SAFETY_R2_STOCK_EDGE_PURGE_AND_SAFE_END_OFFLINE_CORRECTION",
             gate["checkpoint"],
         )
         self.assertIn("RECOVERY_FINISHED_AT_Z50_X203_Y273", gate["technical_status"])
         self.assertIn("UNSAFE_THERMAL_GCODE_REMOVED", gate["technical_status"])
+        self.assertIn("STOCK_X0_1_X0_4_Y20_Y180_F3000_PURGE", gate["technical_status"])
         self.assertEqual(
             "G4-K1-CONTROL-Z-THERMAL-STABILIZATION-DIAGNOSTIC-V1",
             gate["active_gate"],
         )
         self.assertEqual(
-            "AFTER_OFFLINE_AND_INSTALL_VALIDATION_CONFIRM_FRONT_LEFT_PURGE_TAIL_GEOMETRY_THEN_REOPEN_THERMAL_Z_DIAGNOSTIC",
+            "AFTER_OFFLINE_AND_INSTALL_VALIDATION_CONFIRM_STOCK_EDGE_OUT_AND_BACK_PURGE_THEN_REOPEN_THERMAL_Z_DIAGNOSTIC",
             gate["required_human_verdict"],
         )
         self.assertTrue(gate["next_effect_blocked"])

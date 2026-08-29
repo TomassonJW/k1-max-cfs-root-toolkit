@@ -9,13 +9,23 @@
   },
   "candidate": {
     "private_path": "inventory/raw/20260829-goal3-start-sequence-owner-safety-r2/k1-control-start-sequence-owner-v1.cfg",
-    "sha256": "a026e0c07db6eb00161f9cb7d4a18d0d624a3795c24120822a82ee27bccea3e2",
-    "bytes": 16038
+    "sha256": "678582e808d74f6b720ef3d6b52dc2c443c7a0652a62c484319e2b22fba7b0bc",
+    "bytes": 16101
   },
   "purge_correction": {
-    "start_mm": [5.0, 180.0, 0.3],
-    "end_mm": [5.0, 20.0, 0.3],
-    "extrusion_mm": 18.0,
+    "stock_reference": {
+      "path": "inventory/raw/20260819-1726-k1max-targeted-sources/targeted-sources.raw.txt",
+      "macro": "CX_PRINT_DRAW_ONE_LINE",
+      "mechanical_x_min_mm": -2.0
+    },
+    "outbound_start_mm": [0.1, 20.0, 0.3],
+    "outbound_end_mm": [0.1, 180.0, 0.3],
+    "return_start_mm": [0.4, 180.0, 0.3],
+    "return_end_mm": [0.4, 20.0, 0.3],
+    "x_offset_mm": 0.3,
+    "extrusion_per_pass_mm": 10.0,
+    "extrusion_total_mm": 20.0,
+    "purge_feedrate_mm_min": 3000,
     "retraction_mm": 1.2,
     "lift_after_purge_mm": 5.0,
     "human_physical_qualification_required": true,

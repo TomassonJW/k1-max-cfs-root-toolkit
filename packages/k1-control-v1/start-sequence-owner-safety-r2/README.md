@@ -3,11 +3,14 @@
 Ce paquet corrige les deux défauts observés pendant le premier essai physique
 du départ possédé.
 
-La purge V1 allait de `X15 Y20` à `X15 Y180`. La ligne restait sur le bord
-gauche, mais son filet terminal partait de `Y180`, en pleine zone utile. R2
-place la ligne à `X5`, l'exécute de `Y180` vers `Y20`, rétracte `1,2 mm` puis
-remonte à `Z5`. Le filet terminal doit donc rester près du coin avant gauche.
-Cette géométrie reste candidate jusqu'au verdict humain.
+La purge V1 allait de `X15 Y20` à `X15 Y180`, lentement et sans retour. La
+source constructeur `CX_PRINT_DRAW_ONE_LINE` confirme le tracé normal décrit
+par Thomas : aller de `X0,1 Y20` à `Y180`, retour à `X0,4 Y20`, `10 mm`
+extrudés par passage et vitesse `F3000`. La course réelle autorise `X0,1`
+(`X mini = -2`), il n'est donc pas nécessaire de déplacer ce filet dans la
+zone imprimable. R2 ajoute seulement un dégagement vers `Y10`, une rétraction
+de `1,2 mm` et une remontée à `Z5`. Cette géométrie reste candidate jusqu'au
+verdict humain.
 
 La fin d'essai V1 libérait directement les moteurs à hauteur de couche. R2
 coupe les chauffes, descend d'abord le plateau à `Z50`, parque la tête à

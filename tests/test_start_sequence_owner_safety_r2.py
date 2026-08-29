@@ -26,11 +26,17 @@ class StartSequenceOwnerSafetyR2Tests(unittest.TestCase):
         cls.contract = json.loads((PACKAGE / "contract.json").read_text(encoding="utf-8"))
         cls.verifier = load_module("start_owner_safety_r2_verifier", PACKAGE / "verify_candidate.py")
 
-    def test_candidate_moves_the_purge_tail_to_the_front_left_edge(self):
+    def test_candidate_uses_the_normal_stock_edge_out_and_back_geometry(self):
         result = self.verifier.verify()
         self.assertEqual("START_SEQUENCE_OWNER_SAFETY_R2_CANDIDATE_OK", result["status"])
-        self.assertEqual([5.0, 180.0, 0.3], result["purge_start_mm"])
-        self.assertEqual([5.0, 20.0, 0.3], result["purge_end_mm"])
+        self.assertEqual([0.1, 20.0, 0.3], result["purge_outbound_start_mm"])
+        self.assertEqual([0.1, 180.0, 0.3], result["purge_outbound_end_mm"])
+        self.assertEqual([0.4, 180.0, 0.3], result["purge_return_start_mm"])
+        self.assertEqual([0.4, 20.0, 0.3], result["purge_return_end_mm"])
+        self.assertEqual(3000, result["purge_feedrate_mm_min"])
+        self.assertTrue(result["stock_reference_verified"])
+        self.assertEqual(0.3, self.contract["purge_correction"]["x_offset_mm"])
+        self.assertEqual(20.0, self.contract["purge_correction"]["extrusion_total_mm"])
 
     def test_safe_end_lowers_and_parks_before_releasing_axes(self):
         lines = self.verifier.verify()["safe_end"]

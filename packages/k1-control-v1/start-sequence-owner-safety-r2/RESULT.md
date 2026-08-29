@@ -13,9 +13,9 @@ en arrière-plan. Les deux lectures finales prouvent que toute la récupération
 s'est terminée.
 
 Le G-code thermique invalide a été supprimé de la K1 après vérification exacte
-de son empreinte. Le correctif R2 est uniquement local : purge inversée jusqu'à
-`X5 Y20`, rétraction `1,2 mm`, remontée `Z5`, puis fin sûre à `Z50` et
-`X203 Y273` avant `M84`.
+de son empreinte. Le correctif R2 est uniquement local : purge constructeur
+aller-retour `X0,1/X0,4`, de `Y20` à `Y180`, `F3000`, rétraction `1,2 mm`,
+remontée `Z5`, puis fin sûre à `Z50` et `X203 Y273` avant `M84`.
 
 La pose live et la qualification physique de la nouvelle purge restent
 fermées. Aucun nouveau fichier d'impression n'est présent sur la K1.
