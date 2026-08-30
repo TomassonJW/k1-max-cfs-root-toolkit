@@ -159,29 +159,31 @@ le mesh ni le Z fin.
 Les températures, durées, vitesses, limites de zone, stratégie de mesh et
 quantités de purge sont paramétrables. Les barrières de sécurité ne le sont pas.
 
-L'ordre cible est :
+L'ordre cible sépare deux chemins :
 
 1. valider le contrat du travail, la plaque, les outils et la calibration ;
-2. lancer immédiatement la chauffe du plateau, sans attendre ;
-3. faire la référence grossière uniquement si elle est nécessaire pour se
-   déplacer sans collision ;
-4. nettoyer la buse avec la recette et la température du matériau précédent ;
-5. attendre la cible plateau et une stabilité courte bornée, puis faire la
-   référence Z finale sur buse propre à la température de palpage ;
-6. charger le mesh correspondant à la plaque et à la température ; une nouvelle
+2. si la géométrie acceptée est encore valide, la relire sans palper ;
+3. si une nouvelle palpation est nécessaire, exiger l'absence de filament
+   engagé, nettoyer la buse, chauffer et stabiliser, puis terminer toutes les
+   références Z et mesures de mesh ;
+4. charger le mesh correspondant à la plaque et à la température ; une nouvelle
    mesure reste une calibration explicite, jamais une étape quotidienne cachée ;
-7. charger la correction Z acceptée, ou la valeur provisoire d'une session de
+5. charger la correction Z acceptée, ou la valeur provisoire d'une session de
    calibration explicitement ouverte ;
-8. vérifier réellement référence, mesh et correction, puis seulement armer les
+6. vérifier réellement référence, mesh et correction, puis seulement armer les
    mouvements bas de production ;
-9. préparer le CFS et le bon outil avec les températures du travail ;
-10. purger selon le profil actif ;
-11. imprimer ;
-12. terminer sans modifier la calibration acceptée.
+7. préparer le CFS et le bon outil avec les températures du travail ;
+8. insérer ou conserver le filament seulement si aucune palpation ne reste à
+   faire ;
+9. purger selon le profil actif ;
+10. imprimer ;
+11. terminer sans modifier la calibration acceptée.
 
-Avant l'étape 8, aucune extrusion, purge ou trajectoire basse de production
-n'est admise. Seuls la prise de référence et le nettoyage dans une zone validée
-sont des chemins bas contrôlés.
+Toute insertion est présumée laisser un résidu sur la buse. Aucune palpation de
+contact ne suit donc l'étape 8. Avant l'armement de la géométrie, aucune
+extrusion, purge ou trajectoire basse de production n'est admise. Seuls la prise
+de référence et le nettoyage dans une zone validée sont des chemins bas
+contrôlés.
 
 ## Températures et deux CFS
 

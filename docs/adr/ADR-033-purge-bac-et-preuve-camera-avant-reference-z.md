@@ -1,5 +1,10 @@
 # ADR-033 — Purger dans le bac et voir la buse avant la référence Z précise
 
+> **Supersédée le 30 août 2026 par ADR-034.** R3 reste une preuve froide
+> historique et ne doit jamais être posé ni exécuté. Une insertion ou une purge
+> précède ici `ACCURATE_G28`, ce qui peut déposer un nouveau résidu et fausser la
+> palpation malgré la caméra.
+
 ## Contexte
 
 Le run R5 du 29 août 2026 a été arrêté après l'observation d'une purge hors du
@@ -38,6 +43,6 @@ Le run R5 est KO et n'est jamais rejoué. Les marqueurs internes ne sont plus un
 preuve de purge ni de bonne hauteur. La caméra devient une preuve de sécurité du
 pilote de test et, plus tard, une étape visible dans K1 Control.
 
-R3 reste hors imprimante. La pose et tout essai chaud sont fermés jusqu'à la
-revue du pilote caméra, une validation à froid, puis la remise en état physique
-réelle de la buse, du plateau et de la route T1A.
+Décision historique : R3 devait rester hors imprimante jusqu'à la revue caméra
+et la remise en état. ADR-034 a depuis fermé définitivement sa pose et tout
+essai chaud, indépendamment de cette remise en état.

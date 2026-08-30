@@ -176,26 +176,33 @@ physique ; aucun V4 n'est implicite.
 ### 5.4 Calibration Z et mesh
 
 Le nettoyage manuel avec contrôle visuel est obligatoire avant une référence Z
-ou un mesh de métrologie. Aucun chargement ni aucune purge n'a lieu pendant la
-mesure de contact. Le retrait préalable reste recommandé si l'absence de
-suintement ne peut pas être garantie autrement.
+ou un mesh de métrologie. Toute insertion est présumée laisser un résidu : tous
+les chargements et toutes les purges ont donc lieu **après** la dernière mesure
+de contact. Si un filament est déjà engagé et qu'une nouvelle palpation devient
+nécessaire, son retrait puis un nettoyage manuel sont obligatoires avant la
+mesure. Le nettoyage après insertion reste une sécurité ponctuelle, pas l'ordre
+du produit final.
 
 ## 6. Démarrage d'une impression
 
 1. Valider le contrat et l'absence d'offset Z caché.
 2. Interroger machine, deux CFS, mapping des slots et capteurs.
 3. Classer l'état filament. Toute contradiction ferme le départ.
-4. Obtenir une confirmation humaine consommable une seule fois que la buse a
-   été nettoyée à la main et est visiblement propre.
-5. Lancer immédiatement la chauffe du plateau et la cible de référence de la
-   buse. Référencer X/Y pendant cette montée, sans palper Z.
+4. Choisir le chemin géométrique. Si le mesh et le Z restent valides, les relire
+   sans palper. Si une nouvelle palpation est requise, refuser toute route
+   engagée, obtenir une confirmation humaine consommable une seule fois que la
+   buse a été nettoyée à la main, puis seulement continuer.
+5. Sur le chemin avec palpation, lancer la chauffe du plateau et la cible de
+   référence de la buse. Référencer X/Y pendant cette montée, sans palper Z.
 6. Atteindre la fenêtre thermique liée au Z accepté. Pour le contexte actuel,
    elle vaut `140/55 °C` ; elle n'est pas remplacée par une température variable.
-7. Faire exactement une référence Z précise avec la buse propre.
-8. Charger le profil mesh qualifié après cette référence, appliquer
-   le Z accepté et relire les deux états effectifs.
-9. Résoudre le filament seulement maintenant : conserver, changer, charger ou
-   bloquer. Aucun effet CFS, chargement ou purge ne précède la référence Z.
+7. Terminer toutes les références Z et mesures de mesh avec la buse propre et
+   sans filament engagé.
+8. Charger le profil mesh qualifié, appliquer le Z accepté et relire les deux
+   états effectifs.
+9. Résoudre le filament seulement maintenant : conserver sur le chemin sans
+   palpation, ou charger/changer après les mesures. Aucun effet CFS, chargement
+   ou purge ne précède une palpation.
 10. Atteindre la température explicite de la première couche ou de la transition.
 11. Purger visiblement. Pour le bon filament déjà engagé, la ligne d'amorçage
     peut constituer cette petite purge unique ; un chargement ou changement
@@ -210,9 +217,10 @@ suintement ne peut pas être garantie autrement.
 14. Vérifier outil, CFS, températures, mesh, Z, capteurs et absence de transition,
     puis seulement rendre la main au modèle.
 
-Ce départ n'appelle jamais `START_PRINT`, une brosse, une référence Z grossière
-avant la référence précise, ni une calibration de mesh. Le mesh et le Z accepté
-restent des données persistantes ; leur recalibration est une action séparée.
+Ce départ n'appelle jamais `START_PRINT` ni une brosse. Une référence Z ou une
+calibration de mesh est une action séparée et se termine avant l'insertion. Le
+mesh et le Z acceptés restent des données persistantes ; un travail avec
+filament déjà engagé les relit sans palper.
 
 ## 7. Décision filament au démarrage
 
@@ -220,6 +228,8 @@ restent des données persistantes ; leur recalibration est une action séparée.
 
 - ne pas aller au cutter ;
 - ne pas retirer ni rembobiner ;
+- ne faire aucune palpation ; si elle est nécessaire, quitter ce chemin et
+  passer par retrait, nettoyage, mesure, puis réinsertion ;
 - aller au réceptacle ;
 - faire une petite purge de preuve ;
 - bloquer si aucun débit ne sort.
@@ -312,7 +322,7 @@ scientifique séparée.
 
 | Calibration | Politique filament |
 |---|---|
-| Z ou mesh par contact buse/plateau | nettoyage manuel obligatoire ; aucun chargement ni purge pendant la mesure ; retrait préalable recommandé si l'absence de suintement n'est pas autrement prouvée |
+| Z ou mesh par contact buse/plateau | absence de filament engagé et nettoyage manuel obligatoires ; toutes les mesures finissent avant insertion, chargement ou purge |
 | débit, température, rétraction ou pression d'avance | filament requis et explicitement résolu |
 | résonances et input shaper | filament sans rôle métrologique ; aucun changement automatique |
 | géométrie historique de la brosse | conservée comme preuve, non exécutable sans décision future distincte |

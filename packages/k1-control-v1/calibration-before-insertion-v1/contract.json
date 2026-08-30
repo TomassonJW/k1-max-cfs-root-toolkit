@@ -1,0 +1,77 @@
+{
+  "schema": 1,
+  "mission": "G4-K1-CONTROL-CALIBRATION-BEFORE-INSERTION-V1",
+  "status": "CLOSED_OK_RULE_FROZEN_PREFLIGHT_CLOSED_NO_EFFECT",
+  "decision": {
+    "adr": "docs/adr/ADR-034-calibrations-avant-insertion-filament.md",
+    "filament_insertion_is_contamination_boundary": true,
+    "probing_after_insertion_forbidden": true,
+    "camera_cannot_replace_clean_nozzle_and_order": true,
+    "post_insertion_manual_clean_is_not_final_product_order": true
+  },
+  "final_paths": {
+    "reuse_valid_geometry": {
+      "required": [
+        "accepted_geometry_still_valid",
+        "mesh_and_z_read_back_without_probe",
+        "no_contact_probe_in_job_start"
+      ],
+      "engaged_correct_filament_may_be_kept": true
+    },
+    "fresh_geometry": {
+      "required_order": [
+        "classify_filament_state",
+        "prove_no_engaged_route",
+        "consume_manual_clean_confirmation",
+        "heat_and_stabilize_for_measurement",
+        "complete_all_contact_probing",
+        "load_and_read_back_mesh_and_accepted_z",
+        "resolve_and_insert_filament",
+        "purge_and_prove_flow",
+        "camera_nozzle_and_purge_check",
+        "prime_outside_useful_bed_area",
+        "camera_prime_check",
+        "start_model"
+      ]
+    }
+  },
+  "r3": {
+    "status": "SUPERSEDED_NEVER_DEPLOY_OR_RUN_PROBING_AFTER_INSERTION",
+    "cold_evidence_retained": true,
+    "deployment_candidate": false,
+    "physical_run_authorized": false
+  },
+  "preflight": {
+    "evidence": "packages/k1-control-v1/calibration-before-insertion-v1/preflight-evidence.json",
+    "verdict": "CLOSED_KO_R3_SUPERSEDED_AND_ACTIVE_MESH_DRIFT",
+    "remote_effects": false,
+    "physical_effects": false
+  },
+  "next_gate": {
+    "id": "G4-K1-CONTROL-BEST-CURRENT-MESH-RESTORE-BEFORE-R4-V1",
+    "purpose": "load_and_read_back_the_existing_11x11_profile_without_probe_heat_motion_extrusion_or_cfs_action",
+    "separate_machine_mutation_authority_required": true,
+    "must_not": [
+      "probe",
+      "calibrate",
+      "heat",
+      "move",
+      "extrude",
+      "change_cfs_route",
+      "install_r3",
+      "start_print"
+    ]
+  },
+  "effects": {
+    "gcode": false,
+    "heater_action": false,
+    "motion_action": false,
+    "extrusion_action": false,
+    "cfs_action": false,
+    "remote_file_write": false,
+    "service_action": false,
+    "configuration_change": false
+  },
+  "executable_candidate": false,
+  "production_authorized": false
+}

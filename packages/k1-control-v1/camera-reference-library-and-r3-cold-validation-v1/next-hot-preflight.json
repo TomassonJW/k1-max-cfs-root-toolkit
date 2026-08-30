@@ -1,12 +1,37 @@
 {
   "schema": 1,
   "gate": "G4-K1-CONTROL-START-SEQUENCE-OWNER-CAMERA-PURGE-R3-HOT-PREFLIGHT-V1",
-  "status": "BLOCKED_WAITING_REAL_MANUAL_RESET_NO_EFFECT_AUTHORIZED",
-  "purpose": "prepare_a_fresh_read_only_preflight_and_exact_rollback_before_any_future_R3_install_or_hot_run",
+  "status": "CLOSED_KO_R3_SUPERSEDED_AND_ACTIVE_MESH_DRIFT",
+  "purpose": "record_the_effect_free_preflight_then_close_R3_before_any_install_or_hot_run",
   "required_manual_facts_before_start": [
     "nozzle_cleaned",
     "bed_cleaned_and_clear",
     "T1A_reengaged_with_official_function"
+  ],
+  "manual_facts_user_confirmed": {
+    "date": "2026-08-30",
+    "nozzle_cleaned": true,
+    "bed_cleaned_and_clear": true,
+    "T1A_reengaged_with_official_function": true,
+    "nozzle_recleaned_after_insertion": true
+  },
+  "observed_read_only_result": {
+    "camera_frame_ok": true,
+    "camera_semantic_confirmation": false,
+    "printer_state": "standby",
+    "heater_targets_c": [0.0, 0.0],
+    "T1A_engaged": true,
+    "cfs_command": "",
+    "accepted_z_mm": -0.04,
+    "active_mesh": "default",
+    "active_mesh_shape": "6x6",
+    "required_best_current_mesh": "k1_p001_t055_r001_n11x11",
+    "configuration_hashes_stable": true,
+    "effects": false
+  },
+  "closure_reasons": [
+    "R3_purges_after_insertion_and_before_accurate_z_reference",
+    "active_mesh_is_default_6x6_not_best_current_11x11"
   ],
   "allowed_preflight_observations": [
     "fresh_camera_GET",
@@ -35,6 +60,7 @@
     "print_start",
     "automatic_retry"
   ],
+  "next_contract": "packages/k1-control-v1/calibration-before-insertion-v1/contract.json",
   "effects": {
     "gcode": false,
     "heater_action": false,

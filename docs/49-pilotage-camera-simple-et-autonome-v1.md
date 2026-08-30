@@ -1,5 +1,11 @@
 # Pilotage caméra simple et autonome V1
 
+> Mise à jour du 30 août 2026 : la caméra ne peut pas rendre sûre une palpation
+> après insertion. Toute insertion est présumée laisser un résidu ; les
+> calibrations et références par contact doivent être terminées avant le
+> chargement. Voir ADR-034. R3 reste une preuve froide historique et ne doit
+> jamais être posé ni exécuté.
+
 Statut : **règle canonique ; pilote minimal validé, bibliothèque limitée à
 `SAFE_IDLE_PARK`**.
 
@@ -71,17 +77,19 @@ doute. Le LiDAR n'est ni requis ni recommandé à ce stade.
 
 ## Règles bloquantes
 
-- image fraîche avant tout essai physique et aux deux pauses caméra de R3 ;
-- purge dans le vrai bac, mouvement E4 de décrochage, puis image propre avant
-  la référence Z précise ;
+- image fraîche avant tout essai physique et à chaque arrêt caméra du futur
+  candidat ;
+- toutes les palpations terminées avec buse propre avant toute insertion ;
+- purge dans le vrai bac et mouvement E4 de décrochage seulement après les
+  références et mesures de contact ;
 - seconde image après la ligne hors plateau et avant le modèle ;
 - surveillance caméra de la première couche avec annulation immédiate au défaut ;
 - aucun retry automatique après un effet incertain ;
-- aucun nouvel essai chaud tant que la buse, le plateau et la route filament ne
-  sont pas réellement remis en état après R5.
+- aucun essai chaud avec R3, même après remise en état.
 
-Les détails du correctif sont figés par ADR-033 et le paquet
-`start-sequence-owner-camera-purge-r3`.
+Les détails du correctif sont figés par ADR-034 et le paquet
+`calibration-before-insertion-v1`. ADR-033 et R3 sont conservés comme preuves
+historiques de l'ordre rejeté.
 
 ## Validation froide acquise
 
@@ -95,6 +103,6 @@ Les deux pauses R3 bloquent avant `ACCURATE_G28` et avant `RESUME_BASE`.
 `TURN_OFF_HEATERS` sans confirmer d'image. Les `16` blocs Jinja ont été parsés
 par le Python existant de la K1 via stdin, sans fichier distant.
 
-Cette validation ne permet toujours pas de poser R3 ou de chauffer. Avant une
-future gate chaude, la buse et le plateau doivent être réellement nettoyés, le
-plateau libéré et `T1A` réengagé avec la fonction officielle.
+Cette validation ne permet pas de poser R3 ou de chauffer. Les gestes manuels
+ont ensuite été confirmés, puis le préflight sans effet a fermé R3 et constaté
+le retour du profil actif à `default` en `6 × 6`.

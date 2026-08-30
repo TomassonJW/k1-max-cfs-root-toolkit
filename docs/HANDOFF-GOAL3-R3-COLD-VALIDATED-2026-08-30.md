@@ -1,5 +1,11 @@
 # Handoff — Goal 3, pilote caméra et R3 validés à froid
 
+> **Supersédé le 30 août 2026** par
+> `HANDOFF-GOAL3-CALIBRATION-BEFORE-INSERTION-PREFLIGHT-2026-08-30.md`.
+> Les gestes manuels sont faits, mais R3 ne doit jamais être posé ni exécuté :
+> ADR-034 impose toutes les palpations avant l'insertion du filament et le
+> préflight a aussi trouvé le mesh actif `default` en `6 × 6`.
+
 Date : 2026-08-30
 Projet : `C:\Users\janko\Documents\ChatGPT\k1-max-cfs-root-toolkit`
 Nouvelle tâche créée : non
@@ -83,8 +89,8 @@ officielle. Il suffit ensuite de dire que ces trois gestes sont terminés ; aucu
 texte de gate n'est à recopier. Le préflight suivant prendra une image et relira
 l'état, la route, le `11 × 11`, le Z accepté et les empreintes. Il préparera les
 sauvegardes et le rollback, mais interdira encore pose, chauffe, mouvement,
-extrusion, CFS et impression. Une pose R3 et un essai chaud resteront des gates
-ultérieures séparées.
+extrusion, CFS et impression. Cette ancienne suite est annulée : ADR-034 ferme
+maintenant toute pose ou tout essai chaud de R3.
 
 La prochaine action est une gate humaine : aucun modèle Codex n'est nécessaire
 pour nettoyer et réengager la machine. Après ce constat, le modèle optimal pour

@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Offline checks for the camera-held bin-purge R3 start candidate."""
+"""Offline tombstone checks for the superseded R3 start sequence."""
 
 from __future__ import annotations
 
@@ -38,6 +38,11 @@ def verify() -> dict[str, object]:
     prime = macro_body(text, "KCTRL_START_VISIBLE_PURGE_V1")
     camera_prime = macro_body(text, "KCTRL_CONFIRM_CAMERA_PRIME_AND_RESUME_R3")
 
+    if contract["status"] != "SUPERSEDED_NEVER_DEPLOY_OR_RUN_PROBING_AFTER_INSERTION":
+        raise ValueError("r3_must_remain_superseded")
+    if contract.get("superseded_by") != "ADR-034":
+        raise ValueError("r3_superseding_adr_missing")
+
     ordered(
         begin,
         [
@@ -50,7 +55,7 @@ def verify() -> dict[str, object]:
         "rough_then_bin_order",
     )
     if "ACCURATE_G28" in begin:
-        raise ValueError("precise_z_must_not_precede_bin_and_camera")
+        raise ValueError("historical_r3_shape_changed")
 
     ordered(
         bin_purge,
@@ -74,6 +79,13 @@ def verify() -> dict[str, object]:
         "bin_release_order",
     )
     ordered(camera_clean, ["camera_clean_check", "ACCURATE_G28", "KCTRL_START_AFTER_REFERENCE_V1"], "camera_before_precise_z")
+
+    # This order is deliberately preserved as evidence of why R3 is closed:
+    # T1A is required, extrusion happens, and only then ACCURATE_G28 runs.
+    if 'box.T1.filament|string != "A"' not in begin:
+        raise ValueError("historical_engaged_route_guard_missing")
+    if "G1 E20 F360" not in bin_purge or "ACCURATE_G28" not in camera_clean:
+        raise ValueError("historical_contamination_before_probe_not_proven")
 
     ordered(
         prime,
@@ -107,9 +119,10 @@ def verify() -> dict[str, object]:
         raise ValueError("outside_bed_prime_beyond_mechanical_min")
 
     return {
-        "status": "START_SEQUENCE_OWNER_CAMERA_PURGE_R3_OFFLINE_OK",
-        "rough_reference_before_bin_purge": True,
-        "camera_before_precise_z": True,
+        "status": "START_SEQUENCE_OWNER_CAMERA_PURGE_R3_SUPERSEDED_OK",
+        "historical_cold_shape_preserved": True,
+        "engaged_filament_before_extrusion": True,
+        "extrusion_before_accurate_z_reference": True,
         "camera_before_model": True,
         "deployment_candidate": False,
         "physical_run_authorized": False,

@@ -1,6 +1,7 @@
 {
   "mission": "G4-K1-CONTROL-START-SEQUENCE-OWNER-CAMERA-PURGE-R3",
-  "status": "OFFLINE_CANDIDATE_PHYSICAL_RUN_BLOCKED",
+  "status": "SUPERSEDED_NEVER_DEPLOY_OR_RUN_PROBING_AFTER_INSERTION",
+  "superseded_by": "ADR-034",
   "supersedes": [
     "G4-K1-CONTROL-START-SEQUENCE-OWNER-SAFETY-R2"
   ],
@@ -8,6 +9,14 @@
     "date": "2026-08-29",
     "failed_run": "20260829-goal3-thermal-r5-run-6174bcc",
     "verdict": "KO_PURGE_NOT_IN_BIN_BLOB_RELEASE_MISSING_Z_REFERENCE_NOT_VISUALLY_TRUSTWORTHY",
+    "automatic_retry": false
+  },
+  "closure": {
+    "date": "2026-08-30",
+    "reason": "T1A_is_required_and_filament_is_purged_before_ACCURATE_G28",
+    "filament_insertion_assumed_to_leave_nozzle_residue": true,
+    "cold_validation_remains_historical_evidence_only": true,
+    "hot_preflight_closed_without_effect": true,
     "automatic_retry": false
   },
   "machine_facts": {

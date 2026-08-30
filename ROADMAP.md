@@ -150,13 +150,13 @@ seul fonctionnement quotidien :
 19. `START-SEQUENCE-OWNER-V1` a été installé et validé à froid, puis sa campagne
     physique a révélé un défaut majeur : R5 a purgé hors bac, sans décrocher la
     boule, et la référence Z physique n'était pas fiable. R5 est clos KO sans
-    retry. ADR-033 et le document 49 imposent maintenant purge dans le bac,
-    mouvement E4 et deux contrôles caméra bloquants. R3 reste hors imprimante ;
-20. pilote caméra minimal et validation froide R3 clos : image fraîche nette,
-    trois zones comparées à la seule référence acquise, deux pauses bloquantes,
-    timeout sûr et `16` blocs Jinja parsés sans effet. La future gate chaude
-    reste fermée jusqu'au nettoyage réel buse/plateau et au réengagement
-    officiel de `T1A`.
+    retry. La validation froide de R3 reste historique ; ADR-034 ferme R3 sans
+    pose ni essai, car cette séquence purgeait avant `ACCURATE_G28` ;
+20. la règle finale est figée : toute insertion est présumée laisser un résidu,
+    donc toutes les palpations finissent avant chargement. Le préflight sans
+    effet a confirmé `T1A`, `standby`, chauffes zéro et Z `−0,04`, mais trouvé le
+    mesh actif `default` en `6 × 6`. La prochaine gate restaure et relit seulement
+    le meilleur `11 × 11`, sans palpation, chauffe, mouvement, extrusion ou CFS.
 
 Le rollback exact de `MESH-EDGE-DIAGNOSTIC-V1` et sa validation finale sont
 verts. Aucun acte physique suivant n'est automatiquement autorisé. La reprise

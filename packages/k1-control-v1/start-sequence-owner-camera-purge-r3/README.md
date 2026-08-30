@@ -1,11 +1,18 @@
-# START-SEQUENCE-OWNER-CAMERA-PURGE-R3
+# START-SEQUENCE-OWNER-CAMERA-PURGE-R3 — supersédée, ne jamais exécuter
+
+Statut depuis le 30 août 2026 :
+`SUPERSEDED_NEVER_DEPLOY_OR_RUN_PROBING_AFTER_INSERTION`.
+
+R3 reste conservée comme preuve froide de l'incident et des arrêts caméra. Elle
+exige `T1A` engagé, purge avant `ACCURATE_G28` et peut donc recréer un résidu
+avant la palpation. ADR-034 interdit sa pose et son essai chaud.
 
 Ce successeur hors imprimante ferme le défaut physique observé le 29 août 2026.
 R2 traçait une ligne au bord du plateau, mais ne purgeait pas dans le bac CFS et
 n'exécutait pas l'aller-retour qualifié qui décroche la boule. Il lançait aussi
 la référence Z précise avant tout nettoyage du filament ressorti à chaud.
 
-R3 rétablit l'ordre physique nécessaire :
+L'ordre historique de R3 était :
 
 1. référence X/Y puis référence Z grossière à `140/55 °C` ;
 2. chauffe à `190 °C` et purge de `20 mm` à la position active du bac

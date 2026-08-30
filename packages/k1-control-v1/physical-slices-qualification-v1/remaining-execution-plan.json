@@ -2,7 +2,7 @@
   "schema": 1,
   "plan_id": "GOAL-P4-PHYSICAL-SLICES-REMAINING-EXECUTION-V1",
   "goal": "GOAL-P4-PHYSICAL-SLICES-QUALIFICATION-V1",
-  "status": "IN_PROGRESS_R5_PHYSICAL_KO_CAMERA_PILOT_AND_R3_COLD_VALIDATION_CLOSED_HOT_EFFECTS_BLOCKED",
+  "status": "IN_PROGRESS_R3_SUPERSEDED_CALIBRATION_BEFORE_INSERTION_FROZEN_ACTIVE_MESH_RESTORE_REQUIRED",
   "purpose": "finish_all_five_remaining_physical_requirements_without_hiding_route_or_human_dependencies",
   "current_observation": {
     "physical_filament_left_in_head_overnight": "T1A_user_confirmed",
@@ -27,7 +27,11 @@
     "R3_cold_validation": "CLOSED_OK_static_holds_and_watchdog_plus_16_remote_Jinja_sections_via_stdin_no_effect",
     "final_safe_state_after_R5": "cancelled_targets_zero_axes_released_head_high_11x11_active_no_engaged_route",
     "continuation_authority": "FAIS_LE_JOB_persists_across_technical_commits_while_physical_conditions_are_unchanged",
-    "current_human_action": "before_any_future_hot_preflight_clean_nozzle_clean_and_clear_bed_then_reengage_T1A_with_official_function"
+    "current_human_action": "COMPLETED_nozzle_and_bed_cleaned_T1A_officially_reengaged_then_nozzle_recleaned_after_insertion",
+    "latest_effect_free_preflight": "CLOSED_KO_R3_SUPERSEDED_T1A_ENGAGED_TARGETS_ZERO_STANDBY_ACTIVE_DEFAULT_6x6",
+    "R3_status": "SUPERSEDED_NEVER_DEPLOY_OR_RUN_PROBING_AFTER_INSERTION",
+    "calibration_before_insertion_rule": "FROZEN_ADR_034",
+    "next_gate": "G4-K1-CONTROL-BEST-CURRENT-MESH-RESTORE-BEFORE-R4-V1"
   },
   "sequencing_decision": {
     "installed_owner_supports_only": "unique_T1A_keep_correct",
@@ -43,6 +47,9 @@
     "automatic_retry": false,
     "stop_on_first_KO_or_uncertain_effect": true,
     "manual_nozzle_clean_before_owned_start": true,
+    "filament_insertion_is_a_nozzle_contamination_boundary": true,
+    "all_contact_probing_finishes_before_filament_insertion": true,
+    "already_engaged_filament_path_must_not_probe": true,
     "best_current_mesh_before_low_move": "k1_p001_t055_r001_n11x11",
     "accepted_z_mm": -0.04,
     "telemetry_never_replaces_human_verdict": true,
@@ -80,14 +87,14 @@
       "order": 3,
       "id": "THERMAL_STABILIZATION_R5_TWO_LAYER",
       "requirement": "CFS_START_STATES_AND_TEMPERATURE_OWNER",
-      "status": "RUN_R5_CLOSED_PHYSICAL_KO_NO_RETRY_CAMERA_PURGE_R3_COLD_VALIDATED_HOT_EFFECT_BLOCKED",
+      "status": "RUN_R5_CLOSED_PHYSICAL_KO_NO_RETRY_R3_SUPERSEDED_NEVER_RUN",
       "route_before": ["T1A"],
       "route_after": [],
       "action": "completed_one_200s_bed_soak_then_owned_R2_two_layer_trial_closed_KO",
       "human_gate": true,
       "automatic_retry": false,
       "artifact": "packages/k1-control-v1/start-sequence-owner-camera-purge-r3/incident-evidence.json",
-      "branch_on_KO": "camera_library_and_R3_cold_validation_closed_next_hot_preflight_blocked_until_real_cleanup_and_T1A_reengagement"
+      "branch_on_KO": "calibration_before_insertion_frozen_preflight_closed_on_R3_order_and_active_default_6x6_next_restore_11x11_without_probe"
     },
     {
       "order": 4,

@@ -1,6 +1,11 @@
 # Résultat
 
-Statut : `OFFLINE_CANDIDATE_PHYSICAL_RUN_BLOCKED`.
+Statut : `SUPERSEDED_NEVER_DEPLOY_OR_RUN_PROBING_AFTER_INSERTION`.
+
+R3 ne doit jamais être posée ni exécutée. Sa validation à froid reste vraie,
+mais elle qualifiait un ordre désormais interdit : `T1A` engagé, extrusion dans
+le bac, puis `ACCURATE_G28`. Une insertion ou une purge est présumée laisser un
+résidu sous la buse ; les palpations doivent être terminées avant. Voir ADR-034.
 
 Validation locale : vérificateur dédié vert, `4/4` tests propres au paquet et
 `14/14` tests ciblés avec le diagnostic thermique. Le parse Jinja complet n'a

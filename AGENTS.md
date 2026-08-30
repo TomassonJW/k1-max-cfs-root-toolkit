@@ -13,16 +13,22 @@ action physique. La caméra locale est désormais un capteur obligatoire : une
 phase Klipper ne prouve ni l'emplacement de la purge, ni le décrochage de la
 boule, ni la bonne hauteur de première couche. Codex capture et compare les
 images, pilote l'arrêt et ne demande à Thomas que les vrais gestes manuels.
-Le pilote caméra minimal et les `16` blocs Jinja de R3 sont maintenant validés
-à froid, sans effet. ADR-033 et le candidat R3 restent hors imprimante. Le LiDAR
-n'est pas requis.
+Le pilote caméra minimal et les `16` blocs Jinja de R3 ont été validés à froid,
+sans effet. Cette validation reste historique : ADR-034 interdit maintenant de
+poser ou d'exécuter R3, car cette séquence purgeait du filament avant une
+palpation Z précise. Le LiDAR n'est pas requis.
 
-Mise à jour prioritaire du 29 août 2026 : le run thermique R5 est clos KO sans
-retry. L'état final observé est `cancelled`, chauffes zéro, axes libérés, tête
-haute, `11 × 11` actif et aucune route CFS engagée. La validation froide du
-pilote caméra/R3 est close ; aucun nouvel essai chaud ne part avant les vrais
-gestes de remise en état demandés en langage courant : nettoyer la buse,
-nettoyer et libérer le plateau, puis réengager `T1A` avec la fonction officielle.
+Mise à jour prioritaire du 30 août 2026 : toute insertion de filament est
+présumée laisser un résidu sur la buse. Dans la version finale, toute référence
+Z précise, tout mesh et toute autre palpation par contact doivent être terminés
+avec buse propre **avant** l'insertion. Une impression qui conserve un filament
+déjà engagé ne repalpe pas ; si une nouvelle palpation devient nécessaire, elle
+doit d'abord sortir de ce chemin, désengager, nettoyer, palper, puis réinsérer.
+Thomas a confirmé avoir nettoyé la buse et le plateau, réengagé `T1A` avec la
+fonction officielle, puis renettoyé la buse après cette insertion. Le préflight
+strictement en lecture seule a confirmé `T1A`, les chauffes à zéro et l'état
+`standby`, mais a trouvé le profil actif `default` en `6 × 6` au lieu du meilleur
+`11 × 11`. Aucun essai chaud ne part sur cet état.
 
 ## Current authority and phase
 

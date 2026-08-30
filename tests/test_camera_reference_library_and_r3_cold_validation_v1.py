@@ -87,13 +87,20 @@ class CameraReferenceLibraryAndR3ColdValidationTests(unittest.TestCase):
         self.assertFalse(self.contract["deployment_candidate"])
         self.assertFalse(self.contract["physical_run_authorized"])
 
-    def test_next_hot_preflight_is_prepared_but_closed(self):
+    def test_next_hot_preflight_closed_without_effect(self):
         self.assertEqual(
-            "BLOCKED_WAITING_REAL_MANUAL_RESET_NO_EFFECT_AUTHORIZED",
+            "CLOSED_KO_R3_SUPERSEDED_AND_ACTIVE_MESH_DRIFT",
             self.next_gate["status"],
         )
         self.assertIn("nozzle_cleaned", self.next_gate["required_manual_facts_before_start"])
         self.assertIn("T1A_reengaged_with_official_function", self.next_gate["required_manual_facts_before_start"])
+        self.assertTrue(self.next_gate["manual_facts_user_confirmed"]["nozzle_recleaned_after_insertion"])
+        self.assertEqual("default", self.next_gate["observed_read_only_result"]["active_mesh"])
+        self.assertEqual("6x6", self.next_gate["observed_read_only_result"]["active_mesh_shape"])
+        self.assertIn(
+            "R3_purges_after_insertion_and_before_accurate_z_reference",
+            self.next_gate["closure_reasons"],
+        )
         self.assertIn("R3_install", self.next_gate["forbidden_in_this_preflight"])
         self.assertFalse(any(self.next_gate["effects"].values()))
 

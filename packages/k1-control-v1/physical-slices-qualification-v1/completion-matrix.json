@@ -6,10 +6,10 @@
   "completion_audit_evidence": null,
   "current_human_gate": {
     "requirement_id": "CFS_START_STATES_AND_TEMPERATURE_OWNER",
-    "checkpoint": "CAMERA_REFERENCE_LIBRARY_AND_R3_COLD_VALIDATION_CLOSED_OK",
-    "active_gate": "G4-K1-CONTROL-START-SEQUENCE-OWNER-CAMERA-PURGE-R3-HOT-PREFLIGHT-V1",
-    "technical_status": "CAMERA_GET_SHARP_1280X720_SAFE_IDLE_CONSISTENT_R3_STATIC_OK_16_JINJA_SECTIONS_PARSED_NO_EFFECT",
-    "required_human_verdict": "CLEAN_NOZZLE_CLEAN_AND_CLEAR_BED_THEN_REENGAGE_T1A_WITH_OFFICIAL_FUNCTION_BEFORE_ANY_HOT_PREFLIGHT",
+    "checkpoint": "CALIBRATION_BEFORE_INSERTION_RULE_FROZEN_PREFLIGHT_CLOSED_KO",
+    "active_gate": "G4-K1-CONTROL-BEST-CURRENT-MESH-RESTORE-BEFORE-R4-V1",
+    "technical_status": "MANUAL_FACTS_CONFIRMED_T1A_ENGAGED_HEATERS_ZERO_STANDBY_R3_SUPERSEDED_ACTIVE_DEFAULT_6X6_NOT_BEST_CURRENT_11X11_NO_EFFECT",
+    "required_human_verdict": "AUTHORIZE_ONE_EXISTING_11X11_PROFILE_LOAD_AND_READBACK_WITHOUT_PROBE_HEAT_MOTION_EXTRUSION_CFS_OR_PRINT",
     "next_effect_blocked": true
   },
   "requirements": [
@@ -48,14 +48,15 @@
     {
       "order": 3,
       "id": "CFS_START_STATES_AND_TEMPERATURE_OWNER",
-      "status": "PHYSICAL_CHECKPOINTS_2_OF_4_PASSED_R5_KO_CAMERA_PURGE_CORRECTION_REQUIRED",
+      "status": "PHYSICAL_CHECKPOINTS_2_OF_4_PASSED_R5_KO_R3_SUPERSEDED_MESH_RESTORE_REQUIRED",
       "slice_id": "CFS-TEMP-OWNER-V1",
       "evidence": "packages/k1-control-v1/cfs-temp-owner-v1/contract.json",
-      "latest_checkpoint_evidence": "packages/k1-control-v1/start-sequence-owner-camera-purge-r3/incident-evidence.json",
-      "corrective_design": "packages/k1-control-v1/start-sequence-owner-camera-purge-r3/contract.json",
+      "latest_checkpoint_evidence": "packages/k1-control-v1/calibration-before-insertion-v1/preflight-evidence.json",
+      "corrective_design": "packages/k1-control-v1/calibration-before-insertion-v1/contract.json",
       "active_physical_gate": null,
       "cold_validation_candidate": "packages/k1-control-v1/start-sequence-owner-camera-purge-r3/contract.json",
       "cold_validation_evidence": "packages/k1-control-v1/camera-reference-library-and-r3-cold-validation-v1/evidence-map.json",
+      "r3_tombstone": "SUPERSEDED_NEVER_DEPLOY_OR_RUN_PROBING_AFTER_INSERTION",
       "power_cycle_recovery_candidate": "packages/k1-control-v1/best-current-mesh-restore-after-power-cycle-v1/contract.json",
       "next_checkpoint_candidate": "packages/k1-control-v1/wrong-change-t1a-to-t2c-v1/contract.json",
       "required_proofs": [

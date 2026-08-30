@@ -24,13 +24,20 @@ class StartSequenceOwnerCameraPurgeR3Tests(unittest.TestCase):
         cls.contract = json.loads((PACKAGE / "contract.json").read_text(encoding="utf-8"))
         cls.incident = json.loads((PACKAGE / "incident-evidence.json").read_text(encoding="utf-8"))
 
-    def test_candidate_closes_both_camera_gates_offline(self):
+    def test_candidate_is_tombstoned_before_any_hot_run(self):
         result = self.verifier.verify()
-        self.assertEqual("START_SEQUENCE_OWNER_CAMERA_PURGE_R3_OFFLINE_OK", result["status"])
-        self.assertTrue(result["camera_before_precise_z"])
+        self.assertEqual("START_SEQUENCE_OWNER_CAMERA_PURGE_R3_SUPERSEDED_OK", result["status"])
+        self.assertTrue(result["historical_cold_shape_preserved"])
+        self.assertTrue(result["engaged_filament_before_extrusion"])
+        self.assertTrue(result["extrusion_before_accurate_z_reference"])
         self.assertTrue(result["camera_before_model"])
         self.assertFalse(result["deployment_candidate"])
         self.assertFalse(result["physical_run_authorized"])
+        self.assertEqual(
+            "SUPERSEDED_NEVER_DEPLOY_OR_RUN_PROBING_AFTER_INSERTION",
+            self.contract["status"],
+        )
+        self.assertEqual("ADR-034", self.contract["superseded_by"])
 
     def test_incident_is_closed_without_retry(self):
         self.assertEqual("cancelled", self.incident["controller_evidence"]["final_print_state"])

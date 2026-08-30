@@ -48,21 +48,21 @@ class Goal3PhysicalCompletionRegistryTests(unittest.TestCase):
         self.assertIn("final_project_closure", boundary)
         self.assertEqual(4, self.contract["macro_goal_count"])
 
-    def test_current_gate_records_closed_cold_validation_and_blocks_hot_effects(self):
+    def test_current_gate_records_r3_closure_and_blocks_machine_effects(self):
         gate = self.matrix["current_human_gate"]
         self.assertEqual(
-            "CAMERA_REFERENCE_LIBRARY_AND_R3_COLD_VALIDATION_CLOSED_OK",
+            "CALIBRATION_BEFORE_INSERTION_RULE_FROZEN_PREFLIGHT_CLOSED_KO",
             gate["checkpoint"],
         )
-        self.assertIn("CAMERA_GET_SHARP_1280X720", gate["technical_status"])
-        self.assertIn("16_JINJA_SECTIONS_PARSED", gate["technical_status"])
+        self.assertIn("R3_SUPERSEDED", gate["technical_status"])
+        self.assertIn("ACTIVE_DEFAULT_6X6_NOT_BEST_CURRENT_11X11", gate["technical_status"])
         self.assertIn("NO_EFFECT", gate["technical_status"])
         self.assertEqual(
-            "G4-K1-CONTROL-START-SEQUENCE-OWNER-CAMERA-PURGE-R3-HOT-PREFLIGHT-V1",
+            "G4-K1-CONTROL-BEST-CURRENT-MESH-RESTORE-BEFORE-R4-V1",
             gate["active_gate"],
         )
-        self.assertIn("CLEAN_NOZZLE", gate["required_human_verdict"])
-        self.assertIn("REENGAGE_T1A", gate["required_human_verdict"])
+        self.assertIn("11X11_PROFILE_LOAD_AND_READBACK", gate["required_human_verdict"])
+        self.assertIn("WITHOUT_PROBE", gate["required_human_verdict"])
         self.assertTrue(gate["next_effect_blocked"])
 
     def test_current_ledger_verifies_as_in_progress_without_effect(self):

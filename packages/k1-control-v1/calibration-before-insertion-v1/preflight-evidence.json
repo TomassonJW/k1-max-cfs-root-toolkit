@@ -1,0 +1,67 @@
+{
+  "schema": 1,
+  "capture": "20260830-calibration-before-insertion-hot-preflight-v1",
+  "authority": "strict_read_only",
+  "manual_facts": {
+    "source": "user_confirmed",
+    "nozzle_cleaned": true,
+    "bed_cleaned_and_clear": true,
+    "T1A_reengaged_with_official_function": true,
+    "nozzle_recleaned_after_insertion": true
+  },
+  "camera": {
+    "frame": "1280x720",
+    "cadrage_ok": true,
+    "sharpness_ok": true,
+    "safe_idle_candidate_match": true,
+    "visual_review": [
+      "toolhead_high_and_away_from_bed",
+      "bed_visible_and_clear_of_print_objects",
+      "no_visible_machine_activity"
+    ],
+    "does_not_prove": [
+      "microscopic_nozzle_cleanliness",
+      "correct_contact_z",
+      "first_layer_quality"
+    ]
+  },
+  "machine_snapshots": {
+    "count": 2,
+    "schema_stable": true,
+    "klippy_state": "ready",
+    "failed_components": [],
+    "warnings": [],
+    "print_state": "standby",
+    "heater_targets_c": {
+      "extruder": 0.0,
+      "bed": 0.0
+    },
+    "homed_axes": "xyz",
+    "position_mm": [210.0, 291.5, 65.89198795428862],
+    "T1A_engaged": true,
+    "T2_route": null,
+    "cfs_command": "",
+    "accepted_z_valid": true,
+    "accepted_z_mm": -0.04,
+    "low_moves_armed": false,
+    "active_mesh": "default",
+    "active_probed_matrix": "6x6",
+    "best_current_profile_present": "k1_p001_t055_r001_n11x11",
+    "configuration_hashes_stable": true
+  },
+  "timings_ms": {
+    "objects_query": [72.662, 257.689]
+  },
+  "verdict": "CLOSED_KO_R3_SUPERSEDED_AND_ACTIVE_MESH_DRIFT",
+  "effects": {
+    "camera_http_get_only": true,
+    "moonraker_http_get_only": true,
+    "gcode_sent": false,
+    "heater_action": false,
+    "motion_action": false,
+    "extrusion_action": false,
+    "cfs_action": false,
+    "remote_file_write": false,
+    "service_action": false
+  }
+}
