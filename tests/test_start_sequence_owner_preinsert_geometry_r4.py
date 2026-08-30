@@ -90,6 +90,8 @@ class StartSequenceOwnerPreinsertGeometryR4Tests(unittest.TestCase):
         self.assertIn("physical_effect_during_deploy = $false", self.deployer)
         self.assertNotIn("__R4_CONFIG_SHA256__", self.deployer)
         self.assertNotIn("__R4_JINJA_SHA256__", self.deployer)
+        self.assertIn("678582e808d74f6b720ef3d6b52dc2c443c7a0652a62c484319e2b22fba7b0bc", self.deployer)
+        self.assertNotIn("25291e1534f0ba100d3171b983796089a24cd49fdfcef76817406d325e6d8e03", self.deployer)
 
     def test_manifest_pins_the_exact_deployment_payload(self):
         for relative_path, expected in self.manifest["payload"].items():

@@ -26,7 +26,7 @@ $LocalConfig = Join-Path $PackageRoot 'k1-control-start-sequence-owner-preinsert
 $RemoteAdmin = Join-Path $V1PackageRoot 'remote_admin.py'
 $RemoteJinja = Join-Path $PackageRoot 'remote_jinja_validate.py'
 
-$ExpectedOldConfigHash = '25291e1534f0ba100d3171b983796089a24cd49fdfcef76817406d325e6d8e03'
+$ExpectedOldConfigHash = '678582e808d74f6b720ef3d6b52dc2c443c7a0652a62c484319e2b22fba7b0bc'
 $ExpectedNewConfigHash = 'c7d7dd06ee81092d73cde9e41ba371642340e8f0270154f3cef15e0e98ef9d4e'
 $ExpectedRemoteAdminHash = 'e81b3810f675f9a3b8985ee6feedb04a8aea12a64e636ee56f7916c0d8943d52'
 $ExpectedRemoteJinjaHash = 'c36aabf22e1149e997a77ac18a5004dae7499eeedab946adbe35f6f9109fd143'
@@ -304,7 +304,7 @@ function Invoke-Preflight {
     }
     Assert-ImmutableHashes
     if ((Get-RemoteHash $StartOwnerConfig) -ne $ExpectedOldConfigHash) {
-        throw 'La version V1 exacte n est pas installee avant R4.'
+        throw 'La version R2 exacte n est pas installee avant R4.'
     }
     Assert-ExactRemoteJinjaSyntax
     $snapshot = Invoke-RemoteAdmin 'snapshot'
@@ -386,7 +386,7 @@ if ($Action -eq 'Plan') {
         printer_cfg_unchanged = $true
         restart = 'Klipper host RESTART only, with real socket transition'
         post_restart = 'load k1_p001_t055_r001_n11x11 once and read it back'
-        rollback = 'restore exact V1 file, restart, restore mesh, validate safe state'
+        rollback = 'restore exact installed R2 file, restart, restore mesh, validate safe state'
         contact_probing_after_insertion = $false
         physical_effect_during_deploy = $false
         physical_trial_started = $false
@@ -417,7 +417,7 @@ if ($Action -eq 'Deploy') {
         }
         Invoke-Remote "cp '$StartOwnerConfig' '$backup/k1-control-start-sequence-owner-v1.cfg.before'" | Out-Null
         if ((Get-RemoteHash "$backup/k1-control-start-sequence-owner-v1.cfg.before") -ne $ExpectedOldConfigHash) {
-            throw 'Backup V1 different.'
+            throw 'Backup R2 different.'
         }
         $checksum = "$ExpectedOldConfigHash  k1-control-start-sequence-owner-v1.cfg.before"
         $payload = [Convert]::ToBase64String([Text.Encoding]::ASCII.GetBytes("$checksum`n"))
