@@ -148,3 +148,17 @@ pauses bloquantes et `16` blocs Jinja parsés sans effet.
 Le prochain effet reste fermé. Avant son futur préflight chaud, Thomas doit
 nettoyer la buse, nettoyer et libérer le plateau, puis réengager `T1A` par la
 fonction officielle.
+
+## Reprise R4 du 30 août 2026
+
+Les gestes ci-dessus ont été faits, y compris le nettoyage de la buse après
+l'insertion. ADR-034 a ensuite fermé R3, car une insertion laisse un résidu et
+aucune palpation ne doit la suivre. Thomas a remis le `11 × 11` en un clic dans
+Mainsail ; une seule lecture passive a confirmé `T1A`, l'état froid, Z `−0,04`
+et le bon profil actif.
+
+R4 est prêt hors imprimante avec `20` blocs Jinja exacts. Son chemin court garde
+`T1A` lorsque les axes, le mesh et le Z restent valides et ne palpe jamais. Son
+chemin frais ne palpe qu'avant l'insertion officielle. La prochaine étape est
+la pose froide réversible d'un fichier avec redémarrage Klipper, remise du
+`11 × 11` et autotest sans chauffe ni mouvement. Le Goal 3 reste à `2/7`.

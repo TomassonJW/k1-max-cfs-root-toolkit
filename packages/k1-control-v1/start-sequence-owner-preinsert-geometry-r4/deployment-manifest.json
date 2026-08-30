@@ -1,0 +1,53 @@
+{
+  "schema": 1,
+  "mission": "G4-K1-CONTROL-START-SEQUENCE-OWNER-PREINSERT-GEOMETRY-R4",
+  "status": "READY_FOR_SEPARATE_INSTALL_ONLY_GATE",
+  "deployment_candidate": true,
+  "deployment_authorized": false,
+  "deployment_completed": false,
+  "printer_connection_authorized": false,
+  "physical_trial_authorized": false,
+  "production_authorized": false,
+  "payload": {
+    "packages/k1-control-v1/start-sequence-owner-preinsert-geometry-r4/k1-control-start-sequence-owner-preinsert-geometry-r4.cfg": "c7d7dd06ee81092d73cde9e41ba371642340e8f0270154f3cef15e0e98ef9d4e",
+    "scripts/deploy-k1-control-start-sequence-owner-preinsert-geometry-r4.ps1": "ef596b552d6b119c3b362d9bc0a6274ac5b9d9edcaa3da6a2eb26b9d37d7d523",
+    "packages/k1-control-v1/start-sequence-owner-v1/remote_admin.py": "e81b3810f675f9a3b8985ee6feedb04a8aea12a64e636ee56f7916c0d8943d52",
+    "packages/k1-control-v1/start-sequence-owner-preinsert-geometry-r4/remote_jinja_validate.py": "c36aabf22e1149e997a77ac18a5004dae7499eeedab946adbe35f6f9109fd143"
+  },
+  "remote_baseline": {
+    "/usr/data/printer_data/config/printer.cfg": "a79c8c917d8eee2575939ade4907640c2b2cf7ff59283d28def895b020e127af",
+    "/usr/data/printer_data/config/k1-control-start-sequence-owner-v1.cfg": "25291e1534f0ba100d3171b983796089a24cd49fdfcef76817406d325e6d8e03"
+  },
+  "planned_change": {
+    "replace_file": "/usr/data/printer_data/config/k1-control-start-sequence-owner-v1.cfg",
+    "replacement_sha256": "c7d7dd06ee81092d73cde9e41ba371642340e8f0270154f3cef15e0e98ef9d4e",
+    "printer_cfg_change": false,
+    "service_action": "Klipper host RESTART only after an exact backup",
+    "restart_guard": "observe a real Klipper socket generation transition",
+    "post_restart_mesh_restore": "load k1_p001_t055_r001_n11x11 once and read it back",
+    "cold_validation": "watchdog self-test and reset with heaters zero and no motion",
+    "contact_probing_after_insertion": false,
+    "physical_effect": false,
+    "physical_trial": false
+  },
+  "backup": {
+    "directory": "/usr/data/k1-control-v1/backups/<capture-id>/start-sequence-owner-preinsert-geometry-r4",
+    "files": [
+      "k1-control-start-sequence-owner-v1.cfg.before",
+      "checksums.sha256"
+    ]
+  },
+  "rollback": {
+    "restore_sha256": "25291e1534f0ba100d3171b983796089a24cd49fdfcef76817406d325e6d8e03",
+    "service_action": "Klipper host RESTART only",
+    "post_restart_mesh_restore": "load k1_p001_t055_r001_n11x11 once and read it back",
+    "final_validation": "zero or one unique T1A route, heaters zero, accepted Z -0.04, owner idle"
+  },
+  "exact_commands": {
+    "plan": ".\\scripts\\deploy-k1-control-start-sequence-owner-preinsert-geometry-r4.ps1 -Action Plan",
+    "preflight": ".\\scripts\\deploy-k1-control-start-sequence-owner-preinsert-geometry-r4.ps1 -Action Preflight -Gate G4-K1-CONTROL-START-SEQUENCE-OWNER-PREINSERT-GEOMETRY-R4 -EvidenceDirectory <workspace-evidence> -Execute",
+    "deploy": ".\\scripts\\deploy-k1-control-start-sequence-owner-preinsert-geometry-r4.ps1 -Action Deploy -Gate G4-K1-CONTROL-START-SEQUENCE-OWNER-PREINSERT-GEOMETRY-R4 -CaptureId <capture-id> -EvidenceDirectory <workspace-evidence> -Execute",
+    "validate": ".\\scripts\\deploy-k1-control-start-sequence-owner-preinsert-geometry-r4.ps1 -Action Validate -Gate G4-K1-CONTROL-START-SEQUENCE-OWNER-PREINSERT-GEOMETRY-R4 -EvidenceDirectory <workspace-evidence> -Execute",
+    "rollback": ".\\scripts\\deploy-k1-control-start-sequence-owner-preinsert-geometry-r4.ps1 -Action Rollback -Gate G4-K1-CONTROL-START-SEQUENCE-OWNER-PREINSERT-GEOMETRY-R4 -CaptureId <capture-id> -EvidenceDirectory <workspace-evidence> -Execute"
+  }
+}

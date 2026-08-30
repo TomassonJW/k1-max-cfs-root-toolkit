@@ -25,10 +25,24 @@ avec buse propre **avant** l'insertion. Une impression qui conserve un filament
 déjà engagé ne repalpe pas ; si une nouvelle palpation devient nécessaire, elle
 doit d'abord sortir de ce chemin, désengager, nettoyer, palper, puis réinsérer.
 Thomas a confirmé avoir nettoyé la buse et le plateau, réengagé `T1A` avec la
-fonction officielle, puis renettoyé la buse après cette insertion. Le préflight
-strictement en lecture seule a confirmé `T1A`, les chauffes à zéro et l'état
-`standby`, mais a trouvé le profil actif `default` en `6 × 6` au lieu du meilleur
-`11 × 11`. Aucun essai chaud ne part sur cet état.
+fonction officielle, puis renettoyé la buse après cette insertion. Il a ensuite
+remis le meilleur `11 × 11` en un clic dans Mainsail ; une unique lecture
+passive a confirmé `T1A`, `standby`, chauffes zéro, Z `−0,04`, propriétaire au
+repos et `k1_p001_t055_r001_n11x11` actif. R4 est prêt hors imprimante : toute
+palpation précède l'insertion et le départ après insertion n'en contient aucune.
+Quand les axes, le mesh et le Z sont encore valides, son chemin court conserve
+`T1A` et ne palpe pas du tout. Aucun essai chaud n'est encore autorisé.
+
+## Règle de temps utilisateur
+
+Si Thomas peut réaliser une action sûre en un clic dans Mainsail ou l'interface
+officielle, ne pas lui demander l'autorisation pour que Codex exécute à distance
+la même action. Lui demander directement le clic utile, en langage courant, ou
+prendre son « c'est fait » comme un fait utilisateur. Faire au plus une lecture
+de confirmation si elle est nécessaire à la sécurité de l'étape suivante, puis
+continuer immédiatement. Ne pas recréer une nouvelle micro-gate autour d'une
+opération déjà qualifiée ; réutiliser les preuves et investir le temps dans la
+version intégrée qui répond au besoin final.
 
 ## Current authority and phase
 

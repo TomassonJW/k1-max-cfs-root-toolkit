@@ -2,7 +2,7 @@
   "schema": 1,
   "plan_id": "GOAL-P4-PHYSICAL-SLICES-REMAINING-EXECUTION-V1",
   "goal": "GOAL-P4-PHYSICAL-SLICES-QUALIFICATION-V1",
-  "status": "IN_PROGRESS_R3_SUPERSEDED_CALIBRATION_BEFORE_INSERTION_FROZEN_ACTIVE_MESH_RESTORE_REQUIRED",
+  "status": "IN_PROGRESS_R4_COLD_READY_INSTALL_ONLY_NEXT",
   "purpose": "finish_all_five_remaining_physical_requirements_without_hiding_route_or_human_dependencies",
   "current_observation": {
     "physical_filament_left_in_head_overnight": "T1A_user_confirmed",
@@ -28,10 +28,12 @@
     "final_safe_state_after_R5": "cancelled_targets_zero_axes_released_head_high_11x11_active_no_engaged_route",
     "continuation_authority": "FAIS_LE_JOB_persists_across_technical_commits_while_physical_conditions_are_unchanged",
     "current_human_action": "COMPLETED_nozzle_and_bed_cleaned_T1A_officially_reengaged_then_nozzle_recleaned_after_insertion",
-    "latest_effect_free_preflight": "CLOSED_KO_R3_SUPERSEDED_T1A_ENGAGED_TARGETS_ZERO_STANDBY_ACTIVE_DEFAULT_6x6",
+    "latest_effect_free_preflight": "CLOSED_OK_SINGLE_PASSIVE_CONFIRMATION_T1A_ENGAGED_TARGETS_ZERO_STANDBY_ACCEPTED_Z_MINUS_0_04_OWNER_IDLE_ACTIVE_11x11",
     "R3_status": "SUPERSEDED_NEVER_DEPLOY_OR_RUN_PROBING_AFTER_INSERTION",
     "calibration_before_insertion_rule": "FROZEN_ADR_034",
-    "next_gate": "G4-K1-CONTROL-BEST-CURRENT-MESH-RESTORE-BEFORE-R4-V1"
+    "R4_cold_validation": "CLOSED_OK_STATIC_CONTRACT_PLUS_20_EXACT_K1_JINJA_SECTIONS_NO_EFFECT",
+    "R4_status": "DEPLOYMENT_CANDIDATE_READY_PHYSICAL_AND_PRODUCTION_CLOSED",
+    "next_gate": "G4-K1-CONTROL-START-SEQUENCE-OWNER-PREINSERT-GEOMETRY-R4-INSTALL-ONLY"
   },
   "sequencing_decision": {
     "installed_owner_supports_only": "unique_T1A_keep_correct",
@@ -56,7 +58,9 @@
     "camera_is_mandatory_physical_sensor": true,
     "camera_mismatch_or_inconclusive_image_stops_before_next_phase": true,
     "codex_handles_camera_state_checks_commands_stop_and_evidence": true,
-    "human_is_requested_only_for_real_manual_machine_actions": true
+    "human_is_requested_only_for_real_manual_machine_actions": true,
+    "one_click_official_UI_action_is_requested_directly_not_reimplemented_remotely": true,
+    "user_confirmed_one_click_action_gets_at_most_one_required_passive_check": true
   },
   "stages": [
     {
@@ -94,7 +98,7 @@
       "human_gate": true,
       "automatic_retry": false,
       "artifact": "packages/k1-control-v1/start-sequence-owner-camera-purge-r3/incident-evidence.json",
-      "branch_on_KO": "calibration_before_insertion_frozen_preflight_closed_on_R3_order_and_active_default_6x6_next_restore_11x11_without_probe"
+      "branch_on_KO": "calibration_before_insertion_frozen_R3_tombstoned_11x11_restored_R4_cold_ready"
     },
     {
       "order": 4,
@@ -267,8 +271,8 @@
     }
   ],
   "unresolved_human_inputs": [
-    "clean_nozzle_and_bed_after_R5_before_any_future_hot_run",
-    "reengage_T1A_through_the_official_UI_before_any_future_owned_start",
+    "for_the_future_R4_physical_run_only_disengage_T1A_then_clean_nozzle_before_preinsert_geometry",
+    "for_the_future_R4_physical_run_only_reengage_T1A_with_the_official_one_click_function_after_geometry",
     "T2C_exact_material_identity_before_any_T2C_effect",
     "exact_equivalent_runout_replacement_slot_and_spool_identity",
     "camera_visible_purge_and_physical_verdict_at_each_relevant_checkpoint"

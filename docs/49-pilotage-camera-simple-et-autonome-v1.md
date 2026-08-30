@@ -106,3 +106,13 @@ par le Python existant de la K1 via stdin, sans fichier distant.
 Cette validation ne permet pas de poser R3 ou de chauffer. Les gestes manuels
 ont ensuite été confirmés, puis le préflight sans effet a fermé R3 et constaté
 le retour du profil actif à `default` en `6 × 6`.
+
+Thomas a ensuite remis le `11 × 11` en un clic dans Mainsail. Une seule lecture
+passive a confirmé le résultat et l'état sûr, sans transformer ce clic en
+nouvelle campagne. Le successeur R4 est validé hors imprimante et par le Python
+Jinja exact de la K1 : ses `20` blocs choisissent entre réutiliser sans mesure
+une géométrie encore valide avec `T1A` conservé, ou palper sans filament avant
+l'insertion officielle. Les deux chemins rejoignent ensuite la purge, le
+décrochage E4 et les deux arrêts caméra. La partie exécutée avec filament engagé
+ne contient aucun homing, aucune palpation et aucune calibration de mesh. Sa
+pose et son essai restent deux étapes distinctes.

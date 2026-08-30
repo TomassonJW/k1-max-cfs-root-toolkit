@@ -1,0 +1,99 @@
+{
+  "schema": 1,
+  "mission": "G4-K1-CONTROL-START-SEQUENCE-OWNER-PREINSERT-GEOMETRY-R4",
+  "status": "CLOSED_OK_OFFLINE_AND_EXACT_K1_JINJA_VALIDATED_DEPLOYMENT_CANDIDATE_READY",
+  "supersedes": [
+    "G4-K1-CONTROL-START-SEQUENCE-OWNER-CAMERA-PURGE-R3"
+  ],
+  "decision": "docs/adr/ADR-034-calibrations-avant-insertion-filament.md",
+  "supported_paths": [
+    "valid_geometry_with_T1A_kept_then_owned_start_without_probe",
+    "fresh_geometry_without_route_then_official_T1A_insertion_then_owned_start"
+  ],
+  "reuse_required_order": [
+    "standby_and_heaters_zero",
+    "stable_T1A_already_engaged",
+    "consume_manual_nozzle_clean_confirmation",
+    "verify_existing_XYZ_11x11_and_accepted_z_without_probe",
+    "open_ten_minute_geometry_token",
+    "virtual_SD_job_start",
+    "consume_geometry_token",
+    "rearm_11x11_and_accepted_z_without_probe",
+    "bed_55_and_nozzle_190",
+    "purge_20mm_into_CFS_bin",
+    "cool_to_140",
+    "qualified_E4_blob_release",
+    "camera_release_check",
+    "reheat_to_190",
+    "outside_bed_prime",
+    "camera_prime_check",
+    "resume_model"
+  ],
+  "required_order": [
+    "standby_and_heaters_zero",
+    "no_engaged_CFS_route",
+    "consume_manual_nozzle_clean_confirmation",
+    "bed_55_and_nozzle_140",
+    "G28_XY",
+    "ACCURATE_G28",
+    "arm_and_read_back_11x11_and_accepted_z",
+    "turn_heaters_off",
+    "open_ten_minute_geometry_token",
+    "official_T1A_insertion",
+    "virtual_SD_job_start",
+    "consume_geometry_token",
+    "rearm_11x11_and_accepted_z_without_probe",
+    "bed_55_and_nozzle_190",
+    "purge_20mm_into_CFS_bin",
+    "cool_to_140",
+    "qualified_E4_blob_release",
+    "camera_release_check",
+    "reheat_to_190",
+    "outside_bed_prime",
+    "camera_prime_check",
+    "resume_model"
+  ],
+  "hard_invariants": {
+    "all_contact_probing_before_insertion": true,
+    "job_start_after_insertion_contains_no_homing_or_probe": true,
+    "valid_geometry_reuse_keeps_T1A_and_never_probes": true,
+    "official_insertion_may_replace_active_mesh_but_R4_rearms_without_probe": true,
+    "geometry_token_single_use": true,
+    "geometry_token_timeout_s": 600,
+    "automatic_retry": false,
+    "camera_never_auto_confirms": true,
+    "stock_START_PRINT_forbidden": true,
+    "stock_PAUSE_and_RESUME_forbidden": true,
+    "PAUSE_BASE_and_RESUME_BASE_only": true
+  },
+  "current_read_only_state": {
+    "source": "user_restored_then_single_passive_snapshot_2026-08-30",
+    "printer_state": "standby",
+    "heater_targets_c": [0.0, 0.0],
+    "T1A_engaged": true,
+    "cfs_command": "",
+    "active_mesh": "k1_p001_t055_r001_n11x11",
+    "accepted_z_mm": -0.04,
+    "start_owner_phase": "idle"
+  },
+  "deployment": {
+    "remote_target": "/usr/data/printer_data/config/k1-control-start-sequence-owner-v1.cfg",
+    "replace_single_existing_owner_file": true,
+    "klipper_host_restart": true,
+    "restore_11x11_after_restart": true,
+    "exact_backup_and_rollback": true,
+    "cold_watchdog_selftest": true
+  },
+  "effects_of_this_package_preparation": {
+    "gcode": false,
+    "heater_action": false,
+    "motion_action": false,
+    "extrusion_action": false,
+    "cfs_action": false,
+    "remote_file_write": false,
+    "service_action": false
+  },
+  "deployment_candidate": true,
+  "physical_run_authorized": false,
+  "production_authorized": false
+}

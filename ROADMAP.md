@@ -153,10 +153,17 @@ seul fonctionnement quotidien :
     retry. La validation froide de R3 reste historique ; ADR-034 ferme R3 sans
     pose ni essai, car cette séquence purgeait avant `ACCURATE_G28` ;
 20. la règle finale est figée : toute insertion est présumée laisser un résidu,
-    donc toutes les palpations finissent avant chargement. Le préflight sans
-    effet a confirmé `T1A`, `standby`, chauffes zéro et Z `−0,04`, mais trouvé le
-    mesh actif `default` en `6 × 6`. La prochaine gate restaure et relit seulement
-    le meilleur `11 × 11`, sans palpation, chauffe, mouvement, extrusion ou CFS.
+    donc toutes les palpations finissent avant chargement. Thomas a remis le
+    meilleur `11 × 11` en un clic dans Mainsail ; une lecture passive unique a
+    confirmé `T1A`, `standby`, chauffes zéro, Z `−0,04`, propriétaire au repos et
+    le bon profil actif ;
+21. R4 est prêt hors imprimante. Il prépare la géométrie sans filament, ouvre
+    ensuite une fenêtre pour l'insertion officielle, puis recharge le `11 × 11`
+    et le Z sans aucune palpation avant purge, décrochage E4 et deux contrôles
+    caméra. Si les axes, le mesh et le Z sont encore valides, il garde `T1A` et
+    saute entièrement le cycle de palpation. Son parse Jinja exact compte `20`
+    blocs verts. La prochaine étape est seulement sa pose réversible et son autotest froid : un fichier, un
+    redémarrage Klipper, remise du `11 × 11`, aucune chauffe ni mouvement.
 
 Le rollback exact de `MESH-EDGE-DIAGNOSTIC-V1` et sa validation finale sont
 verts. Aucun acte physique suivant n'est automatiquement autorisé. La reprise

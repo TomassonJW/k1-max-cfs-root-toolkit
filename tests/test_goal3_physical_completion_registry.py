@@ -48,21 +48,20 @@ class Goal3PhysicalCompletionRegistryTests(unittest.TestCase):
         self.assertIn("final_project_closure", boundary)
         self.assertEqual(4, self.contract["macro_goal_count"])
 
-    def test_current_gate_records_r3_closure_and_blocks_machine_effects(self):
+    def test_current_gate_records_r4_cold_readiness_and_blocks_physical_effects(self):
         gate = self.matrix["current_human_gate"]
         self.assertEqual(
-            "CALIBRATION_BEFORE_INSERTION_RULE_FROZEN_PREFLIGHT_CLOSED_KO",
+            "R4_OFFLINE_AND_EXACT_K1_JINJA_VALIDATED",
             gate["checkpoint"],
         )
-        self.assertIn("R3_SUPERSEDED", gate["technical_status"])
-        self.assertIn("ACTIVE_DEFAULT_6X6_NOT_BEST_CURRENT_11X11", gate["technical_status"])
-        self.assertIn("NO_EFFECT", gate["technical_status"])
+        self.assertIn("ACTIVE_11X11", gate["technical_status"])
+        self.assertIn("R4_DEPLOYMENT_CANDIDATE_READY", gate["technical_status"])
         self.assertEqual(
-            "G4-K1-CONTROL-BEST-CURRENT-MESH-RESTORE-BEFORE-R4-V1",
+            "G4-K1-CONTROL-START-SEQUENCE-OWNER-PREINSERT-GEOMETRY-R4-INSTALL-ONLY",
             gate["active_gate"],
         )
-        self.assertIn("11X11_PROFILE_LOAD_AND_READBACK", gate["required_human_verdict"])
-        self.assertIn("WITHOUT_PROBE", gate["required_human_verdict"])
+        self.assertIn("ONE_FILE_BACKUP_REPLACE", gate["required_human_verdict"])
+        self.assertIn("WITHOUT_HEAT_MOTION_EXTRUSION_OR_CFS", gate["required_human_verdict"])
         self.assertTrue(gate["next_effect_blocked"])
 
     def test_current_ledger_verifies_as_in_progress_without_effect(self):

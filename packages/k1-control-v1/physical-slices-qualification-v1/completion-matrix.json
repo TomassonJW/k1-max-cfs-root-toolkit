@@ -6,10 +6,10 @@
   "completion_audit_evidence": null,
   "current_human_gate": {
     "requirement_id": "CFS_START_STATES_AND_TEMPERATURE_OWNER",
-    "checkpoint": "CALIBRATION_BEFORE_INSERTION_RULE_FROZEN_PREFLIGHT_CLOSED_KO",
-    "active_gate": "G4-K1-CONTROL-BEST-CURRENT-MESH-RESTORE-BEFORE-R4-V1",
-    "technical_status": "MANUAL_FACTS_CONFIRMED_T1A_ENGAGED_HEATERS_ZERO_STANDBY_R3_SUPERSEDED_ACTIVE_DEFAULT_6X6_NOT_BEST_CURRENT_11X11_NO_EFFECT",
-    "required_human_verdict": "AUTHORIZE_ONE_EXISTING_11X11_PROFILE_LOAD_AND_READBACK_WITHOUT_PROBE_HEAT_MOTION_EXTRUSION_CFS_OR_PRINT",
+    "checkpoint": "R4_OFFLINE_AND_EXACT_K1_JINJA_VALIDATED",
+    "active_gate": "G4-K1-CONTROL-START-SEQUENCE-OWNER-PREINSERT-GEOMETRY-R4-INSTALL-ONLY",
+    "technical_status": "T1A_ENGAGED_HEATERS_ZERO_STANDBY_ACCEPTED_Z_MINUS_0_04_OWNER_IDLE_ACTIVE_11X11_R4_DEPLOYMENT_CANDIDATE_READY",
+    "required_human_verdict": "AUTHORIZE_ONE_FILE_BACKUP_REPLACE_KLIPPER_RESTART_11X11_RESTORE_AND_COLD_WATCHDOG_SELFTEST_WITHOUT_HEAT_MOTION_EXTRUSION_OR_CFS",
     "next_effect_blocked": true
   },
   "requirements": [
@@ -48,14 +48,14 @@
     {
       "order": 3,
       "id": "CFS_START_STATES_AND_TEMPERATURE_OWNER",
-      "status": "PHYSICAL_CHECKPOINTS_2_OF_4_PASSED_R5_KO_R3_SUPERSEDED_MESH_RESTORE_REQUIRED",
+      "status": "PHYSICAL_CHECKPOINTS_2_OF_4_PASSED_R5_KO_R3_SUPERSEDED_R4_COLD_READY",
       "slice_id": "CFS-TEMP-OWNER-V1",
       "evidence": "packages/k1-control-v1/cfs-temp-owner-v1/contract.json",
       "latest_checkpoint_evidence": "packages/k1-control-v1/calibration-before-insertion-v1/preflight-evidence.json",
       "corrective_design": "packages/k1-control-v1/calibration-before-insertion-v1/contract.json",
       "active_physical_gate": null,
-      "cold_validation_candidate": "packages/k1-control-v1/start-sequence-owner-camera-purge-r3/contract.json",
-      "cold_validation_evidence": "packages/k1-control-v1/camera-reference-library-and-r3-cold-validation-v1/evidence-map.json",
+      "cold_validation_candidate": "packages/k1-control-v1/start-sequence-owner-preinsert-geometry-r4/contract.json",
+      "cold_validation_evidence": "packages/k1-control-v1/start-sequence-owner-preinsert-geometry-r4/RESULT.md",
       "r3_tombstone": "SUPERSEDED_NEVER_DEPLOY_OR_RUN_PROBING_AFTER_INSERTION",
       "power_cycle_recovery_candidate": "packages/k1-control-v1/best-current-mesh-restore-after-power-cycle-v1/contract.json",
       "next_checkpoint_candidate": "packages/k1-control-v1/wrong-change-t1a-to-t2c-v1/contract.json",
