@@ -2,7 +2,7 @@
   "schema": 1,
   "plan_id": "GOAL-P4-PHYSICAL-SLICES-REMAINING-EXECUTION-V1",
   "goal": "GOAL-P4-PHYSICAL-SLICES-QUALIFICATION-V1",
-  "status": "IN_PROGRESS_R4_COLD_READY_INSTALL_ONLY_NEXT",
+  "status": "IN_PROGRESS_R4_INSTALLED_COLD_FIRST_SHORT_RUN_NEXT",
   "purpose": "finish_all_five_remaining_physical_requirements_without_hiding_route_or_human_dependencies",
   "current_observation": {
     "physical_filament_left_in_head_overnight": "T1A_user_confirmed",
@@ -32,8 +32,11 @@
     "R3_status": "SUPERSEDED_NEVER_DEPLOY_OR_RUN_PROBING_AFTER_INSERTION",
     "calibration_before_insertion_rule": "FROZEN_ADR_034",
     "R4_cold_validation": "CLOSED_OK_STATIC_CONTRACT_PLUS_20_EXACT_K1_JINJA_SECTIONS_NO_EFFECT",
-    "R4_status": "DEPLOYMENT_CANDIDATE_READY_PHYSICAL_AND_PRODUCTION_CLOSED",
-    "next_gate": "G4-K1-CONTROL-START-SEQUENCE-OWNER-PREINSERT-GEOMETRY-R4-INSTALL-ONLY"
+    "R4_install": "CLOSED_OK_EXACT_R2_BACKUP_SINGLE_FILE_REPLACE_KLIPPER_RESTART_11x11_RESTORE_COLD_WATCHDOG_SELFTEST",
+    "R4_final_read": "STANDBY_TARGETS_ZERO_AXES_RELEASED_ACCEPTED_Z_MINUS_0_04_OWNER_IDLE_ACTIVE_11x11_T1_T2_CONNECTED_NO_LOGICAL_ROUTE",
+    "physical_filament_after_restart": "UNKNOWN_NO_FILAMENT_MOTION_COMMANDED_TELEMETRY_CANNOT_PROVE_POSITION",
+    "R4_status": "INSTALLED_VALIDATED_COLD_PHYSICAL_AND_PRODUCTION_CLOSED",
+    "next_gate": "G4-K1-CONTROL-START-SEQUENCE-OWNER-PREINSERT-GEOMETRY-R4-FIRST-SHORT-RUN-V1"
   },
   "sequencing_decision": {
     "installed_owner_supports_only": "unique_T1A_keep_correct",

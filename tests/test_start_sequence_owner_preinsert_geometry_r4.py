@@ -27,6 +27,7 @@ class StartSequenceOwnerPreinsertGeometryR4Tests(unittest.TestCase):
         cls.verifier = load_verifier()
         cls.contract = json.loads((PACKAGE / "contract.json").read_text(encoding="utf-8"))
         cls.manifest = json.loads((PACKAGE / "deployment-manifest.json").read_text(encoding="utf-8"))
+        cls.deployment_result = json.loads((PACKAGE / "deployment-result.json").read_text(encoding="utf-8"))
         cls.config = CONFIG.read_text(encoding="utf-8")
         cls.deployer = DEPLOYER.read_text(encoding="utf-8")
 
@@ -101,6 +102,32 @@ class StartSequenceOwnerPreinsertGeometryR4Tests(unittest.TestCase):
     def test_physical_and_production_authority_remain_closed(self):
         self.assertFalse(self.contract["physical_run_authorized"])
         self.assertFalse(self.contract["production_authorized"])
+
+    def test_install_is_closed_on_exact_r2_backup_and_exact_r4_payload(self):
+        result = self.deployment_result
+        self.assertEqual("INSTALLED_VALIDATED_COLD_ZERO_LOGICAL_ROUTE_AFTER_RESTART", result["status"])
+        self.assertEqual("installed_R2_exact_not_remote_drift", result["first_preflight"]["classification"])
+        self.assertEqual(
+            "678582e808d74f6b720ef3d6b52dc2c443c7a0652a62c484319e2b22fba7b0bc",
+            result["deployment"]["backup_sha256"],
+        )
+        self.assertEqual(
+            "c7d7dd06ee81092d73cde9e41ba371642340e8f0270154f3cef15e0e98ef9d4e",
+            result["deployment"]["installed_sha256"],
+        )
+        self.assertFalse(result["deployment"]["rollback_used"])
+
+    def test_cold_install_has_no_physical_effect_and_records_route_loss(self):
+        deployment = self.deployment_result["deployment"]
+        for key in ("heater_action", "motion_action", "extrusion_action", "cfs_action", "print_started"):
+            self.assertFalse(deployment[key])
+        final = self.deployment_result["final_independent_read"]
+        self.assertEqual("standby", final["print_state"])
+        self.assertEqual([0.0, 0.0], final["heater_targets_c"])
+        self.assertEqual("", final["homed_axes"])
+        self.assertEqual("k1_p001_t055_r001_n11x11", final["active_mesh"])
+        self.assertEqual([], final["logical_routes"])
+        self.assertTrue(self.deployment_result["physical_interpretation"]["physical_filament_position_not_proved_by_telemetry"])
 
 
 if __name__ == "__main__":

@@ -1,10 +1,12 @@
 {
   "schema": 1,
   "mission": "G4-K1-CONTROL-START-SEQUENCE-OWNER-PREINSERT-GEOMETRY-R4",
-  "status": "READY_FOR_SEPARATE_INSTALL_ONLY_GATE",
-  "deployment_candidate": true,
+  "status": "INSTALLED_VALIDATED_COLD_ZERO_LOGICAL_ROUTE_AFTER_RESTART",
+  "deployment_candidate": false,
   "deployment_authorized": false,
-  "deployment_completed": false,
+  "deployment_completed": true,
+  "authorization_consumed": true,
+  "deployment_capture_id": "20260831-000831-g4-k1-control-start-sequence-owner-preinsert-geometry-r4",
   "printer_connection_authorized": false,
   "physical_trial_authorized": false,
   "production_authorized": false,
@@ -43,6 +45,7 @@
     "post_restart_mesh_restore": "load k1_p001_t055_r001_n11x11 once and read it back",
     "final_validation": "zero or one unique T1A route, heaters zero, accepted Z -0.04, owner idle"
   },
+  "deployment_result": "packages/k1-control-v1/start-sequence-owner-preinsert-geometry-r4/deployment-result.json",
   "exact_commands": {
     "plan": ".\\scripts\\deploy-k1-control-start-sequence-owner-preinsert-geometry-r4.ps1 -Action Plan",
     "preflight": ".\\scripts\\deploy-k1-control-start-sequence-owner-preinsert-geometry-r4.ps1 -Action Preflight -Gate G4-K1-CONTROL-START-SEQUENCE-OWNER-PREINSERT-GEOMETRY-R4 -EvidenceDirectory <workspace-evidence> -Execute",

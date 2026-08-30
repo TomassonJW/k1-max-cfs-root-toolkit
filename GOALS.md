@@ -1,6 +1,6 @@
 # GOALS — pilotage macro
 
-Date de mise à jour : 2026-08-30
+Date de mise à jour : 2026-08-31
 
 Ce fichier sert d'index rapide pour les grandes sessions de travail. Les noms
 ci-dessous regroupent les petites gates déjà définies dans `GATES.md` ; ils ne
@@ -17,8 +17,10 @@ obligatoire. Le Goal 3 compte désormais deux exigences résolues sur sept. Le
 run thermique R5 est clos KO : la purge n'est pas tombée dans le bac, le
 mouvement de décrochage n'a pas eu lieu et la référence Z n'est pas fiable
 physiquement. ADR-033 et le document 49 rendent désormais la caméra obligatoire.
-Le pilote minimal et R3 sont validés à froid sans effet ; la future gate chaude
-reste bloquée avant les vrais gestes de remise en état.
+ADR-034 ferme ensuite R3 : toute palpation doit précéder l'insertion. Son
+successeur R4 est installé et validé à froid avec le `11 × 11`, sans chauffe ni
+mouvement. Le premier run court reste bloqué jusqu'à la résolution de la
+position physique du filament après le restart.
 
 ## Vue rapide
 
@@ -26,7 +28,7 @@ reste bloquée avant les vrais gestes de remise en état.
 | --- | --- | --- | --- |
 | 1 | `GOAL-P4-OFFLINE-CYCLE-CFS-V1` | terminé hors imprimante | système logiciel complet simulé et plan futur inerte vérifié |
 | 2 | `GOAL-P4-K1-READ-ONLY-QUALIFICATION-V1` | terminé en lecture seule ; écart de mesh alors observé, corrigé par une gate distincte | réponses et délais réels qualifiés sans commande ni impression |
-| 3 | `GOAL-P4-PHYSICAL-SLICES-QUALIFICATION-V1` | en cours ; `2/7`, R5 clos KO, pilote caméra et R3 validés à froid, prochain effet bloqué | toutes les fonctions physiques et le profil de bord validés séparément |
+| 3 | `GOAL-P4-PHYSICAL-SLICES-QUALIFICATION-V1` | en cours ; `2/7`, R5 clos KO, R3 interdit, R4 installé et validé à froid, premier run court bloqué | toutes les fonctions physiques et le profil de bord validés séparément |
 | 4 | `GOAL-P4-DAILY-CUTOVER-V1` | prévu après Goal 3 | bascule unifiée, validation production et clôture définitive du projet |
 
 Le registre exécutable
@@ -143,15 +145,15 @@ Identifiant : `GOAL-P4-PHYSICAL-SLICES-QUALIFICATION-V1`
 État : **en cours ; `2/7` exigences passées ; nettoyage automatique clos KO et
 remplacé par une gate manuelle obligatoire ; la conservation réelle de `T1A`
 est prouvée ; le départ stock est KO ; START-SEQUENCE-OWNER-V1 a été installé
-puis invalidé physiquement par R5 ; R3 reste hors imprimante mais est validé à
-froid avec son pilote caméra minimal ; l'architecture
+puis invalidé physiquement par R5 ; R3 est interdit par ADR-034 ; R4 est
+installé et validé à froid avec son pilote caméra ; l'architecture
 complète CFS est choisie, le préflight S12 est clos
 en lecture seule et le cœur propriétaire obtient `21/21` hors imprimante ;
 l'observabilité V2 et l'exclusion réelle du propriétaire stock sont closes OK ;
-le run thermique R5 est clos KO et sans retry ; le candidat correctif R3 reste
-hors imprimante ; sa validation froide est close et la prochaine gate chaude
-reste bloquée jusqu'au nettoyage réel buse/plateau et au réengagement officiel
-de `T1A`**.
+le run thermique R5 est clos KO et sans retry ; la prochaine gate chaude reste
+bloquée jusqu'à la résolution de la position physique du filament, son retrait
+avant toute palpation, le nettoyage réel de la buse, puis la réinsertion
+officielle de `T1A` après la géométrie de contact**.
 
 Le checkpoint C a référencé XYZ, rechargé le `11 × 11`, commandé `Z=50 mm` et
 attendu la fin. Un premier faux KO local a confondu la position physique
@@ -240,13 +242,13 @@ repousser la clôture.
 
 ## Démarrage recommandé
 
-La gate caméra froide est close. La prochaine gate candidate est
-`G4-K1-CONTROL-START-SEQUENCE-OWNER-CAMERA-PURGE-R3-HOT-PREFLIGHT-V1`, préparée
-dans le paquet caméra mais fermée sans effet. Elle commencera par une image et
-des lectures fraîches, puis préparera les sauvegardes et le rollback exact avant
-toute future pose séparée.
+R4 est installé et validé à froid. La prochaine gate candidate est son premier
+run court intégré. Le restart a libéré les axes et laissé la route CFS logique
+vide sans commander de mouvement de filament ; la position physique du filament
+reste donc inconnue.
 
-La prochaine action est d'abord humaine et ne demande pas d'agent : nettoyer la
-buse, nettoyer et libérer le plateau, puis réengager `T1A` avec la fonction
-officielle. Tant que ces trois faits ne sont pas vrais, le préflight ne démarre
-pas et aucun essai chaud n'est permis.
+La reprise commencera par résoudre cet état réel avec la fonction officielle,
+retirer le filament avant toute palpation et nettoyer la buse. Codex exécutera
+ensuite la géométrie fraîche, demandera seulement la réinsertion officielle de
+`T1A`, puis pilotera purge, décrochage, amorce et première couche par caméra.
+Aucun essai chaud n'est autorisé par la pose froide close.

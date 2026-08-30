@@ -27,7 +27,9 @@ demandé que pour le chemin frais, lorsque la géométrie doit réellement être
 refaite. Tout timeout coupe les chauffes, consomme le jeton et désarme les
 mouvements bas.
 
-R4 est maintenant clos hors imprimante et son déployeur exact est prêt. Sa pose
-reste une étape séparée : un fichier remplacé avec backup, redémarrage Klipper,
-remise du `11 × 11` et autotest froid. Aucun essai physique n'est autorisé par
-les vérifications froides.
+R4 est maintenant installé et validé à froid. La pose a remplacé un fichier
+après backup R2 exact, redémarré Klipper, remis le `11 × 11` et validé le
+surveillant sans chauffe ni mouvement. Le restart a laissé les deux CFS
+connectés mais aucune route logique ; la position physique du filament reste à
+résoudre avant la future géométrie fraîche. Aucun essai physique n'est autorisé
+par cette pose.

@@ -157,13 +157,18 @@ seul fonctionnement quotidien :
     meilleur `11 × 11` en un clic dans Mainsail ; une lecture passive unique a
     confirmé `T1A`, `standby`, chauffes zéro, Z `−0,04`, propriétaire au repos et
     le bon profil actif ;
-21. R4 est prêt hors imprimante. Il prépare la géométrie sans filament, ouvre
+21. R4 prépare la géométrie sans filament, ouvre
     ensuite une fenêtre pour l'insertion officielle, puis recharge le `11 × 11`
     et le Z sans aucune palpation avant purge, décrochage E4 et deux contrôles
     caméra. Si les axes, le mesh et le Z sont encore valides, il garde `T1A` et
     saute entièrement le cycle de palpation. Son parse Jinja exact compte `20`
-    blocs verts. La prochaine étape est seulement sa pose réversible et son autotest froid : un fichier, un
-    redémarrage Klipper, remise du `11 × 11`, aucune chauffe ni mouvement.
+    blocs verts ;
+22. R4 est installé et validé à froid : backup R2 exact, un fichier remplacé,
+    vraie transition Klipper, `11 × 11` remis et autotest du surveillant vert,
+    sans chauffe ni mouvement. Les axes sont libérés et la route logique est
+    vide après restart. La prochaine étape est un premier run court intégré qui
+    résout d'abord la position physique du filament, termine toute palpation sans
+    filament, puis utilise l'insertion officielle et les contrôles caméra.
 
 Le rollback exact de `MESH-EDGE-DIAGNOSTIC-V1` et sa validation finale sont
 verts. Aucun acte physique suivant n'est automatiquement autorisé. La reprise

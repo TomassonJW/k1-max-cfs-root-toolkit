@@ -48,20 +48,21 @@ class Goal3PhysicalCompletionRegistryTests(unittest.TestCase):
         self.assertIn("final_project_closure", boundary)
         self.assertEqual(4, self.contract["macro_goal_count"])
 
-    def test_current_gate_records_r4_cold_readiness_and_blocks_physical_effects(self):
+    def test_current_gate_records_r4_cold_install_and_blocks_hot_effects(self):
         gate = self.matrix["current_human_gate"]
         self.assertEqual(
-            "R4_OFFLINE_AND_EXACT_K1_JINJA_VALIDATED",
+            "R4_INSTALLED_AND_VALIDATED_COLD",
             gate["checkpoint"],
         )
         self.assertIn("ACTIVE_11X11", gate["technical_status"])
-        self.assertIn("R4_DEPLOYMENT_CANDIDATE_READY", gate["technical_status"])
+        self.assertIn("R4_EXACT_INSTALLED", gate["technical_status"])
+        self.assertIn("NO_LOGICAL_ROUTE_AFTER_RESTART", gate["technical_status"])
         self.assertEqual(
-            "G4-K1-CONTROL-START-SEQUENCE-OWNER-PREINSERT-GEOMETRY-R4-INSTALL-ONLY",
+            "G4-K1-CONTROL-START-SEQUENCE-OWNER-PREINSERT-GEOMETRY-R4-FIRST-SHORT-RUN-V1",
             gate["active_gate"],
         )
-        self.assertIn("ONE_FILE_BACKUP_REPLACE", gate["required_human_verdict"])
-        self.assertIn("WITHOUT_HEAT_MOTION_EXTRUSION_OR_CFS", gate["required_human_verdict"])
+        self.assertIn("RESOLVE_THE_REAL_FILAMENT_POSITION", gate["required_human_verdict"])
+        self.assertIn("ONLY_AFTER_CONTACT_PROBING", gate["required_human_verdict"])
         self.assertTrue(gate["next_effect_blocked"])
 
     def test_current_ledger_verifies_as_in_progress_without_effect(self):

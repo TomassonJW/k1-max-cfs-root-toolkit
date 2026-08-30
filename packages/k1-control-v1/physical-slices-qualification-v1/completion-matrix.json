@@ -6,10 +6,10 @@
   "completion_audit_evidence": null,
   "current_human_gate": {
     "requirement_id": "CFS_START_STATES_AND_TEMPERATURE_OWNER",
-    "checkpoint": "R4_OFFLINE_AND_EXACT_K1_JINJA_VALIDATED",
-    "active_gate": "G4-K1-CONTROL-START-SEQUENCE-OWNER-PREINSERT-GEOMETRY-R4-INSTALL-ONLY",
-    "technical_status": "T1A_ENGAGED_HEATERS_ZERO_STANDBY_ACCEPTED_Z_MINUS_0_04_OWNER_IDLE_ACTIVE_11X11_R4_DEPLOYMENT_CANDIDATE_READY",
-    "required_human_verdict": "AUTHORIZE_ONE_FILE_BACKUP_REPLACE_KLIPPER_RESTART_11X11_RESTORE_AND_COLD_WATCHDOG_SELFTEST_WITHOUT_HEAT_MOTION_EXTRUSION_OR_CFS",
+    "checkpoint": "R4_INSTALLED_AND_VALIDATED_COLD",
+    "active_gate": "G4-K1-CONTROL-START-SEQUENCE-OWNER-PREINSERT-GEOMETRY-R4-FIRST-SHORT-RUN-V1",
+    "technical_status": "R4_EXACT_INSTALLED_STANDBY_HEATERS_ZERO_AXES_RELEASED_ACCEPTED_Z_MINUS_0_04_OWNER_IDLE_ACTIVE_11X11_NO_LOGICAL_ROUTE_AFTER_RESTART",
+    "required_human_verdict": "BEFORE_HOT_RUN_RESOLVE_THE_REAL_FILAMENT_POSITION_THEN_CONFIRM_NO_FILAMENT_FOR_FRESH_GEOMETRY_AND_USE_OFFICIAL_T1A_INSERTION_ONLY_AFTER_CONTACT_PROBING",
     "next_effect_blocked": true
   },
   "requirements": [
@@ -48,14 +48,14 @@
     {
       "order": 3,
       "id": "CFS_START_STATES_AND_TEMPERATURE_OWNER",
-      "status": "PHYSICAL_CHECKPOINTS_2_OF_4_PASSED_R5_KO_R3_SUPERSEDED_R4_COLD_READY",
+      "status": "PHYSICAL_CHECKPOINTS_2_OF_4_PASSED_R4_INSTALLED_COLD_FIRST_SHORT_RUN_PENDING",
       "slice_id": "CFS-TEMP-OWNER-V1",
       "evidence": "packages/k1-control-v1/cfs-temp-owner-v1/contract.json",
       "latest_checkpoint_evidence": "packages/k1-control-v1/calibration-before-insertion-v1/preflight-evidence.json",
       "corrective_design": "packages/k1-control-v1/calibration-before-insertion-v1/contract.json",
       "active_physical_gate": null,
-      "cold_validation_candidate": "packages/k1-control-v1/start-sequence-owner-preinsert-geometry-r4/contract.json",
-      "cold_validation_evidence": "packages/k1-control-v1/start-sequence-owner-preinsert-geometry-r4/RESULT.md",
+      "installed_candidate": "packages/k1-control-v1/start-sequence-owner-preinsert-geometry-r4/contract.json",
+      "cold_install_evidence": "packages/k1-control-v1/start-sequence-owner-preinsert-geometry-r4/deployment-result.json",
       "r3_tombstone": "SUPERSEDED_NEVER_DEPLOY_OR_RUN_PROBING_AFTER_INSERTION",
       "power_cycle_recovery_candidate": "packages/k1-control-v1/best-current-mesh-restore-after-power-cycle-v1/contract.json",
       "next_checkpoint_candidate": "packages/k1-control-v1/wrong-change-t1a-to-t2c-v1/contract.json",

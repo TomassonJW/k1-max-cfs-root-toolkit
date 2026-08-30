@@ -1,7 +1,7 @@
 {
   "schema": 1,
   "mission": "G4-K1-CONTROL-START-SEQUENCE-OWNER-PREINSERT-GEOMETRY-R4",
-  "status": "CLOSED_OK_OFFLINE_AND_EXACT_K1_JINJA_VALIDATED_DEPLOYMENT_CANDIDATE_READY",
+  "status": "INSTALLED_VALIDATED_COLD_ZERO_LOGICAL_ROUTE_AFTER_RESTART",
   "supersedes": [
     "G4-K1-CONTROL-START-SEQUENCE-OWNER-CAMERA-PURGE-R3"
   ],
@@ -67,14 +67,16 @@
     "PAUSE_BASE_and_RESUME_BASE_only": true
   },
   "current_read_only_state": {
-    "source": "user_restored_then_single_passive_snapshot_2026-08-30",
+    "source": "post_install_independent_snapshot_2026-08-31",
     "printer_state": "standby",
     "heater_targets_c": [0.0, 0.0],
-    "T1A_engaged": true,
+    "T1A_engaged": false,
     "cfs_command": "",
     "active_mesh": "k1_p001_t055_r001_n11x11",
     "accepted_z_mm": -0.04,
-    "start_owner_phase": "idle"
+    "start_owner_phase": "idle",
+    "homed_axes": "",
+    "config_warning_count": 0
   },
   "deployment": {
     "remote_target": "/usr/data/printer_data/config/k1-control-start-sequence-owner-v1.cfg",
@@ -93,7 +95,8 @@
     "remote_file_write": false,
     "service_action": false
   },
-  "deployment_candidate": true,
+  "deployment_candidate": false,
+  "deployment_completed": true,
   "physical_run_authorized": false,
   "production_authorized": false
 }

@@ -114,5 +114,11 @@ Jinja exact de la K1 : ses `20` blocs choisissent entre réutiliser sans mesure
 une géométrie encore valide avec `T1A` conservé, ou palper sans filament avant
 l'insertion officielle. Les deux chemins rejoignent ensuite la purge, le
 décrochage E4 et les deux arrêts caméra. La partie exécutée avec filament engagé
-ne contient aucun homing, aucune palpation et aucune calibration de mesh. Sa
-pose et son essai restent deux étapes distinctes.
+ne contient aucun homing, aucune palpation et aucune calibration de mesh.
+
+R4 est maintenant posé et validé à froid. Le redémarrage a libéré les axes et
+laissé la route CFS logique vide, sans commander de mouvement de filament. La
+caméra et la télémétrie ne prouvent donc pas la position interne du filament.
+Le premier essai R4 doit d'abord résoudre cet état réel, puis garder l'ordre
+strict : filament absent, buse propre, géométrie de contact, insertion
+officielle, purge et arrêts caméra.

@@ -28,10 +28,14 @@ Thomas a confirmé avoir nettoyé la buse et le plateau, réengagé `T1A` avec l
 fonction officielle, puis renettoyé la buse après cette insertion. Il a ensuite
 remis le meilleur `11 × 11` en un clic dans Mainsail ; une unique lecture
 passive a confirmé `T1A`, `standby`, chauffes zéro, Z `−0,04`, propriétaire au
-repos et `k1_p001_t055_r001_n11x11` actif. R4 est prêt hors imprimante : toute
-palpation précède l'insertion et le départ après insertion n'en contient aucune.
-Quand les axes, le mesh et le Z sont encore valides, son chemin court conserve
-`T1A` et ne palpe pas du tout. Aucun essai chaud n'est encore autorisé.
+repos et `k1_p001_t055_r001_n11x11` actif. R4 est maintenant installé et validé
+à froid sous la capture
+`20260831-000831-g4-k1-control-start-sequence-owner-preinsert-geometry-r4` :
+backup R2 exact, un fichier remplacé, vraie transition Klipper, `11 × 11` remis
+et autotest froid vert, sans chauffe ni mouvement. La lecture finale montre les
+axes libérés et aucune route CFS logique. Comme le restart n'a commandé aucun
+mouvement de filament, sa position physique reste inconnue et doit être résolue
+avant la géométrie fraîche. Aucun essai chaud n'est encore autorisé.
 
 ## Règle de temps utilisateur
 

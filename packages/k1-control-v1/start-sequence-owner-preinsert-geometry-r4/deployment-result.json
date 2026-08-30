@@ -1,0 +1,76 @@
+{
+  "schema": 1,
+  "mission": "G4-K1-CONTROL-START-SEQUENCE-OWNER-PREINSERT-GEOMETRY-R4",
+  "status": "INSTALLED_VALIDATED_COLD_ZERO_LOGICAL_ROUTE_AFTER_RESTART",
+  "capture_id": "20260831-000831-g4-k1-control-start-sequence-owner-preinsert-geometry-r4",
+  "authorization_consumed": true,
+  "first_preflight": {
+    "status": "CLOSED_BEFORE_EFFECT_STALE_LOCAL_BASELINE_PIN",
+    "expected_old_sha256": "25291e1534f0ba100d3171b983796089a24cd49fdfcef76817406d325e6d8e03",
+    "observed_old_sha256": "678582e808d74f6b720ef3d6b52dc2c443c7a0652a62c484319e2b22fba7b0bc",
+    "classification": "installed_R2_exact_not_remote_drift",
+    "remote_write": false,
+    "service_action": false,
+    "physical_effect": false
+  },
+  "baseline_correction": {
+    "commit": "bccf344",
+    "old_sha256_pinned_to_installed_R2": "678582e808d74f6b720ef3d6b52dc2c443c7a0652a62c484319e2b22fba7b0bc",
+    "target_R4_sha256_unchanged": "c7d7dd06ee81092d73cde9e41ba371642340e8f0270154f3cef15e0e98ef9d4e",
+    "targeted_tests": "9/9"
+  },
+  "successful_preflight": {
+    "status": "PREFLIGHT_START_SEQUENCE_OWNER_PREINSERT_GEOMETRY_R4_OK",
+    "route": "T1A",
+    "active_mesh": "k1_p001_t055_r001_n11x11",
+    "accepted_z_mm": -0.04,
+    "heater_targets_c": [0.0, 0.0],
+    "physical_effect": false
+  },
+  "deployment": {
+    "status": "DEPLOY_START_SEQUENCE_OWNER_PREINSERT_GEOMETRY_R4_OK",
+    "backup_sha256": "678582e808d74f6b720ef3d6b52dc2c443c7a0652a62c484319e2b22fba7b0bc",
+    "installed_sha256": "c7d7dd06ee81092d73cde9e41ba371642340e8f0270154f3cef15e0e98ef9d4e",
+    "klipper_socket_transition_observed": true,
+    "mesh_restore_once": "k1_p001_t055_r001_n11x11",
+    "cold_watchdog_selftest": "PASSED_AND_RESET_TO_IDLE",
+    "rollback_used": false,
+    "remote_file_write": true,
+    "service_action": "Klipper host RESTART",
+    "control_gcode": [
+      "BED_MESH_PROFILE LOAD=k1_p001_t055_r001_n11x11",
+      "KCTRL_START_WATCHDOG_SELFTEST_V1",
+      "KCTRL_RESET_START_OWNER_V1"
+    ],
+    "heater_action": false,
+    "motion_action": false,
+    "extrusion_action": false,
+    "cfs_action": false,
+    "print_started": false
+  },
+  "final_independent_read": {
+    "webhooks": "ready",
+    "print_state": "standby",
+    "heater_targets_c": [0.0, 0.0],
+    "homed_axes": "",
+    "active_mesh": "k1_p001_t055_r001_n11x11",
+    "accepted_z_mm": -0.04,
+    "owner_phase": "idle",
+    "watchdog_armed": 0,
+    "geometry_ready_token": 0,
+    "T1_state": "connect",
+    "T2_state": "connect",
+    "logical_routes": [],
+    "cfs_command": "",
+    "config_warning_count": 0
+  },
+  "physical_interpretation": {
+    "restart_did_not_command_filament_motion": true,
+    "logical_route_before_restart": "T1A",
+    "logical_route_after_restart": "NONE",
+    "physical_filament_position_not_proved_by_telemetry": true,
+    "next_hot_run_must_resolve_physical_filament_state_before_contact_geometry": true
+  },
+  "physical_trial_authorized": false,
+  "production_authorized": false
+}

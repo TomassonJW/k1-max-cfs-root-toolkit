@@ -1,5 +1,8 @@
 # Handoff — Goal 3, R4 prêt à froid
 
+> Historique : la pose décrite ici est maintenant close. Reprendre depuis
+> `docs/HANDOFF-GOAL3-R4-INSTALLED-COLD-2026-08-31.md`.
+
 Date : 2026-08-30
 Projet : `C:\Users\janko\Documents\ChatGPT\k1-max-cfs-root-toolkit`
 Nouvelle tâche créée : non

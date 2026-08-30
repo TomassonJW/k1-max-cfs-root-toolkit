@@ -157,8 +157,12 @@ aucune palpation ne doit la suivre. Thomas a remis le `11 × 11` en un clic dans
 Mainsail ; une seule lecture passive a confirmé `T1A`, l'état froid, Z `−0,04`
 et le bon profil actif.
 
-R4 est prêt hors imprimante avec `20` blocs Jinja exacts. Son chemin court garde
+R4 a été validé hors imprimante avec `20` blocs Jinja exacts. Son chemin court garde
 `T1A` lorsque les axes, le mesh et le Z restent valides et ne palpe jamais. Son
-chemin frais ne palpe qu'avant l'insertion officielle. La prochaine étape est
-la pose froide réversible d'un fichier avec redémarrage Klipper, remise du
-`11 × 11` et autotest sans chauffe ni mouvement. Le Goal 3 reste à `2/7`.
+chemin frais ne palpe qu'avant l'insertion officielle.
+
+La pose froide du 31 août est close : R2 sauvegardée exactement, R4 installée,
+transition Klipper observée, `11 × 11` remis et autotest vert, sans chauffe ni
+mouvement. Les axes sont libérés et la route logique est vide ; la position
+physique du filament doit être résolue avant le premier run court. Le Goal 3
+reste à `2/7`.
