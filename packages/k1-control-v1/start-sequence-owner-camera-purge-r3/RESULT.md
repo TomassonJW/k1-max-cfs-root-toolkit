@@ -18,7 +18,13 @@ modèle. La ligne finale reste hors zone imprimable grâce à la course mécaniq
 négative déjà présente sur cette K1.
 
 Aucune pose, chauffe, extrusion, référence ou reprise physique n'est permise par
-ce résultat. Le prochain travail est une revue hors imprimante du candidat et
-de son futur pilote caméra, puis une validation à froid. Un nouvel essai chaud
-restera bloqué tant que T1A n'est pas réellement réengagé et que le plateau et
-la buse n'ont pas été remis propres après l'incident.
+ce résultat. La revue hors imprimante, le pilote caméra minimal et la validation
+froide sont maintenant clos dans
+`camera-reference-library-and-r3-cold-validation-v1`. Les `16` blocs Jinja ont
+été parsés par le Python de la K1 via stdin, sans fichier distant ni G-code. Les
+deux pauses restent bloquantes et les timeouts coupent les chauffes sans
+confirmer d'image.
+
+Un nouvel essai chaud reste néanmoins bloqué tant que `T1A` n'est pas réellement
+réengagé et que le plateau et la buse n'ont pas été remis propres après
+l'incident. R3 reste sans déployeur et sans autorité physique.

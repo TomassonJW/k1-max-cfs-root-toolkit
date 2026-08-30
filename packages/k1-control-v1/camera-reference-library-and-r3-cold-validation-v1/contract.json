@@ -1,0 +1,60 @@
+{
+  "schema": 1,
+  "mission": "G4-K1-CONTROL-CAMERA-REFERENCE-LIBRARY-AND-R3-COLD-VALIDATION-V1",
+  "status": "CLOSED_OK_CAMERA_READ_ONLY_AND_R3_COLD_VALIDATED",
+  "purpose": "capture_and_compare_camera_frames_then_prove_r3_camera_holds_without_printer_effect",
+  "camera_pilot": {
+    "ssh_alias": "k1max-root",
+    "address_resolution": "ssh_config_query_only",
+    "snapshot_method": "GET",
+    "snapshot_port": 8080,
+    "snapshot_path": "/?action=snapshot",
+    "expected_width_px": 1280,
+    "expected_height_px": 720,
+    "private_output_root": "inventory/raw",
+    "semantic_state_auto_confirmation": false,
+    "human_or_codex_visual_review_required": true
+  },
+  "reference_policy": {
+    "acquired": [
+      "SAFE_IDLE_PARK"
+    ],
+    "missing": [
+      "ROUGH_HOME_READY",
+      "BIN_PURGE_ACTIVE",
+      "BIN_RELEASED_CLEAN",
+      "PRIME_OUTSIDE_BED",
+      "FIRST_LAYER_GOOD"
+    ],
+    "invent_missing_reference": false
+  },
+  "r3_cold_invariants": [
+    "camera_clean_check_blocks_before_ACCURATE_G28",
+    "camera_prime_check_blocks_before_RESUME_BASE",
+    "PAUSE_BASE_and_RESUME_BASE_only",
+    "stock_pause_resume_macros_are_not_called",
+    "watchdog_timeout_turns_off_heaters",
+    "watchdog_timeout_never_confirms_a_camera_state",
+    "jinja_is_parsed_by_the_existing_k1_python_without_remote_file_write"
+  ],
+  "read_only_connectors": [
+    "ssh_-G_local_configuration_query",
+    "camera_http_GET",
+    "ssh_stdin_remote_jinja_parse"
+  ],
+  "effect_connectors": [],
+  "evidence": "packages/k1-control-v1/camera-reference-library-and-r3-cold-validation-v1/evidence-map.json",
+  "next_gate_plan": "packages/k1-control-v1/camera-reference-library-and-r3-cold-validation-v1/next-hot-preflight.json",
+  "effects": {
+    "gcode": false,
+    "heater_action": false,
+    "motion_action": false,
+    "extrusion_action": false,
+    "cfs_action": false,
+    "remote_file_write": false,
+    "service_action": false,
+    "configuration_change": false
+  },
+  "deployment_candidate": false,
+  "physical_run_authorized": false
+}

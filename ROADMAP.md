@@ -151,7 +151,12 @@ seul fonctionnement quotidien :
     physique a révélé un défaut majeur : R5 a purgé hors bac, sans décrocher la
     boule, et la référence Z physique n'était pas fiable. R5 est clos KO sans
     retry. ADR-033 et le document 49 imposent maintenant purge dans le bac,
-    mouvement E4 et deux contrôles caméra bloquants. R3 reste hors imprimante.
+    mouvement E4 et deux contrôles caméra bloquants. R3 reste hors imprimante ;
+20. pilote caméra minimal et validation froide R3 clos : image fraîche nette,
+    trois zones comparées à la seule référence acquise, deux pauses bloquantes,
+    timeout sûr et `16` blocs Jinja parsés sans effet. La future gate chaude
+    reste fermée jusqu'au nettoyage réel buse/plateau et au réengagement
+    officiel de `T1A`.
 
 Le rollback exact de `MESH-EDGE-DIAGNOSTIC-V1` et sa validation finale sont
 verts. Aucun acte physique suivant n'est automatiquement autorisé. La reprise

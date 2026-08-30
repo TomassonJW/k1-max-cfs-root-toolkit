@@ -1,0 +1,71 @@
+{
+  "schema": 1,
+  "library_id": "K1-CAMERA-REFERENCE-LIBRARY-V1",
+  "status": "SAFE_IDLE_PARK_ONLY",
+  "frame": {
+    "width_px": 1280,
+    "height_px": 720,
+    "minimum_sampled_gradient": 2.0,
+    "comparison_sample_step_px": 8,
+    "candidate_match_max_normalized_mad": 0.08
+  },
+  "regions": {
+    "nozzle": {
+      "left": 540,
+      "top": 60,
+      "width": 260,
+      "height": 260
+    },
+    "bin": {
+      "left": 430,
+      "top": 140,
+      "width": 540,
+      "height": 360
+    },
+    "bed": {
+      "left": 0,
+      "top": 300,
+      "width": 1280,
+      "height": 420
+    }
+  },
+  "references": [
+    {
+      "id": "SAFE_IDLE_PARK",
+      "acquired": true,
+      "source_capture": "20260829-camera-pilot-r5-incident/k1-camera-after-r5-cancel.jpg",
+      "sha256": "db0d21de4288c522f0c132f4ae8df1e5fc5c9d46062da584e255577e1382029d",
+      "observed_facts": [
+        "bed_lowered",
+        "toolhead_high_and_away_from_bed"
+      ],
+      "does_not_prove": [
+        "past_purge_location",
+        "nozzle_cleanliness_at_precise_z_reference",
+        "prime_line_quality",
+        "first_layer_quality"
+      ]
+    },
+    {
+      "id": "ROUGH_HOME_READY",
+      "acquired": false
+    },
+    {
+      "id": "BIN_PURGE_ACTIVE",
+      "acquired": false
+    },
+    {
+      "id": "BIN_RELEASED_CLEAN",
+      "acquired": false
+    },
+    {
+      "id": "PRIME_OUTSIDE_BED",
+      "acquired": false
+    },
+    {
+      "id": "FIRST_LAYER_GOOD",
+      "acquired": false
+    }
+  ],
+  "automatic_semantic_decision": false
+}

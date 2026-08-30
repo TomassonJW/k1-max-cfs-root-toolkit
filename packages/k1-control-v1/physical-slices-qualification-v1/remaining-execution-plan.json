@@ -2,7 +2,7 @@
   "schema": 1,
   "plan_id": "GOAL-P4-PHYSICAL-SLICES-REMAINING-EXECUTION-V1",
   "goal": "GOAL-P4-PHYSICAL-SLICES-QUALIFICATION-V1",
-  "status": "IN_PROGRESS_R5_PHYSICAL_KO_EFFECTS_BLOCKED_CAMERA_PILOT_AND_R3_COLD_VALIDATION_NEXT",
+  "status": "IN_PROGRESS_R5_PHYSICAL_KO_CAMERA_PILOT_AND_R3_COLD_VALIDATION_CLOSED_HOT_EFFECTS_BLOCKED",
   "purpose": "finish_all_five_remaining_physical_requirements_without_hiding_route_or_human_dependencies",
   "current_observation": {
     "physical_filament_left_in_head_overnight": "T1A_user_confirmed",
@@ -23,9 +23,11 @@
     "thermal_run_R5": "CLOSED_PHYSICAL_KO_purge_outside_bin_blob_release_missing_apparent_10mm_gap_cancelled_no_retry",
     "camera_access": "PROVED_1280x720_snapshot_on_local_port_8080_after_cancel",
     "camera_reference_library": "SAFE_IDLE_PARK_only_other_states_not_yet_learned",
+    "camera_pilot_live_read_only": "CLOSED_OK_1280x720_sharp_three_regions_safe_idle_candidate_match_semantic_auto_confirmation_false",
+    "R3_cold_validation": "CLOSED_OK_static_holds_and_watchdog_plus_16_remote_Jinja_sections_via_stdin_no_effect",
     "final_safe_state_after_R5": "cancelled_targets_zero_axes_released_head_high_11x11_active_no_engaged_route",
     "continuation_authority": "FAIS_LE_JOB_persists_across_technical_commits_while_physical_conditions_are_unchanged",
-    "current_human_action": "none_during_handoff_and_offline_cold_successor_work_future_hot_run_requires_real_nozzle_and_bed_cleanup_plus_T1A_reengagement"
+    "current_human_action": "before_any_future_hot_preflight_clean_nozzle_clean_and_clear_bed_then_reengage_T1A_with_official_function"
   },
   "sequencing_decision": {
     "installed_owner_supports_only": "unique_T1A_keep_correct",
@@ -78,14 +80,14 @@
       "order": 3,
       "id": "THERMAL_STABILIZATION_R5_TWO_LAYER",
       "requirement": "CFS_START_STATES_AND_TEMPERATURE_OWNER",
-      "status": "RUN_R5_CLOSED_PHYSICAL_KO_NO_RETRY_CAMERA_PURGE_R3_REQUIRED",
+      "status": "RUN_R5_CLOSED_PHYSICAL_KO_NO_RETRY_CAMERA_PURGE_R3_COLD_VALIDATED_HOT_EFFECT_BLOCKED",
       "route_before": ["T1A"],
       "route_after": [],
       "action": "completed_one_200s_bed_soak_then_owned_R2_two_layer_trial_closed_KO",
       "human_gate": true,
       "automatic_retry": false,
       "artifact": "packages/k1-control-v1/start-sequence-owner-camera-purge-r3/incident-evidence.json",
-      "branch_on_KO": "build_simple_camera_reference_library_and_validate_R3_cold_before_real_cleanup_T1A_reengagement_or_any_hot_run"
+      "branch_on_KO": "camera_library_and_R3_cold_validation_closed_next_hot_preflight_blocked_until_real_cleanup_and_T1A_reengagement"
     },
     {
       "order": 4,

@@ -53,8 +53,9 @@ revérifié ; tous les profils actuels ont des défauts de bord ; aucun profil
 actuel n'est qualifié robuste ; éditeur point par point disponible hors ligne ;
 Goal 3 compte `2/7` exigences passées ; le run thermique R5 est clos KO après
 une purge hors bac, sans décrochage de la boule, et une hauteur physique
-incohérente ; la caméra locale est maintenant un capteur canonique ; production
-volontairement bloquée**
+incohérente ; la caméra locale est maintenant un capteur canonique ; pilote
+caméra minimal et R3 validés à froid sans effet ; production volontairement
+bloquée**
 
 Le registre local
 `packages/k1-control-v1/physical-slices-qualification-v1/` fixe désormais les
@@ -1339,8 +1340,30 @@ mouvement E4, image caméra propre, référence Z précise, ligne hors plateau,
 seconde image, puis modèle. Le document 49 répartit clairement le travail entre
 Codex et Thomas et prépare une future calibration Z assistée par image.
 
-La prochaine tranche unique est
+La tranche corrective suivante était
 `G4-K1-CONTROL-CAMERA-REFERENCE-LIBRARY-AND-R3-COLD-VALIDATION-V1`, hors
 imprimante puis à froid seulement. Elle doit construire le pilote caméra simple,
 relire le candidat R3 et prouver ses deux pauses sans chauffe, extrusion ni
-mouvement physique. Le LiDAR reste hors périmètre.
+mouvement physique. Elle est maintenant close dans la mise à jour ci-dessous.
+Le LiDAR reste hors périmètre.
+
+## Mise à jour 2026-08-30 — pilote caméra et validation froide R3
+
+`G4-K1-CONTROL-CAMERA-REFERENCE-LIBRARY-AND-R3-COLD-VALIDATION-V1` est close
+avec `CLOSED_OK_CAMERA_READ_ONLY_AND_R3_COLD_VALIDATED`. Le pilote a résolu
+`k1max-root`, pris une image fraîche `1280 × 720` par un seul `GET`, validé sa
+netteté et extrait les zones buse, bac et plateau. Les trois comparaisons avec
+`SAFE_IDLE_PARK` restent proches, puis la revue visuelle confirme seulement la
+tête haute, le plateau descendu et l'absence d'activité visible. Aucune décision
+sémantique automatique n'est produite.
+
+La bibliothèque garde exactement une référence acquise : `SAFE_IDLE_PARK`.
+Les cinq autres références restent absentes. La validation froide prouve les
+deux blocages caméra, l'usage exclusif de `PAUSE_BASE/RESUME_BASE` et l'arrêt des
+chauffes sur timeout sans confirmation d'image. Les `16` blocs Jinja de R3 ont
+été parsés sur le Python existant de la K1 via stdin, sans fichier distant ni
+G-code.
+
+R3 reste hors imprimante. La prochaine gate chaude est fermée tant que Thomas
+n'a pas réellement nettoyé la buse, nettoyé et libéré le plateau, puis réengagé
+`T1A` avec la fonction officielle.

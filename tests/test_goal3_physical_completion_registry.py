@@ -48,25 +48,22 @@ class Goal3PhysicalCompletionRegistryTests(unittest.TestCase):
         self.assertIn("final_project_closure", boundary)
         self.assertEqual(4, self.contract["macro_goal_count"])
 
-    def test_current_gate_records_the_safe_run_ko_and_persistent_continuation_authority(self):
+    def test_current_gate_records_closed_cold_validation_and_blocks_hot_effects(self):
         gate = self.matrix["current_human_gate"]
         self.assertEqual(
-            "THERMAL_RUN_3027F59_CLOSED_KO_AFTER_MACHINE_SIDE_SOAK_NO_PRINT_OR_PURGE_SAFE_FINAL_PROVED_SPLIT_SUCCESSOR_VALIDATING",
+            "CAMERA_REFERENCE_LIBRARY_AND_R3_COLD_VALIDATION_CLOSED_OK",
             gate["checkpoint"],
         )
-        self.assertIn("MACHINE_SIDE_SOAK_COMPLETED", gate["technical_status"])
-        self.assertIn("NO_PRINT_OR_PURGE", gate["technical_status"])
-        self.assertIn("SPLIT_HEAT_AND_DWELL_SOCKET_FIX_VALIDATING_OFFLINE", gate["technical_status"])
-        self.assertIn("CONTINUATION_AUTHORITY_ACTIVE", gate["technical_status"])
+        self.assertIn("CAMERA_GET_SHARP_1280X720", gate["technical_status"])
+        self.assertIn("16_JINJA_SECTIONS_PARSED", gate["technical_status"])
+        self.assertIn("NO_EFFECT", gate["technical_status"])
         self.assertEqual(
-            "G4-K1-CONTROL-Z-THERMAL-STABILIZATION-DIAGNOSTIC-V1",
+            "G4-K1-CONTROL-START-SEQUENCE-OWNER-CAMERA-PURGE-R3-HOT-PREFLIGHT-V1",
             gate["active_gate"],
         )
-        self.assertEqual(
-            "VISUAL_TWO_LAYER_VERDICT_ONLY_AFTER_AUTOMATIC_TRIAL_UNLESS_A_MATERIAL_SENSITIVE_PHYSICAL_CHANGE_OCCURS_FIRST",
-            gate["required_human_verdict"],
-        )
-        self.assertFalse(gate["next_effect_blocked"])
+        self.assertIn("CLEAN_NOZZLE", gate["required_human_verdict"])
+        self.assertIn("REENGAGE_T1A", gate["required_human_verdict"])
+        self.assertTrue(gate["next_effect_blocked"])
 
     def test_current_ledger_verifies_as_in_progress_without_effect(self):
         result = verifier.verify()

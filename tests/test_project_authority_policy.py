@@ -17,28 +17,25 @@ class ProjectAuthorityPolicyTests(unittest.TestCase):
 
     def test_current_handoff_never_requests_a_literal_gate(self):
         handoff = (ROOT / "HANDOFF.md").read_text(encoding="utf-8")
-        current_header = "\n".join(handoff.splitlines()[:70])
-        self.assertNotIn("autoriser littéralement", current_header)
-        self.assertIn("GOAL-P4-OFFLINE-CYCLE-CFS-V1", current_header)
-        self.assertIn("terminé", current_header)
-        self.assertIn("GOAL-P4-K1-READ-ONLY-QUALIFICATION-V1", current_header)
+        current_name = "HANDOFF-GOAL3-R3-COLD-VALIDATED-2026-08-30.md"
+        self.assertIn(current_name, handoff)
+        current = (ROOT / "docs" / current_name).read_text(encoding="utf-8")
+        normalized_current = " ".join(current.split())
+        self.assertNotIn("autoriser littéralement", current)
+        self.assertIn("2/7", current)
         self.assertIn(
-            "20260827-142853-goal-p4-k1-read-only-qualification-v1",
-            current_header,
+            "CLOSED_OK_CAMERA_READ_ONLY_AND_R3_COLD_VALIDATED",
+            current,
         )
+        self.assertIn("SAFE_IDLE_PARK", current)
+        self.assertIn("REMOTE_R3_JINJA_PARSE_OK sections=16", current)
+        self.assertIn("19/19", current)
         self.assertIn(
-            "Aucune impression, G-code, écriture distante", current_header
+            "G4-K1-CONTROL-START-SEQUENCE-OWNER-CAMERA-PURGE-R3-HOT-PREFLIGHT-V1",
+            current,
         )
-        self.assertIn("HANDOFF-CFS-OWNER-EXCLUSION-LIVE-EFFECT-2026-08-28.md", current_header)
-        self.assertIn("G4-K1-CONTROL-CFS-OWNER-EXCLUSION-GUARD-OFFLINE-V1", current_header)
-        self.assertIn("25/25", current_header)
-        self.assertIn("15/15", current_header)
-        self.assertIn("2/7", current_header)
-        self.assertIn("G4-K1-CONTROL-START-SEQUENCE-OWNER-V1", current_header)
-        self.assertIn("CLOSED_OK_EXCLUSION_AND_EXACT_RESTORE_QUALIFIED", current_header)
-        self.assertIn("ne doivent pas être rejouées", current_header)
-        self.assertIn("installable et réversible", current_header)
-        self.assertIn("rollback", handoff)
+        self.assertIn("aucun texte de gate n'est à recopier", normalized_current)
+        self.assertIn("rollback", current)
 
     def test_adr_and_decision_preserve_technical_safety_controls(self):
         adr = (

@@ -1,6 +1,7 @@
 # Pilotage caméra simple et autonome V1
 
-Statut : **règle canonique de reprise ; bibliothèque d'images à construire**.
+Statut : **règle canonique ; pilote minimal validé, bibliothèque limitée à
+`SAFE_IDLE_PARK`**.
 
 ## Principe
 
@@ -26,8 +27,13 @@ Une seule session courte et surveillée doit capturer quelques références :
 5. `FIRST_LAYER_GOOD` : une petite première couche connue comme correcte.
 
 La première image `SAFE_IDLE_PARK` existe déjà dans l'inventaire brut privé de
-l'incident R5. Les autres références n'existent pas encore et ne doivent pas
-être inventées.
+l'incident R5. Son empreinte, le cadrage et les zones buse/bac/plateau sont
+figés dans le paquet
+`camera-reference-library-and-r3-cold-validation-v1`. Une image fraîche du
+30 août a été nette et visuellement cohérente avec cet état sûr. Le pilote
+conserve toutefois `semantic_state_confirmed=false` : une proximité de pixels
+ne confirme jamais seule une gate. Les autres références n'existent pas encore
+et ne doivent pas être inventées.
 
 Le contrôle reste volontairement simple : même cadrage, petites zones fixes
 autour de la buse, du bac et du plateau, comparaison avec la référence, puis
@@ -76,3 +82,19 @@ doute. Le LiDAR n'est ni requis ni recommandé à ce stade.
 
 Les détails du correctif sont figés par ADR-033 et le paquet
 `start-sequence-owner-camera-purge-r3`.
+
+## Validation froide acquise
+
+Le pilote minimal et R3 sont validés sans effet. Le pilote résout l'adresse par
+la configuration locale de `k1max-root`, fait uniquement un `GET` caméra,
+contrôle `1280 × 720`, la netteté et les trois zones, puis écrit dans
+`inventory/raw`. Il ne connaît aucune route Moonraker ou G-code.
+
+Les deux pauses R3 bloquent avant `ACCURATE_G28` et avant `RESUME_BASE`.
+`PAUSE_BASE/RESUME_BASE` évitent les macros CFS stock ; le timeout appelle
+`TURN_OFF_HEATERS` sans confirmer d'image. Les `16` blocs Jinja ont été parsés
+par le Python existant de la K1 via stdin, sans fichier distant.
+
+Cette validation ne permet toujours pas de poser R3 ou de chauffer. Avant une
+future gate chaude, la buse et le plateau doivent être réellement nettoyés, le
+plateau libéré et `T1A` réengagé avec la fonction officielle.

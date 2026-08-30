@@ -1555,9 +1555,31 @@ L'impression est confirmée `cancelled`, les deux cibles sont à zéro, les axes
 sont libérés, la tête est haute, le `11 × 11` reste actif et aucune route CFS
 n'est engagée. L'image caméra tardive prouve seulement cet état final sûr.
 
-La gate suivante unique est
-`G4-K1-CONTROL-CAMERA-REFERENCE-LIBRARY-AND-R3-COLD-VALIDATION-V1`. Elle est
-hors effet : préparer quelques images de référence, valider le pilote de
-comparaison et les deux pauses de R3 à froid. Toute chauffe, extrusion, homing
-ou nouvel essai reste fermé tant que la buse, le plateau et T1A n'ont pas été
-réellement remis en état.
+La gate corrective suivante est désormais close ci-dessous. Toute chauffe,
+extrusion, homing ou nouvel essai reste fermé tant que la buse, le plateau et
+`T1A` n'ont pas été réellement remis en état.
+
+### `G4-K1-CONTROL-CAMERA-REFERENCE-LIBRARY-AND-R3-COLD-VALIDATION-V1`
+
+Statut : **close OK sans effet** avec
+`CLOSED_OK_CAMERA_READ_ONLY_AND_R3_COLD_VALIDATED`.
+
+Un seul `GET` caméra a produit une image fraîche, nette et conforme au cadrage
+`1280 × 720`. Les zones buse, bac et plateau ont été extraites et comparées à
+`SAFE_IDLE_PARK`, seule référence acquise. La revue visuelle retrouve la tête
+haute et le plateau descendu. Le pilote n'exporte pas l'adresse et conserve une
+revue obligatoire : aucune ressemblance ne confirme automatiquement un état.
+
+À froid, les deux pauses R3 bloquent avant la référence Z précise et avant le
+modèle. Seules `PAUSE_BASE` et `RESUME_BASE` sont utilisées. Un timeout coupe
+les chauffes sans confirmer l'image. Les `16` blocs Jinja ont été parsés par le
+Python existant de la K1 via stdin seulement. Aucun fichier distant, G-code,
+chauffe, mouvement, extrusion, CFS, service ou changement de configuration n'a
+eu lieu.
+
+La prochaine gate candidate est
+`G4-K1-CONTROL-START-SEQUENCE-OWNER-CAMERA-PURGE-R3-HOT-PREFLIGHT-V1`. Elle reste
+fermée. Concrètement, Thomas doit d'abord nettoyer la buse, nettoyer et libérer
+le plateau, puis réengager `T1A` avec la fonction officielle. Ce futur préflight
+devra relire l'état sûr et préparer un rollback avant tout effet ; il
+n'autorise encore aucune impression.

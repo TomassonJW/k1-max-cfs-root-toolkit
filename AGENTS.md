@@ -13,13 +13,16 @@ action physique. La caméra locale est désormais un capteur obligatoire : une
 phase Klipper ne prouve ni l'emplacement de la purge, ni le décrochage de la
 boule, ni la bonne hauteur de première couche. Codex capture et compare les
 images, pilote l'arrêt et ne demande à Thomas que les vrais gestes manuels.
-ADR-033 et le candidat R3 restent hors imprimante. Le LiDAR n'est pas requis.
+Le pilote caméra minimal et les `16` blocs Jinja de R3 sont maintenant validés
+à froid, sans effet. ADR-033 et le candidat R3 restent hors imprimante. Le LiDAR
+n'est pas requis.
 
 Mise à jour prioritaire du 29 août 2026 : le run thermique R5 est clos KO sans
 retry. L'état final observé est `cancelled`, chauffes zéro, axes libérés, tête
-haute, `11 × 11` actif et aucune route CFS engagée. Aucun nouvel essai chaud ne
-part avant la validation froide du pilote caméra/R3 puis les vrais gestes de
-remise en état demandés en langage courant.
+haute, `11 × 11` actif et aucune route CFS engagée. La validation froide du
+pilote caméra/R3 est close ; aucun nouvel essai chaud ne part avant les vrais
+gestes de remise en état demandés en langage courant : nettoyer la buse,
+nettoyer et libérer le plateau, puis réengager `T1A` avec la fonction officielle.
 
 ## Current authority and phase
 

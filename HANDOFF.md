@@ -2,7 +2,7 @@
 
 La passation canonique de la session est désormais :
 
-`docs/HANDOFF-GOAL3-CAMERA-PILOT-2026-08-29.md`
+`docs/HANDOFF-GOAL3-R3-COLD-VALIDATED-2026-08-30.md`
 
 Lire ce document en premier. Le contenu ci-dessous est conservé comme archive
 des clôtures antérieures ; il ne décrit plus l'état actuel et ne doit pas

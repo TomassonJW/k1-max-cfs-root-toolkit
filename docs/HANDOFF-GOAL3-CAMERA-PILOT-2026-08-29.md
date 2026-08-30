@@ -1,5 +1,8 @@
 # Handoff — Goal 3, incident R5 et reprise par caméra
 
+Cette passation est historique. La passation canonique actuelle est
+`docs/HANDOFF-GOAL3-R3-COLD-VALIDATED-2026-08-30.md`.
+
 Date : 2026-08-29
 Projet : `C:\Users\janko\Documents\ChatGPT\k1-max-cfs-root-toolkit`
 Nouvelle tâche créée : non

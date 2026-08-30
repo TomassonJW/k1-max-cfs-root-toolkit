@@ -140,7 +140,11 @@ couches. Aucun retry n'est permis.
 
 L'état final est sûr et relu : `cancelled`, cibles zéro, axes libérés, tête
 haute, `11 × 11` actif et aucune route CFS. ADR-033, le document 49 et le
-candidat R3 remplacent donc la reprise thermique directe. La prochaine tranche
-est seulement le pilote caméra simple et la validation froide de R3. Les vrais
-gestes manuels requis avant un futur essai chaud seront demandés au moment utile :
-nettoyer buse/plateau et réengager T1A par la fonction officielle.
+candidat R3 remplacent donc la reprise thermique directe. Le pilote caméra
+simple et la validation froide de R3 sont maintenant clos : image fraîche
+nette `1280 × 720`, trois zones comparées, une seule référence acquise, deux
+pauses bloquantes et `16` blocs Jinja parsés sans effet.
+
+Le prochain effet reste fermé. Avant son futur préflight chaud, Thomas doit
+nettoyer la buse, nettoyer et libérer le plateau, puis réengager `T1A` par la
+fonction officielle.

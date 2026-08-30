@@ -1,6 +1,6 @@
 # GOALS — pilotage macro
 
-Date de mise à jour : 2026-08-29
+Date de mise à jour : 2026-08-30
 
 Ce fichier sert d'index rapide pour les grandes sessions de travail. Les noms
 ci-dessous regroupent les petites gates déjà définies dans `GATES.md` ; ils ne
@@ -17,6 +17,8 @@ obligatoire. Le Goal 3 compte désormais deux exigences résolues sur sept. Le
 run thermique R5 est clos KO : la purge n'est pas tombée dans le bac, le
 mouvement de décrochage n'a pas eu lieu et la référence Z n'est pas fiable
 physiquement. ADR-033 et le document 49 rendent désormais la caméra obligatoire.
+Le pilote minimal et R3 sont validés à froid sans effet ; la future gate chaude
+reste bloquée avant les vrais gestes de remise en état.
 
 ## Vue rapide
 
@@ -24,7 +26,7 @@ physiquement. ADR-033 et le document 49 rendent désormais la caméra obligatoir
 | --- | --- | --- | --- |
 | 1 | `GOAL-P4-OFFLINE-CYCLE-CFS-V1` | terminé hors imprimante | système logiciel complet simulé et plan futur inerte vérifié |
 | 2 | `GOAL-P4-K1-READ-ONLY-QUALIFICATION-V1` | terminé en lecture seule ; écart de mesh alors observé, corrigé par une gate distincte | réponses et délais réels qualifiés sans commande ni impression |
-| 3 | `GOAL-P4-PHYSICAL-SLICES-QUALIFICATION-V1` | en cours ; `2/7`, R5 clos KO, effets physiques suspendus pendant la correction caméra/purge | toutes les fonctions physiques et le profil de bord validés séparément |
+| 3 | `GOAL-P4-PHYSICAL-SLICES-QUALIFICATION-V1` | en cours ; `2/7`, R5 clos KO, pilote caméra et R3 validés à froid, prochain effet bloqué | toutes les fonctions physiques et le profil de bord validés séparément |
 | 4 | `GOAL-P4-DAILY-CUTOVER-V1` | prévu après Goal 3 | bascule unifiée, validation production et clôture définitive du projet |
 
 Le registre exécutable
@@ -51,7 +53,8 @@ plateau rend la référence Z de R5 non fiable malgré une télémétrie ordinai
 ADR-033 impose maintenant un départ possédé avec purge explicite dans le bac,
 mouvement E4, deux contrôles caméra bloquants et référence Z précise seulement
 après preuve visuelle de buse propre. Son candidat R3 est préparé uniquement
-hors imprimante. Ce registre ne
+hors imprimante ; le pilote caméra et ses `16` blocs Jinja sont validés à froid
+sans effet. Ce registre ne
 crée aucun Goal supplémentaire. ADR-032 et la cartographie canonique
 `design/cfs-control-source-map-v1.json` réutilisent maintenant les captures
 locales, le binaire stock, HelixScreen, FrederickAlt, CFSTool et les principaux
@@ -140,13 +143,15 @@ Identifiant : `GOAL-P4-PHYSICAL-SLICES-QUALIFICATION-V1`
 État : **en cours ; `2/7` exigences passées ; nettoyage automatique clos KO et
 remplacé par une gate manuelle obligatoire ; la conservation réelle de `T1A`
 est prouvée ; le départ stock est KO ; START-SEQUENCE-OWNER-V1 a été installé
-puis invalidé physiquement par R5 ; R3 reste hors imprimante ; l'architecture
+puis invalidé physiquement par R5 ; R3 reste hors imprimante mais est validé à
+froid avec son pilote caméra minimal ; l'architecture
 complète CFS est choisie, le préflight S12 est clos
 en lecture seule et le cœur propriétaire obtient `21/21` hors imprimante ;
 l'observabilité V2 et l'exclusion réelle du propriétaire stock sont closes OK ;
 le run thermique R5 est clos KO et sans retry ; le candidat correctif R3 reste
-hors imprimante ; la prochaine tranche construit le pilote caméra simple et
-valide R3 à froid avant toute nouvelle qualification physique**.
+hors imprimante ; sa validation froide est close et la prochaine gate chaude
+reste bloquée jusqu'au nettoyage réel buse/plateau et au réengagement officiel
+de `T1A`**.
 
 Le checkpoint C a référencé XYZ, rechargé le `11 × 11`, commandé `Z=50 mm` et
 attendu la fin. Un premier faux KO local a confondu la position physique
@@ -235,24 +240,13 @@ repousser la clôture.
 
 ## Démarrage recommandé
 
-Le garde `G4-K1-CONTROL-CFS-OWNER-EXCLUSION-GUARD-OFFLINE-V1` est maintenant
-clos avec `25/25` scénarios et `15/15` tests ciblés, sans connexion K1. Il
-sauvegarde la valeur stock, borne désactivation et restauration à une tentative
-et exige deux lectures stables avant d'ouvrir ou fermer le propriétaire.
+La gate caméra froide est close. La prochaine gate candidate est
+`G4-K1-CONTROL-START-SEQUENCE-OWNER-CAMERA-PURGE-R3-HOT-PREFLIGHT-V1`, préparée
+dans le paquet caméra mais fermée sans effet. Elle commencera par une image et
+des lectures fraîches, puis préparera les sauvegardes et le rollback exact avant
+toute future pose séparée.
 
-L'adaptateur V2 obtient `12/12`, puis sa gate live qualifie le vrai Z accepté
-`−0,04 mm` sous une seule connexion Moonraker persistante. La gate d'effet
-désactive ensuite l'auto-remplacement stock une fois, prouve `0`, restaure la
-valeur exacte précédente `1` une fois et la prouve. Les deux captures sont
-consommées et ne doivent pas être rejouées.
-
-La prochaine mission proposée est
-`G4-K1-CONTROL-START-SEQUENCE-OWNER-V1`. Elle rendra d'abord le candidat hors
-imprimante installable : surveillant thermique borné, parse K1 exact, ligne de
-purge revue, sauvegardes, rollback et validation indépendante. La pose et
-l'essai physique resteront une tranche distincte.
-
-Le choix optimal est `gpt-5.6-terra` avec raisonnement `high` : le volume est
-modéré, mais Klipper/Jinja, le surveillant thermique et le rollback demandent
-une revue précise. L'option économique raisonnable est le même modèle en
-`medium`, avec davantage de risque de reprise sur les chemins d'échec.
+La prochaine action est d'abord humaine et ne demande pas d'agent : nettoyer la
+buse, nettoyer et libérer le plateau, puis réengager `T1A` avec la fonction
+officielle. Tant que ces trois faits ne sont pas vrais, le préflight ne démarre
+pas et aucun essai chaud n'est permis.

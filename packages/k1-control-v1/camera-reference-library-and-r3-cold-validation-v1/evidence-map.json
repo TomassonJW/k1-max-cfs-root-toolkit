@@ -1,0 +1,71 @@
+{
+  "schema": 1,
+  "mission": "G4-K1-CONTROL-CAMERA-REFERENCE-LIBRARY-AND-R3-COLD-VALIDATION-V1",
+  "status": "CLOSED_OK_CAMERA_READ_ONLY_AND_R3_COLD_VALIDATED",
+  "private_capture": {
+    "session": "20260830-camera-reference-library-and-r3-cold-validation-v1",
+    "analysis_file": "live-safe-idle-compare.analysis.json",
+    "frame_sha256": "ecee0cbb1ece699d08927d172c38d50c64d79b29bdb604b1d35cf5d7c12e3bfe",
+    "width_px": 1280,
+    "height_px": 720,
+    "sharpness_ok": true,
+    "reference": "SAFE_IDLE_PARK",
+    "all_regions_candidate_match": true,
+    "normalized_mean_absolute_difference": {
+      "nozzle": 0.010838,
+      "bin": 0.009603,
+      "bed": 0.010106
+    },
+    "codex_visual_review": [
+      "toolhead_high_and_away_from_bed",
+      "bed_lowered",
+      "no_visible_activity"
+    ],
+    "semantic_state_auto_confirmed": false,
+    "resolved_ipv4_exported": false
+  },
+  "r3_cold_validation": {
+    "static_validator": "CAMERA_REFERENCE_LIBRARY_AND_R3_COLD_STATIC_OK",
+    "targeted_tests": "19/19_camera_R3_and_Goal3_registry",
+    "authority_policy_tests": "5/5",
+    "full_test_suite": "797_executed_794_passed_3_known_skips",
+    "jinja_parser": "existing_k1_python_jinja2",
+    "jinja_result": "REMOTE_R3_JINJA_PARSE_OK sections=16",
+    "remote_files_written": false,
+    "gcode_sent": false,
+    "camera_before_precise_z": true,
+    "camera_before_model": true,
+    "base_pause_resume_only": true,
+    "watchdog_shutdown_without_camera_confirmation": true
+  },
+  "reference_library": {
+    "acquired": [
+      "SAFE_IDLE_PARK"
+    ],
+    "missing": [
+      "ROUGH_HOME_READY",
+      "BIN_PURGE_ACTIVE",
+      "BIN_RELEASED_CLEAN",
+      "PRIME_OUTSIDE_BED",
+      "FIRST_LAYER_GOOD"
+    ]
+  },
+  "effects": {
+    "camera_get": true,
+    "ssh_stdin_jinja_parse": true,
+    "gcode": false,
+    "heater_action": false,
+    "motion_action": false,
+    "extrusion_action": false,
+    "cfs_action": false,
+    "remote_file_write": false,
+    "service_action": false,
+    "configuration_change": false
+  },
+  "next_effect_blocked": true,
+  "required_before_future_hot_gate": [
+    "clean_nozzle",
+    "clean_and_clear_bed",
+    "reengage_T1A_with_official_function"
+  ]
+}
