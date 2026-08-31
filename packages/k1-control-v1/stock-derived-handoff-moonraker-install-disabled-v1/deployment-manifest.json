@@ -1,0 +1,160 @@
+{
+  "schema": 1,
+  "gate": "G4-K1-CONTROL-STOCK-DERIVED-HANDOFF-MOONRAKER-INSTALL-DISABLED-V1",
+  "status": "offline_review_candidate_not_installed",
+  "baseline": {
+    "printer_cfg_sha256": "55b73da92aee86e9645ec8f8ebf3726bffc261d4530b642af52b91cbb89b9479",
+    "moonraker_conf_sha256": "aae7130b39b3676d32f4ebd6677c83824bd596f6db8e4c28c90992677ec183a0",
+    "best_current_mesh": "k1_p001_t055_r001_n11x11",
+    "accepted_z_offset_mm": -0.04,
+    "required_files": {
+      "R4_config": {
+        "path": "/usr/data/printer_data/config/k1-control-start-sequence-owner-v1.cfg",
+        "sha256": "c7d7dd06ee81092d73cde9e41ba371642340e8f0270154f3cef15e0e98ef9d4e"
+      },
+      "direct_owner_component": {
+        "path": "/usr/share/klipper/klippy/extras/k1_control_cfs_direct_owner.py",
+        "sha256": "47cc69a495afc269d5e54df7224d88d9b9ada430fc511a4107f42935138029d2"
+      },
+      "direct_owner_config": {
+        "path": "/usr/data/printer_data/config/k1-control-cfs-direct-owner-disabled-v1.cfg",
+        "sha256": "f9de28c0836db9ce03908ea82facefc8edc5468a4f94849d19d96c79633b63cf"
+      },
+      "integrated_cycle_config": {
+        "path": "/usr/data/printer_data/config/k1-control-integrated-production-cycle-v1.cfg",
+        "sha256": "97fe159a3e4105512f8a349539d224f42cd28617dbb9a6dfa403195b7e68f998"
+      },
+      "moonraker_existing_cycle": {
+        "path": "/usr/data/k1-control-v1/current/moonraker/moonraker/moonraker/components/k1_control_cycle.py",
+        "sha256": "c062b68ee4d3f9aa25d77cab55917c2c290a6064ff79ce552906c79149e05196"
+      }
+    }
+  },
+  "installed": {
+    "printer_cfg_sha256": "c3b732ff1b4069da952392eb5eb3d6e2527305164186a723295694ef0d32e941",
+    "moonraker_conf_sha256": "ea817b7275909fa299872f2a23ad2d510470588afd96a738be1dc3277c26d835"
+  },
+  "files": [
+    {
+      "source": "packages/k1-control-v1/cfs-stock-derived-cycle-owner-install-disabled-v1/k1-control-stock-derived-cycle-owner-disabled-v1.cfg",
+      "stage_name": "stock-cycle-owner.cfg",
+      "destination": "/usr/data/printer_data/config/k1-control-stock-derived-cycle-owner-disabled-v1.cfg",
+      "sha256": "ccc5ab6d45ccec4233b4e2017ecb9c4d170a6a2cf74509969f56c4d2bcc0e1ee",
+      "before": "absent"
+    },
+    {
+      "source": "packages/k1-control-v1/cfs-stock-derived-cycle-owner-install-disabled-v1/k1_control_stock_cycle_owner.py",
+      "stage_name": "k1_control_stock_cycle_owner.py",
+      "destination": "/usr/share/klipper/klippy/extras/k1_control_stock_cycle_owner.py",
+      "sha256": "7f1a6c53111ab3808fa3ba902899aa12482ed520dfa507b77399465a41a8ed50",
+      "before": "absent"
+    },
+    {
+      "source": "packages/k1-control-v1/stock-derived-handoff-moonraker-install-disabled-v1/k1-control-stock-geometry-handoff-disabled-v1.cfg",
+      "stage_name": "stock-geometry-handoff.cfg",
+      "destination": "/usr/data/printer_data/config/k1-control-stock-geometry-handoff-disabled-v1.cfg",
+      "sha256": "47840c90502f6cefd47cd4fb5d9941bc349791a56a950141101e87fb4aad48c3",
+      "before": "absent"
+    },
+    {
+      "source": "packages/k1-control-v1/stock-derived-handoff-moonraker-install-disabled-v1/k1_control_stock_geometry_handoff.py",
+      "stage_name": "k1_control_stock_geometry_handoff.py",
+      "destination": "/usr/share/klipper/klippy/extras/k1_control_stock_geometry_handoff.py",
+      "sha256": "89cc348b0bdc9cf463639b950aed2fbb7d947c159b71ce2920760a703b927cb7",
+      "before": "absent"
+    },
+    {
+      "source": "packages/k1-control-v1/cfs-stock-derived-orchestrator-offline-v1/orchestrator.py",
+      "stage_name": "k1_control_stock_cycle_core.py",
+      "destination": "/usr/data/k1-control-v1/current/moonraker/moonraker/moonraker/components/k1_control_stock_cycle_core.py",
+      "sha256": "934f04f78b8f82b5b51a6459daa3954978f5fa5448e412d8365f01e1e98376d7",
+      "before": "absent"
+    },
+    {
+      "source": "packages/k1-control-v1/stock-derived-handoff-moonraker-install-disabled-v1/moonraker_component.py",
+      "stage_name": "k1_control_stock_cycle.py",
+      "destination": "/usr/data/k1-control-v1/current/moonraker/moonraker/moonraker/components/k1_control_stock_cycle.py",
+      "sha256": "f6a36e98058e08b09b974d426c3a011c024f8e73b20f02762ae79bb3f0cfe396",
+      "before": "absent"
+    }
+  ],
+  "support_files": [
+    {
+      "source": "packages/k1-control-v1/stock-derived-handoff-moonraker-install-disabled-v1/moonraker-section.conf",
+      "sha256": "a60c8162f8fd843636a9e7573670dee02225579cd923711515b64bd3d8325750"
+    },
+    {
+      "source": "packages/k1-control-v1/stock-derived-handoff-moonraker-install-disabled-v1/remote_source_validate.py",
+      "sha256": "b30c47888b9f353bc009e91b9245058ac6be50a31fe38f156feb3887793c24f4"
+    },
+    {
+      "source": "packages/k1-control-v1/stock-derived-handoff-moonraker-install-disabled-v1/remote_validate_disabled.py",
+      "sha256": "b6d2373a57a319f76136c1fd775c92fb5459104e40b8744b38f81684a5a3f737"
+    },
+    {
+      "source": "packages/k1-control-v1/stock-derived-handoff-moonraker-install-disabled-v1/run_scenarios.py",
+      "sha256": "62b0be527698e1599101dc34da8f1e212ed3ec433378afb2a1354c59712f2204"
+    },
+    {
+      "source": "packages/k1-control-v1/stock-derived-handoff-moonraker-install-disabled-v1/contract.json",
+      "sha256": "7f9f9c696b0f7e1fb8b20f9b5dc45048fd512b707d644f0e1c835cb36c40ae85"
+    },
+    {
+      "source": "packages/k1-control-v1/stock-derived-handoff-moonraker-install-disabled-v1/verify_candidate.py",
+      "sha256": "36d74ced9d85d7557643297a895bbfbbafdc27c781ce5b13c7a2bd1b49d382db"
+    }
+  ],
+  "preparation_evidence": [
+    {
+      "source": "packages/k1-control-v1/stock-derived-handoff-moonraker-install-disabled-v1/baseline-read-only.json",
+      "sha256": "6f12093dd8906fd89db5373a1ef4c95910c71f103e7d9ce8d34ada56bb7843e1"
+    },
+    {
+      "source": "packages/k1-control-v1/stock-derived-handoff-moonraker-install-disabled-v1/remote_baseline_probe.py",
+      "sha256": "1fa2576d7e3bbf911cc3c92d802bef572a7686f704e9e4b8a607090121acaf02"
+    },
+    {
+      "source": "packages/k1-control-v1/stock-derived-handoff-moonraker-install-disabled-v1/capture_baseline_read_only.ps1",
+      "sha256": "9e7e446a985f9983b82084a8c52bcbc27158f812925ae75d11070226371c89a8"
+    }
+  ],
+  "deployer": {
+    "source": "scripts/deploy-k1-control-stock-derived-handoff-moonraker-install-disabled-v1.ps1",
+    "sha256": "a5c1d8eb387f61081ef9f8faf5d7a1ff6a5aff54cb72abee9a9de002f814f769"
+  },
+  "planned_effects": {
+    "remote_files_added": 6,
+    "printer_cfg_includes_added": 2,
+    "moonraker_section_added": 1,
+    "klipper_restart": 1,
+    "dedicated_moonraker_restart": 1,
+    "restore_mesh_once": "k1_p001_t055_r001_n11x11",
+    "heat": false,
+    "axis_motion": false,
+    "extrusion": false,
+    "filament": false,
+    "cfs_frame": false,
+    "probe": false,
+    "mesh_recalculation": false
+  },
+  "required_disabled_validation": {
+    "klipper_components_enabled": false,
+    "moonraker_component_enabled": false,
+    "klipper_effect_and_command_counts": 0,
+    "moonraker_effect_and_transport_counts": 0,
+    "state_file_exists": false,
+    "expected_refused_moonraker_effect_endpoints": 6
+  },
+  "backup": {
+    "directory": "/usr/data/k1-control-v1/backups/<capture-id>/stock-derived-handoff-moonraker-install-disabled-v1",
+    "files": ["printer.cfg.before", "moonraker.conf.before", "checksums.sha256"]
+  },
+  "rollback": {
+    "restore_exact": ["printer.cfg", "moonraker.conf"],
+    "remove_new_files": 6,
+    "remove_state_file_if_any": true,
+    "klipper_restart": 1,
+    "dedicated_moonraker_restart": 1,
+    "restore_mesh_once": "k1_p001_t055_r001_n11x11"
+  }
+}

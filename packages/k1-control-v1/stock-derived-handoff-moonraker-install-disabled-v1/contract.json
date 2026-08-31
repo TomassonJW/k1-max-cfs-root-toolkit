@@ -1,0 +1,75 @@
+{
+  "schema": 1,
+  "gate": "G4-K1-CONTROL-STOCK-DERIVED-HANDOFF-MOONRAKER-INSTALL-DISABLED-V1",
+  "status": "OFFLINE_INSTALL_CANDIDATE_DISABLED",
+  "decisions": ["ADR-034", "ADR-036", "ADR-038"],
+  "authority": {
+    "cold_disabled_install_authorized": true,
+    "activation_authorized": false,
+    "physical_trial_authorized": false,
+    "production_authorized": false
+  },
+  "geometry_handoff": {
+    "enabled": false,
+    "immutable_without_replacement_package": true,
+    "input_phase": "geometry_ready_for_insertion",
+    "output_token": "geometry_ready_for_stock_cycle",
+    "requires_no_filament": true,
+    "requires_stock_auto_refill_off": true,
+    "requires_xyz": true,
+    "requires_profile": "k1_p001_t055_r001_n11x11",
+    "requires_accepted_z_mm": -0.04,
+    "temperature_context_c": {
+      "bed": 55.0,
+      "probe_nozzle": 140.0,
+      "first_nozzle": 190.0
+    },
+    "contact_probe_after_handoff": false,
+    "mesh_recalculation_after_handoff": false,
+    "heat_motion_extrusion_or_cfs_frame": false,
+    "effect_claimed_before_first_command": true,
+    "automatic_retry": false
+  },
+  "moonraker_component": {
+    "enabled": false,
+    "immutable_without_replacement_package": true,
+    "effect_endpoint_count": 6,
+    "effect_routes_refuse_before_request_read": true,
+    "state_file_read_while_disabled": false,
+    "state_file_write_while_disabled": false,
+    "klippy_query_while_disabled": false,
+    "gcode_dispatch_while_disabled": false,
+    "camera_request_while_disabled": false,
+    "core_loaded": "cfs-stock-derived-orchestrator-offline-v1/orchestrator.py"
+  },
+  "equivalent_spool_refill": {
+    "preserved_in_core": true,
+    "stock_auto_refill_owner": false,
+    "source_and_spare_must_be_strictly_identical": true,
+    "spare_must_be_unique": true,
+    "user_approval_required": true,
+    "pause_temperature_and_print_context_preserved": true,
+    "camera_confirmation_required_before_resume": true,
+    "ambiguous_or_near_match_fails_closed": true
+  },
+  "disabled_install_effects": {
+    "remote_files_added": 6,
+    "printer_cfg_includes_added": 2,
+    "moonraker_section_added": 1,
+    "klipper_restart": 1,
+    "dedicated_moonraker_restart": 1,
+    "best_mesh_restored_once": true,
+    "heat": false,
+    "axis_motion": false,
+    "extrusion": false,
+    "filament": false,
+    "cfs_frame": false,
+    "stock_BOX_effect": false
+  },
+  "next_gate": {
+    "name": "G4-K1-CONTROL-STOCK-DERIVED-CYCLE-ACTIVATION-V1",
+    "must_replace_immutable_disabled_components": true,
+    "camera_pilot_required": true,
+    "physical_actions_separate": true
+  }
+}

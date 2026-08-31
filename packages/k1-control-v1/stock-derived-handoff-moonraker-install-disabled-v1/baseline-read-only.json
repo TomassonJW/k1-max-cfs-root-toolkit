@@ -1,0 +1,39 @@
+{
+  "schema": 1,
+  "date": "2026-08-31",
+  "marker": "REMOTE_STOCK_DERIVED_HANDOFF_MOONRAKER_BASELINE_READ_ONLY_OK",
+  "printer_cfg": {
+    "baseline_sha256": "55b73da92aee86e9645ec8f8ebf3726bffc261d4530b642af52b91cbb89b9479",
+    "prospective_sha256": "c3b732ff1b4069da952392eb5eb3d6e2527305164186a723295694ef0d32e941",
+    "bytes_before": 12336,
+    "bytes_after": 12459
+  },
+  "moonraker_conf": {
+    "baseline_sha256": "aae7130b39b3676d32f4ebd6677c83824bd596f6db8e4c28c90992677ec183a0",
+    "prospective_sha256": "ea817b7275909fa299872f2a23ad2d510470588afd96a738be1dc3277c26d835",
+    "bytes_before": 1563,
+    "bytes_after": 1677
+  },
+  "required": {
+    "R4_config": "c7d7dd06ee81092d73cde9e41ba371642340e8f0270154f3cef15e0e98ef9d4e",
+    "direct_owner_component": "47cc69a495afc269d5e54df7224d88d9b9ada430fc511a4107f42935138029d2",
+    "direct_owner_config": "f9de28c0836db9ce03908ea82facefc8edc5468a4f94849d19d96c79633b63cf",
+    "integrated_cycle_config": "97fe159a3e4105512f8a349539d224f42cd28617dbb9a6dfa403195b7e68f998",
+    "moonraker_existing_cycle": "c062b68ee4d3f9aa25d77cab55917c2c290a6064ff79ce552906c79149e05196"
+  },
+  "new_paths_absent": {
+    "stock_cycle_config": true,
+    "stock_cycle_component": true,
+    "geometry_config": true,
+    "geometry_component": true,
+    "moonraker_core": true,
+    "moonraker_component": true
+  },
+  "remote_write": false,
+  "gcode": false,
+  "service_action": false,
+  "heat": false,
+  "motion": false,
+  "extrusion": false,
+  "cfs_frame": false
+}
