@@ -145,12 +145,16 @@ class ProductionControlContractTests(unittest.TestCase):
         self.assertEqual(change["rear_purge_role"], "remove_previous_material")
         self.assertIn("stabilize_pressure", change["slicer_prime_tower_role"])
 
-    def test_end_keeps_correct_filament_and_exposes_manual_unload(self) -> None:
+    def test_end_requires_full_unload_and_rewind(self) -> None:
         end = self.contract["end_policy"]
-        self.assertEqual(end["default_candidate"], "keep_correct_filament_engaged")
+        self.assertEqual(end["default_candidate"], "full_unload_and_rewind")
         self.assertTrue(end["default_requires_physical_qualification"])
         self.assertFalse(end["automatic_cut_and_unload_by_habit"])
-        self.assertEqual(end["manual_action"], "Disengage and clean")
+        self.assertTrue(end["normal_end_cut_and_unload_required"])
+        self.assertTrue(end["explicit_material_unload_temperature_required"])
+        self.assertTrue(end["single_attempt_no_retry"])
+        self.assertTrue(end["safe_park_before_motor_release"])
+        self.assertEqual(end["manual_action"], "Clean nozzle only before a future contact reference")
         self.assertFalse(end["unattended_delayed_reheat"])
         self.assertIn("filament_state_engaged_known_none_or_explicitly_unknown", end["final_state"])
 

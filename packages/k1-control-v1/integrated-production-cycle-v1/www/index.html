@@ -1,0 +1,78 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>K1 Control — Impression</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <main class="shell">
+    <header>
+      <p class="eyebrow">K1 CONTROL</p>
+      <h1>Impression</h1>
+      <p class="lead">Un seul parcours possède le filament, la géométrie, la purge et la fin.</p>
+    </header>
+
+    <section class="status-card" aria-live="polite">
+      <div>
+        <p class="label">État actuel</p>
+        <h2 id="phase-title">Connexion…</h2>
+        <p id="phase-detail">Lecture de la K1 en cours.</p>
+      </div>
+      <span id="phase-badge" class="badge">—</span>
+    </section>
+
+    <section class="job-card">
+      <div class="job-heading">
+        <div>
+          <p class="label">Travail sélectionné</p>
+          <h2 id="job-name">Aucun fichier</h2>
+        </div>
+        <button id="refresh" class="quiet" type="button">Actualiser</button>
+      </div>
+      <label class="file-picker" for="file-select">
+        <span>Fichier Orca présent sur la K1</span>
+        <select id="file-select">
+          <option value="">Choisir un fichier…</option>
+        </select>
+      </label>
+      <p id="file-help" class="hint">Le fichier sera contrôlé avant toute chauffe.</p>
+      <div class="facts">
+        <div><span>Filament</span><strong id="route">T1A</strong></div>
+        <div><span>Plateau</span><strong id="bed-temp">55 °C</strong></div>
+        <div><span>Buse</span><strong id="nozzle-temp">—</strong></div>
+        <div><span>Mesh</span><strong id="mesh">11 × 11</strong></div>
+      </div>
+    </section>
+
+    <section id="clean-card" class="action-card hidden">
+      <p class="step">INTERVENTION MANUELLE</p>
+      <h2>Nettoie maintenant la face de la buse</h2>
+      <p>Le filament est retiré et les chauffes sont coupées. Après ton clic, toutes les références seront terminées avant le prochain chargement.</p>
+      <label class="check"><input id="clean-check" type="checkbox"> La buse est visiblement propre</label>
+      <button id="confirm-clean" class="primary" type="button" disabled>Buse propre — Continuer</button>
+    </section>
+
+    <section class="controls">
+      <p id="mode-warning" class="mode-warning hidden"></p>
+      <button id="prepare" class="primary" type="button">Préparer l’impression</button>
+      <button id="abort" class="danger" type="button">Arrêter en sécurité</button>
+    </section>
+
+    <section class="timeline" aria-label="Étapes du cycle">
+      <h2>Parcours</h2>
+      <ol id="steps"></ol>
+    </section>
+
+    <details>
+      <summary>Détails techniques</summary>
+      <pre id="technical">Aucune donnée.</pre>
+      <p><a href="calibration/index.html">Ouvrir les anciennes calibrations avancées</a></p>
+    </details>
+
+    <p id="error" class="error" role="alert"></p>
+  </main>
+  <script src="app.js"></script>
+</body>
+</html>

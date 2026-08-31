@@ -1,0 +1,20 @@
+{
+  "gate": "G4-K1-CONTROL-INTEGRATED-PRODUCTION-CYCLE-HOTFIX-R1",
+  "status": "consumed_closed_ok",
+  "reason": "Compatibilite avec le FileManager Moonraker Creality qui expose get_directory mais pas get_full_path.",
+  "source": "moonraker_component.py",
+  "source_sha256": "c062b68ee4d3f9aa25d77cab55917c2c290a6064ff79ce552906c79149e05196",
+  "installed_sha256": "7ba814a9d62c8a2cbd120d996cc3a69daee0395ec5d9842860a27a1db02dc9e7",
+  "destination": "/usr/data/k1-control-v1/current/moonraker/moonraker/moonraker/components/k1_control_cycle.py",
+  "selection_fixture": "K1-INTEGRATED-T1A-2LAYER.gcode",
+  "deployer_sha256": "27f678611c3f779285a3b69c9f533627bfadfee8b6ae24fc3eb3610895da7e1d",
+  "effects": {
+    "klipper_restart": false,
+    "moonraker_restart": true,
+    "heat": false,
+    "motion": false,
+    "extrusion": false,
+    "cfs": false,
+    "selected_job_state_write": true
+  }
+}

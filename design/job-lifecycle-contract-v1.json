@@ -721,11 +721,16 @@
     "unknown_runout_phase": "block_without_replaying_full_cycle"
   },
   "end_policy": {
-    "default_candidate": "keep_correct_filament_engaged",
+    "decision_record": "docs/adr/ADR-035-cycle-integre-et-retrait-final-systematique.md",
+    "default_candidate": "full_unload_and_rewind",
     "default_requires_physical_qualification": true,
     "automatic_cut_and_unload_by_habit": false,
+    "normal_end_cut_and_unload_required": true,
+    "explicit_material_unload_temperature_required": true,
+    "single_attempt_no_retry": true,
+    "safe_park_before_motor_release": true,
     "persist_last_filament_record": true,
-    "manual_action": "Disengage and clean",
+    "manual_action": "Clean nozzle only before a future contact reference",
     "manual_action_uses_previous_material_explicit_temperature": true,
     "unattended_delayed_reheat": false,
     "final_state": [

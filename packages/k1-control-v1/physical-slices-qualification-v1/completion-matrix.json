@@ -99,14 +99,15 @@
     },
     {
       "order": 6,
-      "id": "CANCEL_END_AND_SEPARATE_DISENGAGE",
+      "id": "CANCEL_AND_FULL_UNLOAD_END",
       "status": "NOT_STARTED",
       "slice_id": "END-SEQUENCE-V1",
       "evidence": null,
       "required_proofs": [
         "cancel_reaches_a_safe_terminal_state",
-        "normal_end_keeps_the_good_filament_engaged",
-        "separate_disengage_and_clean_runs_only_on_explicit_request",
+        "normal_end_cuts_retracts_the_local_tip_12mm_and_rewinds_the_current_filament_once",
+        "normal_end_uses_the_explicit_material_unload_temperature",
+        "safe_lift_bed_lowering_and_head_park_finish_before_motor_release",
         "all_terminal_paths_request_heater_targets_zero",
         "no_terminal_action_is_retried_after_an_uncertain_effect"
       ]

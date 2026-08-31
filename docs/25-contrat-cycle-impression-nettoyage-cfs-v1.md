@@ -60,7 +60,7 @@ Le contrat versionné contient au minimum :
 - cibles explicites de retrait et de purge pour chaque transition de matière ;
 - volume de purge demandé par le slicer pour chaque transition ;
 - politique de mesh et profil attendu ;
-- politique de fin : conserver engagé ou retrait explicite ;
+- politique de fin : retrait complet et rembobinage à température explicite ;
 - preuve que l'ancien `+0,27 mm` n'est pas appliqué.
 
 Le mapping `outil logique -> CFS -> slot` est résolu au moment du travail. Une
@@ -331,26 +331,27 @@ Le retrait CFS ne prouve pas une buse vide : un résidu peut rester dans le bloc
 de chauffe. La propreté extérieure et l'absence de suintement restent des
 preuves distinctes.
 
-## 12. Fin d'impression et bouton de retrait
+## 12. Fin d'impression avec retrait complet
 
-La politique cible par défaut est **conserver le filament correct engagé**, sous
-réserve de la qualification physique du CFS exact :
+ADR-035 remplace l'ancienne politique qui conservait le filament engagé. La fin
+normale possède désormais tout le retour à l'état sûr :
 
-1. parquer ;
-2. effectuer seulement la rétraction finale validée ;
-3. ne pas aller au cutter ;
-4. enregistrer outil, CFS, slot, matière, température et capteurs ;
-5. demander les chauffes à zéro ;
-6. libérer les moteurs seulement dans un état sûr ;
-7. fermer toute reprise.
+1. lever la buse au-dessus de la pièce dans la hauteur encore disponible ;
+2. descendre le plateau par une trajectoire qualifiée ;
+3. atteindre la température explicite de retrait de la matière courante ;
+4. couper, rétracter localement la pointe de `12 mm` hors de la zone chaude,
+   retirer et vérifier le rembobinage du filament, une seule fois ;
+5. parquer ensuite la tête dans sa position finale sûre ;
+6. enregistrer outil, CFS, slot, matière, température et états des capteurs ;
+7. demander les chauffes et ventilateurs à zéro ;
+8. libérer les moteurs seulement après le parc sûr ;
+9. fermer toute reprise et afficher `filament retiré`, `inconnu` ou l'erreur
+   exacte observée.
 
-L'interface fournit un bouton séparé **Désengager et nettoyer**. Cette action :
-
-- utilise la température explicite enregistrée de l'ancien matériau ;
-- coupe, retire et vérifie le rembobinage ;
-- ne lance aucun nettoyage automatique ; le nettoyage manuel reste une gate
-  séparée si la buse doit être rendue propre ;
-- finit avec cibles zéro, outil `none` ou état `unknown` clairement affiché.
+Cette fin ne lance aucun nettoyage automatique. Le nettoyage manuel reste une
+frontière séparée avant une future référence par contact. Le bouton
+**Désengager et nettoyer** reste disponible uniquement pour une récupération
+ou un retrait explicite hors travail ; il n'est plus le chemin normal de fin.
 
 Il n'existe pas de réchauffage automatique différé et sans présence humaine
 plusieurs heures après la fin d'un travail.
@@ -408,8 +409,8 @@ reste suspendue. Avant toute reprise :
    changement de matière et trajet sûr autour d'une pièce.
 7. **PAUSE-RESUME-SEMANTICS-V1** : pause sans CFS, reprise simple et
    réamorçage volontaire.
-8. **END-SEQUENCE-V1** : conserver engagé par défaut, puis bouton Désengager et
-   nettoyer.
+8. **END-SEQUENCE-V1** : retrait complet et rembobinage dans la fin normale,
+   puis parc sûr, refroidissement et libération des moteurs.
 9. **ORCA-CUTOVER-V1** : bascule atomique du profil sélectionné et retrait du
    `+0,27 mm` historique.
 10. **G5** : trois travaux consécutifs, deux CFS, changement, runout, pause,

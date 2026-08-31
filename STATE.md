@@ -1367,3 +1367,28 @@ G-code.
 R3 reste hors imprimante. La prochaine gate chaude est fermée tant que Thomas
 n'a pas réellement nettoyé la buse, nettoyé et libéré le plateau, puis réengagé
 `T1A` avec la fonction officielle.
+
+## Mise à jour 2026-08-31 — cycle intégré clos KO et confiné
+
+Le candidat de cycle quotidien a été posé avec sélection explicite du G-code,
+UI Mainsail, orchestration et fin propriétaire. Deux défauts sans effet ont
+d'abord été corrigés : compatibilité du FileManager Moonraker Creality et noms
+de macros sans chiffre interne.
+
+Le premier effet réel s'est ensuite fermé KO pendant la réassociation du
+filament physique `T1A`. `BOX_EXTRUDE_MATERIAL` a référencé X/Y, annoncé
+`flush_temp: 220`, dépassé `220 °C`, vidé le mesh puis échoué sans engager la
+route. Aucun chargement qualifié, retrait, nettoyage, palpage, purge ou départ
+d'impression n'a suivi ; aucun retry n'a été lancé.
+
+Les cibles sont revenues à zéro, le `11 × 11` a été restauré et la caméra
+confirme un état visuel sûr. K1 Control est maintenant confiné avec
+`authority_mode: offline`, `effects_enabled: false`, cycle `idle` et macros CFS
+neutralisées. La K1 finale est `ready/standby`, buse proche de l'ambiante,
+plateau froid, axes libérés, deux CFS connectés, aucune route et Z accepté
+`−0,04 mm` intact.
+
+Cette voie ne doit pas être rejouée. L'autonomie complète exige désormais un
+propriétaire CFS borné qui ne délègue ni température ni géométrie à la primitive
+stock. Une nouvelle gate intégrée est interdite avant une preuve de protocole
+hors imprimante puis une qualification unique de chargement et de retrait.

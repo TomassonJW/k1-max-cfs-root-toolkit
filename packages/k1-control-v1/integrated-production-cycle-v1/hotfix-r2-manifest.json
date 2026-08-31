@@ -1,0 +1,35 @@
+{
+  "gate": "G4-K1-CONTROL-INTEGRATED-PRODUCTION-CYCLE-HOTFIX-R2",
+  "status": "consumed_closed_ok",
+  "reason": "Creality n'accepte les chiffres qu'en fin de nom de commande; remplacer les noms internes contenant T1A.",
+  "stable": {
+    "printer_cfg_sha256": "8e4be26ac43cac25950b3bec2e280464b7fb6af99d1d20aa8bbec927d17e4223",
+    "moonraker_conf_sha256": "db37133be2719757f9c3121be1120cb57449b7421793fb3e68486eedb49b6abf",
+    "component_sha256": "c062b68ee4d3f9aa25d77cab55917c2c290a6064ff79ce552906c79149e05196"
+  },
+  "files": [
+    {
+      "source": "k1-control-integrated-production-cycle-v1.cfg",
+      "destination": "/usr/data/printer_data/config/k1-control-integrated-production-cycle-v1.cfg",
+      "installed_sha256": "efbc442fdbc7b1ed2ffe2634aa97ceeaed22e17c3fae86cd6cc11a6e155ce80d",
+      "source_sha256": "66267e170ee34d585dc848bb254f777cad0e641b9831df3f820a3ae936e1d0d0"
+    },
+    {
+      "source": "orchestrator.py",
+      "destination": "/usr/data/k1-control-v1/current/moonraker/moonraker/moonraker/components/k1_control_cycle_orchestrator.py",
+      "installed_sha256": "de61e37f4187937934f4ab7ec01622ef75fc4d9987dcb665c5efa5f50c887644",
+      "source_sha256": "ceedb6d4fbdf6aaea78bd07700e60a0e537abf1ec9bc93dbb35b6468e21f7523"
+    }
+  ],
+  "selection_fixture": "K1-INTEGRATED-T1A-2LAYER.gcode",
+  "deployer_sha256": "e4d0a2f96e3af42c747a4c16cd2fa652ef73b9186d3da921082b539db4c23de1",
+  "effects": {
+    "klipper_restart": true,
+    "moonraker_restart": true,
+    "restore_mesh_once": "k1_p001_t055_r001_n11x11",
+    "heat": false,
+    "motion": false,
+    "extrusion": false,
+    "cfs": false
+  }
+}

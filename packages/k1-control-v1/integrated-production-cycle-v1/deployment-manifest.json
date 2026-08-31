@@ -1,0 +1,100 @@
+{
+  "schema": 1,
+  "gate": "G4-K1-CONTROL-INTEGRATED-PRODUCTION-CYCLE-V1",
+  "status": "offline_review_candidate",
+  "deployer_sha256": "710d401802d69457c99fc4e385c9c22d40044cccae7cc8faa9b838fff5e09132",
+  "baseline": {
+    "printer_cfg_sha256": "a79c8c917d8eee2575939ade4907640c2b2cf7ff59283d28def895b020e127af",
+    "moonraker_conf_sha256": "950dc211e0b7cd8990a8bb131062f633cd9bddfdd75cc6168a10149356ed5761",
+    "start_owner_r4_sha256": "c7d7dd06ee81092d73cde9e41ba371642340e8f0270154f3cef15e0e98ef9d4e",
+    "ui": {
+      "index.html": "4892294d278497f2f4215564b3e70fcedb354fb880f306641a29a03042ad1abc",
+      "app.js": "001a31fe7357b0031bfbfa5f6856f8436315cf9640f5a61b2f6121766c985554",
+      "styles.css": "a7c27fbcdc07f24b00b6d47cc1d9aa8570b9483bcf4dd3615419de579f9aaa12"
+    }
+  },
+  "files": [
+    {
+      "source": "k1-control-integrated-production-cycle-v1.cfg",
+      "destination": "/usr/data/printer_data/config/k1-control-integrated-production-cycle-v1.cfg",
+      "sha256": "97fe159a3e4105512f8a349539d224f42cd28617dbb9a6dfa403195b7e68f998"
+    },
+    {
+      "source": "cycle.py",
+      "destination": "/usr/data/k1-control-v1/current/moonraker/moonraker/moonraker/components/k1_control_cycle_core.py",
+      "sha256": "db44509ce7172564c1a56f1a888cb6ceae409acdf5a6fb485b1edc112cb98768"
+    },
+    {
+      "source": "orchestrator.py",
+      "destination": "/usr/data/k1-control-v1/current/moonraker/moonraker/moonraker/components/k1_control_cycle_orchestrator.py",
+      "sha256": "ceedb6d4fbdf6aaea78bd07700e60a0e537abf1ec9bc93dbb35b6468e21f7523"
+    },
+    {
+      "source": "job_contract.py",
+      "destination": "/usr/data/k1-control-v1/current/moonraker/moonraker/moonraker/components/k1_control_cycle_job_contract.py",
+      "sha256": "409d33066d99c95ada7c33abf4759c519b376123ba21169febeb66c352d8a8ba"
+    },
+    {
+      "source": "moonraker_component.py",
+      "destination": "/usr/data/k1-control-v1/current/moonraker/moonraker/moonraker/components/k1_control_cycle.py",
+      "sha256": "c062b68ee4d3f9aa25d77cab55917c2c290a6064ff79ce552906c79149e05196"
+    },
+    {
+      "source": "www/index.html",
+      "destination": "/usr/data/k1-control-v1/current/www/mainsail/k1-control/index.html",
+      "sha256": "3f8d8980645b333c74e391d1b36ba78c127deebfe09b5a4b2e8a92eb1dcd060c"
+    },
+    {
+      "source": "www/app.js",
+      "destination": "/usr/data/k1-control-v1/current/www/mainsail/k1-control/app.js",
+      "sha256": "12468c3f704420d8eda1ba7b5d9e44d74b2fb351776a12832eef9c89c9991b69"
+    },
+    {
+      "source": "www/styles.css",
+      "destination": "/usr/data/k1-control-v1/current/www/mainsail/k1-control/styles.css",
+      "sha256": "7e65c7a5f0334373d71b243da753459380d9018d3ce9c0bd3162f814ef100749"
+    },
+    {
+      "source": "K1-INTEGRATED-T1A-2LAYER.gcode",
+      "destination": "/usr/data/printer_data/gcodes/K1-INTEGRATED-T1A-2LAYER.gcode",
+      "sha256": "2420ca80f7bb39b4e6926d0726a350c3575eda0e15b28331689877ced61c3a6f"
+    }
+  ],
+  "support_files": [
+    {
+      "source": "moonraker-section.conf",
+      "sha256": "d73bca368c60d29847d34ba98fc6d6867ecd964579cd2fb793f8b577da794f74"
+    },
+    {
+      "source": "remote_jinja_validate.py",
+      "sha256": "198df86540297c3eda7501a41504b54e9202c6af8059dba51028811a3ae35770"
+    },
+    {
+      "source": "orca-start.gcode",
+      "sha256": "ff35ece6e29cb749766adf7165771d3fe30ab4df28bc0c79f60e80e50d494f7d"
+    },
+    {
+      "source": "orca-end.gcode",
+      "sha256": "b6f2b7d2eebef084e4a7ed19b25ceb8b6ca8b5295ca9e1f512ca74b527c89c48"
+    },
+    {
+      "source": "verify_candidate.py",
+      "sha256": "69dffd22030e17ef8f99dde4f1dfed6175b64ff0c6c80463904c263b86cb4042"
+    },
+    {
+      "source": "build_gate_gcode.py",
+      "sha256": "54856eaec17efb40d2f72608d7c4f8c1e0f448d4758f9fd49116bb42d44aa9d4"
+    }
+  ],
+  "planned_effects": {
+    "deployment": "files, exact backups, Moonraker restart and Klipper RESTART only",
+    "physical_action_during_deployment": false,
+    "authority_mode_after_deployment": "qualification",
+    "first_physical_run": "separate integrated supervised run, no retry"
+  },
+  "rollback": {
+    "restore_exact": ["printer.cfg", "moonraker.conf", "previous K1 Control UI"],
+    "remove_new": ["macro", "four Moonraker modules", "integrated UI", "two-layer G-code", "selected job state"],
+    "restore_mesh_once": "k1_p001_t055_r001_n11x11"
+  }
+}

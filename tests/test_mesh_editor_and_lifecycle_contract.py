@@ -130,7 +130,7 @@ class MeshEditorAndLifecycleContractTests(unittest.TestCase):
             "pression d'avance",
             "La purge arrière chasse l'ancien matériau",
             "tour de purge",
-            "conserver le filament correct engagé",
+            "retrait complet et rembobinage",
             "Il n'existe pas de réchauffage automatique différé",
         ):
             self.assertIn(token, self.lifecycle_contract)

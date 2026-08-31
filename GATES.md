@@ -1583,3 +1583,20 @@ fermée. Concrètement, Thomas doit d'abord nettoyer la buse, nettoyer et libér
 le plateau, puis réengager `T1A` avec la fonction officielle. Ce futur préflight
 devra relire l'état sûr et préparer un rollback avant tout effet ; il
 n'autorise encore aucune impression.
+
+### `G4-K1-CONTROL-INTEGRATED-PRODUCTION-CYCLE-V1`
+
+Statut : **close KO, propriétaire CFS stock interdit, aucun retry**.
+
+La préparation logicielle et la sélection explicite du G-code sont validées.
+Le premier effet réel s'est arrêté sur la réassociation `T1A` : la primitive
+stock a imposé `flush_temp: 220`, référencé X/Y, vidé le mesh et échoué sans
+engager la route. Le cycle n'a atteint ni nettoyage, ni référence Z, ni purge,
+ni impression.
+
+Le `11 × 11` est restauré, les cibles sont à zéro, les axes sont libérés, les
+deux CFS sont connectés et aucune route n'est active. Le composant est confiné
+en mode `offline`, les effets sont désactivés et les macros CFS sont
+neutralisées. Cette gate est consommée et ne doit pas être rejouée. La prochaine
+branche est une décision de propriétaire CFS réellement borné, hors imprimante
+avant toute nouvelle action physique.

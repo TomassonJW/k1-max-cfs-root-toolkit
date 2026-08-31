@@ -1,0 +1,115 @@
+{
+  "schema": 1,
+  "mission": "G4-K1-CONTROL-INTEGRATED-PRODUCTION-CYCLE-V1",
+  "status": "CLOSED_KO_STOCK_CFS_OWNER_BLOCKED",
+  "decision": "docs/adr/ADR-035-cycle-integre-et-retrait-final-systematique.md",
+  "authority": "offline_only",
+  "deployment_candidate": false,
+  "printer_connection": false,
+  "physical_action": false,
+  "target_ui": "K1 Control opened from Mainsail",
+  "human_actions": [
+    "clean_nozzle_after_route_is_clear",
+    "confirm_nozzle_clean_once"
+  ],
+  "workflow": [
+    "prepare_button",
+    "classify_filament",
+    "unload_existing_route_at_explicit_temperature_if_needed",
+    "wait_for_manual_nozzle_clean",
+    "reference_XY_then_Z_at_explicit_probe_temperature",
+    "load_and_verify_existing_11x11_without_mesh_calibration",
+    "load_T1A_at_explicit_material_temperature",
+    "single_origin_edge_purge_and_camera_proof",
+    "start_selected_virtual_SD_job",
+    "print_with_Orca_contract_temperatures",
+    "safe_lift_lower_bed_and_park",
+    "cut_unload_and_rewind_at_explicit_temperature",
+    "heaters_and_fans_zero",
+    "release_motors"
+  ],
+  "states": [
+    "idle",
+    "unload_before_clean",
+    "await_manual_clean",
+    "await_geometry",
+    "await_t1a_load",
+    "await_purge_proof",
+    "ready_to_print",
+    "printing",
+    "ending",
+    "closed_safe",
+    "failed_safe"
+  ],
+  "fixed_geometry_context": {
+    "plate_id": 1,
+    "bed_c": 55.0,
+    "probe_nozzle_c": 140.0,
+    "profile": "k1_p001_t055_r001_n11x11",
+    "accepted_z_mm": -0.04,
+    "mesh_calibration": false,
+    "xy_reference_count": 1,
+    "precise_z_reference_count": 1
+  },
+  "cfs_primitives_closed_ko": {
+    "load": [
+      "BOX_EXTRUDE_MATERIAL TNN=T1A",
+      "BOX_EXTRUDER_EXTRUDE TNN=T1A"
+    ],
+    "unload": [
+      "BOX_CUT_MATERIAL",
+      "local_tip_retract_12mm_at_explicit_temperature",
+      "BOX_RETRUDE_MATERIAL"
+    ],
+    "forbidden_full_stock_sequences": [
+      "START_PRINT",
+      "END_PRINT",
+      "BOX_START_PRINT",
+      "BOX_END_PRINT",
+      "BOX_MATERIAL_FLUSH",
+      "BOX_NOZZLE_CLEAN",
+      "BOX_TNN_RETRY_PROCESS"
+    ],
+    "temperature_rewrite_to_220_c": "observed_on_20260831_and_failed_safe_no_retry",
+    "load_verdict": "blocked_hidden_220_and_geometry_owner",
+    "unload_verdict": "not_run_and_still_unqualified",
+    "callable_effects": []
+  },
+  "single_purge": {
+    "count": 1,
+    "zone": "origin_edge_outside_model",
+    "camera_proof_required": true,
+    "flow_proof_required": true,
+    "second_routine_purge_forbidden": true
+  },
+  "normal_end": {
+    "safe_lift": true,
+    "bed_lower_before_motor_release": true,
+    "head_park_after_unload_and_before_motor_release": true,
+    "cut_count": 1,
+    "unload_count": 1,
+    "route_clear_required": true,
+    "after_cutter_sensor_clear_required": true,
+    "toolhead_segment_may_remain": true,
+    "heater_targets_zero_required": true,
+    "fans_zero_required": true,
+    "motors_released_last": true
+  },
+  "hard_invariants": {
+    "manual_clean_after_any_unload_or_insertion": true,
+    "all_contact_reference_before_T1A_load": true,
+    "no_mesh_measurement": true,
+    "one_effect_id_per_CFS_effect": true,
+    "automatic_retry": false,
+    "CFS_never_owns_temperature": true,
+    "hidden_legacy_z_offset_forbidden": true,
+    "camera_never_bypassed": true
+  },
+  "next_required_artifacts": [
+    "ADR_superseding_stock_CFS_effect_primitives",
+    "bounded_direct_CFS_owner_or_explicit_human_one_click_boundary",
+    "offline_protocol_proof_before_any_new_physical_effect",
+    "separate_load_and_unload_physical_qualification",
+    "only_then_one_integrated_physical_gate"
+  ]
+}

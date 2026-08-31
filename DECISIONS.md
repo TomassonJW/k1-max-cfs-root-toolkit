@@ -1811,3 +1811,29 @@ suite revient au démarrage possédé `START-SEQUENCE-OWNER-V1`, qui doit être
 rendu installable et réversible avant une nouvelle gate physique.
 
 Voir `docs/48-observabilite-et-exclusion-proprietaire-cfs-v2.md`.
+
+## D-086 — Les effets CFS stock ne peuvent pas appartenir au cycle intégré
+
+Date: 2026-08-31
+
+Status: décision imposée par preuve physique ; candidat stock clos KO
+
+Le cycle intégré a appelé à tort `BOX_EXTRUDE_MATERIAL` alors que la frontière
+canonique la maintenait candidate et non appelable. Le run a reproduit la prise
+de contrôle déjà connue : référence X/Y, calcul `flush_temp: 220`, cible réelle
+au-dessus de `220 °C`, mesh vidé, puis échec sans route `T1A` engagée.
+
+La décision est donc ferme : aucune des primitives stock de chargement, coupe
+ou retrait n'est appelable par le cycle quotidien tant qu'elle n'a pas été
+remplacée ou qualifiée isolément avec une frontière réellement contrôlable.
+Remettre la température après l'appel ou restaurer le mesh après coup ne rend
+pas la primitive acceptable.
+
+Le cycle installé est confiné en mode `offline`, ses effets sont désactivés et
+ses entrées CFS refusent avant action. L'autonomie complète demandée nécessite
+un propriétaire CFS borné qui possède effectivement température et géométrie.
+Le bouton officiel reste seulement une solution humaine temporaire, pas la
+version finale autonome.
+
+Voir `docs/adr/ADR-035-cycle-integre-et-retrait-final-systematique.md` et
+`packages/k1-control-v1/integrated-production-cycle-v1/RUN-20260831-RESULT.md`.
