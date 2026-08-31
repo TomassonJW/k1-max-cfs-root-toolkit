@@ -1430,3 +1430,25 @@ Le script de pose ne contient qu'un ajout de six fichiers, un include, un
 `printer.cfg` exact et retire seulement ces fichiers. Le plan local est vert.
 Aucune connexion K1, écriture distante, relance, chauffe, mouvement ou trame
 CFS n'a eu lieu. La gate de pose reste ouverte et non autorisée.
+
+## Mise à jour 2026-08-31 — propriétaire direct posé mais désactivé
+
+La gate `G4-K1-CONTROL-CFS-DIRECT-OWNER-INSTALL-DISABLED-V1` est close OK sous
+la capture `20260831-123137-g4-k1-control-cfs-direct-owner-install-disabled-v1`.
+Une première tentative s'est arrêtée avant la copie du premier candidat parce
+que le client Windows cherchait un serveur SFTP absent de la K1. Le rollback
+automatique a restauré la base exacte, retiré toute destination candidate,
+redémarré Klipper et remis le `11 × 11`; le préflight suivant était vert.
+
+La reprise force le mode SCP compatible. Six fichiers et un include sont
+maintenant présents. La validation intégrée et deux validations indépendantes
+prouvent `enabled=false`, `phase=disabled`, transport série non pris, commandes
+stock non remplacées, trois refus d'autotest et zéro trame CFS. Aucun chauffage,
+mouvement, extrusion ou effet filament n'a eu lieu.
+
+L'état final est `ready/standby`, cibles zéro, axes libérés, Z accepté
+`−0,04 mm`, meilleur `11 × 11` actif, `T1/T2` connectés, commande stock vide et
+aucune route logique. La pose est consommée. La prochaine gate unique est
+`G4-K1-CONTROL-CFS-DIRECT-OWNER-PHYSICAL-LOAD-UNLOAD-V1`; elle devra activer le
+propriétaire sous surveillance et qualifier un seul cycle direct `T1A`, sans
+palpage, mesh, purge ou retry.

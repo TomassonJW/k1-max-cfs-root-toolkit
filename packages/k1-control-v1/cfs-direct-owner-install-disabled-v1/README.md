@@ -1,8 +1,8 @@
 # Propriétaire CFS direct — installation désactivée V1
 
-Ce paquet prépare la première pose réellement installable du propriétaire CFS
-direct choisi par ADR-036. Il ne touche pas encore à la K1 : la configuration
-livrée fixe `enabled: false` et le manifeste garde l'autorité de pose fermée.
+Ce paquet a posé et qualifié la première installation du propriétaire CFS
+direct choisi par ADR-036. La configuration installée fixe `enabled: false` et
+l'autorité d'activation reste fermée.
 
 Dans cet état, le composant :
 
@@ -26,7 +26,9 @@ sont remplacées par un refus ou constatées absentes. Le préflight exige ensui
 .\scripts\deploy-k1-control-cfs-direct-owner-install-disabled-v1.ps1 -Action Plan
 ```
 
-La pose, le restart Klipper et toute connexion K1 restent une action distincte.
-La gate physique de chargement/retrait restera encore séparée après la pose.
+La pose est close sous la capture
+`20260831-123137-g4-k1-control-cfs-direct-owner-install-disabled-v1` avec une
+validation intégrée et deux validations indépendantes. La gate physique de
+chargement/retrait reste séparée.
 Le backend Moonraker du cycle intégré n'est pas encore abonné à ce nouvel objet
 Klipper : ses effets restent donc désactivés après cette seule pose.

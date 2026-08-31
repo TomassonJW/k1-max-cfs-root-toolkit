@@ -64,7 +64,10 @@ function Get-LocalSha256 {
 function Assert-Package {
     $manifest = Get-Content -LiteralPath $ManifestPath -Raw | ConvertFrom-Json
     if ($manifest.gate -cne $RequiredGate -or
-        $manifest.status -cne 'offline_review_candidate_not_authorized' -or
+        [string]$manifest.status -notin @(
+            'offline_review_candidate_not_authorized',
+            'installed_validated_disabled'
+        ) -or
         $manifest.files.Count -ne 6) {
         throw 'Manifeste de pose invalide.'
     }
@@ -151,7 +154,7 @@ function Copy-ToRemote {
     )
 
     $resolved = Assert-LocalPathInsideWorkspace $Source
-    $output = & scp.exe @SshOptions $resolved "${SshTarget}:$Destination" 2>&1
+    $output = & scp.exe '-O' @SshOptions $resolved "${SshTarget}:$Destination" 2>&1
     if ($LASTEXITCODE -ne 0) {
         throw "Transfert distant KO : $resolved -> $Destination`n$($output -join "`n")"
     }
@@ -211,7 +214,7 @@ function Assert-SafeSnapshot {
         [string]$Snapshot.toolhead.homed_axes -ne '' -or
         [string]$Snapshot.mesh_profile -cne [string]$Manifest.baseline.best_current_mesh -or
         [int]$Snapshot.runtime.accepted_z_valid -ne 1 -or
-        [Math]::Abs([double]$Snapshot.runtime.accepted_z_offset_mm - [double]$Manifest.baseline.accepted_z_offset_mm) -gt 0.0005 -or
+        [Math]::Abs([double]$Snapshot.runtime.accepted_z_offset - [double]$Manifest.baseline.accepted_z_offset_mm) -gt 0.0005 -or
         $Snapshot.box.units.T1.state -cne 'connect' -or
         $Snapshot.box.units.T2.state -cne 'connect' -or
         [string]$Snapshot.box.t_command -ne '' -or
@@ -348,8 +351,13 @@ $manifest = Assert-Package
 
 if ($Action -eq 'Plan') {
     Write-Output "PLAN_CFS_DIRECT_OWNER_INSTALL_DISABLED_V1_OK gate=$RequiredGate"
-    Write-Output 'Pose: six fichiers, un include, un RESTART Klipper, puis remise du meilleur mesh.'
-    Write-Output 'Etat pose: enabled=false, aucun transport serie pris, aucune commande stock remplacee, aucun effet filament.'
+    if ($manifest.status -ceq 'installed_validated_disabled') {
+        Write-Output 'Etat actuel: pose close, enabled=false, transport serie non pris, commandes stock intactes et zero trame CFS.'
+    }
+    else {
+        Write-Output 'Pose: six fichiers, un include, un RESTART Klipper, puis remise du meilleur mesh.'
+        Write-Output 'Etat pose: enabled=false, aucun transport serie pris, aucune commande stock remplacee, aucun effet filament.'
+    }
     Write-Output 'Rollback: printer.cfg exact, six fichiers retires, RESTART Klipper et remise du meme mesh.'
     exit 0
 }

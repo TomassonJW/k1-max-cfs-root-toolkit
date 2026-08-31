@@ -44,12 +44,17 @@ ADR-036 remplace tous les effets `BOX_*` par un propriétaire CFS direct qui ne
 conserve du stock que `auto_addr` et `serial_485`. Le paquet
 `cfs-direct-owner-offline-v1` obtient `24/24` sans connexion K1 : trames locales
 exactes, `T1A..T2D`, deux capteurs, température K1 Control, réassociation sans
-moteur, chargement, retrait complet sans cutter et zéro retry. Il n'est pas
-installé. Le candidat de pose désactivée est maintenant préparé avec `13/13` :
-six fichiers ajoutés, un include, rollback exact, transport non pris et trois
-entrées d'effet refusées tant que `enabled: false`. Il n'a pas été envoyé à la
-K1. La prochaine gate reste cette pose désactivée, sans chauffe, mouvement,
-trame CFS ou effet filament ; l'activation et l'essai `T1A` seront séparés.
+moteur, chargement, retrait complet sans cutter et zéro retry. Le candidat
+désactivé obtient `13/13`, puis sa pose est close sous la capture
+`20260831-123137-g4-k1-control-cfs-direct-owner-install-disabled-v1`. Une
+première tentative de transfert incompatible a été rollbackée exactement ; la
+reprise en SCP compatible a ajouté six fichiers et un include, redémarré
+Klipper, remis le `11 × 11`, puis passé une validation intégrée et deux
+validations indépendantes. L'objet final est `enabled=false`, transport non
+pris, commandes stock non remplacées et zéro trame CFS. Aucun chauffage,
+mouvement, extrusion ou effet filament n'a eu lieu. La prochaine gate est la
+qualification physique directe `T1A` chargement/retrait ; l'activation reste
+fermée jusque-là.
 
 ## Règle de temps utilisateur
 

@@ -1,7 +1,7 @@
 {
   "schema": 1,
   "gate": "G4-K1-CONTROL-CFS-DIRECT-OWNER-INSTALL-DISABLED-V1",
-  "status": "OFFLINE_PREPARED_NOT_AUTHORIZED",
+  "status": "INSTALLED_VALIDATED_DISABLED_ZERO_CFS_FRAME",
   "decision": "ADR-036",
   "source_owner": {
     "package": "packages/k1-control-v1/cfs-direct-owner-offline-v1",
@@ -17,6 +17,22 @@
     "physical_action": false,
     "deployment_authorized": false,
     "production_authorized": false
+  },
+  "live_qualification": {
+    "capture_id": "20260831-123137-g4-k1-control-cfs-direct-owner-install-disabled-v1",
+    "deployment_completed": true,
+    "embedded_validation": true,
+    "independent_validation_count": 2,
+    "printer_connection_used": true,
+    "remote_write_used": true,
+    "klipper_restart_count": 1,
+    "mesh_restore": "k1_p001_t055_r001_n11x11",
+    "heater_command": false,
+    "axis_motion": false,
+    "filament_command": false,
+    "cfs_frame": false,
+    "first_attempt_rollback_exact": true,
+    "evidence_map": "packages/k1-control-v1/cfs-direct-owner-install-disabled-v1/evidence-map.json"
   },
   "installed_configuration": {
     "section": "k1_control_cfs_direct_owner",
@@ -87,10 +103,11 @@
     "ko_count": 0
   },
   "known_limits": [
-    "component_not_installed_on_K1",
+    "component_installed_but_enabled_false",
     "integrated_Moonraker_backend_not_yet_subscribed_to_k1_control_cfs_direct_owner",
     "integrated_cycle_effects_remain_disabled_after_install_disabled_gate",
-    "physical_load_and_unload_not_yet_qualified"
+    "physical_load_and_unload_not_yet_qualified",
+    "activation_not_authorized"
   ],
   "next_gate_after_install": "G4-K1-CONTROL-CFS-DIRECT-OWNER-PHYSICAL-LOAD-UNLOAD-V1"
 }

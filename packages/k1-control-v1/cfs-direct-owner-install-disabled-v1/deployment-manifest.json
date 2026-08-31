@@ -1,7 +1,24 @@
 {
   "schema": 1,
   "gate": "G4-K1-CONTROL-CFS-DIRECT-OWNER-INSTALL-DISABLED-V1",
-  "status": "offline_review_candidate_not_authorized",
+  "status": "installed_validated_disabled",
+  "execution": {
+    "successful_capture_id": "20260831-123137-g4-k1-control-cfs-direct-owner-install-disabled-v1",
+    "first_attempt_capture_id": "20260831-122208-g4-k1-control-cfs-direct-owner-install-disabled-v1",
+    "first_attempt_result": "transfer_compatibility_failure_exact_rollback_ok",
+    "embedded_validation": true,
+    "independent_validation_count": 2,
+    "enabled": false,
+    "transport_bound": false,
+    "frames_sent_count": 0,
+    "heater_command": false,
+    "axis_motion": false,
+    "filament_action": false
+  },
+  "evidence_map": {
+    "path": "packages/k1-control-v1/cfs-direct-owner-install-disabled-v1/evidence-map.json",
+    "sha256": "6585b94f40e727d489dcc83b35b229237fb44097872c6013da8668faebe334f3"
+  },
   "baseline": {
     "printer_cfg_sha256": "8e4be26ac43cac25950b3bec2e280464b7fb6af99d1d20aa8bbec927d17e4223",
     "box_cfg_sha256": "e7a6b26df58a9fa8e49d3af6845f5a0937a790c8ef494b96ec72fd7392abc7a7",
@@ -69,7 +86,7 @@
     },
     {
       "source": "scripts/deploy-k1-control-cfs-direct-owner-install-disabled-v1.ps1",
-      "sha256": "2a28d530b0b268d15ba60abb9cf1316c3cff112e25bf1ac194d065a92fd3ada0"
+      "sha256": "25f9832765ee6bd0dcdb36783dc58b83febeb000959253d4ac45463e06ef7a9a"
     },
     {
       "source": "packages/k1-control-v1/cfs-direct-owner-install-disabled-v1/run_scenarios.py",
@@ -77,11 +94,11 @@
     },
     {
       "source": "packages/k1-control-v1/cfs-direct-owner-install-disabled-v1/verify_candidate.py",
-      "sha256": "a4fea287a17f38b82821bbf413c5c3c38ed28ae2a0f81b6f50c5118404c2d2d2"
+      "sha256": "417cf5153e89766c06093cc95bb47cc656be70142aa7624b33ede07a8fe8522a"
     },
     {
       "source": "packages/k1-control-v1/cfs-direct-owner-install-disabled-v1/contract.json",
-      "sha256": "567dba1527bc2b464e708d6d801b67670c9c8b12400ba19d97c4f6c3701c8d45"
+      "sha256": "a8cf856d8a9f7e77c1df34a9d2f67875d94bf69a1794afcc94f3c9d45aa793de"
     }
   ],
   "planned_effects": {

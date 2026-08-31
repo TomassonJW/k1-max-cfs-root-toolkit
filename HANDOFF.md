@@ -1,16 +1,23 @@
-# HANDOFF — reprise actuelle du propriétaire CFS direct
+# HANDOFF — reprise après pose désactivée du propriétaire CFS direct
 
 La reprise canonique est désormais :
 
 `docs/51-proprietaire-cfs-direct-candidat-pose-desactivee-v1.md`
 
 ADR-036 est acceptée et `cfs-direct-owner-offline-v1` obtient `24/24`. Le cycle
-intégré ne dépend plus d'aucun effet `BOX_*`. Le candidat installable désactivé
-obtient ensuite `13/13`, son plan local est vert et son rollback exact est
-écrit. Il n'est pas installé et la K1 reste confinée avec l'ancien cycle en
-mode `offline`, effets désactivés. La prochaine tranche reste
-`G4-K1-CONTROL-CFS-DIRECT-OWNER-INSTALL-DISABLED-V1` : exécuter cette pose
-inerte, sans chauffe, mouvement, trame CFS ou effet filament.
+intégré ne dépend plus d'aucun effet `BOX_*`. Le candidat désactivé obtient
+`13/13`, puis il est posé sous
+`20260831-123137-g4-k1-control-cfs-direct-owner-install-disabled-v1`. Le
+composant est chargé avec `enabled=false`, transport non pris, commandes stock
+non remplacées et zéro trame CFS. Une validation intégrée et deux validations
+indépendantes sont vertes. L'état final est froid, au repos, axes libérés,
+`11 × 11` actif, Z `−0,04`, deux CFS connectés et aucune route logique.
+
+La prochaine tranche unique est
+`G4-K1-CONTROL-CFS-DIRECT-OWNER-PHYSICAL-LOAD-UNLOAD-V1` : activer sous
+surveillance, qualifier un seul cycle direct `T1A`, puis remettre un état sûr.
+Elle ne doit faire aucun palpage, mesh, purge ou retry. Le cycle intégré reste
+confiné en mode `offline` jusqu'à cette preuve puis son raccord explicite.
 
 Lire le document 51, ADR-036, puis les derniers blocs de `STATE.md`, `GATES.md`
 et `DECISIONS.md`. Le contenu ci-dessous est conservé comme archive des

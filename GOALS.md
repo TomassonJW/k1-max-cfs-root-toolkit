@@ -249,7 +249,8 @@ repousser la clôture.
 Le premier run intégré stock est clos KO et confiné. ADR-036 ainsi que le
 propriétaire CFS direct hors imprimante sont maintenant verts à `24/24`.
 
-La prochaine gate est la pose désactivée de ce propriétaire, avec backup,
-rollback et exclusion du propriétaire stock, sans chauffe ni mouvement
-filament. Une qualification physique unique chargement/retrait sous caméra
-viendra ensuite. Le nouveau run intégré reste interdit avant ces deux preuves.
+La pose désactivée est maintenant close : backup et rollback ont été éprouvés,
+le composant est installé avec `enabled=false`, le transport n'est pas pris et
+zéro trame CFS a été envoyée. La prochaine gate est la qualification physique
+unique `T1A` chargement/retrait direct sous caméra. Le nouveau run intégré reste
+interdit avant cette preuve puis le raccord du propriétaire au cycle.

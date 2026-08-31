@@ -70,14 +70,31 @@ def verify_remote_import_validator(manifest):
 def verify():
     manifest = json.loads(MANIFEST.read_text(encoding="utf-8"))
     contract = json.loads(CONTRACT.read_text(encoding="utf-8"))
-    if manifest["status"] != "offline_review_candidate_not_authorized":
+    if manifest["status"] != "installed_validated_disabled":
         raise AssertionError("manifest_status_invalid")
-    if contract["status"] != "OFFLINE_PREPARED_NOT_AUTHORIZED":
+    if contract["status"] != "INSTALLED_VALIDATED_DISABLED_ZERO_CFS_FRAME":
         raise AssertionError("contract_status_invalid")
     if contract["authority"]["printer_connection"] is not False:
         raise AssertionError("printer_connection_authority_open")
     if contract["authority"]["deployment_authorized"] is not False:
         raise AssertionError("deployment_authority_open")
+    if contract["live_qualification"] != {
+        "capture_id": "20260831-123137-g4-k1-control-cfs-direct-owner-install-disabled-v1",
+        "deployment_completed": True,
+        "embedded_validation": True,
+        "independent_validation_count": 2,
+        "printer_connection_used": True,
+        "remote_write_used": True,
+        "klipper_restart_count": 1,
+        "mesh_restore": "k1_p001_t055_r001_n11x11",
+        "heater_command": False,
+        "axis_motion": False,
+        "filament_command": False,
+        "cfs_frame": False,
+        "first_attempt_rollback_exact": True,
+        "evidence_map": "packages/k1-control-v1/cfs-direct-owner-install-disabled-v1/evidence-map.json",
+    }:
+        raise AssertionError("live_qualification_invalid")
     if contract["installed_configuration"] != {
         "section": "k1_control_cfs_direct_owner",
         "enabled": False,
@@ -92,6 +109,9 @@ def verify():
         path = ROOT / item["source"]
         if digest(path) != item["sha256"]:
             raise AssertionError("manifest_hash_mismatch:%s" % item["source"])
+    evidence_map = HERE / "evidence-map.json"
+    if digest(evidence_map) != manifest["evidence_map"]["sha256"]:
+        raise AssertionError("evidence_map_hash_mismatch")
     if len(manifest["files"]) != 6:
         raise AssertionError("payload_file_count_invalid")
     if any(item["before"] != "absent" for item in manifest["files"]):
@@ -157,11 +177,15 @@ def verify():
         "Invoke-ExactRollback",
         "Wait-KlipperTransition",
         "REMOTE_CFS_DIRECT_OWNER_DISABLED_VALIDATE_OK",
+        "$Snapshot.runtime.accepted_z_offset",
+        "& scp.exe '-O' @SshOptions",
         "enabled=false",
         "aucun effet filament",
     ):
         if token not in deployer_text:
             raise AssertionError("deployer_guard_missing:%s" % token)
+    if "$Snapshot.runtime.accepted_z_offset_mm" in deployer_text:
+        raise AssertionError("deployer_uses_nonexistent_z_field")
 
     verify_remote_import_validator(manifest)
     scenarios = load(
@@ -179,6 +203,7 @@ def verify():
         "installed_enabled": False,
         "printer_connection": False,
         "deployment_authorized": False,
+        "direct_owner_installed": True,
         "cfs_frame": False,
     }
 

@@ -1868,7 +1868,7 @@ Voir `docs/adr/ADR-036-proprietaire-cfs-direct-sur-transport-serie-borne.md` et
 
 Date: 2026-08-31
 
-Status: candidat hors imprimante `13/13` ; pose et activation fermées
+Status: installé et validé désactivé ; activation fermée
 
 Le composant réel est livré avec `enabled: false`. Dans cet état, il ne prend
 pas le transport série, ne remplace aucune commande stock et refuse ses trois
@@ -1884,3 +1884,11 @@ d'origine ; la valeur d'auto-remplacement est ensuite restaurée par la frontiè
 déjà qualifiée.
 
 Voir `docs/51-proprietaire-cfs-direct-candidat-pose-desactivee-v1.md`.
+
+La pose est close sous
+`20260831-123137-g4-k1-control-cfs-direct-owner-install-disabled-v1`. Le mode
+désactivé a été prouvé par la validation intégrée puis deux fois séparément :
+transport non pris, commandes stock intactes, trois refus d'effet et zéro trame
+CFS. Une première incompatibilité SFTP a aussi exercé le rollback exact avant
+la reprise en mode SCP compatible. Cette clôture ne vaut ni activation ni
+qualification physique du filament.

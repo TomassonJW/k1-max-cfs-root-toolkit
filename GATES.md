@@ -1623,7 +1623,7 @@ sans envoyer la moindre trame filament.
 
 ### `G4-K1-CONTROL-CFS-DIRECT-OWNER-INSTALL-DISABLED-V1`
 
-Statut : **candidat préparé hors imprimante, `13/13`, pose non autorisée et non exécutée**.
+Statut : **close OK, installé désactivé, `13/13`, zéro trame CFS**.
 
 Le composant Klipper, ses six destinations exactes, l'include, le backup, la
 transition Klipper, la remise du `11 × 11` et le rollback sont décrits. La
@@ -1633,8 +1633,18 @@ entrées directes d'effet refusent avant leurs arguments.
 
 La simulation du futur mode actif remplace ou constate absentes dix-neuf
 entrées stock, exige `auto_refill = 0`, `t_command` vide et les deux CFS
-connectés avant toute trame. Cette preuve reste logicielle. Aucun préflight K1,
-fichier distant, restart, chauffe, mouvement ou effet filament n'a eu lieu.
+connectés avant toute trame.
 
-La prochaine action est l'exécution séparément autorisée de cette pose inerte.
-La qualification physique `T1A` chargement/retrait reste une gate ultérieure.
+Le premier transfert s'est fermé avant la copie du premier candidat parce que
+le client Windows cherchait SFTP, absent de la K1. Le rollback automatique a
+restauré la base exacte et l'état froid. La reprise en mode SCP compatible est
+close sous `20260831-123137-g4-k1-control-cfs-direct-owner-install-disabled-v1`.
+Une validation intégrée et deux validations indépendantes prouvent
+`enabled=false`, transport non pris, commandes stock non remplacées et zéro
+trame. L'état final est `ready/standby`, cibles zéro, axes libérés, `11 × 11`
+actif, Z `−0,04`, deux CFS connectés et aucune route logique.
+
+Cette pose est consommée. La prochaine gate est
+`G4-K1-CONTROL-CFS-DIRECT-OWNER-PHYSICAL-LOAD-UNLOAD-V1`, pour activer puis
+qualifier un cycle direct `T1A` sous surveillance, sans palpage, mesh, purge ou
+retry.

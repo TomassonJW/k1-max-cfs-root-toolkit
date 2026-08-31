@@ -1,7 +1,7 @@
 {
   "contract_id": "K1-CONTROL-JOB-LIFECYCLE-V1",
   "schema": 1,
-  "status": "direct_CFS_owner_install_disabled_candidate_prepared_not_installed",
+  "status": "direct_CFS_owner_installed_validated_disabled_not_physically_qualified",
   "printer_mutation_authorized": false,
   "canonical_document": "docs/25-contrat-cycle-impression-nettoyage-cfs-v1.md",
   "amendments": [
@@ -37,7 +37,7 @@
     }
   ],
   "cfs_control_architecture": {
-    "status": "direct_owner_offline_24_of_24_install_disabled_candidate_13_of_13",
+    "status": "direct_owner_installed_disabled_zero_frames_physical_gate_pending",
     "canonical_document": "docs/43-cartographie-canonique-pilotage-cfs-k1-max-v1.md",
     "source_map": "design/cfs-control-source-map-v1.json",
     "selected_owner": "K1_CONTROL_DIRECT_CFS_OWNER_OVER_STOCK_SERIAL_TRANSPORT",
@@ -62,7 +62,13 @@
     "install_disabled_candidate_scenarios": "13/13",
     "install_disabled_candidate_tests": "5/5",
     "install_disabled_deployment_authorized": false,
-    "direct_owner_installed": false,
+    "install_disabled_capture": "20260831-123137-g4-k1-control-cfs-direct-owner-install-disabled-v1",
+    "install_disabled_embedded_validation": true,
+    "install_disabled_independent_validations": 2,
+    "install_disabled_frames_sent": 0,
+    "direct_owner_installed": true,
+    "direct_owner_enabled": false,
+    "direct_owner_transport_bound": false,
     "direct_owner_physically_qualified": false,
     "offline_owner_core_completed": true,
     "offline_owner_core_contract": "packages/k1-control-v1/cfs-owner-core-offline-v1/contract.json",
@@ -87,8 +93,8 @@
     "start_owner_installed": true,
     "start_owner_cold_validation": "PASS",
     "start_owner_capture": "20260828-220525-g4-k1-control-start-sequence-owner-v1",
-    "next_gate": "G4-K1-CONTROL-CFS-DIRECT-OWNER-INSTALL-DISABLED-V1",
-    "next_gate_scope": "execute_prepared_install_disabled_with_exact_rollback_without_filament_frame",
+    "next_gate": "G4-K1-CONTROL-CFS-DIRECT-OWNER-PHYSICAL-LOAD-UNLOAD-V1",
+    "next_gate_scope": "activate_under_supervision_and_qualify_one_direct_T1A_load_unload_without_probe_mesh_purge_or_retry",
     "next_gate_preflight_completed": false,
     "next_gate_human_action_pending": null,
     "current_logical_route": null,

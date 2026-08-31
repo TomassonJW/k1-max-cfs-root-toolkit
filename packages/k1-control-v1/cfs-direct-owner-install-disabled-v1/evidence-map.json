@@ -1,0 +1,56 @@
+{
+  "schema": 1,
+  "mission": "G4-K1-CONTROL-CFS-DIRECT-OWNER-INSTALL-DISABLED-V1",
+  "status": "closed_ok_installed_validated_disabled_zero_cfs_frame",
+  "identity_values_exported": false,
+  "attempts": [
+    {
+      "capture_id": "20260831-122208-g4-k1-control-cfs-direct-owner-install-disabled-v1",
+      "result": "closed_ko_transfer_compatibility_exact_rollback_ok",
+      "failure": "windows_scp_defaulted_to_unavailable_remote_sftp_server",
+      "candidate_file_copied": false,
+      "rollback_exact": true,
+      "private_failure_sha256": "62745cf512db644c493a87592deb335b8d0a21bc1fdb0a0978647a5d10a50a62",
+      "private_rollback_safe_state_sha256": "a661f7812a62cae92e5d93cafd2c771235c28c6af1f58a9369ffe1313a5c0860"
+    },
+    {
+      "capture_id": "20260831-123137-g4-k1-control-cfs-direct-owner-install-disabled-v1",
+      "result": "closed_ok_installed_validated_disabled_zero_cfs_frame",
+      "transfer_mode": "legacy_scp_O",
+      "embedded_validation": true,
+      "independent_validation_count": 2,
+      "private_deploy_result_sha256": "637ebc2742330dee66c1feb2477ee7726ee8ce39c548b6c2f0a39f91af19b4f9",
+      "private_preflight_safe_state_sha256": "50213b03f36f28ee59f71675dcc4309c5a6c8d57d1f75eca82a1d8c74ad6e0f3",
+      "private_final_owner_sha256": "41c03ac11cd4d8c3d17f55d6a4b26e547f6d1bf5ea87f449e6132dc13f4c3341",
+      "private_final_safe_state_sha256": "e230be3fe0d48df16ab1fd2e26456e9b1266e7a9dced61db04146b77da090219"
+    }
+  ],
+  "installed_state": {
+    "enabled": false,
+    "phase": "disabled",
+    "transport_bound": false,
+    "stock_commands_replaced": [],
+    "stock_commands_blocked": false,
+    "frames_sent_count": 0,
+    "disabled_selftest_refusal_count": 3,
+    "heater_command": false,
+    "axis_motion": false,
+    "extrusion": false,
+    "filament_action": false
+  },
+  "final_safe_state": {
+    "webhooks": "ready",
+    "print_state": "standby",
+    "extruder_target_c": 0.0,
+    "bed_target_c": 0.0,
+    "homed_axes": "",
+    "mesh_profile": "k1_p001_t055_r001_n11x11",
+    "accepted_z_offset_mm": -0.04,
+    "connected_units": ["T1", "T2"],
+    "logical_routes": [],
+    "stock_t_command": "",
+    "stock_auto_refill": 1,
+    "start_owner_phase": "idle"
+  },
+  "next_gate": "G4-K1-CONTROL-CFS-DIRECT-OWNER-PHYSICAL-LOAD-UNLOAD-V1"
+}
