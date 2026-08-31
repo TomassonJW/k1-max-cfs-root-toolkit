@@ -1,6 +1,6 @@
 # K1 Control — interface du cycle stock dérivé V1
 
-Statut : **candidat hors imprimante, non installé**.
+Statut : **installé et validé statiquement, sans essai physique**.
 
 Ce paquet remplace la page principale K1 Control par le parcours d’impression
 possédé installé sous `stock-derived-cycle-activation-v1`. Le sous-dossier
@@ -33,3 +33,8 @@ une campagne physique surveillée avant de rendre le verdict sémantique autonom
 Le déploiement de cette interface est purement statique : aucune chauffe,
 mouvement, extrusion, trame CFS, palpation, recalcul de mesh, commande G-code ou
 redémarrage de service.
+
+La capture `20260831-215849-g4-k1-control-stock-derived-cycle-ui-v1` a obtenu la
+pose puis une validation indépendante. Les trois fichiers racine correspondent
+au manifeste, le sous-dossier `calibration/` est inchangé et le propriétaire
+installé reste actif au repos sûr.

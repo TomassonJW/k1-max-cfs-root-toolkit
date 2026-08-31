@@ -2,7 +2,7 @@
   "schema": 1,
   "contract_id": "G4-K1-CONTROL-STOCK-DERIVED-CYCLE-UI-V1",
   "purpose": "Expose the installed stock-derived owner through a simple Mainsail/K1 Control page while preserving the calibration UI.",
-  "status": "offline_review_candidate_not_installed",
+  "status": "installed_validated_static_no_physical_trial",
   "static_write_set": [
     "index.html",
     "app.js",

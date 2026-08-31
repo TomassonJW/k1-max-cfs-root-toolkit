@@ -1,7 +1,7 @@
 {
   "schema": 1,
   "contract_id": "G4-K1-CONTROL-STOCK-DERIVED-CYCLE-UI-V1",
-  "status": "offline_review_candidate_not_installed",
+  "status": "installed_validated_static_no_physical_trial",
   "files": [
     {
       "source": "index.html",
@@ -21,7 +21,7 @@
   ],
   "contract": {
     "source": "packages/k1-control-v1/stock-derived-cycle-ui-v1/contract.json",
-    "sha256": "a98af43d2a7bf85a08b7daf3e239cb8be13da95ff3c399771d5f81544206d0a3"
+    "sha256": "3a6da1b7b6d7e0af7e8015c02e1052a2544ebb5a40baa3a9b84da2e3f6440242"
   },
   "deployer": {
     "source": "scripts/deploy-k1-control-stock-derived-cycle-ui-v1.ps1",
