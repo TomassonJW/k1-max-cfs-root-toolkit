@@ -1,7 +1,7 @@
 {
   "contract_id": "K1-CONTROL-JOB-LIFECYCLE-V1",
   "schema": 1,
-  "status": "direct_CFS_owner_installed_validated_disabled_not_physically_qualified",
+  "status": "direct_CFS_physical_v1_closed_before_effect_integrated_cutter_purge_successor_offline",
   "printer_mutation_authorized": false,
   "canonical_document": "docs/25-contrat-cycle-impression-nettoyage-cfs-v1.md",
   "amendments": [
@@ -34,10 +34,16 @@
       "path": "packages/k1-control-v1/integrated-production-cycle-v1/contract.json",
       "decision_record": "docs/adr/ADR-035-cycle-integre-et-retrait-final-systematique.md",
       "effect": "the_daily_cycle_unloads_before_cleaning_and_fully_rewinds_at_normal_end"
+    },
+    {
+      "id": "CUTTER-AND-BIN-PURGE-ATOMIC-BOUNDARY-V1",
+      "path": "docs/adr/ADR-037-cutter-et-purge-bac-indissociables-du-cycle-filament.md",
+      "decision_record": "docs/adr/ADR-037-cutter-et-purge-bac-indissociables-du-cycle-filament.md",
+      "effect": "every_unload_requires_cutter_position_and_cut_and_every_load_requires_bin_purge_3_to_4_release_round_trips_and_camera_proof"
     }
   ],
   "cfs_control_architecture": {
-    "status": "direct_owner_installed_disabled_zero_frames_physical_gate_pending",
+    "status": "direct_owner_installed_disabled_zero_frames_physical_v1_closed_ko_before_effect",
     "canonical_document": "docs/43-cartographie-canonique-pilotage-cfs-k1-max-v1.md",
     "source_map": "design/cfs-control-source-map-v1.json",
     "selected_owner": "K1_CONTROL_DIRECT_CFS_OWNER_OVER_STOCK_SERIAL_TRANSPORT",
@@ -93,13 +99,22 @@
     "start_owner_installed": true,
     "start_owner_cold_validation": "PASS",
     "start_owner_capture": "20260828-220525-g4-k1-control-start-sequence-owner-v1",
-    "next_gate": "G4-K1-CONTROL-CFS-DIRECT-OWNER-PHYSICAL-LOAD-UNLOAD-V1",
-    "next_gate_scope": "activate_under_supervision_and_qualify_one_direct_T1A_load_unload_without_probe_mesh_purge_or_retry",
+    "physical_v1_capture": "20260831-132914-g4-k1-control-cfs-direct-owner-physical-load-unload-v1",
+    "physical_v1_status": "CLOSED_KO_BEFORE_FILAMENT_EFFECT",
+    "physical_v1_failure": "stock_auto_refill_invalid_after_restart",
+    "physical_v1_CFS_frames_sent": 0,
+    "physical_v1_filament_effect_attempted": false,
+    "cutter_required_before_any_unload": true,
+    "bin_purge_required_after_every_load": true,
+    "bin_release_round_trips": "3_to_4",
+    "bin_release_camera_proof_required": true,
+    "next_gate": "G4-K1-CONTROL-CFS-CUTTER-PURGE-INTEGRATED-R2-OFFLINE-V1",
+    "next_gate_scope": "offline_only_integrated_cutter_unload_and_load_bin_purge_release_camera_choreography_with_auto_refill_restart_fix",
     "next_gate_preflight_completed": false,
     "next_gate_human_action_pending": null,
     "current_logical_route": null,
-    "current_physical_filament_sensors": "both_true_after_failed_stock_reconcile",
-    "next_gate_after_install": "G4-K1-CONTROL-CFS-DIRECT-OWNER-PHYSICAL-LOAD-UNLOAD-V1"
+    "current_physical_filament_sensors": "both_true_no_filament_effect_attempted_filament_still_engaged",
+    "next_gate_after_install": "CLOSED_KO_G4-K1-CONTROL-CFS-DIRECT-OWNER-PHYSICAL-LOAD-UNLOAD-V1"
   },
   "target": {
     "printer": "Creality K1 Max S12 structure 0",

@@ -442,12 +442,18 @@ et ne doit pas être rejoué. ADR-036 remplace maintenant tous les effets CFS
 stock par un propriétaire direct K1 Control au-dessus du seul transport
 `serial_485`. Sa preuve hors imprimante obtient `24/24`, sans connexion K1.
 
-La fin normale vise un retrait direct complet sans cutter dans cette V1 : c'est
-la seule séquence locale complète dont les deux déclencheurs, la traction de
-pointe et les capteurs ont été observés. Si la qualification physique ne libère
-pas entièrement le chemin filament, la V1 s'arrête ; elle ne réintroduit pas un
-cutter stock caché. La prochaine tranche installe d'abord ce propriétaire en
-mode désactivé et prouve l'exclusion du propriétaire stock.
+La tentative de qualification directe V1 est close avant tout effet filament.
+Après restart, `auto_refill` est revenu à `1` et le préflight actif s'est fermé
+sur `stock_auto_refill_invalid`. Le rollback a remis le propriétaire désactivé,
+les cibles à zéro et les axes libérés ; les deux capteurs sont restés actifs,
+donc le filament initial est toujours engagé.
+
+ADR-037 ferme aussi le concept « retrait direct sans cutter ». Pour cette
+machine, tout retrait place d'abord la tête au cutter et coupe le filament.
+Tout chargement est immédiatement suivi d'une purge dans le vrai bac, puis de
+`3 à 4` allers-retours francs du mécanisme de décrochage et d'une preuve caméra.
+Ces étapes ne sont plus qualifiées séparément. Les mesures Z et mesh restent
+terminées avant toute insertion, chargement ou purge.
 
 ## 16. Références
 
@@ -457,6 +463,7 @@ mode désactivé et prouve l'exclusion du propriétaire stock.
 - [ADR-030 — nettoyage de buse manuel obligatoire](adr/ADR-030-nettoyage-buse-manuel-obligatoire.md)
 - [ADR-031 — démarrage propriétaire sans brossage ni recalibration](adr/ADR-031-demarrage-proprietaire-sans-brossage-ni-recalibration.md)
 - [ADR-036 — propriétaire CFS direct sur transport série borné](adr/ADR-036-proprietaire-cfs-direct-sur-transport-serie-borne.md)
+- [ADR-037 — cutter et purge bac indissociables](adr/ADR-037-cutter-et-purge-bac-indissociables-du-cycle-filament.md)
 - [Audit mesh et cycle CFS](23-audit-mesh-manuel-et-cycle-production-cfs.md)
 - [Klipper — capteurs filament](https://www.klipper3d.org/Config_Reference.html#filament-sensors)
 - [Klipper — profils bed mesh](https://www.klipper3d.org/Bed_Mesh.html#profiles)

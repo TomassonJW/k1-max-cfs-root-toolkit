@@ -1,15 +1,15 @@
 {
   "schema": 1,
   "contract_id": "GOAL-P4-PHYSICAL-SLICES-QUALIFICATION-V1",
-  "updated_at": "2026-08-30",
+  "updated_at": "2026-08-31",
   "goal_status": "IN_PROGRESS",
   "completion_audit_evidence": null,
   "current_human_gate": {
     "requirement_id": "CFS_START_STATES_AND_TEMPERATURE_OWNER",
-    "checkpoint": "R4_INSTALLED_AND_VALIDATED_COLD",
-    "active_gate": "G4-K1-CONTROL-START-SEQUENCE-OWNER-PREINSERT-GEOMETRY-R4-FIRST-SHORT-RUN-V1",
-    "technical_status": "R4_EXACT_INSTALLED_STANDBY_HEATERS_ZERO_AXES_RELEASED_ACCEPTED_Z_MINUS_0_04_OWNER_IDLE_ACTIVE_11X11_NO_LOGICAL_ROUTE_AFTER_RESTART",
-    "required_human_verdict": "BEFORE_HOT_RUN_RESOLVE_THE_REAL_FILAMENT_POSITION_THEN_CONFIRM_NO_FILAMENT_FOR_FRESH_GEOMETRY_AND_USE_OFFICIAL_T1A_INSERTION_ONLY_AFTER_CONTACT_PROBING",
+    "checkpoint": "DIRECT_PHYSICAL_V1_CLOSED_KO_BEFORE_FILAMENT_EFFECT",
+    "active_gate": "G4-K1-CONTROL-CFS-CUTTER-PURGE-INTEGRATED-R2-OFFLINE-V1",
+    "technical_status": "DIRECT_OWNER_DISABLED_TARGETS_ZERO_AXES_RELEASED_11X11_ACTIVE_ZERO_CFS_FRAMES_FILAMENT_STILL_ENGAGED",
+    "required_human_verdict": null,
     "next_effect_blocked": true
   },
   "requirements": [
@@ -48,7 +48,7 @@
     {
       "order": 3,
       "id": "CFS_START_STATES_AND_TEMPERATURE_OWNER",
-      "status": "PHYSICAL_CHECKPOINTS_2_OF_4_PASSED_R4_INSTALLED_COLD_FIRST_SHORT_RUN_PENDING",
+      "status": "PHYSICAL_CHECKPOINTS_2_OF_4_PASSED_DIRECT_V1_CLOSED_KO_INTEGRATED_CUTTER_PURGE_SUCCESSOR_OFFLINE",
       "slice_id": "CFS-TEMP-OWNER-V1",
       "evidence": "packages/k1-control-v1/cfs-temp-owner-v1/contract.json",
       "latest_checkpoint_evidence": "packages/k1-control-v1/calibration-before-insertion-v1/preflight-evidence.json",
@@ -56,6 +56,9 @@
       "active_physical_gate": null,
       "installed_candidate": "packages/k1-control-v1/start-sequence-owner-preinsert-geometry-r4/contract.json",
       "cold_install_evidence": "packages/k1-control-v1/start-sequence-owner-preinsert-geometry-r4/deployment-result.json",
+      "direct_physical_v1_evidence": "packages/k1-control-v1/cfs-direct-owner-physical-load-unload-v1/evidence-map.json",
+      "direct_physical_v1_status": "CLOSED_KO_BEFORE_FILAMENT_EFFECT",
+      "integrated_cutter_purge_decision": "docs/adr/ADR-037-cutter-et-purge-bac-indissociables-du-cycle-filament.md",
       "r3_tombstone": "SUPERSEDED_NEVER_DEPLOY_OR_RUN_PROBING_AFTER_INSERTION",
       "power_cycle_recovery_candidate": "packages/k1-control-v1/best-current-mesh-restore-after-power-cycle-v1/contract.json",
       "next_checkpoint_candidate": "packages/k1-control-v1/wrong-change-t1a-to-t2c-v1/contract.json",

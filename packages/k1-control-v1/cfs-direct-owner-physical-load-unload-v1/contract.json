@@ -1,0 +1,79 @@
+{
+  "schema": 1,
+  "mission": "G4-K1-CONTROL-CFS-DIRECT-OWNER-PHYSICAL-LOAD-UNLOAD-V1",
+  "status": "CLOSED_KO_BEFORE_FILAMENT_EFFECT",
+  "authority": {
+    "exact_user_go_received": true,
+    "printer_connection": true,
+    "temporary_owner_activation": true,
+    "stock_auto_refill_temporary_disable": true,
+    "T1A_reconcile_if_both_sensors_present": true,
+    "T1A_initial_unload_if_needed": true,
+    "T1A_load_once": true,
+    "T1A_final_unload_once": true,
+    "no_other_route": true,
+    "automatic_retry": false,
+    "printing": false,
+    "purge": false,
+    "probe": false,
+    "mesh_calibration": false,
+    "axis_motion": false
+  },
+  "temperature": {
+    "owner": "K1_Control",
+    "target_c": 220,
+    "material_range_c": [190, 230],
+    "source": "observed_T1A_Geeetech_PLA_stock_load_target",
+    "CFS_temperature_command": false,
+    "heater_off_after_each_effect": true
+  },
+  "ordered_phases": [
+    "fresh_camera_before_effect",
+    "disabled_safe_preflight",
+    "disable_stock_auto_refill_once",
+    "install_enabled_true_temporarily",
+    "klipper_restart_and_restore_11x11",
+    "active_preflight_zero_frame",
+    "prepare_clear_reconcile_and_unload_only_if_both_sensors_present",
+    "camera_after_clear",
+    "load_T1A_once",
+    "camera_after_load",
+    "unload_T1A_once",
+    "camera_after_unload",
+    "restore_enabled_false",
+    "klipper_restart_and_restore_11x11",
+    "restore_stock_auto_refill_once",
+    "final_camera_and_double_validation"
+  ],
+  "failure_policy": {
+    "no_retry_after_uncertain_effect": true,
+    "turn_off_heaters": true,
+    "restore_disabled_owner": true,
+    "restore_stock_auto_refill": true,
+    "restore_best_mesh": "k1_p001_t055_r001_n11x11",
+    "do_not_attempt_filament_recovery_automatically": true
+  },
+  "offline_qualification": {
+    "scenario_count": 15,
+    "expected_ok_count": 15
+  },
+  "observed_run": {
+    "capture_id": "20260831-132914-g4-k1-control-cfs-direct-owner-physical-load-unload-v1",
+    "failure_code": "stock_auto_refill_invalid",
+    "filament_effect_attempted": false,
+    "CFS_frames_sent": 0,
+    "heater_action": false,
+    "axis_motion": false,
+    "rollback_disabled_owner": true,
+    "final_filament_still_engaged": true
+  },
+  "product_contract_correction": {
+    "cutter_position_and_cut_before_any_unload": true,
+    "purge_in_bin_after_every_load": true,
+    "purge_release_round_trips": "3_to_4",
+    "camera_proof_after_purge_release": true,
+    "probe_or_mesh_after_insertion": false,
+    "isolated_load_or_unload_without_full_choreography": false
+  },
+  "next_gate": "G4-K1-CONTROL-CFS-CUTTER-PURGE-INTEGRATED-R2-OFFLINE-V1"
+}

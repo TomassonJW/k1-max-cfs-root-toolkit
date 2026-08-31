@@ -56,6 +56,19 @@ mouvement, extrusion ou effet filament n'a eu lieu. La prochaine gate est la
 qualification physique directe `T1A` chargement/retrait ; l'activation reste
 fermée jusque-là.
 
+Correction prioritaire du même jour : cette qualification directe V1 est
+maintenant close KO avant tout effet filament et interdite de rejeu. Après le
+restart d'activation, `auto_refill` est revenu à `1`; le préflight actif a
+refusé avant chauffe, trame CFS, moteur filament ou mouvement d'axe, puis le
+rollback a restauré l'état désactivé exact. Les deux capteurs restent actifs :
+le filament initial est toujours engagé. Thomas a rappelé la frontière physique
+canonique, désormais fixée par ADR-037 : avant tout retrait, placer la tête au
+cutter et couper ; après tout chargement, purger dans le vrai bac, exécuter `3
+à 4` allers-retours francs de décrochage, puis exiger une preuve caméra. Aucun
+palpage ou mesh après insertion. Ne plus proposer ni exécuter de chargement ou
+retrait physique isolé de cette chorégraphie complète. La suite unique est un
+successeur intégré construit et validé hors imprimante avant tout nouvel effet.
+
 ## Règle de temps utilisateur
 
 Si Thomas peut réaliser une action sûre en un clic dans Mainsail ou l'interface

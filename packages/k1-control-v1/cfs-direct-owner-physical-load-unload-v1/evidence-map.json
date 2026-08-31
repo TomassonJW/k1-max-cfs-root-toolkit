@@ -1,0 +1,37 @@
+{
+  "schema": 1,
+  "mission": "G4-K1-CONTROL-CFS-DIRECT-OWNER-PHYSICAL-LOAD-UNLOAD-V1",
+  "status": "CLOSED_KO_BEFORE_FILAMENT_EFFECT",
+  "capture_id": "20260831-132914-g4-k1-control-cfs-direct-owner-physical-load-unload-v1",
+  "private_capture_directory": "inventory/raw/20260831-132914-g4-k1-control-cfs-direct-owner-physical-load-unload-v1",
+  "evidence": {
+    "initial_preflight": "preflight-fresh.json",
+    "camera_before": "before-effect.jpg",
+    "active_refusal": "activate-active-preflight.json",
+    "rollback_disabled_preflight": "deactivate-disabled-preflight.json",
+    "camera_after_rollback": "after-activation-ko-disabled.jpg",
+    "final_state_with_filament_engaged": "validate-final.json"
+  },
+  "facts": {
+    "active_refusal_reason": "stock_auto_refill_invalid",
+    "physical_filament_effect_attempted": false,
+    "CFS_frames_sent": 0,
+    "heater_action": false,
+    "axis_motion": false,
+    "camera_before_after_head_position_unchanged": true,
+    "rollback_owner_enabled": false,
+    "rollback_transport_bound": false,
+    "rollback_targets_zero": true,
+    "rollback_axes_homed": false,
+    "rollback_mesh": "k1_p001_t055_r001_n11x11",
+    "rollback_accepted_z_mm": -0.04,
+    "final_head_sensor_present": true,
+    "final_after_cutter_sensor_present": true
+  },
+  "product_correction": {
+    "withdrawal_requires_cutter_position_and_cut": true,
+    "load_requires_immediate_bin_purge": true,
+    "bin_release_requires_round_trips": "3_to_4",
+    "camera_is_a_blocking_proof": true
+  }
+}

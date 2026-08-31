@@ -2,8 +2,8 @@
 
 Date : 2026-08-31
 
-Statut : **décision acceptée ; moteur hors imprimante en cours de qualification ;
-aucune pose ni action physique autorisée**
+Statut : **transport et moteur hors imprimante conservés ; règle de retrait
+sans cutter remplacée par ADR-037 ; V1 physique close KO avant effet**
 
 ## Contexte
 
@@ -59,10 +59,9 @@ K1 Control possède directement le chargement et le retrait au-dessus de
 - retrait local observé : mode alimentation, déclencheur buffer, une traction
   locale de `−20 mm` à `140 mm/s`, puis déclencheur matière et preuve que le
   capteur de tête est libre ;
-- aucun cutter n'est appelé dans cette V1 : la seule séquence locale complète
-  observée retire le filament par ces deux déclencheurs et la traction locale ;
-  si la gate physique ne libère pas tout le chemin, elle ferme la V1 au lieu de
-  réintroduire un cutter stock non qualifié ;
+- décision historique remplacée par ADR-037 : le retrait physique sans cutter
+  n'est plus autorisé ; la tête doit rejoindre le cutter, couper, puis seulement
+  rétracter et rembobiner ;
 - toute trame d'effet porte un identifiant consommable une seule fois ;
 - timeout, statut CFS non nul, CRC invalide, réponse incohérente ou capteur
   inattendu ferme le cycle ; aucune étape d'effet n'est renvoyée ;
@@ -92,6 +91,10 @@ La progression se fait en trois preuves distinctes :
    tout nouvel essai intégré.
 
 La preuve hors imprimante n'autorise ni la pose ni les effets physiques.
+
+La gate physique V1 s'est fermée avant la première trame sur le retour de
+`auto_refill` à `1` après restart. Aucun effet filament n'a eu lieu. ADR-037
+interdit désormais de rejouer cette V1, indépendamment de ce défaut technique.
 
 ## Rollback futur
 

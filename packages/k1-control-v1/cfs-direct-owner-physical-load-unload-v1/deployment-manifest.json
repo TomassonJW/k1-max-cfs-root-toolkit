@@ -1,0 +1,116 @@
+{
+  "schema": 1,
+  "mission": "G4-K1-CONTROL-CFS-DIRECT-OWNER-PHYSICAL-LOAD-UNLOAD-V1",
+  "status": "closed_ko_before_filament_effect",
+  "disabled_config_sha256": "f9de28c0836db9ce03908ea82facefc8edc5468a4f94849d19d96c79633b63cf",
+  "active_config_sha256": "391041a6821544441db889d7e0ce5c879a1426502db57578936e1cb94b094682",
+  "historical_executed_active_config_sha256": "4bc190b1cf7c4ebecde613a4ea51ce699fc6dffe787b35e401d18cee2309a162",
+  "local_files": [
+    {
+      "path": "packages/k1-control-v1/cfs-direct-owner-physical-load-unload-v1/k1-control-cfs-direct-owner-active-physical-v1.cfg",
+      "sha256": "391041a6821544441db889d7e0ce5c879a1426502db57578936e1cb94b094682"
+    },
+    {
+      "path": "packages/k1-control-v1/cfs-direct-owner-physical-load-unload-v1/remote_phase.py",
+      "sha256": "3a324a1b9c5cc544c5f655af1ea33520f60b80c89bb7231ed30240a7a596565f"
+    },
+    {
+      "path": "packages/k1-control-v1/cfs-direct-owner-physical-load-unload-v1/run_gate.ps1",
+      "sha256": "65999ea67e571bc38e014ee45645b5a76ca2a7f12d77c8e35ffebfd561d4ad8e"
+    },
+    {
+      "path": "packages/k1-control-v1/cfs-direct-owner-physical-load-unload-v1/run_scenarios.py",
+      "sha256": "f65474d1c04850255503c5d7f9aaa5162a6965337978c6a0c49338663afe43e6"
+    },
+    {
+      "path": "packages/k1-control-v1/cfs-direct-owner-physical-load-unload-v1/contract.json",
+      "sha256": "25c97832b5c1699aa3adbbd1c5486333bbd5126ba4d187d4a733456df67aaf34"
+    },
+    {
+      "path": "packages/k1-control-v1/cfs-direct-owner-install-disabled-v1/k1-control-cfs-direct-owner-disabled-v1.cfg",
+      "sha256": "f9de28c0836db9ce03908ea82facefc8edc5468a4f94849d19d96c79633b63cf"
+    },
+    {
+      "path": "packages/k1-control-v1/start-sequence-owner-v1/remote_admin.py",
+      "sha256": "e81b3810f675f9a3b8985ee6feedb04a8aea12a64e636ee56f7916c0d8943d52"
+    }
+  ],
+  "remote_baseline": {
+    "printer_cfg": {
+      "path": "/usr/data/printer_data/config/printer.cfg",
+      "sha256": "55b73da92aee86e9645ec8f8ebf3726bffc261d4530b642af52b91cbb89b9479"
+    },
+    "box_cfg": {
+      "path": "/usr/data/printer_data/config/box.cfg",
+      "sha256": "e7a6b26df58a9fa8e49d3af6845f5a0937a790c8ef494b96ec72fd7392abc7a7"
+    },
+    "start_owner_r4": {
+      "path": "/usr/data/printer_data/config/k1-control-start-sequence-owner-v1.cfg",
+      "sha256": "c7d7dd06ee81092d73cde9e41ba371642340e8f0270154f3cef15e0e98ef9d4e"
+    },
+    "integrated_cycle": {
+      "path": "/usr/data/printer_data/config/k1-control-integrated-production-cycle-v1.cfg",
+      "sha256": "97fe159a3e4105512f8a349539d224f42cd28617dbb9a6dfa403195b7e68f998"
+    },
+    "direct_config": {
+      "path": "/usr/data/printer_data/config/k1-control-cfs-direct-owner-disabled-v1.cfg",
+      "sha256": "f9de28c0836db9ce03908ea82facefc8edc5468a4f94849d19d96c79633b63cf"
+    },
+    "direct_component": {
+      "path": "/usr/share/klipper/klippy/extras/k1_control_cfs_direct_owner.py",
+      "sha256": "47cc69a495afc269d5e54df7224d88d9b9ada430fc511a4107f42935138029d2"
+    },
+    "direct_init": {
+      "path": "/usr/share/klipper/klippy/extras/k1_control_cfs_direct/__init__.py",
+      "sha256": "f2af2974d84e48d4aabc7fcd1928e504e35581e9f96d1932fd4d9fe83790d782"
+    },
+    "direct_protocol": {
+      "path": "/usr/share/klipper/klippy/extras/k1_control_cfs_direct/protocol.py",
+      "sha256": "5a2b719bcbf8ff8dc1977199c52b0f30c37bfc9d496dbfd0c2d75a03bf10498e"
+    },
+    "direct_owner": {
+      "path": "/usr/share/klipper/klippy/extras/k1_control_cfs_direct/owner.py",
+      "sha256": "df121ba1fa8dfc494aa65afc235ae6404d5c9e7124ef8fc90e3346512239c3af"
+    },
+    "direct_runtime_adapter": {
+      "path": "/usr/share/klipper/klippy/extras/k1_control_cfs_direct/runtime_adapter.py",
+      "sha256": "179cdc7ab6a7333c0396869028e617340d55927aeee8d1e6607c64d329cd5a3d"
+    }
+  },
+  "planned_effects_never_reached": {
+    "temporary_config_replace": true,
+    "klipper_restart_activate": 1,
+    "klipper_restart_deactivate": 1,
+    "stock_auto_refill_disable_once": true,
+    "stock_auto_refill_restore_once": true,
+    "T1A_reconcile_status_frame_if_needed": true,
+    "T1A_initial_unload_if_needed": true,
+    "T1A_load_once": true,
+    "T1A_final_unload_once": true,
+    "nozzle_target_c": 220,
+    "bed_command": false,
+    "axis_motion": false,
+    "probe": false,
+    "mesh_calibration": false,
+    "purge": false,
+    "print": false,
+    "automatic_retry": false
+  },
+  "observed_effects": {
+    "capture_id": "20260831-132914-g4-k1-control-cfs-direct-owner-physical-load-unload-v1",
+    "temporary_config_replace": true,
+    "klipper_restart_activate": 1,
+    "klipper_restart_rollback": 1,
+    "stock_auto_refill_disable_command": 1,
+    "failure_code": "stock_auto_refill_invalid",
+    "CFS_frames_sent": 0,
+    "nozzle_heat": false,
+    "filament_motor": false,
+    "cutter": false,
+    "purge": false,
+    "axis_motion": false,
+    "final_disabled": true,
+    "final_targets_zero": true,
+    "final_filament_sensors_present": true
+  }
+}

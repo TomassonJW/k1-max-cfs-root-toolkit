@@ -1,6 +1,15 @@
 # STATE
 
-Last updated: 2026-08-27
+Last updated: 2026-08-31
+
+Mise à jour prioritaire : la gate physique directe T1A est close KO avant tout
+effet filament. Le préflight actif a refusé `auto_refill=1` après restart ; le
+rollback a restauré le propriétaire désactivé, les chauffes zéro, les axes
+libérés, le `11 × 11` et le Z `−0,04`. Aucune chauffe, trame CFS, coupe, purge,
+avance ou rétraction n'a eu lieu ; le filament reste engagé selon les deux
+capteurs. ADR-037 remplace la dérogation sans cutter : retrait = position cutter
+puis coupe ; chargement = purge immédiate dans le bac, `3 à 4` allers-retours
+de décrochage et preuve caméra. La suite reste hors imprimante.
 
 Thomas a approuvé le 24 août 2026 l'autorité par objectif définie par D-054. Un
 Goal actif ou une mission clairement décrite couvre désormais les actions

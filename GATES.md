@@ -1,5 +1,16 @@
 # GATES
 
+## Gate physique directe T1A du 31 août 2026
+
+`G4-K1-CONTROL-CFS-DIRECT-OWNER-PHYSICAL-LOAD-UNLOAD-V1` : **close KO avant
+effet, interdite de rejeu**. Le restart a remis `auto_refill` à `1` et le
+préflight actif a fermé avant toute trame CFS, chauffe ou moteur filament. Le
+rollback exact est revenu à l'état désactivé sûr ; le filament reste engagé.
+
+ADR-037 impose maintenant une seule frontière intégrée : cutter avant retrait,
+purge bac après chargement, `3 à 4` allers-retours de décrochage, preuve caméra,
+et aucune palpation après insertion. Le successeur est d'abord hors imprimante.
+
 Progression is evidence-based. Une gate prouve qu'une phase bornée est sûre et
 conforme ; elle n'est pas une formule d'autorisation à faire recopier par
 Thomas.

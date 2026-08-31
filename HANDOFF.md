@@ -1,4 +1,24 @@
-# HANDOFF — reprise après pose désactivée du propriétaire CFS direct
+# HANDOFF — reprise après KO borné de la V1 physique directe
+
+La gate
+`G4-K1-CONTROL-CFS-DIRECT-OWNER-PHYSICAL-LOAD-UNLOAD-V1` est close KO et ne
+doit jamais être rejouée. Capture privée :
+`20260831-132914-g4-k1-control-cfs-direct-owner-physical-load-unload-v1`.
+L'activation s'est arrêtée sur `stock_auto_refill_invalid` après restart, avant
+chauffe, trame CFS, moteur filament ou mouvement d'axe. Le rollback a remis
+`enabled=false`, zéro cible, axes libérés, `11 × 11` et Z `−0,04`. Les deux
+capteurs sont toujours actifs : le filament initial est resté engagé.
+
+Thomas a corrigé la frontière produit et ADR-037 la rend canonique : tout
+retrait passe d'abord par la position cutter et la coupe ; tout chargement est
+immédiatement suivi d'une purge dans le vrai bac, de `3 à 4` allers-retours
+francs de décrochage, puis d'une preuve caméra. Aucun palpage ou mesh après
+insertion. La prochaine mission est uniquement
+`G4-K1-CONTROL-CFS-CUTTER-PURGE-INTEGRATED-R2-OFFLINE-V1` : construire et
+tester la chorégraphie complète hors imprimante, y compris la persistance
+d'`auto_refill`, avant toute nouvelle action physique.
+
+Le texte ci-dessous décrit l'état précédent et reste une archive.
 
 La reprise canonique est désormais :
 
@@ -13,11 +33,10 @@ non remplacées et zéro trame CFS. Une validation intégrée et deux validation
 indépendantes sont vertes. L'état final est froid, au repos, axes libérés,
 `11 × 11` actif, Z `−0,04`, deux CFS connectés et aucune route logique.
 
-La prochaine tranche unique est
+L'ancienne tranche annoncée était
 `G4-K1-CONTROL-CFS-DIRECT-OWNER-PHYSICAL-LOAD-UNLOAD-V1` : activer sous
 surveillance, qualifier un seul cycle direct `T1A`, puis remettre un état sûr.
-Elle ne doit faire aucun palpage, mesh, purge ou retry. Le cycle intégré reste
-confiné en mode `offline` jusqu'à cette preuve puis son raccord explicite.
+Cette tranche est maintenant close KO et remplacée par ADR-037.
 
 Lire le document 51, ADR-036, puis les derniers blocs de `STATE.md`, `GATES.md`
 et `DECISIONS.md`. Le contenu ci-dessous est conservé comme archive des
