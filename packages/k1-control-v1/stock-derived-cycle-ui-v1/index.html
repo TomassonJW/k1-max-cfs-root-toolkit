@@ -1,0 +1,164 @@
+<!doctype html>
+<html lang="fr">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="color-scheme" content="dark">
+    <title>K1 Control — impression</title>
+    <link rel="icon" href="data:,">
+    <link rel="stylesheet" href="styles.css">
+    <style>
+      .is-hidden { display: none !important; }
+      .job-grid { display: grid; grid-template-columns: minmax(0, 2fr) minmax(9rem, 1fr); gap: 12px; }
+      .job-grid label, .inventory-row label { display: grid; gap: 6px; color: var(--muted); font-size: .82rem; }
+      .job-grid select, .inventory-row input { width: 100%; min-width: 0; padding: 11px; border: 1px solid var(--border); border-radius: 10px; background: var(--surface-raised); color: var(--text); }
+      .job-panel, .inventory-panel { grid-column: 1 / -1; }
+      #inventory-rows { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 0 20px; }
+      .inventory-row { display: grid; grid-template-columns: 4rem 1fr 1fr; gap: 8px; align-items: end; padding: 10px 0; border-top: 1px solid var(--border); }
+      .inventory-route { display: flex !important; align-items: center; gap: 7px !important; min-height: 42px; font-weight: 800; }
+      .inventory-route input { width: 18px; height: 18px; accent-color: var(--orange); }
+      .workflow-actions { display: grid; grid-template-columns: 1fr auto; gap: 12px; }
+      .workflow-actions .primary-button { width: 100%; }
+      .camera-state { display: flex; gap: 12px; align-items: flex-start; }
+      .camera-state .status-dot { flex: 0 0 auto; margin-top: 5px; }
+      .technical-state { white-space: pre-wrap; overflow-wrap: anywhere; color: var(--muted); font-size: .76rem; }
+      .compact-note { margin: 8px 0 0; color: var(--muted); font-size: .84rem; line-height: 1.45; }
+      .spare-good { color: var(--green); }
+      @media (max-width: 760px) {
+        .job-grid, .workflow-actions { grid-template-columns: 1fr; }
+        #inventory-rows { grid-template-columns: 1fr; }
+        .inventory-row { grid-template-columns: 3.5rem 1fr 1fr; }
+      }
+    </style>
+  </head>
+  <body data-mode="real">
+    <header class="topbar">
+      <div>
+        <p class="eyebrow">K1 Max · cycle propriétaire</p>
+        <h1>K1 Control</h1>
+      </div>
+      <div class="topbar-actions">
+        <span class="simulation-badge real-badge">Interface réelle</span>
+        <a class="ghost-button link-button" href="calibration/index.html">Calibration avancée</a>
+        <a class="ghost-button link-button" href="/">Mainsail</a>
+      </div>
+    </header>
+
+    <main class="layout" aria-live="polite">
+      <section class="hero-card" id="cycle-card">
+        <div>
+          <p class="eyebrow">État de l’impression</p>
+          <div class="status-line">
+            <span class="status-dot" aria-hidden="true"></span>
+            <h2 id="phase-title">Connexion…</h2>
+          </div>
+          <p id="phase-detail">Lecture du propriétaire K1 Control.</p>
+        </div>
+        <div class="hero-actions">
+          <span class="pill" id="connection-status">—</span>
+          <button class="secondary-button" id="abort-cycle" type="button">Arrêter en sécurité</button>
+        </div>
+      </section>
+
+      <section class="dashboard-grid">
+        <article class="panel calibration-panel job-panel">
+          <div class="panel-heading">
+            <div><p class="eyebrow">Travail Orca</p><h2>Impression</h2></div>
+            <button class="ghost-button" id="refresh-files" type="button">Actualiser</button>
+          </div>
+          <div class="job-grid">
+            <label>Fichier présent sur la K1
+              <select id="file-select"><option value="">Choisir un fichier…</option></select>
+            </label>
+            <label>Bobine de départ
+              <select id="initial-route"></select>
+            </label>
+          </div>
+          <dl class="facts compact" id="job-facts">
+            <div><dt>Filament</dt><dd id="job-material">—</dd></div>
+            <div><dt>Buse</dt><dd id="job-nozzle">—</dd></div>
+            <div><dt>Plateau</dt><dd id="job-bed">—</dd></div>
+            <div><dt>Mesh</dt><dd>11 × 11</dd></div>
+          </dl>
+          <p class="callout" id="spare-summary">Configure les bobines pour qualifier un éventuel secours.</p>
+        </article>
+
+        <article class="panel inventory-panel">
+          <div class="panel-heading">
+            <div><p class="eyebrow">Configuration persistante</p><h2>Bobines CFS</h2></div>
+            <span class="pill" id="inventory-status">À configurer</span>
+          </div>
+          <p class="compact-note">Coche uniquement les bobines réellement présentes. Une bobine de secours doit avoir exactement la même référence, matière, couleur, diamètre et recette thermique.</p>
+          <div id="inventory-rows"></div>
+          <button class="secondary-button full-width" id="save-inventory" type="button">Enregistrer les bobines</button>
+        </article>
+
+        <article class="panel calibration-panel" id="preflight-panel">
+          <div class="panel-heading">
+            <div><p class="eyebrow">Avant le premier effet</p><h2>Vérifications utiles</h2></div>
+          </div>
+          <label class="check-field"><input id="operator-present" type="checkbox"> Je suis devant la K1</label>
+          <label class="check-field"><input id="camera-ready" type="checkbox"> La caméra locale est disponible</label>
+          <label class="check-field"><input id="machine-clear" type="checkbox"> Le volume d’impression est libre</label>
+          <div class="workflow-actions">
+            <button class="primary-button" id="begin-cycle" type="button">Préparer et lancer l’impression</button>
+            <span class="pill" id="selection-status">Aucun travail validé</span>
+          </div>
+          <p class="compact-note">Ce clic peut retirer un filament déjà engagé. K1 Control s’arrête ensuite pour le seul geste manuel indispensable : nettoyer la buse et le plateau.</p>
+        </article>
+
+        <article class="panel calibration-panel is-hidden" id="clean-panel">
+          <div class="panel-heading">
+            <div><p class="eyebrow">Geste manuel</p><h2>Nettoyage frais</h2></div>
+            <span class="pill invalid">Attendu</span>
+          </div>
+          <p class="callout warning">Le filament est absent. Nettoie maintenant la face de la buse et le plateau ; aucune autre palpation ne sera faite après le prochain chargement.</p>
+          <label class="check-field"><input id="nozzle-clean" type="checkbox"> La buse est visiblement propre</label>
+          <label class="check-field"><input id="plate-clean" type="checkbox"> Le plateau est propre et libre</label>
+          <button class="primary-button full-width" id="confirm-clean" type="button">C’est propre — continuer</button>
+        </article>
+
+        <article class="panel" id="camera-panel">
+          <div class="panel-heading">
+            <div><p class="eyebrow">Preuve physique</p><h2>Caméra</h2></div>
+            <span class="pill" id="camera-status">Au repos</span>
+          </div>
+          <div class="camera-state">
+            <span class="status-dot" aria-hidden="true"></span>
+            <div>
+              <strong id="camera-title">Aucun contrôle attendu</strong>
+              <p class="compact-note" id="camera-detail">Le pilote caméra prendra et vérifiera l’image aux étapes de purge, de ligne d’amorce et de changement de bobine.</p>
+            </div>
+          </div>
+          <p class="callout warning is-hidden" id="camera-pending-warning">La séquence reste arrêtée tant qu’une image fraîche n’a pas été qualifiée. Aucun bouton ne permet de contourner cette preuve.</p>
+        </article>
+
+        <article class="panel calibration-panel is-hidden" id="tool-change-panel">
+          <div class="panel-heading">
+            <div><p class="eyebrow">Pendant l’impression</p><h2>Changer de filament</h2></div>
+          </div>
+          <div class="job-grid">
+            <label>Nouvelle bobine approuvée<select id="tool-change-route"></select></label>
+            <button class="secondary-button" id="tool-change" type="button">Changer</button>
+          </div>
+          <p class="compact-note">Le changement volontaire coupe d’abord au cutter, charge dans le bac de purge, effectue quatre allers-retours puis attend la caméra avant de reprendre.</p>
+        </article>
+
+        <article class="panel sequence-panel">
+          <div class="panel-heading"><div><p class="eyebrow">Parcours possédé</p><h2>Étapes</h2></div></div>
+          <ol class="sequence" id="sequence-list"></ol>
+          <p class="callout">Le roulement sur bobine vide est automatique uniquement avec un secours unique et strictement identique. Sinon l’impression est fermée en sécurité, sans choix au hasard.</p>
+        </article>
+      </section>
+
+      <section class="panel event-panel">
+        <div class="panel-heading"><div><p class="eyebrow">Diagnostic</p><h2>Dernier résultat</h2></div></div>
+        <p id="last-error">Aucune erreur.</p>
+        <details><summary>Détails techniques</summary><pre class="technical-state" id="technical-state">—</pre></details>
+      </section>
+    </main>
+
+    <footer>K1 Control · propriétaire unique du cycle · Mainsail reste disponible pour la vue experte</footer>
+    <script type="module" src="app.js"></script>
+  </body>
+</html>

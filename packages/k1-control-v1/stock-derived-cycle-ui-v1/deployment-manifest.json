@@ -1,0 +1,66 @@
+{
+  "schema": 1,
+  "contract_id": "G4-K1-CONTROL-STOCK-DERIVED-CYCLE-UI-V1",
+  "status": "offline_review_candidate_not_installed",
+  "files": [
+    {
+      "source": "index.html",
+      "destination": "/usr/data/k1-control-v1/current/www/mainsail/k1-control/index.html",
+      "sha256": "2aa0d299d16eecfcbfc26de12c0adf6d7d09a70058ae3b551506b99266d8b20d"
+    },
+    {
+      "source": "app.js",
+      "destination": "/usr/data/k1-control-v1/current/www/mainsail/k1-control/app.js",
+      "sha256": "8ecd2f7c2b7c7036d9a4ea7d5b42e142cdfc7fa7b3aef24e09331cd3ef4181ed"
+    },
+    {
+      "source": "styles.css",
+      "destination": "/usr/data/k1-control-v1/current/www/mainsail/k1-control/styles.css",
+      "sha256": "3d6849c7171f821b4870891593d7a3b8149121eeba4e2dbaf8acf8305acdbe78"
+    }
+  ],
+  "contract": {
+    "source": "packages/k1-control-v1/stock-derived-cycle-ui-v1/contract.json",
+    "sha256": "a98af43d2a7bf85a08b7daf3e239cb8be13da95ff3c399771d5f81544206d0a3"
+  },
+  "deployer": {
+    "source": "scripts/deploy-k1-control-stock-derived-cycle-ui-v1.ps1",
+    "sha256": "62b56ad47659c1bf6f99ebde0d02769901eeaeefa89904b377be80a05b84ec10"
+  },
+  "baseline": {
+    "existing": [
+      {
+        "destination": "/usr/data/k1-control-v1/current/www/mainsail/k1-control/index.html",
+        "sha256": "3f8d8980645b333c74e391d1b36ba78c127deebfe09b5a4b2e8a92eb1dcd060c"
+      },
+      {
+        "destination": "/usr/data/k1-control-v1/current/www/mainsail/k1-control/app.js",
+        "sha256": "12468c3f704420d8eda1ba7b5d9e44d74b2fb351776a12832eef9c89c9991b69"
+      },
+      {
+        "destination": "/usr/data/k1-control-v1/current/www/mainsail/k1-control/styles.css",
+        "sha256": "7e65c7a5f0334373d71b243da753459380d9018d3ce9c0bd3162f814ef100749"
+      }
+    ]
+  },
+  "unchanged": {
+    "calibration": [
+      {
+        "destination": "/usr/data/k1-control-v1/current/www/mainsail/k1-control/calibration/index.html",
+        "sha256": "4892294d278497f2f4215564b3e70fcedb354fb880f306641a29a03042ad1abc"
+      },
+      {
+        "destination": "/usr/data/k1-control-v1/current/www/mainsail/k1-control/calibration/app.js",
+        "sha256": "001a31fe7357b0031bfbfa5f6856f8436315cf9640f5a61b2f6121766c985554"
+      },
+      {
+        "destination": "/usr/data/k1-control-v1/current/www/mainsail/k1-control/calibration/styles.css",
+        "sha256": "a7c27fbcdc07f24b00b6d47cc1d9aa8570b9483bcf4dd3615419de579f9aaa12"
+      }
+    ]
+  },
+  "rollback": {
+    "restore_existing_from_capture_backup": ["index.html", "app.js", "styles.css"],
+    "service_restart": false
+  }
+}

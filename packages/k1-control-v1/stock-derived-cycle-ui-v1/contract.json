@@ -1,0 +1,57 @@
+{
+  "schema": 1,
+  "contract_id": "G4-K1-CONTROL-STOCK-DERIVED-CYCLE-UI-V1",
+  "purpose": "Expose the installed stock-derived owner through a simple Mainsail/K1 Control page while preserving the calibration UI.",
+  "status": "offline_review_candidate_not_installed",
+  "static_write_set": [
+    "index.html",
+    "app.js",
+    "styles.css"
+  ],
+  "preserved_remote_tree": "calibration/",
+  "interface": {
+    "default_page": "print_cycle",
+    "advanced_calibration_preserved_unchanged": true,
+    "inventory_persisted_by_backend": true,
+    "routes": ["T1A", "T1B", "T1C", "T1D", "T2A", "T2B", "T2C", "T2D"],
+    "strict_material_identity_fields": [
+      "reference_id",
+      "material_type",
+      "color",
+      "diameter_mm",
+      "thermal_recipe_id",
+      "user_approved"
+    ],
+    "one_primary_start_button": true,
+    "manual_actions": [
+      "confirm_machine_clear_and_operator_present",
+      "fresh_nozzle_and_plate_clean"
+    ],
+    "manual_camera_pass_button": false,
+    "safe_abort_visible": true
+  },
+  "api": {
+    "base": "/machine/k1_control/stock-cycle",
+    "read": ["status", "files"],
+    "write": ["inventory", "select", "begin", "clean-confirm", "tool-change", "abort"],
+    "camera_verdict_called_by_ui": false,
+    "gcode_called_by_ui": false
+  },
+  "deployment_effects": {
+    "service_restart": false,
+    "heat": false,
+    "motion": false,
+    "extrusion": false,
+    "filament": false,
+    "cfs_frame": false,
+    "probe": false,
+    "mesh_recalculation": false,
+    "starts_cycle": false
+  },
+  "camera_boundary": {
+    "ui_displays_checkpoint": true,
+    "ui_cannot_bypass_checkpoint": true,
+    "autonomous_semantic_verdict_ready": false,
+    "reason": "Only SAFE_IDLE_PARK is currently qualified; purge, prime and first-layer references still require a monitored capture campaign."
+  }
+}
