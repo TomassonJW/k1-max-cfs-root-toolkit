@@ -25,6 +25,7 @@ python_files = (
     "remote_source_validate.py",
     "remote_validate_active_idle.py",
     "remote_prospective_hash.py",
+    "remote_restore_accepted_z.py",
     "run_scenarios.py",
 )
 for name in python_files:

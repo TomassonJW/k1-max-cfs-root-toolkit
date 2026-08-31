@@ -28,12 +28,24 @@ class K1ControlCfsStartupExclusion:
         self.gcode = self.printer.lookup_object("gcode")
         self.enabled = config.getboolean("enabled", False)
         self.box_name = config.get("box", "box")
+        self.ready_timeout_s = config.getfloat(
+            "ready_timeout_s", 60.0, minval=10.0, maxval=120.0
+        )
+        self.ready_poll_s = config.getfloat(
+            "ready_poll_s", 0.5, minval=0.25, maxval=2.0
+        )
         self.captured_handler = None
         self.policy_call_count = 0
         self.policy_already_zero_count = 0
+        self.policy_attempted = False
+        self.ready_poll_count = 0
+        self.ready_deadline = 0.0
         self.selftest_count = 0
         self.ready_verified = False
         self.last_failure: Optional[str] = None
+        self.ready_timer = self.reactor.register_timer(
+            self._poll_ready, self.reactor.NEVER
+        )
 
         self.gcode.register_command(
             "KCTRL_CFS_STARTUP_EXCLUSION_STATUS_V1",
@@ -59,12 +71,27 @@ class K1ControlCfsStartupExclusion:
         if not self.enabled:
             logging.info("K1 Control CFS startup exclusion disabled")
             return
+        now = self.reactor.monotonic()
+        self.ready_deadline = now + self.ready_timeout_s
+        self.reactor.update_timer(self.ready_timer, now + self.ready_poll_s)
+
+    def _poll_ready(self, eventtime: float) -> float:
+        self.ready_poll_count += 1
         try:
             box = self.printer.lookup_object(self.box_name, None)
             if box is None:
                 raise StartupExclusionError("box_status_object_missing")
             before = self._box_status(box)
+            waiting = self._transient_cfs_wait_reason(before)
+            if waiting is not None:
+                if eventtime < self.ready_deadline:
+                    self.last_failure = waiting
+                    return eventtime + self.ready_poll_s
+                raise StartupExclusionError("cfs_ready_timeout:%s" % waiting)
             if before.get("auto_refill") == 1:
+                if self.policy_attempted:
+                    raise StartupExclusionError("stock_auto_refill_policy_replay_blocked")
+                self.policy_attempted = True
                 gcmd = self.gcode.create_gcode_command(
                     "BOX_ENABLE_AUTO_REFILL",
                     "BOX_ENABLE_AUTO_REFILL ENABLE=0",
@@ -84,23 +111,35 @@ class K1ControlCfsStartupExclusion:
                 self.policy_call_count,
                 self.policy_already_zero_count,
             )
+            return self.reactor.NEVER
         except StartupExclusionError as error:
             self.last_failure = error.code
             self.printer.invoke_shutdown(
                 "K1 Control CFS startup exclusion: %s" % error.code
             )
+            return self.reactor.NEVER
         except Exception:
             self.last_failure = "stock_auto_refill_private_handler_failed"
             logging.exception("K1 Control CFS startup exclusion failed")
             self.printer.invoke_shutdown(
                 "K1 Control CFS startup exclusion: stock_auto_refill_private_handler_failed"
             )
+            return self.reactor.NEVER
 
     def _box_status(self, box) -> Dict[str, Any]:
         status = box.get_status(self.reactor.monotonic())
         if not isinstance(status, dict):
             raise StartupExclusionError("box_status_invalid")
         return status
+
+    def _transient_cfs_wait_reason(self, status: Dict[str, Any]) -> Optional[str]:
+        if status.get("t_command") not in (None, ""):
+            return "stock_command_not_idle"
+        for name in ("T1", "T2"):
+            unit = status.get(name)
+            if not isinstance(unit, dict) or unit.get("state") != "connect":
+                return "%s_not_connected" % name
+        return None
 
     def _require_excluded(self, status: Dict[str, Any]) -> None:
         if status.get("auto_refill") != 0:
@@ -153,6 +192,9 @@ class K1ControlCfsStartupExclusion:
             "ready_verified": self.ready_verified,
             "policy_call_count": self.policy_call_count,
             "policy_already_zero_count": self.policy_already_zero_count,
+            "policy_attempted": self.policy_attempted,
+            "ready_poll_count": self.ready_poll_count,
+            "ready_deadline": self.ready_deadline,
             "selftest_count": self.selftest_count,
             "last_failure": self.last_failure,
             "captured_policy_handler": self.captured_handler is not None,

@@ -120,8 +120,29 @@ class FakeCommandError(RuntimeError):
 
 
 class FakeReactor:
+    NEVER = 1.0e30
+
+    def __init__(self):
+        self.now = 10.0
+        self.timer = None
+        self.waketime = self.NEVER
+
     def monotonic(self) -> float:
-        return 10.0
+        return self.now
+
+    def register_timer(self, callback, waketime: float):
+        self.timer = callback
+        self.waketime = waketime
+        return callback
+
+    def update_timer(self, timer, waketime: float) -> None:
+        assert timer is self.timer
+        self.waketime = waketime
+
+    def fire_timer(self) -> None:
+        assert self.timer is not None and self.waketime < self.NEVER
+        self.now = self.waketime
+        self.waketime = self.timer(self.now)
 
 
 class FakeBox:
@@ -213,17 +234,28 @@ class FakeStartupConfig:
     def get(self, name: str, default=None):
         return default
 
+    def getfloat(self, name: str, default: float, **kwargs) -> float:
+        return default
+
     def error(self, message: str):
         return FakeCommandError(message)
 
 
 def scenario_startup_exclusion_calls_only_policy_once() -> None:
     printer = FakeStartupPrinter(auto_refill=1)
+    printer.box.status["T1"]["state"] = "connecting"
     owner = STARTUP.K1ControlCfsStartupExclusion(FakeStartupConfig(printer))
     owner._handle_ready()
+    printer.reactor.fire_timer()
+    assert owner.get_status(0)["ready_verified"] is False
+    assert owner.get_status(0)["policy_call_count"] == 0
+    assert printer.shutdowns == []
+    printer.box.status["T1"]["state"] = "connect"
+    printer.reactor.fire_timer()
     status = owner.get_status(0)
     assert status["ready_verified"] is True
     assert status["policy_call_count"] == 1
+    assert status["ready_poll_count"] == 2
     assert status["cfs_frame_count"] == 0
     assert printer.box.status["auto_refill"] == 0
     gcmd = FakeStartupGcmd()
@@ -235,6 +267,7 @@ def scenario_startup_exclusion_accepts_already_zero_without_call() -> None:
     printer = FakeStartupPrinter(auto_refill=0)
     owner = STARTUP.K1ControlCfsStartupExclusion(FakeStartupConfig(printer))
     owner._handle_ready()
+    printer.reactor.fire_timer()
     status = owner.get_status(0)
     assert status["policy_call_count"] == 0
     assert status["policy_already_zero_count"] == 1
@@ -257,6 +290,7 @@ def scenario_startup_exclusion_failure_shuts_klipper_down() -> None:
     logging.disable(logging.CRITICAL)
     try:
         owner._handle_ready()
+        printer.reactor.fire_timer()
     finally:
         logging.disable(previous_disable)
     assert len(printer.shutdowns) == 1
@@ -298,9 +332,10 @@ class FakeDirectWrapper:
     def get_status(self, eventtime: float):
         result = self.last_result or self.owner.result()
         return {
-            "owner": "k1_control_cfs_direct_owner",
+            "owner": "k1_control_direct",
             "enabled": True,
             "stock_commands_blocked": True,
+            "stock_commands_replaced": ["BOX_CHECK_MATERIAL_REFILL"],
             "phase": result["phase"],
             "active_route": result["active_route"],
             "failure_code": result.get("failure_code"),
@@ -309,7 +344,11 @@ class FakeDirectWrapper:
 
 class FakeRunoutGcode:
     def __init__(self, direct: FakeDirectWrapper):
-        self.handlers = {"BOX_CHECK_MATERIAL_REFILL": direct.blocker}
+        class OpaqueDispatchWrapper:
+            def __call__(self, gcmd):
+                return direct.blocker(gcmd)
+
+        self.handlers = {"BOX_CHECK_MATERIAL_REFILL": OpaqueDispatchWrapper()}
 
     def register_command(self, name: str, handler, desc: Optional[str] = None):
         previous = self.handlers.get(name)

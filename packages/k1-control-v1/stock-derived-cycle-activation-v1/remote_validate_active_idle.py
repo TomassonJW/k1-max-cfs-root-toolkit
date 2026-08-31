@@ -108,6 +108,12 @@ expected_startup = {
 for key, value in expected_startup.items():
     if startup.get(key) != value:
         raise RuntimeError("startup_status_invalid:%s" % key)
+if startup.get("policy_attempted") is not True:
+    raise RuntimeError("startup_policy_was_not_attempted")
+if int(startup.get("ready_poll_count", 0)) < 1:
+    raise RuntimeError("startup_ready_poll_missing")
+if float(startup.get("ready_deadline", 0.0)) <= 0.0:
+    raise RuntimeError("startup_ready_deadline_missing")
 if startup.get("policy_call_count", 0) + startup.get("policy_already_zero_count", 0) != 1:
     raise RuntimeError("startup_policy_call_count_invalid")
 

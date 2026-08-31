@@ -1,6 +1,6 @@
 [CmdletBinding()]
 param(
-    [ValidateSet('Plan', 'Preflight', 'Deploy', 'Validate', 'Rollback')]
+    [ValidateSet('Plan', 'Preflight', 'Deploy', 'Validate', 'Rollback', 'RestoreAcceptedZ')]
     [string]$Action = 'Plan',
 
     [string]$Gate,
@@ -26,6 +26,7 @@ $RemoteAdmin = Join-Path $WorkspaceRoot 'packages\k1-control-v1\start-sequence-o
 $RemoteSourceValidator = Join-Path $PackageRoot 'remote_source_validate.py'
 $RemoteActiveValidator = Join-Path $PackageRoot 'remote_validate_active_idle.py'
 $RemoteProspective = Join-Path $PackageRoot 'remote_prospective_hash.py'
+$RemoteAcceptedZRestorer = Join-Path $PackageRoot 'remote_restore_accepted_z.py'
 $RemoteDisabledValidator = Join-Path $WorkspaceRoot (
     'packages\k1-control-v1\stock-derived-handoff-moonraker-install-disabled-v1\remote_validate_disabled.py'
 )
@@ -40,6 +41,7 @@ $PrinterConfig = '/usr/data/printer_data/config/printer.cfg'
 $MoonrakerConfig = "$RemoteCurrent/config/moonraker.conf"
 $MoonrakerComponent = "$RemoteCurrent/moonraker/moonraker/moonraker/components/k1_control_stock_cycle.py"
 $MoonrakerService = '/etc/init.d/S56k1_control_moonraker'
+$KlipperService = '/etc/init.d/S55klipper_service'
 $RunStatePath = "$RemoteRoot/state/stock-derived-cycle-state.json"
 $SelectionStatePath = "$RemoteRoot/state/stock-derived-selection.json"
 $SshTarget = 'k1max-root'
@@ -77,7 +79,10 @@ function Resolve-Source {
 function Assert-Package {
     $manifest = Get-Content -LiteralPath $ManifestPath -Raw | ConvertFrom-Json
     if ($manifest.gate -cne $RequiredGate -or
-        [string]$manifest.status -cne 'offline_review_candidate_not_installed' -or
+        [string]$manifest.status -notin @(
+            'offline_review_candidate_not_installed',
+            'installed_validated_active_idle_no_physical_trial'
+        ) -or
         $manifest.files.Count -ne 8) {
         throw 'Manifeste d activation invalide.'
     }
@@ -187,10 +192,21 @@ function Invoke-Admin {
     return (($output -join "`n") | ConvertFrom-Json)
 }
 
+function Restore-AcceptedZNoMove {
+    param([Parameter(Mandatory = $true)][string]$EvidenceName)
+    $program = [IO.File]::ReadAllText($RemoteAcceptedZRestorer).Replace("`r`n", "`n")
+    $output = Invoke-RemoteStdin '/usr/share/klippy-env/bin/python -B -' $program
+    if (($output | Select-Object -Last 1) -cne 'REMOTE_RESTORE_ACCEPTED_Z_NO_MOVE_OK') {
+        throw "Restauration du Z accepte invalide : $($output -join "`n")"
+    }
+    Save-Evidence $EvidenceName (($output | Select-Object -First 1) | ConvertFrom-Json)
+}
+
 function Wait-KlipperTransition {
     param([Parameter(Mandatory = $true)]$BeforeGeneration)
     Start-Sleep -Seconds 2
     $readyReads = 0
+    $fatalStateMessage = $null
     for ($attempt = 1; $attempt -le 90; $attempt++) {
         try {
             $generation = Invoke-Admin 'generation'
@@ -198,6 +214,9 @@ function Wait-KlipperTransition {
                 ([long]$generation.socket_mtime_ns -ne [long]$BeforeGeneration.socket_mtime_ns)
             if ($changed) {
                 $snapshot = Invoke-Admin 'snapshot'
+                if ([string]$snapshot.webhooks.state -cin @('error', 'shutdown')) {
+                    $fatalStateMessage = [string]$snapshot.webhooks.state_message
+                }
                 if ($snapshot.webhooks.state -ceq 'ready' -and $snapshot.print_state) {
                     $readyReads++
                     if ($readyReads -ge 2) { return $snapshot }
@@ -206,6 +225,9 @@ function Wait-KlipperTransition {
             }
         }
         catch { $readyReads = 0 }
+        if ($fatalStateMessage) {
+            throw "Klipper a refuse la configuration apres transition : $fatalStateMessage"
+        }
         Start-Sleep -Seconds 1
     }
     throw 'Klipper ne presente pas une vraie transition prete dans le delai.'
@@ -242,6 +264,7 @@ function Assert-SafeSnapshot {
         [Parameter(Mandatory = $true)][int]$ExpectedAutoRefill,
         [string]$ExpectedRoute
     )
+    $origin = @($Snapshot.homing_origin)
     if ($Snapshot.webhooks.state -cne 'ready' -or
         $Snapshot.print_state -cne 'standby' -or
         [double]$Snapshot.extruder.target -ne 0.0 -or
@@ -250,6 +273,8 @@ function Assert-SafeSnapshot {
         [string]$Snapshot.mesh_profile -cne [string]$Manifest.baseline.best_current_mesh -or
         [int]$Snapshot.runtime.accepted_z_valid -ne 1 -or
         [Math]::Abs([double]$Snapshot.runtime.accepted_z_offset - [double]$Manifest.baseline.accepted_z_offset_mm) -gt 0.0005 -or
+        $origin.Count -lt 3 -or
+        [Math]::Abs([double]$origin[2] - [double]$Manifest.baseline.accepted_z_offset_mm) -gt 0.0005 -or
         $Snapshot.box.units.T1.state -cne 'connect' -or
         $Snapshot.box.units.T2.state -cne 'connect' -or
         [string]$Snapshot.box.t_command -ne '' -or
@@ -353,9 +378,25 @@ function Invoke-ActiveValidation {
         }
     }
     $program = [IO.File]::ReadAllText($RemoteActiveValidator).Replace("`r`n", "`n")
-    $output = Invoke-RemoteStdin '/usr/share/klippy-env/bin/python -B -' $program
-    if (($output | Select-Object -Last 1) -cne 'REMOTE_STOCK_DERIVED_CYCLE_ACTIVATION_IDLE_VALIDATE_OK') {
-        throw "Validation active au repos invalide : $($output -join "`n")"
+    $output = $null
+    $marker = $null
+    $lastValidationFailure = 'none'
+    for ($attempt = 1; $attempt -le 70; $attempt++) {
+        try {
+            $output = Invoke-RemoteStdin '/usr/share/klippy-env/bin/python -B -' $program
+            $marker = $output | Select-Object -Last 1
+            if ($marker -ceq 'REMOTE_STOCK_DERIVED_CYCLE_ACTIVATION_IDLE_VALIDATE_OK') {
+                break
+            }
+            $lastValidationFailure = $output -join "`n"
+        }
+        catch {
+            $lastValidationFailure = $_.Exception.Message
+        }
+        if ($attempt -lt 70) { Start-Sleep -Seconds 1 }
+    }
+    if ($marker -cne 'REMOTE_STOCK_DERIVED_CYCLE_ACTIVATION_IDLE_VALIDATE_OK') {
+        throw "Validation active au repos invalide apres attente CFS : $lastValidationFailure"
     }
     $snapshot = Invoke-Admin 'snapshot'
     [void](Assert-SafeSnapshot $snapshot $Manifest 0 $ExpectedRoute)
@@ -366,6 +407,7 @@ function Invoke-ActiveValidation {
 function Assert-Preflight {
     param([Parameter(Mandatory = $true)]$Manifest)
     Assert-ImmutableBase $Manifest
+    [void](Invoke-Remote "test -x '$KlipperService'")
     foreach ($file in $Manifest.files) {
         if ([string]$file.before -ceq 'absent') {
             [void](Invoke-Remote "test ! -e '$([string]$file.destination)'")
@@ -386,6 +428,17 @@ function Assert-Preflight {
     Assert-ProspectiveHashes $Manifest
 }
 
+function Remove-RemoteRuntimeCaches {
+    [void](Invoke-Remote "rm -f '/usr/share/klipper/klippy/extras/k1_control_cfs_startup_exclusion.pyc' '/usr/share/klipper/klippy/extras/k1_control_cfs_runout_owner.pyc'")
+    foreach ($name in @(
+        'k1_control_stock_cycle',
+        'k1_control_stock_cycle_active_core',
+        'k1_control_stock_job_contract'
+    )) {
+        [void](Invoke-Remote "rm -f '$RemoteCurrent/moonraker/moonraker/moonraker/components/$name.pyc' '$RemoteCurrent/moonraker/moonraker/moonraker/components/__pycache__/$name.'*.pyc")
+    }
+}
+
 function Remove-NewPayload {
     param([Parameter(Mandatory = $true)]$Manifest)
     foreach ($file in $Manifest.files) {
@@ -397,12 +450,15 @@ function Remove-NewPayload {
         'k1_control_cfs_startup_exclusion',
         'k1_control_cfs_runout_owner'
     )) {
+        [void](Invoke-Remote "rm -f '/usr/share/klipper/klippy/extras/$name.pyc'")
         [void](Invoke-Remote "rm -f '/usr/share/klipper/klippy/extras/__pycache__/$name.'*.pyc")
     }
     foreach ($name in @(
+        'k1_control_stock_cycle',
         'k1_control_stock_cycle_active_core',
         'k1_control_stock_job_contract'
     )) {
+        [void](Invoke-Remote "rm -f '$RemoteCurrent/moonraker/moonraker/moonraker/components/$name.pyc'")
         [void](Invoke-Remote "rm -f '$RemoteCurrent/moonraker/moonraker/moonraker/components/__pycache__/$name.'*.pyc")
     }
     [void](Invoke-Remote "rm -f '$RunStatePath' '$SelectionStatePath' '$PrinterConfig.next' '$MoonrakerConfig.next'")
@@ -422,9 +478,10 @@ function Invoke-ExactRollback {
     [void](Invoke-Remote "'$MoonrakerService' restart")
     Wait-Moonraker
     $before = Invoke-Admin 'generation'
-    [void](Invoke-Admin 'restart')
+    [void](Invoke-Remote "'$KlipperService' restart")
     [void](Wait-KlipperTransition $before)
     [void](Invoke-Admin 'restore_mesh')
+    Restore-AcceptedZNoMove 'rollback-restore-accepted-z.json'
     Assert-ImmutableBase $Manifest
     Invoke-DisabledValidation $Manifest $ExpectedRoute
     Save-Evidence 'rollback-safe-state.json' (Invoke-Admin 'snapshot')
@@ -460,6 +517,17 @@ if ($Action -eq 'Validate') {
 Assert-MutationGate
 $RemoteBackup = "$RemoteRoot/backups/$CaptureId/stock-derived-cycle-activation-v1"
 $RemoteStaging = "$RemoteRoot/staging/$CaptureId-stock-derived-cycle-activation-v1"
+
+if ($Action -eq 'RestoreAcceptedZ') {
+    Assert-ImmutableBase $manifest
+    Restore-AcceptedZNoMove 'recovery-restore-accepted-z.json'
+    $snapshot = Invoke-Admin 'snapshot'
+    [void](Assert-SafeSnapshot $snapshot $manifest 1 'none')
+    Invoke-DisabledValidation $manifest 'none'
+    Save-Evidence 'recovery-safe-state.json' $snapshot
+    Write-Output "RESTORE_ACCEPTED_Z_NO_MOVE_V1_OK capture=$CaptureId"
+    exit 0
+}
 
 if ($Action -eq 'Rollback') {
     $route = Get-RouteSignature (Invoke-Admin 'snapshot')
@@ -528,14 +596,16 @@ print('REMOTE_STOCK_DERIVED_CYCLE_ACTIVATION_CONFIG_BUILD_OK')
         $staged = [string]$file.stage_name
         [void](Invoke-Remote "cp '$RemoteStaging/$staged' '$destination.next' && chmod 0644 '$destination.next' && mv '$destination.next' '$destination'")
     }
+    Remove-RemoteRuntimeCaches
     [void](Invoke-Remote "mv '$PrinterConfig.next' '$PrinterConfig'")
     [void](Invoke-Remote "mv '$MoonrakerConfig.next' '$MoonrakerConfig'")
     [void](Invoke-Remote "'$MoonrakerService' restart")
     Wait-Moonraker
     $before = Invoke-Admin 'generation'
-    [void](Invoke-Admin 'restart')
+    [void](Invoke-Remote "'$KlipperService' restart")
     [void](Wait-KlipperTransition $before)
     [void](Invoke-Admin 'restore_mesh')
+    Restore-AcceptedZNoMove 'deploy-restore-accepted-z.json'
     Invoke-ActiveValidation $manifest $PreflightRoute
     Save-Evidence 'deploy-result.json' ([ordered]@{
         capture_id = $CaptureId

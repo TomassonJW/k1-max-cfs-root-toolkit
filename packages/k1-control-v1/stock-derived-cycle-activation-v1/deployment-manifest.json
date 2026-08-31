@@ -1,7 +1,7 @@
 {
   "schema": 1,
   "gate": "G4-K1-CONTROL-STOCK-DERIVED-CYCLE-ACTIVATION-IDLE-V1",
-  "status": "offline_review_candidate_not_installed",
+  "status": "installed_validated_active_idle_no_physical_trial",
   "baseline": {
     "printer_cfg_sha256": "c3b732ff1b4069da952392eb5eb3d6e2527305164186a723295694ef0d32e941",
     "moonraker_conf_sha256": "ea817b7275909fa299872f2a23ad2d510470588afd96a738be1dc3277c26d835",
@@ -51,14 +51,14 @@
       "source": "packages/k1-control-v1/stock-derived-cycle-activation-v1/k1_control_cfs_startup_exclusion.py",
       "stage_name": "k1_control_cfs_startup_exclusion.py",
       "destination": "/usr/share/klipper/klippy/extras/k1_control_cfs_startup_exclusion.py",
-      "sha256": "e2706d4d80dd939e09252edc3e8e777d5a036752091e37283b671673bb913981",
+      "sha256": "1baf7eadb0e477da380e1c0888b25d8cc086549b49788f788308570b34540f43",
       "before": "absent"
     },
     {
       "source": "packages/k1-control-v1/stock-derived-cycle-activation-v1/k1_control_cfs_runout_owner.py",
       "stage_name": "k1_control_cfs_runout_owner.py",
       "destination": "/usr/share/klipper/klippy/extras/k1_control_cfs_runout_owner.py",
-      "sha256": "81d77f66cd1c84363b2330be3626b6d48bcf01059b1a2b85d52951df0613a737",
+      "sha256": "1501c82b55de94dd8a18ef007e56dc4b525bce60cdddd8936942da0a5781f8e7",
       "before": "absent"
     },
     {
@@ -116,19 +116,23 @@
     },
     {
       "source": "packages/k1-control-v1/stock-derived-cycle-activation-v1/remote_validate_active_idle.py",
-      "sha256": "c5904fead2fed6e6c183ee03eae7d31cb32ca2ffa90f8adc935b9c0fb52ba217"
+      "sha256": "009d507262bbf245d3edd47c01223364cc493cc32c815ddba2d3142e3b0aa50e"
     },
     {
       "source": "packages/k1-control-v1/stock-derived-cycle-activation-v1/remote_prospective_hash.py",
       "sha256": "1e2cfb062870728acf36ac13c3e587fe71204963186ef79cfce5df2e7198c949"
     },
     {
+      "source": "packages/k1-control-v1/stock-derived-cycle-activation-v1/remote_restore_accepted_z.py",
+      "sha256": "394e133a836941190fcd0bdf6a45e00a76796884e44a2c915918f0ba3541f924"
+    },
+    {
       "source": "packages/k1-control-v1/stock-derived-cycle-activation-v1/run_scenarios.py",
-      "sha256": "64c02f264d1b94593bfd108c02da6cc223414d6f2feb7f72ff415e8d00e71b3c"
+      "sha256": "fe19ba29d4d6ae2fb0511ce4bd27b79e58916d9493e925a73a4ab319040c4193"
     },
     {
       "source": "packages/k1-control-v1/stock-derived-cycle-activation-v1/verify_candidate.py",
-      "sha256": "6f50c79f1a3b1ab0b32bb909b1b20ad40965583410e3f77b07532ec1f02e4c00"
+      "sha256": "47816bc51beb6675085aa602bd2fcf747be6c6c1855599c36fbcdab9df9919c6"
     },
     {
       "source": "packages/k1-control-v1/stock-derived-cycle-activation-v1/contract.json",
@@ -136,7 +140,7 @@
     },
     {
       "source": "packages/k1-control-v1/stock-derived-cycle-activation-v1/README.md",
-      "sha256": "1a0f6ea5db049e75c70e7096c6e03e52db9a684aff66bcf1e16ad561b6dff499"
+      "sha256": "742656e48708132893f9a8944edf3ab8eab6fe74b4a6cc29b3faf4406259de9b"
     },
     {
       "source": "packages/k1-control-v1/stock-derived-handoff-moonraker-install-disabled-v1/remote_validate_disabled.py",
@@ -155,7 +159,7 @@
   ],
   "deployer": {
     "source": "scripts/deploy-k1-control-stock-derived-cycle-activation-v1.ps1",
-    "sha256": "42fdf7e4805d116599ca2280fc1991c32f907d7453485191797437ec9c2fa322"
+    "sha256": "b2656f42f085eb090daac9681152ef33531cc61e02b9d765a98f7fa95be31b81"
   },
   "planned_effects": {
     "remote_files_added": 7,
@@ -163,9 +167,11 @@
     "printer_cfg_includes_replaced": 3,
     "moonraker_section_replaced": 1,
     "klipper_restart": 1,
+    "klipper_restart_kind": "full_S55klipper_service_process_restart",
     "dedicated_moonraker_restart": 1,
     "stock_auto_refill_policy": "1_to_0_via_captured_policy_handler",
     "restore_mesh_once": "k1_p001_t055_r001_n11x11",
+    "restore_accepted_z_no_move_once_mm": -0.04,
     "heat": false,
     "axis_motion": false,
     "extrusion": false,
@@ -204,9 +210,35 @@
     "remove_new_files": 7,
     "remove_state_files_if_any": true,
     "klipper_restart": 1,
+    "klipper_restart_kind": "full_S55klipper_service_process_restart",
     "dedicated_moonraker_restart": 1,
     "restore_mesh_once": "k1_p001_t055_r001_n11x11",
+    "restore_accepted_z_no_move_once_mm": -0.04,
     "stock_auto_refill_restored_by_stock_restart": 1
+  },
+  "installation": {
+    "capture_id": "20260831-205322-g4-k1-control-stock-derived-cycle-activation-v1",
+    "deploy_marker": "DEPLOY_STOCK_DERIVED_CYCLE_ACTIVATION_V1_OK",
+    "independent_validation_marker": "VALIDATE_STOCK_DERIVED_CYCLE_ACTIVATION_V1_OK",
+    "state": "ready",
+    "print_state": "standby",
+    "cycle_phase": "idle",
+    "effective_z_offset_mm": -0.04,
+    "mesh_profile": "k1_p001_t055_r001_n11x11",
+    "stock_auto_refill": 0,
+    "route": "none",
+    "runout_armed": false,
+    "runout_event_seq": 0,
+    "effect_dispatch_count": 0,
+    "run_state_present": false,
+    "selection_state_present": false,
+    "heat": false,
+    "axis_motion": false,
+    "extrusion": false,
+    "filament": false,
+    "cfs_frame": false,
+    "probe": false,
+    "mesh_recalculation": false
   },
   "physical_trial_included": false
 }

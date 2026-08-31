@@ -111,13 +111,17 @@ class K1ControlCfsRunoutOwner:
             raise config.error(
                 "K1 Control runout: direct owner load order is required"
             )
-        previous_owner = getattr(previous, "__self__", None)
-        if previous_owner is None or not hasattr(previous_owner, "get_status"):
-            raise config.error(
-                "K1 Control runout: previous BOX_CHECK owner is not inspectable"
-            )
-        status = previous_owner.get_status(self.reactor.monotonic())
-        if status.get("owner") != "k1_control_cfs_direct_owner":
+        direct = self.printer.lookup_object(self.direct_owner_name, None)
+        if direct is None or not hasattr(direct, "get_status"):
+            raise config.error("K1 Control runout: direct owner object is missing")
+        status = direct.get_status(self.reactor.monotonic())
+        if (
+            status.get("owner") != "k1_control_direct"
+            or status.get("enabled") is not True
+            or status.get("stock_commands_blocked") is not True
+            or "BOX_CHECK_MATERIAL_REFILL"
+            not in status.get("stock_commands_replaced", [])
+        ):
             raise config.error(
                 "K1 Control runout: stock BOX_CHECK was not isolated first"
             )

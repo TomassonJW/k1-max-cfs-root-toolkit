@@ -2,9 +2,10 @@
 
 ## Statut
 
-Acceptée et implémentée hors effet. Le candidat de pose active a obtenu son
-préflight réel en lecture seule ; la pose n'est pas encore exécutée. Elle ne
-lancera aucun cycle. Le premier bouton physique restera une gate caméra séparée.
+Acceptée, installée et validée indépendamment au repos sous la capture
+`20260831-205322-g4-k1-control-stock-derived-cycle-activation-v1`. Aucun cycle,
+chauffage, mouvement, palpage, filament ou trame CFS n'a été lancé. Le premier
+bouton physique reste une gate caméra séparée.
 
 ## Contexte
 
@@ -42,9 +43,11 @@ pendant la relève stock.
   avant le propriétaire direct. Il capture le handler stock de politique,
   puis le propriétaire direct bloque publiquement toutes les commandes
   `BOX_*` d'effet.
-- À `klippy:ready`, le composant appelle au plus une fois le handler privé avec
+- À `klippy:ready`, le composant attend passivement jusqu'à `60 s` la reconnexion
+  des deux CFS. Il appelle ensuite au plus une fois le handler privé avec
   `ENABLE=0`, vérifie `box.auto_refill == 0`, `t_command == ""` et les deux CFS
-  connectés. Il ne chauffe, ne bouge et n'envoie aucune trame CFS.
+  connectés. L'attente ne rejoue aucun effet ; elle ne chauffe, ne bouge et
+  n'envoie aucune trame CFS.
 - Après l'exclusion générale, un verrou runout remplace uniquement le bloqueur
   public de `BOX_CHECK_MATERIAL_REFILL`. Le handler stock original reste
   inaccessible. Ce nouveau point d'entrée ne produit aucun effet : il mémorise
@@ -75,6 +78,9 @@ pendant la relève stock.
   caméra de purge/décrochage et de ligne d'amorce.
 - La pose d'activation s'arrête en `idle`, sans fichier sélectionné et sans
   effet filament. Le premier `begin` reste une gate physique distincte.
+- Les modules Python imposent un vrai restart du processus hôte Klipper. Après
+  ce restart, le déployeur recharge le meilleur mesh et remet le Z accepté à
+  `-0,04` avec `MOVE=0`. Le même chemin est obligatoire dans le rollback.
 
 ## Conséquences
 

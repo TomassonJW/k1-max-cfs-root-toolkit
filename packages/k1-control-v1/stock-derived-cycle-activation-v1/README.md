@@ -21,6 +21,11 @@ Vérification hors imprimante :
 python packages\k1-control-v1\stock-derived-cycle-activation-v1\verify_candidate.py
 ```
 
+L'installation active au repos et sa validation indépendante sont closes sous
+la capture `20260831-205322-g4-k1-control-stock-derived-cycle-activation-v1`.
+Le restart hôte recharge explicitement le mesh `11 × 11` et le Z accepté
+`-0,04` avec `MOVE=0` avant de valider l'état `idle`.
+
 La validation physique du premier bouton n'appartient pas à cette pose. Elle
 commence ensuite par la présence humaine, la caméra et un nettoyage frais de la
 buse et du plateau, avant toute géométrie et avant toute insertion de filament.
