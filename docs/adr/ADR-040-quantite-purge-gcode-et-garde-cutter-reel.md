@@ -51,6 +51,24 @@ chaque position. Aucune commande de retrait n'a donc été envoyée.
    aucun retry automatique ne sont permis. Une vérification mécanique du
    levier, du cutter et de son capteur est obligatoire avant reprise.
 
+## Gate manuelle du capteur
+
+La configuration exacte relie l'entrée cutter à `nozzle_mcu:PA8`. Les traces
+historiques montrent le gestionnaire de bouton publier immédiatement l'état
+`1` à l'appui et `0` au relâchement ; `cut_pos` est donc bien le signal physique
+à surveiller, sans devoir lancer une macro stock.
+
+Le 1er septembre, un préflight froid et une image caméra fraîche ont précédé
+une fenêtre de lecture seule de `90 s`. La K1 était à `30,65 °C`, cibles zéro,
+axes libérés et `cut_pos=0`. Aucune transition n'a été observée, mais aucun
+appui humain n'a été confirmé pendant cette fenêtre. Ce résultat est
+inconclusif : il ne classe ni le levier ni le capteur en panne.
+
+La prochaine preuve exige un appui manuel sur le petit poussoir/levier
+solidaire de la tête — celui que la butée du châssis doit enfoncer — puis son
+relâchement. Le moniteur doit observer exactement `0→1→0`. Il n'envoie aucun
+G-code, aucune chauffe, aucun mouvement d'axe et aucun mouvement de filament.
+
 ## Conséquences
 
 - Le correctif purge est installé sous

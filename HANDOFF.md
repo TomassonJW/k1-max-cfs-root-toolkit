@@ -17,6 +17,12 @@ prochaine étape est une vérification mécanique réelle, à froid, du levier d
 cutter et de son capteur. ADR-040 et le `RESULT.md` du paquet
 `stock-derived-cycle-activation-v1` sont les références canoniques.
 
+Un moniteur manuel en lecture seule est prêt. Le préflight froid et la caméra
+sont verts ; sa première fenêtre de `90 s` n'a vu aucune transition, mais
+l'appui humain n'a pas été confirmé. Ne pas en déduire une panne. La prochaine
+preuve est l'appui puis le relâchement du poussoir/levier solidaire de la tête,
+avec observation obligatoire de `cut_pos : 0→1→0`.
+
 Le texte ci-dessous est l'archive de la reprise précédente.
 
 # Archive — reprise après KO borné de la V1 physique directe

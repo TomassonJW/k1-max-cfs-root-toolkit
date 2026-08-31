@@ -147,6 +147,10 @@
       "sha256": "ca0e596ac6239cfdef45b1dadcf8fef952c8c327783ee559337dd1f7e58d3ac2"
     },
     {
+      "source": "packages/k1-control-v1/stock-derived-cycle-activation-v1/remote_manual_cutter_sensor_check.py",
+      "sha256": "a0249948eae3e6506656b0dc5962fceef0c8dc723316e796c3750db165e051de"
+    },
+    {
       "source": "packages/k1-control-v1/stock-derived-cycle-activation-v1/K1-STOCK-DERIVED-T1A-2LAYER.gcode",
       "sha256": "eb086ac545a677e1d12d9daa2cc87dcb54844e5ccc0839d80555ed26732cf769"
     },

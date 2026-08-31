@@ -120,6 +120,17 @@ def test_runout_owner_checks_the_identity_published_by_the_real_direct_owner():
     assert 'status.get("owner") != "k1_control_direct"' in runout_owner
 
 
+def test_manual_cutter_sensor_check_is_strictly_read_only():
+    checker = (PACKAGE / "remote_manual_cutter_sensor_check.py").read_text(
+        encoding="utf-8"
+    )
+    assert '"objects/query"' in checker
+    assert '"gcode/script"' not in checker
+    assert "MONITOR_SECONDS = 90.0" in checker
+    assert '"filament_motion": False' in checker
+    compile(checker, "remote_manual_cutter_sensor_check.py", "exec")
+
+
 def test_real_installation_and_independent_idle_validation_are_recorded():
     result = (PACKAGE / "RESULT.md").read_text(encoding="utf-8")
     assert "ACTIVÉE ET CORRIGÉE" in result
@@ -157,6 +168,9 @@ class StockDerivedCycleActivationV1Tests(unittest.TestCase):
     )
     test_runout_owner_checks_the_identity_published_by_the_real_direct_owner = staticmethod(
         test_runout_owner_checks_the_identity_published_by_the_real_direct_owner
+    )
+    test_manual_cutter_sensor_check_is_strictly_read_only = staticmethod(
+        test_manual_cutter_sensor_check_is_strictly_read_only
     )
     test_real_installation_and_independent_idle_validation_are_recorded = staticmethod(
         test_real_installation_and_independent_idle_validation_are_recorded

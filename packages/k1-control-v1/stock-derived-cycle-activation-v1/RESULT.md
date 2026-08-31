@@ -50,3 +50,12 @@ confirmé garde `T1A` chargé et les deux capteurs filament actifs ; chauffes à
 zéro, axes libérés, `11 × 11` actif et Z `−0,04 mm`. La reprise exige maintenant
 une vérification mécanique réelle du levier/cutter ou de son capteur. Voir
 ADR-040.
+
+La gate manuelle suivante dispose maintenant d'un moniteur strictement en
+lecture seule. Le préflight du 1er septembre a confirmé la buse à `30,65 °C`,
+les cibles à zéro, les axes libérés, `cut_pos=0` et les deux capteurs filament
+actifs. La caméra était fraîche et nette. Une première fenêtre de `90 s` n'a
+vu aucune transition, mais l'appui humain n'a pas été confirmé : ce passage est
+**inconclusif** et ne prouve pas une panne du capteur. La preuve attendue reste
+exactement `0→1→0` pendant un appui puis un relâchement du levier solidaire de
+la tête.
