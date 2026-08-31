@@ -1,0 +1,41 @@
+{
+  "schema": 1,
+  "status": "LOCAL_EVIDENCE_ONLY",
+  "cutter_configuration": {
+    "path": "inventory/raw/20260828-g4-k1-control-cfs-s12-owner-preflight-v1/cfs-s12-owner-preflight-v1.safe.json",
+    "required_fragments": [
+      "\"cut_pos_offset\":\"1.3\"",
+      "\"cut_pos_x\":\"38#48.0#223.8\"",
+      "\"cut_pos_y\":\"303.2#302\"",
+      "\"cut_velocity\":\"7000\"",
+      "\"pre_cut_pos_x\":\"38#48.0#223.8\"",
+      "\"pre_cut_pos_y\":\"230.0#200\""
+    ]
+  },
+  "cutter_observed_run": {
+    "path": "inventory/raw/g3-production/p123-20260820-154056/20260820-154056-p123.raw.txt",
+    "required_fragments_in_order": [
+      "\"gcode_position\":[38.99,230.0",
+      "[box] cut sensor state:1",
+      "\"gcode_position\":[38.0,304.5",
+      "[box] cut to return OK",
+      "Cut sensor triggered.",
+      "extrude = -20, velocity: [140.0]"
+    ]
+  },
+  "purge_and_prime": {
+    "delta_path": "packages/k1-control-v1/cfs-cutter-purge-integrated-r2-offline-v1/stock-sequence-delta.json",
+    "stock_prime_source": "inventory/raw/20260819-1726-k1max-targeted-sources/targeted-sources.raw.txt",
+    "normal_print_log": "inventory/raw/p4-control-foundation/20260821-1231-v3-paths-8h/klippy-after-observation.private.log"
+  },
+  "equivalent_refill": {
+    "contract_path": "packages/k1-control-v1/cfs-owner-core-offline-v1/contract.json",
+    "required_scenarios": [
+      "runout_selects_unique_identical_cross_cfs",
+      "runout_rejects_no_identical_candidate",
+      "runout_rejects_multiple_identical_candidates",
+      "runout_rejects_near_match"
+    ]
+  },
+  "new_discovery_print_required": false
+}

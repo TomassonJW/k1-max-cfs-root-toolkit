@@ -1,0 +1,122 @@
+{
+  "schema": 1,
+  "gate": "G4-K1-CONTROL-CFS-STOCK-DERIVED-CYCLE-OWNER-INSTALL-DISABLED-V1",
+  "status": "OFFLINE_INSTALL_CANDIDATE_DISABLED",
+  "decision": "ADR-038",
+  "source_delta": "packages/k1-control-v1/cfs-cutter-purge-integrated-r2-offline-v1/stock-sequence-delta.json",
+  "authority": {
+    "printer_connection": false,
+    "remote_write": false,
+    "service_restart": false,
+    "heat": false,
+    "axis_motion": false,
+    "extrusion": false,
+    "cfs_frame": false,
+    "deployment_authorized": false,
+    "activation_authorized": false,
+    "production_authorized": false
+  },
+  "preparation_read_only": {
+    "printer_connection_used": true,
+    "purpose": "compute_exact_prospective_printer_cfg_hash_in_memory",
+    "evidence": "prospective-hash-read-only.json",
+    "remote_write": false,
+    "gcode": false,
+    "service_action": false,
+    "physical_action": false
+  },
+  "installed_configuration": {
+    "section": "k1_control_stock_cycle_owner",
+    "enabled": false,
+    "enabled_is_not_a_gcode_variable": true,
+    "effect_entries_refuse_before_argument_parsing": true,
+    "disabled_selftest_expected_refusals": 5,
+    "transport_bound_while_disabled": false
+  },
+  "prepared_effect_entries": {
+    "cut_unload": "KCTRL_STOCK_CYCLE_CUT_UNLOAD_V1",
+    "load_purge_release": "KCTRL_STOCK_CYCLE_LOAD_PURGE_V1",
+    "stock_prime_line": "KCTRL_STOCK_CYCLE_PRIME_V1",
+    "equivalent_refill_guard": "KCTRL_STOCK_CYCLE_REFILL_GUARD_V1",
+    "normal_end": "KCTRL_STOCK_CYCLE_END_V1"
+  },
+  "hard_invariants": {
+    "contact_probe_command_in_component": false,
+    "mesh_recalculation_command_in_component": false,
+    "stock_BOX_effect_command_in_component": false,
+    "direct_owner_required_when_enabled": true,
+    "stock_auto_refill_must_be_zero_when_enabled": true,
+    "automatic_retry": false,
+    "effect_ticket_claimed_before_first_command": true,
+    "uncertain_effect_ticket_is_not_replayable": true,
+    "full_G28_after_filament": false,
+    "gcode_temperature_is_authoritative": true,
+    "camera_confirmation_owned_by_moonraker_orchestrator": true
+  },
+  "cutter": {
+    "pre_cut_commanded_xy_mm": [38.0, 230.0],
+    "cut_commanded_xy_mm": [38.0, 304.5],
+    "configuration_cut_y_mm": 303.2,
+    "configuration_offset_mm": 1.3,
+    "feedrate_mm_min": 7000,
+    "return_to_pre_cut": true,
+    "physical_qualification_required_before_activation": true
+  },
+  "load_and_purge": {
+    "load_and_purge_xyz_mm": [185.5, 305.0, 30.0],
+    "safe_release_xyz_mm": [203.0, 273.0, 32.0],
+    "release_x_mm": [203.0, 206.0, 203.0],
+    "release_y_alternation_mm": [305.0, 304.0],
+    "release_round_trips": [3, 4],
+    "release_feedrate_mm_min": 180,
+    "camera_required_before_resume": true
+  },
+  "prime": {
+    "path": [
+      "G1 X0.1 Y20 Z0.3 F6000",
+      "G1 X0.1 Y180 Z0.3 F3000 E10",
+      "G1 X0.4 Y180 Z0.3 F3000",
+      "G1 X0.4 Y20 Z0.3 F3000 E10",
+      "G1 Y10 F3000"
+    ],
+    "post_line_relative_positive_z_mm": 5.0,
+    "K1_effect": "lower_bed_away_from_filament"
+  },
+  "equivalent_refill": {
+    "feature_preserved": true,
+    "guard_requires_pause_latched": true,
+    "candidate_count": 1,
+    "source_and_target_identity_digest_must_match": true,
+    "identity_digest_source_fields": [
+      "reference_id",
+      "material_type",
+      "color",
+      "diameter_mm",
+      "thermal_recipe_id",
+      "user_approved"
+    ],
+    "stock_auto_refill_owner": false,
+    "temperature_and_resume_context_preserved_by_orchestrator": true
+  },
+  "end": {
+    "order": [
+      "relative_positive_Z5",
+      "move_to_cutter",
+      "cut",
+      "direct_unload",
+      "park_X203_Y273",
+      "heaters_and_fans_zero",
+      "M84"
+    ],
+    "full_G28": false,
+    "reason_no_full_G28": "would_reintroduce_contact_after_filament_and_is_not_needed_to_reach_the_known_cutter"
+  },
+  "runtime_integration_boundary": {
+    "existing_R4_finishes_XYZ_before_filament": true,
+    "existing_direct_owner_sends_only_CFS_frames": true,
+    "existing_integrated_moonraker_component_remains_offline": true,
+    "persistent_ticket_journal_remains_owned_by_moonraker": true,
+    "next_required_code": "subscribe_the_integrated_moonraker_orchestrator_to_these_primitives_and_camera_gates",
+    "physical_activation_is_separate": true
+  }
+}

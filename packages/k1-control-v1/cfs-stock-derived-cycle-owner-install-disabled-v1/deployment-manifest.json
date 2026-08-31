@@ -1,0 +1,86 @@
+{
+  "schema": 1,
+  "gate": "G4-K1-CONTROL-CFS-STOCK-DERIVED-CYCLE-OWNER-INSTALL-DISABLED-V1",
+  "status": "offline_review_candidate_not_installed",
+  "baseline": {
+    "printer_cfg_sha256": "55b73da92aee86e9645ec8f8ebf3726bffc261d4530b642af52b91cbb89b9479",
+    "direct_owner_config_sha256": "f9de28c0836db9ce03908ea82facefc8edc5468a4f94849d19d96c79633b63cf",
+    "direct_owner_component_sha256": "47cc69a495afc269d5e54df7224d88d9b9ada430fc511a4107f42935138029d2",
+    "integrated_cycle_neutralized_sha256": "97fe159a3e4105512f8a349539d224f42cd28617dbb9a6dfa403195b7e68f998",
+    "best_current_mesh": "k1_p001_t055_r001_n11x11",
+    "accepted_z_offset_mm": -0.04
+  },
+  "printer_cfg": {
+    "insert_after": "[include k1-control-cfs-direct-owner-disabled-v1.cfg]",
+    "add_line": "[include k1-control-stock-derived-cycle-owner-disabled-v1.cfg]",
+    "installed_sha256": "0f5e6d2ae0a2d4f2613313d39e2face14b9a228fef7b1b8f672628e944675bfa",
+    "rollback_sha256": "55b73da92aee86e9645ec8f8ebf3726bffc261d4530b642af52b91cbb89b9479"
+  },
+  "files": [
+    {
+      "source": "k1-control-stock-derived-cycle-owner-disabled-v1.cfg",
+      "destination": "/usr/data/printer_data/config/k1-control-stock-derived-cycle-owner-disabled-v1.cfg",
+      "sha256": "ccc5ab6d45ccec4233b4e2017ecb9c4d170a6a2cf74509969f56c4d2bcc0e1ee",
+      "before": "absent"
+    },
+    {
+      "source": "k1_control_stock_cycle_owner.py",
+      "destination": "/usr/share/klipper/klippy/extras/k1_control_stock_cycle_owner.py",
+      "sha256": "7f1a6c53111ab3808fa3ba902899aa12482ed520dfa507b77399465a41a8ed50",
+      "before": "absent"
+    }
+  ],
+  "support_files": [
+    {
+      "source": "remote_validate_disabled.py",
+      "sha256": "40594beb4155c49fe359384f19486c58fb2302fbb640f487b53b9c70ba5887df"
+    },
+    {
+      "source": "remote_source_validate.py",
+      "sha256": "d9a2428ebcae8c37905305d1ef183b0ed501bc6ef2bce56a7135b72681312c8b"
+    },
+    {
+      "source": "remote_prospective_hash.py",
+      "sha256": "b803574e2dc3aaa4b57ddddcaa38dd09d6a9bf2a71c370447ba4f76e75f5e5a2"
+    }
+  ],
+  "deployer": {
+    "source": "scripts/deploy-k1-control-cfs-stock-derived-cycle-owner-install-disabled-v1.ps1",
+    "sha256": "bbeb95f8d747b8b6d4956aa09b225253c41ddb41d228569d2366cd591dd137ab"
+  },
+  "preparation_evidence": {
+    "source": "prospective-hash-read-only.json",
+    "sha256": "13399a32c6f2766910efec62c7c1fc7f0d7ab6088f40f5bccc687d2ce68072ae"
+  },
+  "planned_effects": {
+    "remote_files_added": 2,
+    "printer_cfg_include_added": 1,
+    "klipper_restart": 1,
+    "restore_mesh_once": "k1_p001_t055_r001_n11x11",
+    "moonraker_restart": 0,
+    "heat": false,
+    "axis_motion": false,
+    "extrusion": false,
+    "filament": false,
+    "cfs_frame": false,
+    "stock_command_replacement": false
+  },
+  "required_disabled_validation": {
+    "enabled": false,
+    "effect_count": 0,
+    "command_count": 0,
+    "disabled_selftest": "KCTRL_STOCK_CYCLE_DISABLED_SELFTEST_V1",
+    "expected_refused_entries": 5
+  },
+  "backup": {
+    "directory": "/usr/data/k1-control-v1/backups/<capture-id>/stock-derived-cycle-install-disabled-v1",
+    "files": ["printer.cfg.before", "checksums.sha256"]
+  },
+  "rollback": {
+    "restore_exact": ["printer.cfg"],
+    "remove_new_files": 2,
+    "klipper_restart": 1,
+    "restore_mesh_once": "k1_p001_t055_r001_n11x11",
+    "expected_printer_cfg_sha256": "55b73da92aee86e9645ec8f8ebf3726bffc261d4530b642af52b91cbb89b9479"
+  }
+}
