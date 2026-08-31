@@ -69,6 +69,25 @@ palpage ou mesh après insertion. Ne plus proposer ni exécuter de chargement ou
 retrait physique isolé de cette chorégraphie complète. La suite unique est un
 successeur intégré construit et validé hors imprimante avant tout nouvel effet.
 
+Mise à jour suivante du 31 août 2026 : le successeur intégré est maintenant
+posé **désactivé** sous la capture
+`20260831-173114-g4-k1-control-stock-derived-handoff-moonraker-install-disabled-v1`.
+Le handoff R4, les primitives stock-derived, le cœur persistant et le composant
+Moonraker obtiennent ensemble `45/45` scénarios hors imprimante. La pose a
+ajouté six fichiers, deux includes et une section Moonraker, avec sauvegarde et
+rollback exacts, restart du Moonraker dédié, vraie transition Klipper et remise
+du même `11 × 11`. Deux validations froides confirment les trois propriétaires
+`enabled=false`, six entrées Moonraker refusées avant lecture, aucun fichier
+d'état, aucune commande, aucun ticket, aucune chauffe, aucun mouvement, aucune
+extrusion, aucune trame CFS, aucun palpage et aucun recalcul. L'état final est
+`ready/standby`, cibles zéro, axes libérés, aucune route engagée, deux CFS
+connectés, Z `−0,04` et `k1_p001_t055_r001_n11x11` actif. Le cœur conserve le
+roulement automatique uniquement vers un spare unique, approuvé et strictement
+identique ; toute ambiguïté ferme la route et une preuve caméra reste exigée
+avant reprise. L'activation et le premier essai physique restent fermés et
+exigeront un paquet de remplacement revu : cette révision ne peut pas être
+activée par un simple changement de configuration.
+
 ## Règle de temps utilisateur
 
 Si Thomas peut réaliser une action sûre en un clic dans Mainsail ou l'interface

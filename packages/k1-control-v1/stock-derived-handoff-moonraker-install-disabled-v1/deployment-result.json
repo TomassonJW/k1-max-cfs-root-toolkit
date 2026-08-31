@@ -1,0 +1,43 @@
+{
+  "schema": 1,
+  "capture_id": "20260831-173114-g4-k1-control-stock-derived-handoff-moonraker-install-disabled-v1",
+  "status": "CLOSED_OK_INSTALLED_DISABLED",
+  "validation": {
+    "integrated": "DEPLOY_STOCK_DERIVED_HANDOFF_MOONRAKER_INSTALL_DISABLED_V1_OK",
+    "independent": "VALIDATE_STOCK_DERIVED_HANDOFF_MOONRAKER_INSTALL_DISABLED_V1_OK",
+    "klipper_stock_owner_enabled": false,
+    "klipper_geometry_handoff_enabled": false,
+    "moonraker_cycle_enabled": false,
+    "moonraker_effect_endpoints_refused": 6,
+    "effect_request_count": 0,
+    "command_count": 0,
+    "claimed_effect_count": 0,
+    "state_file_exists": false
+  },
+  "final_state": {
+    "webhooks": "ready",
+    "print_state": "standby",
+    "extruder_target_c": 0.0,
+    "bed_target_c": 0.0,
+    "homed_axes": "",
+    "route": "none",
+    "cfs_T1": "connect",
+    "cfs_T2": "connect",
+    "accepted_z_mm": -0.04,
+    "mesh_profile": "k1_p001_t055_r001_n11x11",
+    "start_owner_phase": "idle"
+  },
+  "physical_effects": {
+    "heat": false,
+    "motion": false,
+    "extrusion": false,
+    "filament": false,
+    "cfs_frame": false,
+    "probe": false,
+    "mesh_recalculation": false
+  },
+  "equivalent_spool_refill_preserved_in_core": true,
+  "activation_authorized": false,
+  "physical_trial_authorized": false,
+  "production_authorized": false
+}
