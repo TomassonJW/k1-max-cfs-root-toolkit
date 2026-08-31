@@ -2,8 +2,8 @@
 
 Date : 2026-08-28
 
-Statut : **décision acceptée et cœur propriétaire implémenté hors imprimante ;
-aucune connexion, pose ou action physique autorisée**
+Statut : **partiellement remplacée par ADR-036 ; le propriétaire de cycle reste
+K1 Control, mais aucun effet CFS stock n'est encore candidat**
 
 ## Contexte
 

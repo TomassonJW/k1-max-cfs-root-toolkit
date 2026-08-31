@@ -1,0 +1,75 @@
+{
+  "schema": 1,
+  "status": "sanitized_exact_local_evidence_with_public_cross_checks",
+  "privacy": {
+    "raw_logs_versioned": false,
+    "binary_versioned": false,
+    "serial_numbers_or_unique_ids_versioned": false
+  },
+  "local_sources": {
+    "load_log": {
+      "private_path": "inventory/raw/20260826-cfs-box-wrapper-read-only-audit-v1/klippy.full.private.log",
+      "sha256": "b02d486f7c475e47407b21c70f7bda76ff6c66baca246d71f541f3f820a4759d",
+      "use": "exact_application_frames_for_material_sensor_tension_load_stages_buffer_and_modes"
+    },
+    "unload_log": {
+      "private_path": "inventory/raw/p4-control-foundation/20260821-1231-v3-paths-8h/klippy-after-observation.private.log",
+      "sha256": "d9bbfbfd17f02c85ad8ad9229c5dceca3c1e711de167979b4c52b0aef060eacc",
+      "use": "exact_T1A_unload_frames_local_pull_and_head_sensor_transition"
+    },
+    "box_wrapper_binary": {
+      "private_path": "inventory/raw/20260826-cfs-box-wrapper-read-only-audit-v1/box_wrapper.cpython-38-mipsel-linux-gnu.private.so",
+      "sha256": "af630c02ccdb51b57585114e5be2be7fcf91fdb10d88872eb6a0c65f048de777",
+      "handling": "hash_only_never_loaded_imported_or_executed"
+    }
+  },
+  "exact_local_vectors": {
+    "set_feed_mode": [1, 5, 255, 4, 0, 1],
+    "material_sensor": [1, 4, 255, 8, 0],
+    "material_sensor_response_mask_9": [247, 1, 4, 0, 8, 9, 207],
+    "load_stage_0": [1, 6, 255, 16, 1, 0, 0],
+    "load_stage_4": [1, 6, 255, 16, 1, 4, 0],
+    "load_stage_5": [1, 6, 255, 16, 1, 5, 0],
+    "load_stage_6": [1, 6, 255, 16, 1, 6, 0],
+    "unload_buffer": [1, 5, 255, 17, 1, 0],
+    "unload_material": [1, 5, 255, 17, 1, 1],
+    "unload_ok_response": [247, 1, 3, 0, 17, 202]
+  },
+  "public_cross_checks": [
+    {
+      "name": "CrealityOfficial_Hi_Klipper_auto_addr_wrapper",
+      "url": "https://github.com/CrealityOfficial/Hi_Klipper/blob/646b6aaaa4dc1fe9c4f773f1a425ea4666e5ed9b/klippy/extras/auto_addr_wrapper.py",
+      "commit": "646b6aaaa4dc1fe9c4f773f1a425ea4666e5ed9b",
+      "blob": "5f76ea69e2d95be04090c50ebdb86e2b27a2a1f3",
+      "use": "exact_stock_transport_method_interface",
+      "authority": "official_transport_source"
+    },
+    {
+      "name": "gitstonelabs_creality_cfs_klipper",
+      "url": "https://github.com/gitstonelabs/creality-cfs-klipper/blob/16309d8547215e8137b00e5037ea8ec61d6b2a6b/docs/protocol.md",
+      "commit": "16309d8547215e8137b00e5037ea8ec61d6b2a6b",
+      "protocol_blob": "10bd4898660243ef79de384a2c4c8ecf67bc8a63",
+      "source_blob": "ec3c966d6e75d15e8bb501ea45dc662a1c6e0005",
+      "use": "crc_and_sensor_gated_state_machine_cross_check_only",
+      "authority": "community_beta_not_exact_K1_effect_proof"
+    },
+    {
+      "name": "FrederickAlt_K1_CFS_reverse_engineering",
+      "url": "https://github.com/FrederickAlt/CREALITY-K1-AND-K1-MAX-CFS-RETRUDE-BEFORE-CUT-MOD/blob/083c5a5679d5f7d3f3cfff9a6303b6d224347c29/docs/serial-protocol.md",
+      "commit": "083c5a5679d5f7d3f3cfff9a6303b6d224347c29",
+      "use": "two_phase_unload_cross_check_only",
+      "authority": "different_opcode_variant_never_callable_proof"
+    }
+  ],
+  "precedence": [
+    "exact_local_K1_log",
+    "official_transport_source",
+    "public_reverse_engineering_cross_check"
+  ],
+  "known_limits": [
+    "offline_engine_has_no_printer_connector",
+    "physical_load_and_unload_not_yet_qualified_by_this_package",
+    "future_firmware_or_binary_hash_change_invalidates_qualification",
+    "stock_owner_exclusion_during_direct_effect_not_yet_installed"
+  ]
+}

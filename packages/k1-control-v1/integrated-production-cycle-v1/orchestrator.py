@@ -3,8 +3,8 @@
 
 The class is transport-agnostic. A future Moonraker component supplies the
 backend, while offline tests use a deterministic fake. Effects are disabled by
-default and must never be enabled before the four BOX primitives are physically
-qualified on the target K1.
+default and must never be enabled before the direct CFS owner is installed,
+stock ownership is excluded and load/unload are physically qualified.
 """
 
 from __future__ import annotations
@@ -140,7 +140,7 @@ class CycleOrchestrator:
 
             await self.backend.run_gcode("KCTRL_CYCLE_LOAD_SLOT_A_V1")
             loaded = await self._wait_phase("await_purge_proof", 300)
-            result = self.cycle.apply({
+            load_event = {
                 "kind": "t1a_load_complete",
                 "operation": "T1A-load",
                 "effect_id": "load-1",
@@ -148,12 +148,14 @@ class CycleOrchestrator:
                 "target_before_c": self.job.load_c,
                 "target_during_c": loaded.get("last_cfs_effect_target_c"),
                 "cfs_temperature_command": loaded.get("cfs_temperature_command"),
-                "commands": ["BOX_EXTRUDE_MATERIAL TNN=T1A", "BOX_EXTRUDER_EXTRUDE TNN=T1A"],
+                "commands": ["KCTRL_CFS_DIRECT_LOAD ROUTE=T1A"],
                 "route_after": self._single_route(loaded),
                 "head_sensor_after": loaded.get("head_sensor"),
                 "after_cutter_sensor_after": loaded.get("after_cutter_sensor"),
                 "automatic_retry": False,
-            })
+            }
+            load_event.update(self._direct_owner_proof(loaded))
+            result = self.cycle.apply(load_event)
             self._raise_if_failed(result)
 
             await self.backend.run_gcode("KCTRL_CYCLE_SINGLE_PURGE_V1")
@@ -199,7 +201,7 @@ class CycleOrchestrator:
         if self.cycle is None or self.job is None:
             raise OrchestrationError("cycle_not_prepared")
         terminal = await self._wait_phase("closed_safe", timeout_s)
-        result = self.cycle.apply({
+        end_event = {
             "kind": "normal_end_complete",
             "operation": "normal-end-unload",
             "effect_id": "end-unload-1",
@@ -209,10 +211,11 @@ class CycleOrchestrator:
             "cfs_temperature_command": terminal.get("cfs_temperature_command"),
             "commands": [
                 "safe_lift", "lower_bed", "set_unload_temperature",
-                "BOX_CUT_MATERIAL", "local_tip_retract", "BOX_RETRUDE_MATERIAL", "park_head",
+                "KCTRL_CFS_DIRECT_UNLOAD ROUTE=T1A", "park_head",
                 "TURN_OFF_HEATERS", "FANS_ZERO", "M84",
             ],
             "route_after": self._single_route(terminal),
+            "head_sensor_after": terminal.get("head_sensor"),
             "after_cutter_sensor_after": terminal.get("after_cutter_sensor"),
             "park_verified": terminal.get("park_verified"),
             "bed_lowered_verified": terminal.get("bed_lowered_verified"),
@@ -220,7 +223,9 @@ class CycleOrchestrator:
             "fans_zero": terminal.get("fans_zero"),
             "motors_released": terminal.get("motors_released"),
             "automatic_retry": False,
-        })
+        }
+        end_event.update(self._direct_owner_proof(terminal))
+        result = self.cycle.apply(end_event)
         self._raise_if_failed(result)
         return await self.public_state()
 
@@ -252,7 +257,7 @@ class CycleOrchestrator:
 
     def _unload_event(self, snapshot: Mapping[str, Any], effect_id: str) -> Dict[str, Any]:
         assert self.job is not None
-        return {
+        event = {
             "kind": "unload_before_clean_complete",
             "operation": "preclean-unload",
             "effect_id": effect_id,
@@ -260,15 +265,18 @@ class CycleOrchestrator:
             "target_before_c": self.job.unload_c,
             "target_during_c": snapshot.get("last_cfs_effect_target_c"),
             "cfs_temperature_command": snapshot.get("cfs_temperature_command"),
-            "commands": ["BOX_CUT_MATERIAL", "local_tip_retract", "BOX_RETRUDE_MATERIAL"],
+            "commands": ["KCTRL_CFS_DIRECT_UNLOAD ROUTE=T1A"],
             "route_after": self._single_route(snapshot),
+            "head_sensor_after": snapshot.get("head_sensor"),
             "after_cutter_sensor_after": snapshot.get("after_cutter_sensor"),
             "automatic_retry": False,
         }
+        event.update(self._direct_owner_proof(snapshot))
+        return event
 
     def _reconcile_event(self, snapshot: Mapping[str, Any], effect_id: str) -> Dict[str, Any]:
         assert self.job is not None
-        return {
+        event = {
             "kind": "reconcile_before_clean_complete",
             "operation": "preclean-T1A-reconcile",
             "effect_id": effect_id,
@@ -276,14 +284,38 @@ class CycleOrchestrator:
             "target_before_c": self.job.load_c,
             "target_during_c": snapshot.get("last_cfs_effect_target_c"),
             "cfs_temperature_command": snapshot.get("cfs_temperature_command"),
-            "commands": [
-                "BOX_EXTRUDE_MATERIAL TNN=T1A",
-                "BOX_EXTRUDER_EXTRUDE TNN=T1A",
-            ],
+            "commands": ["KCTRL_CFS_DIRECT_RECONCILE ROUTE=T1A"],
             "route_after": self._single_route(snapshot),
             "head_sensor_after": snapshot.get("head_sensor"),
             "after_cutter_sensor_after": snapshot.get("after_cutter_sensor"),
             "automatic_retry": False,
+        }
+        event.update(self._direct_owner_proof(snapshot))
+        return event
+
+    @staticmethod
+    def _direct_owner_proof(snapshot: Mapping[str, Any]) -> Dict[str, Any]:
+        return {
+            "cfs_owner": snapshot.get("cfs_direct_owner"),
+            "cfs_owner_operation": snapshot.get("cfs_direct_owner_operation"),
+            "cfs_owner_phase": snapshot.get("cfs_direct_owner_phase"),
+            "cfs_owner_route": snapshot.get("cfs_direct_owner_route"),
+            "cfs_owner_failure_code": snapshot.get("cfs_direct_owner_failure_code"),
+            "cfs_owner_automatic_retry_count": snapshot.get(
+                "cfs_direct_owner_automatic_retry_count"
+            ),
+            "cfs_owner_temperature_commands": snapshot.get(
+                "cfs_direct_owner_temperature_commands"
+            ),
+            "cfs_owner_geometry_commands": snapshot.get(
+                "cfs_direct_owner_geometry_commands"
+            ),
+            "cfs_owner_mesh_commands": snapshot.get(
+                "cfs_direct_owner_mesh_commands"
+            ),
+            "cfs_owner_purge_commands": snapshot.get(
+                "cfs_direct_owner_purge_commands"
+            ),
         }
 
     def _job_public(self) -> Optional[Dict[str, Any]]:
@@ -304,7 +336,7 @@ class CycleOrchestrator:
 
     def _require_effects(self) -> None:
         if not self.effects_enabled:
-            raise OrchestrationError("CFS_primitives_not_physically_qualified")
+            raise OrchestrationError("CFS_direct_owner_not_physically_qualified")
 
     @staticmethod
     def _raise_if_failed(result: Mapping[str, Any]) -> None:

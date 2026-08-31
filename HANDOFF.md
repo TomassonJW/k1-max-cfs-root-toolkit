@@ -1,12 +1,21 @@
-# HANDOFF — redirection vers la passation complète actuelle
+# HANDOFF — reprise actuelle du propriétaire CFS direct
 
-La passation canonique de la session est désormais :
+La reprise canonique est désormais :
 
-`docs/HANDOFF-GOAL3-R3-COLD-VALIDATED-2026-08-30.md`
+`docs/50-proprietaire-cfs-direct-hors-imprimante-v1.md`
 
-Lire ce document en premier. Le contenu ci-dessous est conservé comme archive
-des clôtures antérieures ; il ne décrit plus l'état actuel et ne doit pas
-piloter la prochaine action.
+ADR-036 est acceptée et `cfs-direct-owner-offline-v1` obtient `24/24`. Le cycle
+intégré ne dépend plus d'aucun effet `BOX_*`. Le nouveau propriétaire n'est pas
+installé et la K1 reste confinée avec l'ancien cycle en mode `offline`, effets
+désactivés. La prochaine tranche est
+`G4-K1-CONTROL-CFS-DIRECT-OWNER-INSTALL-DISABLED-V1` : pose désactivée,
+rollback exact et exclusion du propriétaire stock, sans chauffe, mouvement ou
+effet filament.
+
+Lire le document 50, ADR-036, puis les derniers blocs de `STATE.md`, `GATES.md`
+et `DECISIONS.md`. Le contenu ci-dessous est conservé comme archive des
+clôtures antérieures ; il ne décrit plus l'état actuel et ne doit pas piloter
+la prochaine action.
 
 L'observabilité V2 est qualifiée hors imprimante puis sur la vraie K1. La gate
 d'effet a ensuite désactivé une fois l'auto-remplacement stock, prouvé deux fois

@@ -1,7 +1,7 @@
 {
   "contract_id": "K1-CONTROL-JOB-LIFECYCLE-V1",
   "schema": 1,
-  "status": "offline_system_complete_production_closed",
+  "status": "direct_CFS_owner_offline_complete_integrated_install_closed",
   "printer_mutation_authorized": false,
   "canonical_document": "docs/25-contrat-cycle-impression-nettoyage-cfs-v1.md",
   "amendments": [
@@ -20,16 +20,29 @@
     {
       "id": "CFS-CONTROL-SOURCE-MAP-V1",
       "path": "design/cfs-control-source-map-v1.json",
-      "decision_record": "docs/adr/ADR-032-proprietaire-cycle-cfs-sur-primitives-stock.md",
-      "effect": "K1_Control_owns_the_full_lifecycle_above_individually_qualified_stock_BOX_primitives_with_custom_auto_refill_and_exact_rollback"
+      "decision_record": "docs/adr/ADR-036-proprietaire-cfs-direct-sur-transport-serie-borne.md",
+      "effect": "K1_Control_owns_each_CFS_stage_directly_over_the_stock_serial_transport_without_stock_BOX_effect_ownership"
+    },
+    {
+      "id": "CALIBRATION-BEFORE-INSERTION-V1",
+      "path": "docs/adr/ADR-034-calibrations-avant-insertion-filament.md",
+      "decision_record": "docs/adr/ADR-034-calibrations-avant-insertion-filament.md",
+      "effect": "all_contact_reference_finishes_with_a_clean_nozzle_before_any_filament_insertion"
+    },
+    {
+      "id": "INTEGRATED-CYCLE-FULL-UNLOAD-V1",
+      "path": "packages/k1-control-v1/integrated-production-cycle-v1/contract.json",
+      "decision_record": "docs/adr/ADR-035-cycle-integre-et-retrait-final-systematique.md",
+      "effect": "the_daily_cycle_unloads_before_cleaning_and_fully_rewinds_at_normal_end"
     }
   ],
   "cfs_control_architecture": {
-    "status": "start_owner_installed_validated_cold_no_T1A",
+    "status": "direct_owner_offline_24_of_24_install_disabled_next",
     "canonical_document": "docs/43-cartographie-canonique-pilotage-cfs-k1-max-v1.md",
     "source_map": "design/cfs-control-source-map-v1.json",
-    "selected_owner": "K1_CONTROL_LIFECYCLE_OWNER_OVER_SELECTED_STOCK_BOX_PRIMITIVES",
-    "stock_box_wrapper_role": "selected_low_level_hardware_phases_only_after_exact_S12_and_physical_qualification",
+    "selected_owner": "K1_CONTROL_DIRECT_CFS_OWNER_OVER_STOCK_SERIAL_TRANSPORT",
+    "stock_box_wrapper_role": "excluded_from_all_K1_Control_filament_effects",
+    "stock_serial_transport_role": "bus_addressing_wire_envelope_CRC_and_response_delivery_only",
     "full_stock_sequences_in_owned_path": false,
     "direct_RS485_driver_for_v1": false,
     "HelixScreen_installed_as_owner": false,
@@ -40,7 +53,12 @@
     "s12_preflight": "packages/k1-control-v1/cfs-s12-owner-preflight-v1/evidence-map.json",
     "exact_s12_binary_surface_confirmed": true,
     "stock_identical_replacement_pair_present_at_capture": false,
-    "implementation_authorized": false,
+    "implementation_authorized": true,
+    "offline_direct_owner_completed": true,
+    "offline_direct_owner_contract": "packages/k1-control-v1/cfs-direct-owner-offline-v1/contract.json",
+    "offline_direct_owner_scenarios": "24/24",
+    "direct_owner_installed": false,
+    "direct_owner_physically_qualified": false,
     "offline_owner_core_completed": true,
     "offline_owner_core_contract": "packages/k1-control-v1/cfs-owner-core-offline-v1/contract.json",
     "offline_owner_core_scenarios": "21/21",
@@ -64,16 +82,13 @@
     "start_owner_installed": true,
     "start_owner_cold_validation": "PASS",
     "start_owner_capture": "20260828-220525-g4-k1-control-start-sequence-owner-v1",
-    "next_gate": "G4-K1-CONTROL-START-SEQUENCE-T1A-ROUTE-V1",
-    "next_gate_scope": "restore_and_read_back_one_unique_T1A_route_without_starting_a_print",
-    "next_gate_preflight_completed": true,
-    "next_gate_preflight_capture": "20260828-goal3-start-sequence-t1a-route-v1-preflight",
-    "next_gate_preflight_verdict": "START_SEQUENCE_T1A_ROUTE_V1_PREFLIGHT_OK",
-    "next_gate_human_action_pending": "manual_nozzle_clean_then_short_owned_start_trial",
-    "T1A_route_gate_result": "KO_OPERATOR_WRONG_BUTTON_ROUTE_ESTABLISHED_RECOVERY_OK",
-    "T1A_route_engaged": true,
-    "T1A_route_recovery_capture": "20260828-goal3-start-sequence-t1a-route-v1-recovery",
-    "next_gate_after_recovery": "G4-K1-CONTROL-START-SEQUENCE-OWNER-PHYSICAL-KEEP-CORRECT-T1A-V1"
+    "next_gate": "G4-K1-CONTROL-CFS-DIRECT-OWNER-INSTALL-DISABLED-V1",
+    "next_gate_scope": "install_disabled_prove_exact_rollback_and_exclude_stock_effect_owner_without_filament_action",
+    "next_gate_preflight_completed": false,
+    "next_gate_human_action_pending": null,
+    "current_logical_route": null,
+    "current_physical_filament_sensors": "both_true_after_failed_stock_reconcile",
+    "next_gate_after_install": "G4-K1-CONTROL-CFS-DIRECT-OWNER-PHYSICAL-LOAD-UNLOAD-V1"
   },
   "target": {
     "printer": "Creality K1 Max S12 structure 0",
@@ -522,7 +537,25 @@
     "remote_write": false,
     "service_restart": false,
     "rerun_authorized": false,
-    "next_design_branch": "G4-K1-CONTROL-START-SEQUENCE-T1A-ROUTE-V1"
+    "next_design_branch": "closed_by_start_owner_then_superseded_by_direct_CFS_owner"
+  },
+  "cfs_direct_owner_offline_v1": {
+    "mission": "G4-K1-CONTROL-CFS-DIRECT-OWNER-OFFLINE-V1",
+    "status": "closed_ok_offline_24_of_24",
+    "decision": "docs/adr/ADR-036-proprietaire-cfs-direct-sur-transport-serie-borne.md",
+    "contract": "packages/k1-control-v1/cfs-direct-owner-offline-v1/contract.json",
+    "evidence_map": "packages/k1-control-v1/cfs-direct-owner-offline-v1/evidence-map.json",
+    "routes": "T1A_to_T2D",
+    "reconcile_without_filament_motor_effect": true,
+    "head_and_after_cutter_sensor_gates": true,
+    "temperature_owner": "K1_Control",
+    "automatic_retry": false,
+    "multiple_complete_cycles": true,
+    "stock_effect_calls": false,
+    "printer_connection": false,
+    "physical_action": false,
+    "deployment_candidate": false,
+    "next_design_branch": "G4-K1-CONTROL-CFS-DIRECT-OWNER-INSTALL-DISABLED-V1"
   },
   "k1_read_only_qualification": {
     "candidate": "GOAL-P4-K1-READ-ONLY-QUALIFICATION-V1",
@@ -669,7 +702,8 @@
   "start_sequence": [
     {"id": "validate_job_contract", "kind": "guard", "sets": ["contract_valid"]},
     {"id": "reconcile_filament_state", "kind": "guard", "requires": ["contract_valid"], "sets": ["filament_state_classified"]},
-    {"id": "confirm_manual_nozzle_clean", "kind": "human_gate", "requires": ["contract_valid", "filament_state_classified"], "sets": ["nozzle_clean"]},
+    {"id": "direct_unload_before_clean_if_present", "kind": "cfs", "requires": ["filament_state_classified"], "sets": ["filament_path_clear"]},
+    {"id": "confirm_manual_nozzle_clean", "kind": "human_gate", "requires": ["contract_valid", "filament_path_clear"], "sets": ["nozzle_clean"]},
     {"id": "start_reference_heating", "kind": "thermal", "requires": ["nozzle_clean"], "sets": ["bed_heating", "probe_nozzle_heating"]},
     {"id": "home_xy_only", "kind": "controlled_motion", "requires": ["bed_heating", "nozzle_clean"], "sets": ["xy_referenced"]},
     {"id": "wait_bed_and_probe_temperature", "kind": "thermal", "requires": ["nozzle_clean", "bed_heating", "probe_nozzle_heating"], "sets": ["thermal_reference_ready"]},
@@ -685,8 +719,8 @@
     {"id": "end_without_calibration_commit", "kind": "guard", "requires": ["job_closed"]}
   ],
   "initial_filament_branches": {
-    "keep_correct": ["do_not_cut", "do_not_unload", "small_visible_purge"],
-    "change_wrong": ["old_explicit_unload_temperature", "cut_and_verify", "load_resolved_tool", "explicit_transition_purge", "return_to_new_gcode_target"],
+    "keep_correct": ["reconcile_route_without_motor_if_needed", "direct_unload_before_clean", "clean_reference_then_direct_reload", "small_visible_purge"],
+    "change_wrong": ["old_explicit_unload_temperature", "direct_unload_and_verify", "clean_reference_then_load_resolved_tool", "explicit_transition_purge", "return_to_new_gcode_target"],
     "load_absent": ["load_resolved_tool", "verify_sensors", "visible_purge"],
     "unknown": ["block", "display_evidence", "offer_confirm_remove_or_cancel"]
   },
@@ -725,7 +759,9 @@
     "default_candidate": "full_unload_and_rewind",
     "default_requires_physical_qualification": true,
     "automatic_cut_and_unload_by_habit": false,
-    "normal_end_cut_and_unload_required": true,
+    "normal_end_cut_and_unload_required": false,
+    "normal_end_direct_full_unload_required": true,
+    "direct_CFS_owner_required": true,
     "explicit_material_unload_temperature_required": true,
     "single_attempt_no_retry": true,
     "safe_park_before_motor_release": true,
@@ -736,14 +772,14 @@
     "final_state": [
       "heater_targets_zero",
       "cfs_not_transitioning",
-      "filament_state_engaged_known_none_or_explicitly_unknown",
+      "filament_state_known_empty_and_rewound",
       "mesh_and_z_persistence_unchanged",
       "no_resume_armed"
     ]
   },
   "calibration_policy": {
     "contact_z_or_mesh": "manual_clean_default_no_load_or_purge_during_measurement",
-    "contact_z_or_mesh_filament": "unload_recommended_if_no_ooze_cannot_otherwise_be_proven",
+    "contact_z_or_mesh_filament": "direct_unload_then_fresh_manual_clean_required_before_contact_measurement",
     "flow_temperature_retraction_pressure_advance": "resolved_filament_required",
     "resonance": "no_automatic_filament_change",
     "brush": "cold_no_extrusion_before_any_hot_recipe"
@@ -753,7 +789,7 @@
     {"id": "mesh_reference_mismatch", "expected": "job_blocked_without_silent_nearest_profile"},
     {"id": "clean_unknown_previous_material", "expected": "cleaning_blocked_or_human_recipe_explicitly_selected"},
     {"id": "clean_brush_z_not_probed", "expected": "versioned_human_calibration_used"},
-    {"id": "start_correct_filament_engaged", "expected": "no_cut_no_unload_small_visible_purge"},
+    {"id": "start_correct_filament_engaged", "expected": "reconcile_if_needed_direct_unload_clean_reference_direct_reload_then_small_visible_purge"},
     {"id": "start_wrong_filament_engaged", "expected": "old_unload_then_explicit_transition_then_new_target"},
     {"id": "start_no_filament", "expected": "resolved_tool_loaded_and_visible_purge_required"},
     {"id": "start_unknown_filament_identity", "expected": "job_blocked_before_motion_or_heat"},
@@ -766,7 +802,7 @@
     {"id": "pause_normal", "expected": "no_cut_no_load_no_purge_by_default"},
     {"id": "resume_with_optional_reprime", "expected": "latest_z_and_full_job_state_preserved"},
     {"id": "tall_part_blocks_rear_path", "expected": "tool_change_blocked_without_collision"},
-    {"id": "end_keep_engaged", "expected": "no_cut_last_filament_recorded_targets_zero"},
+    {"id": "end_full_unload", "expected": "one_direct_unload_filament_path_empty_targets_zero_park_then_motors_released"},
     {"id": "manual_disengage_and_clean", "expected": "previous_material_recipe_used_and_final_state_safe"},
     {"id": "cfs_late_220_rewrite", "expected": "phase_fails_before_resume"},
     {"id": "orca_contract_version_mismatch", "expected": "job_rejected_before_machine_hazard"},
@@ -778,12 +814,12 @@
     {"id": "cfs_no_transport_offline_matrix", "expected": "two_cfs_pause_resume_runout_cancel_and_fail_safe_paths_are_deterministic_without_printer_transport"}
   ],
   "deployment": {
-    "active_physical_gate": "MESH-EDGE-DIAGNOSTIC-V1 suspended after invalid no-flow source passage",
-    "active_physical_gate_rollback": "validated under capture 20260826-090956-mesh-edge-diagnostic-v1; temporary profile and four gcodes absent",
+    "active_physical_gate": "none_until_direct_CFS_owner_is_installed_disabled_and_stock_effect_ownership_is_excluded",
+    "active_physical_gate_rollback": "integrated_stock_owner_attempt_contained_targets_zero_11x11_restored_and_effects_disabled",
     "daily_calibration": "6x6 Lagrange one-mesh campaign validated and autonomous",
     "precision_mode": "hidden; edge diagnostic and derived profile qualification incomplete",
-    "cfs_dynamic_temperature_routing": "offline contract and simulator complete; minimal separate owner selected; serial transport and deployment absent",
-    "production_cutover": "not implemented; serial owner, physical CFS qualification, sensor mapping and Orca cutover remain absent",
+    "cfs_dynamic_temperature_routing": "direct_owner_offline_24_of_24_over_exact_stock_serial_transport_no_install",
+    "production_cutover": "not implemented; disabled install physical load_unload qualification and final integrated gate remain",
     "offline_prototype_required_before_physical_gate": true,
     "rollback_required_per_slice": true
   }

@@ -1392,3 +1392,22 @@ Cette voie ne doit pas être rejouée. L'autonomie complète exige désormais un
 propriétaire CFS borné qui ne délègue ni température ni géométrie à la primitive
 stock. Une nouvelle gate intégrée est interdite avant une preuve de protocole
 hors imprimante puis une qualification unique de chargement et de retrait.
+
+## Mise à jour 2026-08-31 — propriétaire CFS direct vert hors imprimante
+
+ADR-036 remplace la partie d'ADR-032 qui conservait des effets `BOX_*`. K1
+Control possède maintenant directement les étapes CFS et ne garde du stock que
+`auto_addr` et `serial_485` pour transporter les trames.
+
+Le paquet `cfs-direct-owner-offline-v1` obtient `24/24` scénarios. Les trames
+locales exactes de chargement et retrait sont encodées, `T1A..T2D` sont bornés,
+les capteurs tête et après-cutter sont exigés, la température appartient à K1
+Control, une route `T1A` perdue peut être réassociée sans moteur et deux cycles
+complets passent sans retry. Aucun code tiers n'est copié.
+
+Le cycle intégré attend désormais les preuves du propriétaire direct et ne
+contient plus d'effet `BOX_*`. Le paquet installé sur la K1 reste cependant
+confiné en mode `offline`; le nouveau propriétaire n'est ni posé ni
+physiquement qualifié. La prochaine tranche est
+`G4-K1-CONTROL-CFS-DIRECT-OWNER-INSTALL-DISABLED-V1`, sans chauffe, mouvement ou
+effet filament.

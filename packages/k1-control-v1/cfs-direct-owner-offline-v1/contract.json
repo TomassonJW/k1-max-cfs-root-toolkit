@@ -1,0 +1,140 @@
+{
+  "schema": 1,
+  "package": "G4-K1-CONTROL-CFS-DIRECT-OWNER-OFFLINE-V1",
+  "status": "CLOSED_OK_OFFLINE_24_OF_24",
+  "decision": "ADR-036",
+  "scope": {
+    "printer_transport": false,
+    "physical_action": false,
+    "deployment_candidate": false,
+    "third_party_code_copied": false
+  },
+  "ownership": {
+    "job_owner": "k1_control",
+    "temperature_owner": "k1_control",
+    "cfs_effect_owner": "k1_control_direct",
+    "retained_stock_infrastructure": [
+      "auto_addr",
+      "serial_485"
+    ],
+    "forbidden_stock_effect_owners": [
+      "START_PRINT",
+      "END_PRINT",
+      "Tn",
+      "BOX_EXTRUDE_MATERIAL",
+      "BOX_EXTRUDER_EXTRUDE",
+      "BOX_CUT_MATERIAL",
+      "BOX_RETRUDE_MATERIAL",
+      "BOX_MATERIAL_FLUSH",
+      "BOX_NOZZLE_CLEAN"
+    ]
+  },
+  "routes": {
+    "allowed": [
+      "T1A",
+      "T1B",
+      "T1C",
+      "T1D",
+      "T2A",
+      "T2B",
+      "T2C",
+      "T2D"
+    ],
+    "addresses": [1, 2],
+    "slot_masks": {
+      "A": 1,
+      "B": 2,
+      "C": 4,
+      "D": 8
+    }
+  },
+  "transport": {
+    "interface": "serial_485.cmd_send_data_with_response(application_frame, timeout_s, false)",
+    "request_shape": [
+      "address",
+      "length",
+      "0xff",
+      "command",
+      "data"
+    ],
+    "response_shape": [
+      "0xf7",
+      "address",
+      "length",
+      "status",
+      "command",
+      "data",
+      "crc8"
+    ],
+    "crc8": {
+      "polynomial": "0x07",
+      "initial": "0x00",
+      "scope": "length_status_command_data"
+    },
+    "automatic_retry": false
+  },
+  "load_sequence": [
+    "require_head_and_after_cutter_sensors_clear",
+    "get_material_sensor_and_require_target_slot",
+    "set_feed_mode",
+    "enable_tension_on_each_connected_box",
+    "extrude_stage_0",
+    "extrude_stage_4",
+    "extrude_stage_5_until_head_sensor_with_bounded_count",
+    "extrude_stage_6",
+    "require_head_and_after_cutter_sensors_present",
+    "require_buffer_middle",
+    "set_print_mode_for_exact_route",
+    "disable_tension_once_per_connected_box"
+  ],
+  "unload_sequence": [
+    "require_exact_active_route",
+    "require_head_and_after_cutter_sensors_present",
+    "set_feed_mode",
+    "retrude_buffer_trigger",
+    "one_local_tip_pull_minus_20_mm_at_140_mm_s",
+    "retrude_material_trigger",
+    "require_head_and_after_cutter_sensors_clear"
+  ],
+  "cutter": {
+    "command_used": false,
+    "reason": "the_exact_local_successful_unload_observation_uses_two_retrude_triggers_and_one_local_tip_pull_without_an_isolated_cutter_command"
+  },
+  "lost_route_reconciliation": {
+    "filament_motor_effect": false,
+    "requires_head_sensor": true,
+    "requires_after_cutter_sensor": true,
+    "requires_target_slot_material_query": true,
+    "result": "exact_route_restored_or_failed_safe"
+  },
+  "temperature_gate": {
+    "required_owner": "k1_control",
+    "target_tolerance_c": 0.5,
+    "actual_tolerance_c": 5.0,
+    "material_bounds_required": true,
+    "cfs_temperature_command": false
+  },
+  "failure_policy": {
+    "state": "failed_safe",
+    "effect_id_once_only": true,
+    "retry_uncertain_effect": false,
+    "resume_stock": false,
+    "tension_cleanup_attempts_per_address_max": 1
+  },
+  "forbidden_side_effects": [
+    "temperature_command",
+    "axis_home",
+    "axis_move",
+    "mesh_change",
+    "z_change",
+    "purge",
+    "print_resume"
+  ],
+  "qualification": {
+    "runner": "run_scenarios.py",
+    "scenario_count": 24,
+    "ok_count": 24,
+    "ko_count": 0
+  },
+  "next_gate": "G4-K1-CONTROL-CFS-DIRECT-OWNER-INSTALL-DISABLED-V1"
+}

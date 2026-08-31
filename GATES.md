@@ -1600,3 +1600,23 @@ en mode `offline`, les effets sont désactivés et les macros CFS sont
 neutralisées. Cette gate est consommée et ne doit pas être rejouée. La prochaine
 branche est une décision de propriétaire CFS réellement borné, hors imprimante
 avant toute nouvelle action physique.
+
+### `G4-K1-CONTROL-CFS-DIRECT-OWNER-OFFLINE-V1`
+
+Statut : **close OK hors imprimante, `24/24`, aucun effet**.
+
+ADR-036 retient K1 Control comme propriétaire direct de chaque étape filament
+au-dessus du seul transport `serial_485` stock. Les octets viennent d'abord des
+journaux exacts de cette K1 ; le source officiel et les projets publics servent
+de recoupement. Aucun code tiers n'est copié.
+
+La matrice couvre les deux CFS, la température explicite, les capteurs tête et
+après-cutter, la réassociation `T1A` sans moteur, le chargement, le retrait, deux
+cycles successifs, les erreurs, timeouts, CRC et l'absence de retry. Le moteur
+ne contient ni chauffe, ni homing, ni mouvement d'axe, ni mesh, ni Z, ni purge,
+ni connecteur imprimante.
+
+Cette gate n'autorise aucune pose ou action physique. La prochaine gate est
+`G4-K1-CONTROL-CFS-DIRECT-OWNER-INSTALL-DISABLED-V1` : installer le composant
+encore désactivé, prouver son rollback exact et exclure le propriétaire stock,
+sans envoyer la moindre trame filament.

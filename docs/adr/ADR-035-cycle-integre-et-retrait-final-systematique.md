@@ -101,3 +101,10 @@ borné dont la température et les mouvements sont réellement contrôlés, soit
 assumer explicitement un clic humain officiel à cette frontière. Une nouvelle
 gate intégrée est interdite avant cette décision et la qualification séparée
 du chargement et du retrait retenus.
+
+## Suite de décision
+
+ADR-036 choisit depuis le propriétaire CFS direct au-dessus du seul transport
+`serial_485` stock. Sa preuve hors imprimante obtient `24/24`; la pose et les
+effets physiques restent fermés. Cette suite ne change pas le KO réel ci-dessus
+et ne rend pas le candidat stock rejouable.

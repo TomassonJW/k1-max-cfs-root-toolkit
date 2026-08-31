@@ -213,19 +213,15 @@ class IntegratedCycle:
     def _reconcile_before_clean_complete(self, event: Mapping[str, Any]) -> None:
         self._require("reconcile_before_clean")
         self._effect(event, "preclean-T1A-reconcile")
-        self._temperature_boundary(event, self.job.load_c)
-        if event.get("commands") != [
-            "BOX_EXTRUDE_MATERIAL TNN=T1A",
-            "BOX_EXTRUDER_EXTRUDE TNN=T1A",
-        ]:
+        if event.get("commands") != ["KCTRL_CFS_DIRECT_RECONCILE ROUTE=T1A"]:
             raise CycleError("reconcile_commands_invalid")
+        self._direct_cfs_owner(event, "reconcile", "loaded", ROUTE)
         if event.get("route_after") != ROUTE:
             raise CycleError("T1A_reconcile_not_proven")
         if event.get("head_sensor_after") is not True or event.get("after_cutter_sensor_after") is not True:
             raise CycleError("T1A_reconcile_sensor_proof_missing")
         if event.get("automatic_retry") is not False:
             raise CycleError("automatic_retry_forbidden")
-        self.load_count += 1
         self.route = ROUTE
         self.phase = "unload_before_clean"
         self.trace.append({"kind": "reconcile_before_clean_complete"})
@@ -234,11 +230,14 @@ class IntegratedCycle:
         self._require("unload_before_clean")
         self._effect(event, "preclean-unload")
         self._temperature_boundary(event, self.job.unload_c)
-        if event.get("commands") != [
-            "BOX_CUT_MATERIAL", "local_tip_retract", "BOX_RETRUDE_MATERIAL"
-        ]:
+        if event.get("commands") != ["KCTRL_CFS_DIRECT_UNLOAD ROUTE=T1A"]:
             raise CycleError("unload_commands_invalid")
-        if event.get("route_after") is not None or event.get("after_cutter_sensor_after") is not False:
+        self._direct_cfs_owner(event, "unload", "idle", None)
+        if (
+            event.get("route_after") is not None
+            or event.get("head_sensor_after") is not False
+            or event.get("after_cutter_sensor_after") is not False
+        ):
             raise CycleError("preclean_unload_not_proven")
         if event.get("automatic_retry") is not False:
             raise CycleError("automatic_retry_forbidden")
@@ -288,11 +287,9 @@ class IntegratedCycle:
         self._require("await_t1a_load")
         self._effect(event, "T1A-load")
         self._temperature_boundary(event, self.job.load_c)
-        if event.get("commands") != [
-            "BOX_EXTRUDE_MATERIAL TNN=T1A",
-            "BOX_EXTRUDER_EXTRUDE TNN=T1A",
-        ]:
+        if event.get("commands") != ["KCTRL_CFS_DIRECT_LOAD ROUTE=T1A"]:
             raise CycleError("load_commands_invalid")
+        self._direct_cfs_owner(event, "load", "loaded", ROUTE)
         if event.get("route_after") != ROUTE:
             raise CycleError("T1A_load_not_proven")
         if event.get("head_sensor_after") is not True or event.get("after_cutter_sensor_after") is not True:
@@ -343,9 +340,7 @@ class IntegratedCycle:
             "safe_lift",
             "lower_bed",
             "set_unload_temperature",
-            "BOX_CUT_MATERIAL",
-            "local_tip_retract",
-            "BOX_RETRUDE_MATERIAL",
+            "KCTRL_CFS_DIRECT_UNLOAD ROUTE=T1A",
             "park_head",
             "TURN_OFF_HEATERS",
             "FANS_ZERO",
@@ -353,7 +348,12 @@ class IntegratedCycle:
         ]
         if event.get("commands") != required_order:
             raise CycleError("normal_end_order_invalid")
-        if event.get("route_after") is not None or event.get("after_cutter_sensor_after") is not False:
+        self._direct_cfs_owner(event, "unload", "idle", None)
+        if (
+            event.get("route_after") is not None
+            or event.get("head_sensor_after") is not False
+            or event.get("after_cutter_sensor_after") is not False
+        ):
             raise CycleError("normal_end_unload_not_proven")
         if event.get("park_verified") is not True or event.get("bed_lowered_verified") is not True:
             raise CycleError("normal_end_park_not_proven")
@@ -391,6 +391,34 @@ class IntegratedCycle:
         if event.get("effect_observed") is not True:
             raise CycleError("effect_unproven")
         self.effect_ids.add(effect_id)
+
+    def _direct_cfs_owner(
+        self,
+        event: Mapping[str, Any],
+        operation: str,
+        phase: str,
+        route: Optional[str],
+    ) -> None:
+        if event.get("cfs_owner") != "k1_control_direct":
+            raise CycleError("direct_CFS_owner_missing")
+        if event.get("cfs_owner_operation") != operation:
+            raise CycleError("direct_CFS_operation_mismatch")
+        if event.get("cfs_owner_phase") != phase:
+            raise CycleError("direct_CFS_phase_mismatch")
+        if event.get("cfs_owner_route") != route:
+            raise CycleError("direct_CFS_route_mismatch")
+        if event.get("cfs_owner_failure_code") is not None:
+            raise CycleError("direct_CFS_failure_present")
+        if event.get("cfs_owner_automatic_retry_count") != 0:
+            raise CycleError("direct_CFS_retry_detected")
+        for name in (
+            "temperature_commands",
+            "geometry_commands",
+            "mesh_commands",
+            "purge_commands",
+        ):
+            if event.get("cfs_owner_%s" % name) != []:
+                raise CycleError("direct_CFS_hidden_%s" % name)
 
     def _require(self, phase: str) -> None:
         if self.phase != phase:

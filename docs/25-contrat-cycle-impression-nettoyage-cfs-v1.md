@@ -437,6 +437,18 @@ fermeture ne qualifie aucun mouvement, débit, délai réseau ou effet physique.
 La prochaine étape est une comparaison en lecture seule avec un état K1 frais,
 sous une autorité séparée.
 
+État au 31 août 2026 : l'essai intégré utilisant un effet `BOX_*` est clos KO
+et ne doit pas être rejoué. ADR-036 remplace maintenant tous les effets CFS
+stock par un propriétaire direct K1 Control au-dessus du seul transport
+`serial_485`. Sa preuve hors imprimante obtient `24/24`, sans connexion K1.
+
+La fin normale vise un retrait direct complet sans cutter dans cette V1 : c'est
+la seule séquence locale complète dont les deux déclencheurs, la traction de
+pointe et les capteurs ont été observés. Si la qualification physique ne libère
+pas entièrement le chemin filament, la V1 s'arrête ; elle ne réintroduit pas un
+cutter stock caché. La prochaine tranche installe d'abord ce propriétaire en
+mode désactivé et prouve l'exclusion du propriétaire stock.
+
 ## 16. Références
 
 - [ADR-016 — cycle de production orchestré](adr/ADR-016-cycle-production-orchestre-et-propriete-cfs.md)
@@ -444,6 +456,7 @@ sous une autorité séparée.
 - [ADR-027 — cycle hors imprimante avant connecteur réel](adr/ADR-027-fermer-le-cycle-hors-imprimante-avant-tout-connecteur-reel.md)
 - [ADR-030 — nettoyage de buse manuel obligatoire](adr/ADR-030-nettoyage-buse-manuel-obligatoire.md)
 - [ADR-031 — démarrage propriétaire sans brossage ni recalibration](adr/ADR-031-demarrage-proprietaire-sans-brossage-ni-recalibration.md)
+- [ADR-036 — propriétaire CFS direct sur transport série borné](adr/ADR-036-proprietaire-cfs-direct-sur-transport-serie-borne.md)
 - [Audit mesh et cycle CFS](23-audit-mesh-manuel-et-cycle-production-cfs.md)
 - [Klipper — capteurs filament](https://www.klipper3d.org/Config_Reference.html#filament-sensors)
 - [Klipper — profils bed mesh](https://www.klipper3d.org/Bed_Mesh.html#profiles)

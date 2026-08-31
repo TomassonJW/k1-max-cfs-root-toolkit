@@ -1,13 +1,13 @@
 {
   "map_id": "K1-CONTROL-CFS-SOURCE-MAP-V1",
   "schema": 1,
-  "as_of": "2026-08-28",
-  "status": "start_owner_installed_validated_cold_T1A_route_next",
+  "as_of": "2026-08-31",
+  "status": "direct_CFS_owner_offline_closed_install_disabled_next",
   "authority": {
     "printer_connection_authorized": false,
     "printer_mutation_authorized": false,
     "physical_action_authorized": false,
-    "implementation_authorized": false,
+    "implementation_authorized": true,
     "offline_owner_core_completed": true,
     "offline_owner_exclusion_guard_completed": true,
     "live_owner_exclusion_read_only_completed": true,
@@ -16,6 +16,8 @@
     "live_owner_exclusion_effect_completed": true,
     "start_owner_installed": true,
     "start_owner_cold_validation_completed": true,
+    "offline_direct_CFS_owner_completed": true,
+    "offline_direct_CFS_owner_scenarios": "24/24",
     "deployment_candidate": false
   },
   "target": {
@@ -71,6 +73,24 @@
       ],
       "limits": [
         "hash_alone_does_not_reveal_symbols_or_behavior"
+      ]
+    },
+    {
+      "id": "CREALITY-OFFICIAL-HI-KLIPPER-TRANSPORT",
+      "kind": "exact_vendor_artifact_for_same_family",
+      "url": "https://github.com/CrealityOfficial/Hi_Klipper",
+      "revision": "646b6aaaa4dc1fe9c4f773f1a425ea4666e5ed9b",
+      "blob": "5f76ea69e2d95be04090c50ebdb86e2b27a2a1f3",
+      "license_use": "transport_interface_reference_only_no_code_copy",
+      "references": [
+        "https://github.com/CrealityOfficial/Hi_Klipper/blob/646b6aaaa4dc1fe9c4f773f1a425ea4666e5ed9b/klippy/extras/auto_addr_wrapper.py"
+      ],
+      "accepted_use": [
+        "exact_cmd_send_data_with_response_interface",
+        "transport_adds_wire_envelope_and_returns_full_response"
+      ],
+      "rejected_use": [
+        "delegate_CFS_lifecycle_or_temperature_policy"
       ]
     },
     {
@@ -335,7 +355,7 @@
       "BOX_SHOW_TNN_INNER_DATA",
       "Moonraker_box_object_query"
     ],
-    "bounded_effect_candidates_not_yet_qualified": [
+    "rejected_stock_effect_candidates_historical": [
       {
         "command": "BOX_EXTRUDE_MATERIAL",
         "role": "box_side_feed",
@@ -389,6 +409,22 @@
         ]
       }
     ],
+    "direct_effect_owner_offline_qualified": {
+      "decision": "docs/adr/ADR-036-proprietaire-cfs-direct-sur-transport-serie-borne.md",
+      "package": "packages/k1-control-v1/cfs-direct-owner-offline-v1",
+      "scenario_matrix": "24/24",
+      "transport": "serial_485.cmd_send_data_with_response(frame, timeout, false)",
+      "routes": "T1A_to_T2D",
+      "operations": [
+        "reconcile_loaded_without_filament_motor_effect",
+        "bounded_direct_load",
+        "bounded_direct_unload"
+      ],
+      "automatic_retry": false,
+      "printer_connection": false,
+      "physical_action": false,
+      "deployment_candidate": false
+    },
     "native_KCTRL_owned_actions": [
       "explicit_hotend_temperature",
       "explicit_bed_temperature",
@@ -401,8 +437,8 @@
     ]
   },
   "selected_architecture": {
-    "id": "K1_CONTROL_LIFECYCLE_OWNER_OVER_SELECTED_STOCK_BOX_PRIMITIVES",
-    "decision_record": "docs/adr/ADR-032-proprietaire-cycle-cfs-sur-primitives-stock.md",
+    "id": "K1_CONTROL_DIRECT_CFS_OWNER_OVER_STOCK_SERIAL_TRANSPORT",
+    "decision_record": "docs/adr/ADR-036-proprietaire-cfs-direct-sur-transport-serie-borne.md",
     "canonical_document": "docs/43-cartographie-canonique-pilotage-cfs-k1-max-v1.md",
     "layers": [
       {
@@ -419,9 +455,14 @@
         "owns": "narrow_versioned_actuation_and_fail_closed_guards"
       },
       {
-        "name": "stock_box_wrapper",
-        "owns": "selected_low_level_CFS_hardware_phases_only",
-        "forbidden": "job_start_temperature_mesh_Z_purge_resume_or_end_policy"
+        "name": "K1_Control_direct_CFS_protocol_owner",
+        "owns": "bounded_load_unload_reconcile_frames_and_sensor_gates",
+        "forbidden": "temperature_geometry_mesh_Z_purge_retry_resume_or_job_policy"
+      },
+      {
+        "name": "stock_auto_addr_and_serial_485",
+        "owns": "bus_open_addressing_wire_envelope_CRC_and_response_delivery_only",
+        "forbidden": "any_filament_lifecycle_decision"
       },
       {
         "name": "classic_CFS_units",
@@ -437,8 +478,9 @@
       "ambiguous_owner_state": "block_without_filament_effect"
     },
     "direct_RS485_driver_for_v1": false,
+    "direct_protocol_owner_over_stock_serial_transport": true,
     "HelixScreen_as_owner": false,
-    "reason": "reuse_the_installed_transport_and_state_surface_while_replacing_hidden_lifecycle_policy"
+    "reason": "reuse_only_the_installed_serial_transport_while_K1_Control_owns_every_filament_stage_and_rejects_hidden_stock_policy"
   },
   "owned_start": {
     "status": "offline_candidate_already_prepared",
@@ -707,29 +749,41 @@
     "service_restart": false,
     "rerun_authorized": false
   },
+  "direct_CFS_owner_offline_v1": {
+    "mission": "G4-K1-CONTROL-CFS-DIRECT-OWNER-OFFLINE-V1",
+    "status": "CLOSED_OK_OFFLINE_24_OF_24",
+    "contract": "packages/k1-control-v1/cfs-direct-owner-offline-v1/contract.json",
+    "evidence_map": "packages/k1-control-v1/cfs-direct-owner-offline-v1/evidence-map.json",
+    "decision": "docs/adr/ADR-036-proprietaire-cfs-direct-sur-transport-serie-borne.md",
+    "exact_local_load_frames": true,
+    "exact_local_unload_frames": true,
+    "route_reconciliation_without_filament_motor_effect": true,
+    "two_CFS_route_mapping": true,
+    "head_and_after_cutter_sensor_gates": true,
+    "explicit_temperature_owner": "k1_control",
+    "automatic_retry": false,
+    "multiple_complete_cycles": true,
+    "third_party_code_copied": false,
+    "printer_connection": false,
+    "physical_action": false,
+    "deployment_candidate": false
+  },
   "next_gate": {
-    "id": "G4-K1-CONTROL-START-SEQUENCE-T1A-ROUTE-V1",
-    "scope": "one_attempt_restore_and_readback_of_one_unique_T1A_route_without_starting_a_print",
-    "preflight_completed": true,
-    "preflight_capture": "20260828-goal3-start-sequence-t1a-route-v1-preflight",
-    "preflight_verdict": "START_SEQUENCE_T1A_ROUTE_V1_PREFLIGHT_OK",
-    "renewed_exact_go_required": false,
-    "printer_connection": true,
+    "id": "G4-K1-CONTROL-CFS-DIRECT-OWNER-INSTALL-DISABLED-V1",
+    "scope": "install_the_direct_owner_disabled_prove_exact_rollback_and_exclude_stock_effect_ownership_before_any_filament_frame",
+    "preflight_completed": false,
+    "printer_connection": false,
     "read_only": false,
-    "guard_effect_path_called": false,
     "implementation_authorized": true,
-    "gcode": true,
-    "heat": true,
+    "gcode": false,
+    "heat": false,
     "motion": false,
-    "extrusion": true,
-    "CFS_effect": true,
-    "remote_write": false,
-    "service_restart": false,
-    "physical_start_trial": false,
-    "physical_trial_blocker": null,
-    "execution_status": "CLOSED_KO_WRONG_STOCK_BUTTON_T1A_ESTABLISHED_RECOVERY_OK",
-    "route_established": "T1A",
-    "recovery_capture": "20260828-goal3-start-sequence-t1a-route-v1-recovery",
-    "next_gate": "G4-K1-CONTROL-START-SEQUENCE-OWNER-PHYSICAL-KEEP-CORRECT-T1A-V1"
+    "extrusion": false,
+    "CFS_effect": false,
+    "remote_write": true,
+    "service_restart": true,
+    "physical_trial": false,
+    "execution_status": "PREPARATION_NOT_STARTED",
+    "next_gate": "G4-K1-CONTROL-CFS-DIRECT-OWNER-PHYSICAL-LOAD-UNLOAD-V1"
   }
 }

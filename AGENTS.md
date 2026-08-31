@@ -37,6 +37,17 @@ axes libérés et aucune route CFS logique. Comme le restart n'a commandé aucun
 mouvement de filament, sa position physique reste inconnue et doit être résolue
 avant la géométrie fraîche. Aucun essai chaud n'est encore autorisé.
 
+Mise à jour prioritaire du 31 août 2026 : le premier cycle intégré stock est
+clos KO et confiné. `BOX_EXTRUDE_MATERIAL` a repris X/Y, la cible `220 °C` et
+le mesh avant d'échouer sans route ; ce chemin ne doit jamais être rejoué.
+ADR-036 remplace tous les effets `BOX_*` par un propriétaire CFS direct qui ne
+conserve du stock que `auto_addr` et `serial_485`. Le paquet
+`cfs-direct-owner-offline-v1` obtient `24/24` sans connexion K1 : trames locales
+exactes, `T1A..T2D`, deux capteurs, température K1 Control, réassociation sans
+moteur, chargement, retrait complet sans cutter et zéro retry. Il n'est pas
+installé. La prochaine gate est sa pose encore désactivée avec rollback exact
+et exclusion du propriétaire stock, sans chauffe, mouvement ou effet filament.
+
 ## Règle de temps utilisateur
 
 Si Thomas peut réaliser une action sûre en un clic dans Mainsail ou l'interface

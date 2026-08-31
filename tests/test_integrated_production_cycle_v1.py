@@ -84,6 +84,16 @@ class FakeBackend:
             "after_cutter_sensor": bool(routes),
             "last_cfs_effect_target_c": 190,
             "cfs_temperature_command": False,
+            "cfs_direct_owner": "k1_control_direct",
+            "cfs_direct_owner_operation": None,
+            "cfs_direct_owner_phase": "loaded" if routes else "idle",
+            "cfs_direct_owner_route": routes[0] if routes else None,
+            "cfs_direct_owner_failure_code": None,
+            "cfs_direct_owner_automatic_retry_count": 0,
+            "cfs_direct_owner_temperature_commands": [],
+            "cfs_direct_owner_geometry_commands": [],
+            "cfs_direct_owner_mesh_commands": [],
+            "cfs_direct_owner_purge_commands": [],
         }
 
     async def selected_job(self):
@@ -108,13 +118,20 @@ class FakeBackend:
                 "head_sensor": True,
                 "after_cutter_sensor": True,
                 "last_cfs_effect_target_c": 190,
+                "cfs_direct_owner_operation": "reconcile",
+                "cfs_direct_owner_phase": "loaded",
+                "cfs_direct_owner_route": "T1A",
             })
         elif script == "KCTRL_CYCLE_UNLOAD_BEFORE_CLEAN_V1":
             self.status.update({
                 "routes": [],
                 "cycle_phase": "await_manual_clean",
+                "head_sensor": False,
                 "after_cutter_sensor": False,
                 "last_cfs_effect_target_c": 190,
+                "cfs_direct_owner_operation": "unload",
+                "cfs_direct_owner_phase": "idle",
+                "cfs_direct_owner_route": None,
             })
         elif script == "KCTRL_CYCLE_CONFIRM_CLEAN_AND_REFERENCE_V1":
             self.status.update({
@@ -134,6 +151,9 @@ class FakeBackend:
                 "after_cutter_sensor": True,
                 "last_cfs_effect_target_c": 190,
                 "cfs_temperature_command": False,
+                "cfs_direct_owner_operation": "load",
+                "cfs_direct_owner_phase": "loaded",
+                "cfs_direct_owner_route": "T1A",
             })
         elif script == "KCTRL_CYCLE_SINGLE_PURGE_V1":
             self.status.update({
@@ -163,6 +183,7 @@ class FakeBackend:
             "printer_state": "standby",
             "cycle_phase": "closed_safe",
             "routes": [],
+            "head_sensor": False,
             "after_cutter_sensor": False,
             "last_cfs_effect_target_c": 190,
             "cfs_temperature_command": False,
@@ -171,6 +192,9 @@ class FakeBackend:
             "heater_targets_zero": True,
             "fans_zero": True,
             "motors_released": True,
+            "cfs_direct_owner_operation": "unload",
+            "cfs_direct_owner_phase": "idle",
+            "cfs_direct_owner_route": None,
         })
 
 
@@ -223,6 +247,36 @@ def effect(kind, operation, effect_id, target, commands, **extra):
         "commands": commands,
         "automatic_retry": False,
     }
+    if operation == "preclean-T1A-reconcile":
+        value.update({
+            "cfs_owner": "k1_control_direct",
+            "cfs_owner_operation": "reconcile",
+            "cfs_owner_phase": "loaded",
+            "cfs_owner_route": "T1A",
+        })
+    elif operation in {"preclean-unload", "normal-end-unload"}:
+        value.update({
+            "cfs_owner": "k1_control_direct",
+            "cfs_owner_operation": "unload",
+            "cfs_owner_phase": "idle",
+            "cfs_owner_route": None,
+        })
+    elif operation == "T1A-load":
+        value.update({
+            "cfs_owner": "k1_control_direct",
+            "cfs_owner_operation": "load",
+            "cfs_owner_phase": "loaded",
+            "cfs_owner_route": "T1A",
+        })
+    if "cfs_owner" in value:
+        value.update({
+            "cfs_owner_failure_code": None,
+            "cfs_owner_automatic_retry_count": 0,
+            "cfs_owner_temperature_commands": [],
+            "cfs_owner_geometry_commands": [],
+            "cfs_owner_mesh_commands": [],
+            "cfs_owner_purge_commands": [],
+        })
     value.update(extra)
     return value
 
@@ -252,8 +306,9 @@ def events_to_print(routes=None):
             "preclean-unload",
             "preclean-1",
             190,
-            ["BOX_CUT_MATERIAL", "local_tip_retract", "BOX_RETRUDE_MATERIAL"],
+            ["KCTRL_CFS_DIRECT_UNLOAD ROUTE=T1A"],
             route_after=None,
+            head_sensor_after=False,
             after_cutter_sensor_after=False,
         ))
     values.extend([
@@ -269,7 +324,7 @@ def events_to_print(routes=None):
             "T1A-load",
             "load-1",
             190,
-            ["BOX_EXTRUDE_MATERIAL TNN=T1A", "BOX_EXTRUDER_EXTRUDE TNN=T1A"],
+            ["KCTRL_CFS_DIRECT_LOAD ROUTE=T1A"],
             route_after="T1A",
             head_sensor_after=True,
             after_cutter_sensor_after=True,
@@ -308,15 +363,14 @@ def normal_end():
             "safe_lift",
             "lower_bed",
             "set_unload_temperature",
-            "BOX_CUT_MATERIAL",
-            "local_tip_retract",
-            "BOX_RETRUDE_MATERIAL",
+            "KCTRL_CFS_DIRECT_UNLOAD ROUTE=T1A",
             "park_head",
             "TURN_OFF_HEATERS",
             "FANS_ZERO",
             "M84",
         ],
         route_after=None,
+        head_sensor_after=False,
         after_cutter_sensor_after=False,
         park_verified=True,
         bed_lowered_verified=True,
@@ -338,14 +392,17 @@ class IntegratedProductionCycleV1Tests(unittest.TestCase):
         result = verifier.verify()
         self.assertEqual("OK", result["status"])
         self.assertTrue(result["single_purge"])
-        self.assertFalse(result["full_unload_end"])
+        self.assertTrue(result["full_unload_end"])
         self.assertTrue(result["cfs_effects_blocked"])
         self.assertFalse(result["printer_transport"])
 
     def test_contract_targets_the_full_daily_cycle_but_remains_offline(self):
         contract = json.loads((PACKAGE / "contract.json").read_text(encoding="utf-8"))
         self.assertEqual("K1 Control opened from Mainsail", contract["target_ui"])
-        self.assertIn("cut_unload_and_rewind_at_explicit_temperature", contract["workflow"])
+        self.assertIn(
+            "direct_full_unload_and_rewind_at_explicit_temperature",
+            contract["workflow"],
+        )
         self.assertFalse(contract["deployment_candidate"])
         self.assertFalse(contract["printer_connection"])
         self.assertFalse(contract["physical_action"])
@@ -395,7 +452,7 @@ class IntegratedProductionCycleV1Tests(unittest.TestCase):
             "T1A-load",
             "load-hidden-220",
             190,
-            ["BOX_EXTRUDE_MATERIAL TNN=T1A", "BOX_EXTRUDER_EXTRUDE TNN=T1A"],
+            ["KCTRL_CFS_DIRECT_LOAD ROUTE=T1A"],
             route_after="T1A",
             head_sensor_after=True,
             after_cutter_sensor_after=True,
@@ -545,7 +602,7 @@ class IntegratedProductionCycleOrchestratorTests(unittest.IsolatedAsyncioTestCas
         service = orchestrator.CycleOrchestrator(backend, effects_enabled=True, poll_s=0)
         prepared = await service.prepare(job())
         self.assertEqual("await_manual_clean", prepared["phase"])
-        self.assertEqual(1, service.cycle.load_count)
+        self.assertEqual(0, service.cycle.load_count)
         self.assertEqual(1, service.cycle.unload_count)
         self.assertIn("KCTRL_CYCLE_RECONCILE_SLOT_A_BEFORE_CLEAN_V1", backend.commands)
         self.assertIn("KCTRL_CYCLE_UNLOAD_BEFORE_CLEAN_V1", backend.commands)
@@ -564,7 +621,7 @@ class IntegratedProductionCycleOrchestratorTests(unittest.IsolatedAsyncioTestCas
         service = orchestrator.CycleOrchestrator(backend, effects_enabled=False, poll_s=0)
         with self.assertRaises(orchestrator.OrchestrationError) as raised:
             await service.prepare(job())
-        self.assertEqual("CFS_primitives_not_physically_qualified", raised.exception.code)
+        self.assertEqual("CFS_direct_owner_not_physically_qualified", raised.exception.code)
         self.assertEqual("failed_safe", service.cycle.phase)
 
     async def test_normal_end_is_verified_as_full_unload_and_safe_terminal_state(self):

@@ -1,4 +1,4 @@
-# Cycle de production intégré V1 — clos KO sur le propriétaire CFS stock
+# Cycle de production intégré V1 — rebasé sur le propriétaire CFS direct
 
 Le run réel du 31 août 2026 a été arrêté sans retry. La primitive stock de
 chargement a repris la température à `220 °C`, référencé X/Y, vidé le mesh actif
@@ -29,14 +29,18 @@ les deux lignes atomiques :
 L'ancien `START_PRINT`, `END_PRINT`, `T0`, tout homing, toute calibration de
 mesh et tout offset Z dans le fichier sont refusés avant la première chauffe.
 
-Les quatre primitives CFS ciblées ne sont plus appelables par ce paquet. Le
-chargement stock a confirmé la prise de contrôle thermique et géométrique déjà
-documentée ; coupe et retrait restent non qualifiés :
+Les primitives CFS stock ne sont plus appelables par ce paquet. Le chargement
+stock a confirmé la prise de contrôle thermique et géométrique déjà documentée.
+ADR-036 les remplace maintenant par trois opérations K1 Control :
 
-- `BOX_EXTRUDE_MATERIAL TNN=T1A` ;
-- `BOX_EXTRUDER_EXTRUDE TNN=T1A` ;
-- `BOX_CUT_MATERIAL` ;
-- `BOX_RETRUDE_MATERIAL`.
+- `KCTRL_CFS_DIRECT_RECONCILE ROUTE=T1A`, sans mouvement filament ;
+- `KCTRL_CFS_DIRECT_LOAD ROUTE=T1A` ;
+- `KCTRL_CFS_DIRECT_UNLOAD ROUTE=T1A`.
+
+Le moteur direct séparé est vert hors imprimante avec `24/24` scénarios. Le
+cycle intégré exige désormais sa preuve complète : propriétaire, opération,
+phase, route, absence d'erreur, zéro retry et absence de commande cachée de
+température, géométrie, mesh ou purge.
 
 ## Parcours utilisateur
 
@@ -58,8 +62,11 @@ de purge et de bonne première couche lors de ce même run.
 ## État de pose
 
 La fondation UI, le composant et les macros ont été posés, mais la gate réelle
-est close KO avant chargement, purge et impression. Le composant installé est
-confiné avec `authority_mode: offline` et `effects_enabled: false`. La suite ne
-peut pas être un nouvel essai intégré : il faut d'abord remplacer les effets CFS
-stock par un propriétaire borné réellement contrôlable, ou accepter une
-frontière humaine explicite pour le bouton officiel.
+historique est close KO avant chargement, purge et impression. Le composant
+installé reste confiné avec `authority_mode: offline` et
+`effects_enabled: false`.
+
+Le remplacement hors imprimante est terminé. La prochaine étape est sa pose
+réversible encore désactivée, avec preuve que le propriétaire stock ne peut pas
+agir en parallèle. Ensuite seulement, un unique chargement/retrait physique
+sous caméra pourra être qualifié avant le nouvel essai intégré.

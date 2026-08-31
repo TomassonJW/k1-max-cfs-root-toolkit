@@ -183,8 +183,9 @@ Ce qui sera réellement fait, une petite tranche à la fois :
 - la cartographie en lecture seule du binaire S12, des arguments publics
   corrélés, des callbacks de runout et de l'exclusion du propriétaire stock est
   maintenant close sans effet ;
-- implémenter hors imprimante le propriétaire K1 Control contre des réponses
-  enregistrées, sans recopier les projets GPL ;
+- le propriétaire direct K1 Control est maintenant implémenté hors imprimante
+  contre les trames locales exactes, avec `24/24`, sans recopier les projets
+  GPL ;
 - installer avec sauvegarde et retour arrière ;
 - qualifier le départ avec purge dans le bac, décrochage E4, contrôles caméra
   bloquants et référence Z précise seulement après image propre ;
@@ -217,8 +218,8 @@ Ce qui sera réellement fait :
 - réunir chauffe, nettoyage, filament, calibration, mesh et Z dans K1 Control ;
 - faire envoyer à Orca une seule demande de démarrage ;
 - retirer ensemble l'ancien départ Orca et le post-traitement `+0,27 mm` ;
-- conserver le bon filament engagé en fin d'impression ;
-- exposer le retrait par le bouton séparé `Désengager et nettoyer` ;
+- retirer et rembobiner complètement le filament en fin normale ;
+- conserver `Désengager et nettoyer` comme action experte séparée hors travail ;
 - prouver le retour complet à l'ancien fonctionnement ;
 - redémarrer à froid et exécuter trois impressions consécutives représentatives ;
 - exercer les deux CFS, un changement de filament et les reprises intégrées ;
@@ -242,13 +243,10 @@ repousser la clôture.
 
 ## Démarrage recommandé
 
-R4 est installé et validé à froid. La prochaine gate candidate est son premier
-run court intégré. Le restart a libéré les axes et laissé la route CFS logique
-vide sans commander de mouvement de filament ; la position physique du filament
-reste donc inconnue.
+Le premier run intégré stock est clos KO et confiné. ADR-036 ainsi que le
+propriétaire CFS direct hors imprimante sont maintenant verts à `24/24`.
 
-La reprise commencera par résoudre cet état réel avec la fonction officielle,
-retirer le filament avant toute palpation et nettoyer la buse. Codex exécutera
-ensuite la géométrie fraîche, demandera seulement la réinsertion officielle de
-`T1A`, puis pilotera purge, décrochage, amorce et première couche par caméra.
-Aucun essai chaud n'est autorisé par la pose froide close.
+La prochaine gate est la pose désactivée de ce propriétaire, avec backup,
+rollback et exclusion du propriétaire stock, sans chauffe ni mouvement
+filament. Une qualification physique unique chargement/retrait sous caméra
+viendra ensuite. Le nouveau run intégré reste interdit avant ces deux preuves.

@@ -1,8 +1,11 @@
 {
   "schema": 1,
   "mission": "G4-K1-CONTROL-INTEGRATED-PRODUCTION-CYCLE-V1",
-  "status": "CLOSED_KO_STOCK_CFS_OWNER_BLOCKED",
-  "decision": "docs/adr/ADR-035-cycle-integre-et-retrait-final-systematique.md",
+  "status": "OFFLINE_REBASED_ON_DIRECT_CFS_OWNER_EFFECTS_STILL_CLOSED",
+  "decisions": [
+    "docs/adr/ADR-035-cycle-integre-et-retrait-final-systematique.md",
+    "docs/adr/ADR-036-proprietaire-cfs-direct-sur-transport-serie-borne.md"
+  ],
   "authority": "offline_only",
   "deployment_candidate": false,
   "printer_connection": false,
@@ -24,7 +27,7 @@
     "start_selected_virtual_SD_job",
     "print_with_Orca_contract_temperatures",
     "safe_lift_lower_bed_and_park",
-    "cut_unload_and_rewind_at_explicit_temperature",
+    "direct_full_unload_and_rewind_at_explicit_temperature",
     "heaters_and_fans_zero",
     "release_motors"
   ],
@@ -51,7 +54,7 @@
     "xy_reference_count": 1,
     "precise_z_reference_count": 1
   },
-  "cfs_primitives_closed_ko": {
+  "stock_cfs_primitives_closed_ko": {
     "load": [
       "BOX_EXTRUDE_MATERIAL TNN=T1A",
       "BOX_EXTRUDER_EXTRUDE TNN=T1A"
@@ -75,6 +78,23 @@
     "unload_verdict": "not_run_and_still_unqualified",
     "callable_effects": []
   },
+  "direct_cfs_owner": {
+    "package": "packages/k1-control-v1/cfs-direct-owner-offline-v1",
+    "offline_status": "CLOSED_OK_OFFLINE_24_OF_24",
+    "commands": {
+      "reconcile": "KCTRL_CFS_DIRECT_RECONCILE ROUTE=T1A",
+      "load": "KCTRL_CFS_DIRECT_LOAD ROUTE=T1A",
+      "unload": "KCTRL_CFS_DIRECT_UNLOAD ROUTE=T1A"
+    },
+    "stock_infrastructure_retained": [
+      "auto_addr",
+      "serial_485"
+    ],
+    "stock_effect_owner_retained": false,
+    "installed": false,
+    "physically_qualified": false,
+    "callable_effects": []
+  },
   "single_purge": {
     "count": 1,
     "zone": "origin_edge_outside_model",
@@ -86,11 +106,12 @@
     "safe_lift": true,
     "bed_lower_before_motor_release": true,
     "head_park_after_unload_and_before_motor_release": true,
-    "cut_count": 1,
+    "cut_count": 0,
     "unload_count": 1,
     "route_clear_required": true,
     "after_cutter_sensor_clear_required": true,
-    "toolhead_segment_may_remain": true,
+    "head_sensor_clear_required": true,
+    "toolhead_segment_may_remain": false,
     "heater_targets_zero_required": true,
     "fans_zero_required": true,
     "motors_released_last": true
@@ -106,9 +127,8 @@
     "camera_never_bypassed": true
   },
   "next_required_artifacts": [
-    "ADR_superseding_stock_CFS_effect_primitives",
-    "bounded_direct_CFS_owner_or_explicit_human_one_click_boundary",
-    "offline_protocol_proof_before_any_new_physical_effect",
+    "install_direct_CFS_owner_disabled_with_exact_rollback",
+    "prove_stock_effect_owner_exclusion",
     "separate_load_and_unload_physical_qualification",
     "only_then_one_integrated_physical_gate"
   ]

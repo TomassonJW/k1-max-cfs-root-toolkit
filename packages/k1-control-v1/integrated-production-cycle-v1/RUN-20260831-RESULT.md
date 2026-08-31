@@ -66,3 +66,17 @@ Une nouvelle gate intégrée est interdite. Le choix produit est désormais rée
 L'autonomie demandée impose l'option 1. Elle doit d'abord produire une preuve
 hors imprimante du protocole exact, puis qualifier séparément un chargement et
 un retrait uniques avant de revenir au cycle complet.
+
+## Mise à jour hors imprimante du 31 août
+
+L'option 1 est maintenant construite : ADR-036 conserve seulement le transport
+`serial_485` stock et confie chaque étape filament à K1 Control. Le paquet
+`cfs-direct-owner-offline-v1` obtient `24/24` scénarios sans connexion K1,
+notamment les deux CFS, la température explicite, les capteurs avant/après
+cutter, la réassociation `T1A` sans moteur, plusieurs cycles et l'absence de
+retry.
+
+Le cœur du cycle intégré n'accepte plus aucun nom d'effet `BOX_*`; il attend
+les preuves du propriétaire direct. L'état réel de cette capture reste KO et
+confiné : cette mise à jour ne réécrit pas l'histoire et n'autorise encore ni
+pose ni mouvement filament.

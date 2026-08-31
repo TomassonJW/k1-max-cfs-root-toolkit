@@ -1837,3 +1837,29 @@ version finale autonome.
 
 Voir `docs/adr/ADR-035-cycle-integre-et-retrait-final-systematique.md` et
 `packages/k1-control-v1/integrated-production-cycle-v1/RUN-20260831-RESULT.md`.
+
+## D-087 — K1 Control possède directement les étapes CFS
+
+Date: 2026-08-31
+
+Status: décision acceptée ; moteur hors imprimante `24/24` ; pose fermée
+
+Le propriétaire stock n'est plus découpé en primitives candidates. K1 Control
+encode et ordonne lui-même le chargement, le retrait et la réassociation de
+route. Le système Creality conserve seulement `auto_addr` et `serial_485` pour
+l'infrastructure du bus ; il ne choisit ni température, ni mouvement, ni retry,
+ni reprise de travail.
+
+Les journaux exacts de cette K1 ont priorité sur toute variante publique. Le
+source officiel confirme l'interface du transport, tandis que gitstonelabs et
+FrederickAlt servent de recoupement seulement. Aucun code GPL ou tiers n'est
+copié.
+
+Chaque effet a un identifiant consommable une fois. Une réponse incertaine
+n'est jamais renvoyée. Les deux capteurs du chemin filament, le slot exact, la
+route, la température et l'absence de commande cachée sont des preuves
+obligatoires. Une route `T1A` perdue après redémarrage peut être réassociée sans
+moteur uniquement si tous les capteurs concordent.
+
+Voir `docs/adr/ADR-036-proprietaire-cfs-direct-sur-transport-serie-borne.md` et
+`docs/50-proprietaire-cfs-direct-hors-imprimante-v1.md`.

@@ -14,6 +14,7 @@ CFG = PACKAGE / "k1-control-integrated-production-cycle-v1.cfg"
 CONTRACT = PACKAGE / "contract.json"
 INDEX = PACKAGE / "www" / "index.html"
 APP = PACKAGE / "www" / "app.js"
+DIRECT_OWNER_CONTRACT = PACKAGE.parent / "cfs-direct-owner-offline-v1" / "contract.json"
 
 
 def block(text: str, macro: str) -> str:
@@ -36,6 +37,7 @@ def ordered(text: str, values: list[str], label: str) -> None:
 
 def verify() -> dict:
     contract = json.loads(CONTRACT.read_text(encoding="utf-8"))
+    direct_owner = json.loads(DIRECT_OWNER_CONTRACT.read_text(encoding="utf-8"))
     cfg = CFG.read_text(encoding="utf-8")
     index = INDEX.read_text(encoding="utf-8")
     app = APP.read_text(encoding="utf-8")
@@ -118,12 +120,28 @@ def verify() -> dict:
             raise AssertionError("moonraker_endpoint_missing:%s" % endpoint)
     if contract["normal_end"]["unload_count"] != 1 or contract["single_purge"]["count"] != 1:
         raise AssertionError("contract_effect_count_invalid")
+    if direct_owner["status"] != "CLOSED_OK_OFFLINE_24_OF_24":
+        raise AssertionError("direct_owner_offline_gate_not_closed")
+    if contract["direct_cfs_owner"]["installed"] is not False:
+        raise AssertionError("direct_owner_install_state_invalid")
+    for filename in ("cycle.py", "orchestrator.py"):
+        source = (PACKAGE / filename).read_text(encoding="utf-8")
+        if "BOX_" in source:
+            raise AssertionError("stock_effect_owner_in_core:%s" % filename)
+        for command in (
+            "KCTRL_CFS_DIRECT_RECONCILE ROUTE=T1A",
+            "KCTRL_CFS_DIRECT_LOAD ROUTE=T1A",
+            "KCTRL_CFS_DIRECT_UNLOAD ROUTE=T1A",
+        ):
+            if command not in source:
+                raise AssertionError("direct_owner_command_missing:%s" % command)
     return {
         "status": "OK",
         "macros": len(macros),
         "single_purge": True,
-        "full_unload_end": False,
+        "full_unload_end": True,
         "cfs_effects_blocked": True,
+        "direct_owner_offline": True,
         "ui_actions": 3,
         "printer_transport": False,
         "deployment_candidate": False,

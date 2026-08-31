@@ -2,8 +2,16 @@
 
 Date : 2026-08-28
 
-État : **architecture choisie, surface S12 confirmée et cœur propriétaire clos
-hors imprimante ; effets physiques, pose et production fermés**
+État : **ADR-036 active ; propriétaire CFS direct `24/24` hors imprimante ;
+pose, effets physiques et production fermés**
+
+Mise à jour prioritaire du 31 août 2026 : le run intégré a prouvé qu'une petite
+primitive `BOX_*` pouvait encore reprendre température, X/Y et mesh. Les quatre
+primitives candidates historiques sont donc rejetées. K1 Control possède
+désormais les trames de chargement/retrait et ne conserve que `auto_addr` et
+`serial_485` comme infrastructure de transport. Les passages plus anciens qui
+parlent encore de primitives candidates sont historiques et remplacés par
+ADR-036.
 
 Mise à jour du 28 août 2026 : la gate S12 est close dans le document 44. Le
 chargeur et le binaire exacts n'ont pas dérivé, l'objet `box` est actif, les
@@ -23,11 +31,11 @@ pas exécutables et aucun effet réel n'est promu par ce résultat.
 Nous ne repartons pas de zéro et nous n’installons pas un nouveau firmware
 aveuglément.
 
-La meilleure voie est de garder le pilote CFS Creality déjà présent pour
-parler aux deux boîtiers, mais de lui retirer la direction du cycle
-d’impression. K1 Control décidera de l’ordre, des températures, du seul palpage
-Z autorisé, du mesh, de la purge, du changement de filament, du runout, de la
-pause, de la reprise et de la fin.
+La meilleure voie est de garder uniquement le transport CFS Creality déjà
+présent pour parler aux deux boîtiers. K1 Control encode les trames filament et
+décide de l’ordre, des températures, du seul palpage Z autorisé, du mesh, de la
+purge, du changement de filament, du runout, de la pause, de la reprise et de la
+fin.
 
 HelixScreen a effectivement réalisé une cartographie très utile. Nous
 réutilisons ses noms de commandes, ses effets cachés et ses pièges comme
@@ -97,15 +105,15 @@ La bonne découpe publique est la suivante :
 | `BOX_TNN_RETRY_PROCESS` | peut rejouer une phase et reprendre le print | interdit en automatique |
 | `BOX_CHECK_MATERIAL_REFILL`, `BOX_EXTRUSION_ALL_MATERIALS`, `BOX_RESUME_EXTRUDE` | traitement stock de fin de bobine, extrusion restante et reprise | interdits tant que K1 Control possède le runout |
 | `BOX_RETRUDE_MATERIAL_WITH_TNN` | peut agir même pendant la reprise interne | interdit |
-| `BOX_EXTRUDE_MATERIAL TNN=…` | avance côté CFS | candidate, pas encore appelable |
-| `BOX_EXTRUDER_EXTRUDE TNN=…` | prise côté extrudeur de tête | candidate, pas encore appelable |
-| `BOX_CUT_MATERIAL` | coupe, avec mouvements possibles | candidate après cartographie exacte |
-| `BOX_RETRUDE_MATERIAL` | retire la route active | candidate après cartographie exacte |
+| `BOX_EXTRUDE_MATERIAL TNN=…` | avance côté CFS avec effets cachés prouvés | interdit dans K1 Control |
+| `BOX_EXTRUDER_EXTRUDE TNN=…` | prise côté extrudeur de tête | interdit dans K1 Control |
+| `BOX_CUT_MATERIAL` | coupe, avec mouvements possibles | interdit dans K1 Control |
+| `BOX_RETRUDE_MATERIAL` | retire la route active | interdit dans K1 Control |
 | requêtes capteurs, buffer et objet `box` | lecture de présence et d’état | candidates de lecture seule |
 | `BOX_ENABLE_AUTO_REFILL ENABLE=0/1` | active ou désactive la politique stock | utilisé seulement pour exclure/restaurer le propriétaire stock, après preuve |
 
-Une commande candidate n’est pas une commande autorisée. Chaque commande
-d’effet reste bloquée jusqu’à sa gate exacte sur la S12.
+Les lectures restent bornées. Aucun effet `BOX_*` n'est une commande candidate
+de la version finale.
 
 ## Architecture retenue
 
@@ -116,12 +124,13 @@ Le trajet sera :
         -> K1 Control dans Moonraker : état, décisions, journal, rollback
         -> macros KCTRL petites et vérifiées
         -> soit Klipper natif : chauffe, mesh, Z, purge, pause/reprise
-        -> soit une primitive BOX qualifiée : moteurs et capteurs CFS
+        -> soit le propriétaire CFS direct : trames et capteurs bornés
+        -> auto_addr + serial_485 stock : transport seulement
         -> les deux CFS stock
 
-Le `box_wrapper` reste donc un conducteur matériel limité. Il ne décide plus
-du départ, du mesh, du Z, de la température, de la purge, de la reprise ni de
-la fin.
+Le `box_wrapper` n'exécute aucun effet du chemin K1 Control. Il ne décide plus
+du départ, du filament, du mesh, du Z, de la température, de la purge, de la
+reprise ni de la fin.
 
 Un verrou de propriétaire est obligatoire. Tant que K1 Control possède un job :
 
@@ -134,15 +143,16 @@ Un verrou de propriétaire est obligatoire. Tant que K1 Control possède un job 
 
 Le départ prévu reste volontairement court :
 
-1. Tu nettoies la buse à la main et confirmes une fois.
-2. Plateau et buse commencent à chauffer.
-3. X/Y sont référencés pendant la chauffe.
-4. À `140/55 °C`, une seule référence Z propre est exécutée.
-5. Le profil `k1_p001_t055_r001_n11x11` et le Z accepté sont chargés puis
+1. K1 Control retire entièrement tout filament présent, sans retry.
+2. Tu nettoies la buse à la main et confirmes une fois.
+3. Plateau et buse commencent à chauffer.
+4. X/Y sont référencés pendant la chauffe.
+5. À `140/55 °C`, une seule référence Z propre est exécutée.
+6. Le profil `k1_p001_t055_r001_n11x11` et le Z accepté sont chargés puis
    relus.
-6. Le filament correct déjà engagé est gardé sans `Tn`.
-7. La température de première couche est atteinte.
-8. Une purge K1 Control explicite, sans brosse, confirme le débit.
+7. `T1A` est chargé par le propriétaire direct à la température du travail.
+8. La température de première couche est atteinte.
+9. Une purge K1 Control explicite, sans brosse, confirme le débit.
 9. Le modèle commence sans autre palpage, sans mesh neuf et sans offset caché.
 
 Les branches « aucun filament » et « mauvais filament » utiliseront le même
@@ -245,7 +255,7 @@ technique fiable, pas une validation de la mauvaise séquence stock.
 | une fin de bobine laisse encore un segment dans le tube et la tête | couper aveuglément ou relancer la grosse purge stock serait faux | qualifier séparément la recette « consommer ou retirer la fin » |
 | la fin de print stock nettoie mappings et états de reprise | les chemins S12 sont repérés, mais appeler `BOX_END_PRINT` rendrait le cycle au stock | posséder explicitement ces nettoyages sans appeler la grosse fin stock |
 | les petites phases peuvent échouer sans lever une erreur claire | un retour HTTP OK ne prouve rien | états avant/après, capteurs, une seule tentative |
-| `BOX_CUT_MATERIAL` peut déplacer la tête | risque de collision avec la pièce | gate séparée avec position et trajet bornés |
+| un cutter stock peut déplacer la tête | risque de collision avec la pièce | aucun cutter stock dans la V1 directe ; la gate ferme si le retrait complet échoue |
 | le changement entre deux CFS n’est pas prouvé localement | route ou reconnexion ambiguë | essai unitaire puis essai inter-boîtiers |
 | les capteurs ne prouvent pas le débit en sortie | risque de reprendre avec buse bouchée | purge qualifiée et règle de blocage avant mode sans surveillance |
 | retour au stock | réintroduit brosse/palpage/mesh stock | profil stock réservé au rollback, jamais présenté comme voie normale |
@@ -262,13 +272,13 @@ seule connexion Moonraker le vrai Z accepté et l'absence de transition CFS. La
 gate d'effet qualifie ensuite exactement `1 -> 0 -> 1` pour l'auto-remplacement
 stock, une tentative par commande et deux preuves d'état après chacune.
 
-`G4-K1-CONTROL-START-SEQUENCE-OWNER-V1` est maintenant installé, surveillé,
-réversible et validé à froid. Les treize templates K1, les courses de purge, les
-empreintes, le backup, le rollback et un export Orca sacrificiel sont revus. Le
-restart exige une vraie transition du socket, puis restaure et relit le
-`11 × 11`. Le test froid est vert sans chauffe, mouvement ni extrusion. La
-lecture finale a toutefois trouvé zéro route engagée.
+`G4-K1-CONTROL-CFS-DIRECT-OWNER-OFFLINE-V1` est clos avec `24/24`. Il couvre
+les trames locales exactes, les deux CFS, les deux capteurs du chemin, la
+température explicite, la réassociation sans moteur, plusieurs cycles et zéro
+retry. Aucun connecteur imprimante ou effet physique n'est inclus.
 
-La prochaine étape est donc une gate distincte qui rétablit puis relit une seule
-route `T1A`, sans impression. Le premier démarrage physique restera une tranche
-encore séparée avec Thomas devant la K1.
+La prochaine étape est
+`G4-K1-CONTROL-CFS-DIRECT-OWNER-INSTALL-DISABLED-V1` : poser le composant encore
+désactivé, sauvegarder et prouver le rollback exact, puis exclure le
+propriétaire stock sans envoyer de trame filament. La qualification physique
+chargement/retrait viendra ensuite avec Thomas devant la K1 et la caméra.
