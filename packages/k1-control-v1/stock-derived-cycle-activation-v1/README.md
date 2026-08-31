@@ -29,3 +29,15 @@ Le restart hôte recharge explicitement le mesh `11 × 11` et le Z accepté
 La validation physique du premier bouton n'appartient pas à cette pose. Elle
 commence ensuite par la présence humaine, la caméra et un nettoyage frais de la
 buse et du plateau, avant toute géométrie et avant toute insertion de filament.
+
+## Récupération d'une route perdue au redémarrage
+
+Si les deux capteurs physiques voient le filament mais que le CFS et le
+propriétaire direct n'exposent plus de route logique, le départ utilise
+uniquement la route initiale explicitement choisie pour le travail. Le ticket
+effectue d'abord la réassociation directe. Si le redémarrage a aussi libéré les
+axes, il référence seulement X/Y et marque Z sans mouvement à une hauteur sûre :
+aucune palpation Z n'a lieu avec le filament. Il enchaîne ensuite cutter,
+retrait, arrêt des chauffes et libération des moteurs. La vraie géométrie de
+contact X/Y/Z reste obligatoire après retrait et nettoyage frais. Toute autre
+combinaison de capteurs reste refusée, sans nouvel essai automatique.

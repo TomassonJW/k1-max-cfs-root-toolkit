@@ -1892,3 +1892,23 @@ transport non pris, commandes stock intactes, trois refus d'effet et zéro trame
 CFS. Une première incompatibilité SFTP a aussi exercé le rollback exact avant
 la reprise en mode SCP compatible. Cette clôture ne vaut ni activation ni
 qualification physique du filament.
+
+## D-089 — La quantité de purge vient du G-code et le cutter doit être prouvé
+
+Date: 2026-09-01
+
+Status: décision acceptée ; purge corrigée ; retrait physique bloqué
+
+Une avance fixe de récupération ne représente pas la purge de production. Le
+chargement initial utilise le vecteur Orca du G-code, avec un repli exact de
+`140 mm`. Un changement de filament utilise la matrice Orca et son
+`flush_multiplier`, sous la limite de sécurité du propriétaire. La purge est
+ensuite réalisée dans le vrai bac avec les mouvements de décrochage déjà figés.
+
+Le retrait ne part que si le capteur du cutter prouve l'appui pendant que la
+tête reste dans la zone de coupe. L'essai du 1er septembre a conservé
+`cut_pos=0` depuis `Y304,5` jusqu'à la limite publiée `Y307,5` ; aucune
+rétraction n'a été envoyée. Une vérification mécanique à froid du levier et du
+capteur est obligatoire avant tout nouvel essai.
+
+Voir `docs/adr/ADR-040-quantite-purge-gcode-et-garde-cutter-reel.md`.

@@ -29,7 +29,7 @@ def load_scenarios():
 def test_activation_scenarios_are_all_green_without_transport():
     result = load_scenarios().run()
     assert result["status"] == "OK"
-    assert result["passed"] == result["total"] == 18
+    assert result["passed"] == result["total"] == 22
     assert result["printer_transport"] is False
     assert result["physical_action"] is False
     assert result["automatic_retry"] is False
@@ -122,7 +122,7 @@ def test_runout_owner_checks_the_identity_published_by_the_real_direct_owner():
 
 def test_real_installation_and_independent_idle_validation_are_recorded():
     result = (PACKAGE / "RESULT.md").read_text(encoding="utf-8")
-    assert "INSTALLÉE ET VALIDÉE INDÉPENDAMMENT AU REPOS" in result
+    assert "ACTIVÉE ET CORRIGÉE" in result
     assert "20260831-205322-g4-k1-control-stock-derived-cycle-activation-v1" in result
     installation = MANIFEST["installation"]
     assert installation["independent_validation_marker"] == (

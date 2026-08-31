@@ -68,6 +68,15 @@ class K1ControlCfsDirectOwner:
     cmd_DISABLED_SELFTEST_help = "Prouve que la pose désactivée reste sans effet"
     cmd_PREFLIGHT_help = "Préflight sans trame du propriétaire CFS direct activé"
     cmd_RECONCILE_help = "Réassocie une route chargée avec une seule lecture CFS"
+    cmd_ADOPT_RETAINED_SEGMENT_help = (
+        "Confirme sans mouvement un segment coupé resté dans la tête"
+    )
+    cmd_RECOVER_EXTRUDE_ERROR_LOAD_TAIL_help = (
+        "Termine une insertion EXTRUDE_ERR8 déjà arrivée aux deux capteurs"
+    )
+    cmd_FINALIZE_LOAD_TAKEOVER_help = (
+        "Valide le buffer après prise locale et verrouille la route sans moteur"
+    )
     cmd_LOAD_help = "Charge une route CFS par les trames directes bornées"
     cmd_UNLOAD_help = "Retire une route CFS par les trames directes bornées"
 
@@ -100,6 +109,9 @@ class K1ControlCfsDirectOwner:
         self.last_effect_id: Optional[str] = None
         self.last_result: Dict[str, Any] = {}
         self.last_box_proof: Dict[str, Any] = {}
+        self.retained_segment_recovery_id: Optional[str] = None
+        self.err8_load_tail_recovery_id: Optional[str] = None
+        self.takeover_finalize_recovery_id: Optional[str] = None
 
         self.gcode.register_command(
             "KCTRL_CFS_DIRECT_STATUS",
@@ -120,6 +132,21 @@ class K1ControlCfsDirectOwner:
             "KCTRL_CFS_DIRECT_RECONCILE",
             self.cmd_RECONCILE,
             desc=self.cmd_RECONCILE_help,
+        )
+        self.gcode.register_command(
+            "KCTRL_CFS_DIRECT_ADOPT_RETAINED_SEGMENT",
+            self.cmd_ADOPT_RETAINED_SEGMENT,
+            desc=self.cmd_ADOPT_RETAINED_SEGMENT_help,
+        )
+        self.gcode.register_command(
+            "KCTRL_CFS_DIRECT_RECOVER_EXTRUDE_ERROR_LOAD_TAIL",
+            self.cmd_RECOVER_EXTRUDE_ERROR_LOAD_TAIL,
+            desc=self.cmd_RECOVER_EXTRUDE_ERROR_LOAD_TAIL_help,
+        )
+        self.gcode.register_command(
+            "KCTRL_CFS_DIRECT_FINALIZE_LOAD_TAKEOVER",
+            self.cmd_FINALIZE_LOAD_TAKEOVER,
+            desc=self.cmd_FINALIZE_LOAD_TAKEOVER_help,
         )
         self.gcode.register_command(
             "KCTRL_CFS_DIRECT_LOAD",
@@ -195,7 +222,14 @@ class K1ControlCfsDirectOwner:
                 "K1 Control CFS direct: disabled_owner_replaced_stock_commands"
             )
         refused = 0
-        for _operation in ("reconcile", "load", "unload"):
+        for _operation in (
+            "reconcile",
+            "adopt_retained_segment",
+            "recover_err8_load_tail",
+            "finalize_load_takeover",
+            "load",
+            "unload",
+        ):
             try:
                 self._require_enabled()
             except RuntimeGateError as error:
@@ -204,12 +238,12 @@ class K1ControlCfsDirectOwner:
                         "K1 Control CFS direct: disabled_guard_invalid"
                     )
                 refused += 1
-        if refused != 3:
+        if refused != 6:
             raise gcmd.error(
                 "K1 Control CFS direct: disabled_guard_count_invalid"
             )
         self.disabled_selftest_count += 1
-        gcmd.respond_info("KCTRL_CFS_DIRECT_DISABLED_SELFTEST_OK refused=3")
+        gcmd.respond_info("KCTRL_CFS_DIRECT_DISABLED_SELFTEST_OK refused=6")
 
     def cmd_PREFLIGHT(self, gcmd) -> None:
         try:
@@ -236,6 +270,46 @@ class K1ControlCfsDirectOwner:
             raise gcmd.error("K1 Control CFS direct: %s" % error.code)
         gcmd.respond_info("KCTRL_CFS_DIRECT_RECONCILE_OK route=%s" % route)
 
+    def cmd_ADOPT_RETAINED_SEGMENT(self, gcmd) -> None:
+        """Adopte uniquement l'état physique confirmé, sans trame ni moteur."""
+        try:
+            self._require_enabled()
+            recovery_id = gcmd.get("RECOVERY_ID")
+            if not recovery_id or recovery_id == self.retained_segment_recovery_id:
+                raise RuntimeGateError("retained_segment_recovery_id_invalid_or_used")
+            if str(gcmd.get("CONFIRM")) != "1":
+                raise RuntimeGateError("retained_segment_human_confirmation_missing")
+            self._ensure_runtime()
+            self._assert_stock_excluded()
+            if self.owner.active_route is not None:
+                raise RuntimeGateError("retained_segment_route_not_clear")
+            if self.owner.phase not in ("idle", "failed_safe"):
+                raise RuntimeGateError("retained_segment_owner_busy")
+            if not self._head_sensor() or self._after_cutter_sensor():
+                raise RuntimeGateError("retained_segment_sensor_shape_invalid")
+            self.owner.active_route = None
+            self.owner.retained_head_segment = True
+            self.owner.phase = "idle"
+            self.owner.failure_code = None
+            self.owner.trace.append(
+                {
+                    "kind": "retained_head_segment_adopted",
+                    "recovery_id": recovery_id,
+                    "human_confirmed": True,
+                    "physical_effect": False,
+                }
+            )
+            self.retained_segment_recovery_id = recovery_id
+            self._record_result(
+                "adopt_retained_segment", recovery_id, self.owner.result()
+            )
+        except RuntimeGateError as error:
+            raise gcmd.error("K1 Control CFS direct: %s" % error.code)
+        gcmd.respond_info(
+            "KCTRL_CFS_DIRECT_ADOPT_RETAINED_SEGMENT_OK recovery_id=%s no_effect=1"
+            % recovery_id
+        )
+
     def cmd_LOAD(self, gcmd) -> None:
         try:
             self._prepare_effect()
@@ -251,6 +325,95 @@ class K1ControlCfsDirectOwner:
         except RuntimeGateError as error:
             raise gcmd.error("K1 Control CFS direct: %s" % error.code)
         gcmd.respond_info("KCTRL_CFS_DIRECT_LOAD_OK route=%s" % route)
+
+    def cmd_RECOVER_EXTRUDE_ERROR_LOAD_TAIL(self, gcmd) -> None:
+        """Reprise explicite, unique et sans nouvelle poussée stage 5."""
+        try:
+            self._require_enabled()
+            route = gcmd.get("ROUTE")
+            recovery_id = gcmd.get("RECOVERY_ID")
+            if route != "T1A":
+                raise RuntimeGateError("err8_recovery_route_not_t1a")
+            if not recovery_id or recovery_id == self.err8_load_tail_recovery_id:
+                raise RuntimeGateError("err8_recovery_id_invalid_or_used")
+            if str(gcmd.get("CONFIRM")) != "1":
+                raise RuntimeGateError("err8_recovery_confirmation_missing")
+            self._ensure_runtime()
+            self._assert_stock_excluded()
+            self._assert_no_stock_route()
+            if self.owner.active_route is not None or self.owner.phase != "idle":
+                raise RuntimeGateError("err8_recovery_owner_not_idle")
+            if not self._head_sensor() or not self._after_cutter_sensor():
+                raise RuntimeGateError("err8_recovery_sensor_shape_invalid")
+
+            # Le restart nécessaire à la pose a réinitialisé l'objet Python.
+            # L'état physique est donc réadopté uniquement sous cette forme
+            # exacte, avant l'unique fin 4 -> 6 qualifiée hors imprimante.
+            self.owner.retained_head_segment = True
+            self.owner.trace.append(
+                {
+                    "kind": "err8_handoff_state_adopted",
+                    "route": route,
+                    "recovery_id": recovery_id,
+                    "human_confirmed": True,
+                    "physical_effect": False,
+                }
+            )
+            self.err8_load_tail_recovery_id = recovery_id
+            result = self.owner.recover_load_tail(
+                route,
+                recovery_id,
+                self._temperature_proof(gcmd),
+            )
+            self._record_result("recover_err8_load_tail", recovery_id, result)
+            self._raise_result_failure()
+        except RuntimeGateError as error:
+            raise gcmd.error("K1 Control CFS direct: %s" % error.code)
+        gcmd.respond_info(
+            "KCTRL_CFS_DIRECT_RECOVER_EXTRUDE_ERROR_LOAD_TAIL_OK route=%s stages=4,6 stage5=0"
+            % route
+        )
+
+    def cmd_FINALIZE_LOAD_TAKEOVER(self, gcmd) -> None:
+        """Clôture après prise locale : lectures puis mode impression."""
+        try:
+            self._require_enabled()
+            route = gcmd.get("ROUTE")
+            recovery_id = gcmd.get("RECOVERY_ID")
+            if route != "T1A":
+                raise RuntimeGateError("takeover_finalize_route_not_t1a")
+            if not recovery_id or recovery_id == self.takeover_finalize_recovery_id:
+                raise RuntimeGateError("takeover_finalize_id_invalid_or_used")
+            if str(gcmd.get("CONFIRM")) != "1":
+                raise RuntimeGateError("takeover_finalize_confirmation_missing")
+            self._ensure_runtime()
+            self._assert_stock_excluded()
+            self._assert_no_stock_route()
+            if self.owner.active_route is not None or self.owner.phase != "idle":
+                raise RuntimeGateError("takeover_finalize_owner_not_idle")
+            if not self._head_sensor() or not self._after_cutter_sensor():
+                raise RuntimeGateError("takeover_finalize_sensor_shape_invalid")
+
+            self.owner.retained_head_segment = True
+            self.owner.trace.append(
+                {
+                    "kind": "load_takeover_state_adopted",
+                    "route": route,
+                    "recovery_id": recovery_id,
+                    "human_confirmed": True,
+                    "physical_effect": False,
+                }
+            )
+            self.takeover_finalize_recovery_id = recovery_id
+            result = self.owner.finalize_load_takeover(route, recovery_id)
+            self._record_result("finalize_load_takeover", recovery_id, result)
+            self._raise_result_failure()
+        except RuntimeGateError as error:
+            raise gcmd.error("K1 Control CFS direct: %s" % error.code)
+        gcmd.respond_info(
+            "KCTRL_CFS_DIRECT_FINALIZE_LOAD_TAKEOVER_OK route=%s buffer=0 motor=0"
+            % route
+        )
 
     def cmd_UNLOAD(self, gcmd) -> None:
         try:
@@ -356,6 +519,18 @@ class K1ControlCfsDirectOwner:
             "connected": connected,
         }
 
+    def _assert_no_stock_route(self) -> None:
+        status = self._box_object.get_status(self.reactor.monotonic())
+        routes = []
+        for address in self.connected_boxes:
+            item = status.get("T%d" % address)
+            filament = item.get("filament") if isinstance(item, dict) else None
+            if filament in ("A", "B", "C", "D"):
+                routes.append("T%d%s" % (address, filament))
+        if routes:
+            raise RuntimeGateError("err8_recovery_stock_route_present")
+        self.last_box_proof["logical_routes"] = []
+
     def _temperature_proof(self, gcmd) -> Dict[str, Any]:
         expected = gcmd.get_float("EXPECTED_C", minval=170.0, maxval=320.0)
         material_min = gcmd.get_float(
@@ -440,7 +615,13 @@ class K1ControlCfsDirectOwner:
             "frames_sent_count": len(result.get("frames", [])),
             "tip_pull_count": result.get("tip_pull_count", 0),
             "load_count": result.get("load_count", 0),
+            "load_tail_recovery_count": result.get(
+                "load_tail_recovery_count", 0
+            ),
+            "takeover_finalize_count": result.get("takeover_finalize_count", 0),
+            "last_buffer_state": result.get("last_buffer_state"),
             "unload_count": result.get("unload_count", 0),
+            "retained_head_segment": result.get("retained_head_segment", False),
             "temperature_commands": list(result.get("temperature_commands", [])),
             "geometry_commands": list(result.get("geometry_commands", [])),
             "mesh_commands": list(result.get("mesh_commands", [])),
@@ -451,6 +632,18 @@ class K1ControlCfsDirectOwner:
             "cfs_direct_owner_phase": phase,
             "cfs_direct_owner_route": result.get("active_route"),
             "cfs_direct_owner_failure_code": result.get("failure_code"),
+            "cfs_direct_owner_retained_head_segment": result.get(
+                "retained_head_segment", False
+            ),
+            "cfs_direct_owner_retained_segment_recovery_id": (
+                self.retained_segment_recovery_id
+            ),
+            "cfs_direct_owner_err8_load_tail_recovery_id": (
+                self.err8_load_tail_recovery_id
+            ),
+            "cfs_direct_owner_takeover_finalize_recovery_id": (
+                self.takeover_finalize_recovery_id
+            ),
             "cfs_direct_owner_automatic_retry_count": result.get(
                 "automatic_retry_count", 0
             ),

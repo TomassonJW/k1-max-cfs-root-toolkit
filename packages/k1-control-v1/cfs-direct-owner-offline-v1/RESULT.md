@@ -13,6 +13,11 @@ CRC, limite de poussées, retrait en deux phases et identifiants consommables
 une fois. Toutes les trames partent avec `retry=False`; un nettoyage de tension
 de sécurité est tenté au plus une fois par adresse.
 
+Le retrait ne confond plus la route amont libérée avec le segment déjà coupé
+qui peut rester dans la tête. Le capteur après cutter doit être libre pour
+valider le retrait ; l'état `retained_head_segment` est alors exposé et peut
+être consommé uniquement par le chargement possédé suivant du même runtime.
+
 Le paquet ne chauffe pas, ne référence pas, ne bouge pas, ne touche ni au mesh
 ni au Z, ne purge pas et ne se connecte pas à la K1. Il n'est pas un candidat
 de pose.

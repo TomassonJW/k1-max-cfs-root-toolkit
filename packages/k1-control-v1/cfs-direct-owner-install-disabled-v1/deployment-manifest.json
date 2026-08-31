@@ -43,7 +43,7 @@
     {
       "source": "packages/k1-control-v1/cfs-direct-owner-install-disabled-v1/k1_control_cfs_direct_owner.py",
       "destination": "/usr/share/klipper/klippy/extras/k1_control_cfs_direct_owner.py",
-      "sha256": "47cc69a495afc269d5e54df7224d88d9b9ada430fc511a4107f42935138029d2",
+      "sha256": "236d329a847ee02dd7b2ef259024b3485282db0e2a89668d35cc43553d784906",
       "before": "absent"
     },
     {
@@ -61,7 +61,7 @@
     {
       "source": "packages/k1-control-v1/cfs-direct-owner-offline-v1/owner.py",
       "destination": "/usr/share/klipper/klippy/extras/k1_control_cfs_direct/owner.py",
-      "sha256": "df121ba1fa8dfc494aa65afc235ae6404d5c9e7124ef8fc90e3346512239c3af",
+      "sha256": "e9a0eca44cb2b87bd2a220c2c2ce13cc5dc9cd4870b519fc764a4d04070de031",
       "before": "absent"
     },
     {
@@ -90,11 +90,11 @@
     },
     {
       "source": "packages/k1-control-v1/cfs-direct-owner-install-disabled-v1/run_scenarios.py",
-      "sha256": "45326ad8de76d4b9935557855c0dd5b19e1618f846efb5f4a13d02ef50efe7b9"
+      "sha256": "e5e114d7686634f65f0abc993ff7f3947da7d98d8e4a29c6cd72eb4ee61b77d8"
     },
     {
       "source": "packages/k1-control-v1/cfs-direct-owner-install-disabled-v1/verify_candidate.py",
-      "sha256": "417cf5153e89766c06093cc95bb47cc656be70142aa7624b33ede07a8fe8522a"
+      "sha256": "0cd2d65eed9e569d6b33c0396ec4ffade61427bf60dc23ea611027d5588297bc"
     },
     {
       "source": "packages/k1-control-v1/cfs-direct-owner-install-disabled-v1/contract.json",

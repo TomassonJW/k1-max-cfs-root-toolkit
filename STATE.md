@@ -1,6 +1,21 @@
 # STATE
 
-Last updated: 2026-08-31
+Last updated: 2026-09-01
+
+Mise à jour prioritaire : la purge de récupération de `30 mm` n'était pas une
+purge stock. Les traces exactes donnent `140 mm` au chargement initial ; le
+cycle actif lit maintenant les quantités Orca du G-code, y compris les matrices
+de changement de couleur. Trois correctifs distants ont été posés et validés :
+quantité de purge, conservation de la route `T1A` pendant l'accès cutter et
+suppression de la réconciliation moteur lorsque le propriétaire direct possède
+déjà cette route.
+
+L'essai réel suivant est fermé avant retrait : `cut_pos` est resté à `0` à la
+position stock `X38 Y304,5` puis jusqu'à la limite machine `Y307,5`. Aucune
+rétraction n'a été envoyée. La K1 est revenue chauffes à zéro, axes libérés,
+`T1A` chargé, deux capteurs filament actifs, mesh `11 × 11` et Z `−0,04 mm`.
+Tout nouvel essai cutter est interdit avant une vérification mécanique à froid
+du levier et de son capteur. Voir ADR-040.
 
 Mise à jour prioritaire : la gate physique directe T1A est close KO avant tout
 effet filament. Le préflight actif a refusé `auto_refill=1` après restart ; le

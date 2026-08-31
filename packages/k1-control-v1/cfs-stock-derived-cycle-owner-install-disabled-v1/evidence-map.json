@@ -16,11 +16,15 @@
     "path": "inventory/raw/g3-production/p123-20260820-154056/20260820-154056-p123.raw.txt",
     "required_fragments_in_order": [
       "\"gcode_position\":[38.99,230.0",
-      "[box] cut sensor state:1",
       "\"gcode_position\":[38.0,304.5",
+      "[box] cut sensor state:1",
       "[box] cut to return OK",
       "Cut sensor triggered.",
-      "extrude = -20, velocity: [140.0]"
+      "YJY K1X box_retrude_material 1",
+      "extrude = -20, velocity: [140.0]",
+      "filament_sensor false",
+      "[box] cut sensor state:0",
+      "\"gcode_position\":[210.0,291.5"
     ]
   },
   "purge_and_prime": {

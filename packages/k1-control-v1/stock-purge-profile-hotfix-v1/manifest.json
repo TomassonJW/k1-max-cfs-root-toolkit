@@ -1,0 +1,68 @@
+{
+  "schema": 1,
+  "mission": "G4-K1-CONTROL-STOCK-PURGE-PROFILE-HOTFIX-V1",
+  "status": "deployment_candidate",
+  "purpose": "Replace the 20/30 mm recovery quantity with the stock-proven 140 mm initial purge baseline and carry Orca colour-transition purge lengths without probing or moving filament during installation.",
+  "files": [
+    {
+      "name": "stock_cycle_owner",
+      "source": "packages/k1-control-v1/cfs-stock-derived-cycle-owner-install-disabled-v1/k1_control_stock_cycle_owner.py",
+      "destination": "/usr/share/klipper/klippy/extras/k1_control_stock_cycle_owner.py",
+      "before_sha256": "7f1a6c53111ab3808fa3ba902899aa12482ed520dfa507b77399465a41a8ed50",
+      "after_sha256": "07e9839519929c3e90937cd7ef3737c8cb982b5840ffdff31807a6d229e1bf6c"
+    },
+    {
+      "name": "stock_cycle_core",
+      "source": "packages/k1-control-v1/cfs-stock-derived-orchestrator-offline-v1/orchestrator.py",
+      "destination": "/usr/data/k1-control-v1/current/moonraker/moonraker/moonraker/components/k1_control_stock_cycle_core.py",
+      "before_sha256": "934f04f78b8f82b5b51a6459daa3954978f5fa5448e412d8365f01e1e98376d7",
+      "after_sha256": "d73132768bcac3f31d2eb89c695f0b3ca60abc643f67c5c44b97c46734a83401"
+    },
+    {
+      "name": "stock_cycle_active_core",
+      "source": "packages/k1-control-v1/stock-derived-cycle-activation-v1/active_core.py",
+      "destination": "/usr/data/k1-control-v1/current/moonraker/moonraker/moonraker/components/k1_control_stock_cycle_active_core.py",
+      "before_sha256": "12a1478dfd71404ba288dcbc9810c1698a220d2516c720154f81607cb31f8713",
+      "after_sha256": "0edab4855258b6670fc9ae8ce855526023fe3c716455ca277acb76b47ddc9cdd"
+    },
+    {
+      "name": "stock_job_contract",
+      "source": "packages/k1-control-v1/stock-derived-cycle-activation-v1/job_contract.py",
+      "destination": "/usr/data/k1-control-v1/current/moonraker/moonraker/moonraker/components/k1_control_stock_job_contract.py",
+      "before_sha256": "2f3a9b20dd9dac5d09a26a1f81d3d82f36136f7e9b2523a5136d8e0d197dcaa8",
+      "after_sha256": "c1ea059f120eba3e99e284249e9923da3ff505fcaa31f090f1eee054ffe6a100"
+    }
+  ],
+  "stale_state": {
+    "run": "/usr/data/k1-control-v1/state/stock-derived-cycle-state.json",
+    "selection": "/usr/data/k1-control-v1/state/stock-derived-selection.json",
+    "required_before": {
+      "phase": "blocked_uncertain",
+      "failure": "effect_outcome_unknown_no_retry",
+      "purge_mm": 20.0,
+      "active_route": "T1A",
+      "filament_loaded": true
+    },
+    "action": "move_to_exact_backup_before_restart"
+  },
+  "post_install": {
+    "initial_purge_mm": 140.0,
+    "maximum_orca_transition_purge_mm": 400.0,
+    "release_trips": [3, 4],
+    "different_material_without_resolved_tool_mapping": "reject",
+    "restore_mesh": "k1_p001_t055_r001_n11x11",
+    "restore_accepted_z_mm": -0.04,
+    "reassociate_route": "T1A",
+    "reassociate_motor_frames": 0
+  },
+  "effects": {
+    "heating": false,
+    "motion": false,
+    "extrusion": false,
+    "probing": false,
+    "mesh_recalculation": false,
+    "cfs_motor_frame": false,
+    "klipper_restart": 1,
+    "dedicated_moonraker_restart": 1
+  }
+}

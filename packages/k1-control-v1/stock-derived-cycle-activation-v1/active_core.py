@@ -36,15 +36,18 @@ class ActiveStockDerivedOrchestrator(base.StockDerivedOrchestrator):
             "SET_FILAMENT_SENSOR SENSOR=filament_sensor_2 ENABLE=0",
         ]
 
-    def plan_preclean_unload(self):
+    def plan_preclean_unload(self, *, reconcile_required=True):
         self._require_phase("preclean_unload_ready")
         route = self._active_route()
         ticket_id = self._next_ticket_id("preclean-unload")
-        command = "\n".join(
-            [
+        reconcile = []
+        if reconcile_required:
+            reconcile.append(
                 "KCTRL_CFS_DIRECT_RECONCILE ROUTE=%s OBSERVATION_ID=%s-reconcile"
-                % (route, ticket_id),
-            ]
+                % (route, ticket_id)
+            )
+        command = "\n".join(
+            reconcile
             + self._intentional_unload_prefix()
             + [self._cut_unload_command(route, ticket_id)]
         )
@@ -144,6 +147,14 @@ class ActiveStockDerivedOrchestrator(base.StockDerivedOrchestrator):
         if target == source:
             self._fail("tool_change_target_same_as_source")
         self._require_available_target(target)
+        source_material = self.inventory[source]["material"]
+        target_material = self.inventory[target]["material"]
+        if base.material_digest(source_material) != base.material_digest(target_material):
+            # Une couleur ou matiere differente doit utiliser la paire exacte
+            # source -> cible de la matrice de rincage Orca. Tant que la route
+            # physique n'est pas associee sans ambiguite aux outils du G-code,
+            # une purge generique est interdite.
+            self._fail("gcode_transition_purge_not_resolved")
         if not isinstance(pause_context, Mapping) or pause_context.get("pause_latched") is not True:
             self._fail("tool_change_pause_not_latched")
         active_c = pause_context.get("nozzle_target_c")

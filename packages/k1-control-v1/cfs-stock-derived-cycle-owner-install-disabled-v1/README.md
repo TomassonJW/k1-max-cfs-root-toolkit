@@ -13,8 +13,9 @@ n'envoient aucune commande.
 
 ## Ce qui est préparé
 
-- cutter : approche `X38/Y230`, course jusqu'à `X38/Y304,5`, retour, puis
-  retrait par le propriétaire direct ;
+- cutter : approche `X38/Y230`, course jusqu'à la butée `X38/Y304,5`, attente
+  du capteur `cut_pos=1`, maintien dans cette position pendant tout le retrait
+  direct, puis seulement retour à `Y230` et preuve `cut_pos=0` ;
 - chargement au bac `X185,5/Y305/Z30`, purge à température G-code, puis `3` ou
   `4` allers-retours sur `X203..206` en alternant `Y305/Y304` à `Z32` ;
 - ligne constructeur exacte `X0,1/X0,4`, `Y20..180`, deux extrusions de

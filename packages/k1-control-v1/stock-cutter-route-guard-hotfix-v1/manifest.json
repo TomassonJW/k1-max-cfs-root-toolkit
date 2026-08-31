@@ -1,0 +1,29 @@
+{
+  "schema": 1,
+  "mission": "G4-K1-CONTROL-STOCK-CUTTER-ROUTE-GUARD-HOTFIX-V1",
+  "status": "deployment_candidate",
+  "component": {
+    "source": "packages/k1-control-v1/stock-derived-cycle-activation-v1/moonraker_component.py",
+    "destination": "/usr/data/k1-control-v1/current/moonraker/moonraker/moonraker/components/k1_control_stock_cycle.py",
+    "before_sha256": "d28307c64a3ae74c7f7aaef58dea043eec4fd4cd6d6c2a17fcbc54c925e50fc5",
+    "after_sha256": "34c9727aeea9a7480896ec84d4e3c86f3dbfab8e110c337095532d690ba81d82"
+  },
+  "incident_state": {
+    "phase": "preclean_unload_ready",
+    "failure": "cutter_access_reference_invalid",
+    "effect_dispatch_count": 0,
+    "route": "T1A",
+    "both_path_sensors": true
+  },
+  "decision": "After the X/Y-only cutter access reference, require the direct route to be unchanged instead of requiring it to be absent.",
+  "effects": {
+    "dedicated_moonraker_restart": 1,
+    "klipper_restart": 0,
+    "heat": false,
+    "motion": false,
+    "filament": false,
+    "cfs_frame": false,
+    "probe": false,
+    "mesh_recalculation": false
+  }
+}

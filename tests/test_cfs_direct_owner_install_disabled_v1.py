@@ -25,7 +25,7 @@ class CfsDirectOwnerInstallDisabledV1Tests(unittest.TestCase):
     def test_candidate_verifier_closes_all_offline_scenarios(self):
         result = load("cfs_direct_install_verifier", "verify_candidate.py").verify()
         self.assertEqual("OK", result["status"])
-        self.assertEqual(13, result["offline_scenarios"])
+        self.assertEqual(16, result["offline_scenarios"])
         self.assertFalse(result["installed_enabled"])
         self.assertFalse(result["printer_connection"])
         self.assertFalse(result["deployment_authorized"])

@@ -107,7 +107,7 @@ def job(filename: str = "owned.gcode") -> Dict[str, Any]:
         "load_c": 190,
         "unload_c": 190,
         "purge_c": 190,
-        "purge_mm": 20,
+        "purge_mm": 140,
         "material_min_c": 180,
         "material_max_c": 230,
         "release_trips": 4,
@@ -498,6 +498,8 @@ def scenario_job_contract_requires_owned_boundaries() -> None:
         }
         result = JOB.build_job_contract("owned.gcode", metadata, path, "T1A")
         assert result["mesh_profile"] == "k1_p001_t055_r001_n11x11"
+        assert result["purge_mm"] == 140.0
+        assert result["purge_contract"] == "stock_initial_load_140mm_fallback"
         path.write_text(
             "KCTRL_STOCK_JOB_ASSERT_V1\nG28\nKCTRL_STOCK_JOB_END_V1\n",
             encoding="utf-8",
@@ -523,6 +525,18 @@ def scenario_job_contract_requires_owned_boundaries() -> None:
                     assert error.code == "forbidden_gcode_command:TURN_OFF_HEATERS"
             else:
                 raise AssertionError("end_heat_override_not_rejected:%s" % forbidden)
+
+
+def scenario_real_two_layer_gcode_has_exact_owned_boundaries() -> None:
+    path = HERE / "K1-STOCK-DERIVED-T1A-2LAYER.gcode"
+    result = JOB.inspect_gcode(path)
+    assert result["size"] > 80_000
+    assert len(result["sha256"]) == 64
+    flush = result["orca_flush_profile"]
+    assert flush["initial_purge_mm_by_tool"] == [140.0, 140.0]
+    assert round(flush["transition_purge_mm_by_pair"]["0>1"], 6) == 266.081080
+    assert round(flush["transition_purge_mm_by_pair"]["1>0"], 6) == 126.804265
+    assert flush["purge_in_prime_tower"] == 0
 
 
 class FakeServerError(RuntimeError):
@@ -638,6 +652,10 @@ class FakeKlippy:
 
     async def run_gcode(self, script: str):
         self.scripts.append(script)
+        if "G28 X Y" in script:
+            self.raw["toolhead"]["homed_axes"] = "xy"
+        if "SET_KINEMATIC_POSITION Z=50" in script:
+            self.raw["toolhead"]["homed_axes"] = "xyz"
         if "KCTRL_CFS_RUNOUT_DISARM_V1" in script:
             self.raw["k1_control_cfs_runout_owner"]["armed"] = False
         if "SET_FILAMENT_SENSOR SENSOR=filament_sensor ENABLE=0" in script:
@@ -657,6 +675,11 @@ class FakeKlippy:
             self.raw["k1_control_cfs_direct_owner"]["phase"] = "idle"
             self.raw["filament_switch_sensor filament_sensor"]["filament_detected"] = False
             self.raw["filament_switch_sensor filament_sensor_2"]["filament_detected"] = False
+        if "TURN_OFF_HEATERS" in script:
+            self.raw["extruder"]["target"] = 0.0
+            self.raw["heater_bed"]["target"] = 0.0
+        if "M84" in script:
+            self.raw["toolhead"]["homed_axes"] = ""
         if "KCTRL_CFS_RUNOUT_RELEASE_V1" in script:
             self.raw["k1_control_cfs_direct_owner"]["active_route"] = None
             self.raw["k1_control_cfs_direct_owner"]["phase"] = "idle"
@@ -833,6 +856,76 @@ def scenario_component_full_start_has_no_post_filament_probe() -> None:
         assert component._public_state()["post_filament_probe_count"] == 0
 
 
+def scenario_component_recovers_explicit_selected_route_before_preclean_unload() -> None:
+    with tempfile.TemporaryDirectory() as directory:
+        component, klippy, _server = make_component(Path(directory))
+
+        async def flow():
+            await component._inventory(FakeRequest(inventory_json=json.dumps(inventory())))
+            await component._select(FakeRequest(filename="owned.gcode", initial_route="T1A"))
+            klippy.raw["filament_switch_sensor filament_sensor"]["filament_detected"] = True
+            klippy.raw["filament_switch_sensor filament_sensor_2"]["filament_detected"] = True
+            assert klippy.raw["box"]["T1"]["filament"] == "None"
+            assert klippy.raw["k1_control_cfs_direct_owner"]["active_route"] is None
+
+            await component._begin(FakeRequest(
+                operator_present=True,
+                camera_available=True,
+                machine_clear=True,
+            ))
+
+            assert component.engine.state["phase"] == "await_manual_clean"
+            assert len(klippy.scripts) == 3
+            assert klippy.scripts[0] == "G28 X Y\nSET_KINEMATIC_POSITION Z=50"
+            script = klippy.scripts[1]
+            assert script.startswith("KCTRL_CFS_DIRECT_RECONCILE ROUTE=T1A")
+            assert "KCTRL_STOCK_CYCLE_CUT_UNLOAD_V1 ROUTE=T1A" in script
+            assert klippy.scripts[2] == "TURN_OFF_HEATERS\nM84"
+            assert klippy.raw["extruder"]["target"] == 0.0
+            assert klippy.raw["toolhead"]["homed_axes"] == ""
+            assert component._public_state()["initial_route_recovery"] == {
+                "route": "T1A",
+                "source": "explicit_selected_initial_route",
+                "both_path_sensors_present": True,
+            }
+            assert component._public_state()["cutter_access_reference"] == {
+                "xy_homed_without_z_probe": True,
+                "z_marked_without_motion_mm": 50.0,
+                "final_contact_geometry_required_after_unload": True,
+            }
+
+        asyncio.run(flow())
+
+
+def scenario_component_keeps_direct_route_through_cutter_access_reference() -> None:
+    with tempfile.TemporaryDirectory() as directory:
+        component, klippy, _server = make_component(Path(directory))
+
+        async def flow():
+            await component._inventory(FakeRequest(inventory_json=json.dumps(inventory())))
+            await component._select(FakeRequest(filename="owned.gcode", initial_route="T1A"))
+            klippy.raw["filament_switch_sensor filament_sensor"]["filament_detected"] = True
+            klippy.raw["filament_switch_sensor filament_sensor_2"]["filament_detected"] = True
+            klippy.raw["k1_control_cfs_direct_owner"]["active_route"] = "T1A"
+            klippy.raw["k1_control_cfs_direct_owner"]["phase"] = "loaded"
+
+            await component._begin(FakeRequest(
+                operator_present=True,
+                camera_available=True,
+                machine_clear=True,
+            ))
+
+            assert component.engine.state["phase"] == "await_manual_clean"
+            assert klippy.scripts[0] == "G28 X Y\nSET_KINEMATIC_POSITION Z=50"
+            assert "KCTRL_STOCK_CYCLE_CUT_UNLOAD_V1 ROUTE=T1A" in klippy.scripts[1]
+            assert "KCTRL_CFS_DIRECT_RECONCILE" not in klippy.scripts[1]
+            assert klippy.scripts[2] == "TURN_OFF_HEATERS\nM84"
+            assert klippy.raw["k1_control_cfs_direct_owner"]["active_route"] is None
+            assert component._public_state()["initial_route_recovery"] is None
+
+        asyncio.run(flow())
+
+
 def scenario_component_equivalent_runout_resumes_on_unique_spare() -> None:
     with tempfile.TemporaryDirectory() as directory:
         component, klippy, _server = asyncio.run(complete_flow(Path(directory)))
@@ -926,18 +1019,34 @@ def scenario_tool_change_keeps_gcode_temperature_and_uses_cutter() -> None:
 
         async def flow():
             klippy.raw["extruder"]["target"] = 205.0
-            await component._tool_change(FakeRequest(target_route="T1B"))
+            await component._tool_change(FakeRequest(target_route="T2D"))
             script = klippy.scripts[-1]
             assert "KCTRL_STOCK_CYCLE_CUT_UNLOAD_V1 ROUTE=T1A" in script
-            assert "KCTRL_STOCK_CYCLE_LOAD_PURGE_V1 ROUTE=T1B" in script
+            assert "KCTRL_STOCK_CYCLE_LOAD_PURGE_V1 ROUTE=T2D" in script
             assert "UNLOAD_C=205" in script
             assert "LOAD_C=205" in script and "PURGE_C=205" in script
+            assert "PURGE_MM=140" in script
             await component._camera_verdict(
                 FakeRequest(verdict="PASS", evidence_id="tool-change-001")
             )
             assert component.engine.state["phase"] == "printing"
             assert klippy.raw["extruder"]["target"] == 205.0
             assert all(script != "RESUME" for script in klippy.scripts)
+
+        asyncio.run(flow())
+
+
+def scenario_different_colour_requires_gcode_transition_purge() -> None:
+    with tempfile.TemporaryDirectory() as directory:
+        component, _klippy, _server = asyncio.run(complete_flow(Path(directory)))
+
+        async def flow():
+            try:
+                await component._tool_change(FakeRequest(target_route="T1B"))
+            except FakeServerError as error:
+                assert "gcode_transition_purge_not_resolved" in str(error)
+            else:
+                raise AssertionError("different_colour_generic_purge_not_rejected")
 
         asyncio.run(flow())
 
@@ -1013,7 +1122,7 @@ def scenario_camera_pass_does_not_advance_engine_before_resume_proof() -> None:
 
         async def flow():
             klippy.raw["extruder"]["target"] = 205.0
-            await component._tool_change(FakeRequest(target_route="T1B"))
+            await component._tool_change(FakeRequest(target_route="T2D"))
             assert component.engine.state["phase"] == "await_tool_change_camera"
 
             async def refuse_resume():
@@ -1044,11 +1153,15 @@ SCENARIOS = (
     scenario_active_core_geometry_ticket_contains_handoff,
     scenario_safe_close_without_filament_has_no_command,
     scenario_job_contract_requires_owned_boundaries,
+    scenario_real_two_layer_gcode_has_exact_owned_boundaries,
     scenario_component_full_start_has_no_post_filament_probe,
+    scenario_component_recovers_explicit_selected_route_before_preclean_unload,
+    scenario_component_keeps_direct_route_through_cutter_access_reference,
     scenario_component_equivalent_runout_resumes_on_unique_spare,
     scenario_sensor_state_without_owned_event_never_refills,
     scenario_no_unique_spare_closes_cold_without_cutter,
     scenario_tool_change_keeps_gcode_temperature_and_uses_cutter,
+    scenario_different_colour_requires_gcode_transition_purge,
     scenario_component_normal_end_cuts_unloads_and_closes,
     scenario_claimed_ticket_restart_becomes_uncertain_without_dispatch,
     scenario_claimed_refill_restart_never_replays_and_keeps_inventory,

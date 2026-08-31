@@ -4,7 +4,7 @@ Statut : **INSTALLED_VALIDATED_DISABLED_ZERO_CFS_FRAME**
 
 Le composant Klipper réel est installé sur la K1 sous la capture
 `20260831-123137-g4-k1-control-cfs-direct-owner-install-disabled-v1`. Les
-`13/13` scénarios locaux, la validation intégrée à la pose et deux validations
+`16/16` scénarios locaux, la validation intégrée à la pose et deux validations
 indépendantes prouvent notamment :
 
 - l'état désactivé sans transport ni trame ;
@@ -33,7 +33,7 @@ commandes stock non remplacées et `frames_sent_count=0`.
 
 ## Vérifications de clôture
 
-- vérificateur du paquet : `13/13` ;
+- vérificateur du paquet : `16/16` ;
 - tests ciblés de la pose désactivée : `5/5` ;
 - moteur direct source : `24/24` ;
 - JSON et script PowerShell modifiés : valides ;

@@ -129,7 +129,11 @@ class DirectCfsOwner:
         self.automatic_retry_count = 0
         self.tip_pull_count = 0
         self.load_count = 0
+        self.load_tail_recovery_count = 0
+        self.takeover_finalize_count = 0
+        self.last_buffer_state: Optional[int] = None
         self.unload_count = 0
+        self.retained_head_segment = False
         self.cleanup_failures: List[str] = []
 
     def result(self) -> Dict[str, Any]:
@@ -143,7 +147,11 @@ class DirectCfsOwner:
             "automatic_retry_count": self.automatic_retry_count,
             "tip_pull_count": self.tip_pull_count,
             "load_count": self.load_count,
+            "load_tail_recovery_count": self.load_tail_recovery_count,
+            "takeover_finalize_count": self.takeover_finalize_count,
+            "last_buffer_state": self.last_buffer_state,
             "unload_count": self.unload_count,
+            "retained_head_segment": self.retained_head_segment,
             "cleanup_failures": list(self.cleanup_failures),
             "temperature_commands": [],
             "geometry_commands": [],
@@ -173,7 +181,8 @@ class DirectCfsOwner:
             TemperatureProof.from_mapping(temperature)
             if target.address not in self.connected_boxes:
                 raise OwnerError("target_box_not_connected")
-            if self._read_head_sensor():
+            head_present_before_load = self._read_head_sensor()
+            if head_present_before_load and not self.retained_head_segment:
                 raise OwnerError("head_path_not_clear_before_load")
             if self._read_after_cutter_sensor():
                 raise OwnerError("after_cutter_path_not_clear_before_load")
@@ -204,11 +213,20 @@ class DirectCfsOwner:
                 if not math.isfinite(wheel):
                     raise OwnerError("load_wheel_value_invalid")
                 wheel_values.append(wheel)
-                if self._read_head_sensor():
+                reached_sensor = (
+                    self._read_after_cutter_sensor()
+                    if self.retained_head_segment
+                    else self._read_head_sensor()
+                )
+                if reached_sensor:
                     reached = True
                     break
             if not reached:
-                raise OwnerError("head_sensor_not_reached")
+                raise OwnerError(
+                    "after_cutter_sensor_not_reached"
+                    if self.retained_head_segment
+                    else "head_sensor_not_reached"
+                )
 
             self._send_ok(protocol.extrude_stage(target, 6), 15.0)
             if not self._read_head_sensor():
@@ -221,6 +239,7 @@ class DirectCfsOwner:
             self._send_ok(protocol.set_print_mode(target), 2.0)
             route_latched = True
             self.active_route = target.logical
+            self.retained_head_segment = False
 
             self._disable_tension(
                 tension_enabled,
@@ -249,6 +268,151 @@ class DirectCfsOwner:
                     tension_disable_attempted,
                     strict=False,
                 )
+        return self.result()
+
+    def recover_load_tail(
+        self,
+        logical_route: str,
+        effect_id: str,
+        temperature: Mapping[str, Any],
+    ) -> Dict[str, Any]:
+        """Termine une insertion deja arrivee aux deux capteurs.
+
+        Cette reprise correspond uniquement a la fin stock observee apres
+        ``EXTRUDE_ERR8`` : elle ne renvoie ni stage 0 ni stage 5. Elle retend
+        les CFS apres un restart, envoie une fois stage 4 puis stage 6, prouve
+        les deux capteurs et verrouille la route.
+        """
+
+        try:
+            target = protocol.route(logical_route)
+        except protocol.ProtocolError as error:
+            self._fail(error.code)
+            return self.result()
+        tension_enabled: Set[int] = set()
+        tension_disable_attempted: Set[int] = set()
+        route_latched = False
+        try:
+            self._begin("idle", "recovering_load_tail", effect_id)
+            TemperatureProof.from_mapping(temperature)
+            if target.address not in self.connected_boxes:
+                raise OwnerError("target_box_not_connected")
+            if not self.retained_head_segment:
+                raise OwnerError("load_tail_retained_segment_not_adopted")
+            if not self._read_head_sensor() or not self._read_after_cutter_sensor():
+                raise OwnerError("load_tail_sensor_proof_missing")
+
+            sensor = self._send_ok(protocol.get_material_sensor(target), 2.0)
+            if len(sensor.data) != 1:
+                raise OwnerError("material_sensor_response_invalid")
+            if sensor.data[0] & target.mask == 0:
+                raise OwnerError("target_slot_has_no_material")
+
+            self._send_ok(protocol.set_feed_mode(target), 2.0)
+            for address in self.connected_boxes:
+                tension_enabled.add(address)
+                self._send_ok(protocol.tighten(address, True), 2.0)
+
+            # Fin exacte vue dans la reprise stock EXTRUDE_ERR8. Aucun stage 5
+            # n'est permis ici : le filament a deja atteint la tete.
+            self._send_ok(protocol.extrude_stage(target, 4), 15.0)
+            self._send_ok(protocol.extrude_stage(target, 6), 15.0)
+            if not self._read_head_sensor() or not self._read_after_cutter_sensor():
+                raise OwnerError("load_tail_sensor_proof_lost")
+            buffer_response = self._send_ok(protocol.get_buffer_state(target), 2.0)
+            if buffer_response.data != bytes((0x00,)):
+                raise OwnerError("buffer_not_middle_after_load")
+            self._send_ok(protocol.set_print_mode(target), 2.0)
+            route_latched = True
+            self.active_route = target.logical
+            self.retained_head_segment = False
+
+            self._disable_tension(
+                tension_enabled,
+                tension_disable_attempted,
+                strict=True,
+            )
+            self.load_count += 1
+            self.load_tail_recovery_count += 1
+            self.phase = "loaded"
+            self.trace.append(
+                {
+                    "kind": "load_tail_recovery_complete",
+                    "route": target.logical,
+                    "stages": [4, 6],
+                    "stage5_count": 0,
+                    "automatic_retry": False,
+                }
+            )
+        except (OwnerError, protocol.ProtocolError) as error:
+            code = getattr(error, "code", str(error))
+            if route_latched:
+                self.active_route = target.logical
+            self._fail(code)
+        finally:
+            if tension_enabled:
+                self._disable_tension(
+                    tension_enabled,
+                    tension_disable_attempted,
+                    strict=False,
+                )
+        return self.result()
+
+    def finalize_load_takeover(
+        self,
+        logical_route: str,
+        effect_id: str,
+    ) -> Dict[str, Any]:
+        """Verrouille une route déjà prise localement, sans moteur filament.
+
+        La méthode lit le slot et le buffer une fois. Elle n'envoie le mode
+        impression que si les deux capteurs sont présents et si le buffer est
+        revenu exactement au milieu (0).
+        """
+
+        try:
+            target = protocol.route(logical_route)
+        except protocol.ProtocolError as error:
+            self._fail(error.code)
+            return self.result()
+        try:
+            self._begin("idle", "finalizing_load_takeover", effect_id)
+            if target.address not in self.connected_boxes:
+                raise OwnerError("target_box_not_connected")
+            if not self.retained_head_segment:
+                raise OwnerError("takeover_segment_state_not_adopted")
+            if not self._read_head_sensor() or not self._read_after_cutter_sensor():
+                raise OwnerError("takeover_sensor_proof_missing")
+
+            sensor = self._send_ok(protocol.get_material_sensor(target), 2.0)
+            if len(sensor.data) != 1:
+                raise OwnerError("material_sensor_response_invalid")
+            if sensor.data[0] & target.mask == 0:
+                raise OwnerError("target_slot_has_no_material")
+            buffer_response = self._send_ok(protocol.get_buffer_state(target), 2.0)
+            if len(buffer_response.data) != 1:
+                raise OwnerError("buffer_state_response_invalid")
+            self.last_buffer_state = int(buffer_response.data[0])
+            if self.last_buffer_state != 0:
+                raise OwnerError("buffer_not_middle_after_takeover")
+
+            self._send_ok(protocol.set_print_mode(target), 2.0)
+            self.active_route = target.logical
+            self.retained_head_segment = False
+            self.load_count += 1
+            self.takeover_finalize_count += 1
+            self.phase = "loaded"
+            self.trace.append(
+                {
+                    "kind": "load_takeover_finalized",
+                    "route": target.logical,
+                    "buffer_state": self.last_buffer_state,
+                    "motor_frame_count": 0,
+                    "automatic_retry": False,
+                }
+            )
+        except (OwnerError, protocol.ProtocolError) as error:
+            self._fail(getattr(error, "code", str(error)))
         return self.result()
 
     def reconcile_loaded(
@@ -326,10 +490,11 @@ class DirectCfsOwner:
             )
             head_present = self._read_head_sensor()
             after_cutter_present = self._read_after_cutter_sensor()
-            if head_present or after_cutter_present:
-                raise OwnerError("head_sensor_not_cleared_after_unload")
+            if after_cutter_present:
+                raise OwnerError("after_cutter_sensor_not_cleared_after_unload")
 
             self.active_route = None
+            self.retained_head_segment = bool(head_present)
             self.unload_count += 1
             self.phase = "idle"
             self.trace.append(
@@ -338,6 +503,7 @@ class DirectCfsOwner:
                     "route": target.logical,
                     "tip_pull_mm": -20.0,
                     "tip_pull_velocity": 140.0,
+                    "retained_head_segment": self.retained_head_segment,
                 }
             )
         except (OwnerError, protocol.ProtocolError) as error:

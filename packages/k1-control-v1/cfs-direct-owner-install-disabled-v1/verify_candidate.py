@@ -193,7 +193,7 @@ def verify():
         HERE / "run_scenarios.py",
     )
     results = scenarios.run()
-    if len(results) != 13 or any(item["status"] != "OK" for item in results):
+    if len(results) != 16 or any(item["status"] != "OK" for item in results):
         raise AssertionError("offline_scenarios_invalid")
 
     return {

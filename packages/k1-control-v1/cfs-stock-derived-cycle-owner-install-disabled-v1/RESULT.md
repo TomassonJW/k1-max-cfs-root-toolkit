@@ -3,9 +3,12 @@
 Statut : **candidat hors imprimante, désactivé, non installé**.
 
 Le cutter n'est plus une abstraction. La configuration capturée fixe
-`pre_cut X38/Y230`, `cut X38/Y303,2`, un offset `1,3` et une vitesse `7000` ;
-la trace réelle montre ensuite `X38/Y304,5`, le capteur de coupe, le retour et
-le retrait local `−20 mm`. Le composant porte ces mouvements dans cet ordre.
+`pre_cut X38/Y230`, `cut X38/Y303,2`, un offset `1,3` et une vitesse `7000`.
+La trace réelle prouve que la tête reste à `X38/Y304,5` pendant le retrait CFS
+et la traction locale `−20 mm`; elle ne quitte la butée qu'après la libération
+du filament. Le composant exige désormais `cut_pos=1` avant le retrait, reste à
+la butée pendant toute la commande directe, puis exige `cut_pos=0` après le
+retour à `Y230`.
 
 La purge et la ligne de départ reprennent également les données retenues : bac
 `X185,5/Y305/Z30`, décrochage `X203..206` sur `Y305/Y304` à `Z32`, puis ligne
@@ -18,7 +21,7 @@ verrouillée. La sélection complète et la reprise exacte resteront possédées
 l'orchestrateur Moonraker afin d'éviter une concurrence avec l'auto-remplacement
 stock.
 
-La matrice locale contient maintenant `14/14` scénarios, dont le refus de
+La matrice locale contient maintenant `16/16` scénarios, dont le refus de
 rejouer un ticket après une issue incertaine. La pose désactivée prévue
 ajoute deux fichiers et un include, redémarre seulement Klipper puis remet le
 meilleur `11 × 11`. Son déployeur réversible passe la lecture PowerShell et le

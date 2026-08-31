@@ -74,13 +74,14 @@
     "automatic_retry": false
   },
   "load_sequence": [
-    "require_head_and_after_cutter_sensors_clear",
+    "require_after_cutter_sensor_clear",
+    "require_head_sensor_clear_unless_a_retained_cut_segment_was_proved_by_the_preceding_unload",
     "get_material_sensor_and_require_target_slot",
     "set_feed_mode",
     "enable_tension_on_each_connected_box",
     "extrude_stage_0",
     "extrude_stage_4",
-    "extrude_stage_5_until_head_sensor_with_bounded_count",
+    "extrude_stage_5_until_head_sensor_or_after_cutter_sensor_when_consuming_a_retained_cut_segment_with_bounded_count",
     "extrude_stage_6",
     "require_head_and_after_cutter_sensors_present",
     "require_buffer_middle",
@@ -94,8 +95,17 @@
     "retrude_buffer_trigger",
     "one_local_tip_pull_minus_20_mm_at_140_mm_s",
     "retrude_material_trigger",
-    "require_head_and_after_cutter_sensors_clear"
+    "require_after_cutter_sensor_clear",
+    "record_whether_the_cut_segment_remains_in_the_head"
   ],
+  "retained_head_segment": {
+    "meaning": "the_upstream_CFS_route_is_clear_but_the_cut_piece_can_still_be_inside_the_toolhead",
+    "source": "post_unload_head_sensor_true_and_after_cutter_sensor_false",
+    "allows_only": "the_immediately_following_owned_load_in_the_same_runtime",
+    "cleared_after": "stage_6_and_both_filament_sensors_present",
+    "automatic_forward_extrusion": false,
+    "restart_inference": false
+  },
   "cutter": {
     "command_used": false,
     "reason": "the_exact_local_successful_unload_observation_uses_two_retrude_triggers_and_one_local_tip_pull_without_an_isolated_cutter_command"

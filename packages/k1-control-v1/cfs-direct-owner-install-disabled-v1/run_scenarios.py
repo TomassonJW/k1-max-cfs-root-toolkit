@@ -239,13 +239,42 @@ def unload_plan():
     )
 
 
+def load_tail_recovery_plan():
+    target = protocol.route("T1A")
+    return ok_plan(
+        [
+            (protocol.get_material_sensor(target), b"\x01"),
+            (protocol.set_feed_mode(target), b""),
+            (protocol.tighten(1, True), b""),
+            (protocol.tighten(2, True), b""),
+            (protocol.extrude_stage(target, 4), b""),
+            (protocol.extrude_stage(target, 6), b""),
+            (protocol.get_buffer_state(target), b"\x00"),
+            (protocol.set_print_mode(target), b""),
+            (protocol.tighten(1, False), b""),
+            (protocol.tighten(2, False), b""),
+        ]
+    )
+
+
+def takeover_finalize_plan():
+    target = protocol.route("T1A")
+    return ok_plan(
+        [
+            (protocol.get_material_sensor(target), b"\x01"),
+            (protocol.get_buffer_state(target), b"\x00"),
+            (protocol.set_print_mode(target), b""),
+        ]
+    )
+
+
 def box_status(auto_refill=0, t_command="", second_state="connect"):
     return {
         "auto_refill": auto_refill,
         "enable": 1,
         "t_command": t_command,
-        "T1": {"state": "connect"},
-        "T2": {"state": second_state},
+        "T1": {"state": "connect", "filament": "None"},
+        "T2": {"state": second_state, "filament": "None"},
     }
 
 
@@ -312,12 +341,12 @@ def scenario_disabled_status_is_inert():
     assert serial.calls == []
 
 
-def scenario_disabled_selftest_refuses_three_effects():
+def scenario_disabled_selftest_refuses_six_entries():
     instance, _printer, _gcode, serial = make_component(enabled=False)
     command = FakeGcmd()
     instance.cmd_DISABLED_SELFTEST(command)
     assert command.responses == [
-        "KCTRL_CFS_DIRECT_DISABLED_SELFTEST_OK refused=3"
+        "KCTRL_CFS_DIRECT_DISABLED_SELFTEST_OK refused=6"
     ]
     assert instance.get_status(123.0)["disabled_selftest_count"] == 1
     assert serial.calls == []
@@ -327,10 +356,43 @@ def scenario_disabled_effect_entries_fail_before_arguments_or_transport():
     instance, printer, _gcode, serial = make_component(enabled=False)
     initial_lookups = list(printer.lookups)
     require_error(lambda: instance.cmd_RECONCILE(FakeGcmd()), "direct_owner_disabled")
+    require_error(
+        lambda: instance.cmd_ADOPT_RETAINED_SEGMENT(FakeGcmd()),
+        "direct_owner_disabled",
+    )
+    require_error(
+        lambda: instance.cmd_RECOVER_EXTRUDE_ERROR_LOAD_TAIL(FakeGcmd()),
+        "direct_owner_disabled",
+    )
+    require_error(
+        lambda: instance.cmd_FINALIZE_LOAD_TAKEOVER(FakeGcmd()),
+        "direct_owner_disabled",
+    )
     require_error(lambda: instance.cmd_LOAD(FakeGcmd()), "direct_owner_disabled")
     require_error(lambda: instance.cmd_UNLOAD(FakeGcmd()), "direct_owner_disabled")
     assert printer.lookups == initial_lookups
     assert serial.calls == []
+
+
+def scenario_adopt_retained_segment_is_state_only_and_once() -> None:
+    instance, _printer, gcode, serial = make_component(
+        enabled=True,
+        head_values=(True, False, True),
+        after_values=(False,),
+    )
+    command = FakeGcmd({"RECOVERY_ID": "recovery-1", "CONFIRM": "1"})
+    instance.cmd_ADOPT_RETAINED_SEGMENT(command)
+    status = instance.get_status(123.0)
+    assert status["phase"] == "idle"
+    assert status["active_route"] is None
+    assert status["retained_head_segment"] is True
+    assert status["cfs_direct_owner_retained_segment_recovery_id"] == "recovery-1"
+    assert serial.calls == []
+    assert gcode.scripts == []
+    require_error(
+        lambda: instance.cmd_ADOPT_RETAINED_SEGMENT(command),
+        "retained_segment_recovery_id_invalid_or_used",
+    )
 
 
 def scenario_disabled_owner_preserves_stock_handlers():
@@ -428,7 +490,7 @@ def scenario_runtime_unload_uses_one_exact_local_pull():
     instance, _printer, gcode, serial = make_component(
         enabled=True,
         serial=serial,
-        head_values=(True, False),
+        head_values=(True, True),
         after_values=(True, False),
     )
     instance._ensure_runtime()
@@ -440,6 +502,8 @@ def scenario_runtime_unload_uses_one_exact_local_pull():
     assert status["phase"] == "idle"
     assert status["active_route"] is None
     assert status["tip_pull_count"] == 1
+    assert status["retained_head_segment"] is True
+    assert status["cfs_direct_owner_retained_head_segment"] is True
     assert gcode.scripts == [
         "SAVE_GCODE_STATE NAME=KCTRL_CFS_DIRECT_PULL",
         "M83",
@@ -447,6 +511,70 @@ def scenario_runtime_unload_uses_one_exact_local_pull():
         "M400",
         "RESTORE_GCODE_STATE NAME=KCTRL_CFS_DIRECT_PULL MOVE=0",
     ]
+    assert serial.plan == []
+
+
+def scenario_runtime_err8_tail_uses_only_stages_four_and_six():
+    serial = FakeSerial(load_tail_recovery_plan())
+    instance, _printer, gcode, serial = make_component(
+        enabled=True,
+        serial=serial,
+        head_values=(True, True, True),
+        after_values=(True, True, True),
+    )
+    values = temperature_args("unused")
+    values.pop("EFFECT_ID")
+    values.update({"RECOVERY_ID": "err8-tail-1", "CONFIRM": "1"})
+    command = FakeGcmd(values)
+    instance.cmd_RECOVER_EXTRUDE_ERROR_LOAD_TAIL(command)
+    status = instance.get_status(123.0)
+    target = protocol.route("T1A")
+    sent = [frame for frame, _timeout, _retry in serial.calls]
+    assert status["phase"] == "loaded"
+    assert status["active_route"] == "T1A"
+    assert status["load_tail_recovery_count"] == 1
+    assert status["cfs_direct_owner_err8_load_tail_recovery_id"] == "err8-tail-1"
+    assert protocol.extrude_stage(target, 0) not in sent
+    assert protocol.extrude_stage(target, 5) not in sent
+    assert sent.count(protocol.extrude_stage(target, 4)) == 1
+    assert sent.count(protocol.extrude_stage(target, 6)) == 1
+    assert gcode.scripts == []
+    assert serial.plan == []
+    require_error(
+        lambda: instance.cmd_RECOVER_EXTRUDE_ERROR_LOAD_TAIL(command),
+        "err8_recovery_id_invalid_or_used",
+    )
+
+
+def scenario_runtime_takeover_finalize_has_no_motor_frame():
+    serial = FakeSerial(takeover_finalize_plan())
+    instance, _printer, gcode, serial = make_component(
+        enabled=True,
+        serial=serial,
+        head_values=(True, True),
+        after_values=(True, True),
+    )
+    command = FakeGcmd(
+        {
+            "ROUTE": "T1A",
+            "RECOVERY_ID": "takeover-finalize-1",
+            "CONFIRM": "1",
+        }
+    )
+    instance.cmd_FINALIZE_LOAD_TAKEOVER(command)
+    status = instance.get_status(123.0)
+    target = protocol.route("T1A")
+    sent = [frame for frame, _timeout, _retry in serial.calls]
+    assert status["phase"] == "loaded"
+    assert status["active_route"] == "T1A"
+    assert status["takeover_finalize_count"] == 1
+    assert status["last_buffer_state"] == 0
+    assert status["cfs_direct_owner_takeover_finalize_recovery_id"] == "takeover-finalize-1"
+    assert protocol.extrude_stage(target, 0) not in sent
+    assert protocol.extrude_stage(target, 4) not in sent
+    assert protocol.extrude_stage(target, 5) not in sent
+    assert protocol.extrude_stage(target, 6) not in sent
+    assert gcode.scripts == []
     assert serial.plan == []
 
 
@@ -486,8 +614,9 @@ def scenario_invalid_connected_boxes_fail_at_config_load():
 
 SCENARIOS = (
     scenario_disabled_status_is_inert,
-    scenario_disabled_selftest_refuses_three_effects,
+    scenario_disabled_selftest_refuses_six_entries,
     scenario_disabled_effect_entries_fail_before_arguments_or_transport,
+    scenario_adopt_retained_segment_is_state_only_and_once,
     scenario_disabled_owner_preserves_stock_handlers,
     scenario_enabled_owner_blocks_every_present_stock_entry,
     scenario_enabled_preflight_binds_without_serial_frame,
@@ -496,6 +625,8 @@ SCENARIOS = (
     scenario_enabled_preflight_requires_both_boxes,
     scenario_runtime_load_uses_offline_owner_without_hidden_commands,
     scenario_runtime_unload_uses_one_exact_local_pull,
+    scenario_runtime_err8_tail_uses_only_stages_four_and_six,
+    scenario_runtime_takeover_finalize_has_no_motor_frame,
     scenario_temperature_mismatch_stops_before_first_frame,
     scenario_invalid_connected_boxes_fail_at_config_load,
 )

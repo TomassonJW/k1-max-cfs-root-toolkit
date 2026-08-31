@@ -665,7 +665,7 @@ class StockDerivedOrchestrator:
             if not result["material_min_c"] <= result[field] <= result["material_max_c"]:
                 raise OrchestratorError("%s_out_of_bounds" % field)
         if (
-            not 0.1 <= result["purge_mm"] <= 80
+            not 0.1 <= result["purge_mm"] <= 400
             or not isinstance(result["release_trips"], int)
             or isinstance(result["release_trips"], bool)
             or result["release_trips"] not in (3, 4)

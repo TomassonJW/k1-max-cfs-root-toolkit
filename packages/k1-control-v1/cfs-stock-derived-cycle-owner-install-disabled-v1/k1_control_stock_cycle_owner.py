@@ -172,7 +172,9 @@ class K1ControlStockCycleOwner:
             effect_id = _safe_id(gcmd.get("EFFECT_ID"), "effect_id_invalid")
             load_c, material_min, material_max = self._temperatures(gcmd, "LOAD_C")
             purge_c = gcmd.get_float("PURGE_C", minval=150.0, maxval=320.0)
-            purge_mm = gcmd.get_float("PURGE_MM", minval=0.1, maxval=80.0)
+            # 140 mm est la purge initiale stock observee. Les transitions
+            # couleur Orca peuvent depasser 300 mm ; elles restent bornees.
+            purge_mm = gcmd.get_float("PURGE_MM", minval=0.1, maxval=400.0)
             trips = gcmd.get_int("TRIPS", minval=3, maxval=4)
             if not material_min <= purge_c <= material_max:
                 raise RuntimeGateError("purge_temperature_out_of_bounds")
@@ -346,23 +348,60 @@ class K1ControlStockCycleOwner:
         material_max: float,
     ) -> None:
         self._heat_nozzle(unload_c)
-        self._run_many(
-            [
-                "SAVE_GCODE_STATE NAME=KCTRL_STOCK_CUT",
-                "G90",
-                "G1 X38 Y230 F7000",
-                "G1 X38 Y304.5 F7000",
-                "M400",
-                "G1 X38 Y230 F7000",
-                "M400",
-                "RESTORE_GCODE_STATE NAME=KCTRL_STOCK_CUT MOVE=0",
-                (
-                    "KCTRL_CFS_DIRECT_UNLOAD ROUTE=%s EFFECT_ID=%s "
-                    "EXPECTED_C=%.3f MATERIAL_MIN_C=%.3f MATERIAL_MAX_C=%.3f"
-                    % (route, effect_id, unload_c, material_min, material_max)
-                ),
-            ]
-        )
+        saved = False
+        try:
+            self._run_many(["SAVE_GCODE_STATE NAME=KCTRL_STOCK_CUT"])
+            saved = True
+            self._run_many(
+                [
+                    "G90",
+                    "G1 X38 Y230 F7000",
+                    "G1 X38 Y304.5 F7000",
+                    "M400",
+                    "G4 P1500",
+                ]
+            )
+            self._require_cut_sensor(True)
+            # La trace stock garde la tete a la butee pendant tout le retrait.
+            # Quitter Y304.5 avant cette commande casse la preuve de coupe.
+            self._run_many(
+                [
+                    (
+                        "KCTRL_CFS_DIRECT_UNLOAD ROUTE=%s EFFECT_ID=%s "
+                        "EXPECTED_C=%.3f MATERIAL_MIN_C=%.3f MATERIAL_MAX_C=%.3f"
+                        % (route, effect_id, unload_c, material_min, material_max)
+                    )
+                ]
+            )
+        finally:
+            if saved:
+                self._run_many(
+                    [
+                        "G90",
+                        "G1 X38 Y230 F7000",
+                        "M400",
+                        "G4 P1000",
+                        "RESTORE_GCODE_STATE NAME=KCTRL_STOCK_CUT MOVE=0",
+                    ]
+                )
+                self._require_cut_sensor(False)
+
+    def _require_cut_sensor(self, expected: bool) -> None:
+        box = self.printer.lookup_object(self.box_name, None)
+        if box is None:
+            raise RuntimeGateError("cutter_sensor_owner_missing")
+        value = box.get_status(self.reactor.monotonic()).get("cut_pos")
+        try:
+            active = abs(float(value) - 1.0) <= 0.001
+            inactive = abs(float(value)) <= 0.001
+        except (TypeError, ValueError):
+            raise RuntimeGateError("cutter_sensor_status_invalid")
+        if not (active if expected else inactive):
+            raise RuntimeGateError(
+                "cutter_sensor_not_triggered"
+                if expected
+                else "cutter_sensor_not_released"
+            )
 
     def _load_and_purge(
         self,

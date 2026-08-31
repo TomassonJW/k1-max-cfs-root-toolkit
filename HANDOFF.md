@@ -1,4 +1,25 @@
-# HANDOFF — reprise après KO borné de la V1 physique directe
+# HANDOFF — reprise après refus réel du cutter le 1er septembre 2026
+
+La quantité de purge est corrigée et installée : la reprise fautive utilisait
+`30 mm`, alors que le chargement initial stock observé utilise `140 mm`. Le
+cycle lit désormais le vecteur et la matrice Orca du G-code ; le fichier
+d'essai courant demande notamment `266,081080 mm` pour une transition `0→1`.
+
+Le dernier essai s'est arrêté proprement avant retrait. La tête a essayé la
+position stock `X38 Y304,5`, puis des pas de `0,5 mm` jusqu'à la limite publiée
+`Y307,5`. Le capteur `cut_pos` est resté à `0` partout. Aucune commande de
+retrait n'a donc été envoyée. `T1A` reste chargé, les deux capteurs filament
+sont actifs, les chauffes sont à zéro, les axes sont libérés, le mesh
+`k1_p001_t055_r001_n11x11` est actif et le Z accepté reste `−0,04 mm`.
+
+Ne pas rejouer automatiquement le cutter et ne jamais dépasser `Y307,5`. La
+prochaine étape est une vérification mécanique réelle, à froid, du levier du
+cutter et de son capteur. ADR-040 et le `RESULT.md` du paquet
+`stock-derived-cycle-activation-v1` sont les références canoniques.
+
+Le texte ci-dessous est l'archive de la reprise précédente.
+
+# Archive — reprise après KO borné de la V1 physique directe
 
 La gate
 `G4-K1-CONTROL-CFS-DIRECT-OWNER-PHYSICAL-LOAD-UNLOAD-V1` est close KO et ne

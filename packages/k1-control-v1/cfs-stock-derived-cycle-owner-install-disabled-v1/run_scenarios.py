@@ -38,9 +38,10 @@ class FakeStatus:
 
 
 class FakeGcode:
-    def __init__(self):
+    def __init__(self, box=None):
         self.commands: Dict[str, Any] = {}
         self.scripts = []
+        self.box = box
 
     def register_command(self, name: str, handler, desc: Optional[str] = None):
         previous = self.commands.get(name)
@@ -49,16 +50,21 @@ class FakeGcode:
 
     def run_script_from_command(self, command: str) -> None:
         self.scripts.append(command)
+        if self.box is not None and command == "G1 X38 Y304.5 F7000":
+            self.box.value["cut_pos"] = 1.0
+        if self.box is not None and command == "G1 X38 Y230 F7000":
+            self.box.value["cut_pos"] = 0.0
 
 
 class FakePrinter:
     def __init__(self, *, auto_refill: int = 0, homed_axes: str = "xyz", direct_enabled: bool = True):
         self.reactor = FakeReactor()
-        self.gcode = FakeGcode()
+        box = FakeStatus({"auto_refill": auto_refill, "t_command": "", "cut_pos": 0.0})
+        self.gcode = FakeGcode(box)
         self.objects = {
             "gcode": self.gcode,
             "toolhead": FakeStatus({"homed_axes": homed_axes}),
-            "box": FakeStatus({"auto_refill": auto_refill, "t_command": ""}),
+            "box": box,
             "k1_control_cfs_direct_owner": FakeStatus(
                 {
                     "enabled": direct_enabled,
@@ -161,7 +167,7 @@ def load_args(trips: int = 3) -> Dict[str, Any]:
         "EFFECT_ID": "load-1",
         "LOAD_C": 205,
         "PURGE_C": 210,
-        "PURGE_MM": 20,
+        "PURGE_MM": 140,
         "TRIPS": trips,
         "MATERIAL_MIN_C": 180,
         "MATERIAL_MAX_C": 230,
@@ -270,11 +276,53 @@ def scenario_cut_unload_exact_stock_geometry() -> None:
         "G1 X38 Y230 F7000",
         "G1 X38 Y304.5 F7000",
         "M400",
+        "G4 P1500",
+        next(item for item in scripts if item.startswith("KCTRL_CFS_DIRECT_UNLOAD ROUTE=T1A")),
         "G1 X38 Y230 F7000",
+        "M400",
+        "G4 P1000",
     ]
     assert contains_in_order(scripts, expected), scripts
     assert any(item.startswith("KCTRL_CFS_DIRECT_UNLOAD ROUTE=T1A") for item in scripts)
     assert not any(item.startswith(("BOX_", "G28", "BED_MESH_")) for item in scripts)
+
+
+def scenario_cut_sensor_must_trigger_before_unload() -> None:
+    owner, printer = make_owner(enabled=True)
+    printer.gcode.box = None
+    expect_error(
+        lambda: owner.cmd_CUT_UNLOAD(FakeGcmd(cut_args())),
+        "cutter_sensor_not_triggered",
+    )
+    assert not any(
+        item.startswith("KCTRL_CFS_DIRECT_UNLOAD")
+        for item in printer.gcode.scripts
+    )
+    assert printer.objects["box"].value["cut_pos"] == 0.0
+
+
+def scenario_unload_failure_still_releases_cutter() -> None:
+    owner, printer = make_owner(enabled=True)
+    original = printer.gcode.run_script_from_command
+
+    def fail_on_direct_unload(command: str) -> None:
+        original(command)
+        if command.startswith("KCTRL_CFS_DIRECT_UNLOAD ROUTE=T1A"):
+            raise FakeCommandError("simulated_direct_unload_failure")
+
+    printer.gcode.run_script_from_command = fail_on_direct_unload
+    expect_error(
+        lambda: owner.cmd_CUT_UNLOAD(FakeGcmd(cut_args())),
+        "command_failed_uncertain_no_retry",
+    )
+    scripts = printer.gcode.scripts
+    unload_index = next(
+        index for index, command in enumerate(scripts)
+        if command.startswith("KCTRL_CFS_DIRECT_UNLOAD ROUTE=T1A")
+    )
+    release_index = scripts.index("G1 X38 Y230 F7000", unload_index)
+    assert unload_index < release_index
+    assert printer.objects["box"].value["cut_pos"] == 0.0
 
 
 def scenario_load_purge_three_trips() -> None:
@@ -283,6 +331,7 @@ def scenario_load_purge_three_trips() -> None:
     scripts = printer.gcode.scripts
     assert scripts.index("G1 Z32 F600") < scripts.index("G1 X185.5 Y305 F1200") < scripts.index("G1 Z30 F600")
     assert any(item.startswith("KCTRL_CFS_DIRECT_LOAD ROUTE=T2D") for item in scripts)
+    assert "G1 E140.000 F360" in scripts
     assert [item for item in scripts if item in ("G1 Y305 F600", "G1 Y304 F600")] == [
         "G1 Y305 F600", "G1 Y304 F600", "G1 Y305 F600"
     ]
@@ -299,6 +348,14 @@ def scenario_load_purge_four_trips() -> None:
     ]
     assert scripts.count("G1 X206 F180") == 4
     assert scripts.count("G1 X203 F180") == 4
+
+
+def scenario_orca_colour_purge_quantity_is_representable() -> None:
+    owner, printer = make_owner(enabled=True)
+    args = load_args(4)
+    args["PURGE_MM"] = 318.466
+    owner.cmd_LOAD_PURGE(FakeGcmd(args))
+    assert "G1 E318.466 F360" in printer.gcode.scripts
 
 
 def scenario_prime_is_exact_stock_line_plus_relative_z5() -> None:
@@ -372,8 +429,11 @@ SCENARIOS = (
     scenario_enabled_requires_direct_owner,
     scenario_uncertain_effect_ticket_is_never_replayed,
     scenario_cut_unload_exact_stock_geometry,
+    scenario_cut_sensor_must_trigger_before_unload,
+    scenario_unload_failure_still_releases_cutter,
     scenario_load_purge_three_trips,
     scenario_load_purge_four_trips,
+    scenario_orca_colour_purge_quantity_is_representable,
     scenario_prime_is_exact_stock_line_plus_relative_z5,
     scenario_refill_unique_identical_spare_passes_without_motion,
     scenario_refill_near_match_rejected,

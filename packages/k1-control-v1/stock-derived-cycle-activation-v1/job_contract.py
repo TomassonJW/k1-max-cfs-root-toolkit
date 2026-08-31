@@ -17,11 +17,17 @@ PROBE_C = 140.0
 FIRST_C = 190.0
 PLA_MIN_C = 180.0
 PLA_MAX_C = 230.0
+STOCK_INITIAL_PURGE_MM = 140.0
 VALID_EXTENSIONS = {".gcode", ".g", ".gco"}
 MAX_SCAN_BYTES = 256 * 1024 * 1024
 ASSERT_MARKER = "KCTRL_STOCK_JOB_ASSERT_V1"
 END_MARKER = "KCTRL_STOCK_JOB_END_V1"
 COMMAND = re.compile(r"^\s*([A-Za-z_][A-Za-z0-9_]*)\b")
+ORCA_FLUSH_LINE = re.compile(
+    r"^\s*;\s*(filament_diameter|flush_multiplier|flush_volumes_matrix|"
+    r"flush_volumes_vector|purge_in_prime_tower)\s*=\s*(.*?)\s*$",
+    re.IGNORECASE,
+)
 FORBIDDEN_EXACT = {
     "T0", "T1", "T2", "T3", "T4", "T5", "T6", "T7",
     "START_PRINT", "END_PRINT", "BOX_START_PRINT", "BOX_END_PRINT",
@@ -72,6 +78,68 @@ def _single_pla(value: Any) -> str:
     return "PLA"
 
 
+def _csv_numbers(value: str, name: str):
+    result = []
+    for item in value.split(","):
+        item = item.strip()
+        if not item:
+            raise JobContractError("gcode_%s_invalid" % name)
+        result.append(_number(item, "gcode_%s" % name))
+    return result
+
+
+def _orca_flush_profile(values: Mapping[str, str]):
+    if not values:
+        return None
+    required = {
+        "filament_diameter",
+        "flush_multiplier",
+        "flush_volumes_matrix",
+        "flush_volumes_vector",
+        "purge_in_prime_tower",
+    }
+    if set(values) != required:
+        raise JobContractError("gcode_flush_profile_incomplete")
+    diameters = _csv_numbers(values["filament_diameter"], "filament_diameter")
+    matrix = _csv_numbers(values["flush_volumes_matrix"], "flush_volumes_matrix")
+    vector = _csv_numbers(values["flush_volumes_vector"], "flush_volumes_vector")
+    multiplier = _number(values["flush_multiplier"], "gcode_flush_multiplier")
+    purge_in_prime_tower = _number(
+        values["purge_in_prime_tower"], "gcode_purge_in_prime_tower"
+    )
+    count = len(diameters)
+    if (
+        count < 1
+        or len(matrix) != count * count
+        or len(vector) < count
+        or not 0.1 <= multiplier <= 3.0
+        or purge_in_prime_tower not in (0.0, 1.0)
+    ):
+        raise JobContractError("gcode_flush_profile_invalid")
+    for diameter in diameters:
+        if not 1.0 <= diameter <= 3.0:
+            raise JobContractError("gcode_filament_diameter_invalid")
+    initial = vector[:count]
+    if any(not 80.0 <= length <= 400.0 for length in initial):
+        raise JobContractError("gcode_initial_purge_out_of_bounds")
+    transitions = {}
+    for source in range(count):
+        for target in range(count):
+            volume = matrix[source * count + target] * multiplier
+            area = math.pi * (diameters[target] / 2.0) ** 2
+            length = volume / area
+            if source != target and not 0.1 <= length <= 400.0:
+                raise JobContractError("gcode_transition_purge_out_of_bounds")
+            transitions["%d>%d" % (source, target)] = length
+    return {
+        "filament_diameter_mm": diameters,
+        "initial_purge_mm_by_tool": initial,
+        "transition_purge_mm_by_pair": transitions,
+        "flush_multiplier": multiplier,
+        "purge_in_prime_tower": int(purge_in_prime_tower),
+    }
+
+
 def inspect_gcode(path: Path) -> Dict[str, Any]:
     try:
         size = path.stat().st_size
@@ -82,11 +150,15 @@ def inspect_gcode(path: Path) -> Dict[str, Any]:
     digest = hashlib.sha256()
     commands = []
     forbidden_shutdown = None
+    flush_values = {}
     try:
         with path.open("rb") as stream:
             for raw_line in stream:
                 digest.update(raw_line)
                 line = raw_line.decode("utf-8", errors="replace")
+                flush_match = ORCA_FLUSH_LINE.match(line)
+                if flush_match is not None:
+                    flush_values[flush_match.group(1).lower()] = flush_match.group(2)
                 match = COMMAND.match(line)
                 if match is not None:
                     command = match.group(1).upper()
@@ -120,6 +192,7 @@ def inspect_gcode(path: Path) -> Dict[str, Any]:
         "sha256": digest.hexdigest(),
         "size": size,
         "command_count": len(commands),
+        "orca_flush_profile": _orca_flush_profile(flush_values),
     }
 
 
@@ -149,6 +222,12 @@ def build_job_contract(
     job_id = re.sub(r"[^A-Za-z0-9._-]", "-", marker).strip("-.")[:48]
     if not job_id:
         raise JobContractError("job_id_invalid")
+    flush_profile = inspection["orca_flush_profile"]
+    initial_purge_mm = STOCK_INITIAL_PURGE_MM
+    purge_contract = "stock_initial_load_140mm_fallback"
+    if flush_profile is not None:
+        initial_purge_mm = flush_profile["initial_purge_mm_by_tool"][0]
+        purge_contract = "orca_flush_vector_tool_0"
     return {
         "job_id": job_id,
         "filename": safe_filename,
@@ -161,7 +240,12 @@ def build_job_contract(
         "load_c": FIRST_C,
         "unload_c": FIRST_C,
         "purge_c": FIRST_C,
-        "purge_mm": 20.0,
+        # La trace stock qualifie 140 mm lorsque le premier filament est
+        # charge (last_tnn=None). Ce n'est pas la purge variable d'un
+        # changement de couleur, qui doit rester issue de la matrice Orca.
+        "purge_mm": initial_purge_mm,
+        "purge_contract": purge_contract,
+        "orca_flush_profile": flush_profile,
         "material_min_c": PLA_MIN_C,
         "material_max_c": PLA_MAX_C,
         "release_trips": 4,

@@ -26,7 +26,7 @@
     {
       "source": "k1_control_stock_cycle_owner.py",
       "destination": "/usr/share/klipper/klippy/extras/k1_control_stock_cycle_owner.py",
-      "sha256": "7f1a6c53111ab3808fa3ba902899aa12482ed520dfa507b77399465a41a8ed50",
+      "sha256": "07e9839519929c3e90937cd7ef3737c8cb982b5840ffdff31807a6d229e1bf6c",
       "before": "absent"
     }
   ],

@@ -222,6 +222,8 @@ class K1ControlStockCycle:
             "camera_checkpoint": self.controller.get("camera_checkpoint"),
             "last_camera_evidence_id": self.controller.get("last_camera_evidence_id"),
             "last_failure": self.controller.get("last_failure"),
+            "initial_route_recovery": self.controller.get("initial_route_recovery"),
+            "cutter_access_reference": self.controller.get("cutter_access_reference"),
             "last_runout_seq": self.controller.get("last_runout_seq", 0),
             "selected": deepcopy(self.selection),
             "effect_dispatch_count": self.effect_dispatch_count,
@@ -380,6 +382,13 @@ class K1ControlStockCycle:
             or value["startup"].get("ready_verified") is not True
             or value["direct"].get("enabled") is not True
             or value["direct"].get("stock_commands_blocked") is not True
+            or (
+                value["active_route"] is not None
+                and (
+                    value["direct"].get("phase") != "loaded"
+                    or value["direct"].get("failure_code") is not None
+                )
+            )
             or value["runout"].get("enabled") is not True
             or value["runout"].get("ready_verified") is not True
             or value["runout"].get("stock_handler_isolated") is not True
@@ -442,6 +451,18 @@ class K1ControlStockCycle:
                 routes = list(snapshot["logical_routes"])
                 if snapshot["active_route"] is not None and snapshot["active_route"] not in routes:
                     routes.append(snapshot["active_route"])
+                if (
+                    routes == []
+                    and snapshot["head_sensor"] is True
+                    and snapshot["after_cutter_sensor"] is True
+                ):
+                    recovery_route = self.selection["job"]["initial_route"]
+                    routes.append(recovery_route)
+                    self.controller["initial_route_recovery"] = {
+                        "route": recovery_route,
+                        "source": "explicit_selected_initial_route",
+                        "both_path_sensors_present": True,
+                    }
                 self.engine.observe_initial_filament(
                     routes,
                     snapshot["head_sensor"],
@@ -449,8 +470,31 @@ class K1ControlStockCycle:
                 )
                 self._persist_run()
                 if self.engine.state["phase"] == "preclean_unload_ready":
-                    ticket = self.engine.plan_preclean_unload()
-                    await self._run_ticket(ticket)
+                    if snapshot["homed_axes"] != "xyz":
+                        await self.klippy_apis.run_gcode(
+                            "G28 X Y\nSET_KINEMATIC_POSITION Z=50"
+                        )
+                        cutter_ready = await self._query()
+                        if (
+                            cutter_ready["homed_axes"] != "xyz"
+                            or cutter_ready["nozzle_target_c"] != 0.0
+                            or cutter_ready["bed_target_c"] != 0.0
+                            or cutter_ready["active_route"] != snapshot["active_route"]
+                        ):
+                            raise ControllerError("cutter_access_reference_invalid")
+                        self.controller["cutter_access_reference"] = {
+                            "xy_homed_without_z_probe": True,
+                            "z_marked_without_motion_mm": 50.0,
+                            "final_contact_geometry_required_after_unload": True,
+                        }
+                        self._persist_run()
+                    ticket = self.engine.plan_preclean_unload(
+                        reconcile_required=snapshot["active_route"] is None
+                    )
+                    try:
+                        await self._run_ticket(ticket)
+                    finally:
+                        await self.klippy_apis.run_gcode("TURN_OFF_HEATERS\nM84")
                     after = await self._query()
                     proof = self._proof_base()
                     proof.update({

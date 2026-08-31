@@ -1,5 +1,20 @@
 # GATES
 
+## Refus cutter réel du 1er septembre 2026
+
+Statut : **close KO avant retrait, aucun rejeu automatique**.
+
+La quantité de purge a d'abord été corrigée de `30 mm` vers le contrat stock
+observé de `140 mm`, avec lecture des quantités de transition Orca depuis le
+G-code. Après pose des correctifs, l'accès cutter a essayé `X38 Y304,5` puis
+chaque demi-millimètre jusqu'à la limite publiée `Y307,5`. `cut_pos` est resté
+à `0` ; le garde a donc refusé l'unique retrait direct.
+
+L'état sûr final conserve `T1A`, les deux capteurs filament, le `11 × 11` et le
+Z `−0,04 mm`; chauffes zéro et axes libérés. La prochaine gate est uniquement
+la vérification mécanique à froid du levier/cutter et de son capteur. Dépasser
+`Y307,5` ou relancer la même trajectoire est interdit. Voir ADR-040.
+
 ## Gate physique directe T1A du 31 août 2026
 
 `G4-K1-CONTROL-CFS-DIRECT-OWNER-PHYSICAL-LOAD-UNLOAD-V1` : **close KO avant

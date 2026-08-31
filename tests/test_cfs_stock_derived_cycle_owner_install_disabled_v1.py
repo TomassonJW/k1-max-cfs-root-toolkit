@@ -28,7 +28,7 @@ class CfsStockDerivedCycleOwnerInstallDisabledV1Tests(unittest.TestCase):
         result = load_runner().run()
         self.assertEqual(result["status"], "OK")
         self.assertEqual(result["passed"], result["total"])
-        self.assertEqual(result["total"], 14)
+        self.assertEqual(result["total"], 17)
         self.assertFalse(result["printer_transport"])
         self.assertFalse(result["physical_action"])
 
@@ -65,7 +65,7 @@ class CfsStockDerivedCycleOwnerInstallDisabledV1Tests(unittest.TestCase):
             result["status"],
             "CFS_STOCK_DERIVED_CYCLE_OWNER_INSTALL_DISABLED_V1_OK",
         )
-        self.assertEqual(result["scenarios"], "14/14")
+        self.assertEqual(result["scenarios"], "17/17")
         self.assertTrue(result["uncertain_effect_retry_blocked"])
         self.assertTrue(result["equivalent_refill_preserved"])
         self.assertFalse(result["printer_connection"])

@@ -115,6 +115,35 @@ def successful_unload_plan(route_value: str = "T1A"):
     )
 
 
+def successful_load_tail_recovery_plan(route_value: str = "T1A"):
+    target = protocol.route(route_value)
+    return ok_plan(
+        [
+            (protocol.get_material_sensor(target), bytes((target.mask,))),
+            (protocol.set_feed_mode(target), b""),
+            (protocol.tighten(1, True), b""),
+            (protocol.tighten(2, True), b""),
+            (protocol.extrude_stage(target, 4), b""),
+            (protocol.extrude_stage(target, 6), b""),
+            (protocol.get_buffer_state(target), b"\x00"),
+            (protocol.set_print_mode(target), b""),
+            (protocol.tighten(1, False), b""),
+            (protocol.tighten(2, False), b""),
+        ]
+    )
+
+
+def successful_takeover_finalize_plan(route_value: str = "T1A"):
+    target = protocol.route(route_value)
+    return ok_plan(
+        [
+            (protocol.get_material_sensor(target), bytes((target.mask,))),
+            (protocol.get_buffer_state(target), b"\x00"),
+            (protocol.set_print_mode(target), b""),
+        ]
+    )
+
+
 def scenario_protocol_exact_vectors() -> None:
     target = protocol.route("T1A")
     require(
@@ -250,6 +279,91 @@ def scenario_status_error_no_retry() -> None:
     transport.done()
 
 
+def scenario_err8_tail_recovery_has_no_stage5() -> None:
+    target = protocol.route("T1A")
+    transport = ScriptedTransport(successful_load_tail_recovery_plan())
+    owner = owner_module.DirectCfsOwner(
+        transport,
+        SensorSequence((True, True)),
+        SensorSequence((True, True)),
+    )
+    owner.retained_head_segment = True
+    result = owner.recover_load_tail("T1A", "recover-err8-tail", TEMP)
+    sent = [item[0] for item in transport.calls]
+    require(result["phase"] == "loaded", "tail_recovery_phase")
+    require(result["active_route"] == "T1A", "tail_recovery_route")
+    require(result["load_tail_recovery_count"] == 1, "tail_recovery_count")
+    require(result["retained_head_segment"] is False, "tail_segment_not_consumed")
+    require(protocol.extrude_stage(target, 0) not in sent, "tail_sent_stage0")
+    require(protocol.extrude_stage(target, 5) not in sent, "tail_sent_stage5")
+    require(sent.count(protocol.extrude_stage(target, 4)) == 1, "tail_stage4_count")
+    require(sent.count(protocol.extrude_stage(target, 6)) == 1, "tail_stage6_count")
+    require(result["automatic_retry_count"] == 0, "tail_automatic_retry")
+    transport.done()
+
+
+def scenario_err8_tail_recovery_requires_both_sensors() -> None:
+    owner = owner_module.DirectCfsOwner(
+        ScriptedTransport([]),
+        SensorSequence((True,)),
+        SensorSequence((False,)),
+    )
+    owner.retained_head_segment = True
+    result = owner.recover_load_tail("T1A", "recover-missing-sensor", TEMP)
+    require(
+        result["failure_code"] == "load_tail_sensor_proof_missing",
+        "tail_sensor_gate",
+    )
+    require(result["frames"] == [], "tail_sensor_gate_sent_frame")
+
+
+def scenario_takeover_finalize_reads_then_latches_without_motor() -> None:
+    target = protocol.route("T1A")
+    transport = ScriptedTransport(successful_takeover_finalize_plan())
+    owner = owner_module.DirectCfsOwner(
+        transport,
+        SensorSequence((True,)),
+        SensorSequence((True,)),
+    )
+    owner.retained_head_segment = True
+    result = owner.finalize_load_takeover("T1A", "finalize-takeover")
+    sent = [item[0] for item in transport.calls]
+    assert result["phase"] == "loaded"
+    assert result["active_route"] == "T1A"
+    assert result["last_buffer_state"] == 0
+    assert result["takeover_finalize_count"] == 1
+    assert result["retained_head_segment"] is False
+    assert protocol.extrude_stage(target, 0) not in sent
+    assert protocol.extrude_stage(target, 4) not in sent
+    assert protocol.extrude_stage(target, 5) not in sent
+    assert protocol.extrude_stage(target, 6) not in sent
+    transport.done()
+
+
+def scenario_takeover_finalize_refuses_nonmiddle_buffer() -> None:
+    target = protocol.route("T1A")
+    transport = ScriptedTransport(
+        ok_plan(
+            [
+                (protocol.get_material_sensor(target), bytes((target.mask,))),
+                (protocol.get_buffer_state(target), b"\x01"),
+            ]
+        )
+    )
+    owner = owner_module.DirectCfsOwner(
+        transport,
+        SensorSequence((True,)),
+        SensorSequence((True,)),
+    )
+    owner.retained_head_segment = True
+    result = owner.finalize_load_takeover("T1A", "finalize-buffer-one")
+    assert result["failure_code"] == "buffer_not_middle_after_takeover"
+    assert result["active_route"] is None
+    assert result["last_buffer_state"] == 1
+    assert protocol.set_print_mode(target) not in [item[0] for item in transport.calls]
+    transport.done()
+
+
 def scenario_timeout_no_retry() -> None:
     target = protocol.route("T1A")
     stage = protocol.extrude_stage(target, 5)
@@ -348,7 +462,7 @@ def temperature_scenario(change: Dict[str, Any], code: str) -> Callable[[], None
 def scenario_unload_success() -> None:
     pulls = []
     transport = ScriptedTransport(successful_unload_plan())
-    head_sensor = SensorSequence((True, False))
+    head_sensor = SensorSequence((True, True))
     after_cutter_sensor = SensorSequence((True, False))
     owner = owner_module.DirectCfsOwner(
         transport,
@@ -360,6 +474,7 @@ def scenario_unload_success() -> None:
     result = owner.unload("T1A", "unload-ok", TEMP)
     require(result["phase"] == "idle", "unload_phase")
     require(result["active_route"] is None, "unload_route")
+    require(result["retained_head_segment"] is True, "retained_head_segment")
     require(pulls == [(-20.0, 140.0)], "tip_pull_contract")
     require(result["automatic_retry_count"] == 0, "unload_retry")
     transport.done()
@@ -414,19 +529,19 @@ def scenario_unload_timeout_no_retry() -> None:
     transport.done()
 
 
-def scenario_unload_sensor_stuck() -> None:
+def scenario_unload_upstream_sensor_stuck() -> None:
     transport = ScriptedTransport(successful_unload_plan())
     owner = owner_module.DirectCfsOwner(
         transport,
         SensorSequence((True, True)),
-        SensorSequence((True, False)),
+        SensorSequence((True, True)),
         tip_pull=lambda _distance, _velocity: True,
         active_route="T1A",
     )
     result = owner.unload("T1A", "unload-sensor", TEMP)
     require(
-        result["failure_code"] == "head_sensor_not_cleared_after_unload",
-        "unload_sensor_gate",
+        result["failure_code"] == "after_cutter_sensor_not_cleared_after_unload",
+        "unload_upstream_sensor_gate",
     )
     require(result["active_route"] == "T1A", "stuck_sensor_route")
     transport.done()
@@ -441,10 +556,10 @@ def scenario_two_cycles_and_once_only_ids() -> None:
     )
     transport = ScriptedTransport(plan)
     head_sensor = SensorSequence(
-        (False, True, True, True, False, False, True, True, True, False)
+        (False, True, True, True, True, True, True, True, True)
     )
     after_cutter_sensor = SensorSequence(
-        (False, True, True, False, False, True, True, False)
+        (False, True, True, False, False, True, True, True, False)
     )
     owner = owner_module.DirectCfsOwner(
         transport,
@@ -453,8 +568,12 @@ def scenario_two_cycles_and_once_only_ids() -> None:
         tip_pull=lambda _distance, _velocity: True,
     )
     require(owner.load("T1A", "load-1", TEMP)["phase"] == "loaded", "cycle1_load")
-    require(owner.unload("T1A", "unload-1", TEMP)["phase"] == "idle", "cycle1_unload")
-    require(owner.load("T1A", "load-2", TEMP)["phase"] == "loaded", "cycle2_load")
+    first_unload = owner.unload("T1A", "unload-1", TEMP)
+    require(first_unload["phase"] == "idle", "cycle1_unload")
+    require(first_unload["retained_head_segment"] is True, "cycle1_segment")
+    second_load = owner.load("T1A", "load-2", TEMP)
+    require(second_load["phase"] == "loaded", "cycle2_load")
+    require(second_load["retained_head_segment"] is False, "cycle2_segment_consumed")
     result = owner.unload("T1A", "unload-2", TEMP)
     require(result["phase"] == "idle", "cycle2_unload")
     require(result["tip_pull_count"] == 2, "multiple_cycle_pull_count")
@@ -523,6 +642,19 @@ SCENARIOS = [
     ("load_t1a", scenario_load_t1a),
     ("load_t2d", scenario_load_t2d),
     ("status_error_no_retry", scenario_status_error_no_retry),
+    ("err8_tail_recovery_has_no_stage5", scenario_err8_tail_recovery_has_no_stage5),
+    (
+        "err8_tail_recovery_requires_both_sensors",
+        scenario_err8_tail_recovery_requires_both_sensors,
+    ),
+    (
+        "takeover_finalize_reads_then_latches_without_motor",
+        scenario_takeover_finalize_reads_then_latches_without_motor,
+    ),
+    (
+        "takeover_finalize_refuses_nonmiddle_buffer",
+        scenario_takeover_finalize_refuses_nonmiddle_buffer,
+    ),
     ("timeout_no_retry", scenario_timeout_no_retry),
     ("disable_tension_no_retry", scenario_disable_tension_no_retry),
     ("missing_material", scenario_missing_material),
@@ -556,7 +688,7 @@ SCENARIOS = [
     ("unload_success", scenario_unload_success),
     ("unload_pull_failure", scenario_unload_pull_failure),
     ("unload_timeout_no_retry", scenario_unload_timeout_no_retry),
-    ("unload_sensor_stuck", scenario_unload_sensor_stuck),
+    ("unload_upstream_sensor_stuck", scenario_unload_upstream_sensor_stuck),
     ("two_cycles_and_once_only_ids", scenario_two_cycles_and_once_only_ids),
     ("invalid_route_closed", scenario_invalid_route_closed),
     (

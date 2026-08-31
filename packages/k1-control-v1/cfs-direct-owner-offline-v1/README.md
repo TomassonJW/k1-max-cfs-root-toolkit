@@ -14,6 +14,9 @@ l'appel local futur vers `serial_485`; rien ne l'instancie contre une machine.
 - les routes `T1A..T2D` sur deux CFS ;
 - le chargement borné par le capteur de tête ;
 - le retrait en deux phases avec une seule traction locale ;
+- la distinction entre la route CFS libérée et le petit segment coupé qui peut
+  rester dans la tête ; ce segment n'autorise que le chargement possédé suivant
+  dans le même runtime, jamais une extrusion avant arbitraire ;
 - la température appartenant exclusivement à K1 Control ;
 - l'arrêt au premier timeout, statut CFS ou capteur incohérent ;
 - aucune répétition automatique d'un effet incertain ;

@@ -47,6 +47,19 @@
     "purge_release_round_trips": 4,
     "resume_temperature": "saved_gcode_target"
   },
+  "lost_route_recovery": {
+    "allowed_only_when_both_path_sensors_present": true,
+    "route_source": "explicit_selected_initial_route",
+    "direct_owner_reconcile_before_motor": true,
+    "cutter_access_xy_home_only": true,
+    "cutter_access_z_probe": false,
+    "cutter_access_z_mark_without_motion_mm": 50.0,
+    "followed_by_cutter_and_unload": true,
+    "heaters_off_and_motors_released_after_unload": true,
+    "full_contact_geometry_after_unload_and_fresh_clean": true,
+    "automatic_retry": false,
+    "all_other_sensor_combinations": "refuse"
+  },
   "geometry": {
     "all_contact_before_filament": true,
     "mesh_profile": "k1_p001_t055_r001_n11x11",

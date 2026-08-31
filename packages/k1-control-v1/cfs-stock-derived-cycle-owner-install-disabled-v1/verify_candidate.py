@@ -120,6 +120,17 @@ def verify() -> Dict[str, Any]:
     )
     if any(fragment not in component_text for fragment in required_motion):
         raise ValueError("required_motion_missing")
+    cutter_runtime_order = (
+        '"G1 X38 Y304.5 F7000"',
+        '"G4 P1500"',
+        "self._require_cut_sensor(True)",
+        '"KCTRL_CFS_DIRECT_UNLOAD ROUTE=%s EFFECT_ID=%s "',
+        '"G1 X38 Y230 F7000"',
+        '"G4 P1000"',
+        "self._require_cut_sensor(False)",
+    )
+    if not ordered(component_text, cutter_runtime_order):
+        raise ValueError("cutter_hold_during_unload_order_missing")
     for forbidden in ("G28", "BED_MESH_CALIBRATE", "CX_PRINT_LEVELING_CALIBRATION"):
         if ('"%s' % forbidden) in component_text:
             raise ValueError("forbidden_contact_command_found:%s" % forbidden)
@@ -167,14 +178,16 @@ def verify() -> Dict[str, Any]:
         raise ValueError("claimed_effect_status_missing")
 
     matrix = load_runner().run()
-    if matrix["status"] != "OK" or matrix["passed"] != matrix["total"] or matrix["total"] != 14:
+    if matrix["status"] != "OK" or matrix["passed"] != matrix["total"] or matrix["total"] != 17:
         raise ValueError("scenario_matrix_failed")
     return {
         "status": "CFS_STOCK_DERIVED_CYCLE_OWNER_INSTALL_DISABLED_V1_OK",
-        "scenarios": "14/14",
+        "scenarios": "17/17",
         "uncertain_effect_retry_blocked": True,
         "effect_entries_refuse_before_arguments": True,
         "cutter_stock_evidence_verified": True,
+        "cutter_held_through_direct_unload": True,
+        "cutter_sensor_required_before_and_after_unload": True,
         "purge_bin_and_release_prepared": True,
         "stock_prime_line_prepared": True,
         "equivalent_refill_preserved": True,

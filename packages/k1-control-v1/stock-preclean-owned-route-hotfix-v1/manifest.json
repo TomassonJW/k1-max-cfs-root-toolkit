@@ -1,0 +1,43 @@
+{
+  "schema": 1,
+  "mission": "G4-K1-CONTROL-STOCK-PRECLEAN-OWNED-ROUTE-HOTFIX-V1",
+  "status": "deployment_candidate",
+  "files": [
+    {
+      "name": "stock_cycle_component",
+      "source": "packages/k1-control-v1/stock-derived-cycle-activation-v1/moonraker_component.py",
+      "destination": "/usr/data/k1-control-v1/current/moonraker/moonraker/moonraker/components/k1_control_stock_cycle.py",
+      "before_sha256": "34c9727aeea9a7480896ec84d4e3c86f3dbfab8e110c337095532d690ba81d82",
+      "after_sha256": "3f3a9cee7df9d1e0e50b805409dc3bc12318e5312017275a73933b217c1da815"
+    },
+    {
+      "name": "stock_cycle_active_core",
+      "source": "packages/k1-control-v1/stock-derived-cycle-activation-v1/active_core.py",
+      "destination": "/usr/data/k1-control-v1/current/moonraker/moonraker/moonraker/components/k1_control_stock_cycle_active_core.py",
+      "before_sha256": "0edab4855258b6670fc9ae8ce855526023fe3c716455ca277acb76b47ddc9cdd",
+      "after_sha256": "98870db3121ab4b93314c9efe5f9ca666fcba87fd271b78c78474a791f5bf38b"
+    }
+  ],
+  "decision": {
+    "direct_route_loaded": "skip_reconcile_then_cut_unload",
+    "route_inferred_from_two_sensors": "reconcile_then_cut_unload",
+    "direct_owner_failed": "reject_before_new_ticket"
+  },
+  "recovery": {
+    "quarantine_uncertain_run": true,
+    "preserve_selected_gcode": true,
+    "restart_moonraker": 1,
+    "restart_klipper": 1,
+    "restore_mesh": "k1_p001_t055_r001_n11x11",
+    "restore_z_no_move_mm": -0.04,
+    "reassociate_t1a_motor_frames": 0
+  },
+  "effects": {
+    "heat": false,
+    "motion": false,
+    "filament": false,
+    "cfs_motor_frame": false,
+    "probe": false,
+    "mesh_recalculation": false
+  }
+}

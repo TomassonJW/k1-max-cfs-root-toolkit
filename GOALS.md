@@ -1,6 +1,6 @@
 # GOALS — pilotage macro
 
-Date de mise à jour : 2026-08-31
+Date de mise à jour : 2026-09-01
 
 Ce fichier sert d'index rapide pour les grandes sessions de travail. Les noms
 ci-dessous regroupent les petites gates déjà définies dans `GATES.md` ; ils ne
@@ -19,11 +19,13 @@ mouvement de décrochage n'a pas eu lieu et la référence Z n'est pas fiable
 physiquement. ADR-033 et le document 49 rendent désormais la caméra obligatoire.
 ADR-034 ferme ensuite R3 : toute palpation doit précéder l'insertion. Son
 successeur R4 est installé et validé à froid avec le `11 × 11`, sans chauffe ni
-mouvement. La V1 physique directe T1A est ensuite close KO avant effet : le
-restart a réactivé `auto_refill`, puis le garde a refusé avant chauffe ou trame.
-Le filament est toujours engagé. ADR-037 interdit désormais le retrait sans
-cutter et le chargement sans purge bac/décrochage caméra. La prochaine tranche
-est intégrée mais reste d'abord entièrement hors imprimante.
+mouvement. La V1 physique directe T1A est ensuite close KO avant effet. Le
+propriétaire stock-derived actif et ses correctifs ont depuis été installés. La
+purge lit maintenant le G-code et utilise `140 mm` au chargement initial, au
+lieu des `30 mm` insuffisants de la reprise. Le premier retrait intégré reste
+fermé : le capteur cutter n'a jamais réagi entre `Y304,5` et la limite
+`Y307,5`. `T1A` reste engagé. ADR-040 impose une vérification mécanique à froid
+avant reprise.
 
 ## Vue rapide
 
@@ -31,7 +33,7 @@ est intégrée mais reste d'abord entièrement hors imprimante.
 | --- | --- | --- | --- |
 | 1 | `GOAL-P4-OFFLINE-CYCLE-CFS-V1` | terminé hors imprimante | système logiciel complet simulé et plan futur inerte vérifié |
 | 2 | `GOAL-P4-K1-READ-ONLY-QUALIFICATION-V1` | terminé en lecture seule ; écart de mesh alors observé, corrigé par une gate distincte | réponses et délais réels qualifiés sans commande ni impression |
-| 3 | `GOAL-P4-PHYSICAL-SLICES-QUALIFICATION-V1` | en cours ; `2/7`, V1 directe close KO avant effet, ADR-037 impose cutter et purge intégrés | toutes les fonctions physiques et le profil de bord validés sans fragmenter la chorégraphie réelle |
+| 3 | `GOAL-P4-PHYSICAL-SLICES-QUALIFICATION-V1` | en cours ; `2/7`, purge G-code corrigée, retrait bloqué par `cut_pos=0` jusqu'à `Y307,5` | toutes les fonctions physiques et le profil de bord validés sans fragmenter la chorégraphie réelle |
 | 4 | `GOAL-P4-DAILY-CUTOVER-V1` | prévu après Goal 3 | bascule unifiée, validation production et clôture définitive du projet |
 
 Le registre exécutable

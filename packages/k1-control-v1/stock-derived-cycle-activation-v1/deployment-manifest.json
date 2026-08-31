@@ -86,7 +86,7 @@
       "source": "packages/k1-control-v1/stock-derived-cycle-activation-v1/moonraker_component.py",
       "stage_name": "k1_control_stock_cycle.py",
       "destination": "/usr/data/k1-control-v1/current/moonraker/moonraker/moonraker/components/k1_control_stock_cycle.py",
-      "sha256": "b572fc736479eadd87a04c9324cbbd5302ea8ce76ff486895565d9dbc8311cd4",
+      "sha256": "3f3a9cee7df9d1e0e50b805409dc3bc12318e5312017275a73933b217c1da815",
       "before": "sha256",
       "before_sha256": "f6a36e98058e08b09b974d426c3a011c024f8e73b20f02762ae79bb3f0cfe396"
     },
@@ -94,14 +94,14 @@
       "source": "packages/k1-control-v1/stock-derived-cycle-activation-v1/active_core.py",
       "stage_name": "k1_control_stock_cycle_active_core.py",
       "destination": "/usr/data/k1-control-v1/current/moonraker/moonraker/moonraker/components/k1_control_stock_cycle_active_core.py",
-      "sha256": "12a1478dfd71404ba288dcbc9810c1698a220d2516c720154f81607cb31f8713",
+      "sha256": "98870db3121ab4b93314c9efe5f9ca666fcba87fd271b78c78474a791f5bf38b",
       "before": "absent"
     },
     {
       "source": "packages/k1-control-v1/stock-derived-cycle-activation-v1/job_contract.py",
       "stage_name": "k1_control_stock_job_contract.py",
       "destination": "/usr/data/k1-control-v1/current/moonraker/moonraker/moonraker/components/k1_control_stock_job_contract.py",
-      "sha256": "2f3a9b20dd9dac5d09a26a1f81d3d82f36136f7e9b2523a5136d8e0d197dcaa8",
+      "sha256": "c1ea059f120eba3e99e284249e9923da3ff505fcaa31f090f1eee054ffe6a100",
       "before": "absent"
     }
   ],
@@ -128,7 +128,7 @@
     },
     {
       "source": "packages/k1-control-v1/stock-derived-cycle-activation-v1/run_scenarios.py",
-      "sha256": "fe19ba29d4d6ae2fb0511ce4bd27b79e58916d9493e925a73a4ab319040c4193"
+      "sha256": "15996303d1fbc74a70948311fe01dc8dff5251e102d5987bbf448af651721cf6"
     },
     {
       "source": "packages/k1-control-v1/stock-derived-cycle-activation-v1/verify_candidate.py",
@@ -136,11 +136,23 @@
     },
     {
       "source": "packages/k1-control-v1/stock-derived-cycle-activation-v1/contract.json",
-      "sha256": "5a400923bf6e82a1ae5dbc635f5d7c58ee82b9929dc9f12c7c64bf0ff227de6a"
+      "sha256": "dacd96c2610d317596988c5a97f1d506f3d8d771cd46ae1f134d6504c632cd4a"
     },
     {
       "source": "packages/k1-control-v1/stock-derived-cycle-activation-v1/README.md",
-      "sha256": "742656e48708132893f9a8944edf3ab8eab6fe74b4a6cc29b3faf4406259de9b"
+      "sha256": "68fad923f90c71e69f2179ff567d88ea0dfebb426f75b2c20811c0897e6c4514"
+    },
+    {
+      "source": "packages/k1-control-v1/stock-derived-cycle-activation-v1/remote_control_action.py",
+      "sha256": "ca0e596ac6239cfdef45b1dadcf8fef952c8c327783ee559337dd1f7e58d3ac2"
+    },
+    {
+      "source": "packages/k1-control-v1/stock-derived-cycle-activation-v1/K1-STOCK-DERIVED-T1A-2LAYER.gcode",
+      "sha256": "eb086ac545a677e1d12d9daa2cc87dcb54844e5ccc0839d80555ed26732cf769"
+    },
+    {
+      "source": "scripts/invoke-k1-control-stock-cycle-v1.ps1",
+      "sha256": "53ae03cc931765c2e152f3b995da76237e36d841454c3e6516b47ef06be19b42"
     },
     {
       "source": "packages/k1-control-v1/stock-derived-handoff-moonraker-install-disabled-v1/remote_validate_disabled.py",
@@ -160,6 +172,22 @@
   "deployer": {
     "source": "scripts/deploy-k1-control-stock-derived-cycle-activation-v1.ps1",
     "sha256": "b2656f42f085eb090daac9681152ef33531cc61e02b9d765a98f7fa95be31b81"
+  },
+  "recovery_patch": {
+    "gate": "G4-K1-CONTROL-STOCK-DERIVED-CYCLE-SELECTED-ROUTE-RECOVERY-V1",
+    "source": "packages/k1-control-v1/stock-derived-cycle-activation-v1/moonraker_component.py",
+    "destination": "/usr/data/k1-control-v1/current/moonraker/moonraker/moonraker/components/k1_control_stock_cycle.py",
+    "before_sha256": "4e244f4c17da6bd630d420b1440e9a9e6c87ea12c3b0d5193a0be456518b8fb6",
+    "after_sha256": "d28307c64a3ae74c7f7aaef58dea043eec4fd4cd6d6c2a17fcbc54c925e50fc5",
+    "deployer": "scripts/deploy-k1-control-stock-derived-cycle-selected-route-recovery-v1.ps1",
+    "deployer_sha256": "b426638c8721ec09f3264c95b962f051ce81efa4529cdd3d010dd157ea103cdf",
+    "dedicated_moonraker_restart": 1,
+    "klipper_restart": 0,
+    "heat": false,
+    "motion": false,
+    "filament": false,
+    "cfs_frame": false,
+    "starts_cycle": false
   },
   "planned_effects": {
     "remote_files_added": 7,
