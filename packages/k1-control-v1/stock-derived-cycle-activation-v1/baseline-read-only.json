@@ -1,0 +1,17 @@
+{
+  "schema": 1,
+  "captured_at": "2026-08-31",
+  "status": "CURRENT_DISABLED_INSTALLATION_VALIDATED_READ_ONLY",
+  "printer_cfg_before_sha256": "c3b732ff1b4069da952392eb5eb3d6e2527305164186a723295694ef0d32e941",
+  "printer_cfg_candidate_sha256": "22a12faecc6c03ea8e29c476c6f6f1d8a64e0bf717daad6268d36a98829f1600",
+  "moonraker_conf_before_sha256": "ea817b7275909fa299872f2a23ad2d510470588afd96a738be1dc3277c26d835",
+  "moonraker_conf_candidate_sha256": "2dbd34d7a89c40cd6664dce47999d5917a632c97be9954127deead709af1ec5e",
+  "disabled_validation": "VALIDATE_STOCK_DERIVED_HANDOFF_MOONRAKER_INSTALL_DISABLED_V1_OK",
+  "best_current_mesh": "k1_p001_t055_r001_n11x11",
+  "accepted_z_offset_mm": -0.04,
+  "printer_state": "standby",
+  "heater_targets_zero": true,
+  "axes_released": true,
+  "engaged_route": null,
+  "physical_effect": false
+}

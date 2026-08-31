@@ -1,0 +1,212 @@
+{
+  "schema": 1,
+  "gate": "G4-K1-CONTROL-STOCK-DERIVED-CYCLE-ACTIVATION-IDLE-V1",
+  "status": "offline_review_candidate_not_installed",
+  "baseline": {
+    "printer_cfg_sha256": "c3b732ff1b4069da952392eb5eb3d6e2527305164186a723295694ef0d32e941",
+    "moonraker_conf_sha256": "ea817b7275909fa299872f2a23ad2d510470588afd96a738be1dc3277c26d835",
+    "best_current_mesh": "k1_p001_t055_r001_n11x11",
+    "accepted_z_offset_mm": -0.04,
+    "required_files": {
+      "R4_config": {
+        "path": "/usr/data/printer_data/config/k1-control-start-sequence-owner-v1.cfg",
+        "sha256": "c7d7dd06ee81092d73cde9e41ba371642340e8f0270154f3cef15e0e98ef9d4e"
+      },
+      "direct_owner_component": {
+        "path": "/usr/share/klipper/klippy/extras/k1_control_cfs_direct_owner.py",
+        "sha256": "47cc69a495afc269d5e54df7224d88d9b9ada430fc511a4107f42935138029d2"
+      },
+      "direct_owner_disabled_config": {
+        "path": "/usr/data/printer_data/config/k1-control-cfs-direct-owner-disabled-v1.cfg",
+        "sha256": "f9de28c0836db9ce03908ea82facefc8edc5468a4f94849d19d96c79633b63cf"
+      },
+      "cycle_owner_component": {
+        "path": "/usr/share/klipper/klippy/extras/k1_control_stock_cycle_owner.py",
+        "sha256": "7f1a6c53111ab3808fa3ba902899aa12482ed520dfa507b77399465a41a8ed50"
+      },
+      "cycle_owner_disabled_config": {
+        "path": "/usr/data/printer_data/config/k1-control-stock-derived-cycle-owner-disabled-v1.cfg",
+        "sha256": "ccc5ab6d45ccec4233b4e2017ecb9c4d170a6a2cf74509969f56c4d2bcc0e1ee"
+      },
+      "geometry_component": {
+        "path": "/usr/share/klipper/klippy/extras/k1_control_stock_geometry_handoff.py",
+        "sha256": "89cc348b0bdc9cf463639b950aed2fbb7d947c159b71ce2920760a703b927cb7"
+      },
+      "geometry_disabled_config": {
+        "path": "/usr/data/printer_data/config/k1-control-stock-geometry-handoff-disabled-v1.cfg",
+        "sha256": "47840c90502f6cefd47cd4fb5d9941bc349791a56a950141101e87fb4aad48c3"
+      },
+      "moonraker_core": {
+        "path": "/usr/data/k1-control-v1/current/moonraker/moonraker/moonraker/components/k1_control_stock_cycle_core.py",
+        "sha256": "934f04f78b8f82b5b51a6459daa3954978f5fa5448e412d8365f01e1e98376d7"
+      }
+    }
+  },
+  "installed": {
+    "printer_cfg_sha256": "22a12faecc6c03ea8e29c476c6f6f1d8a64e0bf717daad6268d36a98829f1600",
+    "moonraker_conf_sha256": "2dbd34d7a89c40cd6664dce47999d5917a632c97be9954127deead709af1ec5e"
+  },
+  "files": [
+    {
+      "source": "packages/k1-control-v1/stock-derived-cycle-activation-v1/k1_control_cfs_startup_exclusion.py",
+      "stage_name": "k1_control_cfs_startup_exclusion.py",
+      "destination": "/usr/share/klipper/klippy/extras/k1_control_cfs_startup_exclusion.py",
+      "sha256": "e2706d4d80dd939e09252edc3e8e777d5a036752091e37283b671673bb913981",
+      "before": "absent"
+    },
+    {
+      "source": "packages/k1-control-v1/stock-derived-cycle-activation-v1/k1_control_cfs_runout_owner.py",
+      "stage_name": "k1_control_cfs_runout_owner.py",
+      "destination": "/usr/share/klipper/klippy/extras/k1_control_cfs_runout_owner.py",
+      "sha256": "81d77f66cd1c84363b2330be3626b6d48bcf01059b1a2b85d52951df0613a737",
+      "before": "absent"
+    },
+    {
+      "source": "packages/k1-control-v1/stock-derived-cycle-activation-v1/k1-control-cfs-direct-owner-active-v1.cfg",
+      "stage_name": "k1-control-cfs-direct-owner-active-v1.cfg",
+      "destination": "/usr/data/printer_data/config/k1-control-cfs-direct-owner-active-v1.cfg",
+      "sha256": "f69496e06d71a334de8e8e2bd5c34fd79ca790ca9dae0d26d3b74aeb1ef22e5c",
+      "before": "absent"
+    },
+    {
+      "source": "packages/k1-control-v1/stock-derived-cycle-activation-v1/k1-control-stock-cycle-active-v1.cfg",
+      "stage_name": "k1-control-stock-cycle-active-v1.cfg",
+      "destination": "/usr/data/printer_data/config/k1-control-stock-cycle-active-v1.cfg",
+      "sha256": "3a77c4a9e86545362af5a9c7bf760c767beef9b896e62f487a613a6ab4eb51f4",
+      "before": "absent"
+    },
+    {
+      "source": "packages/k1-control-v1/stock-derived-cycle-activation-v1/k1-control-stock-geometry-handoff-active-v1.cfg",
+      "stage_name": "k1-control-stock-geometry-handoff-active-v1.cfg",
+      "destination": "/usr/data/printer_data/config/k1-control-stock-geometry-handoff-active-v1.cfg",
+      "sha256": "25346d953a1b40793344eb3e503a5961cc5d9041a0ef04913423bcd330b764e4",
+      "before": "absent"
+    },
+    {
+      "source": "packages/k1-control-v1/stock-derived-cycle-activation-v1/moonraker_component.py",
+      "stage_name": "k1_control_stock_cycle.py",
+      "destination": "/usr/data/k1-control-v1/current/moonraker/moonraker/moonraker/components/k1_control_stock_cycle.py",
+      "sha256": "b572fc736479eadd87a04c9324cbbd5302ea8ce76ff486895565d9dbc8311cd4",
+      "before": "sha256",
+      "before_sha256": "f6a36e98058e08b09b974d426c3a011c024f8e73b20f02762ae79bb3f0cfe396"
+    },
+    {
+      "source": "packages/k1-control-v1/stock-derived-cycle-activation-v1/active_core.py",
+      "stage_name": "k1_control_stock_cycle_active_core.py",
+      "destination": "/usr/data/k1-control-v1/current/moonraker/moonraker/moonraker/components/k1_control_stock_cycle_active_core.py",
+      "sha256": "12a1478dfd71404ba288dcbc9810c1698a220d2516c720154f81607cb31f8713",
+      "before": "absent"
+    },
+    {
+      "source": "packages/k1-control-v1/stock-derived-cycle-activation-v1/job_contract.py",
+      "stage_name": "k1_control_stock_job_contract.py",
+      "destination": "/usr/data/k1-control-v1/current/moonraker/moonraker/moonraker/components/k1_control_stock_job_contract.py",
+      "sha256": "2f3a9b20dd9dac5d09a26a1f81d3d82f36136f7e9b2523a5136d8e0d197dcaa8",
+      "before": "absent"
+    }
+  ],
+  "support_files": [
+    {
+      "source": "packages/k1-control-v1/stock-derived-cycle-activation-v1/moonraker-section.conf",
+      "sha256": "ac3135d58eb11329da1609173a9c7ff9e49921380557ceb7d8037f9434eaff31"
+    },
+    {
+      "source": "packages/k1-control-v1/stock-derived-cycle-activation-v1/remote_source_validate.py",
+      "sha256": "41aadbb8bb699a62ee309ea00980761fbb93d6054e9298f69d1517b7b7617430"
+    },
+    {
+      "source": "packages/k1-control-v1/stock-derived-cycle-activation-v1/remote_validate_active_idle.py",
+      "sha256": "c5904fead2fed6e6c183ee03eae7d31cb32ca2ffa90f8adc935b9c0fb52ba217"
+    },
+    {
+      "source": "packages/k1-control-v1/stock-derived-cycle-activation-v1/remote_prospective_hash.py",
+      "sha256": "1e2cfb062870728acf36ac13c3e587fe71204963186ef79cfce5df2e7198c949"
+    },
+    {
+      "source": "packages/k1-control-v1/stock-derived-cycle-activation-v1/run_scenarios.py",
+      "sha256": "64c02f264d1b94593bfd108c02da6cc223414d6f2feb7f72ff415e8d00e71b3c"
+    },
+    {
+      "source": "packages/k1-control-v1/stock-derived-cycle-activation-v1/verify_candidate.py",
+      "sha256": "6f50c79f1a3b1ab0b32bb909b1b20ad40965583410e3f77b07532ec1f02e4c00"
+    },
+    {
+      "source": "packages/k1-control-v1/stock-derived-cycle-activation-v1/contract.json",
+      "sha256": "5a400923bf6e82a1ae5dbc635f5d7c58ee82b9929dc9f12c7c64bf0ff227de6a"
+    },
+    {
+      "source": "packages/k1-control-v1/stock-derived-cycle-activation-v1/README.md",
+      "sha256": "1a0f6ea5db049e75c70e7096c6e03e52db9a684aff66bcf1e16ad561b6dff499"
+    },
+    {
+      "source": "packages/k1-control-v1/stock-derived-handoff-moonraker-install-disabled-v1/remote_validate_disabled.py",
+      "sha256": "b6d2373a57a319f76136c1fd775c92fb5459104e40b8744b38f81684a5a3f737"
+    }
+  ],
+  "preparation_evidence": [
+    {
+      "source": "packages/k1-control-v1/stock-derived-cycle-activation-v1/baseline-read-only.json",
+      "sha256": "52b6276c308fd48a089afc79b9ad08e289030270a268cc2fb91d3cc153fbff35"
+    },
+    {
+      "source": "packages/k1-control-v1/stock-derived-cycle-activation-v1/capture_activation_baseline_read_only.ps1",
+      "sha256": "5508fb6c42891abd7fae87c8c6a2af3a53d772aa65e1a779ad069e1a0fee20a7"
+    }
+  ],
+  "deployer": {
+    "source": "scripts/deploy-k1-control-stock-derived-cycle-activation-v1.ps1",
+    "sha256": "42fdf7e4805d116599ca2280fc1991c32f907d7453485191797437ec9c2fa322"
+  },
+  "planned_effects": {
+    "remote_files_added": 7,
+    "remote_files_replaced": 1,
+    "printer_cfg_includes_replaced": 3,
+    "moonraker_section_replaced": 1,
+    "klipper_restart": 1,
+    "dedicated_moonraker_restart": 1,
+    "stock_auto_refill_policy": "1_to_0_via_captured_policy_handler",
+    "restore_mesh_once": "k1_p001_t055_r001_n11x11",
+    "heat": false,
+    "axis_motion": false,
+    "extrusion": false,
+    "filament": false,
+    "cfs_frame": false,
+    "probe": false,
+    "mesh_recalculation": false
+  },
+  "required_active_idle_validation": {
+    "all_components_enabled": true,
+    "cycle_phase": "idle",
+    "direct_transport_bound": false,
+    "runout_armed": false,
+    "runout_event_seq": 0,
+    "runout_consumed_seq": 0,
+    "run_and_selection_state_absent": true,
+    "effect_and_command_counts": 0,
+    "stock_auto_refill": 0,
+    "route": "none"
+  },
+  "backup": {
+    "directory": "/usr/data/k1-control-v1/backups/<capture-id>/stock-derived-cycle-activation-v1",
+    "files": [
+      "printer.cfg.before",
+      "moonraker.conf.before",
+      "k1_control_stock_cycle.py.before",
+      "checksums.sha256"
+    ]
+  },
+  "rollback": {
+    "restore_exact": [
+      "printer.cfg",
+      "moonraker.conf",
+      "k1_control_stock_cycle.py"
+    ],
+    "remove_new_files": 7,
+    "remove_state_files_if_any": true,
+    "klipper_restart": 1,
+    "dedicated_moonraker_restart": 1,
+    "restore_mesh_once": "k1_p001_t055_r001_n11x11",
+    "stock_auto_refill_restored_by_stock_restart": 1
+  },
+  "physical_trial_included": false
+}

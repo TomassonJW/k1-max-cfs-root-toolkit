@@ -1,0 +1,68 @@
+{
+  "schema": 1,
+  "gate": "G4-K1-CONTROL-STOCK-DERIVED-CYCLE-ACTIVATION-IDLE-V1",
+  "purpose": "Activate the reviewed owner stack at idle without starting a print or a filament effect.",
+  "installation": {
+    "starts_cycle": false,
+    "creates_selection": false,
+    "creates_run_state": false,
+    "heat": false,
+    "motion": false,
+    "extrusion": false,
+    "filament": false,
+    "cfs_frame": false,
+    "probe": false,
+    "mesh_recalculation": false
+  },
+  "owner_order": [
+    "k1_control_cfs_startup_exclusion",
+    "k1_control_cfs_direct_owner",
+    "k1_control_cfs_runout_owner"
+  ],
+  "runout": {
+    "source": "filament_sensor_2 runout_gcode -> BOX_CHECK_MATERIAL_REFILL",
+    "sensor_state_alone_is_sufficient": false,
+    "stock_handler_callable": false,
+    "event_monotone": true,
+    "intentional_unload_disarms_and_disables_sensors": true,
+    "empty_spool_uses_cutter": false,
+    "empty_spool_release": "logical_without_motor",
+    "unique_strict_spare_required": true,
+    "resume_temperature": "saved_gcode_target",
+    "camera_before_resume": true,
+    "automatic_retry": false
+  },
+  "strict_material_identity": [
+    "reference_id",
+    "material_type",
+    "color",
+    "diameter_mm",
+    "thermal_recipe_id",
+    "user_approved"
+  ],
+  "intentional_tool_change": {
+    "cutter_required": true,
+    "unload_required": true,
+    "purge_bin_required": true,
+    "purge_release_round_trips": 4,
+    "resume_temperature": "saved_gcode_target"
+  },
+  "geometry": {
+    "all_contact_before_filament": true,
+    "mesh_profile": "k1_p001_t055_r001_n11x11",
+    "accepted_z_mm": -0.04,
+    "post_filament_probe_count": 0,
+    "mesh_recalculation_count": 0
+  },
+  "persistence": {
+    "ticket_before_effect": true,
+    "claimed_after_restart": "uncertain_no_replay",
+    "inventory_preserved": true
+  },
+  "physical_trial": {
+    "included": false,
+    "requires_operator": true,
+    "requires_camera": true,
+    "requires_fresh_manual_nozzle_and_plate_clean": true
+  }
+}
