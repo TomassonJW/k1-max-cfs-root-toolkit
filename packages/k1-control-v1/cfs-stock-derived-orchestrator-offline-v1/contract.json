@@ -1,0 +1,120 @@
+{
+  "schema": 1,
+  "contract_id": "cfs-stock-derived-orchestrator-offline-v1",
+  "status": "OFFLINE_PERSISTABLE_ORCHESTRATOR_NO_CONNECTOR",
+  "decision": "ADR-038",
+  "authority": {
+    "printer_connection": false,
+    "remote_write": false,
+    "gcode_dispatch": false,
+    "service_action": false,
+    "heat": false,
+    "motion": false,
+    "extrusion": false,
+    "cfs_frame": false,
+    "deployment_authorized": false,
+    "production_authorized": false
+  },
+  "sources": {
+    "lifecycle": "packages/k1-control-v1/cfs-cutter-purge-integrated-r2-offline-v1/stock-sequence-delta.json",
+    "owner_and_refill": "packages/k1-control-v1/cfs-owner-core-offline-v1/contract.json",
+    "effect_primitives": "packages/k1-control-v1/cfs-stock-derived-cycle-owner-install-disabled-v1/contract.json",
+    "geometry_source": "packages/k1-control-v1/start-sequence-owner-preinsert-geometry-r4/k1-control-start-sequence-owner-preinsert-geometry-r4.cfg"
+  },
+  "ownership": {
+    "single_owner": "K1_Control",
+    "stock_auto_refill_disabled_while_owned": true,
+    "stock_auto_refill_zero_observation_required_before_owned_phase": true,
+    "stock_auto_refill_previous_value_restored_exactly": true,
+    "stock_BOX_effects_allowed": false,
+    "stock_resume_allowed": false
+  },
+  "persistent_ticket": {
+    "claim_before_first_effect": true,
+    "attempt_count": 1,
+    "automatic_retry_count": 0,
+    "command_sha256_recorded": true,
+    "proof_sha256_recorded": true,
+    "claimed_ticket_after_restart": "blocked_uncertain_manual_recovery",
+    "unknown_outcome": "blocked_uncertain_manual_recovery"
+  },
+  "start_order": [
+    "acquire_owner_and_disable_stock_auto_refill",
+    "cut_and_unload_if_filament_is_engaged",
+    "fresh_manual_nozzle_clean",
+    "R4_X_Y_Z_references_without_filament",
+    "load_exact_11x11_and_canonical_Z_without_recalculation",
+    "consume_geometry_handoff_token",
+    "direct_load_and_bin_purge",
+    "camera_release_verdict",
+    "exact_stock_prime_line_and_relative_positive_Z5",
+    "camera_prime_verdict",
+    "start_selected_virtual_SD_file"
+  ],
+  "after_filament_invariants": {
+    "G28": false,
+    "contact_probe": false,
+    "mesh_recalculation": false,
+    "hidden_Z_offset": false,
+    "stock_BOX_effect": false
+  },
+  "tool_change": {
+    "pause_owned": true,
+    "atomic_ticket_operations": [
+      "cutter_and_direct_unload",
+      "direct_load_bin_purge_and_release"
+    ],
+    "camera_before_resume": true,
+    "contact_after_filament": false
+  },
+  "equivalent_refill": {
+    "feature_preserved": true,
+    "pause_latched": true,
+    "required_exact_fields": [
+      "reference_id",
+      "material_type",
+      "color",
+      "diameter_mm",
+      "thermal_recipe_id",
+      "user_approved"
+    ],
+    "candidate_count": 1,
+    "cross_cfs_allowed": true,
+    "active_temperature_preserved": true,
+    "complete_pause_context_preserved": true,
+    "camera_before_resume": true,
+    "near_match_refused": true,
+    "multiple_matches_refused": true
+  },
+  "normal_end": {
+    "primitive": "KCTRL_STOCK_CYCLE_END_V1",
+    "full_G28": false,
+    "required_terminal_proofs": [
+      "route_empty",
+      "head_sensor_empty",
+      "after_cutter_sensor_empty",
+      "safe_park",
+      "heater_targets_zero",
+      "fans_zero",
+      "motors_released"
+    ]
+  },
+  "current_runtime_boundary": {
+    "qualified_thermal_geometry_profiles": [
+      {
+        "bed_c": 55.0,
+        "probe_nozzle_c": 140.0,
+        "first_nozzle_c": 190.0,
+        "mesh_profile": "k1_p001_t055_r001_n11x11",
+        "accepted_z_mm": -0.04
+      }
+    ],
+    "other_thermal_profiles": "closed_until_mesh_and_canonical_Z_are_qualified",
+    "geometry_handoff_token": "geometry_ready_for_stock_cycle",
+    "geometry_handoff_adapter_installed": false,
+    "moonraker_connector_present": false,
+    "state_file_writer_present": false,
+    "effect_dispatcher_present": false
+  },
+  "next_increment": "geometry_handoff_and_moonraker_component_install_disabled_v1"
+}
