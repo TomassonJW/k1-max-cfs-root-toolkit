@@ -1411,3 +1411,22 @@ confiné en mode `offline`; le nouveau propriétaire n'est ni posé ni
 physiquement qualifié. La prochaine tranche est
 `G4-K1-CONTROL-CFS-DIRECT-OWNER-INSTALL-DISABLED-V1`, sans chauffe, mouvement ou
 effet filament.
+
+## Mise à jour 2026-08-31 — candidat de pose désactivée prêt hors imprimante
+
+Le paquet `cfs-direct-owner-install-disabled-v1` ajoute l'adaptateur Klipper
+réel, la configuration `enabled: false`, six destinations distantes exactes,
+un plan de backup/pose/validation/rollback et deux validateurs distants inertes.
+Les `13/13` scénarios et `5/5` tests ciblés sont verts hors imprimante.
+
+Dans l'état candidat, aucun objet série n'est pris, aucune commande stock n'est
+remplacée et réassociation/chargement/retrait refusent avant leurs arguments.
+Le futur mode actif est préparé mais non autorisé : dix-neuf entrées stock sont
+alors bloquées, l'auto-remplacement doit déjà être à zéro et les deux CFS doivent
+être connectés avant toute trame.
+
+Le script de pose ne contient qu'un ajout de six fichiers, un include, un
+`RESTART` Klipper et la remise du meilleur `11 × 11`; son rollback restaure le
+`printer.cfg` exact et retire seulement ces fichiers. Le plan local est vert.
+Aucune connexion K1, écriture distante, relance, chauffe, mouvement ou trame
+CFS n'a eu lieu. La gate de pose reste ouverte et non autorisée.

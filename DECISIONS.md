@@ -1863,3 +1863,24 @@ moteur uniquement si tous les capteurs concordent.
 
 Voir `docs/adr/ADR-036-proprietaire-cfs-direct-sur-transport-serie-borne.md` et
 `docs/50-proprietaire-cfs-direct-hors-imprimante-v1.md`.
+
+## D-088 — La première pose du propriétaire direct reste strictement désactivée
+
+Date: 2026-08-31
+
+Status: candidat hors imprimante `13/13` ; pose et activation fermées
+
+Le composant réel est livré avec `enabled: false`. Dans cet état, il ne prend
+pas le transport série, ne remplace aucune commande stock et refuse ses trois
+entrées d'effet avant même leurs arguments. La pose peut ainsi vérifier le
+chargement du code et son rollback sans mouvement filament caché.
+
+Une future activation exige un redémarrage distinct. À ce démarrage seulement,
+les dix-neuf entrées stock connues sont remplacées par des refus ou constatées
+absentes. Avant toute trame, l'auto-remplacement stock doit déjà valoir zéro,
+aucune commande stock ne doit être active et les deux CFS doivent être
+connectés. Revenir à `enabled: false` puis redémarrer restitue les handlers stock
+d'origine ; la valeur d'auto-remplacement est ensuite restaurée par la frontière
+déjà qualifiée.
+
+Voir `docs/51-proprietaire-cfs-direct-candidat-pose-desactivee-v1.md`.

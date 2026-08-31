@@ -153,7 +153,9 @@ l'observabilité V2 et l'exclusion réelle du propriétaire stock sont closes OK
 le run thermique R5 est clos KO et sans retry ; la prochaine gate chaude reste
 bloquée jusqu'à la résolution de la position physique du filament, son retrait
 avant toute palpation, le nettoyage réel de la buse, puis la réinsertion
-officielle de `T1A` après la géométrie de contact**.
+officielle de `T1A` après la géométrie de contact ; le propriétaire CFS direct
+obtient `24/24` et son candidat de pose désactivée `13/13`, mais ce dernier
+n'est pas encore installé**.
 
 Le checkpoint C a référencé XYZ, rechargé le `11 × 11`, commandé `Z=50 mm` et
 attendu la fin. Un premier faux KO local a confondu la position physique
@@ -186,7 +188,8 @@ Ce qui sera réellement fait, une petite tranche à la fois :
 - le propriétaire direct K1 Control est maintenant implémenté hors imprimante
   contre les trames locales exactes, avec `24/24`, sans recopier les projets
   GPL ;
-- installer avec sauvegarde et retour arrière ;
+- son composant installable désactivé, son backup et son rollback exact sont
+  préparés avec `13/13` ; l'installer sans trame filament ;
 - qualifier le départ avec purge dans le bac, décrochage E4, contrôles caméra
   bloquants et référence Z précise seulement après image propre ;
 - qualifier un retrait unique et l'arrêt réel des chauffes ;

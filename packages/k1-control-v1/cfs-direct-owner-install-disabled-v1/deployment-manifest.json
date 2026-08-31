@@ -1,0 +1,110 @@
+{
+  "schema": 1,
+  "gate": "G4-K1-CONTROL-CFS-DIRECT-OWNER-INSTALL-DISABLED-V1",
+  "status": "offline_review_candidate_not_authorized",
+  "baseline": {
+    "printer_cfg_sha256": "8e4be26ac43cac25950b3bec2e280464b7fb6af99d1d20aa8bbec927d17e4223",
+    "box_cfg_sha256": "e7a6b26df58a9fa8e49d3af6845f5a0937a790c8ef494b96ec72fd7392abc7a7",
+    "start_owner_r4_sha256": "c7d7dd06ee81092d73cde9e41ba371642340e8f0270154f3cef15e0e98ef9d4e",
+    "integrated_cycle_neutralized_sha256": "97fe159a3e4105512f8a349539d224f42cd28617dbb9a6dfa403195b7e68f998",
+    "best_current_mesh": "k1_p001_t055_r001_n11x11",
+    "accepted_z_offset_mm": -0.04
+  },
+  "printer_cfg": {
+    "insert_after": "[include k1-control-integrated-production-cycle-v1.cfg]",
+    "add_line": "[include k1-control-cfs-direct-owner-disabled-v1.cfg]",
+    "installed_sha256": "55b73da92aee86e9645ec8f8ebf3726bffc261d4530b642af52b91cbb89b9479",
+    "rollback_sha256": "8e4be26ac43cac25950b3bec2e280464b7fb6af99d1d20aa8bbec927d17e4223"
+  },
+  "files": [
+    {
+      "source": "packages/k1-control-v1/cfs-direct-owner-install-disabled-v1/k1-control-cfs-direct-owner-disabled-v1.cfg",
+      "destination": "/usr/data/printer_data/config/k1-control-cfs-direct-owner-disabled-v1.cfg",
+      "sha256": "f9de28c0836db9ce03908ea82facefc8edc5468a4f94849d19d96c79633b63cf",
+      "before": "absent"
+    },
+    {
+      "source": "packages/k1-control-v1/cfs-direct-owner-install-disabled-v1/k1_control_cfs_direct_owner.py",
+      "destination": "/usr/share/klipper/klippy/extras/k1_control_cfs_direct_owner.py",
+      "sha256": "47cc69a495afc269d5e54df7224d88d9b9ada430fc511a4107f42935138029d2",
+      "before": "absent"
+    },
+    {
+      "source": "packages/k1-control-v1/cfs-direct-owner-install-disabled-v1/payload_init.py",
+      "destination": "/usr/share/klipper/klippy/extras/k1_control_cfs_direct/__init__.py",
+      "sha256": "f2af2974d84e48d4aabc7fcd1928e504e35581e9f96d1932fd4d9fe83790d782",
+      "before": "absent"
+    },
+    {
+      "source": "packages/k1-control-v1/cfs-direct-owner-offline-v1/protocol.py",
+      "destination": "/usr/share/klipper/klippy/extras/k1_control_cfs_direct/protocol.py",
+      "sha256": "5a2b719bcbf8ff8dc1977199c52b0f30c37bfc9d496dbfd0c2d75a03bf10498e",
+      "before": "absent"
+    },
+    {
+      "source": "packages/k1-control-v1/cfs-direct-owner-offline-v1/owner.py",
+      "destination": "/usr/share/klipper/klippy/extras/k1_control_cfs_direct/owner.py",
+      "sha256": "df121ba1fa8dfc494aa65afc235ae6404d5c9e7124ef8fc90e3346512239c3af",
+      "before": "absent"
+    },
+    {
+      "source": "packages/k1-control-v1/cfs-direct-owner-offline-v1/runtime_adapter.py",
+      "destination": "/usr/share/klipper/klippy/extras/k1_control_cfs_direct/runtime_adapter.py",
+      "sha256": "179cdc7ab6a7333c0396869028e617340d55927aeee8d1e6607c64d329cd5a3d",
+      "before": "absent"
+    }
+  ],
+  "support_files": [
+    {
+      "source": "packages/k1-control-v1/cfs-direct-owner-install-disabled-v1/remote_import_validate.py",
+      "sha256": "3e25917b81cc80ad289127f32de5ffafd1b569e2bc9f3bb5c5e7bf97670c8981"
+    },
+    {
+      "source": "packages/k1-control-v1/cfs-direct-owner-install-disabled-v1/remote_validate_disabled.py",
+      "sha256": "fc4caa6c17410928f87d5b0c2bdf9ab42950fa5ccabfd8bffee0492c7ae21ce6"
+    },
+    {
+      "source": "packages/k1-control-v1/start-sequence-owner-v1/remote_admin.py",
+      "sha256": "e81b3810f675f9a3b8985ee6feedb04a8aea12a64e636ee56f7916c0d8943d52"
+    },
+    {
+      "source": "scripts/deploy-k1-control-cfs-direct-owner-install-disabled-v1.ps1",
+      "sha256": "2a28d530b0b268d15ba60abb9cf1316c3cff112e25bf1ac194d065a92fd3ada0"
+    },
+    {
+      "source": "packages/k1-control-v1/cfs-direct-owner-install-disabled-v1/run_scenarios.py",
+      "sha256": "45326ad8de76d4b9935557855c0dd5b19e1618f846efb5f4a13d02ef50efe7b9"
+    },
+    {
+      "source": "packages/k1-control-v1/cfs-direct-owner-install-disabled-v1/verify_candidate.py",
+      "sha256": "a4fea287a17f38b82821bbf413c5c3c38ed28ae2a0f81b6f50c5118404c2d2d2"
+    },
+    {
+      "source": "packages/k1-control-v1/cfs-direct-owner-install-disabled-v1/contract.json",
+      "sha256": "567dba1527bc2b464e708d6d801b67670c9c8b12400ba19d97c4f6c3701c8d45"
+    }
+  ],
+  "planned_effects": {
+    "remote_files_added": 6,
+    "printer_cfg_changed": true,
+    "klipper_restart": true,
+    "restore_mesh_once": "k1_p001_t055_r001_n11x11",
+    "heat": false,
+    "motion": false,
+    "extrusion": false,
+    "filament": false,
+    "cfs_frame": false,
+    "stock_command_replacement_while_disabled": false
+  },
+  "backup": {
+    "directory": "/usr/data/k1-control-v1/backups/<capture-id>/cfs-direct-owner-install-disabled-v1",
+    "files": ["printer.cfg.before", "checksums.sha256"]
+  },
+  "rollback": {
+    "restore_exact": ["printer.cfg"],
+    "remove_new_files": 6,
+    "klipper_restart": true,
+    "restore_mesh_once": "k1_p001_t055_r001_n11x11",
+    "expected_printer_cfg_sha256": "8e4be26ac43cac25950b3bec2e280464b7fb6af99d1d20aa8bbec927d17e4223"
+  }
+}

@@ -1620,3 +1620,21 @@ Cette gate n'autorise aucune pose ou action physique. La prochaine gate est
 `G4-K1-CONTROL-CFS-DIRECT-OWNER-INSTALL-DISABLED-V1` : installer le composant
 encore désactivé, prouver son rollback exact et exclure le propriétaire stock,
 sans envoyer la moindre trame filament.
+
+### `G4-K1-CONTROL-CFS-DIRECT-OWNER-INSTALL-DISABLED-V1`
+
+Statut : **candidat préparé hors imprimante, `13/13`, pose non autorisée et non exécutée**.
+
+Le composant Klipper, ses six destinations exactes, l'include, le backup, la
+transition Klipper, la remise du `11 × 11` et le rollback sont décrits. La
+configuration candidate impose `enabled: false`. Dans cet état le transport
+`serial_485` n'est pas acquis, aucune entrée stock n'est remplacée et les trois
+entrées directes d'effet refusent avant leurs arguments.
+
+La simulation du futur mode actif remplace ou constate absentes dix-neuf
+entrées stock, exige `auto_refill = 0`, `t_command` vide et les deux CFS
+connectés avant toute trame. Cette preuve reste logicielle. Aucun préflight K1,
+fichier distant, restart, chauffe, mouvement ou effet filament n'a eu lieu.
+
+La prochaine action est l'exécution séparément autorisée de cette pose inerte.
+La qualification physique `T1A` chargement/retrait reste une gate ultérieure.

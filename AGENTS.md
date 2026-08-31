@@ -45,8 +45,11 @@ conserve du stock que `auto_addr` et `serial_485`. Le paquet
 `cfs-direct-owner-offline-v1` obtient `24/24` sans connexion K1 : trames locales
 exactes, `T1A..T2D`, deux capteurs, température K1 Control, réassociation sans
 moteur, chargement, retrait complet sans cutter et zéro retry. Il n'est pas
-installé. La prochaine gate est sa pose encore désactivée avec rollback exact
-et exclusion du propriétaire stock, sans chauffe, mouvement ou effet filament.
+installé. Le candidat de pose désactivée est maintenant préparé avec `13/13` :
+six fichiers ajoutés, un include, rollback exact, transport non pris et trois
+entrées d'effet refusées tant que `enabled: false`. Il n'a pas été envoyé à la
+K1. La prochaine gate reste cette pose désactivée, sans chauffe, mouvement,
+trame CFS ou effet filament ; l'activation et l'essai `T1A` seront séparés.
 
 ## Règle de temps utilisateur
 

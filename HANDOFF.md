@@ -2,17 +2,17 @@
 
 La reprise canonique est désormais :
 
-`docs/50-proprietaire-cfs-direct-hors-imprimante-v1.md`
+`docs/51-proprietaire-cfs-direct-candidat-pose-desactivee-v1.md`
 
 ADR-036 est acceptée et `cfs-direct-owner-offline-v1` obtient `24/24`. Le cycle
-intégré ne dépend plus d'aucun effet `BOX_*`. Le nouveau propriétaire n'est pas
-installé et la K1 reste confinée avec l'ancien cycle en mode `offline`, effets
-désactivés. La prochaine tranche est
-`G4-K1-CONTROL-CFS-DIRECT-OWNER-INSTALL-DISABLED-V1` : pose désactivée,
-rollback exact et exclusion du propriétaire stock, sans chauffe, mouvement ou
-effet filament.
+intégré ne dépend plus d'aucun effet `BOX_*`. Le candidat installable désactivé
+obtient ensuite `13/13`, son plan local est vert et son rollback exact est
+écrit. Il n'est pas installé et la K1 reste confinée avec l'ancien cycle en
+mode `offline`, effets désactivés. La prochaine tranche reste
+`G4-K1-CONTROL-CFS-DIRECT-OWNER-INSTALL-DISABLED-V1` : exécuter cette pose
+inerte, sans chauffe, mouvement, trame CFS ou effet filament.
 
-Lire le document 50, ADR-036, puis les derniers blocs de `STATE.md`, `GATES.md`
+Lire le document 51, ADR-036, puis les derniers blocs de `STATE.md`, `GATES.md`
 et `DECISIONS.md`. Le contenu ci-dessous est conservé comme archive des
 clôtures antérieures ; il ne décrit plus l'état actuel et ne doit pas piloter
 la prochaine action.

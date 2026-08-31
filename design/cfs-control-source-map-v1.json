@@ -768,6 +768,26 @@
     "physical_action": false,
     "deployment_candidate": false
   },
+  "direct_CFS_owner_install_disabled_v1": {
+    "mission": "G4-K1-CONTROL-CFS-DIRECT-OWNER-INSTALL-DISABLED-V1",
+    "status": "OFFLINE_PREPARED_NOT_AUTHORIZED_13_OF_13",
+    "contract": "packages/k1-control-v1/cfs-direct-owner-install-disabled-v1/contract.json",
+    "deployment_manifest": "packages/k1-control-v1/cfs-direct-owner-install-disabled-v1/deployment-manifest.json",
+    "deployment_script": "scripts/deploy-k1-control-cfs-direct-owner-install-disabled-v1.ps1",
+    "installed_enabled": false,
+    "transport_bound_when_disabled": false,
+    "stock_commands_replaced_when_disabled": false,
+    "direct_effect_entries_refuse_when_disabled": true,
+    "future_enabled_stock_entry_count": 19,
+    "future_enabled_requires_stock_auto_refill_zero": true,
+    "offline_scenarios": "13/13",
+    "targeted_tests": "5/5",
+    "printer_connection": false,
+    "remote_write": false,
+    "service_restart": false,
+    "physical_action": false,
+    "deployment_authorized": false
+  },
   "next_gate": {
     "id": "G4-K1-CONTROL-CFS-DIRECT-OWNER-INSTALL-DISABLED-V1",
     "scope": "install_the_direct_owner_disabled_prove_exact_rollback_and_exclude_stock_effect_ownership_before_any_filament_frame",
@@ -775,6 +795,9 @@
     "printer_connection": false,
     "read_only": false,
     "implementation_authorized": true,
+    "deployment_authorized": false,
+    "planned_connection_required_if_later_authorized": true,
+    "planned_gcode_limited_to_restart_mesh_restore_and_disabled_selftest": true,
     "gcode": false,
     "heat": false,
     "motion": false,
@@ -783,7 +806,7 @@
     "remote_write": true,
     "service_restart": true,
     "physical_trial": false,
-    "execution_status": "PREPARATION_NOT_STARTED",
+    "execution_status": "OFFLINE_PREPARED_NOT_AUTHORIZED",
     "next_gate": "G4-K1-CONTROL-CFS-DIRECT-OWNER-PHYSICAL-LOAD-UNLOAD-V1"
   }
 }

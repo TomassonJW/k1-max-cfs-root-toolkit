@@ -1,0 +1,96 @@
+{
+  "schema": 1,
+  "gate": "G4-K1-CONTROL-CFS-DIRECT-OWNER-INSTALL-DISABLED-V1",
+  "status": "OFFLINE_PREPARED_NOT_AUTHORIZED",
+  "decision": "ADR-036",
+  "source_owner": {
+    "package": "packages/k1-control-v1/cfs-direct-owner-offline-v1",
+    "contract_sha256": "e9ef749a28985bb1bb7d71242dd4ba989316331c055e8084148b34b03858d50f",
+    "status": "CLOSED_OK_OFFLINE_24_OF_24"
+  },
+  "authority": {
+    "offline_implementation": true,
+    "printer_connection": false,
+    "remote_write": false,
+    "service_restart": false,
+    "filament_frame": false,
+    "physical_action": false,
+    "deployment_authorized": false,
+    "production_authorized": false
+  },
+  "installed_configuration": {
+    "section": "k1_control_cfs_direct_owner",
+    "enabled": false,
+    "transport_bound": false,
+    "stock_commands_replaced": false,
+    "direct_effect_entries_refuse_before_argument_parsing": true,
+    "disabled_selftest_has_no_serial_frame": true
+  },
+  "future_enabled_boundary": {
+    "requires_new_gate": true,
+    "stock_effect_entry_count": 19,
+    "stock_effect_entries_replaced_at_klipper_start": true,
+    "stock_auto_refill_must_already_equal": 0,
+    "stock_t_command_must_equal": "",
+    "connected_boxes_required": [1, 2],
+    "transport": "serial_485 serial485",
+    "automatic_retry": false
+  },
+  "direct_commands": {
+    "status": "KCTRL_CFS_DIRECT_STATUS",
+    "disabled_selftest": "KCTRL_CFS_DIRECT_DISABLED_SELFTEST",
+    "enabled_preflight": "KCTRL_CFS_DIRECT_PREFLIGHT",
+    "reconcile": "KCTRL_CFS_DIRECT_RECONCILE ROUTE={route} OBSERVATION_ID={once_id}",
+    "load": "KCTRL_CFS_DIRECT_LOAD ROUTE={route} EFFECT_ID={once_id} EXPECTED_C={c} MATERIAL_MIN_C={c} MATERIAL_MAX_C={c}",
+    "unload": "KCTRL_CFS_DIRECT_UNLOAD ROUTE={route} EFFECT_ID={once_id} EXPECTED_C={c} MATERIAL_MIN_C={c} MATERIAL_MAX_C={c}"
+  },
+  "temperature_ownership": {
+    "component_heater_commands": [],
+    "owner": "k1_control",
+    "proof_source": "live_extruder_target_temperature_and_can_extrude",
+    "target_tolerance_c": 0.5,
+    "actual_tolerance_c": 5.0
+  },
+  "local_tip_pull": {
+    "distance_mm": -20.0,
+    "velocity_mm_s": 140.0,
+    "ordered_gcode": [
+      "SAVE_GCODE_STATE NAME=KCTRL_CFS_DIRECT_PULL",
+      "M83",
+      "G1 E-20 F8400",
+      "M400",
+      "RESTORE_GCODE_STATE NAME=KCTRL_CFS_DIRECT_PULL MOVE=0"
+    ],
+    "count_per_unload": 1
+  },
+  "deployment_effects_if_separately_authorized": {
+    "files_added": 6,
+    "printer_cfg_include_added": 1,
+    "klipper_host_restart": 1,
+    "best_current_mesh_restore": "k1_p001_t055_r001_n11x11",
+    "heater_command": false,
+    "axis_motion": false,
+    "filament_command": false,
+    "cfs_frame": false
+  },
+  "rollback": {
+    "restore_exact_printer_cfg": true,
+    "remove_six_added_files": true,
+    "klipper_host_restart": 1,
+    "restore_best_current_mesh_once": true,
+    "stock_commands_original_after_restart": true
+  },
+  "offline_qualification": {
+    "runner": "run_scenarios.py",
+    "scenario_count": 13,
+    "ok_count": 13,
+    "ko_count": 0
+  },
+  "known_limits": [
+    "component_not_installed_on_K1",
+    "integrated_Moonraker_backend_not_yet_subscribed_to_k1_control_cfs_direct_owner",
+    "integrated_cycle_effects_remain_disabled_after_install_disabled_gate",
+    "physical_load_and_unload_not_yet_qualified"
+  ],
+  "next_gate_after_install": "G4-K1-CONTROL-CFS-DIRECT-OWNER-PHYSICAL-LOAD-UNLOAD-V1"
+}
