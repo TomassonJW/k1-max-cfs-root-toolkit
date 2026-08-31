@@ -1,0 +1,177 @@
+{
+  "schema": 1,
+  "intent": "derive_the_final_cycle_from_observed_creality_stock_behavior_instead_of_inventing_motion",
+  "status": "OFFLINE_EVIDENCE_MAP_ONLY",
+  "coverage": {
+    "normal_single_material_print": "complete_start_load_purge_prime_print_end_cut_unload",
+    "mid_print_tool_change": "complete_cut_unload_load_purge_restore_and_resume",
+    "equivalent_spool_refill": "preserved_by_existing_offline_owner_core_and_now_integrated_in_this_delta_validator",
+    "normal_print_original_gcode": "not_archived_but_relevant_internal_sequence_is_in_persistent_klipper_log",
+    "single_change_original_gcode": "archived_exact_383733_bytes",
+    "new_discovery_print_required": false,
+    "future_physical_print_role": "validate_the_final_delta_with_camera_not_rediscover_stock_motion"
+  },
+  "sources": {
+    "stock_macros": {
+      "path": "inventory/raw/20260819-1627-k1max-stock/ssh-final-acquisition.raw.txt",
+      "required_fragments_in_order": [
+        "[gcode_macro START_PRINT]",
+        "CX_ROUGH_G28 EXTRUDER_TEMP={extruder_temp} BED_TEMP={bed_temp}",
+        "CX_NOZZLE_CLEAR",
+        "ACCURATE_G28",
+        "CX_PRINT_LEVELING_CALIBRATION",
+        "BOX_START_PRINT_EXTRUDE_MATERIAL START_PRINT=8",
+        "CX_PRINT_DRAW_ONE_LINE EXTRUDER_TEMP={params.EXTRUDER_TEMP} BED_TEMP={params.BED_TEMP}",
+        "[gcode_macro END_PRINT_NO_M84]",
+        "BOX_END",
+        "BOX_END_PRINT",
+        "TURN_OFF_HEATERS",
+        "END_PRINT_POINT"
+      ]
+    },
+    "stock_prime_line": {
+      "path": "inventory/raw/20260819-1726-k1max-targeted-sources/targeted-sources.raw.txt",
+      "required_fragments_in_order": [
+        "def cmd_CX_PRINT_DRAW_ONE_LINE(self, gcmd):",
+        "G1 X0.1 Y20 Z0.3 F6000.0",
+        "G1 X0.1 Y180.0 Z0.3 F3000.0 E10.0",
+        "G1 X0.4 Y180.0 Z0.3 F3000.0",
+        "G1 X0.4 Y20.0 Z0.3 F3000.0 E10.0",
+        "G1 Y10.0 F3000.0"
+      ]
+    },
+    "normal_print_log": {
+      "path": "inventory/raw/p4-control-foundation/20260821-1231-v3-paths-8h/klippy-after-observation.private.log",
+      "required_fragments_in_order": [
+        "work_handler start print, filename:/usr/data/printer_data/gcodes/_3 LU Bin Fit",
+        "cfs_enable[1]",
+        "YJY K1X cmd_T vtnn=T1A",
+        "y_pos: 305.0, self.boxcfg.safe_pos_y: 291.5",
+        "flush_temp: 220",
+        "extrude = 140.0, velocity: (360,), temp: 220.0",
+        "box_end",
+        "[box] cut sensor state:1",
+        "[box] cut to return OK",
+        "extrude = -20, velocity: [140.0], temp: 220",
+        "filament_sensor false",
+        "Finished SD card print",
+        "Exiting SD card print (position 37713392)"
+      ]
+    },
+    "single_change_gcode": {
+      "path": "inventory/raw/user-inputs/20260820-full-system-audit/03-gcodes/test-suite-20260820/p5-single-change-revision/P5-CFS-ONE-CHANGE.gcode",
+      "bytes": 383733,
+      "tool_commands_in_order": ["T0", "T1"]
+    },
+    "single_change_log": {
+      "path": "inventory/raw/g3-production/p123-20260820-154056/20260820-154056-p123.raw.txt",
+      "required_fragments_in_order": [
+        "LOG|2026-08-20T17:21:53.958985|[INFO] 2026-08-20 17:21:53,787 [root] [virtual_sdcard:work_handler:939] work_handler start print, filename:/usr/data/printer_data/gcodes/P5-CFS-ONE-CHANGE.gcode",
+        "YJY K1X cmd_T vtnn=T1B",
+        "[box] cut sensor state:1",
+        "[box] cut to return OK",
+        "Cut sensor triggered.",
+        "extrude = -20, velocity: [140.0], temp: 220",
+        "YJY K1X cmd_T ret = self.box_action.box_extrude_material(T1D)",
+        "y_pos: 305.0, self.boxcfg.safe_pos_y: 291.5",
+        "YJY K1X cmd_T ret = self.material_change_flush(T2A,T1D)",
+        "extrude = 318.4657930668195",
+        "YJY K1X cmd_T self.box_action.z_restore()",
+        "Finished SD card print",
+        "Exiting SD card print (position 383733)"
+      ]
+    },
+    "single_change_human_verdict": {
+      "path": "inventory/raw/g3-production/p123-20260820-154056/P123-HUMAN-NOTES.md",
+      "required_fragments_in_order": [
+        "## P5-CFS-ONE-CHANGE — seconde tentative",
+        "Aucun problème CFS remarqué a priori.",
+        "Aucune pause mesurée sur cette seconde tentative."
+      ]
+    },
+    "existing_equivalent_refill_contract": {
+      "path": "packages/k1-control-v1/cfs-owner-core-offline-v1/contract.json",
+      "required_fragments_in_order": [
+        "\"required_exact_fields\"",
+        "\"reference_id\"",
+        "\"material_type\"",
+        "\"color\"",
+        "\"diameter_mm\"",
+        "\"thermal_recipe_id\"",
+        "\"stock_same_material_group_is_sufficient\": false",
+        "\"runout_selects_unique_identical_cross_cfs\"",
+        "\"runout_rejects_no_identical_candidate\"",
+        "\"runout_rejects_multiple_identical_candidates\"",
+        "\"runout_rejects_near_match\""
+      ]
+    }
+  },
+  "delta": [
+    {
+      "phase": "pre_print_contact_geometry",
+      "stock": "CX_ROUGH_G28_then_CX_NOZZLE_CLEAR_then_ACCURATE_G28_then_leveling",
+      "action": "REPLACE",
+      "final": "one_bounded_X_Y_Z_reference_sequence_before_any_filament_then_no_more_contact"
+    },
+    {
+      "phase": "mesh_and_Z",
+      "stock": "default_mesh_reload_and_optional_leveling",
+      "action": "REPLACE",
+      "final": "exact_stored_11x11_profile_plus_its_canonical_Z_without_recalculation"
+    },
+    {
+      "phase": "temperature_ownership",
+      "stock": "opaque_CFS_path_observed_forcing_220C",
+      "action": "REPLACE",
+      "final": "Gcode_first_layer_and_next_tool_temperatures_are_authoritative"
+    },
+    {
+      "phase": "initial_load_and_bin_purge",
+      "stock": "load_at_purge_station_then_flush_at_Y305_and_safe_Y291_5",
+      "action": "KEEP_CHOREOGRAPHY_REIMPLEMENT_DIRECT",
+      "final": "same_observed_motion_order_with_direct_owner_and_explicit_temperature"
+    },
+    {
+      "phase": "purge_ball_release",
+      "stock": "release_result_observed_but_exact_repeated_brush_motion_not_proven_in_log",
+      "action": "ADD_EXPLICIT_CORRECTION",
+      "final": "three_or_four_qualified_round_trips_on_the_bin_release_feature_then_camera_verdict"
+    },
+    {
+      "phase": "prime_line",
+      "stock": "X0_1_and_X0_4_from_Y20_to_Y180_with_two_10mm_extrusions",
+      "action": "KEEP",
+      "final": "exact_stock_prime_line"
+    },
+    {
+      "phase": "post_prime_clearance",
+      "stock": "stock_macro_finishes_with_small_Z_moves_not_a_proven_relative_5mm_clearance",
+      "action": "ADD_EXPLICIT_CORRECTION",
+      "final": "relative_positive_Z5_to_lower_the_K1_bed_before_model_motion"
+    },
+    {
+      "phase": "mid_print_tool_change",
+      "stock": "cut_return_unload_load_bin_purge_Z_restore_resume",
+      "action": "KEEP_CHOREOGRAPHY_REIMPLEMENT_DIRECT",
+      "final": "same_order_with_explicit_routes_temperatures_and_no_contact_probe"
+    },
+    {
+      "phase": "equivalent_spool_runout_refill",
+      "stock": "firmware_can_select_a_configured_same_material_spare_without_ending_the_print",
+      "action": "KEEP_CAPABILITY_REIMPLEMENT_DIRECT",
+      "final": "K1_Control_latches_pause_selects_exactly_one_user_approved_identical_spare_preserves_active_temperature_runs_owned_filament_choreography_then_restores_context_and_resumes"
+    },
+    {
+      "phase": "end_of_print",
+      "stock": "safe_lift_park_cut_return_unload_cool_and_M84",
+      "action": "KEEP_AND_HARDEN",
+      "final": "same_safe_end_family_with_complete_unload_targets_zero_and_motors_released"
+    }
+  ],
+  "implementation_boundary": {
+    "minimal_delta_means": "preserve_proven_physical_choreography_and_replace_only_bad_decisions",
+    "opaque_stock_BOX_calls_allowed_in_final_runtime": false,
+    "reason": "their_hidden_temperature_and_geometry_side_effects_cannot_be_selectively_disabled_or_proven",
+    "engine_role": "validate_the_evidence_derived_delta_and_safety_invariants_not_invent_motion"
+  }
+}

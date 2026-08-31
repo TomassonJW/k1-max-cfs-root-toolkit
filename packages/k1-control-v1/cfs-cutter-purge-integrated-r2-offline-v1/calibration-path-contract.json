@@ -1,0 +1,56 @@
+{
+  "schema": 1,
+  "name": "K1_CONTROL_CREATE_EXACT_THERMAL_11X11_PROFILE",
+  "status": "OFFLINE_UI_AND_SEQUENCE_CONTRACT_ONLY",
+  "entrypoint": {
+    "surface": "K1 Control",
+    "visible_action": "Calibrer ce couple de températures",
+    "one_click_after_human_preconditions": true,
+    "mainsail_micro_authorization_required": false
+  },
+  "inputs": [
+    "plate_id",
+    "bed_first_c",
+    "nozzle_first_c",
+    "profile_label"
+  ],
+  "human_preconditions": [
+    "filament_fully_unloaded",
+    "nozzle_freshly_cleaned",
+    "bed_surface_clean_and_clear"
+  ],
+  "automatic_sequence": [
+    "prove_no_route_and_both_filament_sensors_clear",
+    "heat_probe_nozzle_to_140C_without_filament",
+    "stabilize_bed_at_requested_bed_first_temperature",
+    "capture_X_Y_Z_references",
+    "measure_composite_11x11_without_insertion",
+    "validate_and_accept_canonical_Z",
+    "persist_exact_registry_entry",
+    "return_heater_targets_to_zero_and_safe_idle"
+  ],
+  "output_key": ["plate_id", "bed_first_c", "nozzle_first_c"],
+  "output": [
+    "qualified_11x11_mesh_profile",
+    "qualified_canonical_Z",
+    "probe_nozzle_c_140",
+    "evidence_identity"
+  ],
+  "hard_stops": [
+    "any_filament_route_or_sensor_active",
+    "nozzle_clean_confirmation_missing_or_stale",
+    "contact_count_or_matrix_incomplete",
+    "profile_key_already_exists_with_different_evidence",
+    "camera_image_missing_or_inconclusive"
+  ],
+  "forbidden": [
+    "filament_insertion_before_last_contact",
+    "nearest_temperature_profile_alias",
+    "automatic_print_start_after_calibration",
+    "stock_BOX_effect",
+    "printer_transport_in_this_offline_package"
+  ],
+  "printer_connection": false,
+  "physical_action": false,
+  "deployment_candidate": false
+}
