@@ -2,6 +2,21 @@
 
 Last updated: 2026-09-01
 
+Mise à jour prioritaire : la voie CFS stock est rétablie et physiquement
+qualifiée. Le blocage de trois semaines venait d'une garde applicative lisant
+`box.cut_pos`, un champ qui ne reflète jamais le capteur du cutter, et dont le
+retrait n'avait jamais été implémenté. Les trois inclusions propriétaires sont
+passées en variante `disabled` dans `printer.cfg` et un cycle complet retrait
+puis chargement a été exécuté et capturé : coupe réelle, rembobinage CFS,
+chargement jusqu'à `box.T1.filament: A`, purge visible, filament inséré. La
+machine peut produire. Voir ADR-044.
+
+Défaut réel resté ouvert et prouvé par la même capture : la cible de buse tombe
+à `0 °C` puis remonte à `200 °C` pendant le chargement, tandis que la purge
+utilise `flush_temp: 220` issu de `Tn_extrude_temp` codé en dur dans `box.cfg`.
+C'est la cause directe du parasitage de température signalé par Thomas et la
+première tranche de fond à traiter.
+
 Mise à jour prioritaire : la purge de récupération de `30 mm` n'était pas une
 purge stock. Les traces exactes donnent `140 mm` au chargement initial ; le
 cycle actif lit maintenant les quantités Orca du G-code, y compris les matrices

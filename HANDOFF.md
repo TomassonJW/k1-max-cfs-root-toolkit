@@ -1,7 +1,7 @@
 # HANDOFF — index de reprise
 
-Mise à jour : 2026-09-01, après qualification du capteur cutter et recadrage
-du périmètre produit.
+Mise à jour : 2026-09-01, après rétablissement et qualification physique de la
+voie CFS stock.
 
 ## État réel
 
@@ -29,12 +29,47 @@ Deux écarts ouverts, mesurés le 1er septembre :
   demande une tranche dédiée sur le moteur hors imprimante, pas un correctif
   de test.
 
-La suite complète passe à `874` tests, `1` échec — celui ci-dessus — contre
-`12` échecs et `2` erreurs avant cette session.
+La suite complète donne `917` tests, `2` échecs, contre `12` échecs et `2`
+erreurs avant cette session. Les deux échecs sont **laissés rouges
+volontairement** : ils signalent des divergences réelles du propriétaire
+direct, aujourd'hui désactivé sur la machine.
+
+- `test_all_canonical_scenarios_are_implemented_once` : divergence
+  `end_full_unload` du design contre `end_keep_engaged` du moteur.
+- `test_unload_requires_head_sensor_to_clear` : le module `DirectCfsOwner`
+  ne pose plus `head_sensor_not_cleared_after_unload` quand le capteur tête
+  reste vrai après retrait. Le test décrit le comportement attendu ; c'est le
+  module qui a dérivé.
 
 État physique au moment de l'écriture : Klipper `ready`, `standby`, buse à
 `26,5 °C`, cibles à zéro, `X/Y` référencés, `Z` non référencé, tête parquée en
 `X100 Y150`, `T1A` engagé, deux capteurs filament actifs, aucune route stock.
+
+## Voie CFS stock : rétablie et prouvée
+
+Le blocage de trois semaines est levé. Après bascule des trois inclusions en
+variante `disabled` et redémarrage Klipper, un cycle complet retrait puis
+chargement a été exécuté depuis l'écran et capturé par
+`gcode/subscribe_output` : coupe réelle (`cut sensor state:1` puis `:0`),
+rembobinage CFS effectif, puis chargement jusqu'à `box.T1.filament: A` avec
+purge visible et filament correctement inséré, confirmé par Thomas.
+
+État physique après ce cycle : `box.state connect`, `box.T1.filament A`,
+`T1.mode 2`, les deux capteurs filament vrais, cibles de chauffe à zéro,
+`X/Y` référencés, `print_stats standby`. La machine peut produire.
+
+Le tronçon de filament qui maintenait `filament_sensor` à vrai venait d'un
+rembobinage sans coupe antérieur ; il n'a jamais bouché le chemin. Aucune
+intervention mécanique n'est nécessaire.
+
+ADR-044 fixe la règle : aucune garde ne doit être réinstallée sur les
+primitives `BOX_*` sans une capture équivalente pour son remplaçant.
+
+**Défaut réel confirmé au passage** : pendant le chargement, la cible de buse
+tombe à `0 °C` juste après l'arrivée du filament, remonte à `200 °C`, puis la
+purge annonce `flush_temp: 220`. Le `220` vient de `Tn_extrude_temp` codé en
+dur dans `box.cfg`, pas du G-code. C'est la cause directe d'une purge quasi
+vide au premier essai, et c'est la cible de la tranche « températures ».
 
 ## Verrou CFS et sortie de secours
 
@@ -60,9 +95,18 @@ conservés. Retour arrière : remettre les trois `-active-`. Sauvegarde machine 
 
 ## Prochaine action
 
-Retrait intégré `T1A` sur le signal console, puis nettoyage manuel par Thomas,
-puis une première impression mono-filament complète. Ensuite seulement le
-correctif Z-par-profil, puis la recalibration.
+Thomas doit produire dans les deux jours : la voie stock est rétablie et suffit
+pour cela. Le travail de fond reprend dans l'ordre d'ADR-042, sans la sortie de
+secours filament devenue inutile :
+
+1. purger `Tn_extrude_temp: 220` de `box.cfg` au profit de la température du
+   G-code, cause prouvée du parasitage ;
+2. correctif Z-par-profil, préalable bloquant au multi-températures ;
+3. recalibration `11 × 11` filament retiré, puis bande de température
+   supplémentaire ;
+4. carré `280 × 280` pour le Z de chaque profil ;
+5. édition point par point du mesh, puis changement de filament et fin de
+   bobine.
 
 ## Archive
 
