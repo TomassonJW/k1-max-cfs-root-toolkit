@@ -147,16 +147,73 @@ def test_a_timeout_fails_the_print_by_default(waiter):
     assert "raise gcmd.error(message)" in body
 
 
-# ------------------------------------------------------------- no extra purge
+# ------------------------------------------------------------------ the top up
+def variables(name):
+    import re
+    text = config_text()
+    start = text.index("[gcode_macro %s]" % name)
+    end = text.find(chr(10) + "gcode:", start)
+    found = {}
+    for key, value in re.findall(r"^variable_(\w+):\s*(.+)$", text[start:end], re.M):
+        found[key] = float(value)
+    return found
+
+
+def render(name, params):
+    responses = []
+    conf = variables(name)
+    rendered = ENV.from_string(section(name)).render(
+        params={k: str(v) for k, v in params.items()},
+        printer={"gcode_macro %s" % name: type("V", (), conf)()},
+        action_respond_info=lambda text: responses.append(text) or "",
+    )
+    return rendered, responses
+
+
+def extruded(rendered):
+    import re
+    return sum(float(v) for v in re.findall(r"^\s*G1 E([\d.]+) F", rendered, re.M))
+
+
+def test_the_top_up_is_pushed_in_full():
+    # If the slicing loses a remainder the purge is short and nothing says so.
+    rendered, _ = render("_KCTRL_PURGE_BALL", {"TEMP": 190})
+    assert extruded(rendered) == pytest.approx(
+        variables("_KCTRL_PURGE_BALL")["purge_mm"], abs=1e-3)
+
+
+@pytest.mark.parametrize("length", [30, 61, 119, 300, 1000])
+def test_any_top_up_is_pushed_in_full(length):
+    rendered, _ = render("_KCTRL_PURGE_BALL", {"TEMP": 190, "LEN": length})
+    assert extruded(rendered) == pytest.approx(length, abs=1e-3)
+
+
+def test_the_top_up_lands_the_real_purge_near_the_intended_140():
+    # Reconstructed from the print of 2026-09-02 00:23: the toolhead extruded
+    # for 32.4 s, of which BOX_EXTRUDER_EXTRUDE claims 140 mm at 360 mm/min,
+    # that is 23.3 s - leaving about 9 s, of the order of 55 mm, for the flush.
+    # The top up brings that back to roughly the 140 that was always intended.
+    total = variables("_KCTRL_PURGE_BALL")["purge_mm"] + 55.0
+    assert 120.0 <= total <= 200.0
+
+
+def test_the_top_up_comes_after_the_wait_and_the_heat():
+    # Pushing before the filament is in the head is the whole defect. A top up
+    # placed ahead of the wait would repeat it with more filament.
+    lines = commands("START_PRINT")
+    top_up = index_of(lines, "_KCTRL_PURGE_BALL")
+    assert top_up > index_of(lines, WAIT)
+    assert top_up > index_of(lines, "M109 S{nozzle}")
+    assert top_up < index_of(lines, "BOX_MATERIAL_FLUSH")
+
+
 def test_the_stock_flush_size_is_left_alone():
-    # 140 mm was never the problem and 440 mm is a lot of filament to burn at
-    # every print start. box.cfg also declares box_need_clean_length_max: 140,
-    # so a LEN above it could be clamped without a word.
+    # box.cfg declares box_need_clean_length_max: 140, so a LEN above it could
+    # be clamped without a word - the worst failure a purge can have, since
+    # nothing reports it and the defect only shows on the plate.
     lines = commands("START_PRINT")
     flush = [line for line in lines if "BOX_MATERIAL_FLUSH" in line]
     assert flush and all("LEN" not in line for line in flush)
-    assert "_KCTRL_PURGE_BALL" not in config_text()
-    assert "purge_mm" not in config_text()
 
 
 # ----------------------------------------------------------- the measurement

@@ -1,4 +1,4 @@
-# ADR-053 — La purge de démarrage attend le filament, elle ne grossit pas
+# ADR-053 — La purge de démarrage attend le filament, puis pousse ce qu'elle annonce
 
 Date : 2026-09-02
 
@@ -10,11 +10,9 @@ Au démarrage d'une impression, la purge au-dessus du bac laisse un filet mince
 accroché à la buse au lieu de former une boule qui se décroche et tombe. Ce
 filet est ensuite traîné sur le plateau et finit dans la première couche.
 
-Le premier réflexe a été de chercher une quantité trop faible. La quantité n'a
-jamais été le problème : `box.cfg` déclare `box_need_clean_length: 140`, et
-`140 mm` suffisent quand ils sortent effectivement de la buse.
-
-Deux raisons pour qu'ils n'en sortent pas.
+`box.cfg` déclare `box_need_clean_length: 140`, et `140 mm` suffisent — quand
+ils sortent effectivement de la buse. Trois raisons pour qu'ils n'en sortent
+pas, dont la troisième est qu'ils ne sont même pas poussés.
 
 **La purge partait avant que le filament soit dans la tête.** La séquence
 possédée vérifiait le capteur de tête par une assertion — un contrôle unique au
@@ -65,14 +63,31 @@ immédiat sur un capteur déjà plein, refus immédiat sur un capteur inconnu.
 **La buse est chaude avant la première poussée.** `M109 S{nozzle}` sur la
 température du G-code, attendue, avant `BOX_EXTRUDER_EXTRUDE`.
 
-**La quantité stock est laissée telle quelle.** `140 mm`, sans `LEN=`. Une
-version intermédiaire de ce travail ajoutait `300 mm` par-dessus : rejetée à
-l'usage, `440 mm` par démarrage est beaucoup de matière brûlée pour compenser
-un problème d'ordre. `box.cfg` déclare par ailleurs
-`box_need_clean_length_max: 140`, donc une longueur supérieure passée à
-`BOX_MATERIAL_FLUSH LEN=` pourrait être bornée sans un mot — le pire échec pour
-une purge, puisque rien ne le signale et que le défaut ne se voit que sur la
-plaque.
+**La quantité stock est laissée telle quelle, et complétée.** `140 mm`, sans
+`LEN=`, plus un complément possédé de `100 mm` juste avant elle. Parce que les
+`140 mm` annoncés par `box.cfg` ne sortent pas. Reconstitution depuis les
+statistiques de l'impression du 2 septembre à 00 h 23, seule trace de ce que
+fait réellement le module compilé :
+
+```
+00:23:30 - 00:23:39   print_time figé, buffer 0    le CFS pousse sur son bus,
+                                                   rien ne bouge côté tête
+00:23:42 - 00:24:00   print_time +32,4 s à 220 °C  la tête extrude
+```
+
+Ces `32,4 s` couvrent `BOX_EXTRUDER_EXTRUDE` et la purge ensemble. `box.cfg`
+donne `Tn_extrude: 140` à `Tn_extrude_velocity: 360 mm/min`, soit `23,3 s` des
+`32,4` — il reste environ `9 s` pour la purge elle-même, de l'ordre de `55 mm`,
+pas `140`. L'opérateur avait raison : « ça n'envoie pas du tout 140 mm ».
+
+Le complément vise donc à ramener la purge réelle près des `140 mm` toujours
+visés, pas à ajouter une purge par-dessus une purge complète. `_KCTRL_PURGE_REPORT`
+affichera le total mesuré à chaque démarrage et fixera le nombre pour de bon.
+
+La longueur n'est pas passée à `BOX_MATERIAL_FLUSH LEN=` : `box.cfg` déclare
+`box_need_clean_length_max: 140`, donc une valeur supérieure pourrait être
+bornée sans un mot — le pire échec pour une purge, puisque rien ne le signale et
+que le défaut ne se voit que sur la plaque.
 
 ## Le capteur surveillé est le bon, et il ne dit pas ce qu'on croit
 
@@ -121,9 +136,10 @@ endroit, parce que c'est précisément le piège dans lequel ce travail est tomb
 Sur la machine : `kctrl_wait.py` déployé dans les extras de Klipper, service
 Klipper redémarré — un `FIRMWARE_RESTART` relit la configuration mais pas les
 modules Python — `KCTRL_WAIT_FILAMENT` enregistré, blocage réel mesuré y compris
-imbriqué dans un macro, sonde de test retirée, `_KCTRL_PURGE_BALL` bien absent.
-**Le résultat reste à juger à l'œil sur la première impression** — c'est le
-seul juge de « boule » contre « filet ».
+imbriqué dans un macro, sonde de test retirée, configuration relue et empreintes
+machine identiques au dépôt. **Le résultat reste à juger à l'œil sur la première
+impression** — c'est le seul juge de « boule » contre « filet », et le nombre
+affiché en console dira enfin ce qui est réellement sorti.
 
 ## Conséquences
 
@@ -132,7 +148,8 @@ seul juge de « boule » contre « filet ».
   poussée.
 - `kctrl_wait.py` est un module Python de Klipper. Toute modification exige un
   redémarrage du service, pas un simple `FIRMWARE_RESTART`.
-- La consommation par démarrage ne change pas : `140 mm`, comme avant.
+- La consommation par démarrage passe d'environ `55 mm` réels à environ
+  `155 mm` réels. Le chiffre exact sera affiché au prochain démarrage.
 - La sauvegarde de la configuration précédente est
   `/usr/data/printer_data/config/.bak-owned-start-v2-prepurge`.
 - `Tn_extrude_temp: 220` reste imposé par le CFS sur la purge stock. Le sortir
@@ -140,9 +157,10 @@ seul juge de « boule » contre « filet ».
 
 ## Alternatives refusées
 
-- **Ajouter `300 mm` de purge à nous** : construit et installé, puis retiré. Le
-  filet ne venait pas d'un manque de matière mais d'un ordre incorrect ;
-  grossir la purge aurait masqué la cause en brûlant `1,3 g` par démarrage.
+- **Ajouter `300 mm` de purge à nous** : construit, installé, puis retiré.
+  `440 mm` par démarrage compensait à l'aveugle un problème d'ordre, sans le
+  corriger. Le complément qui subsiste fait `100 mm` et il est chiffré depuis
+  le log, pas supposé.
 - **Passer `LEN=` à `BOX_MATERIAL_FLUSH`** : susceptible d'être borné à `140`
   sans le dire.
 - **Se contenter de l'assertion** : elle contrôle une fois, au rendu, et le CFS
