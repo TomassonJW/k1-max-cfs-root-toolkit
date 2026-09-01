@@ -1,4 +1,4 @@
-# ADR-053 — Purge de démarrage sous notre contrôle
+# ADR-053 — La purge de démarrage attend le filament, elle ne grossit pas
 
 Date : 2026-09-02
 
@@ -7,123 +7,108 @@ Statut : **acceptée ; installée ; à juger sur la première impression**
 ## Contexte
 
 Au démarrage d'une impression, la purge au-dessus du bac laisse un filet mince
-qui reste accroché à la buse au lieu de former une boule qui se décroche et
-tombe. Ce filet est ensuite traîné sur le plateau et finit dans la première
-couche.
+accroché à la buse au lieu de former une boule qui se décroche et tombe. Ce
+filet est ensuite traîné sur le plateau et finit dans la première couche.
 
-La purge du parcours possédé était intégralement celle du stock :
-`BOX_MATERIAL_FLUSH TEMP={nozzle}`, sans longueur. Sa quantité vient donc de
-`box.cfg`, qui déclare sur cette machine :
+Le premier réflexe a été de chercher une quantité trop faible. La quantité n'a
+jamais été le problème : `box.cfg` déclare `box_need_clean_length: 140`, et
+`140 mm` suffisent quand ils sortent effectivement de la buse.
 
-```
-box_first_clean_length: 140
-box_need_clean_length: 140
-box_need_clean_length_max: 140
-```
+Deux raisons pour qu'ils n'en sortent pas.
 
-Soit `140 mm`. La correction de quantité décidée en ADR-040 — vecteur
-`flush_volumes_vector` du G-code, repli qualifié à `140 mm` — vit dans
-`k1_control_cfs_direct_owner.py`, un composant **désactivé**. Elle n'est donc
-pas sur le parcours réel, ce qui explique la sensation d'une purge « remise »
-plus faible : elle n'a jamais été renforcée là où l'impression passe.
+**La purge partait avant que le filament soit dans la tête.** La séquence
+possédée vérifiait le capteur de tête par une assertion — un contrôle unique au
+moment où le macro se rend — puis enchaînait sur `BOX_EXTRUDER_EXTRUDE` et la
+purge stock. Le CFS continue d'alimenter sur son propre bus après le retour de
+la commande. Une purge dimensionnée pour une tête déjà chargée, lancée sur une
+zone de fusion vide, ne produit qu'un filet. Aucune longueur supplémentaire ne
+répare ça : elle serait dépensée au même endroit.
+
+**Et la buse n'était pas chaude.** Traces du 2 septembre à 00 h 22, au moment
+de la purge stock : `extruder: target=220 temp=109.3`. Le CFS pose sa cible et
+n'attend pas. À `109 °C` il ne sort quasiment rien.
 
 ## Décision
 
-La longueur de purge est possédée par le paquet, pas déléguée.
+**Rien ne pousse de filament tant que le capteur de tête ne le voit pas.**
 
-Un macro `_KCTRL_PURGE_BALL` pousse une quantité explicite au-dessus du bac,
-**avant** `BOX_MATERIAL_FLUSH` :
+`_KCTRL_WAIT_HEAD_FILAMENT` sonde le capteur et temporise `250 ms` s'il est
+vide. Douze appels déroulés suivent les quatre tentatives de chargement, soit
+trois secondes de grâce, puis l'assertion existante refuse l'impression si le
+filament n'est toujours pas là.
 
-```
-BOX_EXTRUDER_EXTRUDE TNN={tool}
-_KCTRL_PURGE_BALL TEMP={nozzle}
-BOX_MATERIAL_FLUSH TEMP={nozzle}
-```
+Le déroulé est nécessaire, pas un choix de style : un macro lit le capteur une
+seule fois, au rendu de son gabarit. Une boucle Jinja à l'intérieur d'un seul
+macro ré-émettrait la même lecture périmée, et Klipper refuse qu'un macro
+s'appelle lui-même. Des appels répétés sont la seule forme qui relise
+réellement la broche.
 
-Défaut : `300 mm` à `300 mm/min`, soit environ `440 mm` au total avec la purge
-stock — un peu plus de trois fois la quantité précédente. Réglable à chaud, la
-valeur prend effet au démarrage suivant :
+**La buse est chaude avant la première poussée.** `M109 S{nozzle}` sur la
+température du G-code, attendue, avant `BOX_EXTRUDER_EXTRUDE`.
 
-```
-SET_GCODE_VARIABLE MACRO=_KCTRL_PURGE_BALL VARIABLE=purge_mm VALUE=400
-```
-
-Quatre points la rendent sûre.
-
-**La longueur n'est pas passée à `BOX_MATERIAL_FLUSH LEN=`.** `box.cfg` déclare
-`box_need_clean_length_max: 140` : une longueur supérieure pourrait être bornée
-sans un mot. Une purge silencieusement bornée est le pire cas — rien ne le
-signale et le défaut ne se voit que sur la plaque.
-
-**La tête est positionnée explicitement.** `BOX_GO_TO_EXTRUDE_POS` est appelé
-avant d'extruder. `BOX_MATERIAL_FLUSH` se positionne tout seul, mais cette
-purge passe avant lui, et `300 mm` extrudés au mauvais endroit ne valent pas le
-pari d'une hypothèse sur la position héritée.
-
-**La température est la nôtre.** `M109 S{nozzle}` avec la valeur du G-code,
-atteinte avant que le filament ne bouge. C'est la seule purge du parcours dont
-la température ne vient pas de la table matière du CFS — `Tn_extrude_temp: 220`
-reste imposé par le stock à la purge suivante, et reste un point ouvert.
-
-**La purge stock reste la dernière au-dessus du bac.** Ce que
-`BOX_MATERIAL_FLUSH` fait en fin de routine pour décrocher la boule et essuyer
-est ce qui a toujours fonctionné ici. Notre purge grossit la boule ; c'est
-toujours le stock qui la lâche.
+**La quantité stock est laissée telle quelle.** `140 mm`, sans `LEN=`. Une
+version intermédiaire de ce travail ajoutait `300 mm` par-dessus : rejetée à
+l'usage, `440 mm` par démarrage est beaucoup de matière brûlée pour compenser
+un problème d'ordre. `box.cfg` déclare par ailleurs
+`box_need_clean_length_max: 140`, donc une longueur supérieure passée à
+`BOX_MATERIAL_FLUSH LEN=` pourrait être bornée sans un mot — le pire échec pour
+une purge, puisque rien ne le signale et que le défaut ne se voit que sur la
+plaque.
 
 ## Le capteur surveillé est le bon, et il ne dit pas ce qu'on croit
 
-L'hypothèse était raisonnable : on purgerait dans le vide parce qu'on
-surveillerait le mauvais capteur. Vérification faite sur la machine, ce n'est
-pas ça.
+L'hypothèse d'un mauvais capteur était raisonnable. Vérification faite sur la
+machine, ce n'est pas ça :
 
 ```
 filament_sensor    (!PC15, MCU principal)      filament_detected: True
 filament_sensor_2  (^!nozzle_mcu:PA10, tête)   filament_detected: False
 ```
 
-`filament_sensor_2` est bien celui de la tête — il est câblé sur le MCU de la
-tête — et c'est bien celui que la séquence interroge. Il lisait `True` pendant
-l'impression et lit `False` maintenant, voyant éteint, parce que `END_PRINT` a
-déchargé par le cutter. Le capteur fonctionne et il est correctement lu.
+`filament_sensor_2` est bien celui de la tête — câblé sur le MCU de la tête —
+et c'est bien celui que la séquence interroge. Il lisait `True` pendant
+l'impression et lit `False` une fois l'impression finie, voyant éteint, parce
+que `END_PRINT` a déchargé par le cutter. Le capteur fonctionne et il est
+correctement lu.
 
-Mais il ne dit pas ce qu'on lui fait dire. Il est placé **après le cutter et
-avant les galets de l'extrudeur**. Voir du filament au capteur signifie que le
-filament est arrivé au capteur, pas que la buse est amorcée. Entre les deux, il
-reste tout le trajet jusqu'à la zone de fusion, que `BOX_EXTRUDER_EXTRUDE`
-couvre avec ses `Tn_extrude: 140`. Une purge de `140 mm` derrière ça peut donc
-sortir bien moins de `140 mm` de matière par la buse.
+Mais il est placé **après le cutter et avant les galets de l'extrudeur**. Voir
+du filament au capteur signifie que le filament est arrivé au capteur, pas que
+la buse est amorcée : il reste tout le trajet jusqu'à la zone de fusion, que
+`BOX_EXTRUDER_EXTRUDE` couvre avec ses `Tn_extrude: 140`. C'est pour cette
+raison que l'assertion seule ne suffisait pas, et pourquoi elle est désormais
+précédée d'une attente.
 
-Deuxième écart trouvé dans les traces du 2 septembre à 00 h 22 : au moment de
-la purge stock, `extruder: target=220 temp=109.3`. Le CFS impose sa cible et
-la purge part alors que la buse est à `109 °C`. `_KCTRL_PURGE_BALL` fait un
-`M109` sur la température du G-code et attend réellement de l'atteindre, ce que
-la purge stock ne garantit pas.
+## Mesure plutôt qu'une théorie de plus
 
-D'où la mesure plutôt qu'une théorie de plus : `_KCTRL_PURGE_MARK` relève l'axe
-extrudeur avant l'étape matière, `_KCTRL_PURGE_REPORT` annonce le total poussé
-après la purge stock. Les deux se lisent après un `M400`, parce qu'un macro se
-rend au moment où sa commande est traitée et que `M400` bloque la file jusqu'à
-la fin des mouvements : la position relevée a donc réellement eu lieu. Le
-prochain démarrage affichera dans la console le nombre réel, en millimètres.
+`_KCTRL_PURGE_MARK` relève l'axe extrudeur avant l'étape matière,
+`_KCTRL_PURGE_REPORT` annonce le total réellement poussé après la purge stock.
+Les deux se lisent après un `M400` : un macro se rend au moment où sa commande
+est traitée, et `M400` bloque la file jusqu'à la fin des mouvements, donc la
+position relevée a réellement eu lieu.
+
+Le prochain démarrage affichera dans la console le nombre de millimètres
+effectivement poussés. C'est la seule réponse honnête à « la purge est-elle
+suffisante », et elle tranchera sans discussion si `140 mm` doivent un jour
+bouger.
 
 ## Vérification
 
-Le rendu Jinja est testé hors machine, avec l'environnement de Klipper
-(délimiteurs à accolade simple) : la longueur commandée est exactement la
-longueur poussée, pour `30`, `61`, `119`, `300`, `421` et `1000 mm`. Le
-découpage est fait en tranches pleines plus un reste, et non en tranches
-égales : des tranches égales portent leur arrondi une fois par tranche, et une
-purge à qui on demande `1000` et qui pousse `1000,008` est une purge dont le
-nombre ne veut plus rien dire.
+Hors machine, l'ordre de l'étape matière est rendu avec l'environnement Jinja
+de Klipper (délimiteurs à accolade simple) et non lu : aucune commande qui
+pousse du filament n'apparaît avant l'attente, avant l'assertion, ni avant le
+`M109`. Le sondage temporise quand le capteur est vide et n'émet rien quand il
+est plein.
 
-Sur la machine : configuration relue, `FIRMWARE_RESTART` accepté, macro
-enregistré. **La quantité réelle reste à juger à l'œil sur la première
-impression** — c'est le seul juge de « boule » contre « filet ».
+Sur la machine : configuration relue, `FIRMWARE_RESTART` accepté,
+`_KCTRL_WAIT_HEAD_FILAMENT` enregistré, `_KCTRL_PURGE_BALL` bien absent.
+**Le résultat reste à juger à l'œil sur la première impression** — c'est le
+seul juge de « boule » contre « filet ».
 
 ## Conséquences
 
-- Le démarrage s'allonge d'environ une minute.
-- Environ `1,3 g` de PLA par démarrage d'impression, contre `0,4 g` avant.
+- Le démarrage s'allonge de l'attente réelle du filament, au plus trois
+  secondes, et de la montée en température avant poussée.
+- La consommation par démarrage ne change pas : `140 mm`, comme avant.
 - La sauvegarde de la configuration précédente est
   `/usr/data/printer_data/config/.bak-owned-start-v2-prepurge`.
 - `Tn_extrude_temp: 220` reste imposé par le CFS sur la purge stock. Le sortir
@@ -131,17 +116,16 @@ impression** — c'est le seul juge de « boule » contre « filet ».
 
 ## Alternatives refusées
 
+- **Ajouter `300 mm` de purge à nous** : construit et installé, puis retiré. Le
+  filet ne venait pas d'un manque de matière mais d'un ordre incorrect ;
+  grossir la purge aurait masqué la cause en brûlant `1,3 g` par démarrage.
 - **Passer `LEN=` à `BOX_MATERIAL_FLUSH`** : susceptible d'être borné à `140`
   sans le dire.
-- **Remplacer entièrement la purge stock** : sa fin de routine décroche la
-  boule, et son contenu exact n'est pas lisible — c'est un `.so` compilé.
-  Retirer ce qui fonctionne pour ne garder que ce qu'on comprend ferait courir
-  le risque d'une boule traînée sur la plaque.
-- **Multiplier une valeur supposée** : la quantité de départ n'était pas
-  `8 mm`, elle était `140 mm`. Multiplier une supposition aurait donné une
-  purge encore trop faible.
+- **Se contenter de l'assertion** : elle contrôle une fois, au rendu, et le CFS
+  continue d'alimenter après le retour de sa commande.
 
 ## Voir aussi
 
 - ADR-040 — quantité de purge G-code et garde cutter réel
 - ADR-049 — chargement CFS, une poussée ne suffit pas
+- ADR-051 — capteur de tête laissé comme le CFS le laisse

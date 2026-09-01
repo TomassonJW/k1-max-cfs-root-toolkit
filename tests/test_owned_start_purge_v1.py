@@ -1,13 +1,15 @@
-"""What the purge over the bin must actually push, rendered not read.
+"""Nothing pushes filament before the head sensor sees it.
 
-The stock flush is sized by box.cfg and leaves a thin strand hanging from the
-nozzle instead of a ball that drops into the bin; that strand is then dragged
-into the first layer. The extra purge is owned here, so its length has to be
-provably the length that is commanded - a Jinja slip in a print start macro
-only ever surfaces at the moment a print starts, with the plate hot.
+The purge over the bin was leaving a thin strand hanging from the nozzle
+instead of a ball that drops, and the strand was then dragged into the first
+layer. The stock flush is sized for a head that already holds material: started
+while the CFS is still feeding, or with the nozzle at 109 C, it is spent on an
+empty melt zone and almost nothing comes out. The size was never the problem.
 
-Klipper renders macros with single braces as its variable delimiters, so the
-same environment is used here rather than an approximation of it.
+So the ordering of the material step is what is pinned here, and it is pinned
+by rendering the macros with Klipper's own Jinja environment rather than by
+reading the file: a slip in a print start macro only ever surfaces at the
+moment a print starts, with the plate hot.
 """
 
 import os
@@ -23,6 +25,8 @@ CONFIG = os.path.join(
 
 # Klipper: jinja2.Environment('{%', '%}', '{', '}')
 ENV = jinja2.Environment("{%", "%}", "{", "}", extensions=["jinja2.ext.do"])
+
+PUSHES_FILAMENT = ("BOX_EXTRUDER_EXTRUDE", "BOX_MATERIAL_FLUSH")
 
 
 def config_text():
@@ -41,117 +45,118 @@ def section(name):
                      for line in body.splitlines())
 
 
-def variables(name):
-    text = config_text()
-    start = text.index("[gcode_macro %s]" % name)
-    end = text.find("\n[", start + 1)
-    block = text[start:end if end != -1 else len(text)]
-    found = {}
-    for key, value in re.findall(r"^variable_(\w+):\s*(.+)$", block, re.M):
-        found[key] = float(value) if re.match(r"^-?[\d.]+$", value.strip()) else value
-    return found
-
-
 def commands(name):
     """The section body with comments and blank lines dropped.
 
-    A comment naming a macro is not a call to it, and an ordering assertion that
-    cannot tell them apart proves nothing.
+    A comment naming a macro is not a call to it, and an ordering assertion
+    that cannot tell them apart proves nothing - the first version of this file
+    passed on a comment.
     """
     kept = [line.strip() for line in section(name).splitlines()]
-    return chr(10).join(line for line in kept
-                        if line and not line.startswith("#"))
+    return [line for line in kept if line and not line.startswith("#")]
 
 
-def render(name, params, extra_status=None):
-    conf = variables(name)
-    status = {"gcode_macro %s" % name: type("V", (), conf)()}
-    status.update(extra_status or {})
+def render(name, params=None, detected=True):
+    sensor = type("S", (), {"filament_detected": detected})()
     responses = []
-    return ENV.from_string(section(name)).render(
-        params={k: str(v) for k, v in params.items()},
-        printer=status,
+    rendered = ENV.from_string(section(name)).render(
+        params={k: str(v) for k, v in (params or {}).items()},
+        printer={"filament_switch_sensor filament_sensor_2": sensor},
         action_respond_info=lambda text: responses.append(text) or "",
-    ), responses
+    )
+    return rendered, responses
 
 
-def extruded(rendered):
-    return sum(float(value)
-               for value in re.findall(r"^\s*G1 E([\d.]+) F", rendered, re.M))
+def index_of(lines, needle):
+    for position, line in enumerate(lines):
+        if line.startswith(needle):
+            return position
+    raise AssertionError("%s absent de la sequence" % needle)
 
 
-# ------------------------------------------------------------------- the length
-def test_the_default_purge_is_pushed_in_full():
-    # The whole point is the amount. If the slicing loses a remainder, the ball
-    # is short and nothing says so.
-    rendered, _ = render("_KCTRL_PURGE_BALL", {"TEMP": 190})
-    assert extruded(rendered) == pytest.approx(
-        variables("_KCTRL_PURGE_BALL")["purge_mm"], abs=1e-6)
+# ------------------------------------------------------- wait, do not assume
+def test_the_wait_polls_only_while_the_head_is_empty():
+    empty, _ = render("_KCTRL_WAIT_HEAD_FILAMENT", detected=False)
+    assert "G4 P250" in empty
+    loaded, _ = render("_KCTRL_WAIT_HEAD_FILAMENT", detected=True)
+    assert "G4" not in loaded
 
 
-@pytest.mark.parametrize("length", [30, 61, 119, 300, 421, 1000])
-def test_any_length_is_pushed_in_full(length):
-    rendered, _ = render("_KCTRL_PURGE_BALL", {"TEMP": 190, "LEN": length})
-    assert extruded(rendered) == pytest.approx(length, abs=1e-3)
+def test_the_wait_is_unrolled_because_one_call_reads_once():
+    # A macro reads the sensor once, when its template renders. A Jinja loop
+    # inside a single macro would re-emit the same stale reading, and Klipper
+    # refuses a macro that calls itself, so repeated calls are the only shape
+    # that actually re-reads the pin.
+    body = section("_KCTRL_WAIT_HEAD_FILAMENT")
+    assert "{% for" not in body
+    assert "_KCTRL_WAIT_HEAD_FILAMENT" not in body
+    calls = [line for line in commands("START_PRINT")
+             if line == "_KCTRL_WAIT_HEAD_FILAMENT"]
+    assert len(calls) >= 8, "trop peu de sondages pour laisser le CFS arriver"
 
 
-def test_the_default_is_at_least_three_times_the_stock_flush():
-    # box.cfg declares box_need_clean_length: 140 on this machine and the
-    # operator judged the result on the plate: it needs three to four times
-    # more before the strand balls up and lets go.
-    total = variables("_KCTRL_PURGE_BALL")["purge_mm"] + 140.0
-    assert total >= 3 * 140.0
+def test_nothing_pushes_filament_before_the_wait_and_the_assertion():
+    # This is the whole fix. Pushing while the CFS is still feeding spends the
+    # purge on an empty melt zone, and no amount of extra length repairs that.
+    lines = commands("START_PRINT")
+    wait = index_of(lines, "_KCTRL_WAIT_HEAD_FILAMENT")
+    assertion = index_of(lines, "_KCTRL_ASSERT_FILAMENT_ENGAGED STAGE=after_cfs_load")
+    assert wait < assertion
+    for command in PUSHES_FILAMENT:
+        assert index_of(lines, command) > assertion, command
 
 
-def test_a_zero_length_purges_nothing():
-    rendered, _ = render("_KCTRL_PURGE_BALL", {"TEMP": 190, "LEN": 0})
-    assert "G1 E" not in rendered
-    # The comment naming it is not a call to it.
-    assert not re.search(r"^\s*BOX_GO_TO_EXTRUDE_POS", rendered, re.M)
+def test_the_nozzle_is_hot_and_waited_on_before_anything_is_pushed():
+    # The stock flush only sets a target. The log of 2026-09-02 00:22 shows it
+    # running at 109 C with the CFS target at 220: almost nothing comes out of
+    # a nozzle at 109 C, which is the other half of the thin strand.
+    lines = commands("START_PRINT")
+    heat = index_of(lines, "M109 S{nozzle}")
+    for command in PUSHES_FILAMENT:
+        assert index_of(lines, command) > heat, command
 
 
-# -------------------------------------------------------------- the temperature
-def test_the_purge_waits_on_the_gcode_temperature():
-    # "JAMAIS que le CFS controle cette putain de temperature": this purge is
-    # the one on the route whose temperature is ours, and it must be reached
-    # before any filament moves, not merely requested.
-    rendered, _ = render("_KCTRL_PURGE_BALL", {"TEMP": 245})
-    assert "M109 S245" in rendered
-    assert rendered.index("M109 S245") < rendered.index("G1 E")
+def test_the_wait_comes_after_every_cfs_attempt():
+    lines = commands("START_PRINT")
+    attempts = [n for n, line in enumerate(lines)
+                if line.startswith("_KCTRL_CFS_LOAD")]
+    assert attempts
+    assert index_of(lines, "_KCTRL_WAIT_HEAD_FILAMENT") > max(attempts)
 
 
-def test_the_head_is_placed_over_the_bin_before_extruding():
-    # 300 mm extruded at the wrong place is not a mistake worth risking on the
-    # assumption that the previous macro left the head where we think.
-    rendered, _ = render("_KCTRL_PURGE_BALL", {"TEMP": 190})
-    assert rendered.index("BOX_GO_TO_EXTRUDE_POS") < rendered.index("G1 E")
-
-
-def test_the_purge_is_relative_and_waited_on():
-    rendered, _ = render("_KCTRL_PURGE_BALL", {"TEMP": 190})
-    assert "M83" in rendered and rendered.index("M83") < rendered.index("G1 E")
-    assert re.search(r"^\s*M400", rendered, re.M)
-    assert rendered.rindex("M400") > rendered.rindex("G1 E")
-
-
-def test_the_operator_is_told_what_was_pushed():
-    _, responses = render("_KCTRL_PURGE_BALL", {"TEMP": 190, "LEN": 420})
-    assert responses and "420" in responses[0]
-
-
-# ------------------------------------------------------------------- the order
-def test_the_stock_flush_stays_last_over_the_bin():
-    # Whatever BOX_MATERIAL_FLUSH does at the end of its routine to detach the
-    # blob is what has always worked here. Our purge grows the ball, the stock
-    # one is still what lets it go.
-    start = commands("START_PRINT")
-    assert start.index("_KCTRL_PURGE_BALL") < start.index("BOX_MATERIAL_FLUSH")
-
-
-def test_the_length_is_not_handed_to_the_stock_macro():
-    # box.cfg declares box_need_clean_length_max: 140, so a LEN above it could
-    # be clamped without a word. A silently clamped purge is the worst kind:
-    # nothing reports it and the defect only shows up on the plate.
-    start = commands("START_PRINT")
-    flush = [line for line in start.splitlines() if "BOX_MATERIAL_FLUSH" in line]
+# ------------------------------------------------------------- no extra purge
+def test_the_stock_flush_size_is_left_alone():
+    # 140 mm was never the problem and 440 mm is a lot of filament to burn at
+    # every print start. box.cfg also declares box_need_clean_length_max: 140,
+    # so a LEN above it could be clamped without a word.
+    lines = commands("START_PRINT")
+    flush = [line for line in lines if "BOX_MATERIAL_FLUSH" in line]
     assert flush and all("LEN" not in line for line in flush)
+    assert "_KCTRL_PURGE_BALL" not in config_text()
+
+
+# ----------------------------------------------------------- the measurement
+def test_the_material_step_is_measured_end_to_end():
+    # The head switch sits after the cutter and before the extruder gears, so
+    # seeing filament there is not the same as having primed the nozzle. The
+    # measured travel is the only honest answer to "was the purge enough".
+    lines = commands("START_PRINT")
+    mark = index_of(lines, "_KCTRL_PURGE_MARK")
+    report = index_of(lines, "_KCTRL_PURGE_REPORT")
+    for command in PUSHES_FILAMENT:
+        position = index_of(lines, command)
+        assert mark < position < report, command
+
+
+@pytest.mark.parametrize("macro", ["_KCTRL_PURGE_MARK", "_KCTRL_PURGE_REPORT"])
+def test_each_measurement_reads_after_a_wait_for_moves(macro):
+    # A macro renders when its command is processed; M400 blocks the queue
+    # until the moves are done. Without it the position read is one that has
+    # merely been queued.
+    lines = commands("START_PRINT")
+    assert lines[index_of(lines, macro) - 1] == "M400"
+
+
+def test_the_config_has_no_leftover_purge_variables():
+    assert "purge_mm" not in config_text()
+    assert "purge_speed" not in config_text()
