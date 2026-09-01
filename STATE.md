@@ -42,7 +42,12 @@ un palpage. `M104` et `M109` sont interceptés et refusent toute consigne
 au-dessus du plafond tant que la fenêtre de palpage est ouverte, ce qui couvre
 aussi les modules Creality compilés puisqu'ils passent par le dispatcher G-code.
 Le contact est fixé à `100 °C` pour toutes les matières, jamais dérivé de la
-température d'impression.
+température d'impression. Plafonner la consigne ne suffisait pas : une buse
+laissée chaude par une purge manuelle ou un chargement avorté reste chaude
+quand la fenêtre s'ouvre, et la trempe de vingt secondes ne la refroidit pas.
+L'ouverture de la fenêtre coupe donc la chauffe et attend la descente réelle
+sous le plafond avant d'autoriser le moindre contact. Relevé le 1er septembre
+2026 avec la buse à `244 °C` et la consigne déjà revenue à zéro.
 
 Mise à jour prioritaire : la voie CFS stock est rétablie et physiquement
 qualifiée. Le blocage de trois semaines venait d'une garde applicative lisant
