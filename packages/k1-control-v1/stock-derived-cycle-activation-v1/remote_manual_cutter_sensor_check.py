@@ -10,7 +10,8 @@ import time
 
 
 SOCKET_PATH = "/tmp/klippy_uds"
-MONITOR_SECONDS = 90.0
+DEFAULT_MONITOR_SECONDS = 90.0
+MAX_MONITOR_SECONDS = 1800.0
 POLL_SECONDS = 0.1
 MAX_SAFE_NOZZLE_C = 50.0
 
@@ -98,14 +99,14 @@ def compact(status):
     }
 
 
-def run():
+def run(monitor_seconds):
     before = snapshot(8400)
     require_cold_idle(before)
     print(
         json.dumps(
             {
                 "event": "MANUAL_CUTTER_SENSOR_MONITOR_READY",
-                "window_seconds": MONITOR_SECONDS,
+                "window_seconds": monitor_seconds,
                 "before": compact(before),
                 "physical_effect": False,
             },
@@ -118,7 +119,7 @@ def run():
     active_at = None
     released_at = None
     request_id = 8401
-    while time.monotonic() - started < MONITOR_SECONDS:
+    while time.monotonic() - started < monitor_seconds:
         current = snapshot(request_id)
         request_id += 1
         elapsed = round(time.monotonic() - started, 3)
@@ -154,8 +155,16 @@ def run():
 
 if __name__ == "__main__":
     try:
-        require(len(sys.argv) == 2 and sys.argv[1] == "monitor", "action_invalid")
-        print(json.dumps(run(), sort_keys=True, separators=(",", ":")))
+        require(len(sys.argv) in (2, 3) and sys.argv[1] == "monitor", "action_invalid")
+        monitor_seconds = (
+            float(sys.argv[2]) if len(sys.argv) == 3 else DEFAULT_MONITOR_SECONDS
+        )
+        require(1.0 <= monitor_seconds <= MAX_MONITOR_SECONDS, "window_invalid")
+        print(
+            json.dumps(
+                run(monitor_seconds), sort_keys=True, separators=(",", ":")
+            )
+        )
     except Exception as error:
         print(
             json.dumps(

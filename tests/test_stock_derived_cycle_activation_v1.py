@@ -126,7 +126,8 @@ def test_manual_cutter_sensor_check_is_strictly_read_only():
     )
     assert '"objects/query"' in checker
     assert '"gcode/script"' not in checker
-    assert "MONITOR_SECONDS = 90.0" in checker
+    assert "DEFAULT_MONITOR_SECONDS = 90.0" in checker
+    assert "MAX_MONITOR_SECONDS = 1800.0" in checker
     assert '"filament_motion": False' in checker
     compile(checker, "remote_manual_cutter_sensor_check.py", "exec")
 
