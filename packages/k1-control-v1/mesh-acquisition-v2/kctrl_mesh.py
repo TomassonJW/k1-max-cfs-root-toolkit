@@ -29,12 +29,32 @@ class KctrlMesh:
     def __init__(self, config):
         self.printer = config.get_printer()
         self.gcode = self.printer.lookup_object("gcode")
+        # Bed screw geometry. The pitch is what converts a height error into a
+        # fraction of a turn; M4 is 0.7 mm per revolution. The positions are
+        # configurable because a published coordinate that is 20 mm off costs
+        # 0.05 mm of correction on a bed tilted by 0.7 mm end to end, which is
+        # the same size as the error being chased.
+        self.screw_pitch = config.getfloat("screw_pitch", 0.7, above=0.)
+        self.screws = []
+        for index in range(1, 9):
+            raw = config.get("screw%d" % index, None)
+            if raw is None:
+                continue
+            name = config.get("screw%d_name" % index, "screw%d" % index)
+            parts = raw.split(",")
+            if len(parts) != 2:
+                raise config.error(
+                    "K1 Control: screw%d must be 'x,y'" % index)
+            self.screws.append((name, float(parts[0]), float(parts[1])))
         self.gcode.register_command(
             "KCTRL_MESH_MERGE", self.cmd_KCTRL_MESH_MERGE,
             desc="Merge the four acquired quadrants into one referenced profile")
         self.gcode.register_command(
             "KCTRL_MESH_SHOW", self.cmd_KCTRL_MESH_SHOW,
             desc="Print a stored mesh profile as a readable map")
+        self.gcode.register_command(
+            "KCTRL_SCREWS_REPORT", self.cmd_KCTRL_SCREWS_REPORT,
+            desc="Turn a probed grid into a per screw correction in eighths of a turn")
 
     # ---------------------------------------------------------------- helpers
     def _profiles(self):
@@ -258,6 +278,93 @@ class KctrlMesh:
         gcmd.respond_info(
             "K1 Control: written into %s. Restart to load it."
             % os.path.basename(path))
+
+    @staticmethod
+    def _fit_plane(samples):
+        # Least squares fit of z = a*x + b*y + c over the probed points. Solved
+        # with the normal equations; a 3x3 system does not warrant more.
+        n = float(len(samples))
+        sx = sum([p[0] for p in samples])
+        sy = sum([p[1] for p in samples])
+        sz = sum([p[2] for p in samples])
+        sxx = sum([p[0] * p[0] for p in samples])
+        syy = sum([p[1] * p[1] for p in samples])
+        sxy = sum([p[0] * p[1] for p in samples])
+        sxz = sum([p[0] * p[2] for p in samples])
+        syz = sum([p[1] * p[2] for p in samples])
+        m = [[sxx, sxy, sx], [sxy, syy, sy], [sx, sy, n]]
+        v = [sxz, syz, sz]
+        # Gaussian elimination with partial pivoting.
+        for col in range(3):
+            pivot = max(range(col, 3), key=lambda r: abs(m[r][col]))
+            if abs(m[pivot][col]) < 1e-12:
+                return None
+            m[col], m[pivot] = m[pivot], m[col]
+            v[col], v[pivot] = v[pivot], v[col]
+            for row in range(col + 1, 3):
+                factor = m[row][col] / m[col][col]
+                for k in range(col, 3):
+                    m[row][k] -= factor * m[col][k]
+                v[row] -= factor * v[col]
+        out = [0.0, 0.0, 0.0]
+        for col in range(2, -1, -1):
+            acc = v[col] - sum([m[col][k] * out[k] for k in range(col + 1, 3)])
+            out[col] = acc / m[col][col]
+        return out
+
+    def cmd_KCTRL_SCREWS_REPORT(self, gcmd):
+        name = gcmd.get("PROFILE", "K1_SCREWS")
+        if not self.screws:
+            raise self.gcode.error(
+                "K1 Control: no screw position configured; add screw1..screwN "
+                "to the [kctrl_mesh] section")
+        profiles = self._profiles()
+        g = self._grid(profiles, name)
+        xs = self._axis(g["min_x"], g["max_x"], g["nx"])
+        ys = self._axis(g["min_y"], g["max_y"], g["ny"])
+        samples = []
+        for j, y in enumerate(ys):
+            for i, x in enumerate(xs):
+                samples.append((x, y, float(g["points"][j][i])))
+
+        plane = self._fit_plane(samples)
+        if plane is None:
+            raise self.gcode.error("K1 Control: the probed grid is degenerate")
+        a, b, c = plane
+        residuals = [abs(z - (a * x + b * y + c)) for x, y, z in samples]
+        rms = (sum([r * r for r in residuals]) / len(residuals)) ** 0.5
+        worst = max(residuals)
+
+        gcmd.respond_info(
+            "K1 Control: plane fitted on %d contacts, residual RMS %.4f mm, "
+            "worst %.4f mm" % (len(samples), rms, worst))
+        if worst > 0.05:
+            gcmd.respond_info(
+                "K1 Control: WARNING the bed departs from a plane by %.3f mm. "
+                "The screws set a plane and cannot correct that part; expect a "
+                "floor on what levelling can achieve." % worst)
+
+        heights = [(nm, x, y, a * x + b * y + c) for nm, x, y in self.screws]
+        highest = max([h[3] for h in heights])
+        lowest = min([h[3] for h in heights])
+        pitch = self.screw_pitch
+        gcmd.respond_info(
+            "K1 Control: screw heights span %.4f mm; M%s pitch %.2f mm, so one "
+            "eighth of a turn is %.4f mm"
+            % (highest - lowest, "4" if abs(pitch - 0.7) < 1e-6 else "?",
+               pitch, pitch / 8.0))
+        gcmd.respond_info("K1 Control: RAISE ONLY, bring every screw up to the highest")
+        for nm, x, y, z in heights:
+            delta = highest - z
+            gcmd.respond_info(
+                "   %-12s X%-5.0f Y%-5.0f  %+.4f mm  ->  raise %.3f mm = %.1f eighths"
+                % (nm, x, y, z, delta, delta / (pitch / 8.0)))
+        gcmd.respond_info("K1 Control: LOWER ONLY, bring every screw down to the lowest")
+        for nm, x, y, z in heights:
+            delta = z - lowest
+            gcmd.respond_info(
+                "   %-12s X%-5.0f Y%-5.0f  %+.4f mm  ->  lower %.3f mm = %.1f eighths"
+                % (nm, x, y, z, delta, delta / (pitch / 8.0)))
 
     def cmd_KCTRL_MESH_SHOW(self, gcmd):
         name = gcmd.get("PROFILE")
