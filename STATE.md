@@ -2,6 +2,48 @@
 
 Last updated: 2026-09-01
 
+Mise à jour prioritaire : la chaîne de calibration est autonome et le plateau a
+atteint son plancher mécanique. Deux commandes suffisent désormais et Thomas les
+lance seul depuis un panneau Mainsail dédié : `KCTRL_BED_SCREWS` mesure le plan
+en vingt-cinq contacts et sort la correction de chaque vis en huitièmes de tour,
+`KCTRL_MESH_CALIBRATE` acquiert le `11 × 11` en quatre quadrants, fusionne,
+normalise au point de palpage et recharge. La fusion vit dans un module Klipper,
+`kctrl_mesh`, parce qu'elle demande du calcul matriciel et une écriture fichier
+qu'une macro Jinja ne sait pas faire, et parce que `SAVE_CONFIG` est interdit sur
+cette machine.
+
+Le plateau est passé de `0,262` à `0,114 mm` d'inclinaison entre vis. Le reste
+est un voile de la tôle mesuré trois fois à `0,15 mm`, invariant en amplitude
+comme en forme : aucune vis ne le corrige, le réglage mécanique s'arrête là et le
+maillage prend le relais. Les positions réelles des quatre vis ont été relevées
+sur la machine et sont asymétriques. Voir ADR-047.
+
+Risque matériel ouvert : une perte de pas Z de `2,78 mm` a été détectée et
+refusée par le firmware pendant une acquisition. Non reproduite sur quatre tours
+de contrôle, non corrigée, l'accès à l'entraînement demandant un outillage
+indisponible. Non bloquant tant que le contrôle de fin de maillage la rattrape,
+mais aucune protection équivalente n'existe pendant une impression. Voir ADR-048.
+
+Mise à jour prioritaire : le chargement CFS du démarrage est corrigé. Une seule
+poussée ne suffit pas. Le CFS épuise ses cinq tentatives internes, signale
+`key836`, puis rend la main **sans faire échouer la séquence** ; la suite se
+serait déroulée à vide et seul le garde de filament a arrêté l'impression. Pire,
+l'erreur se verrouille : toute relance de `BOX_EXTRUDE_MATERIAL` est un no-op
+muet tant que `BOX_ERROR_CLEAR` n'a pas été rejoué. Le pas matière fait
+maintenant jusqu'à quatre tentatives, chacune précédée de son effacement
+d'erreur, et se saute de lui-même dès que le capteur de tête voit du filament.
+Le capteur de tête, que le CFS désactive pour charger et ne restaure jamais, est
+réactivé après la purge : les impressions tournaient sans détection de fin de
+bobine. Correctif vérifié au chargement, pas encore rejoué depuis un départ
+complet. Voir ADR-049.
+
+Verrou ajouté : la buse ne peut plus dépasser sa température de contact pendant
+un palpage. `M104` et `M109` sont interceptés et refusent toute consigne
+au-dessus du plafond tant que la fenêtre de palpage est ouverte, ce qui couvre
+aussi les modules Creality compilés puisqu'ils passent par le dispatcher G-code.
+Le contact est fixé à `100 °C` pour toutes les matières, jamais dérivé de la
+température d'impression.
+
 Mise à jour prioritaire : la voie CFS stock est rétablie et physiquement
 qualifiée. Le blocage de trois semaines venait d'une garde applicative lisant
 `box.cut_pos`, un champ qui ne reflète jamais le capteur du cutter, et dont le
