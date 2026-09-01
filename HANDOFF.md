@@ -1,12 +1,56 @@
 # HANDOFF — index de reprise
 
-La passation canonique actuelle est :
+Mise à jour : 2026-09-01, après qualification du capteur cutter et recadrage
+du périmètre produit.
 
-`HANDOFF-CUTTER-SENSOR-PAUSE-2026-09-01.md`
+## État réel
 
-Elle contient l'état physique exact, les preuves, les limites, la liste complète
-des gestes humains restants et la prochaine mission unique. Le contenu ci-dessous
-est conservé uniquement comme archive historique.
+Le capteur du cutter est **bon**. `BOX_CUT_HALL_TEST`, machine froide et `X/Y`
+référencés, amène la tête à `Y304,5` et publie `[box] cut sensor state:1` puis
+`:0`, avec `release_failed_num: 0`. ADR-041 établit que `box.cut_pos` ne
+reflète jamais ce capteur : la garde qui bloquait le retrait lisait le mauvais
+champ, et l'appui manuel sur le levier n'était pas un test valide.
+
+ADR-042 recadre le périmètre : la bascule Orca sort du chemin critique et
+devient du backlog V2. Le besoin canonique de Thomas est désormais écrit en
+tête de `GOALS.md` et fait autorité.
+
+Deux écarts ouverts, mesurés le 1er septembre :
+
+- le Z accepté est stocké en **un seul enregistrement global**, pas par profil
+  de mesh ; c'est un préalable bloquant à toute campagne multi-températures ;
+- le mesh réellement chargé est `default`, pas `k1_p001_t055_r001_n11x11` ; le
+  profil existe toujours mais a dérivé et devra être recalibré, filament retiré ;
+- le contrat de design impose `end_full_unload` (ADR-035) alors que le paquet
+  `job-lifecycle-offline-v1` modélise encore `end_keep_engaged` : son moteur ne
+  connaît que la politique `keep_engaged` et lève `end_policy_mismatch` sinon.
+  Le test `test_all_canonical_scenarios_are_implemented_once` est **laissé
+  rouge volontairement** : il signale cette divergence réelle. La corriger
+  demande une tranche dédiée sur le moteur hors imprimante, pas un correctif
+  de test.
+
+La suite complète passe à `874` tests, `1` échec — celui ci-dessus — contre
+`12` échecs et `2` erreurs avant cette session.
+
+État physique au moment de l'écriture : Klipper `ready`, `standby`, buse à
+`26,5 °C`, cibles à zéro, `X/Y` référencés, `Z` non référencé, tête parquée en
+`X100 Y150`, `T1A` engagé, deux capteurs filament actifs, aucune route stock.
+
+## Prochaine action
+
+Retrait intégré `T1A` sur le signal console, puis nettoyage manuel par Thomas,
+puis une première impression mono-filament complète. Ensuite seulement le
+correctif Z-par-profil, puis la recalibration.
+
+## Archive
+
+La passation détaillée précédente, `HANDOFF-CUTTER-SENSOR-PAUSE-2026-09-01.md`,
+reste consultable pour l'historique des preuves. Sa liste de gestes humains est
+en revanche **périmée** : son point 2, l'appui manuel sur le levier, est retiré
+par ADR-041.
+
+Le contenu ci-dessous est conservé comme archive historique. Il décrit l'état
+antérieur à la qualification du capteur et ne doit plus piloter l'action.
 
 # Archive — reprise après refus réel du cutter le 1er septembre 2026
 

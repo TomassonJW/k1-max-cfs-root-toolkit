@@ -152,7 +152,7 @@
     },
     {
       "source": "packages/k1-control-v1/stock-derived-cycle-activation-v1/K1-STOCK-DERIVED-T1A-2LAYER.gcode",
-      "sha256": "eb086ac545a677e1d12d9daa2cc87dcb54844e5ccc0839d80555ed26732cf769"
+      "sha256": "0891e09c4ba8342e8069394d8c0b470fa46f857a134d80291fd14ac098b499bd"
     },
     {
       "source": "scripts/invoke-k1-control-stock-cycle-v1.ps1",

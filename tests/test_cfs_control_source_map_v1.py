@@ -20,13 +20,16 @@ class CfsControlSourceMapV1Tests(unittest.TestCase):
     def test_architecture_has_qualified_exact_live_restore_but_grants_no_open_authority(self):
         authority = self.source_map["authority"]
         self.assertEqual(
-            "start_owner_installed_validated_cold_T1A_route_next",
+            "direct_CFS_owner_offline_closed_install_disabled_next",
             self.source_map["status"],
         )
         self.assertFalse(authority["printer_connection_authorized"])
         self.assertFalse(authority["printer_mutation_authorized"])
         self.assertFalse(authority["physical_action_authorized"])
-        self.assertFalse(authority["implementation_authorized"])
+        # ADR-036 : le propriétaire CFS direct est implémenté hors imprimante
+        # puis posé désactivé. L'autorité d'implémentation est donc ouverte ;
+        # connexion, mutation et action physique restent fermées.
+        self.assertTrue(authority["implementation_authorized"])
         self.assertTrue(authority["offline_owner_core_completed"])
         self.assertTrue(authority["offline_owner_exclusion_guard_completed"])
         self.assertTrue(authority["live_owner_exclusion_read_only_completed"])
@@ -50,6 +53,7 @@ class CfsControlSourceMapV1Tests(unittest.TestCase):
             "SLICK1MAX",
             "NIK-OLI-HELPER-SCRIPT",
             "ORCASLICER-ISSUE-14191",
+            "CREALITY-OFFICIAL-HI-KLIPPER-TRANSPORT",
         }
         self.assertEqual(required, set(sources))
         for source_id in (
@@ -104,10 +108,10 @@ class CfsControlSourceMapV1Tests(unittest.TestCase):
             }.issubset(forbidden_cfs)
         )
 
-    def test_only_bounded_stock_phases_remain_candidates(self):
+    def test_stock_effect_phases_are_historical_and_no_longer_candidates(self):
         candidates = {
             item["command"]: item
-            for item in self.source_map["command_decisions"]["bounded_effect_candidates_not_yet_qualified"]
+            for item in self.source_map["command_decisions"]["rejected_stock_effect_candidates_historical"]
         }
         self.assertEqual(
             {
@@ -129,7 +133,7 @@ class CfsControlSourceMapV1Tests(unittest.TestCase):
     def test_k1_control_is_the_only_lifecycle_owner(self):
         architecture = self.source_map["selected_architecture"]
         self.assertEqual(
-            "K1_CONTROL_LIFECYCLE_OWNER_OVER_SELECTED_STOCK_BOX_PRIMITIVES",
+            "K1_CONTROL_DIRECT_CFS_OWNER_OVER_STOCK_SERIAL_TRANSPORT",
             architecture["id"],
         )
         self.assertFalse(architecture["direct_RS485_driver_for_v1"])
@@ -273,32 +277,32 @@ class CfsControlSourceMapV1Tests(unittest.TestCase):
         self.assertFalse(effect["rerun_authorized"])
         next_gate = self.source_map["next_gate"]
         self.assertEqual(
-            "G4-K1-CONTROL-START-SEQUENCE-T1A-ROUTE-V1",
+            "G4-K1-CONTROL-CFS-DIRECT-OWNER-INSTALL-DISABLED-V1",
             next_gate["id"],
         )
-        self.assertTrue(next_gate["printer_connection"])
+        # La gate suivante est la pose désactivée : elle n'ouvre pas de
+        # connexion imprimante propre et n'envoie aucune trame CFS.
+        self.assertFalse(next_gate["printer_connection"])
         self.assertFalse(next_gate["read_only"])
-        self.assertFalse(next_gate["guard_effect_path_called"])
+        self.assertFalse(next_gate["CFS_effect"])
         self.assertTrue(next_gate["implementation_authorized"])
-        self.assertTrue(next_gate["preflight_completed"])
+        self.assertFalse(next_gate["preflight_completed"])
         self.assertEqual(
-            "START_SEQUENCE_T1A_ROUTE_V1_PREFLIGHT_OK",
-            next_gate["preflight_verdict"],
+            "OFFLINE_PREPARED_NOT_AUTHORIZED",
+            next_gate["execution_status"],
         )
-        self.assertFalse(next_gate["renewed_exact_go_required"])
-        self.assertTrue(next_gate["gcode"])
-        self.assertTrue(next_gate["heat"])
+        # Pose désactivée : elle écrit des fichiers et redémarre un service,
+        # mais n'exécute ni G-code, ni chauffe, ni mouvement, ni extrusion.
+        self.assertFalse(next_gate["gcode"])
+        self.assertFalse(next_gate["heat"])
         self.assertFalse(next_gate["motion"])
-        self.assertTrue(next_gate["extrusion"])
-        self.assertTrue(next_gate["CFS_effect"])
-        self.assertFalse(next_gate["remote_write"])
-        self.assertFalse(next_gate["service_restart"])
-        self.assertFalse(next_gate["renewed_exact_go_required"])
-        self.assertFalse(next_gate["physical_start_trial"])
-        self.assertIsNone(next_gate["physical_trial_blocker"])
-        self.assertEqual("T1A", next_gate["route_established"])
+        self.assertFalse(next_gate["extrusion"])
+        self.assertTrue(next_gate["remote_write"])
+        self.assertTrue(next_gate["service_restart"])
+        self.assertFalse(next_gate["physical_trial"])
+        self.assertFalse(next_gate["deployment_authorized"])
         self.assertEqual(
-            "G4-K1-CONTROL-START-SEQUENCE-OWNER-PHYSICAL-KEEP-CORRECT-T1A-V1",
+            "G4-K1-CONTROL-CFS-DIRECT-OWNER-PHYSICAL-LOAD-UNLOAD-V1",
             next_gate["next_gate"],
         )
         gaps = self.source_map["open_gaps_in_order"]
@@ -317,12 +321,13 @@ class CfsControlSourceMapV1Tests(unittest.TestCase):
         amendment = amendments["CFS-CONTROL-SOURCE-MAP-V1"]
         self.assertEqual("design/cfs-control-source-map-v1.json", amendment["path"])
         self.assertEqual(
-            "docs/adr/ADR-032-proprietaire-cycle-cfs-sur-primitives-stock.md",
+            "docs/adr/ADR-036-proprietaire-cfs-direct-sur-transport-serie-borne.md",
             amendment["decision_record"],
         )
         architecture = lifecycle["cfs_control_architecture"]
         self.assertTrue(architecture["auto_refill_feature_preserved"])
-        self.assertFalse(architecture["implementation_authorized"])
+        # Ouverte par ADR-036 ; la pose et l'action physique restent fermées.
+        self.assertTrue(architecture["implementation_authorized"])
         self.assertTrue(architecture["offline_owner_core_completed"])
         self.assertEqual("21/21", architecture["offline_owner_core_scenarios"])
         self.assertTrue(architecture["offline_owner_exclusion_guard_completed"])
@@ -334,7 +339,10 @@ class CfsControlSourceMapV1Tests(unittest.TestCase):
             "CLOSED_OK_EXCLUSION_AND_EXACT_RESTORE_QUALIFIED",
             architecture["live_owner_exclusion_effect_verdict"],
         )
-        self.assertFalse(architecture["deployment_candidate"])
+        # Un candidat de pose désactivée existe (13/13), mais sa pose n'est
+        # pas autorisée pour autant.
+        self.assertTrue(architecture["deployment_candidate"])
+        self.assertFalse(architecture["install_disabled_deployment_authorized"])
         self.assertTrue(architecture["start_owner_installed"])
         self.assertEqual("PASS", architecture["start_owner_cold_validation"])
         self.assertTrue(architecture["start_owner_live_read_only_preflight_completed"])
