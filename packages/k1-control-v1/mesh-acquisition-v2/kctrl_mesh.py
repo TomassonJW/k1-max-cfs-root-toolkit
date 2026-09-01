@@ -23,6 +23,26 @@ import os
 REFERENCE_XY = (150.0, 150.0)
 QUADRANTS = ("K1_SUB_SW", "K1_SUB_SE", "K1_SUB_NW", "K1_SUB_NE")
 MAX_JUNCTION_SPREAD = 0.05
+# Largest correction one edit command may apply. Hand tuning on a printed square
+# resolves hundredths; a tenth is already a different bed. Anything larger is a
+# typo, and a typo that reaches the first layer costs a print.
+MAX_EDIT_DELTA = 0.15
+
+# The operator describes the bed in plain words - front edge, right edge, back
+# right corner - and both languages are accepted because that is how the
+# corrections arrive.
+EDGES = {
+    "front": "front", "avant": "front",
+    "back": "back", "arriere": "back", "fond": "back",
+    "left": "left", "gauche": "left",
+    "right": "right", "droit": "right", "droite": "right",
+}
+CORNERS = {
+    "front_left": (0, 0), "avant_gauche": (0, 0),
+    "front_right": (1, 0), "avant_droit": (1, 0),
+    "back_left": (0, 1), "arriere_gauche": (0, 1),
+    "back_right": (1, 1), "arriere_droit": (1, 1),
+}
 
 
 class KctrlMesh:
@@ -55,6 +75,15 @@ class KctrlMesh:
         self.gcode.register_command(
             "KCTRL_SCREWS_REPORT", self.cmd_KCTRL_SCREWS_REPORT,
             desc="Turn a probed grid into a per screw correction in eighths of a turn")
+        self.gcode.register_command(
+            "KCTRL_MESH_EDIT", self.cmd_KCTRL_MESH_EDIT,
+            desc="Shift an edge, a corner or one point of a stored mesh profile")
+        self.gcode.register_command(
+            "KCTRL_MESH_UNDO", self.cmd_KCTRL_MESH_UNDO,
+            desc="Revert the last KCTRL_MESH_EDIT")
+        # One step of history is enough for hand tuning: the operator judges a
+        # correction on the next printed square, not three commands later.
+        self._undo = None
 
     # ---------------------------------------------------------------- helpers
     def _profiles(self):
@@ -405,6 +434,232 @@ class KctrlMesh:
             gcmd.respond_info(
                 "   %-16s X%-5.0f Y%-5.0f  %+.4f mm  ->  %s"
                 % (nm, x, y, z, verdict))
+
+
+    # ------------------------------------------------------------------- edits
+    def _live_profile(self, name):
+        # bed_mesh.get_status returns the profile manager's own dictionary, so
+        # the point rows can be corrected in place. That matters: several edits
+        # are applied in a row before a single reload, and reading the file back
+        # between them would lose everything but the last one.
+        profiles = self._profiles()
+        prof = profiles.get(name)
+        if prof is None:
+            raise self.gcode.error("K1 Control: no profile named %s" % name)
+        points = prof.get("points")
+        if not points or not isinstance(points[0], list):
+            raise self.gcode.error(
+                "K1 Control: profile %s does not expose editable points" % name)
+        return prof, points
+
+    @staticmethod
+    def _stored_params(prof):
+        mp = prof["mesh_params"]
+        order = ("x_count", "y_count", "mesh_x_pps", "mesh_y_pps",
+                 "algo", "tension", "min_x", "max_x", "min_y", "max_y")
+        out = []
+        for key in order:
+            value = mp[key]
+            if key in ("min_x", "max_x", "min_y", "max_y"):
+                out.append((key, "%.1f" % float(value)))
+            elif key in ("x_count", "y_count", "mesh_x_pps", "mesh_y_pps"):
+                out.append((key, int(value)))
+            else:
+                out.append((key, value))
+        return out
+
+    def _select(self, gcmd, nx, ny, xs, ys):
+        ring = gcmd.get_int("RING", 0, minval=0)
+        if ring * 2 >= min(nx, ny):
+            raise self.gcode.error(
+                "K1 Control: ring %d does not exist on a %dx%d grid"
+                % (ring, nx, ny))
+        lo_i, hi_i = ring, nx - 1 - ring
+        lo_j, hi_j = ring, ny - 1 - ring
+
+        edge = gcmd.get("EDGE", None)
+        corner = gcmd.get("CORNER", None)
+        col = gcmd.get_int("COL", None)
+        row = gcmd.get_int("ROW", None)
+        px = gcmd.get_float("X", None)
+        py = gcmd.get_float("Y", None)
+
+        given = [n for n, v in (("EDGE", edge), ("CORNER", corner),
+                                ("COL/ROW", col if col is not None else row),
+                                ("X/Y", px if px is not None else py))
+                 if v is not None]
+        if len(given) != 1:
+            raise self.gcode.error(
+                "K1 Control: give exactly one of EDGE, CORNER, COL+ROW or X+Y "
+                "(received %s)" % (", ".join(given) if given else "none"))
+
+        if edge is not None:
+            key = edge.strip().lower()
+            if key not in EDGES:
+                raise self.gcode.error(
+                    "K1 Control: EDGE must be one of %s"
+                    % ", ".join(sorted(set(EDGES))))
+            side = EDGES[key]
+            # An edge excludes its two corners unless asked otherwise, because
+            # a corner and the edge beside it are judged separately on the
+            # printed square and rarely need the same correction.
+            with_corners = gcmd.get_int("WITH_CORNERS", 0, minval=0, maxval=1)
+            pad = 0 if with_corners else 1
+            if side in ("front", "back"):
+                j = lo_j if side == "front" else hi_j
+                cells = [(i, j) for i in range(lo_i + pad, hi_i + 1 - pad)]
+            else:
+                i = lo_i if side == "left" else hi_i
+                cells = [(i, j) for j in range(lo_j + pad, hi_j + 1 - pad)]
+            label = "%s edge, ring %d%s" % (
+                side, ring, "" if pad else ", corners included")
+            return cells, label
+
+        if corner is not None:
+            key = corner.strip().lower().replace("-", "_").replace(" ", "_")
+            if key not in CORNERS:
+                raise self.gcode.error(
+                    "K1 Control: CORNER must be one of %s"
+                    % ", ".join(sorted(set(CORNERS))))
+            right, back = CORNERS[key]
+            i = hi_i if right else lo_i
+            j = hi_j if back else lo_j
+            return [(i, j)], "%s corner, ring %d" % (key, ring)
+
+        if col is not None or row is not None:
+            if col is None or row is None:
+                raise self.gcode.error("K1 Control: COL and ROW go together")
+            if not (0 <= col < nx) or not (0 <= row < ny):
+                raise self.gcode.error(
+                    "K1 Control: COL must be 0..%d and ROW 0..%d"
+                    % (nx - 1, ny - 1))
+            return [(col, row)], "point col %d row %d" % (col, row)
+
+        if px is None or py is None:
+            raise self.gcode.error("K1 Control: X and Y go together")
+        i = min(range(nx), key=lambda k: abs(xs[k] - px))
+        j = min(range(ny), key=lambda k: abs(ys[k] - py))
+        step_x = (xs[-1] - xs[0]) / max(1, nx - 1)
+        step_y = (ys[-1] - ys[0]) / max(1, ny - 1)
+        if abs(xs[i] - px) > step_x / 2.0 or abs(ys[j] - py) > step_y / 2.0:
+            raise self.gcode.error(
+                "K1 Control: X%.0f Y%.0f is outside the grid" % (px, py))
+        return [(i, j)], "point nearest X%.0f Y%.0f" % (px, py)
+
+    @staticmethod
+    def _delta(gcmd):
+        raw = gcmd.get_float("DELTA", None)
+        closer = gcmd.get_float("CLOSER", None)
+        further = gcmd.get_float("FURTHER", None)
+        given = [v for v in (raw, closer, further) if v is not None]
+        if len(given) != 1:
+            raise ValueError
+        if raw is not None:
+            return raw
+        # A positive mesh value lifts the toolhead, so it moves the nozzle away
+        # from the plate. CLOSER and FURTHER exist so a correction read off a
+        # printed square - "this edge sits 0.02 too close" - is typed as it was
+        # observed, with no sign to get wrong.
+        if closer is not None:
+            return -abs(closer)
+        return abs(further)
+
+    def cmd_KCTRL_MESH_EDIT(self, gcmd):
+        bed_mesh = self.printer.lookup_object("bed_mesh", None)
+        if bed_mesh is None:
+            raise self.gcode.error("K1 Control: no bed_mesh on this printer")
+        active = bed_mesh.get_status(None).get("profile_name")
+        name = gcmd.get("PROFILE", active)
+        if not name or name in ("default", "None"):
+            raise self.gcode.error(
+                "K1 Control: PROFILE is required and cannot be the default mesh")
+        try:
+            delta = self._delta(gcmd)
+        except ValueError:
+            raise self.gcode.error(
+                "K1 Control: give exactly one of DELTA, CLOSER or FURTHER. "
+                "CLOSER lowers the nozzle where the layer sits too high, "
+                "FURTHER lifts it where the nozzle digs in")
+        if abs(delta) > MAX_EDIT_DELTA:
+            raise self.gcode.error(
+                "K1 Control: %+.3f mm is beyond the %.2f mm limit of one edit"
+                % (delta, MAX_EDIT_DELTA))
+        if delta == 0.0:
+            raise self.gcode.error("K1 Control: a zero correction changes nothing")
+
+        prof, points = self._live_profile(name)
+        g = self._grid(self._profiles(), name)
+        xs = self._axis(g["min_x"], g["max_x"], g["nx"])
+        ys = self._axis(g["min_y"], g["max_y"], g["ny"])
+        cells, label = self._select(gcmd, g["nx"], g["ny"], xs, ys)
+
+        # The profile is zero at the probing point and every print depends on
+        # that (ADR-046). Editing the reference cell would silently move the
+        # whole bed instead of one zone; the Z offset is the lever for that.
+        rx, ry = REFERENCE_XY
+        for i, j in cells:
+            if abs(xs[i] - rx) < 1e-6 and abs(ys[j] - ry) < 1e-6:
+                raise self.gcode.error(
+                    "K1 Control: X%.0f Y%.0f is the Z reference and stays at "
+                    "zero; shift the whole bed with KCTRL_Z_SAVE instead"
+                    % (rx, ry))
+        for i, j in cells:
+            after = points[j][i] + delta
+            if after < -2.0 or after > 2.0:
+                raise self.gcode.error(
+                    "K1 Control: X%.0f Y%.0f would reach %+.3f mm, outside the "
+                    "-2..2 mm limit" % (xs[i], ys[j], after))
+
+        if gcmd.get_int("PREVIEW", 0, minval=0, maxval=1):
+            gcmd.respond_info(
+                "K1 Control: preview only, %d point(s) of %s would move %+.3f mm"
+                % (len(cells), label, delta))
+            for i, j in cells:
+                gcmd.respond_info(
+                    "   X%-5.0f Y%-5.0f  %+.4f  ->  %+.4f"
+                    % (xs[i], ys[j], points[j][i], points[j][i] + delta))
+            return
+
+        self._undo = (name, [list(r) for r in points])
+        for i, j in cells:
+            points[j][i] = points[j][i] + delta
+        self._persist(name, prof, points, active)
+
+        flat = [v for row in points for v in row]
+        gcmd.respond_info(
+            "K1 Control: %s, %d point(s) moved %+.3f mm (%s)"
+            % (label, len(cells), delta,
+               "nozzle further from the plate" if delta > 0
+               else "nozzle closer to the plate"))
+        gcmd.respond_info(
+            "K1 Control: %s now spans %+.4f .. %+.4f mm, still zero at X%.0f Y%.0f"
+            % (name, min(flat), max(flat), rx, ry))
+
+    def cmd_KCTRL_MESH_UNDO(self, gcmd):
+        if self._undo is None:
+            raise self.gcode.error(
+                "K1 Control: nothing to undo in this session")
+        name, saved = self._undo
+        bed_mesh = self.printer.lookup_object("bed_mesh", None)
+        active = bed_mesh.get_status(None).get("profile_name")
+        prof, points = self._live_profile(name)
+        for j, row in enumerate(saved):
+            for i, value in enumerate(row):
+                points[j][i] = value
+        self._persist(name, prof, points, active)
+        self._undo = None
+        gcmd.respond_info(
+            "K1 Control: %s restored to its state before the last edit" % name)
+
+    def _persist(self, name, prof, points, active):
+        self._write_profile(name, points, self._stored_params(prof))
+        # Reloading is what makes the correction visible on the next layer
+        # instead of after a restart. Only the active profile is reloaded; a
+        # profile edited while another one prints stays on disk until it is
+        # loaded on purpose.
+        if active == name:
+            self.gcode.run_script_from_command(
+                "BED_MESH_PROFILE LOAD=%s" % name)
 
     def cmd_KCTRL_MESH_SHOW(self, gcmd):
         name = gcmd.get("PROFILE")
