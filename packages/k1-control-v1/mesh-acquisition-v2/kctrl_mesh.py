@@ -18,7 +18,9 @@
 # than through SAVE_CONFIG, which on this machine would also commit unrelated
 # pending state that must never be persisted.
 
+import json
 import os
+import time
 
 REFERENCE_XY = (150.0, 150.0)
 QUADRANTS = ("K1_SUB_SW", "K1_SUB_SE", "K1_SUB_NW", "K1_SUB_NE")
@@ -81,6 +83,9 @@ class KctrlMesh:
         self.gcode.register_command(
             "KCTRL_MESH_UNDO", self.cmd_KCTRL_MESH_UNDO,
             desc="Revert the last KCTRL_MESH_EDIT")
+        self.gcode.register_command(
+            "KCTRL_MESH_APPLY", self.cmd_KCTRL_MESH_APPLY,
+            desc="Apply a whole edited matrix from a JSON file, keeping a backup")
         # One step of history is enough for hand tuning: the operator judges a
         # correction on the next printed square, not three commands later.
         self._undo = None
@@ -446,11 +451,18 @@ class KctrlMesh:
         prof = profiles.get(name)
         if prof is None:
             raise self.gcode.error("K1 Control: no profile named %s" % name)
-        points = prof.get("points")
-        if not points or not isinstance(points[0], list):
+        rows = prof.get("points")
+        if not rows or not hasattr(rows[0], "__len__"):
             raise self.gcode.error(
                 "K1 Control: profile %s does not expose editable points" % name)
-        return prof, points
+        # config.getlists parses the stored matrix into a tuple of tuples, so a
+        # freshly loaded profile is immutable and no edit could be written into
+        # it. Promote it to lists once, in the live dictionary, so this and
+        # every later edit lands on the same mutable rows. bed_mesh only ever
+        # reads them, so the change of container is invisible to it.
+        if not isinstance(rows, list) or not isinstance(rows[0], list):
+            prof["points"] = [list(row) for row in rows]
+        return prof, prof["points"]
 
     @staticmethod
     def _stored_params(prof):
@@ -660,6 +672,128 @@ class KctrlMesh:
         if active == name:
             self.gcode.run_script_from_command(
                 "BED_MESH_PROFILE LOAD=%s" % name)
+
+
+    # ------------------------------------------------------- whole matrix apply
+    def _backup(self, name, prof, points):
+        # A hand edited mesh is judgement, not measurement: it cannot be
+        # reprobed. Every apply therefore leaves the previous matrix on disk
+        # before overwriting it, next to printer.cfg so a restore never depends
+        # on this session still being alive.
+        folder = os.path.join(
+            os.path.dirname(self._config_path()), "kctrl-mesh-backups")
+        if not os.path.isdir(folder):
+            os.makedirs(folder)
+        stamp = time.strftime("%Y%m%d-%H%M%S", time.localtime())
+        path = os.path.join(folder, "%s-%s.json" % (name, stamp))
+        payload = {
+            "profile": name,
+            "saved_at": stamp,
+            "mesh_params": dict(prof["mesh_params"]),
+            "points": [list(row) for row in points],
+        }
+        handle = open(path, "w")
+        try:
+            handle.write(json.dumps(payload, indent=1, sort_keys=True))
+        finally:
+            handle.close()
+        return path
+
+    def cmd_KCTRL_MESH_APPLY(self, gcmd):
+        source = gcmd.get("FILE")
+        if not os.path.exists(source):
+            raise self.gcode.error("K1 Control: no file at %s" % source)
+        handle = open(source, "r")
+        try:
+            payload = json.loads(handle.read())
+        except ValueError as exc:
+            raise self.gcode.error(
+                "K1 Control: %s is not readable JSON (%s)" % (source, exc))
+        finally:
+            handle.close()
+
+        name = payload.get("profile")
+        incoming = payload.get("points")
+        if not name or not isinstance(incoming, list):
+            raise self.gcode.error(
+                "K1 Control: the file must hold a profile name and a points matrix")
+        if name in ("default", "None"):
+            raise self.gcode.error(
+                "K1 Control: the default mesh is not an editable profile")
+
+        bed_mesh = self.printer.lookup_object("bed_mesh", None)
+        if bed_mesh is None:
+            raise self.gcode.error("K1 Control: no bed_mesh on this printer")
+        active = bed_mesh.get_status(None).get("profile_name")
+        prof, points = self._live_profile(name)
+
+        if len(incoming) != len(points) or any(
+                not isinstance(row, list) or len(row) != len(points[0])
+                for row in incoming):
+            raise self.gcode.error(
+                "K1 Control: the matrix is %s, the profile expects %dx%d"
+                % (("%dx%d" % (len(incoming), len(incoming[0])))
+                   if incoming and isinstance(incoming[0], list) else "malformed",
+                   len(points[0]), len(points)))
+
+        g = self._grid(self._profiles(), name)
+        xs = self._axis(g["min_x"], g["max_x"], g["nx"])
+        ys = self._axis(g["min_y"], g["max_y"], g["ny"])
+        rx, ry = REFERENCE_XY
+
+        changed = 0
+        largest = 0.0
+        for j, row in enumerate(incoming):
+            for i, raw in enumerate(row):
+                try:
+                    value = float(raw)
+                except (TypeError, ValueError):
+                    raise self.gcode.error(
+                        "K1 Control: X%.0f Y%.0f holds %r, which is not a number"
+                        % (xs[i], ys[j], raw))
+                if value < -2.0 or value > 2.0:
+                    raise self.gcode.error(
+                        "K1 Control: X%.0f Y%.0f would reach %+.3f mm, outside "
+                        "the -2..2 mm limit" % (xs[i], ys[j], value))
+                move = value - points[j][i]
+                if abs(move) < 1e-9:
+                    continue
+                # The profile is zero at the probing point and every print
+                # depends on it (ADR-046). Moving it would shift the whole bed
+                # under the guise of one point; KCTRL_Z_SAVE is that lever.
+                if abs(xs[i] - rx) < 1e-6 and abs(ys[j] - ry) < 1e-6:
+                    raise self.gcode.error(
+                        "K1 Control: X%.0f Y%.0f is the Z reference and stays "
+                        "at zero" % (rx, ry))
+                if abs(move) > MAX_EDIT_DELTA:
+                    raise self.gcode.error(
+                        "K1 Control: X%.0f Y%.0f moves by %+.3f mm, beyond the "
+                        "%.2f mm limit of one edit"
+                        % (xs[i], ys[j], move, MAX_EDIT_DELTA))
+                changed += 1
+                largest = max(largest, abs(move))
+
+        if not changed:
+            gcmd.respond_info("K1 Control: %s already holds these values, "
+                              "nothing written" % name)
+            return
+
+        backup = self._backup(name, prof, points)
+        self._undo = (name, [list(r) for r in points])
+        for j, row in enumerate(incoming):
+            for i, raw in enumerate(row):
+                points[j][i] = float(raw)
+        self._persist(name, prof, points, active)
+
+        flat = [v for row in points for v in row]
+        gcmd.respond_info(
+            "K1 Control: %s updated, %d point(s) changed, largest move %.3f mm"
+            % (name, changed, largest))
+        gcmd.respond_info(
+            "K1 Control: range %+.4f .. %+.4f mm, zero kept at X%.0f Y%.0f"
+            % (min(flat), max(flat), rx, ry))
+        gcmd.respond_info(
+            "K1 Control: previous matrix saved as %s" % os.path.basename(backup))
 
     def cmd_KCTRL_MESH_SHOW(self, gcmd):
         name = gcmd.get("PROFILE")

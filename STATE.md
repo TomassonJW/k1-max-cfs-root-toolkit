@@ -24,6 +24,26 @@ de contrôle, non corrigée, l'accès à l'entraînement demandant un outillage
 indisponible. Non bloquant tant que le contrôle de fin de maillage la rattrape,
 mais aucune protection équivalente n'existe pendant une impression. Voir ADR-048.
 
+Mise à jour prioritaire : le maillage se retouche à la main, point par point,
+depuis une page servie par l'imprimante sur le port `7130`. On clique un point,
+on tape sa valeur, la surface se redessine, un bouton enregistre. Aucune
+écriture ne passe par le serveur : il dépose la matrice et `KCTRL_MESH_APPLY`
+valide, sauvegarde puis persiste, donc la mémoire de Klipper et `printer.cfg`
+ne peuvent pas diverger. Chaque enregistrement laisse la matrice précédente
+horodatée à côté de `printer.cfg`, et ce fichier est lui-même rejouable. Chaîne
+vérifiée de bout en bout sur la machine, matrice finale identique bit à bit à
+celle de la calibration. Une retouche par zone existe en parallèle pour les
+défauts de bord. Voir ADR-050 et ADR-052.
+
+Correctif retiré le soir même : le capteur de filament de tête n'est plus
+réarmé au démarrage. `END_PRINT` retire le filament par le cutter, donc le
+capteur se vide à chaque fin normale et déclenchait une pause runout après la
+dernière couche, buse à `140 °C`, sans rien à reprendre. Ce que l'ADR-049
+prenait pour un oubli du CFS est une précaution. La détection de fin de bobine
+attend la reprise en main de `END_PRINT`. Règle retenue : armer une protection
+sans posséder la séquence qui doit la désarmer transforme une fin normale en
+incident. Voir ADR-051.
+
 Mise à jour prioritaire : le chargement CFS du démarrage est corrigé. Une seule
 poussée ne suffit pas. Le CFS épuise ses cinq tentatives internes, signale
 `key836`, puis rend la main **sans faire échouer la séquence** ; la suite se

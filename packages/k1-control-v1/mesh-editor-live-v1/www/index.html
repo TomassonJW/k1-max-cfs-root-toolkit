@@ -1,0 +1,85 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Maillage K1 Max — édition point par point</title>
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+<header class="bar">
+  <div class="bar-group">
+    <label class="field">
+      <span>Profil</span>
+      <select id="profile"></select>
+    </label>
+    <span id="badge-active" class="badge" hidden>actif à l'impression</span>
+    <span id="badge-z" class="badge badge-quiet" hidden></span>
+  </div>
+
+  <div class="bar-group bar-stats">
+    <span class="stat"><b id="stat-min">—</b><i>mini</i></span>
+    <span class="stat"><b id="stat-max">—</b><i>maxi</i></span>
+    <span class="stat"><b id="stat-span">—</b><i>amplitude</i></span>
+    <span class="stat stat-edits"><b id="stat-edits">0</b><i>retouches</i></span>
+  </div>
+
+  <div class="bar-group">
+    <label class="field">
+      <span>Pas</span>
+      <select id="step">
+        <option value="0.005">0,005</option>
+        <option value="0.01" selected>0,010</option>
+        <option value="0.02">0,020</option>
+        <option value="0.025">0,025</option>
+      </select>
+    </label>
+    <button id="reload" class="ghost" type="button">Recharger</button>
+    <button id="revert" class="ghost" type="button" disabled>Annuler les retouches</button>
+    <button id="save" class="primary" type="button" disabled>Enregistrer</button>
+  </div>
+</header>
+
+<main>
+  <section class="pane pane-grid">
+    <div class="pane-head">
+      <h1>Plateau vu de dessus</h1>
+      <p class="hint">L'arrière du plateau est en haut. Clique un point et tape sa valeur.</p>
+    </div>
+    <div id="grid" class="grid" tabindex="0" aria-label="Grille du maillage"></div>
+    <div class="legend">
+      <span id="legend-low">—</span>
+      <div class="legend-ramp" aria-hidden="true"></div>
+      <span id="legend-high">—</span>
+    </div>
+  </section>
+
+  <section class="pane pane-view">
+    <div class="pane-head">
+      <h1>Surface</h1>
+      <p class="hint">Clique un sommet pour le sélectionner dans la grille.</p>
+    </div>
+    <canvas id="surface" width="620" height="460"></canvas>
+    <dl class="readout">
+      <div><dt>Point</dt><dd id="ro-where">—</dd></div>
+      <div><dt>Mesuré</dt><dd id="ro-origin">—</dd></div>
+      <div><dt>Retouché</dt><dd id="ro-value">—</dd></div>
+      <div><dt>Écart</dt><dd id="ro-delta">—</dd></div>
+    </dl>
+  </section>
+</main>
+
+<footer id="status" class="status" role="status">Chargement…</footer>
+
+<div id="keys" class="keys">
+  <b>Entrée</b> valider et passer à droite
+  <b>Tab</b> point suivant
+  <b>+ / −</b> corriger d'un pas
+  <b>Suppr</b> revenir au mesuré
+  <b>Échap</b> annuler la saisie
+  <b>Ctrl+Z</b> défaire
+</div>
+
+<script type="module" src="app.mjs"></script>
+</body>
+</html>
