@@ -101,14 +101,20 @@ class KctrlMesh:
                     "K1 Control: quadrant %s shares no point with the others" % name)
             diffs = [placed[k] - cells[k] for k in shared]
             offset = sum(diffs) / len(diffs)
-            spread = max(diffs) - min(diffs)
-            spreads.append((name, len(shared), offset, spread))
-            if spread > MAX_JUNCTION_SPREAD:
+            # The offset itself is removed by the merge, so what qualifies the
+            # acquisition is what survives it: the largest residual deviation
+            # from that offset. Comparing the raw range instead would reject a
+            # sound acquisition, since a symmetric range is about twice the
+            # deviation it comes from.
+            residual = max([abs(d - offset) for d in diffs])
+            spreads.append((name, len(shared), offset, residual))
+            if residual > MAX_JUNCTION_SPREAD:
                 raise self.gcode.error(
-                    "K1 Control: quadrant %s disagrees with its neighbours by "
-                    "%.4f mm over %d shared points, above the %.2f mm limit; "
-                    "the acquisition is not trustworthy, run it again"
-                    % (name, spread, len(shared), MAX_JUNCTION_SPREAD))
+                    "K1 Control: quadrant %s still disagrees with its neighbours "
+                    "by %.4f mm over %d shared points once its bias is removed, "
+                    "above the %.2f mm limit; the acquisition is not trustworthy, "
+                    "run it again"
+                    % (name, residual, len(shared), MAX_JUNCTION_SPREAD))
             offsets[name] = offset
             for k, v in cells.items():
                 corrected = v + offset
@@ -230,10 +236,10 @@ class KctrlMesh:
         ]
         path = self._write_profile(name, matrix, params)
 
-        for qname, shared, offset, spread in spreads:
+        for qname, shared, offset, residual in spreads:
             gcmd.respond_info(
-                "K1 Control: %s aligned on %d shared points, bias %+.4f mm, "
-                "spread %.4f mm" % (qname, shared, offset, spread))
+                "K1 Control: %s aligned on %d shared points, bias %+.4f mm "
+                "removed, residual %.4f mm" % (qname, shared, offset, residual))
         gcmd.respond_info(
             "K1 Control: %s merged, 121 real contacts, zero at X%.0f Y%.0f "
             "(shifted by %+.4f mm), range %+.4f .. %+.4f mm"
