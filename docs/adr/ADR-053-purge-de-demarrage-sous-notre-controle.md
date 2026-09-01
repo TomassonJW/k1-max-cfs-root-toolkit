@@ -32,16 +32,35 @@ n'attend pas. À `109 °C` il ne sort quasiment rien.
 
 **Rien ne pousse de filament tant que le capteur de tête ne le voit pas.**
 
-`_KCTRL_WAIT_HEAD_FILAMENT` sonde le capteur et temporise `250 ms` s'il est
-vide. Douze appels déroulés suivent les quatre tentatives de chargement, soit
-trois secondes de grâce, puis l'assertion existante refuse l'impression si le
-filament n'est toujours pas là.
+`KCTRL_WAIT_FILAMENT SENSOR=filament_sensor_2 TIMEOUT=15` bloque jusqu'à ce que
+le capteur voie la matière, relit la broche toutes les `200 ms`, et fait échouer
+l'impression si le filament n'arrive jamais. Quinze secondes parce que le CFS
+met sept à huit secondes minimum à atteindre la tête et que son propre délai de
+déclenchement n'est pas connu ; un sondage toutes les `200 ms` fait qu'un
+chargement rapide ne coûte pas quinze secondes mais un cinquième de seconde.
 
-Le déroulé est nécessaire, pas un choix de style : un macro lit le capteur une
-seule fois, au rendu de son gabarit. Une boucle Jinja à l'intérieur d'un seul
-macro ré-émettrait la même lecture périmée, et Klipper refuse qu'un macro
-s'appelle lui-même. Des appels répétés sont la seule forme qui relise
-réellement la broche.
+C'est une commande Python, pas un macro qui temporise. La version macro a été
+écrite, installée, et elle ne fonctionne pas — silencieusement. Mesures du
+2 septembre :
+
+```
+un sondage temporisé, appelé directement          0,84 s   la pause a lieu
+dix sondages à plat, appelés directement          8,14 s   les dix ont lieu
+les mêmes dix à travers un macro                  0,02 s   rien n'a lieu
+idem, puis M400 au sommet                         0,02 s   rien n'était en file
+```
+
+La dernière ligne tranche : les temporisations n'avaient jamais été mises en
+file, donc aucune attente ultérieure ne pouvait les rattraper. Un `G4`/`M400`
+dans un macro appelé depuis `START_PRINT` — le seul endroit où cette attente
+servirait — est une période de grâce qui n'existe pas, et rien ne le signale :
+l'impression continue simplement de purger dans une zone de fusion vide, c'est-
+à-dire exactement le défaut recherché.
+
+La commande Python, elle, met en pause le réacteur elle-même et ne dépend pas
+de l'endroit d'où elle est appelée. Vérifié sur la machine : `4,01 s` pour un
+délai de `4 s` appelée directement, `4,13 s` **appelée depuis un macro**, retour
+immédiat sur un capteur déjà plein, refus immédiat sur un capteur inconnu.
 
 **La buse est chaude avant la première poussée.** `M109 S{nozzle}` sur la
 température du G-code, attendue, avant `BOX_EXTRUDER_EXTRUDE`.
@@ -96,18 +115,23 @@ bouger.
 Hors machine, l'ordre de l'étape matière est rendu avec l'environnement Jinja
 de Klipper (délimiteurs à accolade simple) et non lu : aucune commande qui
 pousse du filament n'apparaît avant l'attente, avant l'assertion, ni avant le
-`M109`. Le sondage temporise quand le capteur est vide et n'émet rien quand il
-est plein.
+`M109`. Le fait que l'attente ne soit pas un macro est verrouillé au même
+endroit, parce que c'est précisément le piège dans lequel ce travail est tombé.
 
-Sur la machine : configuration relue, `FIRMWARE_RESTART` accepté,
-`_KCTRL_WAIT_HEAD_FILAMENT` enregistré, `_KCTRL_PURGE_BALL` bien absent.
+Sur la machine : `kctrl_wait.py` déployé dans les extras de Klipper, service
+Klipper redémarré — un `FIRMWARE_RESTART` relit la configuration mais pas les
+modules Python — `KCTRL_WAIT_FILAMENT` enregistré, blocage réel mesuré y compris
+imbriqué dans un macro, sonde de test retirée, `_KCTRL_PURGE_BALL` bien absent.
 **Le résultat reste à juger à l'œil sur la première impression** — c'est le
 seul juge de « boule » contre « filet ».
 
 ## Conséquences
 
-- Le démarrage s'allonge de l'attente réelle du filament, au plus trois
-  secondes, et de la montée en température avant poussée.
+- Le démarrage s'allonge de l'attente réelle du filament — le temps qu'il met
+  vraiment, au plus quinze secondes — et de la montée en température avant
+  poussée.
+- `kctrl_wait.py` est un module Python de Klipper. Toute modification exige un
+  redémarrage du service, pas un simple `FIRMWARE_RESTART`.
 - La consommation par démarrage ne change pas : `140 mm`, comme avant.
 - La sauvegarde de la configuration précédente est
   `/usr/data/printer_data/config/.bak-owned-start-v2-prepurge`.
@@ -123,6 +147,9 @@ seul juge de « boule » contre « filet ».
   sans le dire.
 - **Se contenter de l'assertion** : elle contrôle une fois, au rendu, et le CFS
   continue d'alimenter après le retour de sa commande.
+- **Attendre avec un macro qui temporise** : écrit, installé, mesuré sans effet
+  dès qu'il est appelé depuis un autre macro. Une attente qui n'attend pas est
+  pire que pas d'attente du tout, puisqu'elle donne le change.
 
 ## Voir aussi
 
