@@ -280,6 +280,25 @@ class KctrlMesh:
             % os.path.basename(path))
 
     @staticmethod
+    def _interpolate(xs, ys, points, x, y):
+        # Bilinear read of the probed grid. Returns None outside it rather than
+        # extrapolating, because an extrapolated screw height is a guess and a
+        # guess here turns into a wrong number of turns.
+        if x < xs[0] or x > xs[-1] or y < ys[0] or y > ys[-1]:
+            return None
+        i = 0
+        while i < len(xs) - 2 and x > xs[i + 1]:
+            i += 1
+        j = 0
+        while j < len(ys) - 2 and y > ys[j + 1]:
+            j += 1
+        fx = 0.0 if xs[i + 1] == xs[i] else (x - xs[i]) / (xs[i + 1] - xs[i])
+        fy = 0.0 if ys[j + 1] == ys[j] else (y - ys[j]) / (ys[j + 1] - ys[j])
+        low = points[j][i] + fx * (points[j][i + 1] - points[j][i])
+        high = points[j + 1][i] + fx * (points[j + 1][i + 1] - points[j + 1][i])
+        return low + fy * (high - low)
+
+    @staticmethod
     def _fit_plane(samples):
         # Least squares fit of z = a*x + b*y + c over the probed points. Solved
         # with the normal equations; a 3x3 system does not warrant more.
@@ -344,7 +363,19 @@ class KctrlMesh:
                 "The screws set a plane and cannot correct that part; expect a "
                 "floor on what levelling can achieve." % worst)
 
-        heights = [(nm, x, y, a * x + b * y + c) for nm, x, y in self.screws]
+        # The screw height is read from the probed grid, never from the fitted
+        # plane. On a bed that departs from a plane the least squares surface
+        # passes well away from the corners and can even reverse the ranking of
+        # two screws, which sends the adjustment the wrong way. The plane is
+        # kept only to quantify the warp.
+        heights = []
+        for nm, x, y in self.screws:
+            z = self._interpolate(xs, ys, g["points"], x, y)
+            if z is None:
+                raise self.gcode.error(
+                    "K1 Control: screw %s at X%.1f Y%.1f falls outside the "
+                    "probed grid; widen MESH_MIN and MESH_MAX" % (nm, x, y))
+            heights.append((nm, x, y, z))
         highest = max([h[3] for h in heights])
         lowest = min([h[3] for h in heights])
         pitch = self.screw_pitch
@@ -353,18 +384,27 @@ class KctrlMesh:
             "eighth of a turn is %.4f mm"
             % (highest - lowest, "4" if abs(pitch - 0.7) < 1e-6 else "?",
                pitch, pitch / 8.0))
-        gcmd.respond_info("K1 Control: RAISE ONLY, bring every screw up to the highest")
-        for nm, x, y, z in heights:
-            delta = highest - z
-            gcmd.respond_info(
-                "   %-12s X%-5.0f Y%-5.0f  %+.4f mm  ->  raise %.3f mm = %.1f eighths"
-                % (nm, x, y, z, delta, delta / (pitch / 8.0)))
-        gcmd.respond_info("K1 Control: LOWER ONLY, bring every screw down to the lowest")
-        for nm, x, y, z in heights:
+        # On this machine tightening moves the bed away from the nozzle, so the
+        # all-tightening answer is the one that brings every screw down to the
+        # lowest. That is the block Thomas acts on; the reverse is printed only
+        # for the case where a screw has no travel left.
+        eighth = pitch / 8.0
+        gcmd.respond_info("K1 Control: VISSER (eloigne le plateau) - a faire")
+        for nm, x, y, z in sorted(heights, key=lambda h: -h[3]):
             delta = z - lowest
+            turns = delta / eighth
+            verdict = "ne pas toucher" if turns < 0.4 else "visser %.1f huitiemes" % turns
             gcmd.respond_info(
-                "   %-12s X%-5.0f Y%-5.0f  %+.4f mm  ->  lower %.3f mm = %.1f eighths"
-                % (nm, x, y, z, delta, delta / (pitch / 8.0)))
+                "   %-16s X%-5.0f Y%-5.0f  %+.4f mm  ->  %s"
+                % (nm, x, y, z, verdict))
+        gcmd.respond_info("K1 Control: DEVISSER (rapproche le plateau) - variante inverse")
+        for nm, x, y, z in sorted(heights, key=lambda h: h[3]):
+            delta = highest - z
+            turns = delta / eighth
+            verdict = "ne pas toucher" if turns < 0.4 else "devisser %.1f huitiemes" % turns
+            gcmd.respond_info(
+                "   %-16s X%-5.0f Y%-5.0f  %+.4f mm  ->  %s"
+                % (nm, x, y, z, verdict))
 
     def cmd_KCTRL_MESH_SHOW(self, gcmd):
         name = gcmd.get("PROFILE")
