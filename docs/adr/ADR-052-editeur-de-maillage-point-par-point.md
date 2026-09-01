@@ -57,6 +57,35 @@ rend le mot `response`.
 sans rien taper ne doit pas réécrire le point à son propre arrondi, sinon
 traverser une ligne repeint le plateau d'un demi-centième.
 
+## Corriger d'un pas plutôt que retaper la valeur
+
+À l'usage, taper `-0.187` pour un point qui valait `-0.192` n'est pas le geste
+juste : l'opérateur ne lit pas une valeur sur son carré imprimé, il lit un
+écart. Il décide qu'un point est deux centièmes trop loin, pas qu'il vaut
+`-0.187`. Le clavier corrige donc d'un pas : `+` éloigne la buse, `−` la
+rapproche, et le pas se choisit entre 0,005 / 0,010 / 0,020 / 0,050 mm.
+
+Trois choix en découlent.
+
+**Un clic simple sélectionne, il n'ouvre plus la saisie.** La version précédente
+ouvrait un champ texte au clic, et ce champ avalait la touche `+` : elle
+inscrivait un signe plus dans la valeur au lieu de déplacer le point. Taper la
+valeur reste à un geste : double-clic, `Entrée`, ou simplement commencer à taper
+des chiffres.
+
+**Une rafale élargit le pas, par multiples entiers.** Une touche maintenue se
+répète toutes les trente millisecondes ; avancer d'un pas à chaque fois
+ramperait. Après six répétitions consécutives sur le même point et dans le même
+sens, le pas double ; après seize, il quadruple. Le facteur reste entier pour
+qu'un point atterrisse toujours sur les valeurs rondes choisies, jamais sur
+0,0175. Changer de sens ou de point remet la rafale à zéro.
+
+**`PagePrec` et `PageSuiv` font la même chose.** Sur un clavier français, `+`
+coûte une touche Majuscule. Les deux boutons à l'écran couvrent le même besoin à
+la souris, et ils portent le sens écrit en toutes lettres : une valeur de
+maillage positive soulève la tête, donc `+` éloigne la buse. Se tromper de signe
+après avoir bien lu son carré coûte une plaque.
+
 ## Conséquences
 
 - La retouche par zone (ADR-050) et la retouche par point coexistent : la

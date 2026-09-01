@@ -14,10 +14,18 @@
 const MAX_MOVE = 0.15;
 const REFERENCE = { x: 150, y: 150 };
 
+/* Held keys repeat every ~30 ms once the system autorepeat starts. Nudging by
+ * one step each time would crawl, so a sustained burst widens the step - but
+ * always by a whole multiple of it, so a point stays on the round values the
+ * operator chose and never lands on 0.0175. */
+const BURST_WINDOW = 400;
+const BURST_STEPS = [[16, 4], [6, 2]];
+
 const el = (id) => document.getElementById(id);
 const ui = {
   profile: el("profile"), step: el("step"), grid: el("grid"),
   surface: el("surface"), status: el("status"),
+  minus: el("minus"), plus: el("plus"), roStep: el("ro-step"),
   save: el("save"), revert: el("revert"), reload: el("reload"),
   badgeActive: el("badge-active"), badgeZ: el("badge-z"),
   statMin: el("stat-min"), statMax: el("stat-max"),
@@ -37,6 +45,7 @@ const state = {
   printerState: null,
   zOffsets: {},
   busy: false,
+  burst: { direction: 0, count: 0, at: 0, i: -1, j: -1 },
 };
 
 /* ------------------------------------------------------------------ geometry */
@@ -113,9 +122,18 @@ function buildGrid() {
       cell.className = "cell";
       cell.dataset.i = String(i);
       cell.dataset.j = String(j);
+      // A single click selects and nothing more. Opening the text editor here
+      // is what made "clique un point puis appuie sur +" impossible: the input
+      // swallowed the key and typed a plus sign into the value. Typing is still
+      // one gesture away - double click, Entrée, or just start typing digits.
       cell.addEventListener("mousedown", (event) => {
         event.preventDefault();
+        commitEdit();
         select(i, j);
+        ui.grid.focus();
+      });
+      cell.addEventListener("dblclick", (event) => {
+        event.preventDefault();
         if (!isReference(i, j)) beginEdit();
       });
       ui.grid.append(cell);
@@ -174,6 +192,10 @@ function readout() {
   ui.roValue.textContent = fmt(value);
   const delta = value - before;
   ui.roDelta.textContent = Math.abs(delta) < 1e-9 ? "—" : fmt(delta);
+  const locked = isReference(i, j);
+  ui.roStep.textContent = (locked ? "—" : Number(ui.step.value).toFixed(3));
+  ui.minus.disabled = locked;
+  ui.plus.disabled = locked;
 }
 
 /* ------------------------------------------------------------------ selection */
@@ -294,11 +316,35 @@ function apply(i, j, value) {
   return true;
 }
 
+function burstFactor(direction, i, j, now) {
+  // A burst is consecutive presses in the same direction on the same point.
+  // Changing direction or point restarts it, so a correction never runs away
+  // because of keys pressed a minute earlier.
+  const burst = state.burst;
+  const continued = burst.direction === direction && burst.i === i
+    && burst.j === j && now - burst.at < BURST_WINDOW;
+  burst.count = continued ? burst.count + 1 : 1;
+  burst.direction = direction;
+  burst.i = i;
+  burst.j = j;
+  burst.at = now;
+  for (const [threshold, factor] of BURST_STEPS) {
+    if (burst.count >= threshold) return factor;
+  }
+  return 1;
+}
+
 function nudge(direction) {
-  const step = Number(ui.step.value);
-  const { i, j } = state.selected;
   commitEdit();
-  apply(i, j, state.points[j][i] + direction * step);
+  const { i, j } = state.selected;
+  const step = Number(ui.step.value);
+  const now = (typeof performance === "object" ? performance.now() : Date.now());
+  const factor = burstFactor(direction, i, j, now);
+  const before = state.points[j][i];
+  if (!apply(i, j, before + direction * step * factor)) return;
+  const suffix = factor > 1 ? ` (rafale : pas ×${factor})` : "";
+  say(`X${xsOf()[i].toFixed(0)} Y${ysOf()[j].toFixed(0)} : `
+    + `${fmt(before)} → ${fmt(state.points[j][i])}${suffix}`, "good");
 }
 
 function undo() {
@@ -421,8 +467,13 @@ ui.grid.addEventListener("keydown", (event) => {
   };
   if (moves[key]) { event.preventDefault(); move(...moves[key]); return; }
   if (key === "Enter") { event.preventDefault(); beginEdit(); return; }
-  if (key === "+" || key === "=") { event.preventDefault(); nudge(1); return; }
-  if (key === "-" || key === "_") { event.preventDefault(); nudge(-1); return; }
+  // PageUp/PageDown are there for the French keyboard, where + costs a Shift.
+  if (key === "+" || key === "=" || key === "PageUp") {
+    event.preventDefault(); nudge(1); return;
+  }
+  if (key === "-" || key === "_" || key === "PageDown") {
+    event.preventDefault(); nudge(-1); return;
+  }
   if (key === "Delete" || key === "Backspace") {
     event.preventDefault();
     const { i, j } = state.selected;
@@ -434,7 +485,10 @@ ui.grid.addEventListener("keydown", (event) => {
     undo();
     return;
   }
-  if (/^[0-9.,+-]$/.test(key) && !event.ctrlKey && !event.metaKey) {
+  // + and - are consumed above as nudges, so they are not seeds here. A
+  // negative value is still typed the usual way: open the editor on Entrée or
+  // by double clicking, and the existing value comes up selected.
+  if (/^[0-9.,]$/.test(key) && !event.ctrlKey && !event.metaKey) {
     event.preventDefault();
     beginEdit(key === "," ? "." : key);
   }
@@ -525,6 +579,17 @@ async function save() {
     paint();
   }
 }
+
+for (const [button, direction] of [[ui.minus, -1], [ui.plus, 1]]) {
+  // mousedown, not click: a held button then repeats through the same burst
+  // path as a held key, and the grid keeps the focus so the keyboard stays live.
+  button.addEventListener("mousedown", (event) => {
+    event.preventDefault();
+    nudge(direction);
+    ui.grid.focus();
+  });
+}
+ui.step.addEventListener("change", () => { readout(); ui.grid.focus(); });
 
 ui.profile.addEventListener("change", () => {
   loadProfile(ui.profile.value).catch((error) => say(error.message, "error"));

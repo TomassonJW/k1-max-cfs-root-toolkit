@@ -28,10 +28,10 @@
     <label class="field">
       <span>Pas</span>
       <select id="step">
-        <option value="0.005">0,005</option>
-        <option value="0.01" selected>0,010</option>
+        <option value="0.005" selected>0,005</option>
+        <option value="0.01">0,010</option>
         <option value="0.02">0,020</option>
-        <option value="0.025">0,025</option>
+        <option value="0.05">0,050</option>
       </select>
     </label>
     <button id="reload" class="ghost" type="button">Recharger</button>
@@ -44,7 +44,8 @@
   <section class="pane pane-grid">
     <div class="pane-head">
       <h1>Plateau vu de dessus</h1>
-      <p class="hint">L'arrière du plateau est en haut. Clique un point et tape sa valeur.</p>
+      <p class="hint">L'arrière du plateau est en haut. Clique un point, puis
+        <b>+</b> / <b>−</b> pour le corriger d'un pas. Double-clic pour taper la valeur.</p>
     </div>
     <div id="grid" class="grid" tabindex="0" aria-label="Grille du maillage"></div>
     <div class="legend">
@@ -66,17 +67,26 @@
       <div><dt>Retouché</dt><dd id="ro-value">—</dd></div>
       <div><dt>Écart</dt><dd id="ro-delta">—</dd></div>
     </dl>
+    <!-- Sign, spelled out on the buttons: a positive mesh value lifts the
+         toolhead. Reading it off a printed square is the hard part, getting the
+         sign wrong on top of that costs a plate. -->
+    <div class="nudge">
+      <button id="minus" type="button">−<small>buse plus près</small></button>
+      <span class="nudge-step">pas <b id="ro-step">—</b> mm</span>
+      <button id="plus" type="button">+<small>buse plus loin</small></button>
+    </div>
   </section>
 </main>
 
 <footer id="status" class="status" role="status">Chargement…</footer>
 
 <div id="keys" class="keys">
+  <b>+ / −</b> corriger d'un pas (aussi <b>PagePrec</b> / <b>PageSuiv</b>)
+  <b>maintenir</b> le pas s'élargit
+  <b>flèches</b> point voisin
+  <b>double-clic</b> taper la valeur
   <b>Entrée</b> valider et passer à droite
-  <b>Tab</b> point suivant
-  <b>+ / −</b> corriger d'un pas
   <b>Suppr</b> revenir au mesuré
-  <b>Échap</b> annuler la saisie
   <b>Ctrl+Z</b> défaire
 </div>
 

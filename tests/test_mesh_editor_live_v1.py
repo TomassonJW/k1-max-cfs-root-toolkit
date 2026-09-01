@@ -165,3 +165,57 @@ def test_the_expected_assets_are_served(server):
     for name in ("index.html", "styles.css", "app.mjs"):
         assert os.path.isfile(os.path.join(PACKAGE, "www", name))
     assert server.CONTENT_TYPES[".mjs"].startswith("text/javascript")
+
+
+# ------------------------------------------------------------ nudge by a step
+# There is no JavaScript runner on this project, so the page is pinned the same
+# way the subscription template is: by reading the source. These four rules were
+# all found by driving the editor by hand, and each one silently made the
+# one-click correction impossible rather than failing visibly.
+def _www(name):
+    with open(os.path.join(PACKAGE, "www", name), encoding="utf-8") as handle:
+        return handle.read()
+
+
+def test_the_offered_steps_are_the_ones_asked_for():
+    page = _www("index.html")
+    for step in ("0.005", "0.01", "0.02", "0.05"):
+        assert 'value="%s"' % step in page, step
+    # 0.025 was a guess and it is not one of them; the coarse step is 0.05.
+    assert 'value="0.025"' not in page
+
+
+def test_the_finest_step_is_the_default():
+    # Almost every correction read off a printed square is one or two
+    # hundredths, so the safe step is the one selected on arrival.
+    page = _www("index.html")
+    assert 'value="0.005" selected' in page
+
+
+def test_a_single_click_selects_without_opening_the_text_editor():
+    # It used to open an input, which then swallowed the + key and typed a plus
+    # sign into the value instead of nudging the point.
+    source = _www("app.mjs")
+    mousedown = source.split('cell.addEventListener("mousedown"', 1)[1]
+    mousedown = mousedown.split("});", 1)[0]
+    assert "beginEdit" not in mousedown
+    assert "ui.grid.focus()" in mousedown
+    assert 'cell.addEventListener("dblclick"' in source
+
+
+def test_plus_and_minus_are_bound_and_never_seed_the_text_editor():
+    source = _www("app.mjs")
+    assert 'key === "+"' in source and 'key === "PageUp"' in source
+    assert 'key === "-"' in source and 'key === "PageDown"' in source
+    # The seed pattern must not claim + or -, or the branch that nudges would
+    # be reachable only until someone reordered the handler.
+    assert "/^[0-9.,]$/" in source
+
+
+def test_a_burst_widens_the_step_by_whole_multiples():
+    # Held keys repeat every ~30 ms; nudging one step each time would crawl. The
+    # factors stay integers so a point keeps landing on the operator's round
+    # values instead of drifting onto 0.0175.
+    source = _www("app.mjs")
+    assert "BURST_STEPS = [[16, 4], [6, 2]]" in source
+    assert "BURST_WINDOW" in source
