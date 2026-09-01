@@ -11,6 +11,10 @@ puis chargement a été exécuté et capturé : coupe réelle, rembobinage CFS,
 chargement jusqu'à `box.T1.filament: A`, purge visible, filament inséré. La
 machine peut produire. Voir ADR-044.
 
+Règle contraignante ajoutée : aucune calibration ni palpage Z sans nettoyage
+manuel de la buse confirmé par Thomas, ce qui impose le retrait préalable du
+filament. Aucun substitut automatique n'existe. Voir ADR-045.
+
 Défaut réel resté ouvert et prouvé par la même capture : la cible de buse tombe
 à `0 °C` puis remonte à `200 °C` pendant le chargement, tandis que la purge
 utilise `flush_temp: 220` issu de `Tn_extrude_temp` codé en dur dans `box.cfg`.

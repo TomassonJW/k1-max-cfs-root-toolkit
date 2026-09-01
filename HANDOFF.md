@@ -45,6 +45,17 @@ direct, aujourd'hui désactivé sur la machine.
 `26,5 °C`, cibles à zéro, `X/Y` référencés, `Z` non référencé, tête parquée en
 `X100 Y150`, `T1A` engagé, deux capteurs filament actifs, aucune route stock.
 
+## Règle absolue avant tout palpage
+
+**Aucune calibration, aucun palpage Z, aucun démarrage d'impression sans que
+Thomas ait nettoyé la buse à la main et l'ait dit.** Le nettoyage manuel impose
+que le filament soit rétracté avant. Le nettoyage automatique de brosse n'a
+jamais fonctionné et a été retiré de la séquence possédée : il n'existe aucun
+substitut. Une mesure prise sur une buse sale n'est pas dégradée, elle est
+fausse et se propage dans un profil persistant. Voir ADR-045.
+
+Ordre imposé : retrait filament, nettoyage manuel confirmé, chauffe, palpage.
+
 ## Voie CFS stock : rétablie et prouvée
 
 Le blocage de trois semaines est levé. Après bascule des trois inclusions en

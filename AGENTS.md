@@ -848,6 +848,18 @@ de renouvellement littéral pour une étape déjà comprise dans l'objectif acti
 leurs mentions historiques restent seulement des faits sur les campagnes
 passées.
 
+## Nozzle rule — no probing without a hand-cleaned nozzle
+
+No Z probing, no mesh calibration and no print start may run until Thomas has
+cleaned the nozzle by hand and said so. Cleaning by hand requires the filament
+to be retracted first. The automatic brush never worked on this machine and was
+removed from the owned start sequence, so no automatic substitute exists.
+
+A measurement taken on a dirty nozzle is not a degraded measurement, it is a
+false one, and it propagates into a persistent profile. An agent announces the
+operation, waits for the explicit cleaning confirmation, and only then runs it.
+No sensor on this machine proves that a nozzle is clean. See ADR-045.
+
 ## Hard prohibitions during P0/P1
 
 Until a clear mission or active Goal covers a named change, an agent must not:
