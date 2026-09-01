@@ -160,7 +160,7 @@ class KctrlMesh:
             raise self.gcode.error("K1 Control: cannot locate printer.cfg")
         return path
 
-    def _write_profile(self, name, matrix, params):
+    def _write_profile(self, name, matrix, params, drop=()):
         path = self._config_path()
         handle = open(path, "r")
         try:
@@ -168,12 +168,17 @@ class KctrlMesh:
         finally:
             handle.close()
         header = "#*# [bed_mesh %s]" % name
-        # Drop any previous block for this profile, then append a fresh one.
+        # Drop the previous block for this profile and every working profile
+        # named in drop, then append a fresh one. The quadrants are scaffolding:
+        # once merged they are noise in the user's profile list.
+        headers = set([header])
+        for other in drop:
+            headers.add("#*# [bed_mesh %s]" % other)
         out = []
         skipping = False
         for line in lines:
             stripped = line.strip()
-            if stripped == header:
+            if stripped in headers:
                 skipping = True
                 continue
             if skipping:
@@ -234,7 +239,12 @@ class KctrlMesh:
             ("min_x", "%.1f" % xs[0]), ("max_x", "%.1f" % xs[-1]),
             ("min_y", "%.1f" % ys[0]), ("max_y", "%.1f" % ys[-1]),
         ]
-        path = self._write_profile(name, matrix, params)
+        # The file is rewritten without the quadrants; drop them from memory too
+        # so they disappear from the profile list without waiting for a restart.
+        path = self._write_profile(name, matrix, params, drop=QUADRANTS)
+        for quadrant in QUADRANTS:
+            self.gcode.run_script_from_command(
+                "BED_MESH_PROFILE REMOVE=%s" % quadrant)
 
         for qname, shared, offset, residual in spreads:
             gcmd.respond_info(
