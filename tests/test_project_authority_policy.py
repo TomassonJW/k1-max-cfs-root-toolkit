@@ -17,25 +17,18 @@ class ProjectAuthorityPolicyTests(unittest.TestCase):
 
     def test_current_handoff_never_requests_a_literal_gate(self):
         handoff = (ROOT / "HANDOFF.md").read_text(encoding="utf-8")
-        current_name = "HANDOFF-GOAL3-R3-COLD-VALIDATED-2026-08-30.md"
+        current_name = "HANDOFF-CUTTER-SENSOR-PAUSE-2026-09-01.md"
         self.assertIn(current_name, handoff)
-        current = (ROOT / "docs" / current_name).read_text(encoding="utf-8")
+        current = (ROOT / current_name).read_text(encoding="utf-8")
         normalized_current = " ".join(current.split())
         self.assertNotIn("autoriser littéralement", current)
         self.assertIn("2/7", current)
-        self.assertIn(
-            "CLOSED_OK_CAMERA_READ_ONLY_AND_R3_COLD_VALIDATED",
-            current,
-        )
-        self.assertIn("SAFE_IDLE_PARK", current)
-        self.assertIn("REMOTE_R3_JINJA_PARSE_OK sections=16", current)
-        self.assertIn("19/19", current)
-        self.assertIn(
-            "G4-K1-CONTROL-START-SEQUENCE-OWNER-CAMERA-PURGE-R3-HOT-PREFLIGHT-V1",
-            current,
-        )
-        self.assertIn("aucun texte de gate n'est à recopier", normalized_current)
-        self.assertIn("rollback", current)
+        self.assertIn("ATTENDRE_GO", current)
+        self.assertIn("aucun identifiant technique n'est à recopier", normalized_current)
+        self.assertIn("cut_pos : 0→1→0", current)
+        self.assertIn("qualification manuelle du capteur", current)
+        self.assertIn("source reste visible", current)
+        self.assertIn("non archiv", current)
 
     def test_adr_and_decision_preserve_technical_safety_controls(self):
         adr = (

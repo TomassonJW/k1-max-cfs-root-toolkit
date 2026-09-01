@@ -1,4 +1,14 @@
-# HANDOFF — reprise après refus réel du cutter le 1er septembre 2026
+# HANDOFF — index de reprise
+
+La passation canonique actuelle est :
+
+`HANDOFF-CUTTER-SENSOR-PAUSE-2026-09-01.md`
+
+Elle contient l'état physique exact, les preuves, les limites, la liste complète
+des gestes humains restants et la prochaine mission unique. Le contenu ci-dessous
+est conservé uniquement comme archive historique.
+
+# Archive — reprise après refus réel du cutter le 1er septembre 2026
 
 La quantité de purge est corrigée et installée : la reprise fautive utilisait
 `30 mm`, alors que le chargement initial stock observé utilise `140 mm`. Le
