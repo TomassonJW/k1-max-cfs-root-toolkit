@@ -86,6 +86,41 @@ la souris, et ils portent le sens écrit en toutes lettres : une valeur de
 maillage positive soulève la tête, donc `+` éloigne la buse. Se tromper de signe
 après avoir bien lu son carré coûte une plaque.
 
+## Corriger un bord entier d'un seul geste
+
+Un défaut de plateau ne se présente presque jamais point par point : c'est un
+bord avant trop loin, une couronne extérieure trop près, un coin qui décroche.
+Corriger onze points un par un, c'est surtout la manière la plus sûre de les
+corriger inégalement. La sélection est donc multiple, avec les gestes déjà
+acquis du tableur : `Maj+clic` étend un rectangle depuis l'ancre, `Ctrl+clic`
+ajoute ou retire un point isolé, `Maj+flèches` étend au clavier, `Ctrl+A` prend
+le plateau entier. `+` et `−` déplacent alors toute la sélection du pas choisi.
+
+Trois règles rendent la chose sûre.
+
+**L'écriture est atomique.** Si un seul point de la sélection ne peut pas
+encaisser la correction — au-delà des `0,15 mm` d'écart avec le mesuré, ou hors
+des `±2 mm` — aucun ne bouge, et le message nomme le point qui bloque. Un bord
+à moitié déplacé ressemble à un bord corrigé sur la surface : le point resté en
+arrière ne se voit qu'à l'impression suivante.
+
+**Le point de référence est sauté, pas bloquant.** `X150 Y150` est le zéro du
+profil (ADR-046) et se trouve à l'intérieur de tout rectangle large. Refuser la
+correction du plateau entier à cause de lui serait absurde : il est simplement
+laissé en place, et le compte rendu le dit.
+
+**Une correction de groupe se défait d'une touche.** La pile d'annulation
+enregistre des groupes, pas des points. Défaire quarante points un par un
+serait pire que ne pas proposer le geste.
+
+Deux ajouts découlent de l'usage. Le bouton **Garder la couronne** réduit la
+sélection à son périmètre : sur `11 × 11`, sélectionner tout le plateau puis
+cliquer donne les quarante points du bord, et un rectangle réduit d'un cran
+donne la couronne suivante — exactement les deux formes où les défauts se
+lisent. Et une valeur tapée au clavier ne s'applique jamais qu'à la cellule
+sous le curseur : une valeur est absolue, l'écrire dans quarante points
+écraserait le relief que la palpation a mesuré.
+
 ## Conséquences
 
 - La retouche par zone (ADR-050) et la retouche par point coexistent : la

@@ -219,3 +219,71 @@ def test_a_burst_widens_the_step_by_whole_multiples():
     source = _www("app.mjs")
     assert "BURST_STEPS = [[16, 4], [6, 2]]" in source
     assert "BURST_WINDOW" in source
+
+
+# ----------------------------------------------------- selecting several points
+def test_shift_and_ctrl_build_a_selection():
+    # Correcting an edge means correcting eleven points, and doing it one at a
+    # time is how a correction ends up uneven.
+    source = _www("app.mjs")
+    mousedown = source.split('cell.addEventListener("mousedown"', 1)[1]
+    mousedown = mousedown.split("});", 1)[0]
+    assert "event.shiftKey" in mousedown and "extend(i, j)" in mousedown
+    assert "event.ctrlKey || event.metaKey" in mousedown and "toggle(i, j)" in mousedown
+
+
+def test_a_group_correction_is_all_or_nothing():
+    # Half a moved edge looks corrected on the surface and the point left behind
+    # is invisible until it prints, so commit() refuses before it writes.
+    source = _www("app.mjs")
+    body = source.split("function commit(changes)", 1)[1].split("\nfunction ", 1)[0]
+    refusal = body.index("refusal(i, j, value)")
+    first_write = body.index("state.points[j][i] = value")
+    assert refusal < first_write, "la validation doit precéder toute écriture"
+    assert "return false" in body[refusal:first_write]
+
+
+def test_the_reference_point_is_skipped_not_blocking():
+    # X150 Y150 is the profile's zero (ADR-046) and sits inside any wide
+    # rectangle. Refusing the whole group because of it would make correcting a
+    # full plate impossible.
+    source = _www("app.mjs")
+    body = source.split("function movable()", 1)[1].split("\nfunction ", 1)[0]
+    assert "isReference" in body and "filter" in body
+
+
+def test_one_group_move_undoes_in_one_keystroke():
+    # Undoing forty points one by one would be worse than not offering the group
+    # move at all, so the undo stack holds groups rather than single points.
+    source = _www("app.mjs")
+    body = source.split("function undo()", 1)[1].split("\nfunction ", 1)[0]
+    assert "const group = state.undo.pop()" in body
+    assert "for (const { i, j, value } of group)" in body
+
+
+def test_a_typed_value_never_lands_on_a_whole_selection():
+    # A typed value is absolute. Writing the same one into forty points would
+    # flatten the relief the probe measured.
+    source = _www("app.mjs")
+    body = source.split("function beginEdit(", 1)[1].split("\nfunction ", 1)[0]
+    assert "state.marks.size > 1" in body
+    assert "uniquement" in body
+
+
+def test_the_surface_pick_accounts_for_letterboxing():
+    # The canvas is object-fit: contain, so scaling by its box alone would
+    # offset every pick once the drawing is letterboxed.
+    source = _www("app.mjs")
+    assert "Math.min(\n    rect.width / ui.surface.width" in source
+    assert "object-fit: contain" in _www("styles.css")
+
+
+def test_the_surface_height_is_not_a_viewport_unit():
+    # A vh resolves to zero outside a real window and the surface collapsed to
+    # one pixel. A floor in pixels cannot do that.
+    import re
+    style = _www("styles.css")
+    canvas = style.split("\ncanvas {", 1)[1].split("}", 1)[0]
+    declarations = re.sub(r"/\*.*?\*/", "", canvas, flags=re.S)
+    assert "vh" not in declarations
+    assert "min-height" in declarations

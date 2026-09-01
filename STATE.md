@@ -27,9 +27,13 @@ mais aucune protection équivalente n'existe pendant une impression. Voir ADR-04
 Mise à jour prioritaire : le maillage se retouche à la main, point par point,
 depuis une page servie par l'imprimante sur le port `7130`. On clique un point,
 puis `+` ou `−` le corrige d'un pas choisi entre 0,005 / 0,010 / 0,020 /
-0,050 mm — maintenir la touche élargit le pas par multiples entiers. Un
-double-clic ouvre la saisie pour taper la valeur. La surface se redessine, un
-bouton enregistre. Aucune
+0,050 mm — maintenir la touche élargit le pas par multiples entiers. `Maj+clic`
+étend la sélection à tout un rectangle, `Ctrl+clic` ajoute ou retire un point,
+et `+` / `−` déplacent alors toute la sélection d'un coup, en tout ou rien : si
+un point ne peut pas encaisser la correction, aucun ne bouge. Un bouton réduit
+la sélection à sa couronne, la forme sous laquelle les défauts de bord se
+présentent. Un double-clic ouvre la saisie pour taper la valeur, sur cette
+cellule seulement. La surface se redessine, un bouton enregistre. Aucune
 écriture ne passe par le serveur : il dépose la matrice et `KCTRL_MESH_APPLY`
 valide, sauvegarde puis persiste, donc la mémoire de Klipper et `printer.cfg`
 ne peuvent pas diverger. Chaque enregistrement laisse la matrice précédente

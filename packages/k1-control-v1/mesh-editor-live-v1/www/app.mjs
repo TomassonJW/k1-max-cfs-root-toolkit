@@ -26,6 +26,7 @@ const ui = {
   profile: el("profile"), step: el("step"), grid: el("grid"),
   surface: el("surface"), status: el("status"),
   minus: el("minus"), plus: el("plus"), roStep: el("ro-step"),
+  ring: el("ring"), roCount: el("ro-count"),
   save: el("save"), revert: el("revert"), reload: el("reload"),
   badgeActive: el("badge-active"), badgeZ: el("badge-z"),
   statMin: el("stat-min"), statMax: el("stat-max"),
@@ -39,7 +40,12 @@ const state = {
   name: null, nx: 0, ny: 0,
   minX: 0, maxX: 0, minY: 0, maxY: 0,
   points: [], origin: [],
+  // selected is the cell under the cursor - the one the readout describes and
+  // the one a typed value lands in. anchor is where a rectangle selection
+  // started. marks is everything a nudge moves, and it always holds selected.
   selected: { i: 0, j: 0 },
+  anchor: { i: 0, j: 0 },
+  marks: new Set(["0:0"]),
   editing: false,
   undo: [],
   printerState: null,
@@ -129,7 +135,11 @@ function buildGrid() {
       cell.addEventListener("mousedown", (event) => {
         event.preventDefault();
         commitEdit();
-        select(i, j);
+        // Spreadsheet gestures, because those are the ones already in the
+        // fingers: Shift stretches a rectangle, Ctrl adds or drops one point.
+        if (event.shiftKey) extend(i, j);
+        else if (event.ctrlKey || event.metaKey) toggle(i, j);
+        else select(i, j);
         ui.grid.focus();
       });
       cell.addEventListener("dblclick", (event) => {
@@ -158,6 +168,7 @@ function paint() {
       cell.style.background = ramp(value, low, high);
       cell.classList.toggle("edited", Math.abs(value - state.origin[j][i]) > 1e-9);
       cell.classList.toggle("locked", isReference(i, j));
+      cell.classList.toggle("in-selection", marked(i, j));
       cell.classList.toggle(
         "selected", i === state.selected.i && j === state.selected.j);
     }
@@ -192,26 +203,110 @@ function readout() {
   ui.roValue.textContent = fmt(value);
   const delta = value - before;
   ui.roDelta.textContent = Math.abs(delta) < 1e-9 ? "—" : fmt(delta);
-  const locked = isReference(i, j);
-  ui.roStep.textContent = (locked ? "—" : Number(ui.step.value).toFixed(3));
-  ui.minus.disabled = locked;
-  ui.plus.disabled = locked;
+  const count = movable().length;
+  ui.roCount.textContent = count > 1 ? `${count} points` : "1 point";
+  ui.roStep.textContent = count ? Number(ui.step.value).toFixed(3) : "—";
+  ui.minus.disabled = count === 0;
+  ui.plus.disabled = count === 0;
+  ui.ring.disabled = markedCells().length < 2;
 }
 
 /* ------------------------------------------------------------------ selection */
-function select(i, j) {
+const mark = (i, j) => `${i}:${j}`;
+
+function marked(i, j) {
+  return state.marks.has(mark(i, j));
+}
+
+function markedCells() {
+  const out = [];
+  for (const key of state.marks) {
+    const [i, j] = key.split(":").map(Number);
+    if (i >= 0 && i < state.nx && j >= 0 && j < state.ny) out.push({ i, j });
+  }
+  return out;
+}
+
+function movable() {
+  // The probing point is the profile's zero (ADR-046). It sits inside any wide
+  // rectangle, so a group correction skips it rather than being refused - being
+  // unable to correct a whole edge because its middle is locked would be absurd.
+  return markedCells().filter(({ i, j }) => !isReference(i, j));
+}
+
+function place(i, j) {
   state.selected = {
     i: Math.min(state.nx - 1, Math.max(0, i)),
     j: Math.min(state.ny - 1, Math.max(0, j)),
   };
-  paint();
   const cell = cellAt(state.selected.i, state.selected.j);
   if (cell) cell.scrollIntoView({ block: "nearest", inline: "nearest" });
 }
 
-function move(di, dj) {
+function select(i, j) {
+  place(i, j);
+  state.anchor = { ...state.selected };
+  state.marks = new Set([mark(state.selected.i, state.selected.j)]);
+  paint();
+}
+
+function extend(i, j) {
+  // The rectangle always redraws from the anchor, so walking the cursor around
+  // grows and shrinks the same selection instead of accumulating leftovers.
+  place(i, j);
+  const marks = new Set();
+  const [i0, i1] = [state.anchor.i, state.selected.i].sort((a, b) => a - b);
+  const [j0, j1] = [state.anchor.j, state.selected.j].sort((a, b) => a - b);
+  for (let y = j0; y <= j1; y += 1) {
+    for (let x = i0; x <= i1; x += 1) marks.add(mark(x, y));
+  }
+  state.marks = marks;
+  paint();
+}
+
+function toggle(i, j) {
+  place(i, j);
+  state.anchor = { ...state.selected };
+  const key = mark(state.selected.i, state.selected.j);
+  if (state.marks.has(key) && state.marks.size > 1) state.marks.delete(key);
+  else state.marks.add(key);
+  // The cursor must stay inside the selection or the readout would describe a
+  // point that no + or - is about to move.
+  if (!state.marks.has(key)) {
+    const first = markedCells()[0];
+    if (first) place(first.i, first.j);
+  }
+  paint();
+}
+
+function keepOnlyRing() {
+  // A ring is the shape defects actually come in: the outer edge of the plate,
+  // then the one just inside it. A rectangle cannot draw one, and clicking
+  // eighty interior points out of a full grid is not an option.
+  const cells = markedCells();
+  if (cells.length < 2) return;
+  const is = cells.map((c) => c.i);
+  const js = cells.map((c) => c.j);
+  const i0 = Math.min(...is); const i1 = Math.max(...is);
+  const j0 = Math.min(...js); const j1 = Math.max(...js);
+  const marks = new Set();
+  for (const { i, j } of cells) {
+    if (i === i0 || i === i1 || j === j0 || j === j1) marks.add(mark(i, j));
+  }
+  if (!marks.size) return;
+  state.marks = marks;
+  if (!marked(state.selected.i, state.selected.j)) {
+    const first = markedCells()[0];
+    if (first) place(first.i, first.j);
+  }
+  paint();
+  say(`couronne : ${marks.size} point(s) retenus, l'intérieur est relâché`, "good");
+}
+
+function move(di, dj, widen = false) {
   commitEdit();
-  select(state.selected.i + di, state.selected.j + dj);
+  if (widen) extend(state.selected.i + di, state.selected.j + dj);
+  else select(state.selected.i + di, state.selected.j + dj);
   ui.grid.focus();
 }
 
@@ -221,6 +316,14 @@ function beginEdit(seed = null) {
   if (state.editing || isReference(i, j)) return;
   const cell = cellAt(i, j);
   if (!cell) return;
+  if (state.marks.size > 1) {
+    // A typed value is absolute. Writing the same one into forty points would
+    // flatten the relief the probe measured, so typing stays on this one cell
+    // and the selection survives for the next nudge.
+    say(`saisie sur X${xsOf()[i].toFixed(0)} Y${ysOf()[j].toFixed(0)} `
+      + `uniquement ; les ${state.marks.size} points restent sélectionnés `
+      + "pour les touches + et −", "busy");
+  }
   state.editing = true;
   const input = document.createElement("input");
   input.type = "text";
@@ -288,32 +391,46 @@ function commitEdit() {
   return apply(i, j, value);
 }
 
-function apply(i, j, value) {
-  const rounded = Math.round(value * 100000) / 100000;
+function refusal(i, j, value) {
   if (isReference(i, j)) {
-    say("X150 Y150 est le zéro de référence du profil, il ne se retouche pas ; "
-      + "c'est le décalage Z qui déplace tout le plateau", "error");
-    paint();
-    return false;
+    return "X150 Y150 est le zéro de référence du profil, il ne se retouche "
+      + "pas ; c'est le décalage Z qui déplace tout le plateau";
   }
-  if (Math.abs(rounded) > 2) {
-    say(`${fmt(rounded)} mm sort des limites ±2 mm`, "error");
-    paint();
-    return false;
+  if (Math.abs(value) > 2) return `${fmt(value)} mm sort des limites ±2 mm`;
+  const gap = value - state.origin[j][i];
+  if (Math.abs(gap) > MAX_MOVE + 1e-9) {
+    return `X${xsOf()[i].toFixed(0)} Y${ysOf()[j].toFixed(0)} : ${fmt(gap)} mm `
+      + `d'écart avec le mesuré, au-delà de ${MAX_MOVE} mm l'imprimante `
+      + "refusera l'enregistrement";
   }
-  const move = rounded - state.origin[j][i];
-  if (Math.abs(move) > MAX_MOVE + 1e-9) {
-    say(`${fmt(move)} mm d'écart avec le mesuré : au-delà de ${MAX_MOVE} mm `
-      + "l'imprimante refusera l'enregistrement", "error");
-    paint();
-    return false;
+  return null;
+}
+
+/* Writes are atomic on purpose. If one point of a group cannot take the
+ * correction, none of them do: half a moved edge looks like a corrected edge on
+ * the surface, and the point left behind is invisible until it prints. */
+function commit(changes) {
+  for (const { i, j, value } of changes) {
+    const refused = refusal(i, j, value);
+    if (refused) { say(refused, "error"); paint(); return false; }
   }
-  if (Math.abs(rounded - state.points[j][i]) > 1e-9) {
-    state.undo.push({ i, j, value: state.points[j][i] });
-    state.points[j][i] = rounded;
+  const undoGroup = [];
+  for (const { i, j, value } of changes) {
+    if (Math.abs(value - state.points[j][i]) <= 1e-9) continue;
+    undoGroup.push({ i, j, value: state.points[j][i] });
+  }
+  if (undoGroup.length) {
+    state.undo.push(undoGroup);
+    for (const { i, j, value } of changes) state.points[j][i] = value;
   }
   paint();
   return true;
+}
+
+const round5 = (value) => Math.round(value * 100000) / 100000;
+
+function apply(i, j, value) {
+  return commit([{ i, j, value: round5(value) }]);
 }
 
 function burstFactor(direction, i, j, now) {
@@ -336,22 +453,42 @@ function burstFactor(direction, i, j, now) {
 
 function nudge(direction) {
   commitEdit();
+  const cells = movable();
+  if (!cells.length) {
+    say("X150 Y150 est le zéro de référence, il ne se déplace pas", "error");
+    return;
+  }
   const { i, j } = state.selected;
   const step = Number(ui.step.value);
   const now = (typeof performance === "object" ? performance.now() : Date.now());
   const factor = burstFactor(direction, i, j, now);
+  const delta = direction * step * factor;
   const before = state.points[j][i];
-  if (!apply(i, j, before + direction * step * factor)) return;
+  if (!commit(cells.map((cell) => ({
+    ...cell, value: round5(state.points[cell.j][cell.i] + delta),
+  })))) return;
   const suffix = factor > 1 ? ` (rafale : pas ×${factor})` : "";
-  say(`X${xsOf()[i].toFixed(0)} Y${ysOf()[j].toFixed(0)} : `
-    + `${fmt(before)} → ${fmt(state.points[j][i])}${suffix}`, "good");
+  const skipped = markedCells().length - cells.length;
+  if (cells.length === 1) {
+    say(`X${xsOf()[i].toFixed(0)} Y${ysOf()[j].toFixed(0)} : `
+      + `${fmt(before)} → ${fmt(state.points[j][i])}${suffix}`, "good");
+  } else {
+    say(`${cells.length} points déplacés de ${fmt(delta)} mm${suffix}`
+      + (skipped ? " (X150 Y150 laissé en place)" : ""), "good");
+  }
 }
 
 function undo() {
-  const last = state.undo.pop();
-  if (!last) { say("plus rien à défaire", "busy"); return; }
-  state.points[last.j][last.i] = last.value;
-  select(last.i, last.j);
+  // One group correction undoes in one keystroke. Undoing forty points one by
+  // one would be worse than not offering the group move at all.
+  const group = state.undo.pop();
+  if (!group) { say("plus rien à défaire", "busy"); return; }
+  for (const { i, j, value } of group) state.points[j][i] = value;
+  place(group[0].i, group[0].j);
+  state.anchor = { ...state.selected };
+  state.marks = new Set(group.map(({ i, j }) => mark(i, j)));
+  paint();
+  say(`${group.length} point(s) remis à leur valeur précédente`, "good");
 }
 
 /* -------------------------------------------------------------------- surface */
@@ -416,11 +553,21 @@ function drawSurface() {
   const chosen = at(state.selected.i, state.selected.j);
   for (const node of nodes) {
     const edited = Math.abs(node.value - state.origin[node.j][node.i]) > 1e-9;
-    if (!edited) continue;
-    context.beginPath();
-    context.arc(node.x, node.y, 3.2, 0, Math.PI * 2);
-    context.fillStyle = "#ffd24a";
-    context.fill();
+    if (edited) {
+      context.beginPath();
+      context.arc(node.x, node.y, 3.2, 0, Math.PI * 2);
+      context.fillStyle = "#ffd24a";
+      context.fill();
+    }
+    // The selection has to read on the surface too: a whole edge picked in the
+    // grid is only obviously the right edge once it is seen in perspective.
+    if (marked(node.i, node.j)) {
+      context.beginPath();
+      context.arc(node.x, node.y, 5, 0, Math.PI * 2);
+      context.strokeStyle = "rgba(255, 255, 255, 0.75)";
+      context.lineWidth = 1.5;
+      context.stroke();
+    }
   }
   if (chosen) {
     context.beginPath();
@@ -443,10 +590,14 @@ function drawSurface() {
 
 ui.surface.addEventListener("mousedown", (event) => {
   if (!state.points.length) return;
+  // The canvas is object-fit: contain, so on a short window the drawing is
+  // letterboxed inside its box. Scaling by the box alone would offset every
+  // pick, and picking the wrong vertex on a bed mesh is not a visible mistake.
   const rect = ui.surface.getBoundingClientRect();
-  const scale = ui.surface.width / rect.width;
-  const x = (event.clientX - rect.left) * scale;
-  const y = (event.clientY - rect.top) * scale;
+  const fit = Math.min(
+    rect.width / ui.surface.width, rect.height / ui.surface.height);
+  const x = (event.clientX - rect.left - (rect.width - ui.surface.width * fit) / 2) / fit;
+  const y = (event.clientY - rect.top - (rect.height - ui.surface.height * fit) / 2) / fit;
   const { nodes } = project(ui.surface.width, ui.surface.height);
   let best = null;
   let bestDistance = 26 * 26;
@@ -454,7 +605,12 @@ ui.surface.addEventListener("mousedown", (event) => {
     const distance = (node.x - x) ** 2 + (node.y - y) ** 2;
     if (distance <= bestDistance) { best = node; bestDistance = distance; }
   }
-  if (best) { commitEdit(); select(best.i, best.j); ui.grid.focus(); }
+  if (!best) return;
+  commitEdit();
+  if (event.shiftKey) extend(best.i, best.j);
+  else if (event.ctrlKey || event.metaKey) toggle(best.i, best.j);
+  else select(best.i, best.j);
+  ui.grid.focus();
 });
 
 /* ------------------------------------------------------------------ keyboard */
@@ -465,7 +621,21 @@ ui.grid.addEventListener("keydown", (event) => {
     ArrowLeft: [-1, 0], ArrowRight: [1, 0],
     ArrowUp: [0, 1], ArrowDown: [0, -1],
   };
-  if (moves[key]) { event.preventDefault(); move(...moves[key]); return; }
+  if (moves[key]) {
+    event.preventDefault();
+    move(moves[key][0], moves[key][1], event.shiftKey);
+    return;
+  }
+  if ((event.ctrlKey || event.metaKey) && key.toLowerCase() === "a") {
+    event.preventDefault();
+    state.anchor = { i: 0, j: 0 };
+    extend(state.nx - 1, state.ny - 1);
+    say(`plateau entier sélectionné : ${movable().length} points déplaçables`,
+      "good");
+    return;
+  }
+  if (key === " ") { event.preventDefault(); toggle(state.selected.i, state.selected.j); return; }
+  if (key === "Escape") { event.preventDefault(); select(state.selected.i, state.selected.j); return; }
   if (key === "Enter") { event.preventDefault(); beginEdit(); return; }
   // PageUp/PageDown are there for the French keyboard, where + costs a Shift.
   if (key === "+" || key === "=" || key === "PageUp") {
@@ -476,8 +646,12 @@ ui.grid.addEventListener("keydown", (event) => {
   }
   if (key === "Delete" || key === "Backspace") {
     event.preventDefault();
-    const { i, j } = state.selected;
-    apply(i, j, state.origin[j][i]);
+    const cells = movable().filter(
+      ({ i, j }) => Math.abs(state.points[j][i] - state.origin[j][i]) > 1e-9);
+    if (!cells.length) { say("rien à annuler ici, déjà au mesuré", "busy"); return; }
+    if (commit(cells.map(({ i, j }) => ({ i, j, value: state.origin[j][i] })))) {
+      say(`${cells.length} point(s) revenus à la valeur mesurée`, "good");
+    }
     return;
   }
   if ((event.ctrlKey || event.metaKey) && key.toLowerCase() === "z") {
@@ -517,6 +691,8 @@ function adopt(profile) {
   state.origin = profile.points.map((row) => row.map(Number));
   state.undo = [];
   state.selected = { i: 0, j: state.ny - 1 };
+  state.anchor = { ...state.selected };
+  state.marks = new Set([mark(state.selected.i, state.selected.j)]);
   ui.badgeActive.hidden = !profile.active;
   const z = state.zOffsets[profile.name.toLowerCase()];
   ui.badgeZ.hidden = z === undefined;
@@ -590,6 +766,7 @@ for (const [button, direction] of [[ui.minus, -1], [ui.plus, 1]]) {
   });
 }
 ui.step.addEventListener("change", () => { readout(); ui.grid.focus(); });
+ui.ring.addEventListener("click", () => { keepOnlyRing(); ui.grid.focus(); });
 
 ui.profile.addEventListener("change", () => {
   loadProfile(ui.profile.value).catch((error) => say(error.message, "error"));
