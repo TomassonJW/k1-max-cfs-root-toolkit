@@ -36,6 +36,28 @@ La suite complète passe à `874` tests, `1` échec — celui ci-dessus — cont
 `26,5 °C`, cibles à zéro, `X/Y` référencés, `Z` non référencé, tête parquée en
 `X100 Y150`, `T1A` engagé, deux capteurs filament actifs, aucune route stock.
 
+## Verrou CFS et sortie de secours
+
+Le 1er septembre, aucun retrait de filament n'était possible : le composant
+`k1_control_cfs_direct_owner`, posé `enabled: true` avec
+`stock_commands_blocked: true`, refuse toute commande `BOX_*`, et son propre
+retrait n'a jamais été implémenté. Onze refus `stock_effect_command_blocked`
+ont été capturés, y compris sur les tentatives manuelles depuis l'écran. Le
+firmware Creality n'est pas en cause. Voir ADR-043 et le document 52.
+
+**Sortie de secours officielle**, dans `printer.cfg` :
+
+```
+[include k1-control-cfs-direct-owner-disabled-v1.cfg]
+[include k1-control-stock-derived-cycle-owner-disabled-v1.cfg]
+[include k1-control-stock-geometry-handoff-disabled-v1.cfg]
+```
+
+puis redémarrage Klipper. Les includes `k1-control-z-mesh.cfg` et
+`k1-control-calibration-path.cfg` restent en place : le Z et le mesh sont
+conservés. Retour arrière : remettre les trois `-active-`. Sauvegarde machine :
+`printer.cfg.bak-before-cfs-unblock`.
+
 ## Prochaine action
 
 Retrait intégré `T1A` sur le signal console, puis nettoyage manuel par Thomas,
