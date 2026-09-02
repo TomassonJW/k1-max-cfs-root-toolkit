@@ -1,7 +1,7 @@
 # HANDOFF — index de reprise
 
-Mise à jour : 2026-09-02, après la session « le popup de correspondance des
-filaments » puis « le Z accepté dans l'éditeur de maillage ».
+Mise à jour : 2026-09-02, après la session « le Z accepté dans l'éditeur de
+maillage » puis le diagnostic des ondulations des couches 2 et 3.
 
 ## Reprise immédiate
 
@@ -31,13 +31,20 @@ vigueur sur la machine — celui que l'on vient de trouver à l'œil pendant une
 première couche — et « Enregistrer Z » le garde pour ce profil. Il s'applique au
 démarrage d'impression suivant. Doc 56 et ADR-057.
 
-**Les ondulations sur les longues lignes viennent du maillage, pas d'un réglage
-d'impression.** Le `11 × 11` en vigueur porte `0,08 mm` d'ondulation crête à
-crête sur 60 mm de ligne droite, pour une couche de `0,20 mm` — 39 % de ses
-écarts entre points voisins dépassent `0,030 mm`. L'interpolation est hors de
-cause (dépassement mesuré : `0,007 mm`). Reste à trancher entre un palpeur qui
-bruite et une tôle qui ne repose pas à plat : nettoyage, repose de la feuille,
-repalpage du même maillage, comparaison. Doc 58.
+**Les ondulations ne viennent pas du maillage.** Longueur d'onde mesurée à la
+règle : `3 à 10 mm`, là où les points du maillage sont espacés de 29 mm. Le
+document 58 se trompait de cause. Ce qui reste vrai du 58 : le `11 × 11` porte
+bien `0,08 mm` d'ondulation crête à crête sur 60 mm, et un repalpage après
+nettoyage sous la feuille magnétique reste utile — mais pour le maillage
+lui-même, pas pour ce défaut-là.
+
+**L'input shaping de la machine n'est qu'à moitié calibré.** `ei` à `57,2 Hz`
+sur les deux axes au dixième près : la macro d'usine ne mesure que **Y** et
+recopie sur X. L'accéléromètre est monté en permanence, mesurer X ne demande
+aucun matériel. Modifier le maillage ou le Z n'a aucun effet sur ce réglage.
+Attention : la disparition du défaut à la couche 4 ne prouve pas la vibration —
+`bottom_shell_layers: 3` fait qu'il n'y a plus de surface pleine à regarder, et
+`slow_down_layers: 3` fait de la couche 4 la première à pleine vitesse. Doc 59.
 
 **La surextrusion à l'arrivée du remplissage sur les parois est diagnostiquée**,
 et ce n'est pas le maillage : le `pressure_advance_smooth_time` de `0,040 s` est
@@ -215,8 +222,13 @@ D'abord, deux gestes courts qui ne demandent pas la machine chaude :
 - **Passer `pressure_advance_smooth_time` à `0,020 s`**, puis une tour de
   réglage du Pressure Advance pour le PLA. Doc 57 porte le calcul et l'ordre
   des opérations.
-- **Mesurer à la règle la longueur d'onde des vagues** sur la dernière pièce :
-  `≈ 30 mm` désigne le maillage, `≈ 5 mm` la résonance. Doc 58, section 8.
+- **Passer l'ongle sur les couches 2 et 3** de la dernière pièce : si ça
+  accroche, c'est de la vibration et il faut calibrer X ; si c'est plat au
+  toucher, c'est le débit qui module et le shaper n'y changera rien. Doc 59.
+- **Mesurer réellement X** : `SHAPER_CALIBRATE AXIS=x` puis `AXIS=y`, machine à
+  l'arrêt, accord de Thomas — opération physique et bruyante. Appliquer avec
+  `SET_INPUT_SHAPER` et reporter à la main dans le bloc `#*#` : `CXSAVE_CONFIG`
+  est la variante Creality de `SAVE_CONFIG`, interdite ici. Doc 59.
 - **Nettoyer sous la feuille magnétique, la reposer, repalper le `11 × 11`** et
   comparer au maillage en vigueur. C'est l'expérience qui tranche. Doc 58.
 
