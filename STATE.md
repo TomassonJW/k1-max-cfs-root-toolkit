@@ -1648,3 +1648,28 @@ Une plaque n'ondule pas de `±0,04 mm` tous les 29 mm : ce bruit est ajouté par
 la mesure, soit par le palpeur — qui est la buse — soit par une feuille
 magnétique qui ne repose pas à plat. Rien n'a été corrigé ; l'expérience qui
 tranche est un repalpage après nettoyage. Doc 58.
+
+## Mise à jour 2026-09-02 — les ondulations ne viennent pas du maillage
+
+Longueur d'onde mesurée à la règle sur la pièce : **3 à 10 mm**. Les points du
+maillage sont espacés de 29 mm, il ne peut rien produire de plus serré. Le
+maillage est écarté ; le document 58 se trompait de cause.
+
+L'input shaping en vigueur n'est pas un calibrage complet : `ei` à `57,2 Hz` sur
+les deux axes, à 0,1 Hz près. La macro d'usine `inputshaper` ne lance
+`SHAPER_CALIBRATE` que sur **Y**, et la macro `autotune_shapers` impose `'ei'`
+avant toute mesure. La fréquence de X est une recopie de celle de Y, jamais
+mesurée. L'accéléromètre `[adxl345]` est monté en permanence sur `nozzle_mcu` et
+`[resonance_tester]` est configuré : la mesure de X ne demande aucun matériel.
+
+Modifier le maillage n'a aucun effet sur l'input shaping — carte d'altitudes en
+Z d'un côté, filtre de mouvement X/Y de l'autre. Le décalage du moteur Z non
+plus, le Z n'étant pas filtré.
+
+La disparition du défaut à la couche 4 n'est pas expliquée par la vibration :
+`bottom_shell_layers: 3` fait qu'il n'y a plus de surface pleine à regarder à
+partir de là, et `slow_down_layers: 3` fait de la couche 4 la **première** à
+pleine vitesse — un défaut de vitesse y serait pire, pas absent.
+
+Aucune mesure de résonance lancée, impression en cours. Les fréquences réelles
+de X et Y restent inconnues. Doc 59.
