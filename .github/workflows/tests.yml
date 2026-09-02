@@ -1,0 +1,103 @@
+name: tests
+
+# Runs the suite on every push and every pull request, so a green tick on the
+# pull request is GitHub's verdict rather than a claim made in a report.
+
+on:
+  push:
+    branches: ["**"]
+  pull_request:
+
+env:
+  # Sixteen modules assert against raw printer captures stored under
+  # inventory/raw/, which .gitignore deliberately keeps out of the repository:
+  # they hold machine identity, private snapshots and multi-megabyte G-code.
+  # A clean checkout does not have them, so those modules cannot run here and
+  # are not being silenced - they run on the machine that holds the evidence.
+  # Removing a line below only makes sense if that module's fixtures become
+  # versioned.
+  EVIDENCE_BACKED: >-
+    --ignore=tests/test_best_current_mesh_restore_v1.py
+    --ignore=tests/test_cfs_cutter_purge_integrated_r2_offline_v1.py
+    --ignore=tests/test_cfs_owner_exclusion_guard_live_effect_v1.py
+    --ignore=tests/test_cfs_owner_exclusion_guard_live_read_only_v1.py
+    --ignore=tests/test_cfs_owner_observability_live_read_only_v2.py
+    --ignore=tests/test_cfs_s12_owner_preflight_v1.py
+    --ignore=tests/test_cfs_stock_derived_cycle_owner_install_disabled_v1.py
+    --ignore=tests/test_cfs_stock_unload_guard_adapter_live_read_only_v1.py
+    --ignore=tests/test_cfs_stock_unload_guard_live_preflight_v1.py
+    --ignore=tests/test_k1_control_clean_motion_v1.py
+    --ignore=tests/test_k1_control_robust_mesh_activation_v1.py
+    --ignore=tests/test_k1_read_only_qualification_v1.py
+    --ignore=tests/test_long_checkpoint_job_v1.py
+    --ignore=tests/test_start_sequence_owner_physical_keep_correct_t1a_v1.py
+    --ignore=tests/test_start_sequence_owner_safety_r2.py
+    --ignore=tests/test_z_thermal_stabilization_diagnostic_v1.py
+
+  # Two tests are red on purpose. They are not broken tests: each reports a real
+  # divergence in the off-printer engine, and repairing the test rather than the
+  # engine would erase the signal.
+  #
+  #   test_all_canonical_scenarios_are_implemented_once
+  #       the design contract requires end_full_unload while the engine still
+  #       models end_keep_engaged
+  #   test_unload_requires_head_sensor_to_clear
+  #       DirectCfsOwner no longer raises head_sensor_not_cleared_after_unload
+  DELIBERATE_RED_1: "tests/test_job_lifecycle_offline_v1.py::JobLifecycleOfflineV1Tests::test_all_canonical_scenarios_are_implemented_once"
+  DELIBERATE_RED_2: "tests/test_cfs_direct_owner_offline_v1.py::test_unload_requires_head_sensor_to_clear"
+
+jobs:
+  python:
+    name: pytest
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.10"
+
+      - name: Install the two third party dependencies the tests need
+        run: python -m pip install --disable-pip-version-check pytest jinja2
+
+      - name: Suite, minus the evidence backed modules and the two deliberate failures
+        run: |
+          python -m pytest -q $EVIDENCE_BACKED \
+            --deselect "$DELIBERATE_RED_1" \
+            --deselect "$DELIBERATE_RED_2"
+
+      # An exclusion nobody re-examines becomes a permanent blind spot. If one
+      # of the two starts passing, the divergence it reported has been closed
+      # and its line has to go, so this step fails until it does.
+      - name: The deliberate failures must still be failing
+        run: |
+          status=0
+          for target in "$DELIBERATE_RED_1" "$DELIBERATE_RED_2"; do
+            if python -m pytest -q "$target" > /dev/null 2>&1; then
+              echo "$target now passes: remove it from the deselect list."
+              status=1
+            fi
+          done
+          exit $status
+
+      - name: Say what this run did not cover
+        if: always()
+        run: |
+          echo "### Not covered by CI" >> "$GITHUB_STEP_SUMMARY"
+          echo "" >> "$GITHUB_STEP_SUMMARY"
+          echo "$EVIDENCE_BACKED" | tr ' ' '\n' | grep -c "^--ignore=" \
+            | xargs -I {} echo "{} modules assert against raw printer captures under inventory/raw/, which is not versioned. They run only on the machine holding the evidence." \
+            >> "$GITHUB_STEP_SUMMARY"
+
+  node:
+    name: mesh editor UI
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+
+      - name: Mesh editor front end
+        run: node --test tests/mesh_editor_ui.test.mjs

@@ -22,7 +22,10 @@ class ProductionControlContractTests(unittest.TestCase):
         return next(index for index, stage in enumerate(self.sequence) if stage["id"] == stage_id)
 
     def test_contract_is_complete_offline_and_never_authorizes_printer_mutation(self) -> None:
-        self.assertEqual(self.contract["status"], "offline_system_complete_production_closed")
+        self.assertEqual(
+            self.contract["status"],
+            "direct_CFS_physical_v1_closed_before_effect_integrated_cutter_purge_successor_offline",
+        )
         self.assertFalse(self.contract["printer_mutation_authorized"])
         self.assertFalse(
             self.contract["job_lifecycle_offline"]["real_connector_present"]
@@ -129,7 +132,10 @@ class ProductionControlContractTests(unittest.TestCase):
 
     def test_initial_filament_branches_keep_change_load_or_block(self) -> None:
         branches = self.contract["initial_filament_branches"]
-        self.assertEqual(branches["keep_correct"][:2], ["do_not_cut", "do_not_unload"])
+        self.assertEqual(
+            branches["keep_correct"][:2],
+            ["reconcile_route_without_motor_if_needed", "direct_unload_before_clean"],
+        )
         self.assertIn("visible_purge", branches["load_absent"])
         self.assertIn("explicit_transition_purge", branches["change_wrong"])
         self.assertIn("block", branches["unknown"])
@@ -150,18 +156,19 @@ class ProductionControlContractTests(unittest.TestCase):
         self.assertEqual(end["default_candidate"], "full_unload_and_rewind")
         self.assertTrue(end["default_requires_physical_qualification"])
         self.assertFalse(end["automatic_cut_and_unload_by_habit"])
-        self.assertTrue(end["normal_end_cut_and_unload_required"])
+        self.assertTrue(end["normal_end_direct_full_unload_required"])
+        self.assertFalse(end["normal_end_cut_and_unload_required"])
         self.assertTrue(end["explicit_material_unload_temperature_required"])
         self.assertTrue(end["single_attempt_no_retry"])
         self.assertTrue(end["safe_park_before_motor_release"])
         self.assertEqual(end["manual_action"], "Clean nozzle only before a future contact reference")
         self.assertFalse(end["unattended_delayed_reheat"])
-        self.assertIn("filament_state_engaged_known_none_or_explicitly_unknown", end["final_state"])
+        self.assertIn("filament_state_known_empty_and_rewound", end["final_state"])
 
     def test_calibration_policy_distinguishes_contact_and_extrusion_work(self) -> None:
         policy = self.contract["calibration_policy"]
         self.assertIn("manual_clean_default", policy["contact_z_or_mesh"])
-        self.assertIn("unload_recommended", policy["contact_z_or_mesh_filament"])
+        self.assertIn("direct_unload", policy["contact_z_or_mesh_filament"])
         self.assertEqual(policy["flow_temperature_retraction_pressure_advance"], "resolved_filament_required")
         self.assertIn("cold_no_extrusion", policy["brush"])
 
@@ -189,7 +196,7 @@ class ProductionControlContractTests(unittest.TestCase):
             "cross_cfs_change",
             "pause_normal",
             "tall_part_blocks_rear_path",
-            "end_keep_engaged",
+            "end_full_unload",
             "manual_disengage_and_clean",
             "cfs_late_220_rewrite",
             "cancel_and_reboot_each_phase",

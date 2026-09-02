@@ -1,12 +1,193 @@
 # HANDOFF — index de reprise
 
-La passation canonique actuelle est :
+Mise à jour : 2026-09-02, après la session « purge de démarrage, édition du
+maillage au pas, surface imprimable réelle ».
 
-`HANDOFF-CUTTER-SENSOR-PAUSE-2026-09-01.md`
+## État réel
 
-Elle contient l'état physique exact, les preuves, les limites, la liste complète
-des gestes humains restants et la prochaine mission unique. Le contenu ci-dessous
-est conservé uniquement comme archive historique.
+La machine est au repos et cohérente avec le dépôt. Relevé à la clôture :
+Klipper `ready`, impression `standby`, chauffes à `0`, maillage actif
+`k1_p001_t055_r001_n11x11`. Les empreintes des deux fichiers que nous possédons
+sur la machine sont identiques à celles du dépôt :
+
+```
+k1-control-owned-start-print-v2.cfg   cf93f361b31660ae7ef3841a3d1a4e55
+kctrl_wait.py                         b8a680c3cdd5c1faac0f066920eeb548
+```
+
+Suite complète en local : `1006` verts, `2` rouges laissés volontairement (voir
+plus bas).
+
+Une CI GitHub tourne désormais à chaque poussée et sur chaque PR
+(`.github/workflows/tests.yml`) : `pytest` et les tests du front de l'éditeur
+de maillage. Elle couvre `834` tests. Elle **ne peut pas** couvrir seize
+modules qui s'appuient sur les captures brutes de `inventory/raw/`, que
+`.gitignore` garde volontairement hors du dépôt — identité machine, relevés
+privés, G-code de plusieurs mégaoctets. Ces seize-là ne tournent que sur la
+machine qui détient les preuves, et ils sont nommés un par ligne dans le
+workflow plutôt que masqués derrière un motif.
+
+### Ce que cette session a fermé
+
+**La purge de démarrage est sous notre contrôle et bornée des deux côtés.**
+Rien ne pousse de filament tant que le capteur de tête ne le voit pas :
+`KCTRL_WAIT_FILAMENT SENSOR=filament_sensor_2 TIMEOUT=15`, une commande Python
+et non un macro — un `G4` dans un macro appelé depuis `START_PRINT` n'est jamais
+mis en file, ce qui a été mesuré et documenté dans l'ADR-053. La buse est
+chauffée et attendue avant la première poussée. Le complément de purge vaut
+`120 mm` : `200` donnent la boule qui se décroche, `180` débordent du bac,
+`120` est le plafond retenu par Thomas. Réglable à chaud par
+`SET_GCODE_VARIABLE MACRO=_KCTRL_PURGE_BALL VARIABLE=purge_mm VALUE=<n>`.
+
+**L'éditeur de maillage corrige au pas et par sélection multiple.** Pas de
+`0,005` / `0,01` / `0,02` / `0,05`, accélération à la répétition, rectangle avec
+`Maj`, ajout et retrait avec `Ctrl`, anneau, annulation par groupe. ADR-052.
+
+**La surface imprimable réelle est établie** : `X 0 → 300`, `Y 0 → 295`,
+`Z 0 → 300`. La limite `Y` est appliquée ligne par ligne pendant l'impression
+dès qu'un CFS est déclaré et met l'impression en pause. Elle n'est pas relevée,
+et pourquoi est écrit dans l'ADR-054.
+
+### Écarts ouverts, mesurés
+
+- **`Tn_extrude_temp: 220` de `box.cfg` reste imposé par le CFS.** Coût chiffré
+  le 2 septembre : environ `27 s` perdues à chaque démarrage à redescendre de
+  `220` vers la température du G-code, plus une mini-purge parasite de quelques
+  millimètres à `220 °C` avant la nôtre. C'est la première tranche de fond.
+- **Le rapport de purge ne mesure rien d'utile.** Il a affiché `-2 mm` : les
+  routines box émettent des `G92 E0` dans l'étape matière et l'axe extrudeur
+  repart de zéro sous le repère. Il le dit désormais au lieu d'afficher un
+  chiffre faux. Le compteur honnête est la position du moteur pas à pas, que
+  `G92` ne touche pas, et se lit en Python.
+- **Le Z accepté est stocké en un seul enregistrement global**, pas par profil
+  de mesh. Préalable bloquant à toute campagne multi-températures.
+- **Chaque `FIRMWARE_RESTART` remet le maillage actif sur `default`.** Il faut
+  recharger `k1_p001_t055_r001_n11x11` derrière, sinon l'impression part sur un
+  maillage vide.
+- **Le serveur de l'éditeur de maillage ne survit pas à un redémarrage de
+  l'imprimante.** Relance manuelle :
+  `cd /usr/data/k1-control-mesh-editor && setsid nohup python3 -u server.py 7130 > /tmp/mesh-editor.log 2>&1 < /dev/null &`
+- **Deux tests laissés rouges volontairement**, ils signalent des divergences
+  réelles et non des tests à réparer :
+  `test_all_canonical_scenarios_are_implemented_once` (divergence
+  `end_full_unload` du design contre `end_keep_engaged` du moteur) et
+  `test_unload_requires_head_sensor_to_clear`.
+
+### Pièges de la machine, à ne pas redécouvrir
+
+- `FIRMWARE_RESTART` relit la configuration mais **pas** les modules Python.
+  Modifier `kctrl_wait.py` exige `/etc/init.d/S55klipper_service restart`. Si
+  les contrôles de mouvement de l'écran meurent ensuite :
+  `/etc/init.d/S99start_app restart`.
+- **Ne jamais lancer `SAVE_CONFIG` sur cette imprimante.**
+- `scp` n'existe pas ici. Déployer par `ssh hote "cat > /chemin" < fichier`.
+- `grep` n'a pas `--include`, `pkill` n'existe pas, `curl` refuse `-s`, `-S`,
+  `-o` et `-w`.
+- Un `.pyc` voisin de `kctrl_wait.py` est présent et cohérent avec la source
+  (généré à l'import). Après tout redéploiement du module, vérifier qu'il a bien
+  été régénéré avant de conclure sur un comportement.
+
+## Règle absolue avant tout palpage
+
+**Aucune calibration, aucun palpage Z, aucun démarrage d'impression sans que
+Thomas ait nettoyé la buse à la main et l'ait dit.** Le nettoyage manuel impose
+que le filament soit rétracté avant. Le nettoyage automatique de brosse n'a
+jamais fonctionné et a été retiré de la séquence possédée : il n'existe aucun
+substitut. Une mesure prise sur une buse sale n'est pas dégradée, elle est
+fausse et se propage dans un profil persistant. Voir ADR-045.
+
+Ordre imposé : retrait filament, nettoyage manuel confirmé, chauffe, palpage.
+
+## Voie CFS stock : rétablie et prouvée
+
+Le blocage de trois semaines est levé. Après bascule des trois inclusions en
+variante `disabled` et redémarrage Klipper, un cycle complet retrait puis
+chargement a été exécuté depuis l'écran et capturé par
+`gcode/subscribe_output` : coupe réelle (`cut sensor state:1` puis `:0`),
+rembobinage CFS effectif, puis chargement jusqu'à `box.T1.filament: A` avec
+purge visible et filament correctement inséré, confirmé par Thomas.
+
+État physique après ce cycle : `box.state connect`, `box.T1.filament A`,
+`T1.mode 2`, les deux capteurs filament vrais, cibles de chauffe à zéro,
+`X/Y` référencés, `print_stats standby`. La machine peut produire.
+
+Le tronçon de filament qui maintenait `filament_sensor` à vrai venait d'un
+rembobinage sans coupe antérieur ; il n'a jamais bouché le chemin. Aucune
+intervention mécanique n'est nécessaire.
+
+ADR-044 fixe la règle : aucune garde ne doit être réinstallée sur les
+primitives `BOX_*` sans une capture équivalente pour son remplaçant.
+
+**Défaut réel confirmé au passage** : pendant le chargement, la cible de buse
+tombe à `0 °C` juste après l'arrivée du filament, remonte à `200 °C`, puis la
+purge annonce `flush_temp: 220`. Le `220` vient de `Tn_extrude_temp` codé en
+dur dans `box.cfg`, pas du G-code. C'est la cause directe d'une purge quasi
+vide au premier essai, et c'est la cible de la tranche « températures ».
+
+## Verrou CFS et sortie de secours
+
+Le 1er septembre, aucun retrait de filament n'était possible : le composant
+`k1_control_cfs_direct_owner`, posé `enabled: true` avec
+`stock_commands_blocked: true`, refuse toute commande `BOX_*`, et son propre
+retrait n'a jamais été implémenté. Onze refus `stock_effect_command_blocked`
+ont été capturés, y compris sur les tentatives manuelles depuis l'écran. Le
+firmware Creality n'est pas en cause. Voir ADR-043 et le document 52.
+
+**Sortie de secours officielle**, dans `printer.cfg` :
+
+```
+[include k1-control-cfs-direct-owner-disabled-v1.cfg]
+[include k1-control-stock-derived-cycle-owner-disabled-v1.cfg]
+[include k1-control-stock-geometry-handoff-disabled-v1.cfg]
+```
+
+puis redémarrage Klipper. Les includes `k1-control-z-mesh.cfg` et
+`k1-control-calibration-path.cfg` restent en place : le Z et le mesh sont
+conservés. Retour arrière : remettre les trois `-active-`. Sauvegarde machine :
+`printer.cfg.bak-before-cfs-unblock`.
+
+## Prochaine action
+
+Machine froide, Thomas présent, dans cet ordre :
+
+1. **Sortir la température du CFS.** L'obstacle supposé n'en est pas un :
+   `box_wrapper...so` est du Cython compilé depuis du Python ordinaire, sans
+   `__pyx_vtable`, donc les attributs de l'objet `box` vivent dans un `__dict__`
+   normal et un autre module Klipper peut les écraser à chaud. `virtual_sdcard.py`
+   le fait déjà (`box_obj.box_action.box_state.Tn_data`). Le véhicule existe :
+   `kctrl_wait.py` est à nous et déjà chargé. Reste une passe d'introspection
+   pour lire les vrais noms d'attributs, puis une commande qui impose la
+   température de première couche du G-code avant que le CFS agisse. Coûte un
+   redémarrage du service Klipper, pas un `FIRMWARE_RESTART`.
+2. **Refaire le compteur de purge en Python**, sur la position du moteur pas à
+   pas, immune aux `G92`. Il remplacera l'arithmétique par un nombre.
+3. **Confirmer les `120 mm`** à l'œil au-dessus du bac au prochain démarrage.
+4. Correctif Z-par-profil, puis bande de température supplémentaire.
+5. Ligne d'amorce sur `CX_PRINT_DRAW_ONE_LINE_V2`, vitesse portée d'environ
+   `F3000` à `F9000`.
+6. Rendre le serveur de l'éditeur de maillage persistant au redémarrage.
+7. Retirer la ligne `KCTRL_PRODUCTION_ARM` du profil Orca.
+8. Capture automatique du Z avant que `END_PRINT` le remette à zéro.
+9. Rechargement automatique en fin de bobine — bloqué tant que `END_PRINT` ne
+   nous appartient pas, à faire délibérément et à froid.
+
+Lire dans cet ordre à la reprise : ce fichier, `STATE.md`, puis les ADR 053 et
+054 pour la purge et la surface imprimable, 052 pour l'éditeur de maillage.
+
+## Archive
+
+L'état du 1er septembre — capteur du cutter qualifié, voie CFS stock
+rétablie, recadrage de périmètre — est consigné dans les ADR-041 et 042 et
+dans `STATE.md`. Il n'est plus repris ici parce qu'il ne pilote plus
+l'action.
+
+La passation détaillée précédente, `HANDOFF-CUTTER-SENSOR-PAUSE-2026-09-01.md`,
+reste consultable pour l'historique des preuves. Sa liste de gestes humains est
+en revanche **périmée** : son point 2, l'appui manuel sur le levier, est retiré
+par ADR-041.
+
+Le contenu ci-dessous est conservé comme archive historique. Il décrit l'état
+antérieur à la qualification du capteur et ne doit plus piloter l'action.
 
 # Archive — reprise après refus réel du cutter le 1er septembre 2026
 

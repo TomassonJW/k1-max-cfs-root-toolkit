@@ -22,10 +22,52 @@ successeur R4 est installé et validé à froid avec le `11 × 11`, sans chauffe
 mouvement. La V1 physique directe T1A est ensuite close KO avant effet. Le
 propriétaire stock-derived actif et ses correctifs ont depuis été installés. La
 purge lit maintenant le G-code et utilise `140 mm` au chargement initial, au
-lieu des `30 mm` insuffisants de la reprise. Le premier retrait intégré reste
-fermé : le capteur cutter n'a jamais réagi entre `Y304,5` et la limite
-`Y307,5`. `T1A` reste engagé. ADR-040 impose une vérification mécanique à froid
-avant reprise.
+lieu des `30 mm` insuffisants de la reprise. Le capteur cutter est désormais
+**qualifié bon** : `BOX_CUT_HALL_TEST` le fait passer par `1` puis `0` avec
+zéro échec de relâchement. ADR-041 établit que `box.cut_pos` ne reflète jamais
+ce capteur et retire la garde d'ADR-040 fondée sur lui. ADR-042 recadre le
+périmètre produit : la bascule Orca quitte le chemin critique et le Z accepté
+doit devenir un attribut du profil de mesh. `T1A` reste engagé ; son retrait
+est la prochaine action physique.
+
+## Besoin produit — formulation canonique de Thomas
+
+Cette section fait autorité sur le périmètre. Elle a été dictée par Thomas le
+1er septembre 2026 et corrige le pilotage précédent (voir ADR-042).
+
+Le problème d'origine : les firmwares K1 Max, kit CFS et CFS produisent des
+séquences d'impression longues et imprévisibles, avec des dérives de
+température, de mesh et de Z liées à la séquence et au calibrage.
+
+Ce que le système doit faire, par ordre de priorité :
+
+1. **Mesh par température de plateau.** Des mesh calibrés par bande de
+   température, et au lancement d'une impression le bon profil se charge
+   automatiquement d'après la température de plateau du G-code.
+2. **Températures respectées.** Les températures filament du G-code sont
+   appliquées au chargement CFS et à l'impression, sans parasitage.
+3. **Démarrage propre.** Une séquence de départ sans palpage Z parasite,
+   pour que le Z redevienne prédictible.
+4. **Changement de filament.** Couleur, matière, ou fin de bobine avec relève
+   automatique sur une bobine compatible détectée par le CFS.
+5. **Z-offset par profil.** Il se calibre en imprimant un grand carré
+   (`280 × 280`), se règle à la main sur la machine, et s'enregistre **dans le
+   profil** pour être rechargé avec le mesh correspondant.
+6. **Édition point par point du mesh**, à la main, notamment sur les bords.
+
+Contraintes explicites :
+
+- les calibrations de mesh se font **sans filament inséré** ;
+- le nettoyage de buse est **manuel** et le reste ;
+- le `11 × 11` demande la méthode spéciale d'ADR-011 : la machine s'arrête
+   d'elle-même vers 36 points de palpage sans elle ;
+- un seul profil existe aujourd'hui, `k1_p001_t055_r001_n11x11`, pour un
+   plateau à `55 °C`, et il a dérivé : une recalibration est due.
+
+Hors périmètre V1, explicitement :
+
+- l'envoi direct des fichiers depuis Orca et tout déclenchement piloté par le
+  slicer sont **V2**, non prioritaires, et ne conditionnent pas la clôture.
 
 ## Vue rapide
 
@@ -33,8 +75,8 @@ avant reprise.
 | --- | --- | --- | --- |
 | 1 | `GOAL-P4-OFFLINE-CYCLE-CFS-V1` | terminé hors imprimante | système logiciel complet simulé et plan futur inerte vérifié |
 | 2 | `GOAL-P4-K1-READ-ONLY-QUALIFICATION-V1` | terminé en lecture seule ; écart de mesh alors observé, corrigé par une gate distincte | réponses et délais réels qualifiés sans commande ni impression |
-| 3 | `GOAL-P4-PHYSICAL-SLICES-QUALIFICATION-V1` | en cours ; `2/7`, purge G-code corrigée, retrait bloqué par `cut_pos=0` jusqu'à `Y307,5` | toutes les fonctions physiques et le profil de bord validés sans fragmenter la chorégraphie réelle |
-| 4 | `GOAL-P4-DAILY-CUTOVER-V1` | prévu après Goal 3 | bascule unifiée, validation production et clôture définitive du projet |
+| 3 | `GOAL-P4-PHYSICAL-SLICES-QUALIFICATION-V1` | en cours ; `2/7`, purge G-code corrigée, capteur cutter qualifié bon par `BOX_CUT_HALL_TEST` (ADR-041) | toutes les fonctions physiques et le profil de bord validés sans fragmenter la chorégraphie réelle |
+| 4 | `GOAL-P4-DAILY-PRODUCTION-V1` | prévu après Goal 3 ; bascule Orca retirée du chemin critique (ADR-042) | Z par profil, mesh multi-températures, relève CFS, trois impressions et clôture |
 
 Le registre exécutable
 `packages/k1-control-v1/physical-slices-qualification-v1/completion-matrix.json`
@@ -215,32 +257,37 @@ séparément et réversibles ; l'ancien démarrage Orca reste encore disponible.
 La clôture exige les sept lignes `PASSED` et un audit transversal conforme au
 registre ; un test logiciel ne peut jamais remplacer une observation physique.
 
-## Goal 4 — Basculer, valider la production et clôturer définitivement
+## Goal 4 — Valider la production quotidienne et clôturer
 
-Identifiant : `GOAL-P4-DAILY-CUTOVER-V1`
+Identifiant : `GOAL-P4-DAILY-PRODUCTION-V1`
 
-État : **prévu après le Goal 3**.
+État : **prévu après le Goal 3**. Remplace `GOAL-P4-DAILY-CUTOVER-V1`, dont la
+bascule Orca est retirée du chemin critique par ADR-042.
 
 Ce qui sera réellement fait :
 
-- réunir chauffe, nettoyage, filament, calibration, mesh et Z dans K1 Control ;
-- faire envoyer à Orca une seule demande de démarrage ;
-- retirer ensemble l'ancien départ Orca et le post-traitement `+0,27 mm` ;
-- retirer et rembobiner complètement le filament en fin normale ;
-- conserver `Désengager et nettoyer` comme action experte séparée hors travail ;
-- prouver le retour complet à l'ancien fonctionnement ;
+- corriger le stockage du Z accepté pour qu'il soit **un attribut du profil de
+  mesh**, chargé et vérifié avec lui — préalable à toute campagne
+  multi-températures ;
+- recalibrer le `11 × 11` avec la méthode d'ADR-011, filament retiré ;
+- calibrer une bande de température supplémentaire et prouver que le bon profil
+  se charge seul d'après la température de plateau du G-code ;
+- établir le Z de chaque profil par le carré `280 × 280`, réglage manuel, puis
+  enregistrement dans le profil ;
+- brancher l'éditeur de mesh point par point sur la machine ;
+- retirer le post-traitement Orca `+0,27 mm`, seule dépendance slicer restante ;
+- exercer les deux CFS, un changement de filament et une relève automatique
+  sur bobine compatible ;
 - redémarrer à froid et exécuter trois impressions consécutives représentatives ;
-- exercer les deux CFS, un changement de filament et les reprises intégrées ;
 - confirmer la conservation du Z, du mesh et des configurations après reboot ;
-- vérifier Orca et K1 Control sans correction manuelle ni intervention Codex ;
 - fermer la documentation, les données privées, Git et la baseline V1.
-
-La validation production auparavant repoussée en P5 fait désormais partie de
-ce Goal 4. Elle ne crée donc plus un cinquième Goal caché.
 
 Fin attendue : fonctionnement quotidien simple, unifié, réversible et validé en
 production. Quand ce Goal passe, le projet est **terminé** et aucune gate
 obligatoire ne reste ouverte.
+
+Backlog V2, hors clôture : envoi direct depuis Orca, déclenchement piloté par
+le slicer, compatibilités communautaires.
 
 ## Après les quatre Goals
 
@@ -251,11 +298,8 @@ repousser la clôture.
 
 ## Démarrage recommandé
 
-Le premier run intégré stock est clos KO et confiné. ADR-036 ainsi que le
-propriétaire CFS direct hors imprimante sont maintenant verts à `24/24`.
-
-La pose désactivée est maintenant close : backup et rollback ont été éprouvés,
-le composant est installé avec `enabled=false`, le transport n'est pas pris et
-zéro trame CFS a été envoyée. La prochaine gate est la qualification physique
-unique `T1A` chargement/retrait direct sous caméra. Le nouveau run intégré reste
-interdit avant cette preuve puis le raccord du propriétaire au cycle.
+Le capteur cutter est qualifié bon (ADR-041). La prochaine action physique est
+le retrait intégré `T1A`, puis le nettoyage manuel et une première impression
+mono-filament complète de bout en bout — la fondation qui n'a jamais été
+obtenue. Le correctif Z-par-profil (ADR-042) vient ensuite, avant toute
+recalibration multi-températures.
