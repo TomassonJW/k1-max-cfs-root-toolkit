@@ -146,10 +146,17 @@ et pourquoi est écrit dans l'ADR-054.
 - **Chaque `FIRMWARE_RESTART` remet le maillage actif sur `default`.** Il faut
   recharger `k1_p001_t055_r001_n11x11` derrière, sinon l'impression part sur un
   maillage vide.
-- **Le serveur de l'éditeur de maillage ne survit pas à un redémarrage de
-  l'imprimante.** `Ouvrir-Editeur-Maillage-K1-Max.cmd`, à la racine, monte le
-  tunnel et le relance tout seul. Relance manuelle si besoin :
-  `cd /usr/data/k1-control-mesh-editor && setsid nohup python3 -u server.py 7130 > /tmp/mesh-editor.log 2>&1 < /dev/null &`
+- **L'éditeur de maillage est un service depuis le 2 septembre au soir**,
+  `/etc/init.d/S58k1_control_mesh_editor`, posé par
+  `scripts/deploy-k1-control-mesh-editor-v1.ps1`. Il démarre avec la machine.
+  `Ouvrir-Editeur-Maillage-K1-Max.cmd`, à la racine, monte le tunnel et le
+  relance s'il manque. Le démarrage au boot lui-même n'a pas encore été prouvé :
+  aucun redémarrage complet n'a eu lieu depuis la pose.
+- **`Tnn_map` ne survit pas à la machine.** Un arrêt d'urgence ou une coupure
+  rend un `tn_data.json` sans la table, et seul le popup de l'écran la remplit.
+  `START_PRINT` se rabat désormais sur `slot_last_choice`, le dernier
+  emplacement choisi par `KCTRL_SLOT`, et le dit sur sa ligne de démarrage.
+  `KCTRL_SLOTS` affiche la même résolution avant de lancer. Voir ADR-058.
 - **Deux tests laissés rouges volontairement**, ils signalent des divergences
   réelles et non des tests à réparer :
   `test_all_canonical_scenarios_are_implemented_once` (divergence

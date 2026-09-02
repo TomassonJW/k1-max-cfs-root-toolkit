@@ -39,6 +39,21 @@ de contrôle, non corrigée, l'accès à l'entraînement demandant un outillage
 indisponible. Non bloquant tant que le contrôle de fin de maillage la rattrape,
 mais aucune protection équivalente n'existe pendant une impression. Voir ADR-048.
 
+Mise à jour prioritaire : la soirée du 2 septembre a montré deux fragilités du
+même genre, et les deux sont corrigées. L'éditeur de maillage ne s'affichait
+plus — un vrai saut de ligne dans une chaîne JavaScript, donc un module jamais
+exécuté, une page vide et un serveur qui répondait pourtant `200`. Il n'était
+pas non plus un service : chaque coupure le laissait mort. Il l'est désormais,
+`/etc/init.d/S58k1_control_mesh_editor`, et `Ouvrir-Editeur-Maillage-K1-Max.cmd`
+ouvre la page d'un double-clic. Une garde de syntaxe couvre la page dans la CI,
+qui ne la voyait pas.
+
+Et `Tnn_map` s'efface avec la machine : après un arrêt d'urgence, le fichier ne
+contenait plus que `base_data`, donc toute impression lancée depuis Mainsail
+était refusée par le garde posé la veille. `START_PRINT` retient maintenant le
+dernier emplacement choisi et le rejoue en le disant, `KCTRL_SLOTS` montre la
+même résolution avant le lancement. Voir ADR-058.
+
 Mise à jour prioritaire : le maillage se retouche à la main, point par point,
 depuis une page servie par l'imprimante sur le port `7130`. On clique un point,
 puis `+` ou `−` le corrige d'un pas choisi entre 0,005 / 0,010 / 0,020 /
