@@ -6,9 +6,12 @@ param(
 $ErrorActionPreference = 'Stop'
 $EditorUrl = 'http://127.0.0.1:7130/'
 $SshHost = 'k1max-root'
-# Le serveur de l'editeur ne survit pas a un redemarrage de l'imprimante.
-# Le lanceur le relance lui-meme plutot que de renvoyer vers une ligne de commande.
-$RemoteStart = "cd /usr/data/k1-control-mesh-editor && setsid nohup python3 -u server.py 7130 > /tmp/mesh-editor.log 2>&1 < /dev/null &"
+# L'editeur est un service depuis la pose de S58k1_control_mesh_editor : il
+# revient tout seul apres une coupure. Le repli couvre une machine ou le service
+# n'a pas encore ete pose, ou qu'un flash du firmware aurait rincee.
+$RemoteStart = "if [ -x /etc/init.d/S58k1_control_mesh_editor ]; then " +
+    "/etc/init.d/S58k1_control_mesh_editor start; else " +
+    "cd /usr/data/k1-control-mesh-editor && setsid nohup python3 -u server.py 7130 > /tmp/mesh-editor.log 2>&1 < /dev/null & fi"
 
 function Get-EditorStatus {
     try {

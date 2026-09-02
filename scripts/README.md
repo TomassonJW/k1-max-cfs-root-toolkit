@@ -87,6 +87,14 @@ port répond mais que la page ne vient pas, relance à distance le serveur de
 l'éditeur, qui ne survit pas à un redémarrage de l'imprimante. Aucune adresse
 privée ni secret dans le script.
 
+`deploy-k1-control-mesh-editor-v1.ps1` pose l'éditeur de maillage et le service
+qui le rallume au démarrage de l'imprimante, `/etc/init.d/S58k1_control_mesh_editor`.
+`Status` lit sans rien écrire, `Deploy` copie les quatre fichiers du paquet,
+installe le service, redémarre et vérifie que l'API répond, `Rollback` retire le
+service en laissant le paquet en place. La syntaxe de `app.mjs` est vérifiée
+avant la pose : un module cassé laisse le serveur répondre `200` sur une page
+qui ne démarre jamais.
+
 `validate-k1-control-calibration-ui-campaign-v1.ps1` prépare puis contrôle en
 lecture seule la campagne d'autonomie opérée depuis l'écran. `Preflight` exige
 l'UI exacte et l'état sûr avant chauffe ; `Validate` exige la phase `accepted`,
