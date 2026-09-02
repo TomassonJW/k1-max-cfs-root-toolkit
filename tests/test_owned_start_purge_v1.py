@@ -188,13 +188,12 @@ def test_any_top_up_is_pushed_in_full(length):
     assert extruded(rendered) == pytest.approx(length, abs=1e-3)
 
 
-def test_the_top_up_lands_the_real_purge_near_the_intended_140():
-    # Reconstructed from the print of 2026-09-02 00:23: the toolhead extruded
-    # for 32.4 s, of which BOX_EXTRUDER_EXTRUDE claims 140 mm at 360 mm/min,
-    # that is 23.3 s - leaving about 9 s, of the order of 55 mm, for the flush.
-    # The top up brings that back to roughly the 140 that was always intended.
-    total = variables("_KCTRL_PURGE_BALL")["purge_mm"] + 55.0
-    assert 120.0 <= total <= 200.0
+def test_the_standing_default_is_the_length_judged_on_the_plate():
+    # Not arithmetic: 200 mm was run on 2026-09-02 and gave the ball that
+    # detaches instead of the strand that hangs. 180 is what the operator then
+    # chose as the standing default, to save a little filament per start.
+    # The value is a decision, so it is pinned here rather than left to drift.
+    assert variables("_KCTRL_PURGE_BALL")["purge_mm"] == 180.0
 
 
 def test_the_top_up_comes_after_the_wait_and_the_heat():
@@ -235,3 +234,15 @@ def test_each_measurement_reads_after_a_wait_for_moves(macro):
     # merely been queued.
     lines = commands("START_PRINT")
     assert lines[index_of(lines, macro) - 1] == "M400"
+
+
+def test_the_report_refuses_to_print_a_number_it_cannot_measure():
+    # It printed -2 mm on 2026-09-02: the box routines issue G92 E0 during
+    # the material step, so the extruder axis restarts under the mark. An
+    # interface that prints a wrong number is worse than one that says it
+    # does not know, so the report guards the reading and falls back on the
+    # one length this file actually commands.
+    body = section("_KCTRL_PURGE_REPORT")
+    assert "travel > 1.0" in body
+    assert "non mesurable" in body
+    assert "purge_mm" in body

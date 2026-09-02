@@ -2,7 +2,8 @@
 
 Date : 2026-09-02
 
-Statut : **acceptée ; installée ; à juger sur la première impression**
+Statut : **acceptée ; installée ; boule obtenue à `200 mm`, défaut ramené à
+`180 mm` à confirmer**
 
 ## Contexte
 
@@ -64,7 +65,7 @@ immédiat sur un capteur déjà plein, refus immédiat sur un capteur inconnu.
 température du G-code, attendue, avant `BOX_EXTRUDER_EXTRUDE`.
 
 **La quantité stock est laissée telle quelle, et complétée.** `140 mm`, sans
-`LEN=`, plus un complément possédé de `100 mm` juste avant elle. Parce que les
+`LEN=`, plus un complément possédé de `180 mm` juste avant elle. Parce que les
 `140 mm` annoncés par `box.cfg` ne sortent pas. Reconstitution depuis les
 statistiques de l'impression du 2 septembre à 00 h 23, seule trace de ce que
 fait réellement le module compilé :
@@ -80,9 +81,12 @@ donne `Tn_extrude: 140` à `Tn_extrude_velocity: 360 mm/min`, soit `23,3 s` des
 `32,4` — il reste environ `9 s` pour la purge elle-même, de l'ordre de `55 mm`,
 pas `140`. L'opérateur avait raison : « ça n'envoie pas du tout 140 mm ».
 
-Le complément vise donc à ramener la purge réelle près des `140 mm` toujours
-visés, pas à ajouter une purge par-dessus une purge complète. `_KCTRL_PURGE_REPORT`
-affichera le total mesuré à chaque démarrage et fixera le nombre pour de bon.
+Le complément vise à ramener la purge réelle près des `140 mm` toujours visés,
+pas à ajouter une purge par-dessus une purge complète. Sa longueur n'est pas
+calculée, elle est jugée sur la plaque : `200 mm` essayés le 2 septembre ont
+donné la boule qui se décroche au lieu du filet qui pend. `180 mm` sont
+retenus comme valeur par défaut, choix de l'opérateur pour économiser un peu
+de filament à chaque démarrage ; à confirmer sur la prochaine impression.
 
 La longueur n'est pas passée à `BOX_MATERIAL_FLUSH LEN=` : `box.cfg` déclare
 `box_need_clean_length_max: 140`, donc une valeur supérieure pourrait être
@@ -112,18 +116,23 @@ la buse est amorcée : il reste tout le trajet jusqu'à la zone de fusion, que
 raison que l'assertion seule ne suffisait pas, et pourquoi elle est désormais
 précédée d'une attente.
 
-## Mesure plutôt qu'une théorie de plus
+## La mesure annoncée n'a pas fonctionné
 
-`_KCTRL_PURGE_MARK` relève l'axe extrudeur avant l'étape matière,
-`_KCTRL_PURGE_REPORT` annonce le total réellement poussé après la purge stock.
-Les deux se lisent après un `M400` : un macro se rend au moment où sa commande
-est traitée, et `M400` bloque la file jusqu'à la fin des mouvements, donc la
-position relevée a réellement eu lieu.
+`_KCTRL_PURGE_MARK` relève l'axe extrudeur avant l'étape matière et
+`_KCTRL_PURGE_REPORT` devait annoncer le total réellement poussé après la purge
+stock. Les deux se lisent après un `M400`, ce qui était la bonne précaution mais
+pas la seule nécessaire.
 
-Le prochain démarrage affichera dans la console le nombre de millimètres
-effectivement poussés. C'est la seule réponse honnête à « la purge est-elle
-suffisante », et elle tranchera sans discussion si `140 mm` doivent un jour
-bouger.
+Le démarrage du 2 septembre a affiché `-2 mm`. Les routines box émettent des
+`G92 E0` à l'intérieur de l'étape matière : l'axe extrudeur repart de zéro sous
+le repère, et la différence n'a plus de sens. Une purge qui affiche un chiffre
+faux est pire qu'une purge muette, puisque le chiffre sert justement à trancher.
+
+Le rapport garde donc la lecture : au-dessus d'un millimètre il annonce le
+parcours mesuré, sinon il dit que le total n'est pas mesurable et rappelle la
+seule longueur que ce fichier commande réellement. Le compteur honnête existe —
+la position du moteur pas à pas, que `G92` ne touche pas — mais il se lit en
+Python, pas en macro. C'est un travail séparé.
 
 ## Vérification
 
@@ -137,9 +146,10 @@ Sur la machine : `kctrl_wait.py` déployé dans les extras de Klipper, service
 Klipper redémarré — un `FIRMWARE_RESTART` relit la configuration mais pas les
 modules Python — `KCTRL_WAIT_FILAMENT` enregistré, blocage réel mesuré y compris
 imbriqué dans un macro, sonde de test retirée, configuration relue et empreintes
-machine identiques au dépôt. **Le résultat reste à juger à l'œil sur la première
-impression** — c'est le seul juge de « boule » contre « filet », et le nombre
-affiché en console dira enfin ce qui est réellement sorti.
+machine identiques au dépôt. **Le résultat se juge à l'œil sur la plaque** —
+c'est le seul juge de « boule » contre « filet ». `200 mm` ont donné la boule
+le 2 septembre. `180 mm`, la valeur par défaut retenue depuis, restent à
+confirmer au prochain démarrage.
 
 ## Conséquences
 
@@ -149,7 +159,10 @@ affiché en console dira enfin ce qui est réellement sorti.
 - `kctrl_wait.py` est un module Python de Klipper. Toute modification exige un
   redémarrage du service, pas un simple `FIRMWARE_RESTART`.
 - La consommation par démarrage passe d'environ `55 mm` réels à environ
-  `155 mm` réels. Le chiffre exact sera affiché au prochain démarrage.
+  `235 mm` réels : les `55 mm` de la purge stock plus les `180 mm` du
+  complément. Valeur retenue à l'œil sur la plaque, la mesure automatique
+  n'étant pas fiable.
+
 - La sauvegarde de la configuration précédente est
   `/usr/data/printer_data/config/.bak-owned-start-v2-prepurge`.
 - `Tn_extrude_temp: 220` reste imposé par le CFS sur la purge stock. Le sortir
@@ -159,8 +172,9 @@ affiché en console dira enfin ce qui est réellement sorti.
 
 - **Ajouter `300 mm` de purge à nous** : construit, installé, puis retiré.
   `440 mm` par démarrage compensait à l'aveugle un problème d'ordre, sans le
-  corriger. Le complément qui subsiste fait `100 mm` et il est chiffré depuis
-  le log, pas supposé.
+  corriger. Le complément qui subsiste fait `180 mm`, posé après l'attente du
+  filament et jugé sur le résultat imprimé.
+
 - **Passer `LEN=` à `BOX_MATERIAL_FLUSH`** : susceptible d'être borné à `140`
   sans le dire.
 - **Se contenter de l'assertion** : elle contrôle une fois, au rendu, et le CFS

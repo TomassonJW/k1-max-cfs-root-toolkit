@@ -95,6 +95,15 @@ utilise `flush_temp: 220` issu de `Tn_extrude_temp` codé en dur dans `box.cfg`.
 C'est la cause directe du parasitage de température signalé par Thomas et la
 première tranche de fond à traiter.
 
+Purge de démarrage, état arrêté le 2 septembre : les `140 mm` annoncés par
+`box.cfg` ne sortent pas. La reconstitution du log donne de l'ordre de
+`55 mm` réels pour la purge stock. `_KCTRL_PURGE_BALL` complète, valeur par
+défaut `180 mm`, posée après `KCTRL_WAIT_FILAMENT` et après le `M109` pour
+que rien ne pousse avant que le filament soit dans la tête. `200 mm` ont
+donné la boule qui se décroche ; `180 mm` restent à confirmer. Le rapport
+automatique ne mesure rien d'utile — les routines box remettent l'axe
+extrudeur à zéro — il le dit désormais au lieu d'afficher un chiffre faux.
+
 Mise à jour prioritaire : la purge de récupération de `30 mm` n'était pas une
 purge stock. Les traces exactes donnent `140 mm` au chargement initial ; le
 cycle actif lit maintenant les quantités Orca du G-code, y compris les matrices
