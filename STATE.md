@@ -1598,3 +1598,31 @@ aucune route logique. La pose est consommée. La prochaine gate unique est
 `G4-K1-CONTROL-CFS-DIRECT-OWNER-PHYSICAL-LOAD-UNLOAD-V1`; elle devra activer le
 propriétaire sous surveillance et qualifier un seul cycle direct `T1A`, sans
 palpage, mesh, purge ou retry.
+
+## Mise à jour 2026-09-02 — le Z accepté s'édite dans l'éditeur de maillage
+
+L'éditeur de maillage (port `7130`) porte désormais le Z accepté du profil
+affiché : la valeur enregistrée, la valeur en vigueur sur la machine, un champ
+pour taper, un bouton pour reprendre la seconde, un bouton pour écrire.
+L'écriture passe par `KCTRL_Z_SAVE`, qui reste l'unique écrivain ; le serveur
+refuse d'avance un profil inconnu de Klipper, une valeur hors de ±2 mm ou une
+valeur illisible, puis laisse la macro revérifier et répondre.
+
+Chaîne complète prouvée sur la machine pendant l'impression de
+`_CORPS_PLA_2h37m.gcode`, sans la perturber : lecture des deux valeurs, refus
+d'un `Z=40`, refus d'un profil inconnu, refus lisible de la macro, et une
+écriture réelle qui a réenregistré la valeur déjà en place — `0,04` — puis
+retrouvée dans `k1-control-saved-vars.cfg`. Empreintes machine identiques au
+dépôt. Doc 56, ADR-057.
+
+Défaut corrigé en chemin : le refus d'une macro porte un vrai saut de ligne
+dans son enveloppe JSON, que le parseur strict rejetait ; l'opérateur recevait
+l'enveloppe entière au lieu de la phrase. L'enregistrement du maillage
+bénéficie du même correctif.
+
+La surextrusion à l'arrivée du remplissage sur les parois est diagnostiquée et
+n'a rien à voir avec le maillage : `pressure_advance_smooth_time` vaut `0,040 s`
+quand les rampes de freinage de la machine durent `0,029 s`, donc la correction
+du Pressure Advance arrive en partie après la fin du trait. Le PA est déjà réglé
+par filament — `0,03` imposé par le profil du trancheur. Aucune correction n'a
+été appliquée : la calibration décisive est une impression. Doc 57.

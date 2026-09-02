@@ -14,7 +14,23 @@
       <select id="profile"></select>
     </label>
     <span id="badge-active" class="badge" hidden>actif à l'impression</span>
-    <span id="badge-z" class="badge badge-quiet" hidden></span>
+  </div>
+
+  <!-- Le Z accepté appartient au profil, pas à la machine : chaque bande de
+       température a le sien. Il se tapait jusqu'ici en console, et le réglage
+       trouvé à l'œil pendant une première couche mourait avec l'impression.
+       « Reprendre » copie le Z en vigueur dans le champ, sans rien écrire. -->
+  <div class="bar-group bar-z">
+    <label class="field">
+      <span>Z du profil</span>
+      <input id="z-value" type="number" step="0.005" min="-2" max="2"
+             inputmode="decimal" placeholder="—" autocomplete="off">
+      <span class="unit">mm</span>
+    </label>
+    <button id="z-live" class="ghost" type="button"
+            title="Copier dans le champ le décalage Z en vigueur sur la machine">
+      reprendre <b id="z-live-value">—</b></button>
+    <button id="z-save" class="ghost" type="button" disabled>Enregistrer&nbsp;Z</button>
   </div>
 
   <div class="bar-group bar-stats">

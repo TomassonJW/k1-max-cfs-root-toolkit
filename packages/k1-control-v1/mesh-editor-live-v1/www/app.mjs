@@ -12,6 +12,9 @@
  */
 
 const MAX_MOVE = 0.15;
+/* Same window as KCTRL_Z_SAVE on the printer. A rule the page lets you
+ * break and the machine refuses afterwards is a rule that wastes a plate. */
+const Z_LIMIT = 2;
 const REFERENCE = { x: 150, y: 150 };
 
 /* Held keys repeat every ~30 ms once the system autorepeat starts. Nudging by
@@ -28,7 +31,9 @@ const ui = {
   minus: el("minus"), plus: el("plus"), roStep: el("ro-step"),
   ring: el("ring"), roCount: el("ro-count"),
   save: el("save"), revert: el("revert"), reload: el("reload"),
-  badgeActive: el("badge-active"), badgeZ: el("badge-z"),
+  badgeActive: el("badge-active"),
+  zValue: el("z-value"), zSave: el("z-save"),
+  zLive: el("z-live"), zLiveValue: el("z-live-value"),
   statMin: el("stat-min"), statMax: el("stat-max"),
   statSpan: el("stat-span"), statEdits: el("stat-edits"),
   legendLow: el("legend-low"), legendHigh: el("legend-high"),
@@ -50,6 +55,7 @@ const state = {
   undo: [],
   printerState: null,
   zOffsets: {},
+  liveZ: null,
   busy: false,
   burst: { direction: 0, count: 0, at: 0, i: -1, j: -1 },
 };
@@ -187,6 +193,7 @@ function paint() {
   ui.save.title = blocked
     ? "Impossible pendant une impression : enregistrer recharge le maillage en cours"
     : "";
+  paintZ();
   readout();
   drawSurface();
 }
@@ -694,9 +701,8 @@ function adopt(profile) {
   state.anchor = { ...state.selected };
   state.marks = new Set([mark(state.selected.i, state.selected.j)]);
   ui.badgeActive.hidden = !profile.active;
-  const z = state.zOffsets[profile.name.toLowerCase()];
-  ui.badgeZ.hidden = z === undefined;
-  if (z !== undefined) ui.badgeZ.textContent = `Z ${fmt(Number(z))}`;
+  const z = zStored(profile.name);
+  ui.zValue.value = z === null ? "" : z.toFixed(3);
   buildGrid();
   paint();
 }
@@ -715,6 +721,7 @@ async function refresh(keep = true) {
   const info = await call("/api/state");
   state.printerState = info.printer_state;
   state.zOffsets = info.z_offsets || {};
+  state.liveZ = Number(info.live_z);
   const wanted = keep && state.name && info.profiles.includes(state.name)
     ? state.name
     : (info.profiles.includes(info.active) ? info.active : info.profiles[0]);
@@ -755,6 +762,94 @@ async function save() {
     paint();
   }
 }
+
+/* --------------------------------------------------------------- Z du profil
+ * The accepted Z belongs to the profile, not to the machine: a 55 C bed and a
+ * 65 C bed do not settle at the same height, and START_PRINT reads z_<profil>.
+ * It used to be typed in a console, so the value found by eye during a first
+ * layer had to be transcribed by hand or lost. Here the field shows what is
+ * stored, "reprendre" copies what the machine is applying right now, and the
+ * write goes through KCTRL_Z_SAVE, which stays the only writer.
+ */
+function zStored(name = state.name) {
+  const z = name ? state.zOffsets[name.toLowerCase()] : undefined;
+  return z === undefined || z === null ? null : Number(z);
+}
+
+/* null: the field is empty. NaN: what is typed is not a usable offset. */
+function zTyped() {
+  const raw = ui.zValue.value.trim().replace(",", ".");
+  if (!raw) return null;
+  const value = Number(raw);
+  if (!Number.isFinite(value) || Math.abs(value) > Z_LIMIT) return NaN;
+  return value;
+}
+
+function paintZ() {
+  const live = Number.isFinite(state.liveZ) ? state.liveZ : null;
+  ui.zLiveValue.textContent = live === null ? "—" : fmt(live);
+  ui.zLive.disabled = live === null || state.busy;
+  const typed = zTyped();
+  const stored = zStored();
+  const usable = typed !== null && !Number.isNaN(typed);
+  const changed = usable && (stored === null || Math.abs(typed - stored) > 1e-9);
+  ui.zSave.disabled = state.busy || !changed;
+  ui.zValue.classList.toggle("dirty", changed);
+  ui.zValue.classList.toggle("bad", typed !== null && Number.isNaN(typed));
+  ui.zValue.title = stored === null
+    ? `aucun Z enregistré pour ${state.name || "ce profil"}`
+    : `enregistré pour ${state.name} : ${fmt(stored)} mm`;
+}
+
+async function saveZ() {
+  const z = zTyped();
+  if (z === null || Number.isNaN(z) || !state.name) return;
+  state.busy = true;
+  paint();
+  say(`enregistrement du Z de ${state.name}…`, "busy");
+  try {
+    const result = await call("/api/z", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ profile: state.name, z }),
+    });
+    state.zOffsets = result.z_offsets || state.zOffsets;
+    state.liveZ = Number(result.live_z);
+    ui.zValue.value = Number(result.saved).toFixed(3);
+    // Said out loud on purpose: nothing moves on the machine now, the value is
+    // read by START_PRINT at the next launch.
+    say((result.messages.join("
+") || `Z ${fmt(z)} enregistré pour ${state.name}`)
+      + "
+il s'applique au prochain démarrage d'impression",
+      "good");
+  } catch (error) {
+    say("refusé : " + error.message, "error");
+  } finally {
+    state.busy = false;
+    paint();
+  }
+}
+
+ui.zValue.addEventListener("input", paintZ);
+ui.zValue.addEventListener("keydown", (event) => {
+  if (event.key === "Enter") { event.preventDefault(); saveZ(); return; }
+  if (event.key === "Escape") {
+    event.preventDefault();
+    const stored = zStored();
+    ui.zValue.value = stored === null ? "" : stored.toFixed(3);
+    paintZ();
+    ui.grid.focus();
+  }
+});
+ui.zLive.addEventListener("click", () => {
+  if (!Number.isFinite(state.liveZ)) return;
+  ui.zValue.value = Number(state.liveZ).toFixed(3);
+  paintZ();
+  say(`Z en cours ${fmt(state.liveZ)} recopié — « Enregistrer Z » pour le garder`
+    + ` sur ${state.name}`, "busy");
+});
+ui.zSave.addEventListener("click", () => saveZ());
 
 for (const [button, direction] of [[ui.minus, -1], [ui.plus, 1]]) {
   // mousedown, not click: a held button then repeats through the same burst

@@ -13,6 +13,7 @@ printer, and every one of them failed quietly rather than loudly:
 """
 
 import importlib.util
+import json
 import os
 
 import pytest
@@ -88,6 +89,17 @@ def test_the_subscription_declares_a_response_template(server):
 def test_a_klipper_error_is_unwrapped_to_its_sentence(server):
     wrapped = {"message": '{"code":"key165", "msg": "K1 Control: refused"}'}
     assert server.Klippy._readable(wrapped) == "K1 Control: refused"
+
+
+def test_a_macro_refusal_keeps_its_newline_and_is_still_unwrapped(server):
+    # Releve sur la machine : le message porte un vrai saut de ligne, que le
+    # parseur strict refuse. L'operateur recevait alors l'enveloppe entiere,
+    # code et valeurs compris, au lieu de la phrase qui dit ce qui ne va pas.
+    sentence = 'K1 Control: PROFILE is required' + chr(10)
+    wrapped = {'message': json.dumps(
+        {'code': 'key165', 'msg': sentence, 'values': []}).replace(
+            chr(92) + 'n', chr(10))}
+    assert server.Klippy._readable(wrapped) == sentence.strip()
 
 
 def test_a_plain_error_survives_unwrapping(server):
@@ -287,3 +299,132 @@ def test_the_surface_height_is_not_a_viewport_unit():
     declarations = re.sub(r"/\*.*?\*/", "", canvas, flags=re.S)
     assert "vh" not in declarations
     assert "min-height" in declarations
+
+
+# ------------------------------------------------------------------ Z du profil
+# The accepted Z is per profile and START_PRINT refuses to start without it. It
+# was only writable from a console, so the value found by eye during a first
+# layer had to be transcribed by hand or was simply lost. These pin the path the
+# editor opens: read what is stored, read what the machine applies right now,
+# and write through KCTRL_Z_SAVE - never around it.
+class _Probe:
+    """Stands in for a handler: the two methods under test only need `klippy`.
+
+    They are called unbound, so none of the socket plumbing of the HTTP base
+    class has to exist here.
+    """
+
+    def __init__(self, server, status, script=None):
+        probe = self
+
+        class _Klippy:
+            def query(self, objects):
+                probe.queried = objects
+                return status
+
+            def script(self, command, timeout=120.0):
+                probe.commands.append(command)
+                return list(script or [])
+
+        self.commands = []
+        self.queried = None
+        self.klippy = _Klippy()
+        # _zsave re-reads the state to answer with it; the real method does it.
+        self._state = lambda: server.Handler._state(self)
+
+
+def _status(z_saved=-0.04, live=0.0, profiles=("k1_p001_t055_r001_n11x11",)):
+    return {
+        "bed_mesh": {"profiles": {name: {} for name in profiles},
+                     "profile_name": profiles[0] if profiles else None},
+        "print_stats": {"state": "standby"},
+        "webhooks": {"state": "ready"},
+        "save_variables": {"variables": {
+            "z_k1_p001_t055_r001_n11x11": z_saved, "autre": 1}},
+        "gcode_move": {"homing_origin": [0.0, 0.0, live, 0.0]},
+    }
+
+
+def test_the_state_carries_the_stored_z_and_the_one_in_force(server):
+    handler = _Probe(server, _status(z_saved=-0.04, live=0.06))
+    state = server.Handler._state(handler)
+    assert state["z_offsets"] == {"k1_p001_t055_r001_n11x11": -0.04}
+    # What the operator dialled in from Fluidd during the first layer. Without
+    # it, that number dies with the print.
+    assert state["live_z"] == 0.06
+    assert "gcode_move" in handler.queried
+
+
+def test_saving_a_z_goes_through_the_macro_and_nothing_else(server):
+    handler = _Probe(server, _status(), script=["// K1 Control: Z 0.0000 saved"])
+    result = server.Handler._zsave(
+        handler, {"profile": "k1_p001_t055_r001_n11x11", "z": 0})
+    assert handler.commands == ["KCTRL_Z_SAVE PROFILE=k1_p001_t055_r001_n11x11 Z=0.0000"]
+    assert result["saved"] == 0
+    assert result["messages"] == ["// K1 Control: Z 0.0000 saved"]
+    # SAVE_VARIABLE is the macro's business. The editor never writes the file.
+    assert "SAVE_VARIABLE" not in "".join(handler.commands)
+
+
+@pytest.mark.parametrize("body", [
+    {"profile": "", "z": 0},
+    {"profile": None, "z": 0},
+    {"z": 0},
+    {"profile": "default", "z": 0},                     # pas un profil connu
+    {"profile": "k1_p001_t055_r001_n11x11 ; M112", "z": 0},  # injection G-code
+    {"profile": "k1_p001_t055_r001_n11x11"},            # pas de Z
+    {"profile": "k1_p001_t055_r001_n11x11", "z": "haut"},
+    {"profile": "k1_p001_t055_r001_n11x11", "z": None},
+    {"profile": "k1_p001_t055_r001_n11x11", "z": 40},   # 0,40 mal tape
+    {"profile": "k1_p001_t055_r001_n11x11", "z": -2.5},
+    {"profile": "k1_p001_t055_r001_n11x11", "z": float("nan")},
+    {"profile": "k1_p001_t055_r001_n11x11", "z": float("inf")},
+])
+def test_a_z_that_would_wreck_a_plate_never_leaves_the_page(server, body):
+    handler = _Probe(server, _status())
+    with pytest.raises(ValueError):
+        server.Handler._zsave(handler, body)
+    assert handler.commands == []
+
+
+def test_a_refusal_is_not_dressed_up_as_an_unreadable_body(server):
+    # "corps illisible: Z 40 hors de la plage" names the wrong failure and
+    # sends the operator looking at their browser instead of at their value.
+    handler = _Probe(server, _status())
+    with pytest.raises(server.Refused) as refusal:
+        server.Handler._zsave(
+            handler, {"profile": "k1_p001_t055_r001_n11x11", "z": 40})
+    assert str(refusal.value).startswith("Z 40.0000 hors de la plage")
+    assert issubclass(server.Refused, ValueError)
+    with open(os.path.join(PACKAGE, "server.py"), encoding="utf-8") as handle:
+        source = handle.read()
+    # The order of the handlers is the whole point: ValueError first would
+    # swallow every refusal into the generic message.
+    assert source.index("except Refused as exc") < source.index(
+        "except ValueError as exc")
+
+
+def test_the_route_is_declared(server):
+    with open(os.path.join(PACKAGE, "server.py"), encoding="utf-8") as handle:
+        source = handle.read()
+    assert 'if path == "/api/z"' in source
+    assert "_zsave(body)" in source
+
+
+def test_the_page_offers_a_typed_z_and_the_one_in_force():
+    page = _www("index.html")
+    assert 'id="z-value"' in page and 'type="number"' in page
+    assert 'id="z-save"' in page and 'id="z-live"' in page
+    source = _www("app.mjs")
+    assert '"/api/z"' in source
+    # Copying the machine's current offset must not write anything by itself.
+    body = source.split('ui.zLive.addEventListener("click"', 1)[1].split("});", 1)[0]
+    assert "saveZ" not in body
+
+
+def test_the_page_refuses_the_same_range_as_the_printer():
+    # A page that accepts what the macro refuses sends the operator to a red
+    # console line instead of telling them on the spot.
+    assert "const Z_LIMIT = 2;" in _www("app.mjs")
+    assert "Z_LIMIT = 2.0" in open(
+        os.path.join(PACKAGE, "server.py"), encoding="utf-8").read()

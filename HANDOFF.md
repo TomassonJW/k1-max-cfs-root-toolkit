@@ -1,7 +1,7 @@
 # HANDOFF — index de reprise
 
 Mise à jour : 2026-09-02, après la session « le popup de correspondance des
-filaments ».
+filaments » puis « le Z accepté dans l'éditeur de maillage ».
 
 ## Reprise immédiate
 
@@ -25,6 +25,17 @@ KCTRL_SLOT SLOT=T2B TOOL=T1B     forcer une correspondance
 Détail, preuves et journaux : `docs/55-popup-de-correspondance-des-filaments-v1.md`
 et ADR-056. Session précédente : doc 54 et ADR-055.
 
+**Le Z accepté se tape maintenant dans l'éditeur de maillage** (port `7130`),
+dans la barre du haut, à côté du profil. « Reprendre » recopie le décalage en
+vigueur sur la machine — celui que l'on vient de trouver à l'œil pendant une
+première couche — et « Enregistrer Z » le garde pour ce profil. Il s'applique au
+démarrage d'impression suivant. Doc 56 et ADR-057.
+
+**La surextrusion à l'arrivée du remplissage sur les parois est diagnostiquée**,
+et ce n'est pas le maillage : le `pressure_advance_smooth_time` de `0,040 s` est
+plus long que les rampes de freinage de la machine, qui durent `0,029 s`. Rien
+n'a été corrigé ni testé, la calibration demande une impression. Doc 57.
+
 ## État réel
 
 La machine est au repos et cohérente avec le dépôt. Relevé à la clôture :
@@ -36,9 +47,14 @@ sur la machine sont identiques à celles du dépôt :
 k1-control-owned-start-print-v2.cfg   c46527dc369d7d327a1521a1feba8f13
 kctrl_wait.py                         b8a680c3cdd5c1faac0f066920eeb548
 kctrl_slot_map.py                     e446f4de6e14308e243ac363acb7a335
+
+mesh-editor/server.py                 5fb3fb44765c8f1f2404029530e1de26
+mesh-editor/www/app.mjs               6c0af23d7d0adf546051b92726c781ba
+mesh-editor/www/index.html            894334d9bf9ff81ccf9ba2cd69b742a4
+mesh-editor/www/styles.css            957f037e67bacd1102bff7653e3f37d3
 ```
 
-Suite complète en local : `1034` verts, `2` rouges laissés volontairement (voir
+Suite complète en local : `1053` verts, `2` rouges laissés volontairement (voir
 plus bas).
 
 Une CI GitHub tourne désormais à chaque poussée et sur chaque PR
@@ -182,6 +198,17 @@ conservés. Retour arrière : remettre les trois `-active-`. Sauvegarde machine 
 ## Prochaine action
 
 Machine froide, Thomas présent, dans cet ordre :
+
+D'abord, deux gestes courts qui ne demandent pas la machine chaude :
+
+- **Enregistrer le Z réellement voulu.** Le profil porte `+0,040 mm` alors que
+  Thomas a imprimé à `0`. Ouvrir l'éditeur de maillage, « reprendre »,
+  « Enregistrer Z » : le démarrage suivant part sur la bonne hauteur.
+- **Passer `pressure_advance_smooth_time` à `0,020 s`**, puis une tour de
+  réglage du Pressure Advance pour le PLA. Doc 57 porte le calcul et l'ordre
+  des opérations.
+
+Ensuite :
 
 1. **Un vrai départ depuis l'écran tactile**, buse nettoyée à la main au
    préalable. C'est le seul test qui prouve le popup, la correspondance et le
