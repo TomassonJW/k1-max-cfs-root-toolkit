@@ -1,21 +1,29 @@
 # HANDOFF — index de reprise
 
-Mise à jour : 2026-09-02, après la session « CFS : choix de l'emplacement,
-rechargement automatique, température ».
+Mise à jour : 2026-09-02, après la session « le popup de correspondance des
+filaments ».
 
 ## Reprise immédiate
 
-Le CFS choisit de nouveau sa bobine, et le rechargement de fin de bobine est
-réarmé. Trois commandes suffisent, depuis Mainsail :
+**Lancer les impressions depuis l'écran tactile, l'application Creality ou la
+page web Creality.** C'est là que vit le popup d'origine : les filaments du
+G-code avec leurs couleurs d'un côté, les bobines du CFS de l'autre, on les met
+en face, et il n'y a rien d'autre à faire. Fluidd et Mainsail n'ont pas ce
+popup — c'est pour cela que tout partait sur `T1A`.
+
+`START_PRINT` lit maintenant la réponse du popup. Le rechargement automatique en
+cours d'impression est armé.
+
+Sans écran dans la boucle, trois commandes font le même travail :
 
 ```
-KCTRL_SLOTS                      voir les bobines et celle qui sera utilisée
-KCTRL_SLOT SLOT=T2A              choisir la bobine du prochain print
-KCTRL_SLOT SLOT=T2B TOOL=T1B     deuxième couleur d'un print multi-filament
+KCTRL_MAP                        voir la correspondance filament -> emplacement
+KCTRL_SLOTS                      voir les bobines et celle qui partira
+KCTRL_SLOT SLOT=T2B TOOL=T1B     forcer une correspondance
 ```
 
-Détail, preuves et réserves : `docs/54-cfs-selection-emplacement-rechargement-et-temperature-v1.md`
-et ADR-055.
+Détail, preuves et journaux : `docs/55-popup-de-correspondance-des-filaments-v1.md`
+et ADR-056. Session précédente : doc 54 et ADR-055.
 
 ## État réel
 
@@ -25,11 +33,12 @@ Klipper `ready`, impression `standby`, chauffes à `0`, maillage actif
 sur la machine sont identiques à celles du dépôt :
 
 ```
-k1-control-owned-start-print-v2.cfg   b8bde5ea6bc43c048ef02ac75253fcb1
+k1-control-owned-start-print-v2.cfg   c46527dc369d7d327a1521a1feba8f13
 kctrl_wait.py                         b8a680c3cdd5c1faac0f066920eeb548
+kctrl_slot_map.py                     e446f4de6e14308e243ac363acb7a335
 ```
 
-Suite complète en local : `1006` verts, `2` rouges laissés volontairement (voir
+Suite complète en local : `1034` verts, `2` rouges laissés volontairement (voir
 plus bas).
 
 Une CI GitHub tourne désormais à chaque poussée et sur chaque PR
@@ -72,6 +81,12 @@ et pourquoi est écrit dans l'ADR-054.
 - **Le rechargement automatique n'est pas encore prouvé de bout en bout.** Toute
   la chaîne est vérifiée pièce par pièce, mais seule une bobine réellement
   épuisée en cours d'impression peut le démontrer.
+- **Le popup de correspondance n'a pas été vu tourner.** La table qu'il écrit
+  est lue et prouvée à froid, mais aucune impression n'a été lancée depuis
+  l'écran. Premier vrai départ à faire par Thomas. Voir doc 55.
+- **Le multi-filament n'a jamais tourné sur cette machine.** Les changements de
+  couleur passent par le `cmd_T` stock, qui lit les volumes de purge dans le
+  fichier tranché ; rien de tout cela n'a été exécuté ici.
 - **Le rapport de purge ne mesure rien d'utile.** Il a affiché `-2 mm` : les
   routines box émettent des `G92 E0` dans l'étape matière et l'axe extrudeur
   repart de zéro sous le repère. Il le dit désormais au lieu d'afficher un
@@ -94,7 +109,9 @@ et pourquoi est écrit dans l'ADR-054.
 ### Pièges de la machine, à ne pas redécouvrir
 
 - `FIRMWARE_RESTART` relit la configuration mais **pas** les modules Python.
-  Modifier `kctrl_wait.py` exige `/etc/init.d/S55klipper_service restart`. Si
+  Modifier `kctrl_wait.py` ou `kctrl_slot_map.py` exige
+  `/etc/init.d/S55klipper_service restart`, qui remet le maillage actif sur
+  `default` — le recharger derrière. Si
   les contrôles de mouvement de l'écran meurent ensuite :
   `/etc/init.d/S99start_app restart`.
 - **Ne jamais lancer `SAVE_CONFIG` sur cette imprimante.**
@@ -136,11 +153,9 @@ intervention mécanique n'est nécessaire.
 ADR-044 fixe la règle : aucune garde ne doit être réinstallée sur les
 primitives `BOX_*` sans une capture équivalente pour son remplaçant.
 
-**Défaut réel confirmé au passage** : pendant le chargement, la cible de buse
-tombe à `0 °C` juste après l'arrivée du filament, remonte à `200 °C`, puis la
-purge annonce `flush_temp: 220`. Le `220` vient de `Tn_extrude_temp` codé en
-dur dans `box.cfg`, pas du G-code. C'est la cause directe d'une purge quasi
-vide au premier essai, et c'est la cible de la tranche « températures ».
+**Défaut relevé au passage, traité depuis** : la purge annonçait
+`flush_temp: 220`, issu de `Tn_extrude_temp` codé en dur dans `box.cfg`. La
+valeur est à `200` depuis le 2 septembre. Voir doc 54.
 
 ## Verrou CFS et sortie de secours
 
@@ -168,19 +183,16 @@ conservés. Retour arrière : remettre les trois `-active-`. Sauvegarde machine 
 
 Machine froide, Thomas présent, dans cet ordre :
 
-1. **Sortir la température du CFS.** L'obstacle supposé n'en est pas un :
-   `box_wrapper...so` est du Cython compilé depuis du Python ordinaire, sans
-   `__pyx_vtable`, donc les attributs de l'objet `box` vivent dans un `__dict__`
-   normal et un autre module Klipper peut les écraser à chaud. `virtual_sdcard.py`
-   le fait déjà (`box_obj.box_action.box_state.Tn_data`). Le véhicule existe :
-   `kctrl_wait.py` est à nous et déjà chargé. Reste une passe d'introspection
-   pour lire les vrais noms d'attributs, puis une commande qui impose la
-   température de première couche du G-code avant que le CFS agisse. Coûte un
-   redémarrage du service Klipper, pas un `FIRMWARE_RESTART`.
-2. **Refaire le compteur de purge en Python**, sur la position du moteur pas à
+1. **Un vrai départ depuis l'écran tactile**, buse nettoyée à la main au
+   préalable. C'est le seul test qui prouve le popup, la correspondance et le
+   chargement sur la bobine choisie. Vérifier ensuite `KCTRL_MAP` : il doit
+   montrer ce qui a été choisi à l'écran.
+2. **Un multi-filament**, deux couleurs, pour voir les changements d'outil et
+   les purges du trancheur. Jamais exécuté sur cette machine.
+3. **Confirmer les `120 mm`** de purge à l'œil au-dessus du bac.
+4. **Refaire le compteur de purge en Python**, sur la position du moteur pas à
    pas, immune aux `G92`. Il remplacera l'arithmétique par un nombre.
-3. **Confirmer les `120 mm`** à l'œil au-dessus du bac au prochain démarrage.
-4. Correctif Z-par-profil, puis bande de température supplémentaire.
+5. Correctif Z-par-profil, puis bande de température supplémentaire.
 5. Ligne d'amorce sur `CX_PRINT_DRAW_ONE_LINE_V2`, vitesse portée d'environ
    `F3000` à `F9000`.
 6. Rendre le serveur de l'éditeur de maillage persistant au redémarrage.

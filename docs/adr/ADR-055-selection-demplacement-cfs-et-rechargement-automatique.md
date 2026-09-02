@@ -2,7 +2,8 @@
 
 Date : 2026-09-02
 
-Statut : **accepté**. Remplace l'ADR-051.
+Statut : **accepté**, complété et partiellement corrigé par l'ADR-056.
+Remplace l'ADR-051.
 
 ## Contexte
 
@@ -24,7 +25,8 @@ sont écrites par ses propres commandes.**
 1. `KCTRL_SLOT` écrit `Tnn_map` par `BOX_MODIFY_TN` **et** mémorise
    l'emplacement pour l'appel direct du démarrage. Les deux routes disent la
    même chose, donc un rechargement automatique qui réécrit `Tnn_map` reste
-   cohérent avec nous.
+   cohérent avec nous. *(La mémorisation a été retirée par l'ADR-056 : une
+   seule table, pas de copie.)*
 2. `filament_sensor_2` est armé en fin de `START_PRINT` et désarmé par
    `END_PRINT` et `CANCEL_PRINT`, redéfinis, `END_PRINT_NO_M84` laissé stock.
 3. `Tn_extrude_temp` descend à `200` dans `box.cfg`. La clé n'est pas acceptée
@@ -44,12 +46,15 @@ sont écrites par ses propres commandes.**
   module ne lit pas le fichier que l'écran écrit. Le seul réglage réel est le
   repli global.
 - Une session PETG demande de remonter `Tn_extrude_temp` et de redémarrer.
-- La sélection ne passe pas par l'écran de la machine : l'écran écrit `Tnn_map`
-  par son propre chemin, que `START_PRINT` ne relit pas. `KCTRL_SLOT` est le
-  point d'entrée unique tant que l'interface K1 Control ne l'expose pas.
+- ~~La sélection ne passe pas par l'écran de la machine.~~ **Faux, corrigé par
+  l'ADR-056.** L'écran écrit bien `Tnn_map`, par `BOX_MODIFY_TN`, après son
+  popup de correspondance. Si `START_PRINT` ne la relisait pas, c'est que
+  Klipper ne publie pas cette table ; un objet en lecture seule la publie
+  désormais, et `kctrl_slot` a été supprimée au profit de `Tnn_map` seule.
 
 ## Voir aussi
 
+- ADR-056 — complète et corrige celle-ci
 - ADR-051 — remplacé
 - ADR-032 — propriétaire direct, resté désactivé
 - doc 54 — preuves, commandes et pièges

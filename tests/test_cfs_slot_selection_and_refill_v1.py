@@ -111,10 +111,26 @@ def test_no_rename_existing_on_a_section_this_file_redefines():
 
 
 # --------------------------------------------------------- choix de la bobine
-def test_start_print_does_not_hardcode_the_slot():
+def test_start_print_reads_the_slot_from_the_cfs_table():
+    # Une seule source de verite : Tnn_map, ecrite par le popup de l'ecran, par
+    # un rechargement automatique, ou par KCTRL_SLOT. Rien n'est stocke a cote.
     body = section("START_PRINT")
-    assert 'printer.save_variables.variables.get("kctrl_slot")' in body
-    assert "params.TOOL|default(saved_slot if saved_slot else c.default_tool)" in body
+    assert 'printer["kctrl_slot_map"]' in body
+    assert 'slot_map.map.get("T1A")' in body
+    assert "VARIABLE=kctrl_slot" not in config_text()
+    assert 'get("kctrl_slot")' not in config_text()
+
+
+def test_start_print_refuses_to_guess_when_the_table_is_unreadable():
+    # Repartir sur T1A en silence est exactement la panne que tout ceci corrige.
+    body = section("START_PRINT")
+    guard = body.index("{% if not tool %}")
+    assert "action_raise_error" in body[guard:guard + 400]
+    assert body.index("{% if not tool %}") < body.index("BOX_MODIFY_TN T1A={tool}")
+
+
+def test_the_slot_map_object_is_declared():
+    assert '[kctrl_slot_map]' in config_text()
 
 
 def test_start_print_refuses_an_empty_slot():
@@ -131,21 +147,16 @@ def test_start_print_points_the_stock_table_at_the_slot_before_loading():
         lines, "_KCTRL_CFS_LOAD TOOL={tool} ATTEMPT=1")
 
 
-def test_kctrl_slot_writes_the_table_before_it_remembers_anything():
-    # Si l'ecriture de la table echoue, la variable ne doit pas revendiquer une
-    # route que le CFS ignore.
+def test_kctrl_slot_writes_the_table_and_nothing_else():
+    # Deux ecritures, c'est deux verites qui divergent des que l'ecran ou un
+    # rechargement automatique touche la table sans passer par nous.
     lines = commands("KCTRL_SLOT")
-    assert index_of(lines, "BOX_MODIFY_TN {logical}={slot}") < index_of(
-        lines, "SAVE_VARIABLE VARIABLE=kctrl_slot")
+    assert index_of(lines, "BOX_MODIFY_TN {logical}={slot}") >= 0
+    assert [line for line in lines if line.startswith("SAVE_VARIABLE")] == []
 
 
-def test_kctrl_slot_only_remembers_the_first_filament():
-    # Seul le premier chargement se fait dans START_PRINT ; les suivants passent
-    # par le cmd_T stock et n'ont besoin que de la table.
-    body = section("KCTRL_SLOT")
-    remember = body.index("SAVE_VARIABLE VARIABLE=kctrl_slot")
-    guard = body.rindex('{% if logical == "T1A" %}', 0, remember)
-    assert guard < remember
+def test_kctrl_slots_reads_the_selection_from_the_same_table():
+    assert 'printer["kctrl_slot_map"].map.get("T1A"' in section("KCTRL_SLOTS")
 
 
 def test_kctrl_slot_validates_both_ends_of_the_mapping():
