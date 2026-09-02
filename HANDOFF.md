@@ -15,9 +15,17 @@ k1-control-owned-start-print-v2.cfg   cf93f361b31660ae7ef3841a3d1a4e55
 kctrl_wait.py                         b8a680c3cdd5c1faac0f066920eeb548
 ```
 
-Branche `codex/owned-start-print-v2`, PR #38 ouverte, tout est poussé, rien ne
-reste en local. Suite complète : `1006` verts, `2` rouges laissés volontairement
-(voir plus bas).
+Suite complète en local : `1006` verts, `2` rouges laissés volontairement (voir
+plus bas).
+
+Une CI GitHub tourne désormais à chaque poussée et sur chaque PR
+(`.github/workflows/tests.yml`) : `pytest` et les tests du front de l'éditeur
+de maillage. Elle couvre `834` tests. Elle **ne peut pas** couvrir seize
+modules qui s'appuient sur les captures brutes de `inventory/raw/`, que
+`.gitignore` garde volontairement hors du dépôt — identité machine, relevés
+privés, G-code de plusieurs mégaoctets. Ces seize-là ne tournent que sur la
+machine qui détient les preuves, et ils sont nommés un par ligne dans le
+workflow plutôt que masqués derrière un motif.
 
 ### Ce que cette session a fermé
 
