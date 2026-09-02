@@ -31,6 +31,14 @@ vigueur sur la machine — celui que l'on vient de trouver à l'œil pendant une
 première couche — et « Enregistrer Z » le garde pour ce profil. Il s'applique au
 démarrage d'impression suivant. Doc 56 et ADR-057.
 
+**Les ondulations sur les longues lignes viennent du maillage, pas d'un réglage
+d'impression.** Le `11 × 11` en vigueur porte `0,08 mm` d'ondulation crête à
+crête sur 60 mm de ligne droite, pour une couche de `0,20 mm` — 39 % de ses
+écarts entre points voisins dépassent `0,030 mm`. L'interpolation est hors de
+cause (dépassement mesuré : `0,007 mm`). Reste à trancher entre un palpeur qui
+bruite et une tôle qui ne repose pas à plat : nettoyage, repose de la feuille,
+repalpage du même maillage, comparaison. Doc 58.
+
 **La surextrusion à l'arrivée du remplissage sur les parois est diagnostiquée**,
 et ce n'est pas le maillage : le `pressure_advance_smooth_time` de `0,040 s` est
 plus long que les rampes de freinage de la machine, qui durent `0,029 s`. Rien
@@ -207,6 +215,10 @@ D'abord, deux gestes courts qui ne demandent pas la machine chaude :
 - **Passer `pressure_advance_smooth_time` à `0,020 s`**, puis une tour de
   réglage du Pressure Advance pour le PLA. Doc 57 porte le calcul et l'ordre
   des opérations.
+- **Mesurer à la règle la longueur d'onde des vagues** sur la dernière pièce :
+  `≈ 30 mm` désigne le maillage, `≈ 5 mm` la résonance. Doc 58, section 8.
+- **Nettoyer sous la feuille magnétique, la reposer, repalper le `11 × 11`** et
+  comparer au maillage en vigueur. C'est l'expérience qui tranche. Doc 58.
 
 Ensuite :
 
