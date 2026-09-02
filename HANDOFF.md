@@ -1,8 +1,8 @@
 # HANDOFF — index de reprise
 
-Mise à jour : 2026-09-02, après la session « le Z accepté dans l'éditeur de
-maillage », le diagnostic des ondulations, puis la mesure de résonance des
-deux axes.
+Mise à jour : 2026-09-02 au soir, après la session « le Z accepté dans
+l'éditeur de maillage », le diagnostic des ondulations, et deux séries de
+mesures de résonance. Une impression tournait à la clôture.
 
 ## Reprise immédiate
 
@@ -31,6 +31,12 @@ dans la barre du haut, à côté du profil. « Reprendre » recopie le décalage
 vigueur sur la machine — celui que l'on vient de trouver à l'œil pendant une
 première couche — et « Enregistrer Z » le garde pour ce profil. Il s'applique au
 démarrage d'impression suivant. Doc 56 et ADR-057.
+
+**L'écran brosse la buse tout seul avant de démarrer, c'est normal.** Il envoie
+`CX_NOZZLE_CLEAR` directement par l'API, et cette macro Creality chauffe le lit
+à `50 C` — sa valeur par défaut, pas celle du fichier. Notre `START_PRINT` ne
+brosse pas et ne recalibre rien. Voir un brossage et un lit à 50 au lancement
+n'est donc pas le signe que la mauvaise séquence part.
 
 **Les ondulations ne viennent pas du maillage.** Longueur d'onde mesurée à la
 règle : `3 à 10 mm`, là où les points du maillage sont espacés de 29 mm. Le
@@ -157,6 +163,11 @@ et pourquoi est écrit dans l'ADR-054.
   `default` — le recharger derrière. Si
   les contrôles de mouvement de l'écran meurent ensuite :
   `/etc/init.d/S99start_app restart`.
+- **Vérifier `print_stats.state` avant toute commande machine.** Une impression
+  peut avoir été lancée depuis l'écran entre deux échanges, sans que rien ne le
+  signale ici. Le 2026-09-02 un `TURN_OFF_HEATERS` est parti sur une machine
+  qu'on croyait au repos : la buse est tombée de `190` à `175 C` en pleine
+  première couche avant d'être rétablie.
 - **Ne jamais lancer `SAVE_CONFIG` sur cette imprimante.** Attention : la règle
   ne couvre pas tout. `SHAPER_CALIBRATE` écrit dans `printer.cfg` de lui-même,
   sans qu'aucun `SAVE_CONFIG` soit demandé — observé le 2026-09-02, journal
@@ -238,9 +249,11 @@ D'abord, deux gestes courts qui ne demandent pas la machine chaude :
 - **Passer `pressure_advance_smooth_time` à `0,020 s`**, puis une tour de
   réglage du Pressure Advance pour le PLA. Doc 57 porte le calcul et l'ordre
   des opérations.
-- **Réimprimer la même pièce** et repasser l'ongle sur les couches 2 et 3 : le
-  relief doit avoir disparu. C'est la seule preuve que le nouveau réglage
-  fonctionne, et elle n'est pas encore faite. Doc 60.
+- **Juger la pièce en cours à l'ongle**, couches 2 et 3 : le relief doit avoir
+  disparu. C'est la seule preuve que le nouveau réglage fonctionne, et elle
+  n'est pas encore faite. Réserve : cette impression a subi une chute de
+  température de `190` à `175 C` en première couche, sans effet attendu sur les
+  couches 2 et 3. Doc 60 et 61.
 - **Baisser l'accélération du trancheur.** Le profil imprime le remplissage
   plein à `9500 mm/s²` ; les mesures conseillent `3000` sur X et `4500` sur Y.
   Au-delà, le filtre arrondit les angles. Doc 60.
