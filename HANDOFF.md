@@ -1,7 +1,8 @@
 # HANDOFF — index de reprise
 
 Mise à jour : 2026-09-02, après la session « le Z accepté dans l'éditeur de
-maillage » puis le diagnostic des ondulations des couches 2 et 3.
+maillage », le diagnostic des ondulations, puis la mesure de résonance des
+deux axes.
 
 ## Reprise immédiate
 
@@ -38,13 +39,16 @@ bien `0,08 mm` d'ondulation crête à crête sur 60 mm, et un repalpage après
 nettoyage sous la feuille magnétique reste utile — mais pour le maillage
 lui-même, pas pour ce défaut-là.
 
-**L'input shaping de la machine n'est qu'à moitié calibré.** `ei` à `57,2 Hz`
-sur les deux axes au dixième près : la macro d'usine ne mesure que **Y** et
-recopie sur X. L'accéléromètre est monté en permanence, mesurer X ne demande
-aucun matériel. Modifier le maillage ou le Z n'a aucun effet sur ce réglage.
-Attention : la disparition du défaut à la couche 4 ne prouve pas la vibration —
-`bottom_shell_layers: 3` fait qu'il n'y a plus de surface pleine à regarder, et
-`slow_down_layers: 3` fait de la couche 4 la première à pleine vitesse. Doc 59.
+**L'input shaping est mesuré et appliqué.** X tournait à `57,2 Hz` recopié de Y
+alors qu'il résonne à `36,0 Hz` — 60 % d'écart, et à 270 mm/s cela fait une
+ondulation tous les 7,5 mm, exactement le relief senti sur les couches 2 et 3.
+En vigueur et écrit dans `printer.cfg` : X `ei` à `36,0 Hz`, Y `mzv` à
+`42,6 Hz`. Modifier le maillage ou le Z n'a aucun effet sur ce réglage.
+
+**Mais X n'est pas sain.** Aucun des cinq filtres ne descend sous 14 % de
+vibrations résiduelles, là où un axe en bon état passe sous 5 %. Et Y a perdu
+11 % de fréquence depuis l'usine (`57,2` → `50,6 Hz`). Les courroies se sont
+détendues : reprendre la tension de X, puis rebalayer. Doc 60.
 
 **La surextrusion à l'arrivée du remplissage sur les parois est diagnostiquée**,
 et ce n'est pas le maillage : le `pressure_advance_smooth_time` de `0,040 s` est
@@ -145,7 +149,11 @@ et pourquoi est écrit dans l'ADR-054.
   `default` — le recharger derrière. Si
   les contrôles de mouvement de l'écran meurent ensuite :
   `/etc/init.d/S99start_app restart`.
-- **Ne jamais lancer `SAVE_CONFIG` sur cette imprimante.**
+- **Ne jamais lancer `SAVE_CONFIG` sur cette imprimante.** Attention : la règle
+  ne couvre pas tout. `SHAPER_CALIBRATE` écrit dans `printer.cfg` de lui-même,
+  sans qu'aucun `SAVE_CONFIG` soit demandé — observé le 2026-09-02, journal
+  `save_config: set [input_shaper] shaper_freq_x = 50.6`. Sauvegarder le fichier
+  **avant** de lancer la commande, pas après. Doc 60.
 - `scp` n'existe pas ici. Déployer par `ssh hote "cat > /chemin" < fichier`.
 - `grep` n'a pas `--include`, `pkill` n'existe pas, `curl` refuse `-s`, `-S`,
   `-o` et `-w`.
@@ -222,13 +230,14 @@ D'abord, deux gestes courts qui ne demandent pas la machine chaude :
 - **Passer `pressure_advance_smooth_time` à `0,020 s`**, puis une tour de
   réglage du Pressure Advance pour le PLA. Doc 57 porte le calcul et l'ordre
   des opérations.
-- **Passer l'ongle sur les couches 2 et 3** de la dernière pièce : si ça
-  accroche, c'est de la vibration et il faut calibrer X ; si c'est plat au
-  toucher, c'est le débit qui module et le shaper n'y changera rien. Doc 59.
-- **Mesurer réellement X** : `SHAPER_CALIBRATE AXIS=x` puis `AXIS=y`, machine à
-  l'arrêt, accord de Thomas — opération physique et bruyante. Appliquer avec
-  `SET_INPUT_SHAPER` et reporter à la main dans le bloc `#*#` : `CXSAVE_CONFIG`
-  est la variante Creality de `SAVE_CONFIG`, interdite ici. Doc 59.
+- **Réimprimer la même pièce** et repasser l'ongle sur les couches 2 et 3 : le
+  relief doit avoir disparu. C'est la seule preuve que le nouveau réglage
+  fonctionne, et elle n'est pas encore faite. Doc 60.
+- **Baisser l'accélération du trancheur.** Le profil imprime le remplissage
+  plein à `9500 mm/s²` ; les mesures conseillent `2600` sur X et `5300` sur Y.
+  Au-delà, le filtre arrondit les angles. Doc 60.
+- **Reprendre la tension de la courroie X**, puis rebalayer les deux axes : les
+  fréquences auront changé. Opération physique, accord de Thomas. Doc 60.
 - **Nettoyer sous la feuille magnétique, la reposer, repalper le `11 × 11`** et
   comparer au maillage en vigueur. C'est l'expérience qui tranche. Doc 58.
 

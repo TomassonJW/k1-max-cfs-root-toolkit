@@ -1673,3 +1673,34 @@ pleine vitesse — un défaut de vitesse y serait pire, pas absent.
 
 Aucune mesure de résonance lancée, impression en cours. Les fréquences réelles
 de X et Y restent inconnues. Doc 59.
+
+## Mise à jour 2026-09-02 — input shaping mesuré sur les deux axes
+
+Balayages réels à l'accéléromètre de tête, plateau vide, buse nettoyée.
+
+| | Avant | Après |
+| --- | --- | --- |
+| X | `ei` à `57,2 Hz` | `ei` à `36,0 Hz` |
+| Y | `ei` à `57,2 Hz` | `mzv` à `42,6 Hz` |
+
+X était à 60 % de sa fréquence réelle : la valeur affichée était une recopie de
+Y, produite par le code Creality qui annonce lui-même `copy_TestAxis_y_to_x`. À
+270 mm/s, 36 Hz donne une ondulation tous les 7,5 mm, ce qui correspond aux 3 à
+10 mm mesurés à la règle et au relief senti au doigt.
+
+Le calibrage embarqué n'évalue qu'un seul filtre, `ei`, imposé par
+`variable_autotune_shapers` dans `gcode_macro.cfg`. Les cinq filtres ont été
+réévalués hors ligne sur les données brutes ; sur Y, `mzv` à `42,6 Hz` fait
+mieux qu'`ei` sur tous les critères. Contrôle de méthode : `ei` sur Y retombe
+exactement sur les chiffres annoncés par la machine.
+
+Sur X, aucun filtre ne descend sous 14 % de vibrations résiduelles, et Y a perdu
+11 % de fréquence depuis l'usine. Les courroies se sont détendues ; le réglage
+appliqué améliore l'état actuel mais ne remplace pas une reprise de tension
+suivie d'un nouveau balayage.
+
+Piège découvert : `SHAPER_CALIBRATE` écrit dans `printer.cfg` sans qu'aucun
+`SAVE_CONFIG` soit demandé. Sauvegarder avant, pas après.
+
+Appliqué à chaud et écrit à la main dans le bloc `#*#`. Aucune impression
+d'essai depuis : la preuve que le relief a disparu reste à faire. Doc 60.
