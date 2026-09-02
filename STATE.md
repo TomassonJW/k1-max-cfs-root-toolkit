@@ -1,6 +1,21 @@
 # STATE
 
-Last updated: 2026-09-01
+Last updated: 2026-09-02
+
+Mise à jour prioritaire : le popup de correspondance des filaments n'avait pas
+disparu, il n'avait jamais été appelé. Il appartient aux surfaces Creality —
+écran tactile, application, page web — et dix-neuf impressions sur vingt sont
+parties de Fluidd ou de Mainsail, qui ne l'ont pas. Le firmware analyse pourtant
+chaque fichier tranché et propose déjà la correspondance : `types : PLA;PLA;PLA;PLA`,
+`colors : #000000;#ffffff;#ff0000;#0080ff`, puis `T1A=T1A T1B=T1D T1C=T2A T1D=T2B`.
+Il l'applique par `BOX_MODIFY_TN`, qui écrit `Tnn_map` dans `tn_data.json`.
+Second verrou : Klipper ne publie pas cette table, donc `START_PRINT` ne pouvait
+pas lire la réponse. Un objet en lecture seule, `kctrl_slot_map`, la publie
+désormais ; `START_PRINT` résout l'emplacement par `map["T1A"]` et refuse de
+démarrer si la table est illisible, au lieu de repartir sur `T1A` en silence.
+La variable `kctrl_slot` est supprimée : une seule table, trois écrivains — le
+popup, le rechargement automatique, `KCTRL_SLOT`. Vérifié à froid le 2 septembre,
+aucune impression lancée. Voir doc 55 et ADR-056.
 
 Mise à jour prioritaire : la chaîne de calibration est autonome et le plateau a
 atteint son plancher mécanique. Deux commandes suffisent désormais et Thomas les
@@ -89,11 +104,11 @@ Règle contraignante ajoutée : aucune calibration ni palpage Z sans nettoyage
 manuel de la buse confirmé par Thomas, ce qui impose le retrait préalable du
 filament. Aucun substitut automatique n'existe. Voir ADR-045.
 
-Défaut réel resté ouvert et prouvé par la même capture : la cible de buse tombe
-à `0 °C` puis remonte à `200 °C` pendant le chargement, tandis que la purge
-utilise `flush_temp: 220` issu de `Tn_extrude_temp` codé en dur dans `box.cfg`.
-C'est la cause directe du parasitage de température signalé par Thomas et la
-première tranche de fond à traiter.
+Défaut de température : la purge utilisait `flush_temp: 220` issu de
+`Tn_extrude_temp` codé en dur dans `box.cfg`. **Traité le 2 septembre** : la clé
+n'est pas modifiable à chaud, la valeur est descendue à `200` dans le fichier
+avec redémarrage Klipper. Réserve PETG, il faut la remonter pour une session
+PETG. Voir doc 54 et ADR-055.
 
 Purge de démarrage, état arrêté le 2 septembre : les `140 mm` annoncés par
 `box.cfg` ne sortent pas. La reconstitution du log donne de l'ordre de

@@ -9,11 +9,15 @@ perdues sont rétablies. La quatrième — la température imposée — est trai
 ## 1. Ce qui était cassé, et pourquoi
 
 **Tout partait sur `T1A`.** Le démarrage possédé charge le CFS en appelant
-`BOX_EXTRUDE_MATERIAL TNN=<emplacement>` directement. C'est le seul chemin qui
-charge de façon fiable sans le mappage que seul le travail écran transporte,
-mais il adresse un emplacement **physique** et contourne donc `Tnn_map`, la
-table que le firmware consulte normalement. L'emplacement passé venait de
-`variable_default_tool`, figé à `T1A`.
+`BOX_EXTRUDE_MATERIAL TNN=<emplacement>` directement. Il adresse un emplacement
+**physique** et contourne donc `Tnn_map`, la table que le firmware consulte
+normalement. L'emplacement passé venait de `variable_default_tool`, figé à
+`T1A`.
+
+> Corrigé depuis, voir doc 55 et ADR-056 : `START_PRINT` lit désormais `Tnn_map`,
+> et la mention d'un « mappage que seul le travail écran transporte » était
+> inexacte — la table vit dans `tn_data.json`, elle n'était simplement pas
+> publiée par Klipper.
 
 **Le rechargement automatique ne pouvait pas se déclencher.** Il est porté par
 `BOX_CHECK_MATERIAL_REFILL`, et cette commande n'est appelée qu'à un seul
