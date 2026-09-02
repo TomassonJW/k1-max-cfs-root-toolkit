@@ -104,6 +104,10 @@ donné la boule qui se décroche ; `180 mm` restent à confirmer. Le rapport
 automatique ne mesure rien d'utile — les routines box remettent l'axe
 extrudeur à zéro — il le dit désormais au lieu d'afficher un chiffre faux.
 
+Surface imprimable réelle : `X 0 → 300`, `Y 0 → 295`, `Z 0 → 300`. La limite
+`Y` est appliquée ligne par ligne pendant l'impression dès qu'un CFS est
+déclaré, et met l'impression en pause. Détail et conséquences dans l'ADR-054.
+
 Mise à jour prioritaire : la purge de récupération de `30 mm` n'était pas une
 purge stock. Les traces exactes donnent `140 mm` au chargement initial ; le
 cycle actif lit maintenant les quantités Orca du G-code, y compris les matrices
