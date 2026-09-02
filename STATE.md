@@ -1730,3 +1730,24 @@ seul dans le fichier (`46,6` recopié sur les deux axes), corrigé après coup.
 
 Accélération conseillée : `3000` sur X, `4500` sur Y, contre `9500` dans le
 profil du trancheur. Aucune impression d'essai depuis. Doc 61.
+
+## Mise à jour 2026-09-02 au soir — clôture de session
+
+Réglage en vigueur et écrit dans `printer.cfg` : input shaper X `ei` à
+`40,2 Hz`, Y `mzv` à `39,0 Hz`. Maillage `k1_p001_t055_r001_n11x11` chargé,
+Z enregistré `+0,040` — toujours pas remis à `0` alors que Thomas imprime à `0`.
+
+L'écran envoie `CX_NOZZLE_CLEAR` de lui-même avant chaque départ, ce qui chauffe
+le lit à `50 C` et brosse la buse. C'est la macro Creality avec ses valeurs par
+défaut, pas notre `START_PRINT`, qui ne brosse pas et ne recalibre rien. Lancer
+depuis l'écran reste la bonne méthode : c'est là que vit le popup de
+correspondance des filaments.
+
+Une impression tournait à la clôture : `_CaillouVisageGOBO_PLA_1h34m.gcode`,
+7 mm de haut, 35 couches. C'est elle qui doit servir de preuve au nouveau
+réglage, à juger à l'ongle sur les couches 2 et 3.
+
+Incident : un `TURN_OFF_HEATERS` a été envoyé sur une machine crue au repos
+alors que l'impression venait d'être relancée depuis l'écran. La buse est tombée
+de `190` à `175 C` pendant la première couche avant rétablissement. Règle
+ajoutée au HANDOFF : vérifier `print_stats.state` avant toute commande machine.
