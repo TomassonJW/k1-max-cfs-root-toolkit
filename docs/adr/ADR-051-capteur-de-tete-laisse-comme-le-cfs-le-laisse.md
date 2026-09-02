@@ -2,7 +2,9 @@
 
 Date : 2026-09-01
 
-Statut : **accepté**, après un défaut constaté en production le soir même
+Statut : **remplacé** par l'ADR-055 le 2 septembre 2026. Le constat de
+production ci-dessous reste vrai ; c'est l'évaluation du coût de la reprise de
+`END_PRINT` qui était fausse.
 
 ## Contexte
 

@@ -1,7 +1,21 @@
 # HANDOFF — index de reprise
 
-Mise à jour : 2026-09-02, après la session « purge de démarrage, édition du
-maillage au pas, surface imprimable réelle ».
+Mise à jour : 2026-09-02, après la session « CFS : choix de l'emplacement,
+rechargement automatique, température ».
+
+## Reprise immédiate
+
+Le CFS choisit de nouveau sa bobine, et le rechargement de fin de bobine est
+réarmé. Trois commandes suffisent, depuis Mainsail :
+
+```
+KCTRL_SLOTS                      voir les bobines et celle qui sera utilisée
+KCTRL_SLOT SLOT=T2A              choisir la bobine du prochain print
+KCTRL_SLOT SLOT=T2B TOOL=T1B     deuxième couleur d'un print multi-filament
+```
+
+Détail, preuves et réserves : `docs/54-cfs-selection-emplacement-rechargement-et-temperature-v1.md`
+et ADR-055.
 
 ## État réel
 
@@ -11,7 +25,7 @@ Klipper `ready`, impression `standby`, chauffes à `0`, maillage actif
 sur la machine sont identiques à celles du dépôt :
 
 ```
-k1-control-owned-start-print-v2.cfg   cf93f361b31660ae7ef3841a3d1a4e55
+k1-control-owned-start-print-v2.cfg   b8bde5ea6bc43c048ef02ac75253fcb1
 kctrl_wait.py                         b8a680c3cdd5c1faac0f066920eeb548
 ```
 
@@ -50,10 +64,14 @@ et pourquoi est écrit dans l'ADR-054.
 
 ### Écarts ouverts, mesurés
 
-- **`Tn_extrude_temp: 220` de `box.cfg` reste imposé par le CFS.** Coût chiffré
-  le 2 septembre : environ `27 s` perdues à chaque démarrage à redescendre de
-  `220` vers la température du G-code, plus une mini-purge parasite de quelques
-  millimètres à `220 °C` avant la nôtre. C'est la première tranche de fond.
+- **`Tn_extrude_temp` est descendu à `200`** dans `box.cfg` le 2 septembre. La
+  clé n'est pas modifiable à chaud : `MODIFY_BOX_CFG TN_EXTRUDE_TEMP=` répond
+  `success` sans rien enregistrer, et `SAVE_BOX_CFG` confirme `ok:no save`. Une
+  session PETG demande de remonter la valeur dans le fichier puis de redémarrer
+  Klipper. Voir doc 54 et ADR-055.
+- **Le rechargement automatique n'est pas encore prouvé de bout en bout.** Toute
+  la chaîne est vérifiée pièce par pièce, mais seule une bobine réellement
+  épuisée en cours d'impression peut le démontrer.
 - **Le rapport de purge ne mesure rien d'utile.** Il a affiché `-2 mm` : les
   routines box émettent des `G92 E0` dans l'étape matière et l'axe extrudeur
   repart de zéro sous le repère. Il le dit désormais au lieu d'afficher un
