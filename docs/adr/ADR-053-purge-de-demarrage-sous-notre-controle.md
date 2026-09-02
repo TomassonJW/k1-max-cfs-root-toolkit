@@ -2,8 +2,8 @@
 
 Date : 2026-09-02
 
-Statut : **acceptée ; installée ; boule obtenue à `200 mm`, défaut ramené à
-`180 mm` à confirmer**
+Statut : **acceptée ; installée ; boule obtenue à `200 mm`, débordement à
+`180 mm`, plafond fixé à `120 mm`**
 
 ## Contexte
 
@@ -65,7 +65,7 @@ immédiat sur un capteur déjà plein, refus immédiat sur un capteur inconnu.
 température du G-code, attendue, avant `BOX_EXTRUDER_EXTRUDE`.
 
 **La quantité stock est laissée telle quelle, et complétée.** `140 mm`, sans
-`LEN=`, plus un complément possédé de `180 mm` juste avant elle. Parce que les
+`LEN=`, plus un complément possédé de `120 mm` juste avant elle. Parce que les
 `140 mm` annoncés par `box.cfg` ne sortent pas. Reconstitution depuis les
 statistiques de l'impression du 2 septembre à 00 h 23, seule trace de ce que
 fait réellement le module compilé :
@@ -83,10 +83,11 @@ pas `140`. L'opérateur avait raison : « ça n'envoie pas du tout 140 mm ».
 
 Le complément vise à ramener la purge réelle près des `140 mm` toujours visés,
 pas à ajouter une purge par-dessus une purge complète. Sa longueur n'est pas
-calculée, elle est jugée sur la plaque : `200 mm` essayés le 2 septembre ont
-donné la boule qui se décroche au lieu du filet qui pend. `180 mm` sont
-retenus comme valeur par défaut, choix de l'opérateur pour économiser un peu
-de filament à chaque démarrage ; à confirmer sur la prochaine impression.
+calculée, elle est jugée au-dessus du bac, et elle est bornée des deux côtés :
+`200 mm` essayés le 2 septembre ont donné la boule qui se décroche au lieu du
+filet qui pend ; `180 mm` essayés ensuite débordent légèrement du bac ;
+`120 mm` sont le plafond retenu par l'opérateur — assez pour former la boule,
+pas assez pour déborder.
 
 La longueur n'est pas passée à `BOX_MATERIAL_FLUSH LEN=` : `box.cfg` déclare
 `box_need_clean_length_max: 140`, donc une valeur supérieure pourrait être
@@ -146,10 +147,18 @@ Sur la machine : `kctrl_wait.py` déployé dans les extras de Klipper, service
 Klipper redémarré — un `FIRMWARE_RESTART` relit la configuration mais pas les
 modules Python — `KCTRL_WAIT_FILAMENT` enregistré, blocage réel mesuré y compris
 imbriqué dans un macro, sonde de test retirée, configuration relue et empreintes
-machine identiques au dépôt. **Le résultat se juge à l'œil sur la plaque** —
-c'est le seul juge de « boule » contre « filet ». `200 mm` ont donné la boule
-le 2 septembre. `180 mm`, la valeur par défaut retenue depuis, restent à
-confirmer au prochain démarrage.
+machine identiques au dépôt. **Le résultat se juge à l'œil au-dessus du bac** —
+c'est le seul juge de « boule » contre « filet », et il a tranché des deux
+côtés : `200 mm` donnent la boule, `180 mm` débordent, `120 mm` sont le
+plafond retenu.
+
+## Ce qui reste imposé par le CFS
+
+Une petite purge de quelques millimètres subsiste à `220 °C` avant la nôtre :
+c'est `BOX_EXTRUDER_EXTRUDE`, qui suit `Tn_extrude_temp` de `box.cfg` et non la
+température du G-code. Elle est parasite mais sans conséquence sur la boule, et
+la retirer suppose de reprendre la température imposée par le CFS, ce qui est un
+travail séparé.
 
 ## Conséquences
 
@@ -159,8 +168,8 @@ confirmer au prochain démarrage.
 - `kctrl_wait.py` est un module Python de Klipper. Toute modification exige un
   redémarrage du service, pas un simple `FIRMWARE_RESTART`.
 - La consommation par démarrage passe d'environ `55 mm` réels à environ
-  `235 mm` réels : les `55 mm` de la purge stock plus les `180 mm` du
-  complément. Valeur retenue à l'œil sur la plaque, la mesure automatique
+  `175 mm` réels : les `55 mm` de la purge stock plus les `120 mm` du
+  complément. Valeur retenue à l'œil au-dessus du bac, la mesure automatique
   n'étant pas fiable.
 
 - La sauvegarde de la configuration précédente est
@@ -172,8 +181,8 @@ confirmer au prochain démarrage.
 
 - **Ajouter `300 mm` de purge à nous** : construit, installé, puis retiré.
   `440 mm` par démarrage compensait à l'aveugle un problème d'ordre, sans le
-  corriger. Le complément qui subsiste fait `180 mm`, posé après l'attente du
-  filament et jugé sur le résultat imprimé.
+  corriger. Le complément qui subsiste fait `120 mm`, posé après l'attente du
+  filament et borné par le débordement observé à `180 mm`.
 
 - **Passer `LEN=` à `BOX_MATERIAL_FLUSH`** : susceptible d'être borné à `140`
   sans le dire.

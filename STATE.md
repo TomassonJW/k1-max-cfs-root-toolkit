@@ -98,9 +98,10 @@ première tranche de fond à traiter.
 Purge de démarrage, état arrêté le 2 septembre : les `140 mm` annoncés par
 `box.cfg` ne sortent pas. La reconstitution du log donne de l'ordre de
 `55 mm` réels pour la purge stock. `_KCTRL_PURGE_BALL` complète, valeur par
-défaut `180 mm`, posée après `KCTRL_WAIT_FILAMENT` et après le `M109` pour
-que rien ne pousse avant que le filament soit dans la tête. `200 mm` ont
-donné la boule qui se décroche ; `180 mm` restent à confirmer. Le rapport
+défaut `120 mm`, posée après `KCTRL_WAIT_FILAMENT` et après le `M109` pour
+que rien ne pousse avant que le filament soit dans la tête. `200 mm` donnent
+la boule qui se décroche, `180 mm` débordent du bac, `120 mm` est le plafond
+retenu. Le rapport
 automatique ne mesure rien d'utile — les routines box remettent l'axe
 extrudeur à zéro — il le dit désormais au lieu d'afficher un chiffre faux.
 

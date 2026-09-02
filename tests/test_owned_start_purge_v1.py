@@ -188,12 +188,12 @@ def test_any_top_up_is_pushed_in_full(length):
     assert extruded(rendered) == pytest.approx(length, abs=1e-3)
 
 
-def test_the_standing_default_is_the_length_judged_on_the_plate():
-    # Not arithmetic: 200 mm was run on 2026-09-02 and gave the ball that
-    # detaches instead of the strand that hangs. 180 is what the operator then
-    # chose as the standing default, to save a little filament per start.
-    # The value is a decision, so it is pinned here rather than left to drift.
-    assert variables("_KCTRL_PURGE_BALL")["purge_mm"] == 180.0
+def test_the_standing_default_is_the_length_judged_over_the_bin():
+    # Not arithmetic, and bounded on both sides. 200 mm gave the ball that
+    # detaches instead of the strand that hangs; 180 mm overflowed the bin;
+    # 120 mm is the ceiling the operator set from there. The value is a
+    # decision, so it is pinned here rather than left to drift.
+    assert variables("_KCTRL_PURGE_BALL")["purge_mm"] == 120.0
 
 
 def test_the_top_up_comes_after_the_wait_and_the_heat():
