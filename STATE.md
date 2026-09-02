@@ -1704,3 +1704,29 @@ Piège découvert : `SHAPER_CALIBRATE` écrit dans `printer.cfg` sans qu'aucun
 
 Appliqué à chaud et écrit à la main dans le bloc `#*#`. Aucune impression
 d'essai depuis : la preuve que le relief a disparu reste à faire. Doc 60.
+
+## Mise à jour 2026-09-02 — deuxième série : courroies saines, resserrage utile
+
+Après resserrage des vis par Thomas, quatre balayages : les deux axes et chaque
+courroie CoreXY séparément.
+
+Les courroies sont identiques à `0,3 Hz` près — `39,8` contre `40,1 Hz`, même
+largeur de pic, même répartition d'énergie. Rien à retendre.
+
+Le resserrage a servi : X est passé de `36,0` à `40,2 Hz`, l'énergie parasite
+sous 30 Hz de `47,9` à `35,3 %`, et les cinq bosses larges se sont réduites à
+une. Y est passé de `50,6` à `46,6 Hz` en `ei` ; la baisse n'est pas expliquée,
+la première série était sur machine chaude et la seconde sur machine froide.
+
+Il subsiste sur X un pic net à `14,0 Hz`, absent de Y (4,4 % d'énergie sous
+30 Hz) et des deux courroies (1,3 et 1,5 %). Trop bas pour une courroie ou un
+rail : une masse entière qui se balance latéralement — support, pieds, CFS,
+panneaux. À 270 mm/s il produit des vagues de 19 mm, alors que le défaut mesuré
+sur la pièce fait 3 à 10 mm : ce n'est pas lui qu'on voit, c'est le pic à 43 Hz.
+
+En vigueur et dans `printer.cfg` : X `ei` à `40,2 Hz`, Y `mzv` à `39,0 Hz`,
+vérifié dans la réponse de Klipper. `SHAPER_CALIBRATE` avait de nouveau écrit
+seul dans le fichier (`46,6` recopié sur les deux axes), corrigé après coup.
+
+Accélération conseillée : `3000` sur X, `4500` sur Y, contre `9500` dans le
+profil du trancheur. Aucune impression d'essai depuis. Doc 61.

@@ -40,15 +40,23 @@ nettoyage sous la feuille magnétique reste utile — mais pour le maillage
 lui-même, pas pour ce défaut-là.
 
 **L'input shaping est mesuré et appliqué.** X tournait à `57,2 Hz` recopié de Y
-alors qu'il résonne à `36,0 Hz` — 60 % d'écart, et à 270 mm/s cela fait une
-ondulation tous les 7,5 mm, exactement le relief senti sur les couches 2 et 3.
-En vigueur et écrit dans `printer.cfg` : X `ei` à `36,0 Hz`, Y `mzv` à
-`42,6 Hz`. Modifier le maillage ou le Z n'a aucun effet sur ce réglage.
+alors qu'il résonne autour de `40 Hz`, et à 270 mm/s cela fait une ondulation
+tous les 6 à 7 mm — exactement le relief senti sur les couches 2 et 3. En
+vigueur et écrit dans `printer.cfg` après deux séries de mesures : X `ei` à
+`40,2 Hz`, Y `mzv` à `39,0 Hz`. Modifier le maillage ou le Z n'a aucun effet sur
+ce réglage.
 
-**Mais X n'est pas sain.** Aucun des cinq filtres ne descend sous 14 % de
-vibrations résiduelles, là où un axe en bon état passe sous 5 %. Et Y a perdu
-11 % de fréquence depuis l'usine (`57,2` → `50,6 Hz`). Les courroies se sont
-détendues : reprendre la tension de X, puis rebalayer. Doc 60.
+**Les courroies sont bonnes, ne pas y toucher.** Mesurées séparément, elles
+tombent à `0,3 Hz` l'une de l'autre — `39,8` et `40,1 Hz`, même largeur, même
+énergie. Le resserrage des vis fait par Thomas a fait monter X de `36,0` à
+`40,2 Hz` et effondré la forêt de bosses parasites.
+
+**Il reste un pic à `14,0 Hz` sur X, et sur X seulement** : 35 % de l'énergie
+sous 30 Hz, contre 4 % sur Y et 1,5 % sur chaque courroie. Trop bas pour une
+courroie ou un rail, c'est une masse entière qui se balance — support, pieds,
+CFS posés contre la machine, panneaux. À 270 mm/s il produit des vagues de
+19 mm, donc ce n'est **pas** le défaut visible (mesuré à 3-10 mm, soit le pic à
+43 Hz, que le filtre corrige). Piste de fond, pas urgence. Doc 61.
 
 **La surextrusion à l'arrivée du remplissage sur les parois est diagnostiquée**,
 et ce n'est pas le maillage : le `pressure_advance_smooth_time` de `0,040 s` est
@@ -234,10 +242,12 @@ D'abord, deux gestes courts qui ne demandent pas la machine chaude :
   relief doit avoir disparu. C'est la seule preuve que le nouveau réglage
   fonctionne, et elle n'est pas encore faite. Doc 60.
 - **Baisser l'accélération du trancheur.** Le profil imprime le remplissage
-  plein à `9500 mm/s²` ; les mesures conseillent `2600` sur X et `5300` sur Y.
+  plein à `9500 mm/s²` ; les mesures conseillent `3000` sur X et `4500` sur Y.
   Au-delà, le filtre arrondit les angles. Doc 60.
-- **Reprendre la tension de la courroie X**, puis rebalayer les deux axes : les
-  fréquences auront changé. Opération physique, accord de Thomas. Doc 60.
+- **Chercher d'où vient le pic à 14 Hz** : support qui fléchit, pied qui
+  balance, CFS posés contre la machine, panneaux mal fermés. Ce n'est pas le
+  défaut visible, mais c'est ce qui empêche X de descendre sous 20 % de
+  vibrations restantes. Doc 61.
 - **Nettoyer sous la feuille magnétique, la reposer, repalper le `11 × 11`** et
   comparer au maillage en vigueur. C'est l'expérience qui tranche. Doc 58.
 
