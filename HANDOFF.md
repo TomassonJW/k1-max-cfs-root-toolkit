@@ -147,7 +147,8 @@ et pourquoi est écrit dans l'ADR-054.
   recharger `k1_p001_t055_r001_n11x11` derrière, sinon l'impression part sur un
   maillage vide.
 - **Le serveur de l'éditeur de maillage ne survit pas à un redémarrage de
-  l'imprimante.** Relance manuelle :
+  l'imprimante.** `Ouvrir-Editeur-Maillage-K1-Max.cmd`, à la racine, monte le
+  tunnel et le relance tout seul. Relance manuelle si besoin :
   `cd /usr/data/k1-control-mesh-editor && setsid nohup python3 -u server.py 7130 > /tmp/mesh-editor.log 2>&1 < /dev/null &`
 - **Deux tests laissés rouges volontairement**, ils signalent des divergences
   réelles et non des tests à réparer :
