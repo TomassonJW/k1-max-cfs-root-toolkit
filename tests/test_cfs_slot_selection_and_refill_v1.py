@@ -147,12 +147,36 @@ def test_start_print_points_the_stock_table_at_the_slot_before_loading():
         lines, "_KCTRL_CFS_LOAD TOOL={tool} ATTEMPT=1")
 
 
-def test_kctrl_slot_writes_the_table_and_nothing_else():
-    # Deux ecritures, c'est deux verites qui divergent des que l'ecran ou un
-    # rechargement automatique touche la table sans passer par nous.
+def test_kctrl_slot_writes_the_table_first_then_remembers_the_choice():
+    # La table reste l'ecrivain unique et la premiere ecriture. Ce qui est
+    # garde a cote n'est pas une seconde verite : c'est la memoire du dernier
+    # choix de l'operateur, relue seulement quand la machine a efface la table,
+    # et immediatement reecrite dedans par START_PRINT.
     lines = commands("KCTRL_SLOT")
-    assert index_of(lines, "BOX_MODIFY_TN {logical}={slot}") >= 0
-    assert [line for line in lines if line.startswith("SAVE_VARIABLE")] == []
+    table = index_of(lines, "BOX_MODIFY_TN {logical}={slot}")
+    saves = [line for line in lines if line.startswith("SAVE_VARIABLE")]
+    assert saves == ["SAVE_VARIABLE VARIABLE=slot_last_choice VALUE='\"{slot}\"'"]
+    assert index_of(lines, "SAVE_VARIABLE") > table
+
+
+def test_the_remembered_slot_is_only_the_first_filament():
+    # T1B, T1C... sont les autres couleurs du meme travail. Les retenir comme
+    # "le" choix ferait repartir une impression suivante sur la mauvaise bobine.
+    body = section("KCTRL_SLOT")
+    guard = body.index("SAVE_VARIABLE VARIABLE=slot_last_choice")
+    assert '{% if logical == "T1A" %}' in body[:guard]
+
+
+def test_start_print_falls_back_on_the_remembered_slot_when_the_table_is_gone():
+    # Un arret d'urgence, une coupure ou un FIRMWARE_RESTART rendent un
+    # tn_data.json sans tnn_map, et l'ecran est le seul a le remplir : sans
+    # repli, toute reprise depuis Mainsail est refusee. Le repli n'est pas une
+    # devinette, il rejoue un choix explicite et le dit.
+    body = section("START_PRINT")
+    assert 'get("slot_last_choice")' in body
+    assert body.index('slot_map.map.get("T1A")') < body.index('get("slot_last_choice")')
+    assert "dernier choix retenu" in body
+    assert "%s (%s)" in body  # l'emplacement et sa provenance, sur la ligne de depart
 
 
 def test_kctrl_slots_reads_the_selection_from_the_same_table():
@@ -189,3 +213,14 @@ def test_the_stock_unload_body_is_left_alone():
 
 def test_cancel_print_still_reaches_the_renamed_stock_body():
     assert "CANCEL_PRINT_BASE" in commands("CANCEL_PRINT")
+
+
+def test_kctrl_slots_resolves_exactly_like_start_print():
+    # Deux resolutions qui divergent, c'est un ecran qui annonce une bobine et
+    # une impression qui en charge une autre.
+    listing = section("KCTRL_SLOTS")
+    start = section("START_PRINT")
+    for source in ['.map.get("T1A")', 'get("slot_last_choice")']:
+        assert source in listing
+        assert source in start
+    assert listing.index('.map.get("T1A")') < listing.index('get("slot_last_choice")')

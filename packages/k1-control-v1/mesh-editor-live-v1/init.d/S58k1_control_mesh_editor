@@ -1,0 +1,81 @@
+#!/bin/sh
+# K1 Control mesh editor, served on port 7130.
+#
+# Started here rather than from Moonraker because the editor is a standalone
+# HTTP server with no dependency beyond the standard library, and because a
+# power cycle is exactly when a mesh gets retouched: it has to come back on its
+# own, without an operator remembering a command line.
+#
+# It is ordered after Klipper (S55) and Moonraker (S56): the editor talks to
+# Klipper over /tmp/klippy_uds. It tolerates Klipper not being up yet - each
+# request reconnects - so this order is a convenience, not a requirement.
+
+set -eu
+
+ROOT=/usr/data/k1-control-mesh-editor
+PORT=7130
+PID=/var/run/k1-control-mesh-editor.pid
+# /tmp is a ram disk: the log is cheap to write and disappears on its own,
+# which is what a debug log for a local tool should do on a flash device.
+LOG=/tmp/mesh-editor.log
+
+# Servers started by hand, before this service existed, hold the port without
+# a pidfile. Matching on the command line rather than on the executable matters
+# here: every Klipper process is python3 too, and -x python3 would take the
+# printer down with the editor.
+# The pattern is anchored on python3 as the program being run, not merely
+# mentioned: a first version matched anywhere in the command line and killed
+# the ssh session that had typed the words "server.py 7130" to look at it.
+orphans() {
+    for entry in /proc/[0-9]*; do
+        pid=${entry#/proc/}
+        [ "$pid" = "$$" ] && continue
+        [ -r "$entry/cmdline" ] || continue
+        case "$(tr '\0' ' ' < "$entry/cmdline")" in
+            python3\ *server.py\ $PORT\ *|/usr/bin/python3\ *server.py\ $PORT\ *)
+                echo "$pid" ;;
+        esac
+    done
+}
+
+start() {
+    [ -f "$ROOT/server.py" ] || { echo "Missing mesh editor: $ROOT/server.py"; exit 1; }
+    # -m records the pid of the shell, which execs python in place, so the
+    # pidfile keeps naming the server itself.
+    start-stop-daemon -S -b -m -p "$PID" -x /bin/sh -- -c \
+        "exec /usr/bin/python3 -u $ROOT/server.py $PORT >> $LOG 2>&1"
+}
+
+stop() {
+    if [ -s "$PID" ]; then
+        start-stop-daemon -K -p "$PID" -o -q
+        attempt=0
+        while [ -d "/proc/$(cat "$PID" 2>/dev/null || echo 0)" ] && [ "$attempt" -lt 10 ]; do
+            sleep 1
+            attempt=$((attempt + 1))
+        done
+        if [ -d "/proc/$(cat "$PID" 2>/dev/null || echo 0)" ]; then
+            start-stop-daemon -K -s KILL -p "$PID" -o -q
+        fi
+    fi
+    rm -f "$PID"
+
+    for pid in $(orphans); do
+        kill "$pid" 2>/dev/null || true
+    done
+}
+
+case "${1:-}" in
+    start) start ;;
+    stop) stop ;;
+    restart) stop; sleep 1; start ;;
+    status)
+        if [ -s "$PID" ] && [ -d "/proc/$(cat "$PID")" ]; then
+            echo "running $(cat "$PID")"
+        else
+            echo "stopped"
+            exit 1
+        fi
+        ;;
+    *) echo "Usage: $0 {start|stop|restart|status}"; exit 1 ;;
+esac

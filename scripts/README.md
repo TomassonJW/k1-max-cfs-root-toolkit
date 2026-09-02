@@ -79,6 +79,22 @@ distincte empêche le service worker de Mainsail, enregistré sur
 `127.0.0.1:4409`, d'intercepter l'écran de calibration. Aucun nouveau port ni
 service n'est créé.
 
+`Ouvrir-Editeur-Maillage-K1-Max.cmd` ouvre l'éditeur de maillage point par
+point sur `http://127.0.0.1:7130/`, par un tunnel dédié vers le même alias
+`k1max-root`. Le lanceur réutilise le tunnel existant plutôt que d'en empiler un
+— Windows laisse deux `ssh` écouter le même port local sans erreur — et, si le
+port répond mais que la page ne vient pas, relance à distance le serveur de
+l'éditeur, qui ne survit pas à un redémarrage de l'imprimante. Aucune adresse
+privée ni secret dans le script.
+
+`deploy-k1-control-mesh-editor-v1.ps1` pose l'éditeur de maillage et le service
+qui le rallume au démarrage de l'imprimante, `/etc/init.d/S58k1_control_mesh_editor`.
+`Status` lit sans rien écrire, `Deploy` copie les quatre fichiers du paquet,
+installe le service, redémarre et vérifie que l'API répond, `Rollback` retire le
+service en laissant le paquet en place. La syntaxe de `app.mjs` est vérifiée
+avant la pose : un module cassé laisse le serveur répondre `200` sur une page
+qui ne démarre jamais.
+
 `validate-k1-control-calibration-ui-campaign-v1.ps1` prépare puis contrôle en
 lecture seule la campagne d'autonomie opérée depuis l'écran. `Preflight` exige
 l'UI exacte et l'état sûr avant chauffe ; `Validate` exige la phase `accepted`,

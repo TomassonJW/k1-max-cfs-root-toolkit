@@ -72,6 +72,23 @@ l'enregistrement du maillage, qui en profite.
 Un refus n'est plus non plus annoncé comme un « corps illisible » : cette phrase
 décrivait le navigateur alors que le problème était la valeur.
 
+## 5 bis. Le même piège, de l'autre côté, découvert le soir
+
+Le saut de ligne écrit tel quel n'a pas été corrigé partout : la phrase ajoutée
+à `app.mjs` pour annoncer que le Z s'applique au prochain démarrage en portait
+deux. Un module dont la syntaxe est invalide n'est jamais exécuté par le
+navigateur : la page s'affichait, complète et vide, arrêtée sur
+« Chargement… ». Le serveur, lui, répondait `200` — la vérification faite à
+`curl` ne pouvait pas le voir.
+
+Corrigé, redéployé, page rechargée : `11 × 11` points affichés, surface
+dessinée, `Z du profil` à `0.040`.
+
+La CI était verte pendant tout ce temps. Le seul test front visait l'éditeur
+hors ligne ; la page servie par l'imprimante n'était couverte par rien. Une
+garde a été ajoutée à `tests/mesh_editor_ui.test.mjs` : `node --check` sur
+`app.mjs`, prouvée en réintroduisant la faute, qui fait tomber la suite.
+
 ## 6. Ce qui reste vrai
 
 Enregistrer un Z ne déplace rien tout de suite. La valeur est lue par

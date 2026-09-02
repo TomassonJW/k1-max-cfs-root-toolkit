@@ -818,10 +818,8 @@ async function saveZ() {
     ui.zValue.value = Number(result.saved).toFixed(3);
     // Said out loud on purpose: nothing moves on the machine now, the value is
     // read by START_PRINT at the next launch.
-    say((result.messages.join("
-") || `Z ${fmt(z)} enregistré pour ${state.name}`)
-      + "
-il s'applique au prochain démarrage d'impression",
+    say((result.messages.join("\n") || `Z ${fmt(z)} enregistré pour ${state.name}`)
+      + "\nil s'applique au prochain démarrage d'impression",
       "good");
   } catch (error) {
     say("refusé : " + error.message, "error");

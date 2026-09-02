@@ -1,6 +1,8 @@
 import assert from "node:assert/strict";
 import test from "node:test";
 import fs from "node:fs";
+import { execFileSync } from "node:child_process";
+import { fileURLToPath } from "node:url";
 
 import {
   allCellsForMode,
@@ -67,4 +69,17 @@ test("l'aperçu projette 121 points et permet une sélection sans déplacement v
     target,
   );
   assert.equal(nearestProjectedPoint(points, -100, -100, 1), null);
+});
+
+// La page servie par l'imprimante n'était couverte par rien : le 2 septembre un
+// vrai saut de ligne posé dans une chaîne de app.mjs a laissé l'éditeur bloqué
+// sur « Chargement… », CI verte, sans qu'aucun test ne le voie. Le module touche
+// document dès l'import et ne peut donc pas être importé ici : c'est l'analyse
+// syntaxique de Node qui sert de garde.
+test("la page live de l'éditeur est syntaxiquement valide", () => {
+  const target = new URL(
+    "../packages/k1-control-v1/mesh-editor-live-v1/www/app.mjs",
+    import.meta.url,
+  );
+  execFileSync(process.execPath, ["--check", fileURLToPath(target)]);
 });
