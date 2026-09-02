@@ -1626,3 +1626,25 @@ quand les rampes de freinage de la machine durent `0,029 s`, donc la correction
 du Pressure Advance arrive en partie après la fin du trait. Le PA est déjà réglé
 par filament — `0,03` imposé par le profil du trancheur. Aucune correction n'a
 été appliquée : la calibration décisive est une impression. Doc 57.
+
+## Mise à jour 2026-09-02 — les ondulations viennent du maillage
+
+Le maillage `k1_p001_t055_r001_n11x11` en vigueur porte `0,076` à `0,082 mm`
+d'ondulation crête à crête sur 60 mm de ligne droite, pour une hauteur de couche
+de `0,200 mm` : 40 % de variation d'écrasement le long d'un même trait. 39 % de
+ses écarts entre points voisins dépassent `0,030 mm`, la courbure locale monte à
+`0,186 mm`. `fade_start: 5.0` applique ce maillage à 100 % jusqu'à 5 mm, donc la
+même vague est rejouée sur vingt-cinq couches.
+
+L'interpolation bicubique est hors de cause : la spline cardinale de Klipper a
+été rejouée sur ce maillage, dépassement maximal `0,007 mm`.
+
+La période de la vague est celle du maillage, 29 mm, ce qui explique qu'elle
+n'apparaisse que sur les longs trajets. Les zones cassantes sont le bord gauche
+(`x34`), le bord droit (`x266`) et une tache centrale autour de `x179`–`x208`
+entre `y121` et `y208`.
+
+Une plaque n'ondule pas de `±0,04 mm` tous les 29 mm : ce bruit est ajouté par
+la mesure, soit par le palpeur — qui est la buse — soit par une feuille
+magnétique qui ne repose pas à plat. Rien n'a été corrigé ; l'expérience qui
+tranche est un repalpage après nettoyage. Doc 58.
