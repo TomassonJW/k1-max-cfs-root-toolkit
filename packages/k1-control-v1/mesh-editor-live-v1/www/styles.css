@@ -89,6 +89,28 @@ button:not(:disabled):hover { border-color: var(--accent); }
 }
 .primary:disabled { background: var(--panel-2); color: var(--ink); border-color: var(--line); }
 
+/* ------------------------------------------------------------------ Z field */
+.bar-z .field span:first-child { white-space: nowrap; }
+
+#z-value {
+  font: 600 14px/1 var(--mono);
+  color: var(--ink);
+  background: var(--panel-2);
+  border: 1px solid var(--line);
+  border-radius: 7px;
+  padding: 6px 8px;
+  width: 6.5em;
+  text-align: right;
+}
+#z-value:focus { outline: none; border-color: var(--accent); }
+/* Typed and not yet written: the difference between what is on screen and what
+   the printer will read has to be visible without reading the button. */
+#z-value.dirty { border-color: var(--edit); color: var(--edit); }
+#z-value.bad { border-color: #ff9a8c; color: #ff9a8c; }
+
+.bar-z .unit { color: var(--ink-faint); font-size: 12px; }
+#z-live b { font-family: var(--mono); font-weight: 600; }
+
 .badge {
   padding: 3px 9px;
   border-radius: 999px;

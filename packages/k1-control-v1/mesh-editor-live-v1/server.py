@@ -24,6 +24,9 @@ KLIPPY_SOCKET = "/tmp/klippy_uds"
 HANDOFF = "/tmp/kctrl-mesh-editor-apply.json"
 WWW = os.path.join(os.path.dirname(os.path.abspath(__file__)), "www")
 DEFAULT_PORT = 7130
+# The same window KCTRL_Z_SAVE enforces on the printer. Refusing here too
+# means a typed 40 instead of 0.40 never leaves the page.
+Z_LIMIT = 2.0
 # Klipper frames every message on its unix socket with this byte.
 SEPARATOR = bytes([3])
 
@@ -63,6 +66,15 @@ def console_lines(message):
 
 class KlippyError(Exception):
     pass
+
+
+class Refused(ValueError):
+    """A request turned down here, before anything reaches the printer.
+
+    It is a ValueError so a caller that only knows the standard exception keeps
+    working, but do_POST answers it with the sentence alone: "corps illisible"
+    in front of "Z 40 hors de la plage" describes the wrong failure.
+    """
 
 
 class Klippy:
@@ -184,7 +196,11 @@ class Klippy:
         # operator needs the sentence, not the envelope.
         text = str(error.get("message", error))
         try:
-            inner = json.loads(text)
+            # strict=False is not cosmetic: a macro refusal carries a real
+            # newline inside the JSON string, which the strict parser rejects.
+            # Without it the operator got the whole envelope, code and values
+            # included, instead of the one sentence that says what went wrong.
+            inner = json.loads(text, strict=False)
             return str(inner.get("msg", text)).strip()
         except (ValueError, AttributeError):
             return text.strip()
@@ -250,9 +266,13 @@ class Handler(BaseHTTPRequestHandler):
             body = json.loads(self.rfile.read(length) or b"{}")
             if path == "/api/save":
                 return self._json(200, self._save(body))
+            if path == "/api/z":
+                return self._json(200, self._zsave(body))
             return self._fail(404, "inconnu: %s" % path)
         except KlippyError as exc:
             return self._fail(503, str(exc))
+        except Refused as exc:
+            return self._fail(400, str(exc))
         except ValueError as exc:
             return self._fail(400, "corps illisible: %s" % exc)
         except Exception as exc:  # pragma: no cover - last resort
@@ -280,6 +300,7 @@ class Handler(BaseHTTPRequestHandler):
             "print_stats": None,
             "webhooks": None,
             "save_variables": None,
+            "gcode_move": None,
         })
         mesh = status.get("bed_mesh", {})
         profiles = sorted(
@@ -294,6 +315,13 @@ class Handler(BaseHTTPRequestHandler):
                 key[2:]: value for key, value in variables.items()
                 if key.startswith("z_")
             },
+            # The offset in force right now, which is what the operator just
+            # dialled in from Fluidd while watching the first layer. Without it
+            # that number dies with the print and has to be found again.
+            # Rounded: a zeroed offset comes back as -1.7e-18 and the page
+            # would print it as -0.000, which reads like a real correction.
+            "live_z": round(float(status.get("gcode_move", {}).get(
+                "homing_origin", [0, 0, 0, 0])[2]), 4),
         }
 
     def _profile(self, name):
@@ -317,7 +345,7 @@ class Handler(BaseHTTPRequestHandler):
         name = body.get("profile")
         points = body.get("points")
         if not name or not isinstance(points, list):
-            raise ValueError("il faut un profil et une matrice")
+            raise Refused("il faut un profil et une matrice")
         payload = {"profile": name, "points": points}
         temporary = HANDOFF + ".part"
         handle = open(temporary, "w")
@@ -328,6 +356,41 @@ class Handler(BaseHTTPRequestHandler):
         os.rename(temporary, HANDOFF)
         lines = self.klippy.script("KCTRL_MESH_APPLY FILE=%s" % HANDOFF)
         return {"messages": lines, "profile": self._profile(name)}
+
+    def _zsave(self, body):
+        """Write the accepted Z of one mesh profile, through the stock macro.
+
+        Nothing is computed here. KCTRL_Z_SAVE owns the rule - the profile must
+        exist, the value must stay inside two millimetres - and it is the only
+        writer, so the number the editor shows and the number START_PRINT reads
+        can never be two different things.
+        """
+        name = body.get("profile")
+        if not isinstance(name, str) or not name:
+            raise Refused("il faut un profil")
+        # The name goes into a G-code command. Only what Klipper itself already
+        # holds as a profile may travel, so nothing can be smuggled in a name.
+        profiles = self.klippy.query({"bed_mesh": None}).get(
+            "bed_mesh", {}).get("profiles", {})
+        if name not in profiles:
+            raise Refused("profil inconnu: %s" % name)
+        try:
+            z = float(body.get("z"))
+        except (TypeError, ValueError):
+            raise Refused("il faut un Z en millimetres")
+        if z != z or z in (float("inf"), float("-inf")):
+            raise Refused("il faut un Z en millimetres")
+        if abs(z) > Z_LIMIT:
+            raise Refused(
+                "Z %.4f hors de la plage -%.0f..%.0f mm" % (z, Z_LIMIT, Z_LIMIT))
+        lines = self.klippy.script("KCTRL_Z_SAVE PROFILE=%s Z=%.4f" % (name, z))
+        state = self._state()
+        return {
+            "messages": lines,
+            "saved": z,
+            "z_offsets": state["z_offsets"],
+            "live_z": state["live_z"],
+        }
 
 
 def main():
