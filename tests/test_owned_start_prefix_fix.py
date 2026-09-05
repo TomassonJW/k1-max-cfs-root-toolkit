@@ -71,29 +71,53 @@ def test_orca_template_starts_with_the_existing_owner():
     assert lines[1:] == ["M104 S[nozzle_temperature_initial_layer]", "M109 S[nozzle_temperature_initial_layer]", "M204 S2000", "G1 Z3 F600", "M83", "G92 E0", "G1 Z1 F600"]
 
 
-@pytest.mark.parametrize("repaired", [False, True])
-def test_recorded_220_degree_failure_against_the_actual_probe_guard(repaired):
-    # Replay only the recorded command/temperature boundary, not physical CFS
-    # behaviour: on 2026-09-05 T0 left a 220 C setpoint before START_PRINT.
+def render_probe_guard_on(ceiling, target, temperature, refuse=None, told=None):
+    """Render the real _KCTRL_PROBE_GUARD_ON body, no printer connection."""
     import jinja2
     from types import SimpleNamespace
+    path = ROOT / "packages/k1-control-v1/mesh-acquisition-v2/k1-control-probe-temp-guard-v1.cfg"
+    block = path.read_text(encoding="utf-8").split("[gcode_macro _KCTRL_PROBE_GUARD_ON]", 1)[1].split("\n[", 1)[0]
+    body = block.split("\ngcode:\n", 1)[1]
+    template = jinja2.Environment("{%", "%}", "{", "}").from_string(body)
+
+    def raise_error(message):
+        raise ValueError(message)
+
+    return template.render(params={"CEILING": ceiling},
+                           printer={"extruder": SimpleNamespace(target=target, temperature=temperature)},
+                           action_raise_error=refuse or raise_error,
+                           action_respond_info=(told.append if told is not None else (lambda _: "")))
+
+
+@pytest.mark.parametrize("repaired", [False, True])
+def test_recorded_220_degree_start_now_goes_through_the_actual_probe_guard(repaired):
+    # Replay only the recorded command/temperature boundary, not physical CFS
+    # behaviour: on 2026-09-05 T0 left a 220 C setpoint before START_PRINT, and
+    # the guard refused it, which killed three prints in a row. The setpoint is
+    # now cut instead, so a file already sliced with that prefix starts.
     prefix = b"G28\nT0\n" + START
     if repaired:
         prefix, _ = fix.repair_prefix(prefix)
     setpoint = 220 if b"T0" in prefix.splitlines() else 0
-    path = ROOT / "packages/k1-control-v1/mesh-acquisition-v2/k1-control-probe-temp-guard-v1.cfg"
-    block = path.read_text().split("[gcode_macro _KCTRL_PROBE_GUARD_ON]", 1)[1].split("\n[", 1)[0]
-    body = block.split("\ngcode:\n", 1)[1]
-    template = jinja2.Environment("{%", "%}", "{", "}").from_string(body)
-    def refuse(message):
-        raise ValueError(message)
-    def render():
-        return template.render(params={"CEILING": "105"},
-                               printer={"extruder": SimpleNamespace(target=setpoint, temperature=33)},
-                               action_raise_error=refuse, action_respond_info=lambda _: "")
-    if repaired:
-        result = render()
-        assert "TEMPERATURE_WAIT SENSOR=extruder MAXIMUM=105.0" in result
-    else:
-        with pytest.raises(ValueError, match="already targeting 220 C.*105 C"):
-            render()
+    result = render_probe_guard_on(ceiling="105", target=setpoint, temperature=33)
+    assert "TEMPERATURE_WAIT SENSOR=extruder MAXIMUM=105.0" in result
+    assert "M104 S0" in result
+
+
+def test_a_leftover_setpoint_is_cut_and_announced_instead_of_refusing():
+    told = []
+    result = render_probe_guard_on(ceiling="105", target=220, temperature=214, told=told)
+    assert any("cible buse 220 C" in line for line in told)
+    assert result.index("M104 S0") < result.index("TEMPERATURE_WAIT")
+
+
+def test_the_window_still_opens_before_the_setpoint_is_cut():
+    # M104/M109 are refused above the ceiling only while active is 1, so the
+    # cut must not happen before the window is on.
+    result = render_probe_guard_on(ceiling="105", target=220, temperature=33)
+    assert result.index("VARIABLE=active VALUE=1") < result.index("M104 S0")
+
+
+def test_an_out_of_range_ceiling_is_still_refused():
+    with pytest.raises(ValueError, match="60..320 C"):
+        render_probe_guard_on(ceiling="42", target=0, temperature=33)
