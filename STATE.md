@@ -2,15 +2,25 @@
 
 Last updated: 2026-09-05
 
-Priorité du 5 septembre : le blocage de départ `220 C / plafond 105 C` est
-corrigé à sa source dans le profil Orca **Copie**, par retrait de `G28` et
-`T[initial_no_support_extruder]` avant `START_PRINT`. Une copie séparée du
-travail fautif est disponible sur la K1 sous le suffixe `_KCTRL-fixed.gcode`.
-Les séquences installées sont inchangées ; huit empreintes protégées sont
-identiques avant/après, et le corps complet du G-code est identique après
-`START_PRINT`. Aucun effet physique ni redémarrage n'a été commandé. L'essai
-réel reste à faire après désengagement et nettoyage manuel confirmé ; le
-filament est encore détecté au dernier relevé. Voir document 62.
+Priorité du 5 septembre, fin de journée : le blocage de départ
+`220 C / plafond 105 C` est corrigé à sa vraie source, dans le garde de
+palpage. Une cible buse au-dessus du plafond est désormais coupée et annoncée
+au lieu d'interrompre la séquence ; la même macro le faisait déjà pour une
+température au-dessus du plafond. Trois départs s'étaient arrêtés au même
+octet, à 16:21, 16:43 et 17:47, le dernier sur le fichier original relancé
+depuis l'écran. Correctif posé sur la machine, `FIRMWARE_RESTART` fait, prouvé
+à froid : cible `220 C` debout, buse `75,5 C`, la fenêtre s'ouvre sans erreur
+et rend la cible à zéro. Aucun mouvement, aucun contact, aucune impression
+lancée. La protection est intacte : `M104` et `M109` au-dessus du plafond
+restent refusés pendant la fenêtre, la buse est toujours ramenée sous le
+plafond avant le contact. Le capteur de tête voit encore du filament laissé par
+les purges avortées : essuyer la buse à la main avant de relancer (ADR-045).
+Voir document 63 et ADR-059.
+
+Le correctif du matin (profil Orca `Copie`, retrait de `G28` et
+`T[initial_no_support_extruder]`, copie `_KCTRL-fixed.gcode` sur la K1) reste
+en place et reste utile — il évite une purge et un référencement inutiles — mais
+il n'est plus la condition du démarrage. Voir document 62.
 
 Mise à jour prioritaire : le popup de correspondance des filaments n'avait pas
 disparu, il n'avait jamais été appelé. Il appartient aux surfaces Creality —
