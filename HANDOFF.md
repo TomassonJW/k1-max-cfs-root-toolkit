@@ -1,5 +1,31 @@
 # HANDOFF — index de reprise
 
+## Priorité du 5 septembre 2026 — départ Orca corrigé
+
+Deux tentatives du même travail s'arrêtaient sur la protection de palpage :
+220 °C demandés alors que le plafond vaut 105 °C. Le profil Orca **Copie**
+envoyait `G28` puis `T0` avant `START_PRINT`. Le `T0` chargeait et purgeait
+T1B avant la référence voulue par notre démarrage. Correction limitée au
+champ de départ du profil, aligné sur **CopieBIS**, et à une copie du G-code
+sur la K1 portant le suffixe **`_KCTRL-fixed.gcode`**. L'original est conservé.
+Les macros, le CFS, le maillage et le Z enregistré restent inchangés.
+
+La copie est visible dans Moonraker et vérifiée intégralement : seuls sept
+octets ont été retirés, et les `50 877 329` octets à partir de `START_PRINT`
+sont identiques. Aucun essai physique, aucune chauffe, aucun mouvement et
+aucun redémarrage n'ont été envoyés. Au dernier relevé, le filament est encore
+détecté dans la tête, les cibles sont nulles et le travail précédent est en
+erreur. Ne pas reprendre le fichier interrompu en cours de route : le nouvel
+essai doit repartir du début de la copie après désengagement officiel et
+nettoyage manuel confirmé de la buse (ADR-045).
+
+Si Orca était ouvert pendant la correction, recharger le profil corrigé avant
+le prochain tranchage ; la modification sur disque ne prouve pas le contenu
+déjà chargé dans l'application. Détails :
+`docs/62-correctif-depart-orca-g28-t0-v1.md`.
+
+La suite du document décrit la clôture historique du 2 septembre.
+
 Mise à jour : 2026-09-02 au soir, après la session « le Z accepté dans
 l'éditeur de maillage », le diagnostic des ondulations, et deux séries de
 mesures de résonance. Une impression tournait à la clôture.

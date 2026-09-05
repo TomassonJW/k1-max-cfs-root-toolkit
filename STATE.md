@@ -1,6 +1,16 @@
 # STATE
 
-Last updated: 2026-09-02
+Last updated: 2026-09-05
+
+Priorité du 5 septembre : le blocage de départ `220 C / plafond 105 C` est
+corrigé à sa source dans le profil Orca **Copie**, par retrait de `G28` et
+`T[initial_no_support_extruder]` avant `START_PRINT`. Une copie séparée du
+travail fautif est disponible sur la K1 sous le suffixe `_KCTRL-fixed.gcode`.
+Les séquences installées sont inchangées ; huit empreintes protégées sont
+identiques avant/après, et le corps complet du G-code est identique après
+`START_PRINT`. Aucun effet physique ni redémarrage n'a été commandé. L'essai
+réel reste à faire après désengagement et nettoyage manuel confirmé ; le
+filament est encore détecté au dernier relevé. Voir document 62.
 
 Mise à jour prioritaire : le popup de correspondance des filaments n'avait pas
 disparu, il n'avait jamais été appelé. Il appartient aux surfaces Creality —

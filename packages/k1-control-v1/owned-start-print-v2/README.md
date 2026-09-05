@@ -1,5 +1,26 @@
 # Owned Start Print V2
 
+## Départ Orca corrigé le 5 septembre 2026
+
+Le modèle actif est `orca-machine-start.gcode` dans ce paquet. Le profil Orca
+`Creality K1 Max (0.4 nozzle) - Copie` utilisait encore `G28` puis `T0` avant
+`START_PRINT` : le CFS chauffait et chargeait avant la référence de hauteur,
+puis le plafond de palpage refusait la consigne de 220 °C. Ces deux lignes ont
+été retirées du seul champ `machine_start_gcode`, qui correspond maintenant à
+celui du profil `CopieBIS` déjà existant. Aucune macro K1 n'a été modifiée.
+
+La copie du travail en échec porte le suffixe `_KCTRL-fixed.gcode`. L'original
+reste présent et tous les octets à partir de `START_PRINT` sont identiques.
+Le script local `scripts/fix_owned_start_prefix.py` prépare par défaut un plan ;
+`--apply` crée une copie séparée. Il refuse les préfixes différents, y compris
+un premier outil autre que `T0`, plutôt que de généraliser ce correctif.
+
+Cette correction ne crée pas un chemin de palpage avec filament engagé.
+Avant l'essai, désengager par l'interface officielle, nettoyer manuellement
+la buse et confirmer ce nettoyage, conformément à ADR-045. Une copie corrigée
+n'est pas une impression validée. Preuves et retour arrière :
+`docs/62-correctif-depart-orca-g28-t0-v1.md`.
+
 Cible exacte : Creality K1 Max, S12 structure 0, firmware 2.3.5.34, kit CFS,
 deux unités chaînées.
 
