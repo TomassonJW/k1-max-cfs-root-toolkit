@@ -1,34 +1,36 @@
 # HANDOFF — index de reprise
 
-## Priorité du 5 septembre 2026 — départ Orca corrigé
+## Priorité du 5 septembre au soir — le départ ne refuse plus une buse chaude
 
-Deux tentatives du même travail s'arrêtaient sur la protection de palpage :
-220 °C demandés alors que le plafond vaut 105 °C. Le profil Orca **Copie**
-envoyait `G28` puis `T0` avant `START_PRINT`. Le `T0` chargeait et purgeait
-T1B avant la référence voulue par notre démarrage. Correction limitée au
-champ de départ du profil, aligné sur **CopieBIS**, et à une copie du G-code
-sur la K1 portant le suffixe **`_KCTRL-fixed.gcode`**. L'original est conservé.
-Les macros, le CFS, le maillage et le Z enregistré restent inchangés.
+Trois départs se sont arrêtés au même octet dans la journée : 16:21, 16:43 et
+17:47. Le correctif du matin agissait sur le profil de tranchage et sur une
+copie du fichier ; il ne pouvait rien pour les fichiers déjà tranchés, et c'est
+l'original qui a été relancé.
 
-La copie est visible dans Moonraker et vérifiée intégralement : seuls sept
-octets ont été retirés, et les `50 877 329` octets à partir de `START_PRINT`
-sont identiques. Aucun essai physique, aucune chauffe, aucun mouvement et
-aucun redémarrage n'ont été envoyés. Au dernier relevé, le filament est encore
-détecté dans la tête, les cibles sont nulles et le travail précédent est en
-erreur. Ne pas reprendre le fichier interrompu en cours de route : le nouvel
-essai doit repartir du début de la copie après désengagement officiel et
-nettoyage manuel confirmé de la buse (ADR-045).
+La cause était dans le garde de palpage, pas dans le fichier : une **cible**
+buse au-dessus du plafond interrompait la séquence, alors qu'une **température**
+au-dessus du plafond était simplement coupée et attendue. Une cible est
+maintenant coupée et annoncée elle aussi. La protection ne change pas : pendant
+la fenêtre, `M104` et `M109` au-dessus du plafond restent refusés et la buse est
+toujours ramenée sous le plafond avant tout contact.
 
-Si Orca était ouvert pendant la correction, recharger le profil corrigé avant
-le prochain tranchage ; la modification sur disque ne prouve pas le contenu
-déjà chargé dans l'application. Détails :
-`docs/62-correctif-depart-orca-g28-t0-v1.md`.
+Posé sur la machine, `FIRMWARE_RESTART` fait, prouvé à froid : cible `220 C`
+debout, buse `75,5 C`, la fenêtre s'ouvre sans erreur et la cible retombe à
+zéro. Aucun mouvement, aucun contact.
+
+**Pour relancer** : essuyer la buse à la main — le capteur de tête voit encore
+le filament laissé par les purges avortées, et une bavure figée fausserait le
+contact (ADR-045) — puis lancer depuis l'écran, l'application ou la page web
+Creality, pour garder le popup de correspondance des bobines. N'importe lequel
+des deux fichiers convient désormais, l'original comme la copie
+`_KCTRL-fixed.gcode`. Reprendre du début, pas de reprise en cours de fichier.
+
+État au moment d'écrire : table CFS lisible, premier filament sur `T1B` ;
+profil `k1_p001_t055_r001_n11x11` présent, Z accepté `+0,050 mm` ; chauffes à
+zéro, rien en cours. Détails : `docs/63-depart-tolere-buse-deja-chaude-v1.md`
+et ADR-059. Le correctif du matin est décrit dans le document 62.
 
 La suite du document décrit la clôture historique du 2 septembre.
-
-Mise à jour : 2026-09-02 au soir, après la session « le Z accepté dans
-l'éditeur de maillage », le diagnostic des ondulations, et deux séries de
-mesures de résonance. Une impression tournait à la clôture.
 
 ## Reprise immédiate
 
