@@ -1,5 +1,16 @@
 # HANDOFF — index de reprise
 
+Soiree du 8 septembre, apres la campagne : la hotend a lache — fils dessoudes,
+chauffage commande a fond sans aucune montee. Thomas l'a remplacee par une piece
+identique. Les resonances n'ont **pas** ete refaites, a raison : une hotend
+identique ne change ni la masse ni la raideur de la tete. Le PID de la buse a
+ete refait (`PID_CALIBRATE TARGET=220`) et ecrit a la main dans `[extruder]` :
+`Kp 20,695 / Ki 1,533 / Kd 69,844` contre `25,013 / 2,566 / 60,966`. Sauvegarde
+`printer.cfg.bak-avant-pid-20260908-233200`. **Ces valeurs ne sont pas encore
+actives** : il faut un redemarrage de Klipper, qui effacera la table des bobines
+du CFS — a repositionner ensuite avec `KCTRL_SLOT`. Restent a reprendre avant
+d'imprimer : le zero Z et l'avance de pression. Voir document 66.
+
 Appliqué le 8 septembre à 22:43, sur accord de Thomas : `ei 42,6 Hz` sur X et
 `mzv 46,6 Hz` sur Y, en direct par `SET_INPUT_SHAPER` et à la main dans le bloc
 `#*#` de `printer.cfg` (sauvegarde `printer.cfg.bak-avant-application-20260908-224352`).
