@@ -21,22 +21,55 @@ $source = Join-Path $repo 'experiments/2026-09-08-resonance-tete-modifiee'
 $destination = Join-Path $repo ('experiments/' + $Label)
 $distant = '/tmp/campagne-resonance'
 
+# Affiche la sortie distante sans la renvoyer : une valeur de retour non
+# affectee serait reaffichee par PowerShell, et le compte rendu paraitrait
+# contenir deux campagnes la ou il n'y en a eu qu'une.
 function Invoke-Remote {
     param([string]$Command, [switch]$Quiet)
+    $sortie = Get-Remote $Command
+    if (-not $Quiet) { $sortie | ForEach-Object { Write-Host $_ } }
+}
+
+function Get-Remote {
+    param([string]$Command)
     $sortie = & ssh $Target $Command 2>&1
     if ($LASTEXITCODE -ne 0) {
         $sortie | ForEach-Object { Write-Host $_ }
         throw "commande distante en echec ($LASTEXITCODE) : $Command"
     }
-    if (-not $Quiet) { $sortie | ForEach-Object { Write-Host $_ } }
     return $sortie
 }
 
+# Les scripts partent en base64, par morceaux : le pipeline texte de PowerShell
+# re-encode les commentaires accentues et ajoute une marque d'ordre d'octets, et
+# une ligne de commande distante trop longue fait fermer la connexion par la
+# machine. En base64 tronconne il n'y a que de l'ASCII, et jamais de commande
+# demesuree.
 function Send-Script {
     param([string]$Nom, [string]$Cible)
-    Get-Content -LiteralPath (Join-Path $source $Nom) -Raw -Encoding UTF8 |
-        & ssh $Target "cat > $Cible"
-    if ($LASTEXITCODE -ne 0) { throw "envoi de $Nom en echec" }
+    $chemin = Join-Path $source $Nom
+    $octets = [System.IO.File]::ReadAllBytes($chemin)
+    $b64 = [System.Convert]::ToBase64String($octets)
+    $taille = 1500
+    $premier = $true
+    for ($i = 0; $i -lt $b64.Length; $i += $taille) {
+        $morceau = $b64.Substring($i, [Math]::Min($taille, $b64.Length - $i))
+        $redirection = if ($premier) { '>' } else { '>>' }
+        & ssh $Target "printf '%s' '$morceau' $redirection $Cible.b64"
+        if ($LASTEXITCODE -ne 0) { throw "envoi de $Nom en echec (morceau a l'octet $i)" }
+        $premier = $false
+    }
+    & ssh $Target "base64 -d < $Cible.b64 > $Cible && rm -f $Cible.b64"
+    if ($LASTEXITCODE -ne 0) { throw "decodage de $Nom en echec sur la machine" }
+
+    # Un envoi tronque ou abime se voit ici, pas au milieu des balayages.
+    $arrives = [int](& ssh $Target "wc -c < $Cible")
+    if ($arrives -ne $octets.Length) {
+        throw "$Nom est arrive abime : $($octets.Length) octets envoyes, $arrives arrives"
+    }
+    & ssh $Target "python3 -m py_compile $Cible"
+    if ($LASTEXITCODE -ne 0) { throw "$Nom n'est pas lisible par la machine apres envoi" }
+    Write-Host ("envoye : {0} ({1} octets)" -f $Nom, $octets.Length)
 }
 
 Write-Host "Cible                : $Target"
@@ -49,7 +82,7 @@ Send-Script -Nom 'analyse-campagne.py' -Cible '/tmp/analyse-campagne.py'
 # L'analyseur non bride est pose avant la campagne : s'il refuse de se
 # construire, autant le savoir avant vingt minutes de balayages.
 Write-Host "`n--- preparation de l'analyseur"
-Invoke-Remote 'python3 /tmp/prepare-analyseur.py 2>&1 | grep -vE "SyntaxWarning|if ret"'
+Invoke-Remote "python3 /tmp/prepare-analyseur.py 2>&1 | grep -vE 'SyntaxWarning|if ret'"
 Invoke-Remote "cp /tmp/analyse-campagne.py /tmp/sc/analyse-campagne.py" -Quiet
 
 if (-not $AnalyseOnly) {
@@ -70,7 +103,8 @@ foreach ($nom in @('resonance-x.csv', 'resonance-y.csv', 'courroie-a.csv', 'cour
 }
 
 Write-Host "`n--- analyse des cinq filtres"
-$rapport = Invoke-Remote "python3 /tmp/sc/analyse-campagne.py $distant 2>&1 | grep -vE 'SyntaxWarning|if ret'"
+$rapport = Get-Remote "python3 /tmp/sc/analyse-campagne.py $distant 2>&1 | grep -vE 'SyntaxWarning|if ret'"
+$rapport | ForEach-Object { Write-Host $_ }
 $cheminRapport = Join-Path $destination 'rapport.txt'
 Set-Content -LiteralPath $cheminRapport -Value $rapport -Encoding UTF8
 

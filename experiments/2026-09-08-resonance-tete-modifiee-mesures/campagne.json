@@ -1,0 +1,68 @@
+﻿{
+  "debut": "2026-09-08 22:10:21",
+  "mesures": [
+    {
+      "nom": "resonance-x",
+      "commande": "SHAPER_CALIBRATE AXIS=x",
+      "source": "/tmp/calibration_data_x_20260908_221059.csv",
+      "fichier": "/tmp/campagne-resonance/resonance-x.csv",
+      "sha256": "23e08f9a1dcddc7ef1252467b624d0d814a13db96716122331cf70da7c86a43c",
+      "normalise": true,
+      "duree_s": 219.7,
+      "entete": "freq,psd_x,psd_y,psd_z,psd_xyz,ei(42.6)"
+    },
+    {
+      "nom": "resonance-y",
+      "commande": "SHAPER_CALIBRATE AXIS=y",
+      "source": "/tmp/calibration_data_y_20260908_221439.csv",
+      "fichier": "/tmp/campagne-resonance/resonance-y.csv",
+      "sha256": "e82125d01504167522d286a68778482ed7626aee28564f9af4de5c093e24c65f",
+      "normalise": true,
+      "duree_s": 219.7,
+      "entete": "freq,psd_x,psd_y,psd_z,psd_xyz,ei(55.8)"
+    },
+    {
+      "nom": "courroie-a",
+      "commande": "TEST_RESONANCES AXIS=1,1 OUTPUT=resonances",
+      "source": "/tmp/resonances_axis=1.000,1.000_20260908_221818.csv",
+      "fichier": "/tmp/campagne-resonance/courroie-a.csv",
+      "sha256": "7c38ba38e12ca8060f3a5c1e87c6f388ed71da366c91f48da5e4f25bc620cb45",
+      "normalise": false,
+      "duree_s": 206.5,
+      "entete": "freq,psd_x,psd_y,psd_z,psd_xyz"
+    },
+    {
+      "nom": "courroie-b",
+      "commande": "TEST_RESONANCES AXIS=1,-1 OUTPUT=resonances",
+      "source": "/tmp/resonances_axis=1.000,-1.000_20260908_222145.csv",
+      "fichier": "/tmp/campagne-resonance/courroie-b.csv",
+      "sha256": "f45a8b6250c23243c01a974246ad33780c28511198369449b7e280022d2677b7",
+      "normalise": false,
+      "duree_s": 205.9,
+      "entete": "freq,psd_x,psd_y,psd_z,psd_xyz"
+    }
+  ],
+  "input_shaper_avant": {
+    "shaper_type": "mzv",
+    "shaper_type_x": "ei",
+    "damping_ratio_x": 0.1,
+    "shaper_freq_x": 40.2,
+    "shaper_type_y": "mzv",
+    "damping_ratio_y": 0.1,
+    "shaper_freq_y": 39.0
+  },
+  "printer_cfg_avant": "b41055a55ff8290a41ffc5957e5d088c76cf43d886b662d4e97b9100d3d0e7fc",
+  "sauvegarde": "/usr/data/printer_data/config/printer.cfg.bak-avant-resonance-20260908-221021",
+  "printer_cfg_apres": "da8c49880b3278aaa1ef722e8f87de9c483f1cc9c81486d788eff996de38f679",
+  "printer_cfg_modifie": true,
+  "input_shaper_apres": {
+    "shaper_type": "mzv",
+    "shaper_type_x": "ei",
+    "damping_ratio_x": 0.1,
+    "shaper_freq_x": 40.2,
+    "shaper_type_y": "mzv",
+    "damping_ratio_y": 0.1,
+    "shaper_freq_y": 39.0
+  },
+  "fin": "2026-09-08 22:25:11"
+}

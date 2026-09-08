@@ -1,5 +1,22 @@
 # HANDOFF — index de reprise
 
+Résultat de la campagne du 8 septembre, 22:10-22:25, après remplacement de la
+buse et de l'extrudeur. Les quatre balayages ont tourné, les deux axes ont bien
+été mesurés séparément. **Rien n'a été appliqué.** Y est nettement meilleur :
+`mzv 46,6 Hz`, zéro vibration, accélération admissible `6 397` contre `4 500`.
+X reste le point faible : `ei 42,6 Hz` et `22,3 %` de vibrations, contre
+`24,7 %` le 2 septembre — le remplacement ne l'a pas réglé, aucun filtre ne
+descend sous `12 %`. Courroies équilibrées, pic `44,7 Hz` des deux côtés.
+Attention : `SHAPER_CALIBRATE` a écrit `ei 55.8` sur les deux axes dans le bloc
+`#*#` — c'est la valeur de Y recopiée sur X, fausse de `13,2 Hz`, et elle
+deviendrait active au prochain redémarrage. Les valeurs vivantes en mémoire
+sont encore celles du 2 septembre. Sauvegarde :
+`printer.cfg.bak-avant-resonance-20260908-221021`. Décision en attente de
+Thomas. Voir document 65.
+
+Toujours ouvert : la buse a changé, donc le zéro Z et l'avance de pression
+(`0,044`) sont à reprendre avant les prochaines impressions.
+
 Priorité du 8 septembre : la tête d'impression a été modifiée, les mesures de
 résonance sont donc à refaire. La campagne est **préparée et validée, pas
 lancée** — Thomas bricole encore sur la machine et on se recale avant de
