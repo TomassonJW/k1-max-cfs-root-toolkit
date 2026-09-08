@@ -1,6 +1,50 @@
 # STATE
 
-Last updated: 2026-09-05
+Last updated: 2026-09-08
+
+Appliqué le 8 septembre à 22:43, sur accord de Thomas : `ei 42,6 Hz` sur X et
+`mzv 46,6 Hz` sur Y, en direct par `SET_INPUT_SHAPER` et à la main dans le bloc
+`#*#` de `printer.cfg` (sauvegarde `printer.cfg.bak-avant-application-20260908-224352`).
+Attention : `save_config_pending` est à `true`, Klipper garde en mémoire les
+`ei 55.8` préparés par `SHAPER_CALIBRATE` ; un `SAVE_CONFIG` écraserait
+l'édition manuelle et redémarrerait la machine. Le zéro Z et l'avance de
+pression ont été refaits par Thomas lui-même.
+
+Résultat de la campagne du 8 septembre, 22:10-22:25, après remplacement de la
+buse et de l'extrudeur. Les quatre balayages ont tourné, les deux axes ont bien
+été mesurés séparément. **Rien n'a été appliqué.** Y est nettement meilleur :
+`mzv 46,6 Hz`, zéro vibration, accélération admissible `6 397` contre `4 500`.
+X reste le point faible : `ei 42,6 Hz` et `22,3 %` de vibrations, contre
+`24,7 %` le 2 septembre — le remplacement ne l'a pas réglé, aucun filtre ne
+descend sous `12 %`. Courroies équilibrées, pic `44,7 Hz` des deux côtés.
+Attention : `SHAPER_CALIBRATE` a écrit `ei 55.8` sur les deux axes dans le bloc
+`#*#` — c'est la valeur de Y recopiée sur X, fausse de `13,2 Hz`, et elle
+deviendrait active au prochain redémarrage. Les valeurs vivantes en mémoire
+sont encore celles du 2 septembre. Sauvegarde :
+`printer.cfg.bak-avant-resonance-20260908-221021`. Décision en attente de
+Thomas. Voir document 65.
+
+Toujours ouvert : la buse a changé, donc le zéro Z et l'avance de pression
+(`0,044`) sont à reprendre avant les prochaines impressions.
+
+Priorité du 8 septembre : la tête d'impression a été modifiée, les mesures de
+résonance sont donc à refaire. La campagne est **préparée et validée, pas
+lancée** — Thomas bricole encore sur la machine et on se recale avant de
+mesurer. Un seul lancement,
+`scripts/run-k1-control-resonance-campaign-v1.ps1`, une vingtaine de minutes :
+les deux axes réellement mesurés chacun, les deux courroies séparément, les
+cinq filtres évalués hors ligne, comparaison avec le 2 septembre, rien
+d'appliqué. L'analyseur a été passé sur les CSV du 2 septembre et les reproduit
+au dixième près (`ei 40,2 Hz / 24,7 %` sur X, `mzv 39,0 Hz / 0,0 %` sur Y).
+
+À savoir : le calibrage de la machine a tourné ce soir à 21:47 depuis l'écran.
+Il n'a mesuré **qu'un seul axe** — les deux CSV ont la même empreinte
+`bd083f5c…` — et a écrit `ei 56.2` sur les deux axes dans le bloc `#*#`,
+effaçant la série du 2 septembre. Ne pas le relancer depuis l'écran. Notre
+campagne échoue explicitement si les deux axes rendent le même fichier.
+Question ouverte et bloquante pour la suite : **ce qui a été changé sur la
+tête**. Si la partie chaude ou la géométrie ont bougé, le zéro Z et l'avance de
+pression (`0,044`) sont à reprendre aussi. Voir document 64.
 
 Priorité du 5 septembre, fin de journée : le blocage de départ
 `220 C / plafond 105 C` est corrigé à sa vraie source, dans le garde de
