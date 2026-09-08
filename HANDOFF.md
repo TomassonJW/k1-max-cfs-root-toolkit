@@ -1,5 +1,24 @@
 # HANDOFF — index de reprise
 
+Priorité du 8 septembre : la tête d'impression a été modifiée, les mesures de
+résonance sont donc à refaire. La campagne est **préparée et validée, pas
+lancée** — Thomas bricole encore sur la machine et on se recale avant de
+mesurer. Un seul lancement,
+`scripts/run-k1-control-resonance-campaign-v1.ps1`, une vingtaine de minutes :
+les deux axes réellement mesurés chacun, les deux courroies séparément, les
+cinq filtres évalués hors ligne, comparaison avec le 2 septembre, rien
+d'appliqué. L'analyseur a été passé sur les CSV du 2 septembre et les reproduit
+au dixième près (`ei 40,2 Hz / 24,7 %` sur X, `mzv 39,0 Hz / 0,0 %` sur Y).
+
+À savoir : le calibrage de la machine a tourné ce soir à 21:47 depuis l'écran.
+Il n'a mesuré **qu'un seul axe** — les deux CSV ont la même empreinte
+`bd083f5c…` — et a écrit `ei 56.2` sur les deux axes dans le bloc `#*#`,
+effaçant la série du 2 septembre. Ne pas le relancer depuis l'écran. Notre
+campagne échoue explicitement si les deux axes rendent le même fichier.
+Question ouverte et bloquante pour la suite : **ce qui a été changé sur la
+tête**. Si la partie chaude ou la géométrie ont bougé, le zéro Z et l'avance de
+pression (`0,044`) sont à reprendre aussi. Voir document 64.
+
 ## Priorité du 5 septembre au soir — le départ ne refuse plus une buse chaude
 
 Trois départs se sont arrêtés au même octet dans la journée : 16:21, 16:43 et
