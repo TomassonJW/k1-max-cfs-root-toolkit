@@ -1841,3 +1841,30 @@ Incident : un `TURN_OFF_HEATERS` a été envoyé sur une machine crue au repos
 alors que l'impression venait d'être relancée depuis l'écran. La buse est tombée
 de `190` à `175 C` pendant la première couche avant rétablissement. Règle
 ajoutée au HANDOFF : vérifier `print_stats.state` avant toute commande machine.
+
+## Mise à jour 2026-09-09 — origine réelle du 220 °C imposé par le CFS
+
+Le chargeur d'origine prend sa température dans `material_database.json`, à la
+fiche de la matière de l'emplacement tiré, et pas dans le fichier tranché. La
+fiche `00001 Generic PLA` portait `220` : d'où le 220 °C sur tous les PLA depuis
+le début, y compris avec un fichier mono-filament. Départage par la vitesse
+journalisée, `max_volumetric_speed: 14`, qui est celle de la fiche et pas celle
+du fichier. Doc 67.
+
+Conséquence à retenir : la température suit la matière de la bobine chargée, pas
+la liste des filaments du travail. Un fichier à seize filaments dont un ABS ne
+fera jamais charger du PLA à 260 °C.
+
+Appliqué sur la machine le 9 septembre à 00:32 : fiche `00001` ramenée à `200`,
+sauvegarde `material_database.json.kctrl-bak-20260909-003232`.
+
+Écrit et testé hors imprimante, **pas encore chargé** : `_KCTRL_LOAD_GUARD`,
+qui abaisse toute cible de buse au dessus de `EXTRUDER_TEMP + 15` pendant le
+bloc CFS de `START_PRINT`. Une impression de 13 h tournait, et charger la
+configuration demande un redémarrage de Klipper.
+
+Reprise : quand la machine est libre, poser les deux `.cfg` en attente sur la
+machine, redémarrer Klipper, lancer un départ et lire dans le journal
+`get next material temp: 200` puis une cible qui ne dépasse jamais 205.
+
+Les documents 30 et 54 sont corrigés sur ce point par le document 67.
