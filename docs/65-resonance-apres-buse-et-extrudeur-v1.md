@@ -89,3 +89,38 @@ Plafond d'accélération à retenir : celui de X, soit `3 380 mm/s²` avec `ei`.
 À faire avant de reprendre les impressions, indépendamment des vibrations :
 la buse a changé, donc le zéro Z est faux et l'avance de pression (`0,044`) ne
 vaut plus rien. Les deux sont à reprendre.
+
+## Application — 8 septembre, 22:43
+
+Thomas a validé. `ei 42,6 Hz` sur X, `mzv 46,6 Hz` sur Y, appliqués des deux
+façons.
+
+**En direct**, par `SET_INPUT_SHAPER`. La commande est bien active et
+validante : `SHAPER_TYPE_X=nawak` est refusé par
+`Unsupported shaper type: nawak`, nos valeurs sont acceptées. À noter, sur cette
+version l'objet `input_shaper` n'est pas publié dans l'état de l'imprimante —
+il n'apparaît pas dans les 122 objets exposés — donc les valeurs vivantes ne
+sont pas relisibles par requête. La preuve tient au refus d'une valeur absurde
+et à l'acceptation des nôtres, pas à une relecture.
+
+**Dans le fichier**, à la main dans le bloc `#*#`, `SAVE_CONFIG` étant interdit
+ici. Trois lignes changées, quatre lignes relues et conformes. Sauvegarde :
+`printer.cfg.bak-avant-application-20260908-224352`.
+
+```
+#*# shaper_type_y = mzv      #*# shaper_type_x = ei
+#*# shaper_freq_y = 46.6     #*# shaper_freq_x = 42.6
+```
+
+### Un piège à connaître
+
+`configfile.save_config_pending` est à `true` : Klipper garde en mémoire les
+valeurs que `SHAPER_CALIBRATE` a préparées, c'est-à-dire `ei 55.8` sur les deux
+axes. Si un `SAVE_CONFIG` était exécuté, il réécrirait le fichier avec ces
+valeurs-là, effacerait l'édition manuelle et redémarrerait la machine. C'est une
+raison de plus de ne jamais lancer `SAVE_CONFIG` sur cette imprimante. Le
+drapeau retombera au prochain redémarrage.
+
+Autre repère relevé au passage : `max_accel` vaut `20000` dans `[printer]`.
+C'est le plafond absolu de la machine, pas l'accélération d'impression ; le
+`3 380 mm/s²` conseillé par la mesure se règle côté tranchage. Non modifié.

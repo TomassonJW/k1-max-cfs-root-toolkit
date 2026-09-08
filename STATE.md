@@ -2,6 +2,14 @@
 
 Last updated: 2026-09-08
 
+Appliqué le 8 septembre à 22:43, sur accord de Thomas : `ei 42,6 Hz` sur X et
+`mzv 46,6 Hz` sur Y, en direct par `SET_INPUT_SHAPER` et à la main dans le bloc
+`#*#` de `printer.cfg` (sauvegarde `printer.cfg.bak-avant-application-20260908-224352`).
+Attention : `save_config_pending` est à `true`, Klipper garde en mémoire les
+`ei 55.8` préparés par `SHAPER_CALIBRATE` ; un `SAVE_CONFIG` écraserait
+l'édition manuelle et redémarrerait la machine. Le zéro Z et l'avance de
+pression ont été refaits par Thomas lui-même.
+
 Résultat de la campagne du 8 septembre, 22:10-22:25, après remplacement de la
 buse et de l'extrudeur. Les quatre balayages ont tourné, les deux axes ont bien
 été mesurés séparément. **Rien n'a été appliqué.** Y est nettement meilleur :
