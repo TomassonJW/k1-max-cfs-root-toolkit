@@ -187,10 +187,18 @@ def test_kctrl_slot_writes_the_table_first_then_remembers_the_choice():
     # garde a cote n'est pas une seconde verite : c'est la memoire du dernier
     # choix de l'operateur, relue seulement quand la machine a efface la table,
     # et immediatement reecrite dedans par START_PRINT.
+    #
+    # Deux ecritures, pas une : une par filament logique, pour que les seize
+    # paires d'un travail multicouleur survivent ensemble, et celle de T1A qui
+    # reste sous son ancien nom parce qu'un enregistrement deja sur la machine
+    # le porte.
     lines = commands("KCTRL_SLOT")
     table = index_of(lines, "BOX_MODIFY_TN {logical}={slot}")
     saves = [line for line in lines if line.startswith("SAVE_VARIABLE")]
-    assert saves == ["SAVE_VARIABLE VARIABLE=slot_last_choice VALUE='\"{slot}\"'"]
+    assert saves == [
+        "SAVE_VARIABLE VARIABLE=slot_choice_{logical|lower} VALUE='\"{slot}\"'",
+        "SAVE_VARIABLE VARIABLE=slot_last_choice VALUE='\"{slot}\"'",
+    ]
     assert index_of(lines, "SAVE_VARIABLE") > table
 
 
