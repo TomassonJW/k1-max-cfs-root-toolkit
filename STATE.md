@@ -1934,3 +1934,42 @@ machine, redémarrer Klipper, lancer un départ et lire dans le journal
 `get next material temp: 200` puis une cible qui ne dépasse jamais 205.
 
 Les documents 30 et 54 sont corrigés sur ce point par le document 67.
+
+## Mise à jour 2026-09-09 soir — zéro Z refait, tour d'avance de pression, et une découverte
+
+**Zéro Z réglé et enregistré.** `z_k1_p001_t055_r001_n11x11 = 0.145` dans
+`save_variables`, contre `0.05` avant. Valeur trouvée à la main par Thomas sur
+un carré de 80x80 en une couche, acceptée entre +0.14 et +0.15. Aucun
+`SAVE_CONFIG`. Vérifié appliqué : au départ suivant, `homing_origin[2]` passe
+bien de `0.000` à `0.145`. Répétabilité du palpeur après changement de hotend :
+étendue 0.046 mm, écart type 0.015 mm sur cinq contacts. Doc 69.
+
+Piège documenté au passage, parce que je m'y suis trompé : **une buse trop
+basse donne exactement l'image d'une buse bouchée**. Le plastique ne peut pas
+sortir. Sur cette machine, `homing_origin.z` plus grand = plus d'espace, et
+c'est le plateau qui descend.
+
+**Avance de pression : tour imprimée, mesure à faire à la main.**
+`kctrl-tour-avance-de-pression.gcode`, 50 mm de haut,
+`TUNING_TOWER … FACTOR=0.002`, donc `PA = 0.002 x hauteur`. Impression terminée
+à 100 %, état `complete`. Valeur en place avant mesure : `0.04`. Reste à lire
+la hauteur où les angles sont nets, puis `SET_PRESSURE_ADVANCE` et édition à la
+main de `pressure_advance` dans `[extruder]`.
+
+**Découverte, mesurée deux fois : une fin d'impression *normale* efface
+`tnn_map`.** Ce n'était pas connu — on croyait cela réservé à l'annulation, à
+l'arrêt d'urgence ou au redémarrage firmware. Après la première couche d'essai
+puis après la tour, `tn_data.json` est revenu avec `base_data` seul.
+`KCTRL_CHECK` l'a attrapé avant le lancement de la tour
+(`filament 1 (T1A) -> ? non associe`), remis en place par `KCTRL_SLOT`.
+Conséquence : `KCTRL_CHECK` est à lancer avant **chaque** impression, et le
+correctif à écrire est de mémoriser les seize paires dans `save_variables` au
+lieu de la seule `T1A`. Doc 68 section 9.
+
+**Preuve de bout en bout du correctif bobine.** Départ réel journalisé :
+`K1 Control start: bed 55 C, nozzle 200 C, filament 1 du fichier (T1A) ->
+emplacement T1B (table CFS), mesh k1_p001_t055_r001_n11x11, Z 0.0500`, avec
+`get next material temp: 200`, aucun `macro_box_extrude_err`, le `T0` du
+fichier n'a pas déclenché de changement d'outil, et le travail est allé jusqu'à
+`Done printing file`. Les deux correctifs du 9 septembre sont donc prouvés en
+impression, plus seulement à froid.

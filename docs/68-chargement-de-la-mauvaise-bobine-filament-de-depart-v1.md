@@ -216,3 +216,43 @@ lu sur le premier bloc du fichier : 4 ms.
 - `packages/k1-control-v1/mesh-acquisition-v2/k1-control-probe-temp-guard-v1.cfg`
 - `tests/test_kctrl_slot_map_v1.py`
 - `tests/test_cfs_slot_selection_and_refill_v1.py`
+
+## 9. Une fin d'impression normale efface aussi la table des bobines
+
+Constate le 9 septembre au soir, et ce n'etait pas connu. Verifie deux fois :
+apres la premiere couche d'essai, puis apres la tour d'avance de pression.
+Les deux impressions se sont terminees normalement, les deux ont laisse
+`tn_data.json` avec `base_data` seul. Ce n'est pas un accident, c'est le
+comportement de la machine.
+
+Jusqu'ici on pensait que `tnn_map` ne disparaissait que sur annulation, arret
+d'urgence, coupure de courant ou redemarrage du firmware. C'est faux. Apres la
+**fin normale** de l'impression de la premiere couche d'essai — `Done printing
+file`, etat `complete`, aucune erreur — `tn_data.json` est revenu avec
+`base_data` seul, sans `tnn_map`.
+
+La preuve est la sortie de `KCTRL_CHECK` juste avant de lancer la tour d'avance
+de pression :
+
+```
+filament 1 (T1A) -> ? non associe
+  1 probleme(s); l'impression s'arreterait en cours
+```
+
+alors que la meme commande, une heure plus tot, sur le meme filament, repondait
+`-> emplacement T1B (matiere 000001), pret`.
+
+Remis en place par `KCTRL_SLOT SLOT=T1B TOOL=T1A`, puis re-verifie vert avant
+de lancer. Sans ce controle prealable, la tour serait partie sans bobine
+associee et se serait arretee au premier changement d'outil.
+
+Ce que cela change en pratique :
+
+- `KCTRL_CHECK` n'est pas un confort, c'est le seul garde-fou entre deux
+  travaux. A lancer avant **chaque** impression, meme si rien n'a bouge.
+- `save_variables.slot_last_choice` ne memorise que le choix de `T1A`. Pour un
+  travail multi-bobines, la table doit etre reecrite a la main apres chaque
+  impression.
+- Correctif possible, pas encore ecrit : memoriser les seize paires dans
+  `save_variables` et les reecrire au demarrage, au lieu de la seule `T1A`.
+  Inscrit au backlog.
