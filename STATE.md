@@ -1,5 +1,71 @@
 # STATE
 
+Last updated: 2026-09-10
+
+Nuit du 9 au 10 septembre. La sequence de demarrage a ete prise en flagrant
+delit et corrigee. Deploye sur la machine, pas encore eprouve par une
+impression.
+
+**Pourquoi une impression se figeait pour de bon.** Le 9 a 23:42, file G-code
+bloquee, annulation ignoree, sortie seulement par redemarrage de Klipper. Le
+trancheur ne pose qu'une commande outil et la met *apres* le bloc de
+demarrage - ligne 275 du fichier, douze lignes sous son `START_PRINT`. Quand
+elle s'executait, le module CFS compile ecrivait `cmd_T last_cmd=None,
+get_fialment_sensor_detect()=True` puis `move_to_cut`. `last_cmd` est l'outil
+que le CFS croit charge, et rien de ce que `START_PRINT` appelait avant ne le
+renseigne, `BOX_EXTRUDE_MATERIAL` compris. Le module voyait du filament sans
+pouvoir l'attribuer, concluait qu'une bobine etrangere devait sortir, coupait,
+reinserait, repurgeait, puis restaurait un Z releve avant que notre purge ne le
+deplace : `Move out of range: 185.500 291.500 -18.951`. Ce refus n'est pas
+rattrape dans le module compile, et la file ne repart jamais.
+
+C'est ce qui explique la sequence absurde que l'operateur decrivait depuis deux
+jours : palpation, purge, trait de purge, **puis** coupe et retrait de la
+bobine, puis reinsertion et nouvelle purge, puis blocage. La coupe n'a
+effectivement rien a faire la, et elle n'y etait que parce que le changement
+d'outil arrivait trop tard.
+
+**Correctif.** `START_PRINT` emet lui-meme le changement d'outil, tete encore
+vide, apres `BOX_MODIFY_TN` et avant tout chargement. La meme `cmd_T` prend
+alors son autre branche : pas de coupe, chargement normal, `last_cmd`
+renseigne. Le `T` du fichier retombe sur le meme outil et ne fait plus rien. Le
+litteral emis est l'index du fichier, pas le nom logique : le firmware decode
+positionnellement.
+
+**Le routage `T1B -> T2D` est correct et n'a jamais ete en cause.** Le fichier
+ecrit `T1`, le firmware le decode en `T1B` logique, `Tnn_map` route ce logique
+vers le physique `T2D`. C'est exactement la table de l'ecran Creality.
+L'en-tete du fichier confirme la lecture de l'operateur :
+`filament used [mm] = 0.00, 62803.00`, filament 1 mort, filament 2 pour tout le
+travail.
+
+**La ligne d'amorce est desormais possedee.** `CX_PRINT_DRAW_ONE_LINE` ne trace
+aucune ligne sur un demarrage normal : tout ce qui dessine dans
+`custom_macro.py` est sous `if self.pheaters.can_break_flag == 3`. Les trois
+cordons a Z 0.30 qui se sont soudes au plateau etaient sa reprise sur rupture.
+L'appel stock reste pour la retraction, la chauffe et la remise a zero du
+drapeau ; `_KCTRL_PRIME_LINE` trace la ligne, toujours, a Z 0.36 au lieu de
+0.30, a 150 mm/s au lieu de 50, en trois passes, 26.6 mm de matiere au lieu de
+10 dans la meme duree de 3.2 s. Tout est en `variable_`, reglable a chaud.
+
+Etat de la machine au 10 septembre, 00h : `k1-control-owned-start-print-v2.cfg`
+deploye (md5 `3ca58a94014711baab93702d50dab0c7`), sauvegarde
+`*.kctrl-bak-20260910-toolfix`, Klipper relance, `klippy: ready`,
+`print: standby`, chauffes coupees, CFS `connect`, table des bobines intacte
+(`T1B -> T2D`). **Du filament est reste dans la tete** apres le blocage : le
+capteur de tete voit `True`. Au prochain demarrage, le changement d'outil
+desormais emis tot le verra et le coupera - au bon moment cette fois, avant
+tout chargement, et le cutter repare passe en 1,5 s.
+
+Reste ouvert, non fait : aucune impression n'a tourne avec ce demarrage. Le
+garde Z de la zone CFS est ecrit mais ni commite ni deploye, et deux de ses
+tests sont rouges parce qu'ils visent un Y hors de sa zone declaree. Deux
+autres tests rouges preexistent, sans rapport :
+`test_cfs_direct_owner_offline_v1` et `test_job_lifecycle_offline_v1`.
+
+---
+
+
 Last updated: 2026-09-09
 
 Journee du 9 septembre. Deux pannes, deux causes distinctes, les deux corrigees
