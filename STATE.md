@@ -2,6 +2,21 @@
 
 Last updated: 2026-09-10
 
+10 septembre, 01:52. Impression reelle lancee par Thomas depuis Mainsail apres
+`KCTRL_SLOT SLOT=T2D TOOL=T1B` : chargement sans coupe, purge, ligne d'amorce,
+premiere couche en cours. Le `T1` du fichier (ligne 275) a pris le chemin
+« meme outil » (`last_cmd = T2D`) sans bouger la tete. Reste en memoire un
+`z_down 20.087` non rendu (P1 de l'audit 70), sans effet sur un mono-filament.
+
+Constat de Thomas pendant la premiere couche : la plaque du plateau a ete pliee
+par un incident de la nuit, la buse se bouchait, il a ajoute ~+0.28 mm en direct
+(`homing_origin Z` = 0.415 contre 0.14 sauve pour le profil
+`k1_p001_t055_r001_n11x11`). Ce reglage en direct n'est pas persiste : le
+prochain depart reappliquera 0.14. A faire avant toute autre impression :
+inspecter la plaque, refaire entierement le mesh a 55 C, puis remesurer le zero
+Z (`KCTRL_Z_SAVE`). Le journal ne montre aucun mouvement en Z negatif accepte ;
+l'origine mecanique de la deformation n'est pas etablie.
+
 Nuit du 9 au 10 septembre, 01:20. Le correctif du changement d'outil est
 **eprouve** : au depart de 00:51 la coupe est arrivee au debut de la sequence
 et non plus au milieu, `z_down move_z: 0.8` contre `44.027` la veille, aucun
