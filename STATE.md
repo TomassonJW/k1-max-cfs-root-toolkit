@@ -2,6 +2,38 @@
 
 Last updated: 2026-09-10
 
+Nuit du 9 au 10 septembre, 01:20. Le correctif du changement d'outil est
+**eprouve** : au depart de 00:51 la coupe est arrivee au debut de la sequence
+et non plus au milieu, `z_down move_z: 0.8` contre `44.027` la veille, aucun
+`Move out of range` pendant `START_PRINT`, et la sequence est allee au bout
+jusqu'a la premiere couche. Premier depart complet depuis que le probleme
+existe.
+
+Ce depart a ete arrete par autre chose : `key841`, le capteur de coupe n'a pas
+vu la lame revenir apres cinq essais. Defaillance **intermittente** — le cutter
+a refonctionne deux fois ensuite sans que `box.cfg` change. Non expliquee.
+
+Une seconde corruption Z a suivi a 01:07, provoquee par une relance depuis
+l'ecran alors que le CFS avait deja fait son `box_resume_extrude` : deux
+reprises superposees, `record_z_pos` appele deux fois a 24 ms d'intervalle,
+-43,00 mm. Ce n'est pas `START_PRINT`. Regle : un seul chemin de reprise.
+
+Thomas a annule. Machine `cancelled`, chauffes a zero, tete vide, et la table
+des bobines est **vide** : il faut `KCTRL_SLOT SLOT=T2D TOOL=T1B` avant toute
+relance, sinon `START_PRINT` refuse.
+
+Un audit independant a tourne en parallele et a rendu
+`docs/70-audit-independant-sequence-demarrage-v1.md` — 320 lignes, sept
+dangers classes, sources Klipper et Creality citees. Sa priorite P1 designe la
+cause de fond des `Move out of range` : l'accumulateur Z n'est jamais rendu
+avant de sortir du bloc CFS. Rien de ce tableau n'est encore applique.
+
+Defaut assume de `_KCTRL_PRIME_LINE` : montee du debit **et** de la vitesse
+ensemble, donc section par trait en baisse (0,133 mm2 contre 0,150 stock). La
+ligne est plus fine que la stock trait par trait. Le zero Z n'est pas en cause,
+`homing_origin Z = 0.14` est bien applique.
+
+
 Nuit du 9 au 10 septembre. La sequence de demarrage a ete prise en flagrant
 delit et corrigee. Deploye sur la machine, pas encore eprouve par une
 impression.

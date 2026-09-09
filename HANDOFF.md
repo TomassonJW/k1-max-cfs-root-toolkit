@@ -1,5 +1,132 @@
 # HANDOFF — index de reprise
 
+## 10 septembre, 01:20 — la machine est propre, la table des bobines est vide
+
+**Point de reprise en un geste :** avant toute impression,
+`KCTRL_SLOT SLOT=T2D TOOL=T1B`. Sans ça `START_PRINT` **refuse de démarrer**.
+
+### Ce que la nuit a prouvé
+
+Le correctif du changement d'outil **fonctionne**. Journal du départ de 00:51 :
+
+```
+00:53:23  cmd_T last_cmd=None, get_fialment_sensor_detect()=True
+00:53:23  z_down move_z: 0.8          <- sain, contre 44.027 la veille
+```
+
+La coupe est arrivée **au début** de la séquence, avant tout chargement et
+avant toute purge, et l'accumulateur Z n'a plus dérivé pendant `START_PRINT`.
+Aucun `Move out of range` pendant le démarrage. La séquence est allée au bout :
+chargement, purge, ligne d'amorce, première couche. **C'est le premier départ
+complet depuis que le problème existe.**
+
+### Ce qui a arrêté ce départ, et ce n'était pas la séquence
+
+```
+00:53:28  [box] cut to return failed          (x5 en 20 s)
+00:53:48  key841 "cut error, cut sensor not detected, cutting not rebound"
+00:53:48  error: printing to pause
+```
+
+Le capteur de coupe n'a pas vu la lame revenir. Cinq essais, abandon, pause.
+Piège de lecture à connaître : la pause est décidée à 00:53:48 mais la purge et
+la ligne d'amorce se déroulent **après**, jusqu'à 00:55:22, parce que Klipper
+vide d'abord la file déjà tamponnée. Le dernier message du journal
+(`SET_HOTEND_FAN`, `key61`) n'est **pas** la cause : il vient d'un webhook de
+`/usr/bin/master-server`, pas du gcode, et tombe là par coïncidence.
+
+Le cutter a ensuite refonctionné (`cut to return OK` à 01:03:45 et à 01:15:44)
+sans que `box.cfg` change d'un octet — md5 `dd05b5bb69929389d233cc1e487a44de`
+avant comme après, positions inchangées (`cut_pos_x: 38`, `cut_pos_y: 303.2`,
+`cut_pos_offset: 1.3`). **Défaillance intermittente non expliquée.** Sauvegarde
+`box.cfg.kctrl-bak-avant-calib-cutter-20260910`.
+
+### La corruption Z de 01:07 : deux reprises superposées
+
+```
+01:05:36  cmd_T box_resume_extrude: last_tnn = T2D, tnn = T2D   <- le CFS reprend seul
+01:07:05  record_z_pos: 2.410
+01:07:05  record_z_pos: -40.590                                  <- 24 ms plus tard, -43.00 mm
+01:07:05  Move out of range: 210.000 291.500 -40.590 [357.808]
+```
+
+Le CFS avait déjà fait sa reprise ; la relance depuis l'écran en a superposé une
+seconde et le compteur Z a soustrait deux fois. **Ce n'est pas `START_PRINT`.**
+Règle qui en sort : **un seul chemin de reprise**. Ne jamais relancer depuis
+l'écran après un `box_resume_extrude`. La machine n'a pas été figée cette fois
+(`idle_timeout: Ready`), aucun redémarrage Klipper n'a été nécessaire.
+
+Confirmé au passage, et c'est la validation de la thèse de cause racine :
+quand `last_cmd` vaut `T2D` et que l'outil demandé vaut `T2D`, le module fait
+`box_resume_extrude` et **ne coupe pas**. La coupe n'a jamais eu lieu que sur
+`last_cmd = None`.
+
+### État machine au moment de la passation, vérifié
+
+| | |
+|---|---|
+| `print_stats.state` | `cancelled` |
+| chauffes | 0 / 0, en refroidissement |
+| `homed_axes` | `''` |
+| capteur de tête | **False** — filament retiré, tête vide |
+| `box.last_cmd` | `None` |
+| `kctrl_slot_map.map` | **`{}`**, `error: tnn_map vide` |
+| `tn_data.json` | `tnn_map: None`, `last_cmd: None` |
+| variables retenues | `kctrl_slot = T1A`, `slot_last_choice = T1B` |
+| config déployée | md5 `3ca58a94014711baab93702d50dab0c7` |
+
+L'annulation a vidé la table des bobines. Le repli `slot_last_choice` **ne
+s'applique qu'à `T1A`** (par construction, voir
+`test_the_remembered_slot_is_only_the_first_filament`), or le fichier démarre
+sur `T1B`, et aucun `slot_choice_t1b` n'existe. Donc `chosen` est vide et
+`START_PRINT` lève une erreur explicite au lieu de deviner — comportement
+voulu, mais il **faut** réécrire la table avant de relancer.
+
+Tête vide au prochain départ = `last_cmd None` + capteur False = **chargement
+normal, aucune coupe**. C'est l'état nominal du CFS, et le cutter sort du
+chemin critique pour ce départ-là.
+
+### Ce qui reste ouvert, par priorité
+
+Le rapport d'audit indépendant `docs/70-audit-independant-sequence-demarrage-v1.md`
+tient la liste complète et sourcée (§4). Les trois premiers :
+
+- **P1 — rendre l'accumulateur Z avant de sortir du bloc CFS.** `RESTORE_POSITION`
+  après `BOX_MATERIAL_FLUSH`, ou remplacer `BOX_EXTRUDE_MATERIAL` +
+  `BOX_GO_TO_EXTRUDE_POS` par le stock `BOX_START_PRINT_EXTRUDE_MATERIAL
+  START_PRINT=8`. C'est la cause de fond des `Move out of range`.
+- **P2 — faire échouer `START_PRINT` sur erreur CFS.** Constaté cette nuit :
+  après `key841`, la séquence a continué à purger et à tracer comme si de rien
+  n'était.
+- **P5 — ligne d'amorce trop fine.** Défaut de conception assumé de
+  `_KCTRL_PRIME_LINE` : monter le débit **et** la vitesse ensemble a fait
+  *baisser* la section par trait — 0,133 mm² contre 0,150 mm² pour la stock,
+  soit 0,37 mm de large contre 0,75. Les 3 passes donnent bien 2,7x la matière
+  au total, mais chaque trait est deux fois plus fin que le stock. Correctif :
+  descendre `variable_line_speed` de 9000 à 6000 (100 mm/s) à débit constant,
+  ou suivre l'audit et plafonner à 15 mm³/s — le profil Orca officiel du
+  `CR-PLA @K1 Max_CFS-C` déclare 18 mm³/s. Le zéro Z n'est **pas** en cause :
+  `homing_origin Z = 0.14` est bien appliqué (écart mesuré entre
+  `gcode_position` et `position`).
+
+Non résolu et non expliqué : l'intermittence du capteur de coupe. Deux passages
+du forum Creality cités par l'audit pointent des débris et le réglage de
+`cut_pos` (TC2841).
+
+### Tests
+
+`tests/test_kctrl_zone_guard_v1.py` : **2 rouges assumés**, ils affirment que le
+mouvement incriminé à Y 291,5 est refusé alors que `zone_y_min` vaut 296.
+L'audit tranche (P4) : viser Y ≥ 285, et n'appliquer le plancher qu'en dehors
+du palpage et pendant `printing`. Le garde n'est **pas déployé**.
+Deux autres rouges préexistants et sans rapport :
+`test_cfs_direct_owner_offline_v1::test_unload_requires_head_sensor_to_clear`,
+`test_job_lifecycle_offline_v1::test_all_canonical_scenarios_are_implemented_once`.
+
+---
+
+# HANDOFF — index de reprise
+
 Soiree du 8 septembre, apres la campagne : la hotend a lache — fils dessoudes,
 chauffage commande a fond sans aucune montee. Thomas l'a remplacee par une piece
 identique. Les resonances n'ont **pas** ete refaites, a raison : une hotend
