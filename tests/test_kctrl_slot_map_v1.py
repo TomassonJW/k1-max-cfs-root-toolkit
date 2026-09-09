@@ -160,3 +160,149 @@ def test_nothing_here_writes(live):
     obj.get_status()
     obj.get_status()
     assert target.read_bytes() == before
+
+
+# ------------------------------------------- le filament sur lequel on demarre
+#
+# Un fichier peut declarer seize filaments et n'en imprimer qu'un. Celui du
+# 9 septembre en declarait deux et n'emettait qu'un seul `T1`, son second. Le
+# demarrage chargeait le premier : le Geeetech noir de T1B a ete charge et purge
+# pour un travail qui voulait l'eSUN de T2D, et le `T1` qui suivait est devenu un
+# changement d'outil en plein demarrage, fini en `macro_box_extrude_err`.
+
+ENTETE = "\n".join([
+    "; nozzle_temperature_initial_layer = 190,220",
+    "; filament: 2",
+    "; EXECUTABLE_BLOCK_START",
+    "START_PRINT EXTRUDER_TEMP=220 BED_TEMP=55",
+    "M104 S220",
+    "M83 ; use relative distances for extrusion",
+])
+
+
+def gcode(tmp_path, corps, name="job.gcode"):
+    target = tmp_path / name
+    target.write_text(ENTETE + "\n" + corps + "\n", encoding="utf-8")
+    return str(target)
+
+
+@pytest.mark.parametrize("ligne,attendu", [
+    ("T0", 0),
+    ("T1", 1),
+    ("T15", 15),
+    ("T1 ; set nozzle temperature", 1),
+    ("  T3  ", 3),
+])
+def test_the_initial_tool_is_read_from_the_file(tmp_path, ligne, attendu):
+    index, note = MOD.scan_initial_tool(gcode(tmp_path, ligne))
+    assert index == attendu
+    assert note == "premier T du fichier"
+
+
+def test_only_the_first_tool_command_counts(tmp_path):
+    # Les suivants sont les changements de couleur du travail, pas son depart.
+    index, _ = MOD.scan_initial_tool(gcode(tmp_path, "T5\nG1 X1\nT2\nT9"))
+    assert index == 5
+
+
+def test_a_file_without_a_tool_command_starts_on_the_first_filament(tmp_path):
+    index, note = MOD.scan_initial_tool(gcode(tmp_path, "G1 X1 Y1"))
+    assert index == 0
+    assert "mono-filament" in note
+
+
+@pytest.mark.parametrize("ligne", [
+    "; T1",                       # en commentaire
+    "TEMPERATURE_WAIT SENSOR=extruder MAXIMUM=45",
+    "M104 T1 S200",               # pas en debut de ligne
+    "T",                          # pas de numero
+])
+def test_what_is_not_a_tool_command_is_not_read_as_one(tmp_path, ligne):
+    index, note = MOD.scan_initial_tool(gcode(tmp_path, ligne))
+    assert index == 0
+    assert "mono-filament" in note
+
+
+def test_a_tool_beyond_the_cfs_is_refused_not_wrapped(tmp_path):
+    # Seize emplacements, T0 a T15. T16 n'existe pas : repondre 0 ferait
+    # charger la premiere bobine pour un travail qui en demande une autre.
+    index, note = MOD.scan_initial_tool(gcode(tmp_path, "T16"))
+    assert index == -1
+    assert "16" in note
+
+
+def test_an_unreadable_file_reports_instead_of_guessing(tmp_path):
+    index, note = MOD.scan_initial_tool(str(tmp_path / "absent.gcode"))
+    assert index == -1
+    assert "illisible" in note
+
+
+def test_the_tool_command_is_found_past_the_first_chunk(tmp_path):
+    # Le fichier est lu par blocs : un `T` a cheval sur deux blocs, ou tres
+    # loin dans l'entete, doit sortir pareil.
+    corps = "\n".join(["G1 X%d" % i for i in range(20000)] + ["T7"])
+    index, _ = MOD.scan_initial_tool(gcode(tmp_path, corps))
+    assert index == 7
+
+
+@pytest.mark.parametrize("index,logical", [
+    (0, "T1A"), (1, "T1B"), (3, "T1D"), (4, "T2A"), (15, "T4D"),
+])
+def test_the_sixteen_filaments_map_onto_the_sixteen_slots(index, logical):
+    assert MOD.logical_of_index(index) == logical
+
+
+@pytest.mark.parametrize("index", [-1, 16, 99, None, "1"])
+def test_a_filament_number_outside_the_cfs_has_no_logical_name(index):
+    assert MOD.logical_of_index(index) == ""
+
+
+class FakeSdcard:
+    def __init__(self, path):
+        self.path = path
+
+    def get_status(self, eventtime=None):
+        return {"file_path": self.path}
+
+
+def test_the_status_names_the_slot_the_job_starts_on(tmp_path):
+    table = dict(LIVE_MAP)
+    table["T1A"] = "T1B"
+    table["T1B"] = "T2D"
+    obj, _ = build(tmp_path, {"tnn_map": table})
+    obj.printer.objects["virtual_sdcard"] = FakeSdcard(gcode(tmp_path, "T1"))
+    status = obj.get_status()
+    assert status["initial_index"] == 1
+    assert status["initial_logical"] == "T1B"
+    # L'emplacement reellement charge : celui du 9 septembre, T2D et pas T1B.
+    assert status["initial_slot"] == "T2D"
+
+
+def test_the_file_is_scanned_once_and_re_read_when_it_changes(tmp_path):
+    obj, _ = build(tmp_path, {"tnn_map": dict(LIVE_MAP)})
+    path = gcode(tmp_path, "T2")
+    obj.printer.objects["virtual_sdcard"] = FakeSdcard(path)
+    assert obj.get_status()["initial_index"] == 2
+
+    calls = []
+    reel = MOD.scan_initial_tool
+    MOD.scan_initial_tool = lambda p, **kw: (calls.append(p), reel(p, **kw))[1]
+    try:
+        obj.get_status()
+        obj.get_status()
+        assert calls == [], "un fichier inchange ne doit pas etre relu"
+        gcode(tmp_path, "T4")
+        stamp = os.stat(path)
+        os.utime(path, (stamp.st_atime + 5, stamp.st_mtime + 5))
+        assert obj.get_status()["initial_index"] == 4
+        assert len(calls) == 1
+    finally:
+        MOD.scan_initial_tool = reel
+
+
+def test_no_file_running_means_the_first_filament(tmp_path):
+    obj, _ = build(tmp_path, {"tnn_map": dict(LIVE_MAP)})
+    status = obj.get_status()
+    assert status["initial_logical"] == "T1A"
+    assert status["initial_file"] == ""
+    assert "aucun fichier" in status["initial_note"]

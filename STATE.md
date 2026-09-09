@@ -1,6 +1,53 @@
 # STATE
 
-Last updated: 2026-09-08
+Last updated: 2026-09-09
+
+Journee du 9 septembre. Deux pannes, deux causes distinctes, les deux corrigees
+et chargees sur la machine.
+
+**La temperature de chargement est reglee, et c'est prouve.** Le journal du
+9 septembre dit `get next material temp: 200` et `flush_temp: 200` a trois
+reprises. La correction de `00001 Generic PLA` de 220 a 200 dans
+`material_database.json` est ce qui l'a fait. Le `220` qui reste dans le journal
+vient du profil filament eSUN de Thomas dans Orca, pas de la machine :
+`nozzle_temperature_initial_layer = 190,220`, et le travail part sur le
+deuxieme filament. C'est le profil Orca qu'il faut changer pour imprimer plus
+froid. Voir document 67.
+
+**La mauvaise bobine chargee au depart : cause trouvee, correctif pose.**
+`START_PRINT` resolvait la bobine sur `T1A` en dur. Le fichier du matin declare
+deux filaments et n'imprime qu'avec le second (une seule ligne `T1`). Il a donc
+charge et purge le Geeetech noir de T1B pour un travail qui voulait l'eSUN de
+T2D, puis le `T1` du fichier est devenu un changement d'outil en plein
+demarrage, qui a echoue sur `macro_box_extrude_err`. `kctrl_slot_map` lit
+maintenant le premier `Tn` du fichier en cours et publie sur quel des seize
+filaments le travail demarre ; `START_PRINT` resout ce filament la. Le
+parametre `TOOL_INDEX=` permet de l'imposer. Voir document 68.
+
+Mesure faite le 9 septembre et qui tranche la question des seize bobines :
+`BOX_MODIFY_TN` **fusionne** dans `tnn_map`, il ne la remplace pas. Ecrire une
+paire laisse les quinze autres intactes. Un travail 4x4 ne perd donc pas sa
+table quand le demarrage reecrit l'emplacement sur lequel il part.
+
+Etat de la machine au 9 septembre : les trois fichiers sont charges et verifies
+par empreinte (`kctrl_slot_map.py`, `k1-control-owned-start-print-v2.cfg`,
+`k1-control-probe-temp-guard-v1.cfg`), Klipper redemarre, `klippy: ready`,
+`etat: standby`, la table des bobines intacte. Sauvegardes
+`*.kctrl-bak-20260909-153757`.
+
+Preuves faites sur la machine, sans imprimer : sur le fichier reel du matin,
+`KCTRL_MAP` repond `filament 2 (T1B) -> T2D <== charge au depart` — exactement
+la bobine qui manquait. Et le plafond de chargement, fenetre ouverte a 100 C :
+`M104 S220` donne une cible de `100,0` avec le message qui l'annonce, fenetre
+fermee il donne `220,0`. Il abaisse, il ne refuse pas.
+
+**Ce qui n'est pas prouve** : aucun depart reel n'a tourne avec le correctif.
+Il reste a lire dans le journal du prochain depart la banniere
+`filament 2 du fichier (T1B) -> emplacement T2D`, `get next material temp: 200`,
+et aucun changement d'outil entre l'amorce et la premiere couche.
+
+Toujours ouvert et prioritaire apres ca : refaire le zero Z, puis l'avance de
+pression.
 
 Soiree du 8 septembre, apres la campagne : la hotend a lache — fils dessoudes,
 chauffage commande a fond sans aucune montee. Thomas l'a remplacee par une piece

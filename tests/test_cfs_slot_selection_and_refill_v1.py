@@ -116,9 +116,29 @@ def test_start_print_reads_the_slot_from_the_cfs_table():
     # un rechargement automatique, ou par KCTRL_SLOT. Rien n'est stocke a cote.
     body = section("START_PRINT")
     assert 'printer["kctrl_slot_map"]' in body
-    assert 'slot_map.map.get("T1A")' in body
+    assert "slot_map.map.get(logical)" in body
     assert "VARIABLE=kctrl_slot" not in config_text()
     assert 'get("kctrl_slot")' not in config_text()
+
+
+def test_start_print_loads_the_filament_the_file_actually_starts_on():
+    # Un fichier peut declarer seize filaments et n'en imprimer qu'un. Celui du
+    # 9 septembre en declarait deux et n'emettait qu'un seul T1, son second :
+    # charger le premier a fait purger le Geeetech noir de T1B pour un travail
+    # qui voulait l'eSUN de T2D, et le T1 qui suivait est devenu un changement
+    # d'outil en plein demarrage - macro_box_extrude_err.
+    body = section("START_PRINT")
+    assert "slot_map.initial_logical" in body
+    assert "params.TOOL_INDEX" in body
+    # Les seize noms logiques, dans l'ordre du trancheur : T0 est T1A, T15 T4D.
+    assert '"T4D"' in body
+    assert "names.index(logical)" in body
+
+
+def test_start_print_refuses_a_tool_index_outside_the_cfs():
+    body = section("START_PRINT")
+    guard = body.index("params.TOOL_INDEX|int(-1) > 15")
+    assert "action_raise_error" in body[guard:guard + 300]
 
 
 def test_start_print_refuses_to_guess_when_the_table_is_unreadable():
@@ -126,7 +146,7 @@ def test_start_print_refuses_to_guess_when_the_table_is_unreadable():
     body = section("START_PRINT")
     guard = body.index("{% if not tool %}")
     assert "action_raise_error" in body[guard:guard + 400]
-    assert body.index("{% if not tool %}") < body.index("BOX_MODIFY_TN T1A={tool}")
+    assert body.index("{% if not tool %}") < body.index("BOX_MODIFY_TN {logical}={tool}")
 
 
 def test_the_slot_map_object_is_declared():
@@ -143,7 +163,7 @@ def test_start_print_points_the_stock_table_at_the_slot_before_loading():
     # BOX_CHECK_MATERIAL_REFILL reecrit Tnn_map pour passer la main a la bobine
     # jumelle. Une route qui ignore la table ne peut pas suivre un rechargement.
     lines = commands("START_PRINT")
-    assert index_of(lines, "BOX_MODIFY_TN T1A={tool}") < index_of(
+    assert index_of(lines, "BOX_MODIFY_TN {logical}={tool}") < index_of(
         lines, "_KCTRL_CFS_LOAD TOOL={tool} ATTEMPT=1")
 
 
@@ -174,13 +194,15 @@ def test_start_print_falls_back_on_the_remembered_slot_when_the_table_is_gone():
     # devinette, il rejoue un choix explicite et le dit.
     body = section("START_PRINT")
     assert 'get("slot_last_choice")' in body
-    assert body.index('slot_map.map.get("T1A")') < body.index('get("slot_last_choice")')
+    assert body.index("slot_map.map.get(logical)") < body.index('get("slot_last_choice")')
     assert "dernier choix retenu" in body
     assert "%s (%s)" in body  # l'emplacement et sa provenance, sur la ligne de depart
 
 
 def test_kctrl_slots_reads_the_selection_from_the_same_table():
-    assert 'printer["kctrl_slot_map"].map.get("T1A"' in section("KCTRL_SLOTS")
+    body = section("KCTRL_SLOTS")
+    assert "slot_map.map.get(logical)" in body
+    assert "slot_map.initial_logical" in body
 
 
 def test_kctrl_slot_validates_both_ends_of_the_mapping():
@@ -220,7 +242,8 @@ def test_kctrl_slots_resolves_exactly_like_start_print():
     # une impression qui en charge une autre.
     listing = section("KCTRL_SLOTS")
     start = section("START_PRINT")
-    for source in ['.map.get("T1A")', 'get("slot_last_choice")']:
+    for source in [".map.get(logical)", 'get("slot_last_choice")',
+                   "initial_logical"]:
         assert source in listing
         assert source in start
-    assert listing.index('.map.get("T1A")') < listing.index('get("slot_last_choice")')
+    assert listing.index(".map.get(logical)") < listing.index('get("slot_last_choice")')

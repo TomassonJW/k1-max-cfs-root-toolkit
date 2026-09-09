@@ -1,9 +1,9 @@
 # 67 — La température imposée par le CFS : origine réelle et correctif
 
 Date : 2026-09-09
-Statut : correctif de base appliqué sur la machine ; garde-fou écrit et testé
-hors imprimante, **pas encore chargé** — une impression de 13 h tournait ; aucun
-journal de départ réel ne prouve encore le résultat
+Statut : correctif de base appliqué sur la machine et **prouvé par le journal
+du 9 septembre** ; garde-fou chargé le 9 septembre et vérifié en direct sur la
+machine. Mise à jour du 9 septembre en section 4.
 
 ## 1. Le résultat court
 
@@ -120,7 +120,28 @@ Elle vit dans le même fichier que `_KCTRL_PROBE_GUARD` parce que Klipper fusion
 les sections homonymes : un second `[gcode_macro M104]` ailleurs écraserait le
 premier et son `rename_existing` ne trouverait plus rien (`key169`, 2 septembre).
 
-## 4. Ce qui n'est pas prouvé
+## 4. Ce qui est prouvé depuis, et ce qui ne l'est pas
+
+**Mise à jour du 9 septembre.** La question posée ci-dessous est tranchée. Le
+journal du 9 septembre dit, trois fois — 13:17, 13:26, 13:46 :
+
+```
+get next material temp: 200
+flush_temp: 200
+```
+
+Le module relit donc bien la base à chaque chargement, la correction de
+`00001 Generic PLA` suffit à elle seule, et elle agit alors que le garde-fou
+n'était même pas chargé à ce moment-là. C'est la preuve exécutable qui manquait.
+
+Le garde-fou a été chargé le 9 septembre à 15:37 et vérifié en direct, hors
+impression : fenêtre ouverte au plafond 100 °C, `M104 S220` donne une cible de
+`100,0` et le message `M104 S220 pendant le chargement CFS, ramene a 100 C` ;
+fenêtre fermée, la même commande donne `220,0`. Il abaisse, il ne refuse pas, et
+il rend la main.
+
+Reste non prouvé : aucun **départ d'impression réel** n'a encore tourné avec le
+garde-fou en place. Le texte d'origine, conservé :
 
 Aucun départ réel n'a tourné avec le garde-fou. Une impression de 13 h était en
 cours au moment du correctif, et charger une configuration demande un
