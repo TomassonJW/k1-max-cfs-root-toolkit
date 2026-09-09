@@ -46,6 +46,25 @@ Il reste a lire dans le journal du prochain depart la banniere
 `filament 2 du fichier (T1B) -> emplacement T2D`, `get next material temp: 200`,
 et aucun changement d'outil entre l'amorce et la premiere couche.
 
+Ajout du 9 septembre au soir, sur question de Thomas — un fichier a dix-huit
+bobines, des emplacements T3C et T4A, un CFS de plus branche plus tard :
+
+- le CFS s'arrete a **seize** emplacements, quatre unites de quatre. Dix-huit
+  filaments ne peuvent pas s'imprimer d'un bout a l'autre. Les numeros au dela
+  de seize sont maintenant lus comme tels et refuses, plus ramenes dans
+  l'intervalle ;
+- les entrees T3x et T4x sont deja dans `tnn_map` ; `KCTRL_SLOT SLOT=T3C
+  TOOL=T1B` les associe sans passer par l'ecran. Ce qui manque tant que
+  l'unite n'est pas branchee, c'est la bobine, pas la ligne de table ;
+- une unite absente ne se dit plus « emplacement vide » : les deux rendent
+  `-1`, et le remede n'est pas le meme ;
+- **`KCTRL_CHECK`** : nouveau controle avant impression. Il lit le fichier en
+  entier — 1,33 s pour 5,5 Mo — et dit, pour chaque filament reellement
+  utilise, l'emplacement vise et son etat. `START_PRINT` ne charge que le
+  filament de depart ; tout le reste passe par le `cmd_T` d'origine, qui
+  echoue en plein milieu d'une impression. Prouve en direct sur trois fichiers
+  le 9 septembre, dont un synthetique a dix-huit filaments.
+
 Toujours ouvert et prioritaire apres ca : refaire le zero Z, puis l'avance de
 pression.
 

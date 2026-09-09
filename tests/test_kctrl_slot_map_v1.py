@@ -306,3 +306,151 @@ def test_no_file_running_means_the_first_filament(tmp_path):
     assert status["initial_logical"] == "T1A"
     assert status["initial_file"] == ""
     assert "aucun fichier" in status["initial_note"]
+
+
+# --- Le contrôle avant impression -------------------------------------------
+#
+# START_PRINT ne charge que le filament de départ. Tout ce qui suit passe par le
+# `cmd_T` d'origine, qui échoue en plein milieu — quatre heures plus tard — si
+# un filament pointe sur un emplacement vide ou sur une unité absente. Ce
+# contrôle pose la question avant, et ne coûte qu'une lecture du fichier.
+
+
+class FakeReactor:
+    def monotonic(self):
+        return 0.0
+
+
+class FakeBox:
+    """L'objet `box` publie toujours T1 à T4, connectés ou non.
+
+    Relevé sur la machine le 9 septembre : les unités absentes rendent
+    `state: "None"` et `material_type: ["-1", ...]`.
+    """
+
+    def __init__(self, connected=("1", "2")):
+        self.connected = connected
+
+    def get_status(self, eventtime=None):
+        state = {}
+        for unit in ("1", "2", "3", "4"):
+            present = unit in self.connected
+            state["T" + unit] = {
+                "state": "connect" if present else "None",
+                "material_type": (["00001"] * 4 if present else ["-1"] * 4),
+                "color_value": (["0ffffff"] * 4 if present else ["-1"] * 4),
+            }
+        return state
+
+
+class GcmdError(Exception):
+    pass
+
+
+class FakeGcmd:
+    def __init__(self, **params):
+        self.params = params
+        self.said = []
+        self.error = GcmdError
+
+    def get(self, name, default=None):
+        return self.params.get(name, default)
+
+    def respond_info(self, message):
+        self.said.append(message)
+
+
+def checker(tmp_path, table, connected=("1", "2")):
+    obj, _ = build(tmp_path, {"base_data": {}, "tnn_map": table})
+    obj.printer.objects["box"] = FakeBox(connected)
+    obj.printer.get_reactor = lambda: FakeReactor()
+    return obj
+
+
+def test_every_tool_of_the_file_is_collected_in_order_of_first_use(tmp_path):
+    path = gcode(tmp_path, "\n".join(["T0", "G1 X1", "T3", "T0", "T1"]))
+    used, note = MOD.scan_all_tools(path)
+    assert used == [0, 3, 1]
+    assert "3 filament" in note
+
+
+def test_a_colour_change_on_the_last_line_is_still_seen(tmp_path):
+    """Le dernier bloc n'est pas terminé par une fin de ligne dans tous les
+    fichiers ; le reste du tampon doit être examiné lui aussi."""
+    target = tmp_path / "fin.gcode"
+    target.write_text(ENTETE + "\nT0\nG1 X1\nT2", encoding="utf-8")
+    used, _ = MOD.scan_all_tools(str(target))
+    assert used == [0, 2]
+
+
+def test_a_file_without_a_tool_command_uses_the_first_filament(tmp_path):
+    used, note = MOD.scan_all_tools(gcode(tmp_path, "G1 X1"))
+    assert used == [0]
+    assert "mono-filament" in note
+
+
+def test_an_unreadable_file_is_reported_not_guessed(tmp_path):
+    used, note = MOD.scan_all_tools(str(tmp_path / "absent.gcode"))
+    assert used is None
+    assert "illisible" in note
+
+
+def test_eighteen_filaments_are_seen_as_eighteen_not_wrapped(tmp_path):
+    """Un fichier tranché pour dix-huit bobines existe ; le CFS s'arrête à
+    seize. T16 et T17 doivent être lus comme tels pour être refusés, pas
+    ramenés dans l'intervalle."""
+    path = gcode(tmp_path, "\n".join("T%d" % i for i in range(18)))
+    used, _ = MOD.scan_all_tools(path)
+    assert used == list(range(18))
+
+
+def test_the_check_passes_when_every_filament_points_at_a_loaded_spool(tmp_path):
+    obj = checker(tmp_path, {"T1A": "T1B", "T1B": "T2D"})
+    obj.printer.objects["virtual_sdcard"] = FakeSdcard(
+        gcode(tmp_path, "\n".join(["T0", "T1"])))
+    gcmd = FakeGcmd()
+    obj.cmd_KCTRL_CHECK(gcmd)
+    report = gcmd.said[0]
+    assert "tout est en place" in report
+    assert "filament 1 (T1A) -> T1B" in report
+    assert "filament 2 (T1B) -> T2D" in report
+    assert "<== charge au depart" in report
+
+
+def test_the_check_names_the_unit_that_is_not_plugged_in(tmp_path):
+    """Deux CFS branchés, un travail qui veut T3C : l'impression partirait et
+    mourrait au premier changement de couleur."""
+    obj = checker(tmp_path, {"T1A": "T1B", "T1B": "T3C"})
+    gcmd = FakeGcmd(FILE=gcode(tmp_path, "\n".join(["T0", "T1"])))
+    obj.cmd_KCTRL_CHECK(gcmd)
+    report = gcmd.said[0]
+    assert "unite 3 non connectee" in report
+    assert "1 probleme" in report
+    assert "s'arreterait en cours" in report
+
+
+def test_the_check_refuses_a_filament_beyond_the_sixteen(tmp_path):
+    obj = checker(tmp_path, {"T1A": "T1B"})
+    gcmd = FakeGcmd(FILE=gcode(tmp_path, "\n".join(["T0", "T17"])))
+    obj.cmd_KCTRL_CHECK(gcmd)
+    report = gcmd.said[0]
+    assert "filament 18" in report
+    assert "16 emplacements" in report
+
+
+def test_the_check_names_a_filament_that_points_nowhere(tmp_path):
+    obj = checker(tmp_path, {"T1A": "T1B"})
+    gcmd = FakeGcmd(FILE=gcode(tmp_path, "\n".join(["T0", "T5"])))
+    obj.cmd_KCTRL_CHECK(gcmd)
+    assert "non associe" in gcmd.said[0]
+
+
+def test_the_check_refuses_to_answer_without_a_file(tmp_path):
+    obj = checker(tmp_path, {"T1A": "T1B"})
+    with pytest.raises(GcmdError):
+        obj.cmd_KCTRL_CHECK(FakeGcmd())
+
+
+def test_the_check_is_registered_as_a_command(tmp_path):
+    obj = checker(tmp_path, {"T1A": "T1B"})
+    assert "KCTRL_CHECK" in obj.printer.gcode.commands

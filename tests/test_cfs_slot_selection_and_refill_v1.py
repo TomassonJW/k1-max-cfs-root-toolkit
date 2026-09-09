@@ -159,6 +159,21 @@ def test_start_print_refuses_an_empty_slot():
     assert "est vide" in body
 
 
+def test_start_print_names_an_unplugged_cfs_unit_instead_of_calling_it_empty():
+    """Une unite absente et un emplacement vide rendent tous les deux -1, et le
+    remede n'est pas le meme : brancher un troisieme CFS, ou charger une
+    bobine. Le message doit dire lequel."""
+    body = section("START_PRINT")
+    assert 'printer.box["T" ~ tool[1]].state|string != "connect"' in body
+    assert "n'est pas connectee" in body
+
+
+def test_kctrl_slot_names_an_unplugged_cfs_unit_too():
+    body = section("KCTRL_SLOT")
+    assert 'state.state|string != "connect"' in body
+    assert "n'existe pas encore" in body
+
+
 def test_start_print_points_the_stock_table_at_the_slot_before_loading():
     # BOX_CHECK_MATERIAL_REFILL reecrit Tnn_map pour passer la main a la bobine
     # jumelle. Une route qui ignore la table ne peut pas suivre un rechargement.

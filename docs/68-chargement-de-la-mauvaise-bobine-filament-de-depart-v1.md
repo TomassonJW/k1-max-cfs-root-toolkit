@@ -148,7 +148,68 @@ trouvée ailleurs.
 - [Creality Forum — chargement depuis le CFS, comportement étrange](https://forum.creality.com/t/loading-filament-from-cfs-odd-behaviour/39935)
 - [Creality Forum — CFS, sous-extrusion au changement de couleur](https://forum.creality.com/t/cfs-what-tha-heck-is-wrong/40785)
 
-## 7. Fichiers
+## 7. Dix-huit filaments, et les unites qu'on branche plus tard
+
+Question posee le 9 septembre : un fichier avec dix-huit bobines declarees, qui
+doit pointer vers T3C et T4A, avec un CFS supplementaire branche dans dix
+minutes. Reponse honnete, en trois parties.
+
+**Seize, pas dix-huit.** Le CFS s'arrete a quatre unites de quatre
+emplacements. Un fichier qui utilise T16 ou T17 ne peut pas s'imprimer d'un
+bout a l'autre, quoi qu'on fasse cote logiciel. Ce qui a change : ces numeros
+sont maintenant **lus comme tels et refuses**, au lieu d'etre ramenes dans
+l'intervalle. Si le travail *demarre* au dela du seizieme, `START_PRINT`
+s'arrete avant de chauffer quoi que ce soit.
+
+**Les emplacements T3x et T4x existent deja dans la table.** `tnn_map` porte
+les seize entrees, en identite pour celles qu'on n'a jamais touchees. Les
+associer se fait sans ecran : `KCTRL_SLOT SLOT=T3C TOOL=T1B`. Ce qui manque
+tant que la troisieme unite n'est pas branchee, c'est la bobine, pas la ligne
+de table.
+
+**Une unite absente ne se dit plus « emplacement vide ».** L'objet `box` publie
+toujours T1 a T4 ; une unite qui n'est pas la rend `state: "None"` et
+`material_type: -1`, exactement comme un emplacement vide d'une unite presente.
+Les deux pannes n'ont pas le meme remede — brancher un CFS, ou charger une
+bobine — et le message le dit maintenant.
+
+### Le controle avant impression
+
+`START_PRINT` ne charge que le filament de depart. Tout le reste passe par le
+`cmd_T` d'origine, qui echoue **en cours d'impression** si un filament pointe
+sur un emplacement vide ou sur une unite absente. Quatre heures pour
+l'apprendre.
+
+`KCTRL_CHECK` pose la question avant, et ne coute rien :
+
+```
+KCTRL_CHECK FILE='/usr/data/printer_data/gcodes/mon-fichier.gcode'
+```
+
+Il lit le fichier en entier — 1,33 s pour 5,5 Mo, mesure le 9 septembre — et
+rend, pour chaque filament reellement utilise, l'emplacement vise et son etat.
+Sur un fichier a dix-huit filaments, avec deux CFS branches :
+
+```
+// K1 Control: controle avant impression, 18 filament(s) utilise(s)
+// filament 3 (T1C) -> T1C   emplacement vide
+// filament 9 (T3A) -> T3A   unite 3 non connectee
+// filament 17   le filament 17 depasse les 16 emplacements du CFS
+// filament 18   le filament 18 depasse les 16 emplacements du CFS
+// 11 probleme(s); l'impression s'arreterait en cours
+```
+
+Et sur le fichier reel du matin :
+
+```
+// filament 2 (T1B) -> T2D   matiere 000001, pret   <== charge au depart
+// tout est en place, le travail peut aller au bout
+```
+
+Le balayage complet ne tourne que sur demande. Le filament de depart, lui, est
+lu sur le premier bloc du fichier : 4 ms.
+
+## 8. Fichiers
 
 - `packages/k1-control-v1/owned-start-print-v2/kctrl_slot_map.py`
 - `packages/k1-control-v1/owned-start-print-v2/k1-control-owned-start-print-v2.cfg`

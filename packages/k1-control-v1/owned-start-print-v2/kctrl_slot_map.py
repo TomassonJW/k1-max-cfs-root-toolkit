@@ -51,7 +51,7 @@ NAMES = tuple("T" + box + slot for box in BOXES for slot in SLOTS)
 
 # T0..T15 in slicer order map onto T1A..T4D in that same order: T0 is the job's
 # first filament and T1A its logical name, T15 the sixteenth and T4D.
-TOOL_LINE = re.compile(rb"^T(\d{1,2})\s*(?:;.*)?$")
+TOOL_LINE = re.compile(rb"^T(\d+)\s*(?:;.*)?$")
 # The initial tool sits a few lines after the start block. A megabyte is three
 # orders of magnitude of margin and still one short read on the machine.
 SCAN_LIMIT = 1 << 20
@@ -101,6 +101,40 @@ def scan_initial_tool(path, limit=SCAN_LIMIT):
     return 0, "aucun T dans le fichier, mono-filament"
 
 
+def scan_all_tools(path):
+    """Every filament number a sliced file selects, in order of first use.
+
+    The initial tool is read from the first kilobytes; this one reads the whole
+    file, because a colour change can sit at the last layer. It is meant for the
+    preflight, not for get_status: a few megabytes is a few seconds on the K1.
+    """
+    seen = []
+    try:
+        with open(path, "rb") as handle:
+            tail = b""
+            while True:
+                chunk = handle.read(SCAN_CHUNK)
+                if not chunk:
+                    break
+                lines = (tail + chunk).split(b"\n")
+                tail = lines.pop()
+                for line in lines:
+                    found = TOOL_LINE.match(line.strip())
+                    if found is None:
+                        continue
+                    index = int(found.group(1))
+                    if index not in seen:
+                        seen.append(index)
+            found = TOOL_LINE.match(tail.strip())
+            if found is not None and int(found.group(1)) not in seen:
+                seen.append(int(found.group(1)))
+    except OSError as exception:
+        return None, "fichier illisible: %s" % exception
+    if not seen:
+        return [0], "aucun T dans le fichier, mono-filament"
+    return seen, "%d filament(s) utilise(s)" % len(seen)
+
+
 class KctrlSlotMap:
     def __init__(self, config):
         self.printer = config.get_printer()
@@ -120,6 +154,8 @@ class KctrlSlotMap:
         gcode = self.printer.lookup_object("gcode")
         gcode.register_command(
             "KCTRL_MAP", self.cmd_KCTRL_MAP, desc=self.cmd_KCTRL_MAP_help)
+        gcode.register_command(
+            "KCTRL_CHECK", self.cmd_KCTRL_CHECK, desc=self.cmd_KCTRL_CHECK_help)
 
     def stat(self, path=None):
         try:
@@ -267,6 +303,74 @@ class KctrlSlotMap:
             lines.append("  fichier lu: %s" % self.initial_file)
         gcmd.respond_info("\n".join(lines))
 
+    cmd_KCTRL_CHECK_help = (
+        "Check every filament a job uses against the spools actually loaded")
+
+    def cmd_KCTRL_CHECK(self, gcmd):
+        """Preflight: can this file print to the end with what is in the CFS?
+
+        START_PRINT only ever loads the filament the job starts on. Everything
+        after that is the stock cmd_T, which resolves against the same table and
+        fails in the middle of a print - four hours in - when a filament points
+        at a slot that is empty or at a unit that is not there. Asked here, the
+        answer costs one full read of the file and no filament at all.
+        """
+        target = gcmd.get("FILE", None) or self.printing_file()
+        if not target:
+            raise gcmd.error("K1 Control: aucun fichier en cours; "
+                             "KCTRL_CHECK FILE=/chemin/du/fichier.gcode")
+        self.refresh()
+        self.refresh_initial(target)
+        used, note = scan_all_tools(target)
+        if used is None:
+            raise gcmd.error("K1 Control: %s" % note)
+        box = self.printer.lookup_object("box", None)
+        state = box.get_status(self.printer.get_reactor().monotonic()) if box else {}
+        lines = ["K1 Control: controle avant impression, %s" % note]
+        problems = []
+        for index in sorted(used):
+            logical = logical_of_index(index)
+            if not logical:
+                trouble = ("le filament %d depasse les 16 emplacements du CFS"
+                           % (index + 1))
+                lines.append("  filament %d   %s" % (index + 1, trouble))
+                problems.append(trouble)
+                continue
+            physical = self.map.get(logical)
+            if physical is None:
+                trouble = ("le filament %d (%s) ne pointe sur aucun emplacement"
+                           % (index + 1, logical))
+                lines.append("  filament %d (%s) -> ?   %s"
+                             % (index + 1, logical, "non associe"))
+                problems.append(trouble)
+                continue
+            unit = state.get("T" + physical[1], {})
+            slot_index = SLOTS.index(physical[2])
+            connected = str(unit.get("state", "None")) == "connect"
+            material = str(unit.get("material_type", ["-1"] * 4)[slot_index])
+            empty = material in ("-1", "None", "")
+            if not connected:
+                verdict = "unite %s non connectee" % physical[1]
+                problems.append("le filament %d (%s) veut %s, %s"
+                                % (index + 1, logical, physical, verdict))
+            elif empty:
+                verdict = "emplacement vide"
+                problems.append("le filament %d (%s) veut %s, %s"
+                                % (index + 1, logical, physical, verdict))
+            else:
+                verdict = "matiere %s, pret" % material
+            mark = "   <== charge au depart" if index == self.initial_index else ""
+            lines.append("  filament %d (%s) -> %s   %s%s"
+                         % (index + 1, logical, physical, verdict, mark))
+        if problems:
+            lines.append("  %d probleme(s); l'impression s'arreterait en cours"
+                         % len(problems))
+            lines.append("  KCTRL_SLOTS pour voir les bobines, "
+                         "KCTRL_SLOT SLOT=... TOOL=... pour associer")
+        else:
+            lines.append("  tout est en place, le travail peut aller au bout")
+        lines.append("  fichier lu: %s" % target)
+        gcmd.respond_info("\n".join(lines))
 
 def load_config(config):
     return KctrlSlotMap(config)
