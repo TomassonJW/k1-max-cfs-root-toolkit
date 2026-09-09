@@ -70,6 +70,11 @@ pause au même endroit **[HYPOTHÈSE]**.
 Aucune action n'a été prise : cette décision (annuler, ou reprendre après
 intervention sur la tête) appartient au propriétaire.
 
+**[FAIT]** Relecture après rédaction (10/09, ~01:15) : `print_stats.state` =
+`cancelled`, cibles buse et plateau à 0, capteur de tête à `False`, axes non
+referencés, Z 150. Le propriétaire a annulé et vidé la tête entre-temps ; le
+P0 du §4 est donc exécuté. L'état du coupe-filament reste non vérifié.
+
 ## 1. Dangers matériels, par gravité décroissante
 
 ### D1 — Descente Z calculée, pas relue : un Z négatif au-dessus du plateau est accepté entre -10 et 0
