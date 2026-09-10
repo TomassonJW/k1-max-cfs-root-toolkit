@@ -254,10 +254,22 @@ fonctionnement : 9 septembre 18:08:47 (`uptime 25,1 s`) et 10 septembre
 chargements à 200 ont continué jusqu'à 18:07. La date de modification de la
 base réécrite est `2020-03-01 13:00:16` puis `13:00:19` : elle est écrite avant
 la mise à l'heure, dans les vingt premières secondes, avant que Klipper ne
-démarre. Le programme qui l'écrit n'est pas identifié (aucune chaîne
-`material_database` ni `Soleyin` dans `/etc`, `/usr/bin`, `/opt`,
-`/usr/share/klipper`, `/rom/etc`, `/usr/data/creality` hors la base elle-même).
-Avec la conception ci-dessous, cela n'a plus d'importance.
+démarre. Ce qu'elle est : une réponse du cloud Creality, pas une copie locale.
+Le fichier a la forme `code / msg / reqId / result`, son `reqId`
+(`cl6020200301130015…`) est horodaté sur l'horloge non réglée
+(`2020-03-01 13:00:15`), et entre les deux copies réécrites aux deux
+allumages seules deux valeurs diffèrent, champ par champ : `reqId` et
+`result.version` (`1788175952` → `1788924106`, deux dates de publication de
+la bibliothèque de matériaux, 31 août puis 9 septembre). C'est pour cela
+qu'elle ne ressemble pas au fichier d'usine de `/rom/etc/sysConfig/defData`
+(40 fiches, PLA à 230) : 49 fiches, PLA à 220, les fiches Creality « Hyper »
+et « Soleyin » en plus. La chaîne `material_database` est présente dans tous
+les serveurs Creality de `/usr/bin` (`display-server`, `app-server`,
+`master-server`, `web-server`, `Monitor`, `upgrade-server`, `wifi-server`,
+`audio-server`, `burn-server`, code partagé) ; lequel télécharge et écrit
+n'est pas isolé. Une correction à la main ne survit donc à aucun allumage,
+et une bibliothèque republiée par Creality peut changer n'importe quelle
+fiche. Avec la conception ci-dessous, cela n'a plus d'importance.
 
 **Conception.** `START_PRINT` n'attend plus que la fiche soit juste : il la
 rend juste. Une commande Python, `KCTRL_MATERIAL_ALIGN MATERIAL=<fiche>

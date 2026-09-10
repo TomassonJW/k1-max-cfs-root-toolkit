@@ -2,13 +2,27 @@
 
 Last updated: 2026-09-10
 
+10 septembre, 11:10. **Alignement deploye sur la machine et prouve.** Sur le
+« deploie » de Thomas : sauvegardes `.kctrl-bak-20260910-1106xx` des trois
+fichiers, copie (sommes md5 identiques au depot), service Klipper redemarre a
+11:06:44, pret a 11:06:49, machine restee a l'arret, chauffes a zero.
+`KCTRL_MATERIAL_ALIGN` verifie en direct : `00001` a 200 -> « deja a 200 C,
+rien ecrit » ; `000001` a 205 -> fichier a 205/205 ; retour a 200 -> 200/200 ;
+fiche `00042` -> refus net. Rien de tout cela n'a touche au materiel. Le flux
+quotidien vise par Thomas est consigne dans `GOALS.md` (precisions du
+10 septembre) avec l'etat de chacun de ses six points ; pas en place : le
+choix des bobines dans Mainsail, le multi-matiere en cours d'impression a la
+temperature du fichier, la releve automatique jamais observee.
+
 10 septembre, 11:00. **Le depart aligne lui-meme la fiche matiere sur le
 fichier.** Reponse a « impossible de bypasser le CFS ? » : non. Deux faits
 mesures : le chargeur relit `material_database.json` a chaque chargement
 (fiche corrigee le 9 a 00:32, 27 chargements a 200 des 13:17 sans
 redemarrage) et le micrologiciel la reecrit a chaque **allumage** seulement
 (les deux retours a 220 tombent sur les deux demarrages a `uptime` 25 s et
-22 s ; les redemarrages Klipper ne touchent a rien). Nouvelle commande Python
+22 s ; les redemarrages Klipper ne touchent a rien ; la base est une reponse
+du cloud Creality, `reqId` date 2020 et `result.version` qui change d'un
+allumage a l'autre). Nouvelle commande Python
 `KCTRL_MATERIAL_ALIGN MATERIAL= TEMP=` dans `kctrl_slot_map.py` : ecrit
 `EXTRUDER_TEMP` dans les deux cles de la fiche de l'emplacement a charger,
 ecriture atomique, relecture, refus si ca ne colle pas. `START_PRINT` l'appelle

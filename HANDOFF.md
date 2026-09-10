@@ -1,16 +1,21 @@
 # HANDOFF — index de reprise
 
-## 10 septembre, 11:00 — le départ aligne la fiche matière tout seul ; à déployer ; zéro Z à refaire
+## 10 septembre, 11:10 — alignement déployé et prouvé ; zéro Z à refaire ; le flux visé est écrit
 
-**Point de reprise en un geste :** sur le « déploie » de Thomas, copier les
-trois fichiers de la branche `fix/cfs-temperature-chargement` sur la machine
-(cat vers `/usr/data/printer_data/config/` pour les deux `.cfg`, vers
-`/usr/share/klipper/klippy/extras/` pour `kctrl_slot_map.py`), vérifier
-`print_stats.state` hors `printing`, puis `/etc/init.d/S55klipper_service
-restart`. Contrôle après redémarrage : `KCTRL_MATERIAL_ALIGN MATERIAL=00001
-TEMP=200` doit répondre « déjà à 200 C, rien écrit » (la base a été
-recorrigée à 10:19). Ensuite carré 280x280, réglage en direct,
-`KCTRL_Z_SAVE PROFILE=k1_p001_t055_r001_n11x11 Z=…`, puis le cube.
+**Point de reprise en un geste :** relire les « Précisions de Thomas du
+10 septembre » dans `GOALS.md` (le flux quotidien visé, point par point, avec
+l'état de chacun), puis carré 280x280, réglage en direct,
+`KCTRL_Z_SAVE PROFILE=k1_p001_t055_r001_n11x11 Z=…`, puis le cube. Ce cube
+sera la première observation d'un vrai chargement avec l'alignement : le
+journal doit dire `get next material temp: <température du fichier>`.
+
+### Déployé à 11:06, vérifié à 11:07
+
+- Les trois fichiers de la branche sont sur la machine (md5 identiques au
+  dépôt), sauvegardes `.kctrl-bak-20260910-1106xx` à côté ; Klipper redémarré,
+  prêt, machine à l'arrêt, chauffes à zéro.
+- `KCTRL_MATERIAL_ALIGN` : « déjà à 200 C, rien écrit », puis `200 → 205`
+  écrit et relu, puis retour `200`, puis refus net sur une fiche absente.
 
 ### Ce qui a été ajouté depuis 10:25
 
@@ -27,8 +32,10 @@ recorrigée à 10:19). Ensuite carré 280x280, réglage en direct,
 - Le changement de bobine en cours d'impression passe par le `cmd_T` d'origine,
   fiche d'usine si le matériau diffère de celui du départ ; à envelopper
   (`T0`..`T15`, `rename_existing`) dans une mission à part.
-- Le programme qui réécrit la base à l'allumage n'est pas identifié ; sans
-  conséquence avec l'alignement.
+- La base est une réponse du cloud Creality téléchargée à chaque allumage
+  avant la mise à l'heure (`reqId` daté 2020, `result.version` qui change
+  d'un allumage à l'autre) ; le serveur Creality qui l'écrit n'est pas isolé.
+  Sans conséquence avec l'alignement.
 
 ## 10 septembre, 10:25 — correctif du chargement écrit, à déployer ; zéro Z à refaire (remplacé par 11:00)
 
