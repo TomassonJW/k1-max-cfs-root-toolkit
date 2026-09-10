@@ -1,6 +1,6 @@
 # GOALS — pilotage macro
 
-Date de mise à jour : 2026-09-01
+Date de mise à jour : 2026-09-10
 
 Ce fichier sert d'index rapide pour les grandes sessions de travail. Les noms
 ci-dessous regroupent les petites gates déjà définies dans `GATES.md` ; ils ne
@@ -68,6 +68,41 @@ Hors périmètre V1, explicitement :
 
 - l'envoi direct des fichiers depuis Orca et tout déclenchement piloté par le
   slicer sont **V2**, non prioritaires, et ne conditionnent pas la clôture.
+
+## Précisions de Thomas du 10 septembre 2026 — le flux quotidien visé
+
+Dictées après la question « impossible de bypasser le signal du CFS ? ». Elles
+complètent les six points ci-dessus sans les remplacer et font autorité au
+même titre. Consigne explicite : « c'est vraiment la base, à toujours prendre
+en compte dans ce projet ; bien consigner toutes les infos, ne rien oublier de
+ce qu'on a fait et de ce qu'on veut au final ». Chaque session les relit.
+
+Le flux voulu :
+
+1. Je change de bobines dans le CFS quand je veux : jamais les mêmes bobines
+   au même endroit, ni les mêmes matières.
+2. Je lance une impression depuis Mainsail ou Fluidd. Pour un multi-couleurs,
+   le choix de la bobine de chaque filament du fichier s'affiche et se fait là.
+3. Les températures que le CFS impose au chargement sont remplacées à chaque
+   impression par celles de mon G-code, quoi que j'aie changé (bobines,
+   emplacements, matières).
+4. Le multi-filament en cours d'impression est bien géré.
+5. Si une bobine se termine et qu'une bobine de rechange compatible est prête
+   dans le CFS, ça change tout seul, proprement, sans que j'intervienne.
+6. Tout se déroule aux bonnes températures, parfaitement calibré, sans
+   intervention de ma part.
+
+État de chaque point, tenu à jour à chaque session (dernière mise à jour :
+10 septembre 2026, 11:25) :
+
+| Point | État | Preuve, ou ce qui manque |
+| --- | --- | --- |
+| 1. Bobines et matières changeantes | **en place pour le départ** | `START_PRINT` résout le filament de départ par la table CFS (popup de l'écran, ou `KCTRL_SLOT` à la console) et lit la matière réelle de l'emplacement ; prouvé le 10 septembre à 00:53 (départ complet sur `T2D`). |
+| 2. Choix des bobines affiché dans Mainsail / Fluidd | **pas en place** | Le popup n'existe que sur l'écran Creality et dans Creality Print. Depuis Mainsail aujourd'hui : `KCTRL_CHECK` pour vérifier, `KCTRL_SLOT SLOT=… TOOL=…` pour associer, ou démarrer depuis l'écran. À construire : appariement automatique couleur + matière du fichier avec le contenu des emplacements, refus clair si ambigu. |
+| 3. Températures du G-code au chargement | **en place, observé sur un vrai chargement le 10 septembre à 11:17** | `KCTRL_MATERIAL_ALIGN` en première commande de `START_PRINT` écrit la température du fichier dans la fiche matière que le chargeur relit à chaque chargement. Cube du 10 septembre : fichier à 190, fiche écrite `200 → 190` à 11:15:03, chargeur à `get next material temp: 190` à 11:17:32, filament à la tête, aucun refus. Nuance : la purge stock qui suit chauffe à `max(fiche, 200)` (journaux du 5 au 10 septembre), donc 200 pour ce fichier ; sous le filet, sans effet pour du PLA ; un fichier sous 185 °C ferait refuser la purge, à traiter si un tel fichier arrive. Document 67, section 8. |
+| 4. Multi-filament en cours d'impression | **partiel** | Les changements passent par le `cmd_T` d'origine (coupe, retrait, chargement, purge stock). Température : celle de la fiche du matériau visé, donc juste si même matière qu'au départ, valeur du cloud Creality sinon (à envelopper `T0`..`T15`). Bloquants : erreur cutter du 10 septembre 00:53 (« cut sensor not detected, cutting not rebound »), accumulateur Z jamais rendu (audit 70, P1). |
+| 5. Relève automatique en fin de bobine | **non prouvé** | Fonction stock (`auto_refill`, groupes même matière **et** même couleur, visibles dans `same_material`). `START_PRINT` pose `last_cmd` pour que le CFS sache quelle bobine tourne. Jamais observé sur cette machine ; à provoquer exprès, sur une impression sans valeur. |
+| 6. Zéro intervention | **pas encore** | Somme des points 2, 4 et 5 ; zéro Z du profil `11 × 11` en cours de réglage en direct sur le cube du 10 septembre (0,14 → 0,03 à 11:25), à sauvegarder par `KCTRL_Z_SAVE` après l'impression. |
 
 ## Vue rapide
 

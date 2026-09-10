@@ -1,6 +1,266 @@
 # STATE
 
-Last updated: 2026-09-08
+Last updated: 2026-09-10
+
+10 septembre, 11:25. **Premiere observation reelle : le CFS a charge a la
+temperature du fichier.** Cube `_Cube_PLA_24m21s.gcode` lance par Thomas a
+11:15:02 (fichier a 190 / 55). `START_PRINT` a ecrit 190 dans la fiche `00001`
+a 11:15:03 (200/200 -> 190, base modifiee a cette seconde), puis chauffe,
+palpage (fenetre 105 C), fenetre de chargement ouverte a 205 C ; le chargeur a
+demande `get next material temp: 190` a 11:17:32 (chargement) et 11:18:27
+(purge), filament a la tete a 11:18:27, purge stock finie a 11:18:56,
+complement de 120 mm a 190 C, ligne d'amorce a 11:20:02, impression partie a
+11:20:09. Nuance mesuree : la purge stock chauffe a `flush_temp: 200`, pas 190.
+Journaux du 5 au 10 septembre : fiche 220 -> purge 220, fiche 200 -> purge 200,
+fiche 190 -> purge 200 ; la purge suit la fiche avec un plancher a 200 (origine
+du plancher non isolee ; le G-code dit `filament_flush_temp = 0`). Sous le
+filet (205), sans effet pour un PLA a 190 ; un fichier sous 185 C ferait
+refuser la purge par le filet, a traiter si un tel fichier arrive. Thomas
+regle le Z en direct sur la premiere couche (0,14 -> 0,03 a 11:25) ;
+sauvegarde `KCTRL_Z_SAVE PROFILE=k1_p001_t055_r001_n11x11 Z=<valeur
+affichee>` apres l'impression, jamais pendant. Bruit connu sans effet :
+`Unknown command:SET_HOTEND_FAN` au depart (docs/70), `Error: no response`
+toutes les 11 s (balayage d'adresses du bus 485, present toute la journee).
+
+10 septembre, 11:10. **Alignement deploye sur la machine et prouve.** Sur le
+« deploie » de Thomas : sauvegardes `.kctrl-bak-20260910-1106xx` des trois
+fichiers, copie (sommes md5 identiques au depot), service Klipper redemarre a
+11:06:44, pret a 11:06:49, machine restee a l'arret, chauffes a zero.
+`KCTRL_MATERIAL_ALIGN` verifie en direct : `00001` a 200 -> « deja a 200 C,
+rien ecrit » ; `000001` a 205 -> fichier a 205/205 ; retour a 200 -> 200/200 ;
+fiche `00042` -> refus net. Rien de tout cela n'a touche au materiel. Le flux
+quotidien vise par Thomas est consigne dans `GOALS.md` (precisions du
+10 septembre) avec l'etat de chacun de ses six points ; pas en place : le
+choix des bobines dans Mainsail, le multi-matiere en cours d'impression a la
+temperature du fichier, la releve automatique jamais observee.
+
+10 septembre, 11:00. **Le depart aligne lui-meme la fiche matiere sur le
+fichier.** Reponse a « impossible de bypasser le CFS ? » : non. Deux faits
+mesures : le chargeur relit `material_database.json` a chaque chargement
+(fiche corrigee le 9 a 00:32, 27 chargements a 200 des 13:17 sans
+redemarrage) et le micrologiciel la reecrit a chaque **allumage** seulement
+(les deux retours a 220 tombent sur les deux demarrages a `uptime` 25 s et
+22 s ; les redemarrages Klipper ne touchent a rien ; la base est une reponse
+du cloud Creality, `reqId` date 2020 et `result.version` qui change d'un
+allumage a l'autre). Nouvelle commande Python
+`KCTRL_MATERIAL_ALIGN MATERIAL= TEMP=` dans `kctrl_slot_map.py` : ecrit
+`EXTRUDER_TEMP` dans les deux cles de la fiche de l'emplacement a charger,
+ecriture atomique, relecture, refus si ca ne colle pas. `START_PRINT` l'appelle
+en premiere commande, avant toute chauffe ; le refus « fiche trop chaude »
+disparait, le refus « fiche inconnue » et le filet (refus a +15) restent.
+Limite : le changement de bobine en cours d'impression passe encore par le
+`cmd_T` d'origine. Section 8 du document 67. 1193 tests verts, les deux rouges
+preexistants inchanges. **Pas deploye** : attend le « deploie » de Thomas.
+
+10 septembre, 10:25. **Plateau remis a niveau et mesh 11x11 refait**, par
+Thomas depuis l'ecran/Mainsail, moi en lecture : vis a 0,08 mm d'ecart apres
+trois passes de `KCTRL_BED_SCREWS` (le plateau garde un voile de 0,14 mm hors
+plan, que le mesh absorbe) ; `k1_p001_t055_r001_n11x11` reacquis a 09:52,
+quatre quarts recolles sous 0,035 mm, ecrit dans `printer.cfg`, forme en dome
+(centre haut, bords a -0,2 mm). **Le zero Z du profil vaut encore 0,14 et n'a
+pas ete remesure** : carre 280x280 puis `KCTRL_Z_SAVE` avant toute impression
+qui compte.
+
+10 septembre, 10:06. **Impression bloquee cinq minutes dans le chargement CFS,
+sortie par arret d'urgence.** Cause : la machine a redemarre a 08:44 et le
+micrologiciel a reecrit `material_database.json` (Generic PLA de retour a
+220) ; le plafond de chargement de `START_PRINT` a ramene le 220 a 205, et le
+chargeur, qui attend la temperature qu'il demande, a redemande 220 chaque
+seconde sans fin, annulation coincee derriere. Le « abaisser au lieu de
+refuser » du 9 septembre etait une erreur de modele. Corrige sur la branche
+`fix/cfs-temperature-chargement`, **pas encore deploye** : `START_PRINT` lit la
+fiche matiere de l'emplacement avant de chauffer et refuse net si elle depasse
+`EXTRUDER_TEMP + 15` (message avec la commande de correction) ; la fenetre
+refuse au lieu d'abaisser ; `kctrl_slot_map` publie `material_temp`. Base
+recorrigee a 10:19 (`00001 -> 200`). Section 7 du document 67. Deux tests
+etaient deja rouges avant ce travail (`test_cfs_direct_owner_offline_v1`,
+`test_job_lifecycle_offline_v1`), non touches.
+
+10 septembre, 02:23. Impression de 01:45 annulee par Thomas (premiere couche
+ratee, plateau plie). Campagne de resonance refaite a froid a sa demande :
+X `ei` 42,8 Hz, Y `mzv` 47,0 Hz, courroies a 44,3 Hz toutes les deux — a moins
+d'un demi-hertz du 8 septembre. Valeurs vivantes et fichier inchanges
+(`ei 42,6` / `mzv 46,6`), `printer.cfg` remis depuis sa sauvegarde apres
+l'ecriture parasite de `SHAPER_CALIBRATE`. Document 72.
+
+10 septembre, 01:52. Impression reelle lancee par Thomas depuis Mainsail apres
+`KCTRL_SLOT SLOT=T2D TOOL=T1B` : chargement sans coupe, purge, ligne d'amorce,
+premiere couche en cours. Le `T1` du fichier (ligne 275) a pris le chemin
+« meme outil » (`last_cmd = T2D`) sans bouger la tete. Reste en memoire un
+`z_down 20.087` non rendu (P1 de l'audit 70), sans effet sur un mono-filament.
+
+Constat de Thomas pendant la premiere couche : la plaque du plateau a ete pliee
+par un incident de la nuit, la buse se bouchait, il a ajoute ~+0.28 mm en direct
+(`homing_origin Z` = 0.415 contre 0.14 sauve pour le profil
+`k1_p001_t055_r001_n11x11`). Ce reglage en direct n'est pas persiste : le
+prochain depart reappliquera 0.14. A faire avant toute autre impression :
+inspecter la plaque, refaire entierement le mesh a 55 C, puis remesurer le zero
+Z (`KCTRL_Z_SAVE`). Le journal ne montre aucun mouvement en Z negatif accepte ;
+l'origine mecanique de la deformation n'est pas etablie.
+
+Nuit du 9 au 10 septembre, 01:20. Le correctif du changement d'outil est
+**eprouve** : au depart de 00:51 la coupe est arrivee au debut de la sequence
+et non plus au milieu, `z_down move_z: 0.8` contre `44.027` la veille, aucun
+`Move out of range` pendant `START_PRINT`, et la sequence est allee au bout
+jusqu'a la premiere couche. Premier depart complet depuis que le probleme
+existe.
+
+Ce depart a ete arrete par autre chose : `key841`, le capteur de coupe n'a pas
+vu la lame revenir apres cinq essais. Defaillance **intermittente** — le cutter
+a refonctionne deux fois ensuite sans que `box.cfg` change. Non expliquee.
+
+Une seconde corruption Z a suivi a 01:07, provoquee par une relance depuis
+l'ecran alors que le CFS avait deja fait son `box_resume_extrude` : deux
+reprises superposees, `record_z_pos` appele deux fois a 24 ms d'intervalle,
+-43,00 mm. Ce n'est pas `START_PRINT`. Regle : un seul chemin de reprise.
+
+Thomas a annule. Machine `cancelled`, chauffes a zero, tete vide, et la table
+des bobines est **vide** : il faut `KCTRL_SLOT SLOT=T2D TOOL=T1B` avant toute
+relance, sinon `START_PRINT` refuse.
+
+Un audit independant a tourne en parallele et a rendu
+`docs/70-audit-independant-sequence-demarrage-v1.md` — 320 lignes, sept
+dangers classes, sources Klipper et Creality citees. Sa priorite P1 designe la
+cause de fond des `Move out of range` : l'accumulateur Z n'est jamais rendu
+avant de sortir du bloc CFS. Rien de ce tableau n'est encore applique.
+
+Defaut assume de `_KCTRL_PRIME_LINE` : montee du debit **et** de la vitesse
+ensemble, donc section par trait en baisse (0,133 mm2 contre 0,150 stock). La
+ligne est plus fine que la stock trait par trait. Le zero Z n'est pas en cause,
+`homing_origin Z = 0.14` est bien applique.
+
+
+Nuit du 9 au 10 septembre. La sequence de demarrage a ete prise en flagrant
+delit et corrigee. Deploye sur la machine, pas encore eprouve par une
+impression.
+
+**Pourquoi une impression se figeait pour de bon.** Le 9 a 23:42, file G-code
+bloquee, annulation ignoree, sortie seulement par redemarrage de Klipper. Le
+trancheur ne pose qu'une commande outil et la met *apres* le bloc de
+demarrage - ligne 275 du fichier, douze lignes sous son `START_PRINT`. Quand
+elle s'executait, le module CFS compile ecrivait `cmd_T last_cmd=None,
+get_fialment_sensor_detect()=True` puis `move_to_cut`. `last_cmd` est l'outil
+que le CFS croit charge, et rien de ce que `START_PRINT` appelait avant ne le
+renseigne, `BOX_EXTRUDE_MATERIAL` compris. Le module voyait du filament sans
+pouvoir l'attribuer, concluait qu'une bobine etrangere devait sortir, coupait,
+reinserait, repurgeait, puis restaurait un Z releve avant que notre purge ne le
+deplace : `Move out of range: 185.500 291.500 -18.951`. Ce refus n'est pas
+rattrape dans le module compile, et la file ne repart jamais.
+
+C'est ce qui explique la sequence absurde que l'operateur decrivait depuis deux
+jours : palpation, purge, trait de purge, **puis** coupe et retrait de la
+bobine, puis reinsertion et nouvelle purge, puis blocage. La coupe n'a
+effectivement rien a faire la, et elle n'y etait que parce que le changement
+d'outil arrivait trop tard.
+
+**Correctif.** `START_PRINT` emet lui-meme le changement d'outil, tete encore
+vide, apres `BOX_MODIFY_TN` et avant tout chargement. La meme `cmd_T` prend
+alors son autre branche : pas de coupe, chargement normal, `last_cmd`
+renseigne. Le `T` du fichier retombe sur le meme outil et ne fait plus rien. Le
+litteral emis est l'index du fichier, pas le nom logique : le firmware decode
+positionnellement.
+
+**Le routage `T1B -> T2D` est correct et n'a jamais ete en cause.** Le fichier
+ecrit `T1`, le firmware le decode en `T1B` logique, `Tnn_map` route ce logique
+vers le physique `T2D`. C'est exactement la table de l'ecran Creality.
+L'en-tete du fichier confirme la lecture de l'operateur :
+`filament used [mm] = 0.00, 62803.00`, filament 1 mort, filament 2 pour tout le
+travail.
+
+**La ligne d'amorce est desormais possedee.** `CX_PRINT_DRAW_ONE_LINE` ne trace
+aucune ligne sur un demarrage normal : tout ce qui dessine dans
+`custom_macro.py` est sous `if self.pheaters.can_break_flag == 3`. Les trois
+cordons a Z 0.30 qui se sont soudes au plateau etaient sa reprise sur rupture.
+L'appel stock reste pour la retraction, la chauffe et la remise a zero du
+drapeau ; `_KCTRL_PRIME_LINE` trace la ligne, toujours, a Z 0.36 au lieu de
+0.30, a 150 mm/s au lieu de 50, en trois passes, 26.6 mm de matiere au lieu de
+10 dans la meme duree de 3.2 s. Tout est en `variable_`, reglable a chaud.
+
+Etat de la machine au 10 septembre, 00h : `k1-control-owned-start-print-v2.cfg`
+deploye (md5 `3ca58a94014711baab93702d50dab0c7`), sauvegarde
+`*.kctrl-bak-20260910-toolfix`, Klipper relance, `klippy: ready`,
+`print: standby`, chauffes coupees, CFS `connect`, table des bobines intacte
+(`T1B -> T2D`). **Du filament est reste dans la tete** apres le blocage : le
+capteur de tete voit `True`. Au prochain demarrage, le changement d'outil
+desormais emis tot le verra et le coupera - au bon moment cette fois, avant
+tout chargement, et le cutter repare passe en 1,5 s.
+
+Reste ouvert, non fait : aucune impression n'a tourne avec ce demarrage. Le
+garde Z de la zone CFS est ecrit mais ni commite ni deploye, et deux de ses
+tests sont rouges parce qu'ils visent un Y hors de sa zone declaree. Deux
+autres tests rouges preexistent, sans rapport :
+`test_cfs_direct_owner_offline_v1` et `test_job_lifecycle_offline_v1`.
+
+---
+
+
+Last updated: 2026-09-09
+
+Journee du 9 septembre. Deux pannes, deux causes distinctes, les deux corrigees
+et chargees sur la machine.
+
+**La temperature de chargement est reglee, et c'est prouve.** Le journal du
+9 septembre dit `get next material temp: 200` et `flush_temp: 200` a trois
+reprises. La correction de `00001 Generic PLA` de 220 a 200 dans
+`material_database.json` est ce qui l'a fait. Le `220` qui reste dans le journal
+vient du profil filament eSUN de Thomas dans Orca, pas de la machine :
+`nozzle_temperature_initial_layer = 190,220`, et le travail part sur le
+deuxieme filament. C'est le profil Orca qu'il faut changer pour imprimer plus
+froid. Voir document 67.
+
+**La mauvaise bobine chargee au depart : cause trouvee, correctif pose.**
+`START_PRINT` resolvait la bobine sur `T1A` en dur. Le fichier du matin declare
+deux filaments et n'imprime qu'avec le second (une seule ligne `T1`). Il a donc
+charge et purge le Geeetech noir de T1B pour un travail qui voulait l'eSUN de
+T2D, puis le `T1` du fichier est devenu un changement d'outil en plein
+demarrage, qui a echoue sur `macro_box_extrude_err`. `kctrl_slot_map` lit
+maintenant le premier `Tn` du fichier en cours et publie sur quel des seize
+filaments le travail demarre ; `START_PRINT` resout ce filament la. Le
+parametre `TOOL_INDEX=` permet de l'imposer. Voir document 68.
+
+Mesure faite le 9 septembre et qui tranche la question des seize bobines :
+`BOX_MODIFY_TN` **fusionne** dans `tnn_map`, il ne la remplace pas. Ecrire une
+paire laisse les quinze autres intactes. Un travail 4x4 ne perd donc pas sa
+table quand le demarrage reecrit l'emplacement sur lequel il part.
+
+Etat de la machine au 9 septembre : les trois fichiers sont charges et verifies
+par empreinte (`kctrl_slot_map.py`, `k1-control-owned-start-print-v2.cfg`,
+`k1-control-probe-temp-guard-v1.cfg`), Klipper redemarre, `klippy: ready`,
+`etat: standby`, la table des bobines intacte. Sauvegardes
+`*.kctrl-bak-20260909-153757`.
+
+Preuves faites sur la machine, sans imprimer : sur le fichier reel du matin,
+`KCTRL_MAP` repond `filament 2 (T1B) -> T2D <== charge au depart` — exactement
+la bobine qui manquait. Et le plafond de chargement, fenetre ouverte a 100 C :
+`M104 S220` donne une cible de `100,0` avec le message qui l'annonce, fenetre
+fermee il donne `220,0`. Il abaisse, il ne refuse pas.
+
+**Ce qui n'est pas prouve** : aucun depart reel n'a tourne avec le correctif.
+Il reste a lire dans le journal du prochain depart la banniere
+`filament 2 du fichier (T1B) -> emplacement T2D`, `get next material temp: 200`,
+et aucun changement d'outil entre l'amorce et la premiere couche.
+
+Ajout du 9 septembre au soir, sur question de Thomas — un fichier a dix-huit
+bobines, des emplacements T3C et T4A, un CFS de plus branche plus tard :
+
+- le CFS s'arrete a **seize** emplacements, quatre unites de quatre. Dix-huit
+  filaments ne peuvent pas s'imprimer d'un bout a l'autre. Les numeros au dela
+  de seize sont maintenant lus comme tels et refuses, plus ramenes dans
+  l'intervalle ;
+- les entrees T3x et T4x sont deja dans `tnn_map` ; `KCTRL_SLOT SLOT=T3C
+  TOOL=T1B` les associe sans passer par l'ecran. Ce qui manque tant que
+  l'unite n'est pas branchee, c'est la bobine, pas la ligne de table ;
+- une unite absente ne se dit plus « emplacement vide » : les deux rendent
+  `-1`, et le remede n'est pas le meme ;
+- **`KCTRL_CHECK`** : nouveau controle avant impression. Il lit le fichier en
+  entier — 1,33 s pour 5,5 Mo — et dit, pour chaque filament reellement
+  utilise, l'emplacement vise et son etat. `START_PRINT` ne charge que le
+  filament de depart ; tout le reste passe par le `cmd_T` d'origine, qui
+  echoue en plein milieu d'une impression. Prouve en direct sur trois fichiers
+  le 9 septembre, dont un synthetique a dix-huit filaments.
+
+Toujours ouvert et prioritaire apres ca : refaire le zero Z, puis l'avance de
+pression.
 
 Soiree du 8 septembre, apres la campagne : la hotend a lache — fils dessoudes,
 chauffage commande a fond sans aucune montee. Thomas l'a remplacee par une piece
@@ -1841,3 +2101,69 @@ Incident : un `TURN_OFF_HEATERS` a été envoyé sur une machine crue au repos
 alors que l'impression venait d'être relancée depuis l'écran. La buse est tombée
 de `190` à `175 C` pendant la première couche avant rétablissement. Règle
 ajoutée au HANDOFF : vérifier `print_stats.state` avant toute commande machine.
+
+## Mise à jour 2026-09-09 — origine réelle du 220 °C imposé par le CFS
+
+Le chargeur d'origine prend sa température dans `material_database.json`, à la
+fiche de la matière de l'emplacement tiré, et pas dans le fichier tranché. La
+fiche `00001 Generic PLA` portait `220` : d'où le 220 °C sur tous les PLA depuis
+le début, y compris avec un fichier mono-filament. Départage par la vitesse
+journalisée, `max_volumetric_speed: 14`, qui est celle de la fiche et pas celle
+du fichier. Doc 67.
+
+Conséquence à retenir : la température suit la matière de la bobine chargée, pas
+la liste des filaments du travail. Un fichier à seize filaments dont un ABS ne
+fera jamais charger du PLA à 260 °C.
+
+Appliqué sur la machine le 9 septembre à 00:32 : fiche `00001` ramenée à `200`,
+sauvegarde `material_database.json.kctrl-bak-20260909-003232`.
+
+Écrit et testé hors imprimante, **pas encore chargé** : `_KCTRL_LOAD_GUARD`,
+qui abaisse toute cible de buse au dessus de `EXTRUDER_TEMP + 15` pendant le
+bloc CFS de `START_PRINT`. Une impression de 13 h tournait, et charger la
+configuration demande un redémarrage de Klipper.
+
+Reprise : quand la machine est libre, poser les deux `.cfg` en attente sur la
+machine, redémarrer Klipper, lancer un départ et lire dans le journal
+`get next material temp: 200` puis une cible qui ne dépasse jamais 205.
+
+Les documents 30 et 54 sont corrigés sur ce point par le document 67.
+
+## Mise à jour 2026-09-09 soir — zéro Z refait, tour d'avance de pression, et une découverte
+
+**Zéro Z réglé et enregistré.** `z_k1_p001_t055_r001_n11x11 = 0.145` dans
+`save_variables`, contre `0.05` avant. Valeur trouvée à la main par Thomas sur
+un carré de 80x80 en une couche, acceptée entre +0.14 et +0.15. Aucun
+`SAVE_CONFIG`. Vérifié appliqué : au départ suivant, `homing_origin[2]` passe
+bien de `0.000` à `0.145`. Répétabilité du palpeur après changement de hotend :
+étendue 0.046 mm, écart type 0.015 mm sur cinq contacts. Doc 69.
+
+Piège documenté au passage, parce que je m'y suis trompé : **une buse trop
+basse donne exactement l'image d'une buse bouchée**. Le plastique ne peut pas
+sortir. Sur cette machine, `homing_origin.z` plus grand = plus d'espace, et
+c'est le plateau qui descend.
+
+**Avance de pression : tour imprimée, mesure à faire à la main.**
+`kctrl-tour-avance-de-pression.gcode`, 50 mm de haut,
+`TUNING_TOWER … FACTOR=0.002`, donc `PA = 0.002 x hauteur`. Impression terminée
+à 100 %, état `complete`. Valeur en place avant mesure : `0.04`. Reste à lire
+la hauteur où les angles sont nets, puis `SET_PRESSURE_ADVANCE` et édition à la
+main de `pressure_advance` dans `[extruder]`.
+
+**Découverte, mesurée deux fois : une fin d'impression *normale* efface
+`tnn_map`.** Ce n'était pas connu — on croyait cela réservé à l'annulation, à
+l'arrêt d'urgence ou au redémarrage firmware. Après la première couche d'essai
+puis après la tour, `tn_data.json` est revenu avec `base_data` seul.
+`KCTRL_CHECK` l'a attrapé avant le lancement de la tour
+(`filament 1 (T1A) -> ? non associe`), remis en place par `KCTRL_SLOT`.
+Conséquence : `KCTRL_CHECK` est à lancer avant **chaque** impression, et le
+correctif à écrire est de mémoriser les seize paires dans `save_variables` au
+lieu de la seule `T1A`. Doc 68 section 9.
+
+**Preuve de bout en bout du correctif bobine.** Départ réel journalisé :
+`K1 Control start: bed 55 C, nozzle 200 C, filament 1 du fichier (T1A) ->
+emplacement T1B (table CFS), mesh k1_p001_t055_r001_n11x11, Z 0.0500`, avec
+`get next material temp: 200`, aucun `macro_box_extrude_err`, le `T0` du
+fichier n'a pas déclenché de changement d'outil, et le travail est allé jusqu'à
+`Done printing file`. Les deux correctifs du 9 septembre sont donc prouvés en
+impression, plus seulement à froid.
