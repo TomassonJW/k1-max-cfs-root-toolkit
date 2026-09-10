@@ -276,7 +276,8 @@ rend juste. Une commande Python, `KCTRL_MATERIAL_ALIGN MATERIAL=<fiche>
 TEMP=<°C>` (dans `kctrl_slot_map.py`), écrit `EXTRUDER_TEMP` du fichier dans
 les deux clés de la fiche du matériau de l'emplacement à charger
 (`nozzle_temperature`, `nozzle_temperature_initial_layer`, celles que le
-chargement et la purge ont suivies le 9 septembre), par fichier provisoire
+chargement a suivies le 9 septembre ; la purge les suit avec un plancher à
+200, voir la première observation plus bas), par fichier provisoire
 renommé sur l'original, puis relit la base et compare. Elle est appelée en
 premier dans `START_PRINT`, avant que quoi que ce soit chauffe ou bouge ; un
 échec (base illisible, fiche absente, relecture différente, température hors
@@ -307,7 +308,33 @@ clés et rien d'autre, atomicité, relecture, refus) et
 `tests/test_cfs_load_temperature_ceiling_v1.py` (l'alignement est la première
 commande de `START_PRINT`, avant chauffe, mouvement et fenêtre) : 96 tests
 verts sur les deux fichiers, 1193 sur la suite, les deux rouges préexistants
-inchangés. **Pas encore déployé, pas encore observé sur la machine.**
+inchangés. **Déployé le 10 septembre à 11:06 ; observé sur le cube de 11:15.**
+
+**Première observation réelle (10 septembre, cube à 190 / 55).** À 11:15:03,
+`START_PRINT` a écrit `200/200 → 190` dans la fiche `00001` avant toute
+chauffe. À 11:17:32 le chargeur a demandé `get next material temp: 190`, à
+nouveau à 11:18:27 pour la purge ; filament à la tête, purge stock finie à
+11:18:56, complément de 120 mm à 190 °C, ligne d'amorce à 11:20:02,
+impression partie à 11:20:09, sans refus ni erreur du chargeur. Une nuance
+mesurée : la purge stock chauffe à `flush_temp: 200`, pas 190. Sur tous les
+journaux conservés :
+
+| Fiche `nozzle_temperature` | `get next material temp` | `flush_temp` | Jours |
+| --- | --- | --- | --- |
+| 220 | 220 | 220 | 5 et 8 septembre |
+| 200 | 200 | 200 | 9 septembre |
+| 190 | 190 | 200 | 10 septembre |
+
+La purge suit donc la fiche avec un plancher à 200. L'origine du plancher
+n'est pas isolée : le G-code du cube dit `filament_flush_temp = 0,0`, la
+fiche porte `nozzle_temperature_range_low = 190` et
+`material_flow_temp_graph = [[1.0,200],[1.3,220]]`, et les chaînes du module
+compilé (`get_flush_temp`, `flush_para`) ne le disent pas. Conséquence : pour
+un fichier à 190, la purge est 10 °C au-dessus, sous le filet à 205, sans
+effet sur du PLA. Pour un fichier sous 185 °C, la purge à 200 dépasserait le
+filet et serait refusée ; à traiter le jour où un tel fichier arrive, en
+relevant le plafond du filet à `max(fichier + 15, 205)` ou en retrouvant le
+plancher.
 
 ## 6. Fichiers
 

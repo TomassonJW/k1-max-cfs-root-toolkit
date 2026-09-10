@@ -1,6 +1,37 @@
 # HANDOFF — index de reprise
 
-## 10 septembre, 11:10 — alignement déployé et prouvé ; zéro Z à refaire ; le flux visé est écrit
+## 10 septembre, 11:25 — le cube a chargé à 190 : l'alignement est observé sur un vrai chargement ; Z en cours de réglage
+
+**Point de reprise en un geste :** quand le cube est fini et que Thomas donne
+le Z affiché dans Mainsail, `KCTRL_Z_SAVE PROFILE=k1_p001_t055_r001_n11x11
+Z=<valeur>` (jamais tant que `print_stats.state` vaut `printing`), puis
+mettre à jour le point 6 de `GOALS.md`, `STATE.md`, la PR #51.
+
+### Observé sur le cube de 11:15 (fichier à 190 / 55)
+
+- 11:15:03 : `START_PRINT` a écrit `200/200 -> 190` dans la fiche `00001`
+  avant toute chauffe (base modifiée à cette seconde).
+- 11:17:32 : `get next material temp: 190` au chargement, à nouveau à
+  11:18:27 pour la purge ; filament à la tête, purge stock finie à 11:18:56,
+  complément de 120 mm à 190 C, ligne d'amorce à 11:20:02, impression partie
+  à 11:20:09. Aucun refus, aucune erreur du chargeur.
+- Nuance : la purge stock chauffe à `flush_temp: 200`, pas 190. Journaux du
+  5 au 10 septembre : fiche 220 → purge 220, fiche 200 → purge 200, fiche 190
+  → purge 200. La purge suit donc la fiche avec un plancher à 200, dont
+  l'origine n'est pas isolée (le G-code dit `filament_flush_temp = 0`). Sous
+  le filet (205) ; sans effet pour du PLA à 190. Un fichier sous 185 C ferait
+  refuser la purge par le filet : à traiter le jour où un tel fichier arrive
+  (plafond du filet à `max(fichier + 15, 205)`, ou plancher retrouvé).
+- Thomas règle le Z en direct sur la première couche : 0,14 → 0,03 à 11:25.
+
+### Bruit connu, sans effet
+
+- `Unknown command:SET_HOTEND_FAN` au départ (docs/70).
+- `Error: no response` toutes les 11 s : balayage d'adresses du bus 485
+  (`auto_addr_wrapper`, commande 161), présent toute la journée, sans lien
+  avec l'impression.
+
+## 10 septembre, 11:10 — alignement déployé et prouvé ; zéro Z à refaire ; le flux visé est écrit (remplacé par 11:25)
 
 **Point de reprise en un geste :** relire les « Précisions de Thomas du
 10 septembre » dans `GOALS.md` (le flux quotidien visé, point par point, avec

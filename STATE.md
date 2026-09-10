@@ -2,6 +2,26 @@
 
 Last updated: 2026-09-10
 
+10 septembre, 11:25. **Premiere observation reelle : le CFS a charge a la
+temperature du fichier.** Cube `_Cube_PLA_24m21s.gcode` lance par Thomas a
+11:15:02 (fichier a 190 / 55). `START_PRINT` a ecrit 190 dans la fiche `00001`
+a 11:15:03 (200/200 -> 190, base modifiee a cette seconde), puis chauffe,
+palpage (fenetre 105 C), fenetre de chargement ouverte a 205 C ; le chargeur a
+demande `get next material temp: 190` a 11:17:32 (chargement) et 11:18:27
+(purge), filament a la tete a 11:18:27, purge stock finie a 11:18:56,
+complement de 120 mm a 190 C, ligne d'amorce a 11:20:02, impression partie a
+11:20:09. Nuance mesuree : la purge stock chauffe a `flush_temp: 200`, pas 190.
+Journaux du 5 au 10 septembre : fiche 220 -> purge 220, fiche 200 -> purge 200,
+fiche 190 -> purge 200 ; la purge suit la fiche avec un plancher a 200 (origine
+du plancher non isolee ; le G-code dit `filament_flush_temp = 0`). Sous le
+filet (205), sans effet pour un PLA a 190 ; un fichier sous 185 C ferait
+refuser la purge par le filet, a traiter si un tel fichier arrive. Thomas
+regle le Z en direct sur la premiere couche (0,14 -> 0,03 a 11:25) ;
+sauvegarde `KCTRL_Z_SAVE PROFILE=k1_p001_t055_r001_n11x11 Z=<valeur
+affichee>` apres l'impression, jamais pendant. Bruit connu sans effet :
+`Unknown command:SET_HOTEND_FAN` au depart (docs/70), `Error: no response`
+toutes les 11 s (balayage d'adresses du bus 485, present toute la journee).
+
 10 septembre, 11:10. **Alignement deploye sur la machine et prouve.** Sur le
 « deploie » de Thomas : sauvegardes `.kctrl-bak-20260910-1106xx` des trois
 fichiers, copie (sommes md5 identiques au depot), service Klipper redemarre a
