@@ -25,11 +25,21 @@ Ce refus n'est pas rattrapé dans le module compilé, et la file ne repart pas.
 branche : pas de coupe, un chargement normal, `last_cmd` renseigné. Le T du
 fichier retombe alors sur le même outil et ne fait plus rien.
 
-Deuxième constat de la même soirée : CX_PRINT_DRAW_ONE_LINE, malgré son nom,
-ne trace aucune ligne sur un démarrage normal. Tout ce qui dessine, dans
-custom_macro.py, est à l'intérieur de `if self.pheaters.can_break_flag == 3`.
-Les trois cordons vus ce soir-là étaient sa reprise sur rupture de filament,
-pas une amorce. La ligne est donc tracée ici, toujours, à nos chiffres.
+Deuxième constat, corrigé le 10 septembre : CX_PRINT_DRAW_ONE_LINE trace ses
+trois cordons lents à chaque démarrage normal, pas seulement sur rupture. Tout
+ce qui dessine, dans custom_macro.py, est derrière
+`if self.pheaters.can_break_flag == 3`, et heaters.py met ce drapeau à 3 à la
+fin de chaque attente de température non interrompue — le M109 du démarrage
+suffit. Vu sur le cube du 10 septembre à 11:19:50 : la ligne stock, lente,
+puis la nôtre. L'appel stock n'est plus émis ; la ligne est tracée ici, une
+fois, à nos chiffres.
+
+Troisième constat, le même jour : le changement d'outil est à lui seul tout le
+chargement — le CFS alimente, l'extrudeur tire jusqu'à la buse, la purge stock
+tourne au-dessus du bac, à chaud. Ce que le démarrage poussait encore après
+(BOX_EXTRUDER_EXTRUDE, 120 mm de complément, BOX_MATERIAL_FLUSH) faisait une
+seconde boule : 254 mm à 190 °C après une purge complète à 200 °C, mesurés à
+11:18. Le démarrage ne pousse plus de filament lui-même.
 """
 
 import os
@@ -127,8 +137,16 @@ def test_l_outil_est_emis_avant_que_du_filament_soit_charge():
     lines = commands("START_PRINT")
     tool = index_of(lines, "T{position - 1}")
     assert tool < index_of(lines, "_KCTRL_CFS_LOAD TOOL={tool} ATTEMPT=1")
-    assert tool < index_of(lines, "BOX_EXTRUDER_EXTRUDE TNN={tool}")
-    assert tool < index_of(lines, "_KCTRL_PURGE_BALL TEMP={nozzle}")
+    assert tool < index_of(lines, "KCTRL_WAIT_FILAMENT SENSOR=filament_sensor_2")
+
+
+def test_le_changement_d_outil_est_la_seule_purge_du_demarrage():
+    # cmd_T charge, tire jusqu'a la buse et purge au-dessus du bac, a chaud.
+    # Le 10 septembre a 11:18 le demarrage poussait encore 254 mm a 190 C
+    # apres cette purge : deux boules dans le bac pour une impression.
+    lines = commands("START_PRINT")
+    for command in ("BOX_EXTRUDER_EXTRUDE", "BOX_MATERIAL_FLUSH", "_KCTRL_PURGE_BALL"):
+        assert not any(line.startswith(command) for line in lines), command
 
 
 def test_l_outil_est_emis_apres_que_la_table_ait_ete_ecrite():
@@ -167,13 +185,13 @@ def test_le_changement_d_outil_est_suivi_d_une_barriere():
 # La ligne d'amorce
 # ---------------------------------------------------------------------------
 
-def test_la_ligne_d_amorce_est_tracee_apres_l_appel_stock():
-    # L'appel stock reste pour ce qu'il fait vraiment : la retraction, la
-    # chauffe, et la remise a zero du drapeau de rupture, qui est un attribut
-    # Python qu'une macro ne peut pas toucher.
+def test_l_appel_stock_n_est_plus_emis():
+    # Il tracait ses trois cordons lents avant les notres a chaque demarrage :
+    # le drapeau qu'il lit vaut 3 apres toute attente de temperature, et rien
+    # d'autre que lui ne lit ce drapeau.
     lines = commands("START_PRINT")
-    assert index_of(lines, "CX_PRINT_DRAW_ONE_LINE") < index_of(
-        lines, "_KCTRL_PRIME_LINE")
+    assert not any(line.startswith("CX_PRINT_DRAW_ONE_LINE") for line in lines)
+    assert sum(1 for line in lines if line.startswith("_KCTRL_PRIME_LINE")) == 1
 
 
 def test_la_ligne_d_amorce_precede_l_armement_du_capteur():
