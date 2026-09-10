@@ -1,0 +1,66 @@
+=== saved minus raw, per run (the firmware ramp)
+K1_SCREWS  5 rows  per row: +0.140 +0.115 +0.090 +0.065 +0.040  (spread inside a row under 0.000)
+           last contact X277 Y274: raw -0.110, saved -0.110, previous contact raw -0.099
+K1_SUB_SW  6 rows  per row: +0.299 +0.279 +0.259 +0.239 +0.219 +0.159  (spread inside a row under 0.199)
+           last contact X5 Y150: raw +0.155, saved +0.155, previous contact raw -0.077
+K1_SUB_SE  6 rows  per row: +0.263 +0.243 +0.223 +0.203 +0.183 +0.130  (spread inside a row under 0.163)
+           last contact X150 Y150: raw +0.141, saved +0.141, previous contact raw +0.016
+K1_SUB_NW  6 rows  per row: +0.157 +0.137 +0.117 +0.097 +0.077 +0.046  (spread inside a row under 0.057)
+           last contact X5 Y295: raw -0.022, saved -0.022, previous contact raw -0.035
+K1_SUB_NE  6 rows  per row: +0.184 +0.164 +0.144 +0.124 +0.104 +0.067  (spread inside a row under 0.084)
+           last contact X150 Y295: raw +0.016, saved +0.016, previous contact raw -0.085
+=== last contacts dropped (another run covers the point): K1_SUB_SW X5 Y150 +0.155; K1_SUB_SE X150 Y150 +0.141; K1_SUB_NE X150 Y295 +0.016
+=== agreement of the raw values between runs at the shared points
+   X 34 Y150  SW -0.077  NW -0.088  spread 0.011
+   X 63 Y150  SW -0.068  NW -0.080  spread 0.012
+   X 92 Y150  SW +0.002  NW -0.007  spread 0.009
+   X121 Y150  SW -0.028  NW +0.008  spread 0.036
+   X150 Y  5  SW -0.281  SE -0.296  spread 0.014
+   X150 Y 34  SW -0.219  SE -0.258  spread 0.039
+   X150 Y 63  SW -0.131  SE -0.136  spread 0.005
+   X150 Y 92  SW -0.069  SE -0.077  spread 0.008
+   X150 Y121  SW -0.016  SE -0.040  spread 0.024
+   X150 Y150  SW -0.009  NW -0.004  NE -0.026  spread 0.023
+   X150 Y179  NW +0.011  NE +0.023  spread 0.012
+   X150 Y208  NW +0.009  NE -0.008  spread 0.017
+   X150 Y237  NW -0.022  NE -0.020  spread 0.002
+   X150 Y266  NW -0.043  NE -0.061  spread 0.018
+   X179 Y150  SE +0.016  NE -0.005  spread 0.022
+   X208 Y150  SE -0.006  NE -0.009  spread 0.003
+   X237 Y150  SE -0.001  NE -0.026  spread 0.024
+   X266 Y150  SE -0.036  NE -0.023  spread 0.013
+   X295 Y150  SE -0.020  NE -0.028  spread 0.008
+=== offset K1_SUB_SE +0.0178 over 5 shared points, residual 0.0209
+=== offset K1_SUB_NW -0.0018 over 5 shared points, residual 0.0343
+=== offset K1_SUB_NE +0.0166 over 10 shared points, residual 0.0305
+=== raw-based 11x11, zero at X150 Y150
+y=  5 -0.267 -0.267 -0.295 -0.323 -0.312 -0.271 -0.274 -0.276 -0.274 -0.266 -0.293
+y= 34 -0.187 -0.246 -0.225 -0.258 -0.228 -0.222 -0.200 -0.176 -0.191 -0.189 -0.145
+y= 63 -0.141 -0.187 -0.178 -0.196 -0.152 -0.116 -0.111 -0.103 -0.127 -0.131 -0.098
+y= 92 -0.100 -0.116 -0.112 -0.117 -0.052 -0.056 -0.058 -0.072 -0.085 -0.062 -0.029
+y=121 -0.063 -0.072 -0.077 -0.016 -0.034 -0.011 -0.020 -0.021 -0.044 -0.057 -0.013
+y=150 -0.032 -0.075 -0.067 +0.005 -0.002 +0.000 +0.031 +0.018 +0.012 -0.004 +0.002
+y=179 -0.012 +0.009 -0.002 -0.002 -0.014 +0.033 +0.058 +0.022 -0.000 -0.012 +0.016
+y=208 -0.007 -0.023 -0.003 +0.017 +0.040 +0.016 +0.030 -0.009 -0.015 -0.013 +0.023
+y=237 -0.009 -0.045 -0.028 -0.028 +0.010 -0.005 -0.003 -0.019 -0.033 -0.043 -0.043
+y=266 -0.012 -0.057 -0.062 -0.029 -0.055 -0.036 -0.053 -0.053 -0.081 -0.072 -0.085
+y=295 -0.016 -0.029 -0.035 -0.061 -0.083 -0.068 -0.060 -0.069 -0.078 -0.092 -0.122
+=== row means: raw-based, live profile before, move
+   y=  5  -0.283  -0.184  -0.099
+   y= 34  -0.206  -0.127  -0.079
+   y= 63  -0.140  -0.081  -0.059
+   y= 92  -0.078  -0.039  -0.039
+   y=121  -0.039  -0.020  -0.019
+   y=150  -0.010  -0.012  +0.001
+   y=179  +0.009  -0.013  +0.022
+   y=208  +0.005  -0.037  +0.042
+   y=237  -0.022  -0.084  +0.062
+   y=266  -0.054  -0.136  +0.082
+   y=295  -0.065  -0.171  +0.106
+=== largest move 0.158 mm, 1 point(s) above the 0.15 limit of one KCTRL_MESH_APPLY
+=== k1_p001_t055_r001_n11x11.etape1.json written, largest move 0.079 mm
+=== k1_p001_t055_r001_n11x11.etape2.json written, largest move 0.079 mm
+=== screws from K1_SCREWS raw: span 0.177 mm; avant-gauche -0.259 visser 0.0/8  avant-droit -0.238 visser 0.2/8  arriere-gauche -0.082 visser 2.0/8  arriere-droit -0.104 visser 1.8/8
+=== screws from K1_SCREWS saved: span 0.077 mm; avant-gauche -0.119 visser 0.0/8  avant-droit -0.098 visser 0.2/8  arriere-gauche -0.042 visser 0.9/8  arriere-droit -0.085 visser 0.4/8
+=== screws from 11x11 raw-based: span 0.181 mm; avant-gauche -0.233 visser 0.0/8  avant-droit -0.210 visser 0.3/8  arriere-gauche -0.052 visser 2.1/8  arriere-droit -0.079 visser 1.8/8
+=== screws from 11x11 live before: span 0.044 mm; avant-gauche -0.147 visser 0.2/8  avant-droit -0.124 visser 0.5/8  arriere-gauche -0.138 visser 0.3/8  arriere-droit -0.168 visser 0.0/8
