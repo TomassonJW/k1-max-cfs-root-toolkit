@@ -42,8 +42,9 @@ ENV = jinja2.Environment("{%", "%}", "{", "}", extensions=["jinja2.ext.do"])
 OPEN = "_KCTRL_LOAD_GUARD_ON"
 CLOSE = "_KCTRL_LOAD_GUARD_OFF"
 # Everything the stock loader touches between these two calls can set a
-# temperature of its own.
-STOCK_LOADER = ("BOX_CHECK_MATERIAL", "BOX_EXTRUDER_EXTRUDE", "BOX_MATERIAL_FLUSH")
+# temperature of its own. The tool change is the whole material step since
+# 2026-09-10: load, pull to the nozzle, and the stock purge at flush_temp.
+STOCK_LOADER = ("BOX_CHECK_MATERIAL", "T{position - 1}")
 
 
 def read(path):
@@ -135,7 +136,7 @@ def test_the_window_wraps_every_stock_loader_call(start_text):
     entry, exit_ = min(closes), max(closes)
     assert entry < opens[0] < exit_
     for i, line in enumerate(lines):
-        if line.split()[0] in STOCK_LOADER:
+        if any(line.startswith(name) for name in STOCK_LOADER):
             assert opens[0] < i < exit_, "%s runs outside the window" % line
 
 

@@ -237,8 +237,8 @@ def test_kctrl_slot_validates_both_ends_of_the_mapping():
 def test_start_print_arms_the_head_sensor_after_the_material_step():
     lines = commands("START_PRINT")
     arm = index_of(lines, "SET_FILAMENT_SENSOR SENSOR=filament_sensor_2 ENABLE=1")
-    assert arm > index_of(lines, "BOX_MATERIAL_FLUSH")
-    assert arm > index_of(lines, "CX_PRINT_DRAW_ONE_LINE")
+    assert arm > index_of(lines, "T{position - 1}")
+    assert arm > index_of(lines, "_KCTRL_PRIME_LINE")
 
 
 @pytest.mark.parametrize("macro", ["END_PRINT", "CANCEL_PRINT"])

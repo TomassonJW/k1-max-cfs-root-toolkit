@@ -2,6 +2,63 @@
 
 Last updated: 2026-09-10
 
+10 septembre, 12:35. **Deploye et applique, sur le « tu peux appliquer la
+PR » de Thomas.** Reponses donnees avant d'agir : pas de nouvelle mesure du
+plateau (elle ressortirait avec la meme rampe ; les 169 touches brutes du
+matin se recoupent a 0,04 pres aux 19 points doubles) ; la pente
+avant/arriere est reelle et progressive (0,18 entre les vis, 0,22 bord a
+bord, plateau plus bas a l'avant), un maillage l'absorbe, le profil
+enregistre l'effacait. Deploiement 12:30-12:31 : sauvegardes
+`.kctrl-bak-20260910-123029` des trois cfg, copies aux md5 du depot, Klipper
+redemarre a 12:30:53, pret a 12:31:27, aucune erreur de configuration,
+`_KCTRL_PURGE_MARK` et `_KCTRL_PURGE_REPORT` absents, `_KCTRL_PURGE_BALL` et
+`_KCTRL_PRIME_LINE` presents, plus aucun « standby » dans les filets. Profil
+a 12:32:54 : `KCTRL_MESH_APPLY` en deux etapes (120 points, pas de 0,079
+chacune, zero garde en X150 Y150), profil vivant identique au fichier
+reconstruit a 1e-6, ecrit dans `printer.cfg` (ligne 504). Sauvegarde du
+profil precedent dans `kctrl-mesh-backups/` : les deux etapes ont recu le
+meme nom `…-123254.json` et la seconde a ecrase la premiere ; la matrice
+d'avant est dans `experiments/2026-09-10-mesh-brut-sans-rampe/profil-actif-avant.json`
+et dans `printer-20260910_123129.cfg` (a corriger dans `kctrl_mesh.py`,
+compteur ou microsecondes dans le nom). Apres redemarrage le profil actif est
+`default` : normal, `START_PRINT` charge `k1_p001_t055_r001_n11x11` lui-meme
+pour un plateau a 55. `save_config_pending` revient a chaque demarrage a
+cause de `[auto_addr] mb_addr_table_uniids` (journal 12:31:27) : banniere
+permanente, jamais SAVE_CONFIG. Machine : `standby`, chauffes a zero, Z
+vivant 0. Prochain geste de Thomas : carre 280x280 a 55, Z en direct ; puis
+`KCTRL_Z_SAVE PROFILE=k1_p001_t055_r001_n11x11 Z=<valeur>` apres
+l'impression. Sur la machine : pas de `bash` ni de `sftp-server` (`sh -s`,
+copie par `cat | ssh`).
+
+10 septembre, 12:15. **Cube fini a 11:43 ; le demarrage ne poussera plus
+qu'une purge et une ligne (ecrit, teste, pas deploye) ; le maillage est faux
+parce que le firmware incline chaque mesure.** Sur le cube de 11:15 Thomas a
+vu deux purges (200 puis 190) et deux lignes (lente puis dense) : la purge
+stock du `T{position - 1}` etait deja complete, et notre chaine de complement
+(254 mm a 190) datait d'avant le `T` ; la ligne stock `CX_PRINT_DRAW_ONE_LINE`
+se trace a chaque demarrage normal (`can_break_flag` vaut 3 apres tout `M109`).
+Branche `fix/demarrage-une-purge-une-ligne` : le demarrage ne pousse plus rien
+lui-meme, une seule ligne (la notre), `_KCTRL_PURGE_BALL` garde en manuel
+(ADR-060). Les macros de mesure ont refuse Thomas apres le cube (« requires
+standby », six fois de 11:43 a 11:49) : l'etat reste `complete` apres une
+impression ; elles ne refusent plus que `printing` et `paused`. Maillage : le
+micrologiciel ajoute a chaque mesure une rampe de 0,10 mm du premier rang au
+dernier avant d'enregistrer le profil (document 73) ; les quatre quarts, tous
+mesures de l'avant vers l'arriere, empilent deux rampes : profil en service
+avant −0,18 / arriere −0,17, contacts bruts avant −0,28 / arriere −0,07, d'ou
+la buse trop loin a l'avant et trop pres a l'arriere. Reconstruction depuis
+les 169 contacts bruts du journal prete dans
+`experiments/2026-09-10-mesh-brut-sans-rampe/` (deux fichiers pour
+`KCTRL_MESH_APPLY`, pas de 0,079 chacun). Le Z regle sur le cube (+0,180) a
+ete remis a zero par l'interface a 11:43:08 (`Z_OFFSET_APPLY_PROBE`, sonde
+inchangee a 0) ; `save_config_pending` est leve, **ne jamais presser
+SAVE_CONFIG**. Vis : le rapport du matin lisait la grille aplatie (0,077 mm
+d'ecart vu, 0,177 reel, arriere plus haut que l'avant). 1196 tests verts, les
+deux rouges preexistants inchanges. **Rien n'est deploye ni applique** :
+attend le « go » de Thomas pour (1) copier les trois cfg et redemarrer
+Klipper, (2) appliquer le profil reconstruit, puis carre 280x280, Z en direct,
+`KCTRL_Z_SAVE` apres l'impression.
+
 10 septembre, 11:25. **Premiere observation reelle : le CFS a charge a la
 temperature du fichier.** Cube `_Cube_PLA_24m21s.gcode` lance par Thomas a
 11:15:02 (fichier a 190 / 55). `START_PRINT` a ecrit 190 dans la fiche `00001`

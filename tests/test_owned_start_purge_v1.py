@@ -11,6 +11,17 @@ a macro that dwells does nothing at all once it is called from inside another
 macro - and inside START_PRINT is the only place it would ever be used. That
 failure is silent, which is why both halves are pinned here: the ordering of
 the material step, and the fact that the wait is not a macro.
+
+Since 2026-09-10 the material step is the tool change the start issues itself:
+cmd_T loads, pulls to the nozzle and purges over the bin, hot, at the flush
+temperature of the record aligned on the file. The push this file used to
+order after the wait - BOX_EXTRUDER_EXTRUDE, a 120 mm top up, BOX_MATERIAL_FLUSH
+- was written when that tool change did not exist and the stock flush ran on a
+nozzle at 109 C. On the print of 2026-09-10 11:15 it added 254 mm at 190 C on
+top of a full purge at 200 C: two balls in the bin, and the operator asked for
+one. The start pushes no filament of its own any more; the wait and the
+assertion stay, after the tool change, as the proof that the load reached the
+head.
 """
 
 import importlib.util
@@ -27,7 +38,10 @@ CONFIG = os.path.join(PACKAGE, "k1-control-owned-start-print-v2.cfg")
 # Klipper: jinja2.Environment('{%', '%}', '{', '}')
 ENV = jinja2.Environment("{%", "%}", "{", "}", extensions=["jinja2.ext.do"])
 
-PUSHES_FILAMENT = ("BOX_EXTRUDER_EXTRUDE", "BOX_MATERIAL_FLUSH")
+# Everything that ever pushed filament from this file. None of it is called by
+# the start any more; the tool change does the whole material step.
+OUR_PUSHES = ("BOX_EXTRUDER_EXTRUDE", "BOX_MATERIAL_FLUSH", "_KCTRL_PURGE_BALL")
+TOOL = "T{position - 1}"
 WAIT = "KCTRL_WAIT_FILAMENT SENSOR=filament_sensor_2"
 
 
@@ -75,15 +89,30 @@ def waiter():
 
 
 # --------------------------------------------------------------- the ordering
-def test_nothing_pushes_filament_before_the_wait_and_the_assertion():
-    # This is the whole fix. Pushing while the CFS is still feeding spends the
-    # purge on an empty melt zone, and no amount of extra length repairs that.
+def test_the_start_pushes_no_filament_of_its_own():
+    # Measured on 2026-09-10 11:15: the tool change had already purged at
+    # 200 C when this block pushed 254 mm more at 190 C. Two balls in the bin
+    # for one print, and the operator asked for one.
     lines = commands("START_PRINT")
+    for command in OUR_PUSHES:
+        assert not any(line.startswith(command) for line in lines), command
+
+
+def test_the_only_purge_is_the_stock_one_inside_the_tool_change():
+    # cmd_T loads, pulls to the nozzle and purges over the bin, hot, at the
+    # flush temperature of the record aligned on the file. Once.
+    lines = commands("START_PRINT")
+    assert sum(1 for line in lines if line.startswith(TOOL)) == 1
+
+
+def test_the_wait_and_the_assertion_come_after_the_tool_change():
+    # The wait no longer protects a push of ours - there is none. It proves
+    # the stock load reached the head before the start goes near the plate.
+    lines = commands("START_PRINT")
+    tool = index_of(lines, TOOL)
     wait = index_of(lines, WAIT)
     assertion = index_of(lines, "_KCTRL_ASSERT_FILAMENT_ENGAGED STAGE=after_cfs_load")
-    assert wait < assertion
-    for command in PUSHES_FILAMENT:
-        assert index_of(lines, command) > assertion, command
+    assert tool < wait < assertion
 
 
 def test_the_grace_period_is_fifteen_seconds():
@@ -102,14 +131,14 @@ def test_the_wait_comes_after_every_cfs_attempt():
     assert index_of(lines, WAIT) > max(attempts)
 
 
-def test_the_nozzle_is_hot_and_waited_on_before_anything_is_pushed():
-    # The stock flush only sets a target. The log of 2026-09-02 00:22 shows it
-    # running at 109 C with the CFS target at 220: almost nothing comes out of
-    # a nozzle at 109 C, which is the other half of the thin strand.
+def test_the_gcode_temperature_is_restored_and_waited_on_after_the_loader():
+    # The stock loader sets targets of its own (flush at 200 for a file at 190
+    # on 2026-09-10). The file's temperature is re-established, and waited on,
+    # between the loader and the plate.
     lines = commands("START_PRINT")
-    heat = index_of(lines, "M109 S{nozzle}")
-    for command in PUSHES_FILAMENT:
-        assert index_of(lines, command) > heat, command
+    tool = index_of(lines, TOOL)
+    heats = [n for n, line in enumerate(lines) if line == "M109 S{nozzle}"]
+    assert heats and tool < max(heats) < index_of(lines, "_KCTRL_PRIME_LINE")
 
 
 def test_the_wait_is_not_a_macro():
@@ -196,53 +225,30 @@ def test_the_standing_default_is_the_length_judged_over_the_bin():
     assert variables("_KCTRL_PURGE_BALL")["purge_mm"] == 120.0
 
 
-def test_the_top_up_comes_after_the_wait_and_the_heat():
-    # Pushing before the filament is in the head is the whole defect. A top up
-    # placed ahead of the wait would repeat it with more filament.
-    lines = commands("START_PRINT")
-    top_up = index_of(lines, "_KCTRL_PURGE_BALL")
-    assert top_up > index_of(lines, WAIT)
-    assert top_up > index_of(lines, "M109 S{nozzle}")
-    assert top_up < index_of(lines, "BOX_MATERIAL_FLUSH")
+def test_the_top_up_is_a_manual_tool_and_not_part_of_the_start():
+    # It was written for a stock flush that ran on a nozzle at 109 C. The tool
+    # change purges hot now, so a top up only adds a second ball. It stays for
+    # the operator: _KCTRL_PURGE_BALL TEMP=200 LEN=100.
+    assert "[gcode_macro _KCTRL_PURGE_BALL]" in config_text()
+    assert not any(line.startswith("_KCTRL_PURGE_BALL")
+                   for line in commands("START_PRINT"))
 
 
-def test_the_stock_flush_size_is_left_alone():
-    # box.cfg declares box_need_clean_length_max: 140, so a LEN above it could
-    # be clamped without a word - the worst failure a purge can have, since
-    # nothing reports it and the defect only shows on the plate.
-    lines = commands("START_PRINT")
-    flush = [line for line in lines if "BOX_MATERIAL_FLUSH" in line]
-    assert flush and all("LEN" not in line for line in flush)
+def test_the_stock_flush_is_not_called_by_the_start():
+    # It runs inside cmd_T, sized and heated by the stock loader. Called again
+    # from here it is the second ball of 2026-09-10.
+    assert not any(line.startswith("BOX_MATERIAL_FLUSH")
+                   for line in commands("START_PRINT"))
 
 
 # ----------------------------------------------------------- the measurement
-def test_the_material_step_is_measured_end_to_end():
-    # The head switch sits after the cutter and before the extruder gears, so
-    # seeing filament there is not the same as having primed the nozzle. The
-    # measured travel is the only honest answer to "was the purge enough".
+def test_the_measurement_of_a_push_that_no_longer_exists_is_gone():
+    # The mark and the report bracketed our push. There is no push of ours to
+    # measure, and the report never measured anyway: -2 mm on 2026-09-02, the
+    # box routines issue G92 E0 under it.
+    text = config_text()
+    assert "[gcode_macro _KCTRL_PURGE_MARK]" not in text
+    assert "[gcode_macro _KCTRL_PURGE_REPORT]" not in text
     lines = commands("START_PRINT")
-    mark = index_of(lines, "_KCTRL_PURGE_MARK")
-    report = index_of(lines, "_KCTRL_PURGE_REPORT")
-    for command in PUSHES_FILAMENT:
-        assert mark < index_of(lines, command) < report, command
-
-
-@pytest.mark.parametrize("macro", ["_KCTRL_PURGE_MARK", "_KCTRL_PURGE_REPORT"])
-def test_each_measurement_reads_after_a_wait_for_moves(macro):
-    # A macro renders when its command is processed; M400 blocks the queue
-    # until the moves are done. Without it the position read is one that has
-    # merely been queued.
-    lines = commands("START_PRINT")
-    assert lines[index_of(lines, macro) - 1] == "M400"
-
-
-def test_the_report_refuses_to_print_a_number_it_cannot_measure():
-    # It printed -2 mm on 2026-09-02: the box routines issue G92 E0 during
-    # the material step, so the extruder axis restarts under the mark. An
-    # interface that prints a wrong number is worse than one that says it
-    # does not know, so the report guards the reading and falls back on the
-    # one length this file actually commands.
-    body = section("_KCTRL_PURGE_REPORT")
-    assert "travel > 1.0" in body
-    assert "non mesurable" in body
-    assert "purge_mm" in body
+    assert not any(line.startswith("_KCTRL_PURGE_MARK")
+                   or line.startswith("_KCTRL_PURGE_REPORT") for line in lines)
