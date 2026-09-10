@@ -179,9 +179,64 @@ ici, pas sur une recette trouvée ailleurs.
 - [Creality Cloud — K1 SE + CFS, la buse ne suit pas le trancheur](https://www.crealitycloud.com/post-detail/687c65e270e6870dbc3d6d5b)
 - [Creality Community Forum — how to update material database](https://forum.creality.com/t/how-to-update-material-database/36527)
 
+## 7. Le 10 septembre : la base revient d'elle-même, et le filet étrangle
+
+**Ce qui s'est passé.** La machine a redémarré le matin (démarrage 08:44). Au
+redémarrage, le micrologiciel a réécrit `material_database.json` — horodatage
+`2020-03-01 13:00:19`, l'horloge d'avant la synchronisation, md5 différent à la
+fois de la sauvegarde d'avant correction et du fichier de `/rom`. La fiche
+`00001 Generic PLA` était revenue à `220`. La première réserve de la section 3
+s'est donc réalisée sans mise à jour Creality : un simple redémarrage suffit.
+
+À 10:06, impression d'un cube PLA à 190 °C. `START_PRINT` ouvre la fenêtre au
+plafond 205 ; le chargeur lit la fiche, demande 220 ; la fenêtre ramène à 205 ;
+le chargeur **attend 220** et redemande chaque seconde :
+
+```
+10:06:14  get next material temp: 220
+10:06:15  K1 Control: M104 S220 pendant le chargement CFS, ramene a 205 C
+10:06:16  K1 Control: M104 S220 pendant le chargement CFS, ramene a 205 C
+   ... toutes les secondes, pendant cinq minutes ...
+10:11:47  K1 Control: M104 S220 pendant le chargement CFS, ramene a 205 C
+```
+
+L'annulation depuis Mainsail attendait derrière la séquence. Sortie par arrêt
+d'urgence à 10:14, puis redémarrage du service Klipper.
+
+**La leçon.** « Abaisser au lieu de refuser » reposait sur une hypothèse fausse :
+que le chargeur pose une cible et continue. Il pose une cible et l'attend. Une
+cible abaissée est donc une attente sans fin, pire qu'un refus.
+
+**Ce qui change (branche `fix/cfs-temperature-chargement`).**
+
+1. `START_PRINT` lit la fiche matière de l'emplacement qu'il va charger
+   **avant de chauffer ou de bouger** : `kctrl_slot_map` publie
+   `material_temp` (température par identifiant de fiche, relue quand le
+   fichier change) ; la macro convertit le type six caractères de l'emplacement
+   en identifiant cinq caractères et compare au plafond `EXTRUDER_TEMP + 15`.
+   Fiche au-dessus du plafond, ou fiche inconnue : refus immédiat, message
+   donnant la commande de correction. Rien n'a chauffé, rien n'a bougé.
+2. La fenêtre `_KCTRL_LOAD_GUARD` **refuse** au lieu d'abaisser. Elle ne devrait
+   plus jamais être atteinte ; si elle l'est, l'impression meurt au chargement,
+   ce qui se termine, au lieu de tourner sans fin.
+3. La base a été recorrigée à 10:19 (`00001 → 200`, sauvegarde
+   `material_database.json.kctrl-bak-20260910-101913`, seules les deux clés de
+   température diffèrent, vérifié champ par champ).
+
+**Ce qui reste vrai.** La base sera réécrite au prochain redémarrage. Le
+contrôle du point 1 le dira avant chaque impression, avec la commande à passer.
+Une réécriture automatique au démarrage (script d'init) n'est pas faite : le
+moment exact où le micrologiciel réécrit le fichier n'est pas connu.
+
+**Non prouvé sur la machine** : le comportement du chargeur compilé face à un
+refus (`action_raise_error`) au milieu de sa boucle. Le point 1 rend ce cas
+théorique ; il n'a pas été provoqué exprès.
+
 ## 6. Fichiers
 
 - `scripts/corriger-temperatures-chargement-cfs-v1.py`
 - `packages/k1-control-v1/mesh-acquisition-v2/k1-control-probe-temp-guard-v1.cfg`
 - `packages/k1-control-v1/owned-start-print-v2/k1-control-owned-start-print-v2.cfg`
+- `packages/k1-control-v1/owned-start-print-v2/kctrl_slot_map.py`
 - `tests/test_cfs_load_temperature_ceiling_v1.py`
+- `tests/test_kctrl_slot_map_v1.py`

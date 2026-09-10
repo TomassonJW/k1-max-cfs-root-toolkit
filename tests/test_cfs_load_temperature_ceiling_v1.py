@@ -9,11 +9,19 @@ every PLA load has always heated to 220 C. Measured on the machine on
 filament_max_volumetric_speed of that very record, while the sliced file
 carried 23,24.
 
-The database is corrected per material and that is the fix. The window pinned
-here is the net under it, and a net that silently stopped being armed would be
-worse than none: the ordering, the closing on every exit, and the fact that the
-wrapper lowers a target instead of refusing it are all asserted by rendering
-the macros rather than by reading them.
+The database is corrected per material and that is the fix - and the firmware
+rewrites the database at boot, which is how the record corrected on 2026-09-09
+was back at 220 C on 2026-09-10. That morning the window lowered the loader's
+220 C to 205 C, and the loader, which waits for the temperature it asked for,
+re-asked every second for five minutes with cancel queued behind it. An
+emergency stop ended it.
+
+So two things are pinned here. START_PRINT reads the material record of the
+slot it will load and refuses, before anything heats or moves, when that record
+is above the ceiling. And the window under it refuses instead of lowering,
+because a lowered target is a hang, not a print that survives. The ordering,
+the closing on every exit and the refusal are asserted by rendering the macros
+rather than by reading them.
 """
 
 import os
@@ -145,16 +153,57 @@ def test_the_window_is_closed_on_every_exit(start_text):
             "%s can leave a stale ceiling armed" % macro
 
 
-@pytest.mark.parametrize("macro,stock", [("M104", "M104.1"), ("M109", "M109.1")])
-def test_a_hot_target_is_lowered_not_refused_while_loading(guard_text, macro, stock):
-    """This is the whole point: the load asks for 220 C and gets 205 C, and the
-    print survives. Refusing killed three prints in a row on 2026-09-05."""
+@pytest.mark.parametrize("macro", ["M104", "M109"])
+def test_a_hot_target_is_refused_not_lowered_while_loading(guard_text, macro):
+    """Lowering 220 C to 205 C looked kinder than refusing, and it was a hang:
+    the loader waits for 220 C and re-asks every second, measured on
+    2026-09-10 at 10:06. A refusal ends; nothing is emitted in its place."""
     emitted, said, raised = render(
         section(guard_text, macro), {"S": 220.0},
         probe=guard_state(False, 0.0), load=guard_state(True, 205.0))
-    assert not raised, "a print must not die at the load"
-    assert emitted == ["%s S205.0" % stock]
-    assert said and "205" in said[0]
+    # action_raise_error aborts the macro in Klipper; the stub here returns, so
+    # only the refusal and the absence of a rewritten target are asserted.
+    assert raised and "220" in raised[0] and "205" in raised[0]
+    assert "S205" not in " ".join(emitted), "a refused target must not be rewritten"
+    assert not said
+
+
+def test_the_material_record_is_checked_before_anything_heats(start_text):
+    """The check has to run before the bed heats and before the head moves: a
+    refusal there costs nothing, a hang at the load costs an emergency stop."""
+    lines = commands(start_text, "START_PRINT")
+    check = [i for i, line in enumerate(lines) if "material_temp.get(" in line]
+    assert len(check) == 1, "the record is read exactly once"
+    refusals = [i for i, line in enumerate(lines)
+                if line.startswith("{% if load_temp")]
+    assert len(refusals) == 2, "unknown record and hot record are both refused"
+    for i in refusals:
+        assert "action_raise_error" in lines[i + 1], "a bad record is a refusal"
+    first_heat = min(i for i, line in enumerate(lines)
+                     if line.split()[0] in ("M140", "M190", "M104", "M109"))
+    first_move = min(i for i, line in enumerate(lines)
+                     if line.split()[0] in ("CX_ROUGH_G28", "ACCURATE_G28", "G28"))
+    opening = min(i for i, line in enumerate(lines) if line.startswith(OPEN))
+    for i in [check[0]] + refusals:
+        assert i < first_heat and i < first_move and i < opening
+    ceiling = min(i for i, line in enumerate(lines)
+                  if "set load_ceiling = nozzle +" in line)
+    assert ceiling < check[0], "the ceiling exists before it is compared to"
+
+
+def test_the_record_check_reads_the_slot_actually_loaded(start_text):
+    """The slot's six character type is turned into the five character id the
+    database is keyed on; guessing a record from the file would read the wrong
+    spool, which is the failure the whole slot map exists to end."""
+    body = section(start_text, "START_PRINT")
+    assert 'printer.box["T" ~ tool[1]].material_type[slot_nums[tool[2]]]' in body
+    assert 'slot_type[1:] if slot_type|length == 6 and slot_type[0] == "0"' in body
+    assert "load_temp|float > load_ceiling" in body
+
+
+def test_the_refusal_names_the_command_that_fixes_it(start_text):
+    body = section(start_text, "START_PRINT")
+    assert "corriger-temperatures-chargement-cfs-v1.py --temp %s=%d --appliquer" in body
 
 
 @pytest.mark.parametrize("macro,stock", [("M104", "M104.1"), ("M109", "M109.1")])

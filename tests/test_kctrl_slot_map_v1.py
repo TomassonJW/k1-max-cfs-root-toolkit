@@ -59,15 +59,20 @@ class FakePrinter:
 
 
 class FakeConfig:
-    def __init__(self, path):
+    def __init__(self, path, material_db=None):
         self.path = path
+        self.material_db = material_db
         self.printer = FakePrinter()
 
     def get_printer(self):
         return self.printer
 
     def get(self, key, default=None):
-        return self.path if key == "path" else default
+        if key == "path":
+            return self.path
+        if key == "material_db":
+            return self.material_db if self.material_db is not None else default
+        return default
 
 
 def build(tmp_path, payload, name="tn_data.json"):
@@ -454,3 +459,103 @@ def test_the_check_refuses_to_answer_without_a_file(tmp_path):
 def test_the_check_is_registered_as_a_command(tmp_path):
     obj = checker(tmp_path, {"T1A": "T1B"})
     assert "KCTRL_CHECK" in obj.printer.gcode.commands
+
+
+# ------------------------------------------ la temperature que le chargeur lit
+#
+# Le chargeur d'origine chauffe au nozzle_temperature de la fiche matiere de
+# l'emplacement, et attend cette temperature. Le 10 septembre a 10:06 la fiche
+# Generic PLA, corrigee a 200 la veille, etait revenue a 220 apres le
+# redemarrage du matin : le plafond de chargement l'a ramenee a 205 et le
+# chargeur a attendu 220 pendant cinq minutes, annulation bloquee derriere.
+# START_PRINT lit donc la fiche avant de chauffer. Ce qui est epingle ici : la
+# forme reelle de la base relevee sur la machine, la correspondance six
+# caracteres -> cinq, et le refus d'inventer une temperature.
+
+def base_matiere(fiches):
+    return {"code": 0, "msg": "", "reqId": "", "result": {"list": [
+        {"engineVersion": "1", "base": {"id": ident, "name": name},
+         "kvParam": {"nozzle_temperature": str(temp),
+                     "nozzle_temperature_initial_layer": str(temp)}}
+        for ident, name, temp in fiches]}}
+
+
+# Releve sur la machine le 10 septembre a 10:19, apres correction.
+FICHES = [("00001", "Generic PLA", 200), ("00003", "Generic PETG", 250),
+          ("10001", "HP-TPU", 230)]
+
+
+def build_temps(tmp_path, payload):
+    db = tmp_path / "material_database.json"
+    if payload is not None:
+        db.write_text(json.dumps(payload) if not isinstance(payload, str)
+                      else payload, encoding="utf-8")
+    table = tmp_path / "tn_data.json"
+    table.write_text(json.dumps({"tnn_map": LIVE_MAP}), encoding="utf-8")
+    return MOD.load_config(FakeConfig(str(table), str(db))), db
+
+
+@pytest.mark.parametrize("slot_type,attendu", [
+    ("000001", "00001"), ("000003", "00003"), ("10001", "10001"),
+    ("110001", "110001"), ("-1", "-1"),
+])
+def test_a_slot_type_maps_onto_its_record(slot_type, attendu):
+    assert MOD.material_key(slot_type) == attendu
+
+
+def test_the_loading_temperatures_read_back_by_record(tmp_path):
+    obj, _ = build_temps(tmp_path, base_matiere(FICHES))
+    status = obj.get_status()
+    assert status["material_temp"] == {"00001": 200.0, "00003": 250.0,
+                                       "10001": 230.0}
+    assert status["material_temp_error"] == ""
+    assert status["material_temp"][MOD.material_key("000001")] == 200.0
+
+
+def test_a_corrected_record_is_picked_up_without_a_restart(tmp_path):
+    obj, db = build_temps(tmp_path, base_matiere(FICHES))
+    assert obj.get_status()["material_temp"]["00001"] == 200.0
+    os.utime(db, (1, 1))
+    db.write_text(json.dumps(base_matiere([("00001", "Generic PLA", 220)])),
+                  encoding="utf-8")
+    assert obj.get_status()["material_temp"]["00001"] == 220.0
+
+
+def test_a_missing_database_reports_instead_of_guessing(tmp_path):
+    obj, _ = build_temps(tmp_path, None)
+    status = obj.get_status()
+    assert status["material_temp"] == {}
+    assert "absente" in status["material_temp_error"]
+
+
+def test_a_damaged_database_reports_instead_of_guessing(tmp_path):
+    obj, _ = build_temps(tmp_path, "{ pas du json")
+    status = obj.get_status()
+    assert status["material_temp"] == {}
+    assert "illisible" in status["material_temp_error"]
+
+
+def test_a_database_without_records_reports_instead_of_guessing(tmp_path):
+    obj, _ = build_temps(tmp_path, {"result": {}})
+    status = obj.get_status()
+    assert status["material_temp"] == {}
+    assert status["material_temp_error"]
+
+
+def test_a_record_without_a_number_is_skipped_not_invented(tmp_path):
+    payload = base_matiere(FICHES)
+    payload["result"]["list"][0]["kvParam"]["nozzle_temperature"] = "chaud"
+    payload["result"]["list"].append({"base": {"id": "00099"}})
+    payload["result"]["list"].append("pas une fiche")
+    obj, _ = build_temps(tmp_path, payload)
+    temps = obj.get_status()["material_temp"]
+    assert "00001" not in temps and "00099" not in temps
+    assert temps["00003"] == 250.0
+
+
+def test_the_database_is_never_written(tmp_path):
+    obj, db = build_temps(tmp_path, base_matiere(FICHES))
+    before = db.read_bytes()
+    obj.get_status()
+    obj.get_status()
+    assert db.read_bytes() == before

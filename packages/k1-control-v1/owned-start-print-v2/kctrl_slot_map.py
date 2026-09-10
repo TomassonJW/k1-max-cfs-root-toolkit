@@ -45,6 +45,15 @@ import os
 import re
 
 DEFAULT_PATH = "/usr/data/creality/userdata/box/tn_data.json"
+# The temperature the stock loader will heat to, per material record. It reads
+# this file and nothing else - see docs/67 - and the firmware rewrites it on its
+# own at boot: measured on 2026-09-10, the record corrected to 200 C on the 9th
+# was back at 220 C after the morning reboot, and the loading window then
+# capped it at 205 C, a target the loader waits for and never reaches. So
+# START_PRINT reads the same record before anything heats, and refuses early
+# instead of hanging late.
+DEFAULT_MATERIAL_DB = "/usr/data/creality/userdata/box/material_database.json"
+TEMP_KEY = "nozzle_temperature"
 BOXES = ("1", "2", "3", "4")
 SLOTS = ("A", "B", "C", "D")
 NAMES = tuple("T" + box + slot for box in BOXES for slot in SLOTS)
@@ -60,6 +69,52 @@ SCAN_CHUNK = 1 << 16
 
 def is_slot_name(value):
     return isinstance(value, str) and value in NAMES
+
+
+def material_key(slot_type):
+    """The database id of a slot's material type.
+
+    The slots publish the type on six characters, the database keys its
+    records on five: a slot in 000001 loads at the temperature of record 00001.
+    The leading zero is dropped, nothing else is guessed.
+    """
+    text = str(slot_type)
+    if len(text) == 6 and text.startswith("0"):
+        return text[1:]
+    return text
+
+
+def read_material_temps(path):
+    """(temps, error): the loading temperature of every record, by id.
+
+    Only records carrying both an id and a numeric nozzle_temperature are
+    kept; a damaged record is skipped rather than turned into a number.
+    """
+    try:
+        with open(path) as handle:
+            data = json.load(handle)
+    except (OSError, ValueError) as exception:
+        return {}, "base matiere illisible: %s" % exception
+    records = data.get("result", {}).get("list") if isinstance(data, dict) else None
+    if not isinstance(records, list):
+        return {}, "base matiere sans liste de fiches"
+    temps = {}
+    for record in records:
+        if not isinstance(record, dict):
+            continue
+        base = record.get("base") or {}
+        params = record.get("kvParam") or {}
+        ident = base.get("id") if isinstance(base, dict) else None
+        raw = params.get(TEMP_KEY) if isinstance(params, dict) else None
+        if not ident or raw is None:
+            continue
+        try:
+            temps[str(ident)] = float(raw)
+        except (TypeError, ValueError):
+            continue
+    if not temps:
+        return {}, "base matiere sans temperature exploitable"
+    return temps, ""
 
 
 def logical_of_index(index):
@@ -151,6 +206,11 @@ class KctrlSlotMap:
         self.initial_note = "aucun fichier en cours"
         self.initial_file = ""
         self.initial_stamp = None
+        # Loading temperature per material record, same stat-then-parse rule.
+        self.material_db = config.get("material_db", DEFAULT_MATERIAL_DB)
+        self.temps = {}
+        self.temps_error = ""
+        self.temps_stamp = None
         gcode = self.printer.lookup_object("gcode")
         gcode.register_command(
             "KCTRL_MAP", self.cmd_KCTRL_MAP, desc=self.cmd_KCTRL_MAP_help)
@@ -242,11 +302,30 @@ class KctrlSlotMap:
         self.map = table
         self.error = "" if table else "tnn_map vide"
 
+    def refresh_temps(self):
+        stamp = self.stat(self.material_db)
+        if stamp is None:
+            self.temps = {}
+            self.temps_stamp = None
+            self.temps_error = "base matiere absente: %s" % self.material_db
+            return
+        if stamp == self.temps_stamp:
+            return
+        self.temps_stamp = stamp
+        self.temps, self.temps_error = read_material_temps(self.material_db)
+
     def get_status(self, eventtime=None):
         self.refresh()
         self.refresh_initial()
+        self.refresh_temps()
         logical = logical_of_index(self.initial_index)
         return {
+            # Loading temperature by material record id, as the stock loader
+            # will read it. Keyed on the five character id of the database;
+            # material_key() turns a slot's six character type into it.
+            "material_temp": dict(self.temps),
+            "material_temp_error": self.temps_error,
+            "material_db": self.material_db,
             "map": dict(self.map),
             "loaded": 1 if self.map else 0,
             "error": self.error,
