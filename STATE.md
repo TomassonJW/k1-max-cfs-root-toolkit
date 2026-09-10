@@ -2,6 +2,22 @@
 
 Last updated: 2026-09-10
 
+10 septembre, 11:00. **Le depart aligne lui-meme la fiche matiere sur le
+fichier.** Reponse a « impossible de bypasser le CFS ? » : non. Deux faits
+mesures : le chargeur relit `material_database.json` a chaque chargement
+(fiche corrigee le 9 a 00:32, 27 chargements a 200 des 13:17 sans
+redemarrage) et le micrologiciel la reecrit a chaque **allumage** seulement
+(les deux retours a 220 tombent sur les deux demarrages a `uptime` 25 s et
+22 s ; les redemarrages Klipper ne touchent a rien). Nouvelle commande Python
+`KCTRL_MATERIAL_ALIGN MATERIAL= TEMP=` dans `kctrl_slot_map.py` : ecrit
+`EXTRUDER_TEMP` dans les deux cles de la fiche de l'emplacement a charger,
+ecriture atomique, relecture, refus si ca ne colle pas. `START_PRINT` l'appelle
+en premiere commande, avant toute chauffe ; le refus « fiche trop chaude »
+disparait, le refus « fiche inconnue » et le filet (refus a +15) restent.
+Limite : le changement de bobine en cours d'impression passe encore par le
+`cmd_T` d'origine. Section 8 du document 67. 1193 tests verts, les deux rouges
+preexistants inchanges. **Pas deploye** : attend le « deploie » de Thomas.
+
 10 septembre, 10:25. **Plateau remis a niveau et mesh 11x11 refait**, par
 Thomas depuis l'ecran/Mainsail, moi en lecture : vis a 0,08 mm d'ecart apres
 trois passes de `KCTRL_BED_SCREWS` (le plateau garde un voile de 0,14 mm hors

@@ -232,6 +232,71 @@ moment exact où le micrologiciel réécrit le fichier n'est pas connu.
 refus (`action_raise_error`) au milieu de sa boucle. Le point 1 rend ce cas
 théorique ; il n'a pas été provoqué exprès.
 
+## 8. Le chargeur suit le fichier : la fiche est alignée avant chaque chargement
+
+Écrit le 10 septembre entre 10:30 et 11:00, après la question de Thomas :
+« impossible de bypasser le signal demandé par le CFS ? ». Non. Le chargeur
+compilé ne se modifie pas, mais ce qu'il lit, si. Deux faits mesurés sur la
+machine tranchent la conception.
+
+**Le chargeur relit la base à chaque chargement.** Fiche `00001` corrigée le
+9 septembre à 00:32:32. Aucun `Start printer` entre le 8 septembre 23:41:08 et
+le 9 septembre 15:38:40. Premier chargement suivant à 13:17:17 :
+`get next material temp: 200`, puis 26 autres à 200 jusqu'à 18:07. Il n'y a
+donc pas de cache au démarrage du module : un fichier écrit entre deux
+chargements est lu par le chargement suivant.
+
+**La base est réécrite à chaque allumage, pas à chaque redémarrage de Klipper.**
+Les deux retours à 220 tombent sur les deux seuls démarrages à faible temps de
+fonctionnement : 9 septembre 18:08:47 (`uptime 25,1 s`) et 10 septembre
+08:44:07 (`uptime 22,5 s`). Les redémarrages de Klipper sans coupure (15:38,
+15:50, 15:59 le 9 septembre, `uptime` de 59 000 s) n'ont rien réécrit : les
+chargements à 200 ont continué jusqu'à 18:07. La date de modification de la
+base réécrite est `2020-03-01 13:00:16` puis `13:00:19` : elle est écrite avant
+la mise à l'heure, dans les vingt premières secondes, avant que Klipper ne
+démarre. Le programme qui l'écrit n'est pas identifié (aucune chaîne
+`material_database` ni `Soleyin` dans `/etc`, `/usr/bin`, `/opt`,
+`/usr/share/klipper`, `/rom/etc`, `/usr/data/creality` hors la base elle-même).
+Avec la conception ci-dessous, cela n'a plus d'importance.
+
+**Conception.** `START_PRINT` n'attend plus que la fiche soit juste : il la
+rend juste. Une commande Python, `KCTRL_MATERIAL_ALIGN MATERIAL=<fiche>
+TEMP=<°C>` (dans `kctrl_slot_map.py`), écrit `EXTRUDER_TEMP` du fichier dans
+les deux clés de la fiche du matériau de l'emplacement à charger
+(`nozzle_temperature`, `nozzle_temperature_initial_layer`, celles que le
+chargement et la purge ont suivies le 9 septembre), par fichier provisoire
+renommé sur l'original, puis relit la base et compare. Elle est appelée en
+premier dans `START_PRINT`, avant que quoi que ce soit chauffe ou bouge ; un
+échec (base illisible, fiche absente, relecture différente, température hors
+150..320) refuse le départ. Fiche déjà juste : rien n'est écrit. Le chargeur
+chauffe ensuite à la température du fichier, à chaque impression, y compris
+après un allumage, sans intervention.
+
+Ce que cela remplace : le refus « fiche au-dessus du plafond, passer la
+commande de correction » de la section 7. Le contrôle « fiche inconnue » reste,
+et le filet `_KCTRL_LOAD_GUARD` reste, en refus, au plafond `EXTRUDER_TEMP +
+15` : il n'est atteint que par un chemin qui lit une autre fiche.
+
+**Limites connues.**
+
+- Un changement de bobine **en cours d'impression** (le `T` du fichier
+  tranché) passe par le `cmd_T` d'origine, qui lit la fiche du matériau visé.
+  Si ce matériau est le même que celui du départ, sa fiche est déjà alignée ;
+  sinon elle porte sa valeur d'usine. Le filet n'est plus ouvert à ce moment.
+  À traiter en enveloppant `T0`..`T15` (`rename_existing`) pour aligner avant
+  d'appeler l'original ; hors périmètre de cette branche.
+- Deux bobines du même matériau dans un fichier à deux températures partagent
+  une fiche : la seconde chargerait à la température de la première.
+- Le script `corriger-temperatures-chargement-cfs-v1.py` reste utile pour une
+  correction à la main, mais n'est plus nécessaire au départ.
+
+**Preuve exécutable.** `tests/test_kctrl_slot_map_v1.py` (écriture des deux
+clés et rien d'autre, atomicité, relecture, refus) et
+`tests/test_cfs_load_temperature_ceiling_v1.py` (l'alignement est la première
+commande de `START_PRINT`, avant chauffe, mouvement et fenêtre) : 96 tests
+verts sur les deux fichiers, 1193 sur la suite, les deux rouges préexistants
+inchangés. **Pas encore déployé, pas encore observé sur la machine.**
+
 ## 6. Fichiers
 
 - `scripts/corriger-temperatures-chargement-cfs-v1.py`

@@ -1,6 +1,36 @@
 # HANDOFF — index de reprise
 
-## 10 septembre, 10:25 — correctif du chargement écrit, à déployer ; zéro Z à refaire
+## 10 septembre, 11:00 — le départ aligne la fiche matière tout seul ; à déployer ; zéro Z à refaire
+
+**Point de reprise en un geste :** sur le « déploie » de Thomas, copier les
+trois fichiers de la branche `fix/cfs-temperature-chargement` sur la machine
+(cat vers `/usr/data/printer_data/config/` pour les deux `.cfg`, vers
+`/usr/share/klipper/klippy/extras/` pour `kctrl_slot_map.py`), vérifier
+`print_stats.state` hors `printing`, puis `/etc/init.d/S55klipper_service
+restart`. Contrôle après redémarrage : `KCTRL_MATERIAL_ALIGN MATERIAL=00001
+TEMP=200` doit répondre « déjà à 200 C, rien écrit » (la base a été
+recorrigée à 10:19). Ensuite carré 280x280, réglage en direct,
+`KCTRL_Z_SAVE PROFILE=k1_p001_t055_r001_n11x11 Z=…`, puis le cube.
+
+### Ce qui a été ajouté depuis 10:25
+
+- `KCTRL_MATERIAL_ALIGN MATERIAL=<fiche ou type d'emplacement> TEMP=<°C>` :
+  écrit la température du fichier dans la fiche que le chargeur va lire,
+  atomiquement, et relit. `START_PRINT` l'appelle en première commande. Le
+  chargeur relit la base à chaque chargement (prouvé le 9 septembre), la base
+  n'est réécrite qu'à l'allumage (prouvé par les `uptime`), donc plus aucune
+  correction à la main. Section 8 du document 67.
+- 1193 tests verts ; les deux rouges préexistants inchangés.
+
+### Ce qui reste ouvert
+
+- Le changement de bobine en cours d'impression passe par le `cmd_T` d'origine,
+  fiche d'usine si le matériau diffère de celui du départ ; à envelopper
+  (`T0`..`T15`, `rename_existing`) dans une mission à part.
+- Le programme qui réécrit la base à l'allumage n'est pas identifié ; sans
+  conséquence avec l'alignement.
+
+## 10 septembre, 10:25 — correctif du chargement écrit, à déployer ; zéro Z à refaire (remplacé par 11:00)
 
 **Point de reprise en un geste :** déployer les trois fichiers de la branche
 `fix/cfs-temperature-chargement` sur la machine (cat vers

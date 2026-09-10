@@ -9,19 +9,20 @@ every PLA load has always heated to 220 C. Measured on the machine on
 filament_max_volumetric_speed of that very record, while the sliced file
 carried 23,24.
 
-The database is corrected per material and that is the fix - and the firmware
-rewrites the database at boot, which is how the record corrected on 2026-09-09
-was back at 220 C on 2026-09-10. That morning the window lowered the loader's
-220 C to 205 C, and the loader, which waits for the temperature it asked for,
-re-asked every second for five minutes with cancel queued behind it. An
-emergency stop ended it.
+The firmware rewrites that database at every boot, which is how the record
+corrected on 2026-09-09 was back at 220 C on 2026-09-10. That morning the
+window lowered the loader's 220 C to 205 C, and the loader, which waits for the
+temperature it asked for, re-asked every second for five minutes with cancel
+queued behind it. An emergency stop ended it.
 
-So two things are pinned here. START_PRINT reads the material record of the
-slot it will load and refuses, before anything heats or moves, when that record
-is above the ceiling. And the window under it refuses instead of lowering,
-because a lowered target is a hang, not a print that survives. The ordering,
-the closing on every exit and the refusal are asserted by rendering the macros
-rather than by reading them.
+The loader re-reads the file at every load: the record corrected at 00:32 on
+the 9th was honoured by 27 loads from 13:17 with no restart in between. So
+START_PRINT writes the file's temperature into the record of the slot it will
+load, before anything heats or moves, and refuses when the record cannot be
+read at all. The window under it refuses instead of lowering, because a
+lowered target is a hang, not a print that survives. The ordering, the closing
+on every exit and the refusal are asserted by rendering the macros rather than
+by reading them.
 """
 
 import os
@@ -168,27 +169,35 @@ def test_a_hot_target_is_refused_not_lowered_while_loading(guard_text, macro):
     assert not said
 
 
-def test_the_material_record_is_checked_before_anything_heats(start_text):
-    """The check has to run before the bed heats and before the head moves: a
-    refusal there costs nothing, a hang at the load costs an emergency stop."""
+def test_the_material_record_is_aligned_before_anything_heats(start_text):
+    """The alignment has to run before the bed heats and before the head
+    moves: a refusal there costs nothing, a hang at the load costs an
+    emergency stop. It is a command, not a template check: the template is
+    rendered whole before the first command runs, so only a command can write
+    the file and stop the start when the write fails."""
     lines = commands(start_text, "START_PRINT")
     check = [i for i, line in enumerate(lines) if "material_temp.get(" in line]
     assert len(check) == 1, "the record is read exactly once"
     refusals = [i for i, line in enumerate(lines)
                 if line.startswith("{% if load_temp")]
-    assert len(refusals) == 2, "unknown record and hot record are both refused"
-    for i in refusals:
-        assert "action_raise_error" in lines[i + 1], "a bad record is a refusal"
+    assert len(refusals) == 1, "an unreadable record is refused"
+    assert "action_raise_error" in lines[refusals[0] + 1]
+    aligns = [i for i, line in enumerate(lines)
+              if line.startswith("KCTRL_MATERIAL_ALIGN ")]
+    assert len(aligns) == 1, "the record is aligned exactly once"
+    first_state = min(i for i, line in enumerate(lines)
+                      if line.startswith("SET_GCODE_VARIABLE MACRO=START_PRINT"))
+    assert aligns[0] < first_state, "the start records nothing before the alignment"
     first_heat = min(i for i, line in enumerate(lines)
                      if line.split()[0] in ("M140", "M190", "M104", "M109"))
     first_move = min(i for i, line in enumerate(lines)
                      if line.split()[0] in ("CX_ROUGH_G28", "ACCURATE_G28", "G28"))
     opening = min(i for i, line in enumerate(lines) if line.startswith(OPEN))
-    for i in [check[0]] + refusals:
+    for i in [check[0], refusals[0], aligns[0]]:
         assert i < first_heat and i < first_move and i < opening
     ceiling = min(i for i, line in enumerate(lines)
                   if "set load_ceiling = nozzle +" in line)
-    assert ceiling < check[0], "the ceiling exists before it is compared to"
+    assert ceiling < opening, "the ceiling exists before the window opens"
 
 
 def test_the_record_check_reads_the_slot_actually_loaded(start_text):
@@ -198,12 +207,20 @@ def test_the_record_check_reads_the_slot_actually_loaded(start_text):
     body = section(start_text, "START_PRINT")
     assert 'printer.box["T" ~ tool[1]].material_type[slot_nums[tool[2]]]' in body
     assert 'slot_type[1:] if slot_type|length == 6 and slot_type[0] == "0"' in body
-    assert "load_temp|float > load_ceiling" in body
+    assert "KCTRL_MATERIAL_ALIGN MATERIAL={material} TEMP={nozzle|int}" in body
 
 
-def test_the_refusal_names_the_command_that_fixes_it(start_text):
+def test_the_alignment_writes_the_gcode_temperature_of_the_slot_loaded(start_text):
+    """The record aligned is the one of the slot that will be pulled from, and
+    the value written is the file's own nozzle temperature: nothing else has
+    a say in what the loader heats to."""
+    lines = commands(start_text, "START_PRINT")
+    align = [line for line in lines if line.startswith("KCTRL_MATERIAL_ALIGN ")]
+    assert align == ["KCTRL_MATERIAL_ALIGN MATERIAL={material} TEMP={nozzle|int}"]
     body = section(start_text, "START_PRINT")
-    assert "corriger-temperatures-chargement-cfs-v1.py --temp %s=%d --appliquer" in body
+    assert "set nozzle = params.EXTRUDER_TEMP" in body
+    assert "corriger-temperatures-chargement-cfs-v1.py" not in body, \
+        "a start that fixes the record itself has no manual command to name"
 
 
 @pytest.mark.parametrize("macro,stock", [("M104", "M104.1"), ("M109", "M109.1")])

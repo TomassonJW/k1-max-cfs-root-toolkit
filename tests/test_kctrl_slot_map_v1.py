@@ -553,9 +553,159 @@ def test_a_record_without_a_number_is_skipped_not_invented(tmp_path):
     assert temps["00003"] == 250.0
 
 
-def test_the_database_is_never_written(tmp_path):
+def test_reading_the_database_never_writes_it(tmp_path):
     obj, db = build_temps(tmp_path, base_matiere(FICHES))
     before = db.read_bytes()
     obj.get_status()
     obj.get_status()
     assert db.read_bytes() == before
+
+
+# --- KCTRL_MATERIAL_ALIGN --------------------------------------------------
+#
+# Le firmware reecrit la base a chaque allumage (deux retours a 220 C, les 9
+# et 10 septembre, pile sur les deux allumages), et le chargeur la relit a
+# chaque chargement (fiche corrigee a 00:32 le 9, 27 chargements a 200 C des
+# 13:17 sans redemarrage). START_PRINT ecrit donc la temperature du fichier
+# dans la fiche juste avant de charger. Ce qui est epingle ici : les deux
+# cles ecrites et rien d'autre, l'ecriture atomique, la relecture, le refus
+# d'ecrire n'importe quoi, et le rafraichissement immediat du statut.
+
+def align(obj, **params):
+    gcmd = FakeGcmd(**params)
+    obj.printer.gcode.commands["KCTRL_MATERIAL_ALIGN"](gcmd)
+    return gcmd
+
+
+def test_the_align_command_is_registered(tmp_path):
+    obj, _ = build_temps(tmp_path, base_matiere(FICHES))
+    assert "KCTRL_MATERIAL_ALIGN" in obj.printer.gcode.commands
+
+
+def test_align_writes_both_loading_keys_of_that_record_and_nothing_else(tmp_path):
+    payload = base_matiere(FICHES)
+    payload["result"]["list"][0]["kvParam"]["filament_max_volumetric_speed"] = "14"
+    obj, db = build_temps(tmp_path, payload)
+    before = json.loads(db.read_text(encoding="utf-8"))
+    gcmd = align(obj, MATERIAL="00001", TEMP="190")
+    after = json.loads(db.read_text(encoding="utf-8"))
+    pla = after["result"]["list"][0]["kvParam"]
+    # Les temperatures sont des chaines dans la base du firmware, "220".
+    assert pla["nozzle_temperature"] == "190"
+    assert pla["nozzle_temperature_initial_layer"] == "190"
+    assert pla["filament_max_volumetric_speed"] == "14"
+    for key in ("nozzle_temperature", "nozzle_temperature_initial_layer"):
+        before["result"]["list"][0]["kvParam"][key] = "190"
+    assert after == before, "seules les deux cles de temperature ont bouge"
+    assert "200/200 -> 190 C" in gcmd.said[0]
+    assert "Generic PLA" in gcmd.said[0]
+
+
+def test_align_accepts_the_six_character_slot_type(tmp_path):
+    obj, db = build_temps(tmp_path, base_matiere(FICHES))
+    align(obj, MATERIAL="000003", TEMP="235")
+    petg = json.loads(db.read_text(encoding="utf-8"))["result"]["list"][1]
+    assert petg["kvParam"]["nozzle_temperature"] == "235"
+
+
+def test_align_writes_nothing_when_the_record_already_agrees(tmp_path):
+    obj, db = build_temps(tmp_path, base_matiere(FICHES))
+    os.utime(db, (1, 1))
+    gcmd = align(obj, MATERIAL="00001", TEMP="200")
+    assert os.stat(db).st_mtime == 1, "un fichier deja juste n'est pas reecrit"
+    assert "rien ecrit" in gcmd.said[0]
+
+
+def test_align_is_seen_by_the_status_at_once(tmp_path):
+    obj, db = build_temps(tmp_path, base_matiere(FICHES))
+    assert obj.get_status()["material_temp"]["00001"] == 200.0
+    align(obj, MATERIAL="00001", TEMP="190")
+    assert obj.get_status()["material_temp"]["00001"] == 190.0
+
+
+def test_align_rounds_to_the_degree_the_loader_reads(tmp_path):
+    obj, db = build_temps(tmp_path, base_matiere(FICHES))
+    align(obj, MATERIAL="00001", TEMP="189.6")
+    pla = json.loads(db.read_text(encoding="utf-8"))["result"]["list"][0]
+    assert pla["kvParam"]["nozzle_temperature"] == "190"
+
+
+def test_align_leaves_no_temporary_file_behind(tmp_path):
+    obj, db = build_temps(tmp_path, base_matiere(FICHES))
+    align(obj, MATERIAL="00001", TEMP="190")
+    assert sorted(f.name for f in tmp_path.iterdir()) == [
+        "material_database.json", "tn_data.json"]
+
+
+def test_align_refuses_a_record_the_base_does_not_have(tmp_path):
+    obj, db = build_temps(tmp_path, base_matiere(FICHES))
+    before = db.read_bytes()
+    with pytest.raises(GcmdError) as failure:
+        align(obj, MATERIAL="00042", TEMP="190")
+    assert "00042" in str(failure.value) and "absente" in str(failure.value)
+    assert db.read_bytes() == before
+
+
+@pytest.mark.parametrize("temp", ["40", "400", "chaud", "-190"])
+def test_align_refuses_a_temperature_that_is_not_a_filament(tmp_path, temp):
+    obj, db = build_temps(tmp_path, base_matiere(FICHES))
+    before = db.read_bytes()
+    with pytest.raises(GcmdError):
+        align(obj, MATERIAL="00001", TEMP=temp)
+    assert db.read_bytes() == before
+
+
+@pytest.mark.parametrize("params", [{}, {"MATERIAL": "00001"}, {"TEMP": "190"}])
+def test_align_refuses_to_guess_a_missing_parameter(tmp_path, params):
+    obj, db = build_temps(tmp_path, base_matiere(FICHES))
+    before = db.read_bytes()
+    with pytest.raises(GcmdError):
+        align(obj, **params)
+    assert db.read_bytes() == before
+
+
+def test_align_does_not_rewrite_a_damaged_base(tmp_path):
+    obj, db = build_temps(tmp_path, "{ pas du json")
+    with pytest.raises(GcmdError) as failure:
+        align(obj, MATERIAL="00001", TEMP="190")
+    assert "illisible" in str(failure.value)
+    assert db.read_text(encoding="utf-8") == "{ pas du json"
+    assert not (tmp_path / "material_database.json.kctrl-tmp").exists()
+
+
+def test_align_refuses_when_the_base_is_absent(tmp_path):
+    obj, db = build_temps(tmp_path, None)
+    with pytest.raises(GcmdError):
+        align(obj, MATERIAL="00001", TEMP="190")
+    assert not db.exists(), "une base absente n'est pas inventee"
+
+
+def test_a_failed_write_leaves_the_original_intact(tmp_path, monkeypatch):
+    obj, db = build_temps(tmp_path, base_matiere(FICHES))
+    before = db.read_bytes()
+
+    def broken(*args, **kwargs):
+        raise OSError("disque plein")
+
+    monkeypatch.setattr(MOD.json, "dump", broken)
+    with pytest.raises(GcmdError) as failure:
+        align(obj, MATERIAL="00001", TEMP="190")
+    assert "disque plein" in str(failure.value)
+    assert db.read_bytes() == before
+    assert not (tmp_path / "material_database.json.kctrl-tmp").exists()
+
+
+def test_align_reads_back_what_it_wrote_and_refuses_a_mismatch(tmp_path, monkeypatch):
+    """Si la base relue ne porte pas la valeur ecrite, le chargeur chaufferait
+    a autre chose que le fichier : c'est un refus, pas un message."""
+    obj, db = build_temps(tmp_path, base_matiere(FICHES))
+
+    def swallowed(src, dst):
+        os.unlink(src)
+
+    monkeypatch.setattr(MOD.os, "replace", swallowed)
+    with pytest.raises(GcmdError) as failure:
+        align(obj, MATERIAL="00001", TEMP="190")
+    assert "relecture" in str(failure.value)
+    assert json.loads(db.read_text(encoding="utf-8"))["result"]["list"][0][
+        "kvParam"]["nozzle_temperature"] == "200"

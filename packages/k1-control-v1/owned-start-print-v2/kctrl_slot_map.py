@@ -37,7 +37,17 @@ n between 0 and 15, in slicer order - T0 is the job's first filament, T15 its
 sixteenth. It maps onto the logical names T1A..T4D in that same order, which is
 what Tnn_map is keyed on.
 
-Nothing here writes. The writer stays BOX_MODIFY_TN, the CFS's own command.
+The table is never written here. The writer stays BOX_MODIFY_TN, the CFS's
+own command.
+
+One thing is written, on purpose: the loading temperature of one material
+record. The stock loader heats to the nozzle_temperature of the record of the
+slot it pulls from, never to what the sliced file asked for, and the firmware
+rewrites that database at every boot. The loader re-reads the file at every
+load - proved on 2026-09-09, when a record corrected at 00:32 was honoured by
+27 loads from 13:17 without a restart in between - so KCTRL_MATERIAL_ALIGN
+writes the file's temperature into the record right before the load, verifies
+what it wrote, and START_PRINT refuses to go on when that fails. See docs/67.
 """
 
 import json
@@ -54,6 +64,13 @@ DEFAULT_PATH = "/usr/data/creality/userdata/box/tn_data.json"
 # instead of hanging late.
 DEFAULT_MATERIAL_DB = "/usr/data/creality/userdata/box/material_database.json"
 TEMP_KEY = "nozzle_temperature"
+# Both keys the stock loader takes its temperatures from: the load itself and
+# the flush that follows logged the same value after both were corrected on
+# 2026-09-09 ("get next material temp: 200", "flush_temp: 200"). The database
+# stores them as strings, "220", and is written back the same way.
+ALIGN_KEYS = ("nozzle_temperature", "nozzle_temperature_initial_layer")
+# A loading temperature outside this band is a typo, not a filament.
+ALIGN_MIN, ALIGN_MAX = 150.0, 320.0
 BOXES = ("1", "2", "3", "4")
 SLOTS = ("A", "B", "C", "D")
 NAMES = tuple("T" + box + slot for box in BOXES for slot in SLOTS)
@@ -115,6 +132,73 @@ def read_material_temps(path):
     if not temps:
         return {}, "base matiere sans temperature exploitable"
     return temps, ""
+
+
+class AlignError(Exception):
+    """The record could not be aligned; the message says why, in French."""
+
+
+def align_material_temp(path, material, temp):
+    """Write `temp` into the two loading keys of record `material`.
+
+    Returns (changed, name, before): whether the file was written, the
+    record's name, and the two values it held. Nothing is written when the
+    record already carries the temperature. The write goes through a temporary
+    file renamed over the original, so the loader never sees a half file, and
+    the result is read back and compared before anything is reported.
+    """
+    try:
+        with open(path) as handle:
+            data = json.load(handle)
+    except (OSError, ValueError) as exception:
+        raise AlignError("base matiere illisible: %s" % exception)
+    records = data.get("result", {}).get("list") if isinstance(data, dict) else None
+    if not isinstance(records, list):
+        raise AlignError("base matiere sans liste de fiches")
+    target = str(int(round(float(temp))))
+    found = None
+    for record in records:
+        if not isinstance(record, dict):
+            continue
+        base = record.get("base")
+        if isinstance(base, dict) and str(base.get("id")) == material:
+            found = record
+            break
+    if found is None:
+        raise AlignError("fiche matiere %s absente de la base" % material)
+    params = found.get("kvParam")
+    if not isinstance(params, dict):
+        params = {}
+        found["kvParam"] = params
+    name = str((found.get("base") or {}).get("name", "?"))
+    before = [params.get(key) for key in ALIGN_KEYS]
+    if all(value == target for value in before):
+        return False, name, before
+    for key in ALIGN_KEYS:
+        params[key] = target
+    provisional = path + ".kctrl-tmp"
+    try:
+        with open(provisional, "w") as handle:
+            json.dump(data, handle, ensure_ascii=False, separators=(",", ":"))
+        try:
+            os.chmod(provisional, os.stat(path).st_mode & 0o777)
+        except OSError:
+            pass
+        os.replace(provisional, path)
+    except (OSError, TypeError, ValueError) as exception:
+        try:
+            os.unlink(provisional)
+        except OSError:
+            pass
+        raise AlignError("ecriture de la base impossible: %s" % exception)
+    temps, error = read_material_temps(path)
+    if material not in temps:
+        raise AlignError("relecture apres ecriture: fiche %s introuvable (%s)"
+                         % (material, error or "sans temperature"))
+    if str(int(temps[material])) != target:
+        raise AlignError("relecture apres ecriture: fiche %s a %s au lieu de %s"
+                         % (material, int(temps[material]), target))
+    return True, name, before
 
 
 def logical_of_index(index):
@@ -216,6 +300,9 @@ class KctrlSlotMap:
             "KCTRL_MAP", self.cmd_KCTRL_MAP, desc=self.cmd_KCTRL_MAP_help)
         gcode.register_command(
             "KCTRL_CHECK", self.cmd_KCTRL_CHECK, desc=self.cmd_KCTRL_CHECK_help)
+        gcode.register_command(
+            "KCTRL_MATERIAL_ALIGN", self.cmd_KCTRL_MATERIAL_ALIGN,
+            desc=self.cmd_KCTRL_MATERIAL_ALIGN_help)
 
     def stat(self, path=None):
         try:
@@ -450,6 +537,55 @@ class KctrlSlotMap:
             lines.append("  tout est en place, le travail peut aller au bout")
         lines.append("  fichier lu: %s" % target)
         gcmd.respond_info("\n".join(lines))
+
+    cmd_KCTRL_MATERIAL_ALIGN_help = (
+        "Write the G-code temperature into a material record so the CFS "
+        "loads and flushes at it: MATERIAL=<record or slot type> TEMP=<C>")
+
+    def cmd_KCTRL_MATERIAL_ALIGN(self, gcmd):
+        """Align one material record on the temperature the file asked for.
+
+        Called by START_PRINT right before the CFS load, with the record of the
+        slot it is about to pull from. The firmware rewrites the database at
+        every boot, so this runs at every start rather than once; the loader
+        re-reads the file at every load, so it takes effect at once, without a
+        restart. A failure here is a refusal to start: a loader heating to a
+        value nobody chose is exactly what this removes.
+        """
+        raw_material = gcmd.get("MATERIAL", None)
+        raw_temp = gcmd.get("TEMP", None)
+        if not raw_material or raw_temp is None:
+            raise gcmd.error("K1 Control: KCTRL_MATERIAL_ALIGN MATERIAL=<fiche> "
+                             "TEMP=<C>")
+        material = material_key(raw_material)
+        try:
+            temp = float(raw_temp)
+        except (TypeError, ValueError):
+            raise gcmd.error("K1 Control: TEMP=%s n'est pas une temperature"
+                             % raw_temp)
+        if temp < ALIGN_MIN or temp > ALIGN_MAX:
+            raise gcmd.error("K1 Control: TEMP=%d hors de la plage %d..%d C"
+                             % (temp, ALIGN_MIN, ALIGN_MAX))
+        try:
+            changed, name, before = align_material_temp(
+                self.material_db, material, temp)
+        except AlignError as exception:
+            raise gcmd.error("K1 Control: fiche matiere %s non alignee, %s; "
+                             "le chargeur CFS chaufferait a une valeur que "
+                             "personne n'a choisie" % (material, exception))
+        # Whatever the stat cache holds is stale now, even if the file kept
+        # its size within the same second.
+        self.temps_stamp = None
+        if changed:
+            gcmd.respond_info(
+                "K1 Control: fiche matiere %s (%s) alignee sur le fichier: "
+                "%s -> %d C pour le chargement et la purge CFS"
+                % (material, name, "/".join(str(v) for v in before), temp))
+        else:
+            gcmd.respond_info(
+                "K1 Control: fiche matiere %s (%s) deja a %d C, rien ecrit"
+                % (material, name, temp))
+
 
 def load_config(config):
     return KctrlSlotMap(config)
