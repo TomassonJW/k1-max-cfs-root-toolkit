@@ -2,6 +2,30 @@
 
 Last updated: 2026-09-10
 
+10 septembre, 10:25. **Plateau remis a niveau et mesh 11x11 refait**, par
+Thomas depuis l'ecran/Mainsail, moi en lecture : vis a 0,08 mm d'ecart apres
+trois passes de `KCTRL_BED_SCREWS` (le plateau garde un voile de 0,14 mm hors
+plan, que le mesh absorbe) ; `k1_p001_t055_r001_n11x11` reacquis a 09:52,
+quatre quarts recolles sous 0,035 mm, ecrit dans `printer.cfg`, forme en dome
+(centre haut, bords a -0,2 mm). **Le zero Z du profil vaut encore 0,14 et n'a
+pas ete remesure** : carre 280x280 puis `KCTRL_Z_SAVE` avant toute impression
+qui compte.
+
+10 septembre, 10:06. **Impression bloquee cinq minutes dans le chargement CFS,
+sortie par arret d'urgence.** Cause : la machine a redemarre a 08:44 et le
+micrologiciel a reecrit `material_database.json` (Generic PLA de retour a
+220) ; le plafond de chargement de `START_PRINT` a ramene le 220 a 205, et le
+chargeur, qui attend la temperature qu'il demande, a redemande 220 chaque
+seconde sans fin, annulation coincee derriere. Le « abaisser au lieu de
+refuser » du 9 septembre etait une erreur de modele. Corrige sur la branche
+`fix/cfs-temperature-chargement`, **pas encore deploye** : `START_PRINT` lit la
+fiche matiere de l'emplacement avant de chauffer et refuse net si elle depasse
+`EXTRUDER_TEMP + 15` (message avec la commande de correction) ; la fenetre
+refuse au lieu d'abaisser ; `kctrl_slot_map` publie `material_temp`. Base
+recorrigee a 10:19 (`00001 -> 200`). Section 7 du document 67. Deux tests
+etaient deja rouges avant ce travail (`test_cfs_direct_owner_offline_v1`,
+`test_job_lifecycle_offline_v1`), non touches.
+
 10 septembre, 02:23. Impression de 01:45 annulee par Thomas (premiere couche
 ratee, plateau plie). Campagne de resonance refaite a froid a sa demande :
 X `ei` 42,8 Hz, Y `mzv` 47,0 Hz, courroies a 44,3 Hz toutes les deux — a moins

@@ -1,5 +1,36 @@
 # HANDOFF — index de reprise
 
+## 10 septembre, 10:25 — correctif du chargement écrit, à déployer ; zéro Z à refaire
+
+**Point de reprise en un geste :** déployer les trois fichiers de la branche
+`fix/cfs-temperature-chargement` sur la machine (cat vers
+`/usr/data/printer_data/config/` pour les deux `.cfg`, vers
+`/usr/share/klipper/klippy/extras/` pour `kctrl_slot_map.py`), puis
+`/etc/init.d/S55klipper_service restart`. Ensuite carré 280x280, réglage en
+direct, `KCTRL_Z_SAVE PROFILE=k1_p001_t055_r001_n11x11 Z=…`.
+
+### Ce que la matinée a établi
+
+- Vis du plateau réglées par Thomas en trois passes (`KCTRL_BED_SCREWS`),
+  écart final 0,08 mm ; voile résiduel 0,14 mm hors plan, hors de portée des
+  vis.
+- Mesh 11x11 refait à 09:52 (`KCTRL_MESH_CALIBRATE`, deuxième essai ; le
+  premier a été refusé pour un contact aberrant de 0,07 mm sur la jonction
+  sud-ouest / nord-ouest). Écrit dans `printer.cfg`, chargé.
+- À 10:06, l'impression du cube s'est figée dans le chargement CFS : la base
+  matière avait été **réécrite au redémarrage de 08:44** (Generic PLA à 220),
+  la fenêtre a abaissé à 205, le chargeur a attendu 220 pour toujours. Arrêt
+  d'urgence à 10:14, redémarrage Klipper, base recorrigée à 10:19.
+- Le correctif (lecture de la fiche avant de chauffer, refus au lieu
+  d'abaissement) est écrit et testé hors machine : 77 tests verts sur les deux
+  fichiers concernés, 1174 sur la suite. Section 7 du document 67.
+
+### Ce qui n'est pas prouvé
+
+- Le correctif n'a pas encore tourné sur la machine.
+- La base sera réécrite au prochain redémarrage ; le contrôle de `START_PRINT`
+  le dira, mais rien ne la recorrige tout seul.
+
 ## 10 septembre, 01:20 — la machine est propre, la table des bobines est vide
 
 **Point de reprise en un geste :** avant toute impression,
