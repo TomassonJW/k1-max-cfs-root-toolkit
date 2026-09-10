@@ -3,7 +3,10 @@
 Date : 2026-09-02
 
 Statut : **acceptée ; installée ; boule obtenue à `200 mm`, débordement à
-`180 mm`, plafond fixé à `120 mm`**
+`180 mm`, plafond fixé à `120 mm` ; remplacée en partie par ADR-060 le
+10 septembre 2026** — l'attente du filament à la tête reste, le complément de
+purge et sa mesure sortent du démarrage (le changement d'outil purge déjà, à
+chaud, et le complément faisait une seconde boule dans le bac).
 
 ## Contexte
 

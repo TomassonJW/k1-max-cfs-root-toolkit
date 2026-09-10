@@ -1,6 +1,58 @@
 # HANDOFF — index de reprise
 
-## 10 septembre, 11:25 — le cube a chargé à 190 : l'alignement est observé sur un vrai chargement ; Z en cours de réglage
+## 10 septembre, 12:15 — cube fini ; une purge, une ligne écrites et testées ; le maillage est incliné par le firmware, reconstruction prête ; rien de déployé
+
+**Point de reprise en un geste :** sur le « go » de Thomas, machine à l'arrêt
+(`print_stats.state` autre que `printing`, vérifié avant chaque action) :
+(1) déployer la branche `fix/demarrage-une-purge-une-ligne` — copie avec
+sauvegarde de `k1-control-owned-start-print-v2.cfg`,
+`k1-control-mesh-acquisition-v2.cfg` et `k1-control-mesh-reference-v2.cfg`,
+puis `/etc/init.d/S55klipper_service restart`, md5 et journal vérifiés ;
+(2) appliquer le profil reconstruit — copier les deux `.json` de
+`experiments/2026-09-10-mesh-brut-sans-rampe/` dans
+`/usr/data/printer_data/config/`, puis `KCTRL_MESH_APPLY FILE=…etape1.json`
+et `…etape2.json` (sauvegarde automatique, `KCTRL_MESH_UNDO` pour revenir) ;
+(3) Thomas imprime le carré 280×280, règle Z en direct, puis
+`KCTRL_Z_SAVE PROFILE=k1_p001_t055_r001_n11x11 Z=<valeur>` après
+l'impression. Ne jamais presser `SAVE_CONFIG` : la bannière levée à 11:43:08
+par `Z_OFFSET_APPLY_PROBE` ne porte rien d'utile (sonde à 0, inchangée).
+
+### Observé sur le cube de 11:15, fini à 11:43:07
+
+- Deux purges dans le bac : la purge stock du `T{position - 1}` (complète, à
+  200, finie à 11:18:56), puis notre complément de 254 mm à 190, chaîne écrite
+  le 2 septembre pour un chargeur qui purgeait alors sur une buse à 109 °C.
+  Deux lignes : `CX_PRINT_DRAW_ONE_LINE` trace ses trois cordons lents à
+  chaque démarrage normal (`can_break_flag` vaut 3 après tout `M109`), puis
+  la nôtre.
+- Première couche ratée : buse trop loin à l'avant, trop près à l'arrière.
+  Cause : le profil lui-même, pas son application (document 73).
+- Z vivant à +0,180 en fin de cube, remis à zéro à 11:43:08 par l'interface ;
+  rien d'écrit dans le profil.
+- `KCTRL_BED_SCREWS` refusé six fois de 11:43:51 à 11:49:19 : l'état vaut
+  `complete` après une impression, pas `standby` (`SDCARD_RESET_FILE` le
+  remettrait). Filet corrigé sur la branche : refus seulement pendant
+  `printing` ou `paused`.
+
+### Décidé et écrit (branche `fix/demarrage-une-purge-une-ligne`, PR #52)
+
+- ADR-060 : le démarrage ne pousse plus de filament lui-même ; une seule
+  ligne, la nôtre ; `_KCTRL_PURGE_BALL TEMP=200 LEN=100` reste en manuel.
+- Les quatre macros de mesure refusent `printing` et `paused`, rien d'autre
+  (`tests/test_mesh_acquisition_state_gate_v1.py`).
+- Document 73 et `experiments/2026-09-10-mesh-brut-sans-rampe/` : la rampe
+  mesurée sur les cinq mesures du matin, le profil reconstruit, les vis
+  (0,177 mm d'écart réel, arrière plus haut, contre 0,077 vu par le rapport).
+- 1196 tests verts, deux rouges préexistants inchangés.
+
+### Mission suivante
+
+`KCTRL_MESH_ACQUIRE` et `KCTRL_BED_SCREWS` capturent les contacts bruts
+pendant la mesure ; `KCTRL_MESH_MERGE` et `KCTRL_SCREWS_REPORT` ne lisent plus
+jamais les profils enregistrés. À ouvrir après validation du carré sur le
+profil reconstruit.
+
+## 10 septembre, 11:25 — le cube a chargé à 190 : l'alignement est observé sur un vrai chargement ; Z en cours de réglage (remplacé par 12:15)
 
 **Point de reprise en un geste :** quand le cube est fini et que Thomas donne
 le Z affiché dans Mainsail, `KCTRL_Z_SAVE PROFILE=k1_p001_t055_r001_n11x11

@@ -2,6 +2,35 @@
 
 Last updated: 2026-09-10
 
+10 septembre, 12:15. **Cube fini a 11:43 ; le demarrage ne poussera plus
+qu'une purge et une ligne (ecrit, teste, pas deploye) ; le maillage est faux
+parce que le firmware incline chaque mesure.** Sur le cube de 11:15 Thomas a
+vu deux purges (200 puis 190) et deux lignes (lente puis dense) : la purge
+stock du `T{position - 1}` etait deja complete, et notre chaine de complement
+(254 mm a 190) datait d'avant le `T` ; la ligne stock `CX_PRINT_DRAW_ONE_LINE`
+se trace a chaque demarrage normal (`can_break_flag` vaut 3 apres tout `M109`).
+Branche `fix/demarrage-une-purge-une-ligne` : le demarrage ne pousse plus rien
+lui-meme, une seule ligne (la notre), `_KCTRL_PURGE_BALL` garde en manuel
+(ADR-060). Les macros de mesure ont refuse Thomas apres le cube (« requires
+standby », six fois de 11:43 a 11:49) : l'etat reste `complete` apres une
+impression ; elles ne refusent plus que `printing` et `paused`. Maillage : le
+micrologiciel ajoute a chaque mesure une rampe de 0,10 mm du premier rang au
+dernier avant d'enregistrer le profil (document 73) ; les quatre quarts, tous
+mesures de l'avant vers l'arriere, empilent deux rampes : profil en service
+avant −0,18 / arriere −0,17, contacts bruts avant −0,28 / arriere −0,07, d'ou
+la buse trop loin a l'avant et trop pres a l'arriere. Reconstruction depuis
+les 169 contacts bruts du journal prete dans
+`experiments/2026-09-10-mesh-brut-sans-rampe/` (deux fichiers pour
+`KCTRL_MESH_APPLY`, pas de 0,079 chacun). Le Z regle sur le cube (+0,180) a
+ete remis a zero par l'interface a 11:43:08 (`Z_OFFSET_APPLY_PROBE`, sonde
+inchangee a 0) ; `save_config_pending` est leve, **ne jamais presser
+SAVE_CONFIG**. Vis : le rapport du matin lisait la grille aplatie (0,077 mm
+d'ecart vu, 0,177 reel, arriere plus haut que l'avant). 1196 tests verts, les
+deux rouges preexistants inchanges. **Rien n'est deploye ni applique** :
+attend le « go » de Thomas pour (1) copier les trois cfg et redemarrer
+Klipper, (2) appliquer le profil reconstruit, puis carre 280x280, Z en direct,
+`KCTRL_Z_SAVE` apres l'impression.
+
 10 septembre, 11:25. **Premiere observation reelle : le CFS a charge a la
 temperature du fichier.** Cube `_Cube_PLA_24m21s.gcode` lance par Thomas a
 11:15:02 (fichier a 190 / 55). `START_PRINT` a ecrit 190 dans la fiche `00001`

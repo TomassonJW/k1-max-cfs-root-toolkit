@@ -93,7 +93,7 @@ Le flux voulu :
    intervention de ma part.
 
 État de chaque point, tenu à jour à chaque session (dernière mise à jour :
-10 septembre 2026, 11:25) :
+10 septembre 2026, 12:15) :
 
 | Point | État | Preuve, ou ce qui manque |
 | --- | --- | --- |
@@ -102,7 +102,7 @@ Le flux voulu :
 | 3. Températures du G-code au chargement | **en place, observé sur un vrai chargement le 10 septembre à 11:17** | `KCTRL_MATERIAL_ALIGN` en première commande de `START_PRINT` écrit la température du fichier dans la fiche matière que le chargeur relit à chaque chargement. Cube du 10 septembre : fichier à 190, fiche écrite `200 → 190` à 11:15:03, chargeur à `get next material temp: 190` à 11:17:32, filament à la tête, aucun refus. Nuance : la purge stock qui suit chauffe à `max(fiche, 200)` (journaux du 5 au 10 septembre), donc 200 pour ce fichier ; sous le filet, sans effet pour du PLA ; un fichier sous 185 °C ferait refuser la purge, à traiter si un tel fichier arrive. Document 67, section 8. |
 | 4. Multi-filament en cours d'impression | **partiel** | Les changements passent par le `cmd_T` d'origine (coupe, retrait, chargement, purge stock). Température : celle de la fiche du matériau visé, donc juste si même matière qu'au départ, valeur du cloud Creality sinon (à envelopper `T0`..`T15`). Bloquants : erreur cutter du 10 septembre 00:53 (« cut sensor not detected, cutting not rebound »), accumulateur Z jamais rendu (audit 70, P1). |
 | 5. Relève automatique en fin de bobine | **non prouvé** | Fonction stock (`auto_refill`, groupes même matière **et** même couleur, visibles dans `same_material`). `START_PRINT` pose `last_cmd` pour que le CFS sache quelle bobine tourne. Jamais observé sur cette machine ; à provoquer exprès, sur une impression sans valeur. |
-| 6. Zéro intervention | **pas encore** | Somme des points 2, 4 et 5 ; zéro Z du profil `11 × 11` en cours de réglage en direct sur le cube du 10 septembre (0,14 → 0,03 à 11:25), à sauvegarder par `KCTRL_Z_SAVE` après l'impression. |
+| 6. Zéro intervention | **pas encore** | Somme des points 2, 4 et 5. Calibrage : le maillage `11 × 11` du 10 septembre est faux, le firmware incline chaque mesure de 0,10 mm du premier rang au dernier (document 73) ; profil reconstruit depuis les contacts bruts, prêt à appliquer sur accord ; zéro Z à refaire ensuite sur le carré (le +0,180 réglé sur le cube a été remis à zéro par l'interface à 11:43). Démarrage : une purge, une ligne (ADR-060), écrit et testé, à déployer sur accord. |
 
 ## Vue rapide
 
