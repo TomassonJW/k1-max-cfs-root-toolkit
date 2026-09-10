@@ -686,6 +686,14 @@ class KctrlMesh:
             os.makedirs(folder)
         stamp = time.strftime("%Y%m%d-%H%M%S", time.localtime())
         path = os.path.join(folder, "%s-%s.json" % (name, stamp))
+        # Two applies in the same second (a matrix moved in two steps) must
+        # not share a name: the second would overwrite the first and the
+        # original matrix would be gone. 10 September 2026, 12:32:54.
+        serial = 1
+        while os.path.exists(path):
+            serial += 1
+            path = os.path.join(
+                folder, "%s-%s-%d.json" % (name, stamp, serial))
         payload = {
             "profile": name,
             "saved_at": stamp,
