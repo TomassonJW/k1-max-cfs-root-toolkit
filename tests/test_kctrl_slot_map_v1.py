@@ -709,3 +709,105 @@ def test_align_reads_back_what_it_wrote_and_refuses_a_mismatch(tmp_path, monkeyp
     assert "relecture" in str(failure.value)
     assert json.loads(db.read_text(encoding="utf-8"))["result"]["list"][0][
         "kvParam"]["nozzle_temperature"] == "200"
+
+
+# ------------------------------------------- ce que le fichier dit de ses filaments
+#
+# Le trancheur ecrit son profil complet en FIN de fichier, entre
+# CONFIG_BLOCK_START et CONFIG_BLOCK_END : une ligne par cle, les cles par
+# filament en listes (virgules pour les temperatures, points-virgules pour les
+# types et couleurs). Le cube du 10 septembre 2026 : deux filaments declares,
+# 195/220 en cours, 190/220 en premiere couche, un seul utilise.
+
+FIXTURE_TAIL = os.path.join(ROOT, "tests", "fixtures", "k1-control-v1",
+                            "orca-2.4.2-cube-2026-09-10-tail.gcode")
+
+
+def test_le_bloc_de_configuration_du_cube_reel_se_lit(tmp_path):
+    job, note = MOD.read_job_filaments(FIXTURE_TAIL)
+    assert note == "2 filament(s) declare(s)"
+    assert job["count"] == 2
+    assert job["temps"] == [195.0, 220.0]
+    assert job["initial"] == [190.0, 220.0]
+    assert job["types"] == ["PLA", "PLA"]
+    assert job["colours"] == ["#000000", "#8080FF"]
+    assert job["names"] == ["PLA Geeetech", "eSUN PLA+ @System - Copie"]
+    assert job["initial_layer_height"] == 0.2
+    assert job["layer_height"] == 0.2
+
+
+def test_le_bloc_est_lu_en_queue_d_un_gros_fichier(tmp_path):
+    # 50 Mo de G-code avant le bloc : seule la queue est lue.
+    target = tmp_path / "gros.gcode"
+    with open(str(target), "wb") as handle:
+        handle.write(b"G1 X1 Y1 E0.1\n" * (3 * 1024 * 1024 // 14))
+        handle.write(open(FIXTURE_TAIL, "rb").read())
+    job, note = MOD.read_job_filaments(str(target))
+    assert job["count"] == 2 and job["temps"] == [195.0, 220.0]
+
+
+def test_un_fichier_sans_bloc_ne_fabrique_rien(tmp_path):
+    target = tmp_path / "nu.gcode"
+    target.write_text("G28\nT0\nG1 X1\n", encoding="utf-8")
+    job, note = MOD.read_job_filaments(str(target))
+    assert job["count"] == 0 and job["temps"] == []
+    assert "pas de bloc" in note
+
+
+def test_une_temperature_illisible_ne_devient_pas_zero(tmp_path):
+    target = tmp_path / "abime.gcode"
+    target.write_text("; CONFIG_BLOCK_START\n; nozzle_temperature = 195,chaud\n"
+                      "; CONFIG_BLOCK_END\n", encoding="utf-8")
+    job, note = MOD.read_job_filaments(str(target))
+    assert job["count"] == 0
+    assert "illisible" in note
+
+
+def test_une_liste_de_premiere_couche_courte_reprend_la_courante(tmp_path):
+    target = tmp_path / "court.gcode"
+    target.write_text("; CONFIG_BLOCK_START\n; nozzle_temperature = 195,220,210\n"
+                      "; nozzle_temperature_initial_layer = 190\n"
+                      "; filament_type = PLA\n; CONFIG_BLOCK_END\n", encoding="utf-8")
+    job, note = MOD.read_job_filaments(str(target))
+    assert job["count"] == 3
+    assert job["initial"] == [190.0, 220.0, 210.0]
+    assert job["types"] == ["PLA", "", ""]
+
+
+def test_le_statut_publie_les_filaments_du_fichier_en_cours(tmp_path):
+    obj, _ = build(tmp_path, {"tnn_map": dict(LIVE_MAP)})
+
+    class Sdcard:
+        def get_status(self, eventtime=None):
+            return {"file_path": FIXTURE_TAIL}
+    obj.printer.objects["virtual_sdcard"] = Sdcard()
+    status = obj.get_status()
+    assert status["job_count"] == 2
+    assert status["job_temps"] == [195.0, 220.0]
+    assert status["job_initial_temps"] == [190.0, 220.0]
+    assert status["job_types"] == ["PLA", "PLA"]
+    assert status["job_colours"] == ["#000000", "#8080FF"]
+    assert status["job_file"] == FIXTURE_TAIL
+    # Sans fichier, des listes vides et une note, jamais une valeur inventee.
+    obj.printer.objects.pop("virtual_sdcard")
+    status = obj.get_status()
+    assert status["job_count"] == 0 and status["job_temps"] == []
+    assert status["job_note"] == "aucun fichier en cours"
+
+
+def test_align_est_partage_et_invalide_le_cache(tmp_path):
+    # L'enveloppe des changements d'outil passe par la meme methode que
+    # KCTRL_MATERIAL_ALIGN : deux cles ecrites, cache des temperatures a
+    # relire ensuite.
+    db = tmp_path / "material_database.json"
+    db.write_text(json.dumps({"result": {"list": [
+        {"base": {"id": "00001", "name": "PLA"},
+         "kvParam": {"nozzle_temperature": "220",
+                     "nozzle_temperature_initial_layer": "220"}}]}}),
+        encoding="utf-8")
+    obj = MOD.load_config(FakeConfig(str(tmp_path / "tn_data.json"), str(db)))
+    assert obj.get_status()["material_temp"] == {"00001": 220.0}
+    changed, name, before = obj.align("000001", 195)
+    assert (changed, name, before) == (True, "PLA", ["220", "220"])
+    assert obj.get_status()["material_temp"] == {"00001": 195.0}
+    assert obj.align("00001", 195) == (False, "PLA", ["195", "195"])

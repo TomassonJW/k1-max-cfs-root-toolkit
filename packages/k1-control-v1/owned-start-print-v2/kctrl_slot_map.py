@@ -83,6 +83,31 @@ TOOL_LINE = re.compile(rb"^T(\d+)\s*(?:;.*)?$")
 SCAN_LIMIT = 1 << 20
 SCAN_CHUNK = 1 << 16
 
+# The slicer writes the whole profile at the END of the file, between
+# "; CONFIG_BLOCK_START" and "; CONFIG_BLOCK_END": one line per key, the
+# per-filament keys as comma or semicolon lists in slicer order. Measured on
+# the files of 2026-09-10: the block starts at line 2079 of a 2750 line cube
+# and at line 1799345 of a 50 MB job, so it is read from the tail, never from
+# the head. Half a megabyte covers a block of a few hundred lines many times.
+CONFIG_START = b"; CONFIG_BLOCK_START"
+CONFIG_LINE = re.compile(r"^; ([a-z_0-9]+) = (.*)$")
+TAIL_LIMIT = 1 << 19
+# key in the file -> (name published, separator between filaments, or None
+# for a single value)
+JOB_KEYS = {
+    "nozzle_temperature": ("temps", ","),
+    "nozzle_temperature_initial_layer": ("initial", ","),
+    "filament_type": ("types", ";"),
+    "filament_colour": ("colours", ";"),
+    "filament_settings_id": ("names", ";"),
+    "initial_layer_print_height": ("initial_layer_height", None),
+    "layer_height": ("layer_height", None),
+}
+EMPTY_JOB = {
+    "count": 0, "temps": [], "initial": [], "types": [], "colours": [],
+    "names": [], "initial_layer_height": 0.0, "layer_height": 0.0,
+}
+
 
 def is_slot_name(value):
     return isinstance(value, str) and value in NAMES
@@ -274,6 +299,86 @@ def scan_all_tools(path):
     return seen, "%d filament(s) utilise(s)" % len(seen)
 
 
+def _numbers(text, separator):
+    values = []
+    for item in text.split(separator):
+        item = item.strip()
+        if not item:
+            continue
+        try:
+            values.append(float(item))
+        except ValueError:
+            values.append(None)
+    return values
+
+
+def read_job_filaments(path, limit=TAIL_LIMIT):
+    """(job, note): what the sliced file says about each of its filaments.
+
+    Returns the per-filament temperatures (running and first layer), types,
+    colours and profile names, in slicer order - index 0 is T0. `count` is the
+    number of filaments the file declares, which is not the number it uses:
+    the cube of 2026-09-10 declares two and prints with one. A file without a
+    config block, or one whose temperatures cannot be read, gives an empty
+    job and a note saying why; nothing is invented.
+    """
+    job = dict(EMPTY_JOB, temps=[], initial=[], types=[], colours=[], names=[])
+    try:
+        with open(path, "rb") as handle:
+            handle.seek(0, os.SEEK_END)
+            size = handle.tell()
+            handle.seek(max(0, size - limit))
+            tail = handle.read()
+    except OSError as exception:
+        return job, "fichier illisible: %s" % exception
+    start = tail.rfind(CONFIG_START)
+    if start < 0:
+        return job, "pas de bloc de configuration en fin de fichier"
+    found = {}
+    for raw in tail[start:].split(b"\n"):
+        line = raw.decode("utf-8", "replace").rstrip("\r")
+        match = CONFIG_LINE.match(line)
+        if match is None:
+            continue
+        key, value = match.group(1), match.group(2).strip()
+        if key in JOB_KEYS:
+            found[key] = value
+    for key, (name, separator) in JOB_KEYS.items():
+        if key not in found:
+            continue
+        value = found[key]
+        if separator is None:
+            try:
+                job[name] = float(value)
+            except ValueError:
+                pass
+        elif name in ("temps", "initial"):
+            job[name] = _numbers(value, separator)
+        else:
+            job[name] = [item.strip().strip('"') for item in value.split(separator)]
+    if not job["temps"]:
+        return job, "bloc de configuration sans nozzle_temperature"
+    if any(value is None for value in job["temps"]):
+        return job, "nozzle_temperature illisible: %s" % found.get("nozzle_temperature")
+    if any(value is None for value in job["initial"]):
+        return job, ("nozzle_temperature_initial_layer illisible: %s"
+                     % found.get("nozzle_temperature_initial_layer"))
+    count = len(job["temps"])
+    # The first layer list is the running list when the file does not give
+    # one, or gives a shorter one: a missing value never becomes zero.
+    initial = list(job["initial"])
+    while len(initial) < count:
+        initial.append(job["temps"][len(initial)])
+    job["initial"] = initial[:count]
+    for name in ("types", "colours", "names"):
+        values = list(job[name])
+        while len(values) < count:
+            values.append("")
+        job[name] = values[:count]
+    job["count"] = count
+    return job, "%d filament(s) declare(s)" % count
+
+
 class KctrlSlotMap:
     def __init__(self, config):
         self.printer = config.get_printer()
@@ -290,6 +395,11 @@ class KctrlSlotMap:
         self.initial_note = "aucun fichier en cours"
         self.initial_file = ""
         self.initial_stamp = None
+        # What the sliced file says about each filament, same caching rule.
+        self.job = dict(EMPTY_JOB)
+        self.job_note = "aucun fichier en cours"
+        self.job_file = ""
+        self.job_stamp = None
         # Loading temperature per material record, same stat-then-parse rule.
         self.material_db = config.get("material_db", DEFAULT_MATERIAL_DB)
         self.temps = {}
@@ -360,6 +470,24 @@ class KctrlSlotMap:
         self.initial_stamp = stamp
         self.initial_index, self.initial_note = scan_initial_tool(target)
 
+    def refresh_job(self, path=None):
+        """Re-read the filaments of the job, only when the file changed."""
+        target = path if path is not None else self.printing_file()
+        if not target:
+            self.job = dict(EMPTY_JOB)
+            self.job_file = ""
+            self.job_stamp = None
+            self.job_note = "aucun fichier en cours"
+            return
+        stamp = self.stat(target)
+        unchanged = (stamp is not None and target == self.job_file
+                     and stamp == self.job_stamp)
+        if unchanged:
+            return
+        self.job_file = target
+        self.job_stamp = stamp
+        self.job, self.job_note = read_job_filaments(target)
+
     def refresh(self):
         stamp = self.stat()
         if stamp is None:
@@ -404,9 +532,22 @@ class KctrlSlotMap:
     def get_status(self, eventtime=None):
         self.refresh()
         self.refresh_initial()
+        self.refresh_job()
         self.refresh_temps()
         logical = logical_of_index(self.initial_index)
         return {
+            # The job's filaments as the sliced file declares them, in slicer
+            # order: index 0 is T0. Empty lists when no file is printing.
+            "job_count": self.job["count"],
+            "job_temps": list(self.job["temps"]),
+            "job_initial_temps": list(self.job["initial"]),
+            "job_types": list(self.job["types"]),
+            "job_colours": list(self.job["colours"]),
+            "job_names": list(self.job["names"]),
+            "job_initial_layer_height": self.job["initial_layer_height"],
+            "job_layer_height": self.job["layer_height"],
+            "job_note": self.job_note,
+            "job_file": self.job_file,
             # Loading temperature by material record id, as the stock loader
             # will read it. Keyed on the five character id of the database;
             # material_key() turns a slot's six character type into it.
@@ -538,6 +679,19 @@ class KctrlSlotMap:
         lines.append("  fichier lu: %s" % target)
         gcmd.respond_info("\n".join(lines))
 
+    def align(self, material, temp):
+        """Align one record on `temp`; (changed, name, before) or AlignError.
+
+        Shared by KCTRL_MATERIAL_ALIGN and by the tool-change wrapper
+        (kctrl_tool_change.py), so both write the same two keys the same way
+        and both leave the temperature cache stale afterwards.
+        """
+        result = align_material_temp(self.material_db, material_key(material), temp)
+        # Whatever the stat cache holds is stale now, even if the file kept
+        # its size within the same second.
+        self.temps_stamp = None
+        return result
+
     cmd_KCTRL_MATERIAL_ALIGN_help = (
         "Write the G-code temperature into a material record so the CFS "
         "loads and flushes at it: MATERIAL=<record or slot type> TEMP=<C>")
@@ -567,15 +721,11 @@ class KctrlSlotMap:
             raise gcmd.error("K1 Control: TEMP=%d hors de la plage %d..%d C"
                              % (temp, ALIGN_MIN, ALIGN_MAX))
         try:
-            changed, name, before = align_material_temp(
-                self.material_db, material, temp)
+            changed, name, before = self.align(material, temp)
         except AlignError as exception:
             raise gcmd.error("K1 Control: fiche matiere %s non alignee, %s; "
                              "le chargeur CFS chaufferait a une valeur que "
                              "personne n'a choisie" % (material, exception))
-        # Whatever the stat cache holds is stale now, even if the file kept
-        # its size within the same second.
-        self.temps_stamp = None
         if changed:
             gcmd.respond_info(
                 "K1 Control: fiche matiere %s (%s) alignee sur le fichier: "
