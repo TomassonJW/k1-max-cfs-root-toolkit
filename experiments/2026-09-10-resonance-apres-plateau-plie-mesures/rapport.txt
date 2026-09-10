@@ -1,0 +1,38 @@
+
+=== resonance-x
+    filtre    frequence     vibrations    accel max
+    -> zv         48.0 Hz        33.5 %      8979
+       mzv        29.2 Hz        15.5 %      2511
+       ei         42.8 Hz        19.6 %      3412
+       2hump_ei    39.0 Hz        10.9 %      1543
+       3hump_ei    48.0 Hz        10.8 %      1530
+    2 septembre : ei a 40.2 Hz, 24.7 % de vibrations, accel 3000
+    ecart       : +7.8 Hz, +8.8 point(s) de vibrations
+
+=== resonance-y
+    filtre    frequence     vibrations    accel max
+       zv         48.6 Hz         3.4 %      9204
+    -> mzv        47.0 Hz         0.1 %      6507
+       ei         55.8 Hz         0.0 %      5799
+       2hump_ei    69.6 Hz         0.0 %      5386
+       3hump_ei    83.6 Hz         0.0 %      5116
+    2 septembre : mzv a 39.0 Hz, 0.0 % de vibrations, accel 4500
+    ecart       : +8.0 Hz, +0.1 point(s) de vibrations
+
+=== courroie-a
+    pic principal 44.3 Hz | largeur a mi-hauteur 8.9 Hz
+    energie 30-45 Hz 24.8 % | energie sous 30 Hz 1.1 %
+    2 septembre : pic 39.8 Hz, largeur 7.9 Hz, sous 30 Hz 1.5 %
+
+=== courroie-b
+    pic principal 44.3 Hz | largeur a mi-hauteur 10.4 Hz
+    energie 30-45 Hz 22.8 % | energie sous 30 Hz 1.1 %
+    2 septembre : pic 40.1 Hz, largeur 8.0 Hz, sous 30 Hz 1.3 %
+
+=== courroies
+    ecart entre les deux pics : 0.0 Hz
+    tension comparable, rien a reprendre
+
+=== a appliquer si ces mesures sont retenues
+    SET_INPUT_SHAPER SHAPER_TYPE_X=zv SHAPER_FREQ_X=48.0 SHAPER_TYPE_Y=mzv SHAPER_FREQ_Y=47.0
+    plafond d'acceleration conseille : 6507 mm/s2 (le plus bas des deux axes)

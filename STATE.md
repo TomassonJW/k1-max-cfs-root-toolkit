@@ -2,6 +2,13 @@
 
 Last updated: 2026-09-10
 
+10 septembre, 02:23. Impression de 01:45 annulee par Thomas (premiere couche
+ratee, plateau plie). Campagne de resonance refaite a froid a sa demande :
+X `ei` 42,8 Hz, Y `mzv` 47,0 Hz, courroies a 44,3 Hz toutes les deux — a moins
+d'un demi-hertz du 8 septembre. Valeurs vivantes et fichier inchanges
+(`ei 42,6` / `mzv 46,6`), `printer.cfg` remis depuis sa sauvegarde apres
+l'ecriture parasite de `SHAPER_CALIBRATE`. Document 72.
+
 10 septembre, 01:52. Impression reelle lancee par Thomas depuis Mainsail apres
 `KCTRL_SLOT SLOT=T2D TOOL=T1B` : chargement sans coupe, purge, ligne d'amorce,
 premiere couche en cours. Le `T1` du fichier (ligne 275) a pris le chemin
