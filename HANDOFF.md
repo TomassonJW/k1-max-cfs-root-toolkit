@@ -1,6 +1,46 @@
 # HANDOFF — index de reprise
 
-## 10 septembre, 12:35 — PR #52 déployée et profil reconstruit appliqué ; prochain geste : le carré 280×280, puis le Z
+## 10 septembre, 22:05 — point 4 écrit et testé (PR #53), à déployer entre deux impressions ; puis points 5 et 2
+
+**Point de reprise en un geste :** quand la machine n'imprime pas
+(`print_stats.state` ni `printing` ni `paused`, vérifié avant chaque action)
+et sur le « go » de Thomas, déployer PR #53 : sauvegardes, copie de
+`kctrl_tool_change.py` et `kctrl_slot_map.py` dans
+`/usr/share/klipper/klippy/extras/` et de
+`k1-control-owned-start-print-v2.cfg` dans `/usr/data/printer_data/config/`
+(par `cat fichier | ssh k1max-root 'cat > cible'`), puis
+`/etc/init.d/S55klipper_service restart` (module Python, jamais
+`FIRMWARE_RESTART` seul). Contrôle : `printer/info` à `ready`, ligne
+`kctrl_tool_change: wrapped T0,…,T15` au journal, `KCTRL_TOOLS` répond.
+Procédure complète : document 74. Fusionner PR #53 dans `main` une fois
+déployée et observée sur un premier `T` réel.
+
+### Fait à 20:50–22:05, pendant que Thomas imprime (aucune action machine)
+
+- Journal relu : ADR-060 tient sur deux vrais démarrages (une purge, une
+  ligne, Z rendu à l'identique) ; Z 0,065 enregistré par Thomas à 20:15.
+- `kctrl_tool_change.py` : enveloppe des seize `T`, refus nets avant la
+  commande stock, fiche alignée sur la température du fichier (première
+  couche ou courante), pause sur tête vide après un changement, cible
+  remise à la valeur du fichier ; `KCTRL_TOOLS`.
+- `kctrl_slot_map.py` : bloc de configuration Orca lu en queue de fichier,
+  `job_*` publiés dans le statut (base du point 2).
+- 24 + 7 tests sur la queue réelle du cube ; suite 1227 verts, 2 rouges
+  préexistants. ADR-061, document 74, `GOALS.md` point 4.
+
+### À savoir
+
+- La commande stock `return False` sans erreur Klipper sur un mauvais
+  emplacement : c'est l'enveloppe qui rend l'échec visible, pas le firmware.
+- La purge stock chauffe toujours à `max(fiche, 200)` ; l'enveloppe remet la
+  cible du fichier après. Point 7 de l'audit 70 toujours ouvert, sans effet.
+- Suite prévue après déploiement : point 5 (relève auto : documenter
+  `auto_refill`, la provoquer exprès sur une impression sans valeur), point 2
+  (appariement automatique couleur + matière depuis Mainsail avec `job_*`),
+  contacts bruts capturés par `KCTRL_MESH_ACQUIRE` / `KCTRL_BED_SCREWS`, nom
+  de sauvegarde unique dans `kctrl_mesh.py`.
+
+## 10 septembre, 12:35 — PR #52 déployée et profil reconstruit appliqué ; prochain geste : le carré 280×280, puis le Z (remplacé par 22:05)
 
 **Point de reprise en un geste :** Thomas imprime le carré 280×280 (plateau à
 55 ; le démarrage charge `k1_p001_t055_r001_n11x11` lui-même), règle Z en
