@@ -1,6 +1,38 @@
 # HANDOFF — index de reprise
 
-## 10 septembre, 22:05 — point 4 écrit et testé (PR #53), à déployer entre deux impressions ; puis points 5 et 2
+## 10 septembre, 23:30 — points 4 et 2 écrits et testés (PR #53 + PR point 2), point 5 documenté ; à déployer entre deux impressions
+
+**Point de reprise en un geste :** quand la machine n'imprime pas
+(`print_stats.state` ni `printing` ni `paused`, vérifié avant chaque action)
+et sur le « go » de Thomas, déployer les deux PR ensemble (la branche du
+point 2 contient le point 4) : sauvegardes, copie de `kctrl_tool_change.py`
+et `kctrl_slot_map.py` dans `/usr/share/klipper/klippy/extras/` et de
+`k1-control-owned-start-print-v2.cfg` dans `/usr/data/printer_data/config/`
+(par `git show <branche>:<chemin> | ssh k1max-root 'cat > cible'`), puis
+`/etc/init.d/S55klipper_service restart`. Contrôle : `printer/info` à
+`ready`, ligne `kctrl_tool_change: wrapped` au journal, `KCTRL_TOOLS` et
+`KCTRL_MATCH CHECK=1` répondent. Procédures : documents 74 et 75. Fusionner
+PR #53 puis la PR du point 2 (et PR #54) une fois déployées et observées.
+
+### Fait à 22:05–23:30, pendant que Thomas imprime (aucune action machine)
+
+- Point 2 : `match` publié par `kctrl_slot_map`, `KCTRL_MATCH`, `START_PRINT`
+  qui prend la bobine appariée avant la table et refuse au rendu sans
+  bobine ; 47 tests ; doc 75, ADR-062.
+- Point 5 : chaîne de relève relue et prouvée au journal du 5 septembre ;
+  aucune paire ce soir ; procédure pour la provoquer ; doc 76.
+- Suite 1274 verts, 2 rouges préexistants.
+
+### À savoir
+
+- `KCTRL_MATCH` sans `CHECK=1` refuse pendant une impression ; seul
+  `START_PRINT` passe `STARTING=1`.
+- Aucune couleur approchée n'est acceptée : la plus proche est nommée dans
+  le refus, `KCTRL_SLOT` l'impose, `MATCH=0` part sur la table.
+- Reste : contacts bruts capturés par `KCTRL_MESH_ACQUIRE` /
+  `KCTRL_BED_SCREWS` ; PR #54 à fusionner.
+
+## 10 septembre, 22:05 — point 4 écrit et testé (PR #53), à déployer entre deux impressions ; puis points 5 et 2 (remplacé par 23:30)
 
 **Point de reprise en un geste :** quand la machine n'imprime pas
 (`print_stats.state` ni `printing` ni `paused`, vérifié avant chaque action)
