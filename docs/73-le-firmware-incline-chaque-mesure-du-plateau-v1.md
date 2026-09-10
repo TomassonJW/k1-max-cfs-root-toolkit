@@ -137,6 +137,14 @@ direct, `KCTRL_Z_SAVE` après l'impression : le zéro Z réglé sur le cube est
 perdu (remis à zéro par l'interface à 11:43:08) et un nouveau profil demande de
 toute façon un nouveau Z.
 
+**Appliqué le 10 septembre à 12:32:54**, sur « tu peux appliquer la PR » :
+deux étapes, 120 points chacune, pas de 0,079, zéro gardé en X150 Y150 ;
+profil vivant identique au fichier à 1e-6, écrit dans `printer.cfg`. Les deux
+étapes, jouées dans la même seconde, ont reçu le même nom de sauvegarde
+`k1_p001_t055_r001_n11x11-20260910-123254.json` et la seconde a écrasé la
+première : la matrice d'avant est `profil-actif-avant.json` de ce dossier
+(nom de sauvegarde à rendre unique dans `kctrl_mesh.py`).
+
 ## Suite structurelle
 
 Toute mesure future refaite par `BED_MESH_CALIBRATE` portera la même rampe.

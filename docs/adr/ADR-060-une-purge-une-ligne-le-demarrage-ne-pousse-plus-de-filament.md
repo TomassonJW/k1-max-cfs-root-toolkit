@@ -2,8 +2,9 @@
 
 Date : 2026-09-10
 
-Statut : **acceptée ; écrite et testée ; pas encore déployée** (déploiement sur
-accord explicite du propriétaire, jamais pendant une impression)
+Statut : **acceptée ; déployée le 10 septembre 2026 à 12:31 sur accord du
+propriétaire, machine à l'arrêt ; première observation attendue au prochain
+démarrage**
 
 Remplace en partie ADR-053 : l'attente du filament à la tête reste, le
 complément de purge et sa mesure sortent du démarrage.

@@ -1,6 +1,44 @@
 # HANDOFF — index de reprise
 
-## 10 septembre, 12:15 — cube fini ; une purge, une ligne écrites et testées ; le maillage est incliné par le firmware, reconstruction prête ; rien de déployé
+## 10 septembre, 12:35 — PR #52 déployée et profil reconstruit appliqué ; prochain geste : le carré 280×280, puis le Z
+
+**Point de reprise en un geste :** Thomas imprime le carré 280×280 (plateau à
+55 ; le démarrage charge `k1_p001_t055_r001_n11x11` lui-même), règle Z en
+direct ; après l'impression, `KCTRL_Z_SAVE PROFILE=k1_p001_t055_r001_n11x11
+Z=<valeur affichée>` (jamais tant que `print_stats.state` vaut `printing`),
+puis point 6 de `GOALS.md`, `STATE.md`, PR #52. Attendu au journal de ce
+démarrage : une seule purge (`material_change_flush`), aucun « complément de
+purge », aucune ligne stock à F3000 avant « ligne d'amorce » (ADR-060).
+
+### Fait à 12:30–12:33, sur « tu peux appliquer la PR »
+
+- Trois cfg copiés (sauvegardes `.kctrl-bak-20260910-123029`, md5 identiques
+  au dépôt), Klipper redémarré 12:30:53, prêt 12:31:27, aucune erreur ;
+  macros de mesure sans « standby », `_KCTRL_PURGE_MARK` et
+  `_KCTRL_PURGE_REPORT` absents, `_KCTRL_PURGE_BALL` et `_KCTRL_PRIME_LINE`
+  présents.
+- `KCTRL_MESH_APPLY` étape 1 puis 2 à 12:32:54 : 120 points, pas de 0,079,
+  zéro gardé en X150 Y150 ; profil vivant identique au fichier reconstruit,
+  écrit dans `printer.cfg`. Retour possible : `KCTRL_MESH_UNDO` (une étape)
+  ou `KCTRL_MESH_APPLY` sur un JSON tiré de
+  `experiments/2026-09-10-mesh-brut-sans-rampe/profil-actif-avant.json`.
+- Réponses données à Thomas avant d'agir : pas de nouvelle mesure du plateau
+  (même rampe) ; la pente avant/arrière est réelle et progressive, 0,18 entre
+  les vis ; la validation est le carré.
+
+### À savoir
+
+- La bannière `SAVE_CONFIG` revient à chaque démarrage (`[auto_addr]
+  mb_addr_table_uniids`, journal 12:31:27) : permanente, jamais la presser.
+- Après un redémarrage le profil actif est `default` ; c'est `START_PRINT`
+  qui charge le bon profil (`BED_MESH_PROFILE LOAD=`).
+- Petit défaut vu : deux applications dans la même seconde ont reçu le même
+  nom de sauvegarde `…-123254.json`, la seconde a écrasé la première ;
+  compteur ou microsecondes à ajouter dans `kctrl_mesh.py`.
+- La machine n'a ni `bash` ni `sftp-server` : `ssh k1max-root 'sh -s'` et
+  copie par `cat fichier | ssh k1max-root 'cat > cible'`.
+
+## 10 septembre, 12:15 — cube fini ; une purge, une ligne écrites et testées ; le maillage est incliné par le firmware, reconstruction prête ; rien de déployé (remplacé par 12:35)
 
 **Point de reprise en un geste :** sur le « go » de Thomas, machine à l'arrêt
 (`print_stats.state` autre que `printing`, vérifié avant chaque action) :
