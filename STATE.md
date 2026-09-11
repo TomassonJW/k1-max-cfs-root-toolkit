@@ -1,6 +1,21 @@
 # STATE
 
-Last updated: 2026-09-10
+Last updated: 2026-09-11
+
+11 septembre, 21:00. **Boulon de plateau perdu dans la nuit, trois relevés
+refaits, outil « quatre vis seulement » écrit, testé et installé (PR #56).**
+Les relevés de 02:38, 03:08 et 03:33 sont propres en eux-mêmes mais le
+plateau bouge entre les quadrants (0,25 à 0,56 mm, contre 0,03 la veille) et
+son bord avant creuse de 0,5 mm au milieu (plat la veille) : tôle pliée par
+ses fixations, pas voilée. Le profil `k1_p001_t055_r001_n11x11` en service
+est celui de 03:33 (amplitude 1,16 mm, avant bas de 0,86 mm) ; Z sauvé 0,075
+d'avant la panne, à refaire. Thomas a imprimé SILLAGES dessus à 03:35
+(résultat non lu). Pour itérer vite sur les vis : `KCTRL_SCREWS_ONLY`
+(quatre `PROBE` aux positions des vis, contacts bruts hors rampe du firmware,
+tours en huitièmes, lit gardé chaud), installée le 11 à 20:45, machine à
+l'arrêt ; première exécution réelle à observer. Doc 77. Rien d'autre n'est
+installé : les PR #53, #54, #55 (points 4 et 2 du flux quotidien) restent à
+déployer sur accord, entre deux impressions.
 
 10 septembre, 12:35. **Deploye et applique, sur le « tu peux appliquer la
 PR » de Thomas.** Reponses donnees avant d'agir : pas de nouvelle mesure du
