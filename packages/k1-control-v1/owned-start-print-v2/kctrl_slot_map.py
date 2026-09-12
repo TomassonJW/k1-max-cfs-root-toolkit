@@ -109,8 +109,38 @@ EMPTY_JOB = {
 }
 
 
+COLOUR_HEX = re.compile(r"^[0-9A-F]{6}$")
+# The material record field that names the type; the misspelling is the
+# firmware's own (material_database.json, base.meterialType).
+TYPE_FIELD = "meterialType"
+
+
 def is_slot_name(value):
     return isinstance(value, str) and value in NAMES
+
+
+def colour_key(text):
+    """Six upper-case hex digits, or ''.
+
+    The sliced file writes '#8080FF', the CFS publishes '0ff1e1e' (seven
+    characters, a leading zero), the material records write '#ffffff'. All
+    three compare as 'FF1E1E' style; anything else - '-1', 'None', '' - is
+    no colour at all and matches nothing.
+    """
+    value = str(text if text is not None else "").strip().lstrip("#").upper()
+    if len(value) == 7 and value[0] == "0":
+        value = value[1:]
+    return value if COLOUR_HEX.match(value) else ""
+
+
+def colour_distance(one, other):
+    """Squared RGB distance between two colour keys; only for the message
+    that names the nearest spool when nothing matches exactly."""
+    try:
+        return sum((int(one[i:i + 2], 16) - int(other[i:i + 2], 16)) ** 2
+                   for i in (0, 2, 4))
+    except ValueError:
+        return 3 * 255 * 255 + 1
 
 
 def material_key(slot_type):
@@ -126,21 +156,26 @@ def material_key(slot_type):
     return text
 
 
-def read_material_temps(path):
-    """(temps, error): the loading temperature of every record, by id.
+def read_material_records(path):
+    """(temps, types, error): every record's loading temperature and type
+    name, by id.
 
     Only records carrying both an id and a numeric nozzle_temperature are
-    kept; a damaged record is skipped rather than turned into a number.
+    kept; a damaged record is skipped rather than turned into a number. The
+    type name ('PLA', 'PETG', 'PLA-CF') is what a slot's six character
+    material id means, and the only thing the sliced file's filament_type
+    can be compared with.
     """
     try:
         with open(path) as handle:
             data = json.load(handle)
     except (OSError, ValueError) as exception:
-        return {}, "base matiere illisible: %s" % exception
+        return {}, {}, "base matiere illisible: %s" % exception
     records = data.get("result", {}).get("list") if isinstance(data, dict) else None
     if not isinstance(records, list):
-        return {}, "base matiere sans liste de fiches"
+        return {}, {}, "base matiere sans liste de fiches"
     temps = {}
+    types = {}
     for record in records:
         if not isinstance(record, dict):
             continue
@@ -154,9 +189,137 @@ def read_material_temps(path):
             temps[str(ident)] = float(raw)
         except (TypeError, ValueError):
             continue
+        kind = base.get(TYPE_FIELD)
+        if isinstance(kind, str) and kind.strip():
+            types[str(ident)] = kind.strip().upper()
     if not temps:
-        return {}, "base matiere sans temperature exploitable"
-    return temps, ""
+        return {}, {}, "base matiere sans temperature exploitable"
+    return temps, types, ""
+
+
+def read_material_temps(path):
+    """(temps, error): the loading temperature of every record, by id."""
+    temps, _, error = read_material_records(path)
+    return temps, error
+
+
+def slot_identities(state, types):
+    """What is loaded where: {slot: {material, type, colour}}.
+
+    `state` is the box object's status. A slot counts when its unit is
+    connected and its material id is not -1. The type name comes from the
+    firmware's own refill groups (same_material: id, colour, slots, type)
+    when the slot is in one, and from the material database otherwise; a
+    slot whose type nobody can name gets '' and matches no file.
+    """
+    named = {}
+    for group in state.get("same_material", []) or []:
+        try:
+            slots = group[2]
+            kind = str(group[3]).strip().upper()
+        except (IndexError, TypeError):
+            continue
+        for slot in slots or []:
+            if is_slot_name(slot) and kind:
+                named[slot] = kind
+    found = {}
+    for box in BOXES:
+        unit = state.get("T" + box) or {}
+        if str(unit.get("state", "None")) != "connect":
+            continue
+        materials = unit.get("material_type") or ["-1"] * 4
+        colours = unit.get("color_value") or ["-1"] * 4
+        for index, slot in enumerate(SLOTS):
+            try:
+                material = str(materials[index])
+                colour = str(colours[index])
+            except IndexError:
+                continue
+            if material in ("-1", "None", ""):
+                continue
+            name = "T" + box + slot
+            kind = named.get(name) or types.get(material_key(material), "")
+            found[name] = {"material": material, "type": kind,
+                           "colour": colour_key(colour)}
+    return found
+
+
+def match_job(job, identities, table):
+    """One entry per filament the file declares, matched against the spools.
+
+    Type and colour both have to agree, exactly: the refill groups of the
+    firmware use the same rule, so two spools this accepts as interchangeable
+    are the two the firmware would swap on a runout. A filament already
+    pointing at a fitting spool keeps it - a choice made on the screen or by
+    KCTRL_SLOT is not undone when it is right. A filament without a colour
+    takes the only spool of its type, and refuses to guess between several.
+    Nothing is written here; the notes say what would be, and why not.
+    """
+    results = []
+    for index in range(job.get("count", 0)):
+        logical = logical_of_index(index)
+        kinds = job.get("types") or []
+        colours = job.get("colours") or []
+        want_type = (kinds[index] if index < len(kinds) else "").strip().upper()
+        want_colour = colour_key(colours[index] if index < len(colours) else "")
+        current = table.get(logical, "")
+        entry = {"index": index, "logical": logical, "type": want_type,
+                 "colour": want_colour, "current": current, "slot": "",
+                 "candidates": [], "note": ""}
+        head = "filament %d (%s)" % (index + 1, logical)
+        if not want_type:
+            entry["note"] = "%s: matiere non declaree par le fichier" % head
+            results.append(entry)
+            continue
+        wanted = "%s %s" % (want_type, want_colour or "sans couleur")
+        same_type = [name for name in NAMES
+                     if name in identities and identities[name]["type"] == want_type]
+        if want_colour:
+            exact = [name for name in same_type
+                     if identities[name]["colour"] == want_colour]
+        else:
+            exact = list(same_type) if len(same_type) == 1 else []
+        entry["candidates"] = exact
+        if current and current in exact:
+            entry["slot"] = current
+            entry["note"] = "%s %s -> %s, deja en table" % (head, wanted, current)
+        elif exact:
+            entry["slot"] = exact[0]
+            was = ""
+            if current in identities:
+                was = " (etait %s, %s %s)" % (
+                    current, identities[current]["type"],
+                    identities[current]["colour"] or "sans couleur")
+            elif current:
+                was = " (etait %s, vide)" % current
+            more = ""
+            if len(exact) > 1:
+                more = ", aussi %s, identique" % ", ".join(exact[1:])
+            entry["note"] = "%s %s -> %s%s%s" % (head, wanted, exact[0], was, more)
+        elif not same_type:
+            loaded = ", ".join("%s %s %s" % (name, identities[name]["type"] or "?",
+                                             identities[name]["colour"] or "-")
+                               for name in NAMES if name in identities) or "aucune"
+            entry["note"] = ("%s %s: aucune bobine %s chargee; chargees: %s"
+                             % (head, wanted, want_type, loaded))
+        elif not want_colour:
+            entry["note"] = ("%s %s: couleur non declaree et %d bobines %s (%s); "
+                             "KCTRL_SLOT SLOT=... TOOL=%s pour choisir"
+                             % (head, wanted, len(same_type), want_type,
+                                ", ".join(same_type), logical))
+        else:
+            nearest = min(same_type, key=lambda name: colour_distance(
+                want_colour, identities[name]["colour"] or "000000"))
+            entry["note"] = ("%s %s: aucune bobine %s de cette couleur; %s chargees: %s; "
+                             "la plus proche est %s (%s), KCTRL_SLOT SLOT=%s TOOL=%s "
+                             "pour l'imposer"
+                             % (head, wanted, want_type, want_type,
+                                ", ".join("%s %s" % (name, identities[name]["colour"] or "-")
+                                          for name in same_type),
+                                nearest, identities[nearest]["colour"] or "-",
+                                nearest, logical))
+        results.append(entry)
+    return results
 
 
 class AlignError(Exception):
@@ -403,8 +566,13 @@ class KctrlSlotMap:
         # Loading temperature per material record, same stat-then-parse rule.
         self.material_db = config.get("material_db", DEFAULT_MATERIAL_DB)
         self.temps = {}
+        self.types = {}
         self.temps_error = ""
         self.temps_stamp = None
+        # The file's filaments matched against the loaded spools, recomputed
+        # on every poll from cached inputs; START_PRINT reads it at render
+        # time and KCTRL_MATCH writes it into the table.
+        self.matches = []
         gcode = self.printer.lookup_object("gcode")
         gcode.register_command(
             "KCTRL_MAP", self.cmd_KCTRL_MAP, desc=self.cmd_KCTRL_MAP_help)
@@ -413,6 +581,8 @@ class KctrlSlotMap:
         gcode.register_command(
             "KCTRL_MATERIAL_ALIGN", self.cmd_KCTRL_MATERIAL_ALIGN,
             desc=self.cmd_KCTRL_MATERIAL_ALIGN_help)
+        gcode.register_command(
+            "KCTRL_MATCH", self.cmd_KCTRL_MATCH, desc=self.cmd_KCTRL_MATCH_help)
 
     def stat(self, path=None):
         try:
@@ -527,15 +697,44 @@ class KctrlSlotMap:
         if stamp == self.temps_stamp:
             return
         self.temps_stamp = stamp
-        self.temps, self.temps_error = read_material_temps(self.material_db)
+        self.temps, self.types, self.temps_error = read_material_records(
+            self.material_db)
+
+    def box_state(self, eventtime=None):
+        """The box object's status, or {} when there is no box."""
+        box = self.printer.lookup_object("box", None)
+        if box is None:
+            return {}
+        if eventtime is None:
+            eventtime = self.printer.get_reactor().monotonic()
+        try:
+            return box.get_status(eventtime) or {}
+        except Exception:
+            return {}
+
+    def refresh_match(self, eventtime=None):
+        """Match the job's declared filaments against the loaded spools."""
+        if not self.job.get("count"):
+            self.matches = []
+            return
+        identities = slot_identities(self.box_state(eventtime), self.types)
+        self.matches = match_job(self.job, identities, self.map)
 
     def get_status(self, eventtime=None):
         self.refresh()
         self.refresh_initial()
         self.refresh_job()
         self.refresh_temps()
+        self.refresh_match(eventtime)
         logical = logical_of_index(self.initial_index)
         return {
+            # The file's filaments matched on the loaded spools, by type and
+            # colour: which slot each would take, and why not when none fits.
+            "match": {entry["logical"]: entry["slot"]
+                      for entry in self.matches if entry["slot"]},
+            "match_notes": [entry["note"] for entry in self.matches],
+            "match_ok": 1 if self.matches and all(
+                entry["slot"] for entry in self.matches) else 0,
             # The job's filaments as the sliced file declares them, in slicer
             # order: index 0 is T0. Empty lists when no file is printing.
             "job_count": self.job["count"],
@@ -735,6 +934,104 @@ class KctrlSlotMap:
             gcmd.respond_info(
                 "K1 Control: fiche matiere %s (%s) deja a %d C, rien ecrit"
                 % (material, name, temp))
+
+
+    cmd_KCTRL_MATCH_help = (
+        "Point every filament of a job at the loaded spool of the same type "
+        "and colour, and refuse when one has none: [FILE=] [CHECK=1] [SKIP=T1A] "
+        "[STARTING=1 from START_PRINT only]")
+
+    def cmd_KCTRL_MATCH(self, gcmd):
+        """Write the file's own colour choices into the CFS table.
+
+        Mainsail and Fluidd have no popup, so without this the table holds
+        whatever the previous job or the last KCTRL_SLOT left in it, and a
+        blue file prints in black without a word. Every filament the file
+        actually uses is matched by type and colour on the spools loaded;
+        the matches are written with the same two commands KCTRL_SLOT uses,
+        and a filament with no fitting spool stops everything before a
+        single write, with the spool that comes closest named.
+        """
+        target = gcmd.get("FILE", None) or self.printing_file()
+        if not target:
+            raise gcmd.error("K1 Control: aucun fichier en cours; "
+                             "KCTRL_MATCH FILE=/chemin/du/fichier.gcode")
+        check = gcmd.get_int("CHECK", 0) != 0
+        skipped = [name.strip().upper()
+                   for name in gcmd.get("SKIP", "").split(",") if name.strip()]
+        # Rewriting the table under a running print would redirect its next
+        # tool change; only START_PRINT, which says so, may do it while the
+        # file counts as printing. CHECK=1 writes nothing and is always fine.
+        state = str(self.status_of("print_stats").get("state", ""))
+        if (state in ("printing", "paused") and not check
+                and gcmd.get_int("STARTING", 0) == 0):
+            raise gcmd.error("K1 Control: impression en cours (%s), la table CFS "
+                             "ne se reecrit pas sous une impression; KCTRL_MATCH "
+                             "CHECK=1 pour voir sans ecrire" % state)
+        self.refresh()
+        self.refresh_temps()
+        self.refresh_job(target)
+        if not self.job.get("count"):
+            raise gcmd.error("K1 Control: le fichier ne declare pas ses filaments "
+                             "(%s); KCTRL_SLOT SLOT=... TOOL=... pour associer "
+                             "a la main" % self.job_note)
+        used, note = scan_all_tools(target)
+        if used is None:
+            raise gcmd.error("K1 Control: %s" % note)
+        identities = slot_identities(self.box_state(), self.types)
+        self.matches = match_job(self.job, identities, self.map)
+        lines = ["K1 Control: appariement du fichier sur les bobines, %s, %s"
+                 % (self.job_note, note)]
+        writes = []
+        problems = []
+        for index in sorted(used):
+            logical = logical_of_index(index)
+            if index >= len(self.matches):
+                problems.append("filament %d (%s) utilise mais non declare par "
+                                "le fichier" % (index + 1, logical or "?"))
+                lines.append("  " + problems[-1])
+                continue
+            entry = self.matches[index]
+            if logical in skipped:
+                lines.append("  %s: laisse tel quel (SKIP)" % entry["note"].split(":")[0])
+                continue
+            lines.append("  " + entry["note"])
+            if not entry["slot"]:
+                problems.append(entry["note"])
+            elif entry["slot"] != entry["current"]:
+                writes.append((logical, entry["slot"]))
+        for entry in self.matches:
+            if entry["index"] not in used:
+                lines.append("  %s, declare mais non utilise" % entry["note"])
+        if problems:
+            gcmd.respond_info("\n".join(lines))
+            raise gcmd.error(
+                "K1 Control: appariement impossible, %d filament(s) sans bobine; "
+                "KCTRL_SLOTS pour voir les bobines, KCTRL_SLOT SLOT=... TOOL=... "
+                "pour imposer, START_PRINT MATCH=0 pour partir sur la table telle "
+                "quelle" % len(problems))
+        if check:
+            lines.append("  controle seul, rien ecrit (%d ecriture(s) en attente)"
+                         % len(writes))
+        elif not writes:
+            lines.append("  la table est deja conforme au fichier, rien ecrit")
+        else:
+            gcode = self.printer.lookup_object("gcode")
+            for logical, slot in writes:
+                gcode.run_script_from_command("BOX_MODIFY_TN %s=%s" % (logical, slot))
+                gcode.run_script_from_command(
+                    "SAVE_VARIABLE VARIABLE=slot_choice_%s VALUE='\"%s\"'"
+                    % (logical.lower(), slot))
+                if logical == "T1A":
+                    gcode.run_script_from_command(
+                        "SAVE_VARIABLE VARIABLE=slot_last_choice VALUE='\"%s\"'"
+                        % slot)
+            # The table on disk changed under the cache.
+            self.stamp = None
+            lines.append("  %d entree(s) ecrite(s) dans la table CFS: %s"
+                         % (len(writes), ", ".join("%s=%s" % w for w in writes)))
+        lines.append("  fichier lu: %s" % target)
+        gcmd.respond_info("\n".join(lines))
 
 
 def load_config(config):

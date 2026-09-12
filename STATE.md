@@ -2,6 +2,31 @@
 
 Last updated: 2026-09-10
 
+10 septembre, 23:30. **Points 2 et 5 traites ; PR #53 (point 4) et la
+PR du point 2 ouvertes, rien de deploye.** Toujours pendant que Thomas
+imprime (lectures seules). Point 2, branche
+`feat/appariement-automatique-des-bobines` sur la branche du point 4 :
+`kctrl_slot_map.py` publie `match` / `match_notes` / `match_ok` (chaque
+filament declare par le fichier apparie sur la bobine chargee de meme type
+et meme couleur, exactement, regle des groupes de releve du firmware ;
+bobine deja juste gardee ; identiques interchangeables ; la plus proche
+nommee dans le refus) et la commande `KCTRL_MATCH` (`CHECK=1`, `FILE=`,
+`SKIP=`, garde impression) qui ecrit les filaments utilises dans la table
+avec les deux commandes de `KCTRL_SLOT`. `START_PRINT` lit `match` au rendu
+avant la table, refuse au rendu si le filament de depart n'a pas de bobine,
+emet `KCTRL_MATCH STARTING=1` apres l'alignement et avant toute chauffe ;
+`MATCH=0` et `TOOL=` gardent l'ancien comportement. 47 tests, suite a 1274
+verts, 2 rouges preexistants. Doc 75, ADR-062. Point 5, lectures seules :
+`auto_refill: 1`, chaine capteur de tete -> `runout_gcode` ->
+`BOX_CHECK_MATERIAL_REFILL` -> `BOX_MODIFY_TN` -> `T` rejoue, prouvee une
+fois au journal (5 septembre 15:22:18 -> 15:22:26, T1A -> T1B) ; aucune
+paire de releve ce soir (chaque bobine seule dans `same_material`) ;
+procedure pour la provoquer (deux bobines meme matiere meme couleur,
+impression sans valeur) dans le doc 76, rien a deployer. Deploiement des
+deux PR ensemble, entre deux impressions, sur accord : doc 74.
+Reste : contacts bruts captures par les macros de mesure ; PR #54 (nom de
+sauvegarde unique) a fusionner.
+
 10 septembre, 22:05. **Point 4 ecrit et teste, PR #53 ouverte, pas
 deploye.** Sur le « GO pour tes recommandations », pendant que Thomas
 imprime (aucune action machine, lectures seules). Verifie au journal : les
