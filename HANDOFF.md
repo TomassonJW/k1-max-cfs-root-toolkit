@@ -1,5 +1,45 @@
 # HANDOFF — index de reprise
 
+## 12 septembre, 23:30 — point 2 fait (premier départ réel par la fenêtre à 23:17) ; PR #58 fusionnée ; reste à poser, machine à l'arrêt, le service qui repose la balise à chaque démarrage
+
+**Point de reprise en un geste :** machine à l'arrêt (`print_stats.state` =
+`standby`, vérifier), poser la persistance de la fenêtre :
+
+```
+cat packages/k1-control-v1/spool-choice-gate-v1/mainsail_overlay_patch.py | ssh k1max-root 'cat > /usr/data/k1-control-v1/state/mainsail_overlay_patch.py'
+cat packages/k1-control-v1/services/S57k1_control_gateway | ssh k1max-root 'cat > /etc/init.d/S57k1_control_gateway'
+ssh k1max-root 'chmod 644 /usr/data/k1-control-v1/state/mainsail_overlay_patch.py; chmod 755 /etc/init.d/S57k1_control_gateway; rm -f /usr/data/k1-control-v1/current/mainsail_overlay_patch.py; /etc/init.d/S57k1_control_gateway restart'
+```
+
+Attendu au restart : « balise deja en place: …/mainsail/index.html », puis
+`http://192.168.1.64:4409/` répond 200 avec la balise et la fenêtre s'ouvre
+toujours sur un départ. Sauvegarde préalable de `/etc/init.d/S57k1_control_gateway`
+(`.bak-<date>`). Ensuite STATE et HANDOFF (nouveau bloc de tête), commit
+`pilotage`, push sur `main`.
+
+### Fait le 12 septembre, 22:58–23:30
+
+- Thomas a lancé BIN4U par la fenêtre à 23:17 : journal « bobines
+  raccordees », « lance avec T1A=T1B », ligne de départ « raccorde sur la
+  page Bobines ». Point 2 du flux quotidien fait ; impression en cours.
+- Persistance de la balise après une nouvelle version de K1 Control
+  (Mainsail y est livré, rien d'autre ne le met à jour ; nginx sans
+  `sub_filter` ni `addition`) : `S57k1_control_gateway` relance
+  `mainsail_overlay_patch.py` depuis `state/` à chaque `start`, sans jamais
+  bloquer la passerelle. Écrit, testé (`test_bobines_page_v1`, 21), pas posé.
+- PR #58 fusionnée dans `main`, branche supprimée.
+
+### À savoir
+
+- Sur la machine ce soir, le script est encore dans `current/` (dossier de
+  version) et le service installé est l'ancien : la balise tient tant que la
+  version K1-CONTROL-V1.0.0 reste, le geste ci-dessus la rend durable.
+- Retour arrière de la fenêtre : `python3 …/mainsail_overlay_patch.py
+  --remove …/mainsail/index.html`, sauvegardes `.bak-20260912-2250`
+  (`nginx-active.conf`, `kctrl_print_gate.py`), `index.html.bak-20260912-225208`.
+- Fluidd et l'écran n'ont pas la fenêtre : la page `/bobines/`, dont le
+  message Klipper donne l'adresse.
+
 ## 12 septembre, 22:58 — la fenêtre Bobines dans Mainsail (PR #58) : lancer depuis Mainsail, la fenêtre s'ouvre seule, raccorder, lancer ; premier départ réel à observer, puis fusion
 
 **Point de reprise en un geste :** Thomas lance un fichier depuis Mainsail.

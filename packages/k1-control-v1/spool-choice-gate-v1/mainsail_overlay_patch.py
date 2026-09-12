@@ -10,7 +10,10 @@ Klipper holds a start. Runs on the machine with its python3:
 
 Idempotent: a file that already carries the tag is left alone. Every change
 first writes a dated copy next to the file (index.html.bak-YYYYmmdd-HHMMSS).
-A Mainsail update that rewrites index.html drops the tag: run again.
+Installed as /usr/data/k1-control-v1/state/mainsail_overlay_patch.py, outside
+the release folder: the gateway service (S57k1_control_gateway) runs it at
+every start, so a new release that ships a fresh index.html gets the tag
+back on its first start. Exit code 0 even when nothing changes.
 """
 import os
 import sys

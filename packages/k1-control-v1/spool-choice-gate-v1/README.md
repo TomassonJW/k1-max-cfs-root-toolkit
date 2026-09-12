@@ -15,7 +15,7 @@ referme. Décision : ADR-063. Récit et preuves :
 | `www/bobines/bobines.js`, `logic.js`, `styles.css` | l'interface, montée une fois par `mount(root, options)` | `/usr/data/k1-control-v1/current/www/bobines/` |
 | `www/bobines/overlay.js` | la fenêtre dans Mainsail : shadow DOM, apparaît seule quand un départ attend, se replie en pastille, se ferme après le lancement | idem |
 | `www/bobines/index.html`, `app.js` | la même interface en page seule, `/bobines/`, pour un téléphone ou Fluidd | idem |
-| `mainsail_overlay_patch.py` | ajoute (ou retire, `--remove`) la balise `<script type="module" src="/bobines/overlay.js">` avant `</body>` de l'index de Mainsail, avec copie datée | lancé sur la machine |
+| `mainsail_overlay_patch.py` | ajoute (ou retire, `--remove`) la balise `<script type="module" src="/bobines/overlay.js">` avant `</body>` de l'index de Mainsail, avec copie datée ; relancé par `S57k1_control_gateway` à chaque démarrage de la passerelle | `/usr/data/k1-control-v1/state/mainsail_overlay_patch.py` (hors du dossier de version) |
 | `nginx-location.conf` | les trois blocs à placer avant `location /` : redirection `/bobines`, `location /bobines/`, `location = /index.html` sans cache | `/usr/data/k1-control-v1/state/nginx-active.conf` |
 | `logic.test.mjs` | tests node de la partie pure (règle d'affichage de la fenêtre comprise) | — |
 
@@ -49,9 +49,15 @@ l'appariement automatique (ADR-062) ne tourne pas.
 3. Ajouter les trois blocs de `nginx-location.conf` avant `location /` dans
    `nginx-active.conf`, tester (`nginx -t` avec le `-p` de la passerelle),
    puis `/etc/init.d/S57k1_control_gateway reload`.
-4. `python3 mainsail_overlay_patch.py /usr/data/k1-control-v1/current/www/mainsail/index.html`
-   (copie `index.html.bak-<date>` à côté). Une mise à jour de Mainsail qui
-   réécrit son index retire la balise : relancer la commande.
+4. Copier `mainsail_overlay_patch.py` dans `/usr/data/k1-control-v1/state/`
+   (hors du dossier de version), puis
+   `python3 /usr/data/k1-control-v1/state/mainsail_overlay_patch.py /usr/data/k1-control-v1/current/www/mainsail/index.html`
+   (copie `index.html.bak-<date>` à côté). Poser aussi
+   `services/S57k1_control_gateway` dans `/etc/init.d/` (755) : il relance
+   cette commande à chaque démarrage de la passerelle, donc la balise revient
+   seule après une nouvelle version de K1 Control (Mainsail est livré dans le
+   dossier de version `releases/`, rien ne le met à jour par ailleurs). Une
+   nouvelle version doit aussi recopier `www/bobines/`.
 5. `/etc/init.d/S55klipper_service restart` (jamais `FIRMWARE_RESTART`
    pour un module Python).
 6. Vérifier : `help` liste `KCTRL_GATE_CONFIRM` ; journal « wrapped

@@ -181,10 +181,11 @@ Mainsail, la fenêtre a suivi 0,4 s après le départ du cube.
   sans perdre le choix.
 
 L'installation sur la machine et ses preuves sont dans `STATE.md` du 12
-septembre au soir. **Le premier départ réel par la fenêtre reste à observer
-par Thomas** : fenêtre par-dessus Mainsail, clic, « Lancer l'impression »,
-« raccordé sur la page Bobines » dans la ligne de départ, puis `cmd_T vtnn=`
-sur la bobine choisie.
+septembre au soir. **Premier départ réel par la fenêtre le 12 septembre à
+23:17, par Thomas** (« ok super, j'ai pu lancer, c'est ce que j'attendais ») :
+BIN4U, journal « bobines raccordees pour BIN4U… », « lance avec T1A=T1B »,
+ligne de départ « filament 1 du fichier (T1A) -> emplacement T1B
+(raccorde sur la page Bobines) », impression en cours à 23:20.
 
 ## Limites connues
 
@@ -196,9 +197,17 @@ sur la bobine choisie.
   sur la même passerelle.
 - Le choix se fait par filament utilisé ; un filament déclaré mais jamais
   utilisé est montré grisé et ne bloque rien.
-- Une mise à jour de Mainsail qui réécrit son `index.html` retire la
-  balise : relancer `mainsail_overlay_patch.py` (la page seule continue de
-  marcher entre-temps, et le message Klipper donne son adresse).
+- La balise vit dans l'`index.html` de Mainsail, lui-même livré dans le
+  dossier de version de K1 Control (`releases/K1-CONTROL-V1.0.0`, `current`
+  y pointe) ; rien ne met Mainsail à jour par ailleurs (pas
+  d'`update_manager` Moonraker), seule une nouvelle version de K1 Control
+  livrerait un index neuf. Pour que la fenêtre y survive :
+  `S57k1_control_gateway` relance `mainsail_overlay_patch.py` (posé dans
+  `state/`, hors du dossier de version) à chaque démarrage de la passerelle,
+  et la procédure de version recopie `www/bobines/`. Le nginx de la machine
+  n'a ni `sub_filter` ni `addition` : impossible d'ajouter la balise à la
+  volée sans toucher au fichier. Ce service modifié est écrit et testé le 12
+  septembre à 23:30 ; à poser sur la machine à l'arrêt (voir HANDOFF).
 - Fluidd et l'écran n'ont pas la fenêtre : la page seule.
 - Le message Klipper « Choix des bobines » reste derrière la fenêtre et se
   voit quand elle est réduite ; c'est voulu, il porte l'abandon.

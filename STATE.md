@@ -2,6 +2,26 @@
 
 Last updated: 2026-09-12
 
+12 septembre, 23:30. **Premier départ réel par la fenêtre à 23:17 : Thomas
+a lancé BIN4U depuis Mainsail, raccordé T1A → T1B dans la fenêtre, « c'est
+ce que j'attendais ».** Journal : « bobines raccordees pour BIN4U… », « lance
+avec T1A=T1B », ligne de départ « filament 1 du fichier (T1A) -> emplacement
+T1B (raccorde sur la page Bobines) », cibles 55 / 190 ; impression en cours
+(13 h 38 annoncées), rien touché sur la machine depuis. Point 2 du flux
+quotidien : fait. Sur sa question « impossible de rendre ça persistant si on
+met à jour Mainsail ? » : Mainsail est livré dans le dossier de version de
+K1 Control (`releases/K1-CONTROL-V1.0.0`, `current` y pointe), aucun
+`update_manager` Moonraker ne le touche, et le nginx de la machine n'a ni
+`sub_filter` ni `addition` (pas d'ajout à la volée). Réponse retenue :
+`S57k1_control_gateway` relance `mainsail_overlay_patch.py` (à poser dans
+`state/`, hors du dossier de version) à chaque démarrage de la passerelle, et
+la procédure de version recopie `www/bobines/`. Écrit et testé (21 tests
+page/fenêtre), **pas encore posé : la machine imprime**. À faire à l'arrêt :
+`cp` du service dans `/etc/init.d/` (755), déplacer le script de `current/`
+vers `state/`, puis `S57k1_control_gateway restart` et vérifier « balise
+deja en place » au démarrage. PR #58 fusionnée à la clôture de cette
+session. Doc 78, ADR-063.
+
 12 septembre, 22:58. **La fenêtre Bobines dans Mainsail, installée à
 22:52 (PR #58, toujours ouverte), sur le refus de Thomas de la page :
 « je veux démarrer de Mainsail, un popup s'affiche contenant l'interface,

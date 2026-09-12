@@ -74,8 +74,9 @@ bobine à sa place au départ.
 node de la partie pure, la fenêtre parcourue dans une fausse page Mainsail
 contre un faux Moonraker puis dans le vrai Mainsail sur la machine (départ
 du cube → fenêtre en 0,4 s, réduire, rouvrir, abandonner ; document 78,
-section « Preuve »), suite complète verte. Le premier départ réel par la
-fenêtre reste à observer par Thomas.
+section « Preuve »), suite complète verte. Premier départ réel par la
+fenêtre le 12 septembre à 23:17 par Thomas (BIN4U, « raccorde sur la page
+Bobines » au journal) : « c'est ce que j'attendais ».
 
 ## Conséquences
 
@@ -88,7 +89,9 @@ fenêtre reste à observer par Thomas.
 - La page et la fenêtre vivent dans la passerelle K1 Control, sans mot de
   passe, sur le réseau privé, au même titre que Mainsail.
 - L'index de Mainsail servi par la passerelle porte une balise ajoutée par
-  `mainsail_overlay_patch.py` ; une mise à jour de Mainsail la retire, à
-  reposer avec la même commande.
+  `mainsail_overlay_patch.py`. Mainsail est livré dans le dossier de version
+  de K1 Control et n'est mis à jour par rien d'autre ; le service
+  `S57k1_control_gateway` repose la balise à chaque démarrage de la
+  passerelle, et toute nouvelle version de K1 Control recopie `www/bobines/`.
 - La relève automatique en fin de bobine (point 5) n'est pas concernée : elle
   suit toujours les groupes du firmware.

@@ -171,6 +171,20 @@ def test_the_mainsail_patch_refuses_a_file_without_body(tmp_path):
     assert path.read_text(encoding="utf-8") == "<html><head></head></html>"
 
 
+def test_the_gateway_service_puts_the_tag_back_at_every_start():
+    service = read(ROOT, "packages", "k1-control-v1", "services", "S57k1_control_gateway")
+    # The script lives outside the release folder, the call sits inside start()
+    # before nginx is launched, and a failure never keeps the gateway down.
+    assert 'PATCH=/usr/data/k1-control-v1/state/mainsail_overlay_patch.py' in service
+    call = 'python3 "$PATCH" "$ROOT/www/mainsail/index.html" || echo'
+    assert call in service
+    start = service[service.index("start() {"):service.index("stop() {")]
+    assert call in start
+    assert start.index('[ -f "$PATCH" ]') < start.index(call) < start.index("start-stop-daemon -S")
+    patch = load_patch()
+    assert patch.main(["--help-me"]) == 2  # no path: usage, no crash
+
+
 def test_the_nginx_blocks_use_root_keep_the_headers_and_sit_before_the_catch_all():
     snippet = read(PACKAGE, "nginx-location.conf")
     assert "location = /bobines {" in snippet
