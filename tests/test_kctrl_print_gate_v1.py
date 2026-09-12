@@ -263,6 +263,43 @@ def test_scan_handles_crlf_and_a_last_line_without_newline(tmp_path):
     assert MOD.scan_used_tools(str(path))[0] == [4, 2]
 
 
+def test_scan_runs_the_regex_only_on_chunks_that_can_hold_a_tool(tmp_path, monkeypatch):
+    # Eight-byte chunks: "G1 X1 Y1\n" fills one alone, the T lines sit at the
+    # very start of a chunk (offset 0, after a newline, indented) and inside
+    # one. The regex must see every chunk that can hold a T, no other.
+    monkeypatch.setattr(MOD, "CHUNK", 8)
+    scanned = []
+    real = MOD.TOOL_IN_CHUNK
+
+    class Counting:
+        def finditer(self, body):
+            scanned.append(bytes(body))
+            return real.finditer(body)
+
+    monkeypatch.setattr(MOD, "TOOL_IN_CHUNK", Counting())
+    path = gcode(tmp_path, "T3\nG1 X1 Y1\nG1 X2 Y2\nG1 X3 Y3\n  T5\nG1 X4 Y4\nG1 X5 Y5\nT9 ; last\n")
+    used, note = MOD.scan_used_tools(path)
+    assert used == [3, 5, 9]
+    assert note == "3 filament(s) utilise(s)"
+    bodies = [body for body in scanned if body.strip()]
+    assert all(MOD.may_hold_tool(body) for body in bodies)
+    assert len(bodies) < 8
+
+
+@pytest.mark.parametrize("body, expected", [
+    (b"T0\nG1 X1\n", True),
+    (b" T0\n", True),
+    (b"\tT0\n", True),
+    (b"G1 X1\nT0\n", True),
+    (b"G1 X1\n  T0\n", True),
+    (b"G1 X1\nG1 X2\n", False),
+    (b"M104 T3 S200\n; T5 in a comment\n", False),
+    (b"", False),
+])
+def test_may_hold_tool_looks_at_line_starts_only(body, expected):
+    assert MOD.may_hold_tool(body) is expected
+
+
 # --- prise de la commande -------------------------------------------------------
 
 

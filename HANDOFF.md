@@ -1,5 +1,48 @@
 # HANDOFF — index de reprise
 
+## 12 septembre, 22:58 — la fenêtre Bobines dans Mainsail (PR #58) : lancer depuis Mainsail, la fenêtre s'ouvre seule, raccorder, lancer ; premier départ réel à observer, puis fusion
+
+**Point de reprise en un geste :** Thomas lance un fichier depuis Mainsail.
+Attendu : rien ne chauffe, la fenêtre Bobines couvre Mainsail en une à
+trois secondes avec les filaments du fichier et les bobines du CFS ; il
+touche un filament puis sa bobine, « Lancer l'impression » ; la fenêtre dit
+« Impression lancée » puis se retire ; au journal, « bobines raccordees
+pour … », la ligne de départ « raccorde sur la page Bobines » et `cmd_T
+vtnn=` sur la bobine choisie. Ensuite : fusion de #58 (STATE et HANDOFF :
+garder tous les blocs de tête, le plus récent en premier), suppression de
+la branche, `main` repoussé.
+
+### Fait le 12 septembre, 22:10–22:58
+
+- Sur le refus de Thomas (« pas une page que je dois ouvrir à chaque
+  fois »), l'interface est devenue une fenêtre dans Mainsail : `bobines.js`
+  (l'interface, montée une fois par `mount`), `overlay.js` (shadow DOM,
+  sondage toutes les 750 ms, « Réduire » et pastille, retrait quatre
+  secondes après le lancement), balise ajoutée à l'index de Mainsail par
+  `mainsail_overlay_patch.py` (copie datée, `--remove`), trois blocs nginx
+  (`= /index.html` sans cache). La page `/bobines/` reste (`app.js`, six
+  lignes).
+- Lenteur du message d'attente corrigée : `may_hold_tool` évite
+  l'expression sur les blocs sans `T` ; BIN4U 50 Mo retenu en 2,4 s sur la
+  machine (8 s et plus avant), cube 0,25 s.
+- Installé à 22:52 machine à l'arrêt (sauvegardes `.bak-20260912-2250`,
+  `index.html.bak-20260912-225208`), vérifié dans le vrai Mainsail :
+  fenêtre en 0,4 s, réduire, rouvrir, abandonner. Détail dans STATE.
+- Tests : 58 + 20 (dont 17 node) ; suite 1371 verts, 2 rouges
+  préexistants. Doc 78 et ADR-063 complétés, README du paquet refait.
+
+### À savoir
+
+- L'attente BIN4U que Thomas avait laissée (22:24) est tombée avec le
+  redémarrage de Klipper : la relancer.
+- Une mise à jour de Mainsail qui réécrit `index.html` retire la balise :
+  `python3 /usr/data/k1-control-v1/current/mainsail_overlay_patch.py
+  /usr/data/k1-control-v1/current/www/mainsail/index.html`.
+- Retour arrière : la même commande avec `--remove`, puis les sauvegardes
+  `.bak-20260912-2250` et celles du bloc précédent.
+- Fluidd et l'écran n'ont pas la fenêtre : la page `/bobines/`, dont le
+  message Klipper donne l'adresse.
+
 ## 12 septembre, 22:10 — la page Bobines installée (PR #58) : chaque départ attend le choix de Thomas ; premier départ réel à observer, puis fusion
 
 **Point de reprise en un geste :** Thomas lance un fichier depuis Mainsail.

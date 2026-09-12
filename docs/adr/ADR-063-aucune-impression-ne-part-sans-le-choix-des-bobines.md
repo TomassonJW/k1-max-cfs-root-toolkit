@@ -3,7 +3,12 @@
 Date : 2026-09-12
 
 Statut : **acceptée ; écrite et testée ; installation le 12 septembre au
-soir sur le « GO » de Thomas, machine à l'arrêt** (voir `STATE.md`).
+soir sur le « GO » de Thomas, machine à l'arrêt** (voir `STATE.md`). Le
+même soir à 22:52, sur son refus d'ouvrir une page (« je veux démarrer de
+Mainsail, un popup s'affiche contenant l'interface »), la même interface
+passe en fenêtre qui s'ouvre d'elle-même dans Mainsail ; la décision ne
+change pas, sa présentation oui. La lenteur du message d'attente (8 s sur un
+fichier de 50 Mo) est corrigée dans la foulée.
 
 Répond au point 2 du flux quotidien (`GOALS.md`) tel que Thomas l'a précisé
 le 12 septembre : « je veux pas que Mainsail décide, je veux être obligé de
@@ -55,17 +60,22 @@ une carte virtuelle occupée, un fichier introuvable. Dans ces cas, et sur
 
 ## Ce que ça change pour Thomas
 
-Il ne peut plus lancer une impression sans passer par la page : c'est ce
-qu'il a demandé. En échange, il voit avant chaque départ, côte à côte, ce
-que le fichier veut et ce que le CFS porte, et il décide. La machine ne
-choisit plus jamais une bobine à sa place au départ.
+Il ne peut plus lancer une impression sans passer par le choix : c'est ce
+qu'il a demandé. Il lance depuis Mainsail, la fenêtre Bobines couvre
+l'écran d'elle-même, il raccorde, « Lancer l'impression », et ça part ; la
+page seule (`/bobines/`) reste pour un téléphone, Fluidd ou l'écran. En
+échange, il voit avant chaque départ, côte à côte, ce que le fichier veut et
+ce que le CFS porte, et il décide. La machine ne choisit plus jamais une
+bobine à sa place au départ.
 
 ## Preuve
 
-38 tests du module, 9 tests de la page dont les 14 tests node de sa partie
-pure, la page parcourue contre un faux Moonraker (document 78, section
-« Preuve »), suite complète verte. Le premier départ réel par la page reste
-à observer par Thomas.
+58 tests du module, 20 tests de la page et de la fenêtre dont les 17 tests
+node de la partie pure, la fenêtre parcourue dans une fausse page Mainsail
+contre un faux Moonraker puis dans le vrai Mainsail sur la machine (départ
+du cube → fenêtre en 0,4 s, réduire, rouvrir, abandonner ; document 78,
+section « Preuve »), suite complète verte. Le premier départ réel par la
+fenêtre reste à observer par Thomas.
 
 ## Conséquences
 
@@ -75,7 +85,10 @@ pure, la page parcourue contre un faux Moonraker (document 78, section
   Thomas ; une table effacée par la machine se remplit avec.
 - Un redémarrage de Klipper pendant l'attente oublie le fichier, qui doit
   être relancé.
-- La page vit dans la passerelle K1 Control, sans mot de passe, sur le
-  réseau privé, au même titre que Mainsail.
+- La page et la fenêtre vivent dans la passerelle K1 Control, sans mot de
+  passe, sur le réseau privé, au même titre que Mainsail.
+- L'index de Mainsail servi par la passerelle porte une balise ajoutée par
+  `mainsail_overlay_patch.py` ; une mise à jour de Mainsail la retire, à
+  reposer avec la même commande.
 - La relève automatique en fin de bobine (point 5) n'est pas concernée : elle
   suit toujours les groupes du firmware.

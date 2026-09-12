@@ -124,6 +124,24 @@ export function pendingKey(model) {
   return model.pending ? model.file + "@" + Math.floor(model.since) : "";
 }
 
+// How long the window inside Mainsail stays to say the print left.
+export const LAUNCHED_MS = 4000;
+
+// The window inside Mainsail decides on its own when to be seen: "choice"
+// while a start waits for its spools, "minimised" when the operator put this
+// very file aside (a pill stays), "launched" for a moment after the launch
+// the window itself sent, "hidden" otherwise so Mainsail keeps its own
+// screens for everything else. A cancel, from here or from anywhere, and a
+// restart of Klipper both end in "hidden" on the next poll.
+export function overlayMode(state, model, now) {
+  if (model && model.view === "choice") {
+    const key = pendingKey(model);
+    return key && key === state.dismissedKey ? "minimised" : "choice";
+  }
+  if (state.launchedAt && now - state.launchedAt < LAUNCHED_MS) return "launched";
+  return "hidden";
+}
+
 // Give `slot` to `logical`; a spool belongs to one filament at a time, so
 // it is taken away from whoever had it. Choosing the same pair again
 // disconnects it.

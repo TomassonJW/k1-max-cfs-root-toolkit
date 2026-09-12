@@ -6,9 +6,9 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
 import {
-  NAMES, assign, buildModel, colourName, compatibility, completeness,
-  elapsedLabel, isLight, mapParam, nextToConnect, normaliseHex, pendingKey,
-  remainingLabel, shortName, summaryLine,
+  LAUNCHED_MS, NAMES, assign, buildModel, colourName, compatibility, completeness,
+  elapsedLabel, isLight, mapParam, nextToConnect, normaliseHex, overlayMode,
+  pendingKey, remainingLabel, shortName, summaryLine,
 } from "./www/bobines/logic.js";
 
 const slot = (type, colour, loaded = 1, remain = 80) => ({ loaded, type, colour, material: "000001", remain });
@@ -173,4 +173,35 @@ test("the summary line counts what is left in plain words", () => {
   assert.equal(summaryLine(two, { T1A: "T2A", T1B: "T2B" }), "Les 2 filaments sont raccordés, tout est prêt.");
   assert.equal(summaryLine(GATE.filaments, { T1A: "T1B" }), "Le filament est raccordé, tout est prêt.");
   assert.equal(summaryLine([], {}), "Le fichier n'utilise aucun filament.");
+});
+
+test("the window inside Mainsail shows itself only while a start waits", () => {
+  const choice = buildModel({ kctrl_print_gate: GATE, print_stats: { state: "standby", filename: "" } });
+  const idle = buildModel({ kctrl_print_gate: Object.assign({}, GATE, { pending: 0 }), print_stats: { state: "standby" } });
+  const printing = buildModel({ kctrl_print_gate: Object.assign({}, GATE, { pending: 0 }), print_stats: { state: "printing", filename: GATE.name } });
+  const quiet = { dismissedKey: "", launchedAt: 0 };
+  assert.equal(overlayMode(quiet, null, 1000), "hidden");
+  assert.equal(overlayMode(quiet, idle, 1000), "hidden");
+  assert.equal(overlayMode(quiet, printing, 1000), "hidden");
+  assert.equal(overlayMode(quiet, choice, 1000), "choice");
+});
+
+test("the window put aside stays a pill for that file only", () => {
+  const choice = buildModel({ kctrl_print_gate: GATE, print_stats: { state: "standby" } });
+  const again = buildModel({ kctrl_print_gate: Object.assign({}, GATE, { since: 2000 }), print_stats: { state: "standby" } });
+  const aside = { dismissedKey: pendingKey(choice), launchedAt: 0 };
+  assert.equal(overlayMode(aside, choice, 1000), "minimised");
+  assert.equal(overlayMode(aside, again, 1000), "choice");
+  assert.equal(overlayMode({ dismissedKey: "", launchedAt: 0 }, choice, 1000), "choice");
+});
+
+test("after the launch it sent the window says so for a moment then hides", () => {
+  const printing = buildModel({ kctrl_print_gate: Object.assign({}, GATE, { pending: 0 }), print_stats: { state: "printing", filename: GATE.name } });
+  const sent = { dismissedKey: "", launchedAt: 50000 };
+  assert.equal(overlayMode(sent, printing, 50000 + 1000), "launched");
+  assert.equal(overlayMode(sent, printing, 50000 + LAUNCHED_MS - 1), "launched");
+  assert.equal(overlayMode(sent, printing, 50000 + LAUNCHED_MS), "hidden");
+  // A cancel never shows the launched card: nothing was sent.
+  const idle = buildModel({ kctrl_print_gate: Object.assign({}, GATE, { pending: 0 }), print_stats: { state: "standby" } });
+  assert.equal(overlayMode({ dismissedKey: "", launchedAt: 0 }, idle, 50000), "hidden");
 });
