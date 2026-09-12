@@ -201,3 +201,32 @@ def test_the_reference_point_is_the_centre_of_the_bed(module):
     # The whole profile is zero at this point (ADR-046) and the editor refuses
     # to touch it; if this moves, that guard has to move with it.
     assert module.REFERENCE_XY == (150.0, 150.0)
+
+
+def test_two_backups_in_the_same_second_keep_both_matrices(module, tmp_path):
+    # 10 September 2026, 12:32:54: a matrix applied in two steps within one
+    # second produced one backup file, the second step overwriting the first,
+    # and the original matrix had to be recovered from a printer.cfg copy.
+    cfg = tmp_path / "printer.cfg"
+    cfg.write_text("[printer]\n")
+
+    class Printer:
+        def get_start_args(self):
+            return {"config_file": str(cfg)}
+
+    mesh = module.KctrlMesh.__new__(module.KctrlMesh)
+    mesh.printer = Printer()
+    prof = {"mesh_params": {"x_count": 2, "y_count": 1}}
+    first = mesh._backup("k1_p001", prof, [[0.1, 0.2]])
+    second = mesh._backup("k1_p001", prof, [[0.3, 0.4]])
+    third = mesh._backup("k1_p001", prof, [[0.5, 0.6]])
+    assert len({first, second, third}) == 3
+    assert os.path.basename(first).startswith("k1_p001-")
+    assert os.path.basename(second).endswith("-2.json")
+    assert os.path.basename(third).endswith("-3.json")
+    folder = tmp_path / "kctrl-mesh-backups"
+    assert sorted(p.name for p in folder.iterdir()) == sorted(
+        os.path.basename(p) for p in (first, second, third))
+    import json
+    assert json.load(open(first))["points"] == [[0.1, 0.2]]
+    assert json.load(open(second))["points"] == [[0.3, 0.4]]
