@@ -101,3 +101,6 @@ jobs:
 
       - name: Mesh editor front end
         run: node --test tests/mesh_editor_ui.test.mjs
+
+      - name: Bobines page logic
+        run: node --test packages/k1-control-v1/spool-choice-gate-v1/logic.test.mjs

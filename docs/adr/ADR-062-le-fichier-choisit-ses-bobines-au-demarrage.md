@@ -2,9 +2,12 @@
 
 Date : 2026-09-10
 
-Statut : **acceptée ; écrite et testée ; pas encore déployée** (déploiement
-sur accord explicite du propriétaire, machine à l'arrêt, redémarrage du
-service Klipper, avec ADR-061).
+Statut : **acceptée ; installée le 12 septembre 2026 à 21:00 ; devenue le
+repli d'ADR-063 le soir même.** Depuis ADR-063, chaque départ attend le
+choix de Thomas sur la page Bobines et `START_PRINT` prend alors la table
+telle qu'il l'a écrite ; l'appariement décrit ici ne s'applique plus qu'aux
+départs qui passent sans choix (reprise après coupure, porte inactive) et à
+`MATCH=1`.
 
 Répond au point 2 du flux quotidien dicté le 10 septembre (`GOALS.md`) :
 « le choix des bobines affiché dans Mainsail / Fluidd ». Document 75.

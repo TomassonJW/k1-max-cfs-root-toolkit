@@ -1,0 +1,6 @@
+{
+  "name": "k1-control-bobines",
+  "private": true,
+  "type": "module",
+  "description": "Page de choix des bobines avant le depart d'une impression (K1 Control)."
+}

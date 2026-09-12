@@ -2,6 +2,80 @@
 
 Last updated: 2026-09-12
 
+12 septembre, 23:30. **Premier départ réel par la fenêtre à 23:17 : Thomas
+a lancé BIN4U depuis Mainsail, raccordé T1A → T1B dans la fenêtre, « c'est
+ce que j'attendais ».** Journal : « bobines raccordees pour BIN4U… », « lance
+avec T1A=T1B », ligne de départ « filament 1 du fichier (T1A) -> emplacement
+T1B (raccorde sur la page Bobines) », cibles 55 / 190 ; impression en cours
+(13 h 38 annoncées), rien touché sur la machine depuis. Point 2 du flux
+quotidien : fait. Sur sa question « impossible de rendre ça persistant si on
+met à jour Mainsail ? » : Mainsail est livré dans le dossier de version de
+K1 Control (`releases/K1-CONTROL-V1.0.0`, `current` y pointe), aucun
+`update_manager` Moonraker ne le touche, et le nginx de la machine n'a ni
+`sub_filter` ni `addition` (pas d'ajout à la volée). Réponse retenue :
+`S57k1_control_gateway` relance `mainsail_overlay_patch.py` (à poser dans
+`state/`, hors du dossier de version) à chaque démarrage de la passerelle, et
+la procédure de version recopie `www/bobines/`. Écrit et testé (21 tests
+page/fenêtre), **pas encore posé : la machine imprime**. À faire à l'arrêt :
+`cp` du service dans `/etc/init.d/` (755), déplacer le script de `current/`
+vers `state/`, puis `S57k1_control_gateway restart` et vérifier « balise
+deja en place » au démarrage. PR #58 fusionnée à la clôture de cette
+session. Doc 78, ADR-063.
+
+12 septembre, 22:58. **La fenêtre Bobines dans Mainsail, installée à
+22:52 (PR #58, toujours ouverte), sur le refus de Thomas de la page :
+« je veux démarrer de Mainsail, un popup s'affiche contenant l'interface,
+et une fois les filaments bien sélectionnés, l'impression part » ; et la
+lenteur du message d'attente corrigée.** Machine à l'arrêt (`standby`,
+vérifié avant chaque geste). La même interface (`bobines.js`, montée par
+`overlay.js` dans un shadow DOM) couvre Mainsail d'elle-même dès qu'un
+départ est retenu, « Lancer l'impression » fait partir le fichier et la
+fenêtre se retire ; « Réduire », Échap ou un clic à côté laissent une
+pastille en bas à droite ; la page `/bobines/` reste pour un téléphone,
+Fluidd ou l'écran. Lenteur : le balayage des `T` passait l'expression sur
+chaque bloc d'un mégaoctet (8,2 s sur BIN4U, 50,9 Mo) ; un test préalable
+par bloc (`may_hold_tool`) le ramène à 0,85 s. Déploiement 22:50–22:53 :
+sauvegardes `.bak-20260912-2250` de `nginx-active.conf` et de
+`kctrl_print_gate.py` ; module, six fichiers `www/bobines/` (644/755) et
+`mainsail_overlay_patch.py` (dans `current/`) copiés, md5 identiques au
+dépôt ; les deux anciens blocs nginx remplacés par les trois nouveaux
+(`/bobines`, `/bobines/`, `= /index.html` sans cache, en-têtes repris),
+`nginx -t` ok, passerelle rechargée ; balise ajoutée à l'index de Mainsail
+(copie `index.html.bak-20260912-225208`) ; Klipper relancé à 22:52:44
+(l'attente BIN4U de Thomas, retenue depuis 22:24, est tombée avec lui : à
+relancer), journal « wrapped SDCARD_PRINT_FILE », aucune erreur. Mesures
+sur la machine à 22:55, `printer/print/start` → `pending 1` : BIN4U 2,4 s
+(8 s et plus avant), cube 0,25 s ; abandons propres. Dans le vrai Mainsail
+(navigateur) : départ du cube → fenêtre en 0,4 s ; « Réduire » → pastille ;
+pastille → fenêtre avec le message Klipper derrière ; abandon en deux temps
+→ « Impression abandonnée, rien n'a chauffé », fenêtre retirée, `pending
+0`, `standby`. Tests : 58 (module) + 20 (page et fenêtre, dont 17 node) ;
+suite 1371 verts, 2 rouges préexistants. Reste : premier départ réel par la
+fenêtre, à observer par Thomas ; fusion de #58. Doc 78, ADR-063.
+
+12 septembre, 22:10. **Point 2 refait sur la consigne de Thomas (« je veux
+être obligé de choisir avant le départ ») : la porte de départ et la page
+Bobines, installées à 22:02 (PR #58, ouverte).** Avant cela, à 21:24–21:26,
+fusion dans `main` de #53, #57 (remplace #55, fermée), #56 et #54 ; la
+machine portait déjà #53/#57 depuis 21:00, `kctrl_mesh.py` de `main` (#54 +
+#56) posé ce soir. Déploiement machine à l'arrêt (`standby`, carte inactive,
+vérifiés avant chaque geste) : sauvegardes `.bak-20260912-2210` du `.cfg`,
+de `nginx-active.conf` et de `kctrl_mesh.py` ; `kctrl_print_gate.py`
+(nouveau), `kctrl_mesh.py`, le `.cfg` et `www/bobines/` copiés, sommes md5
+identiques au dépôt ; bloc `location /bobines/` et redirection `/bobines` →
+`/bobines/` insérés avant `location /`, passerelle rechargée (un premier
+403 : `cat >` crée en 600, droits 755/644 posés) ; Klipper relancé à
+22:02:05, prêt en 7 s, journal « kctrl_print_gate: wrapped
+SDCARD_PRINT_FILE », aucune erreur. Preuve de la retenue à 22:05 :
+`printer/print/start` du cube → `pending 1`, état `standby`, cibles 0 / 0,
+fenêtre Mainsail émise (`action:prompt_begin Choix des bobines`), filament
+1 PLA 000000 « PLA Geeetech » utilisé, identique à T1B ; filament 2 déclaré,
+non utilisé ; `KCTRL_GATE_CANCEL` → `pending 0`, fenêtre fermée, rien n'a
+chauffé. Page `http://192.168.1.64:4409/bobines/` servie (200, `no-cache`),
+vue au repos avec les six bobines réelles. L'appariement automatique
+(ADR-062) reste en repli. Reste : premier départ réel par la page, à
+observer par Thomas ; fusion de #58. Doc 78, ADR-063.
+
 12 septembre, 21:05. **Points 4 et 2 du flux quotidien installés sur la
 machine (PR #53 + #55), sur le « je voudrais installer les modules » de
 Thomas, après son recalibrage complet.** Machine à l'arrêt (`standby`), Z

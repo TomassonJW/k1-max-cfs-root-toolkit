@@ -1,5 +1,125 @@
 # HANDOFF — index de reprise
 
+## 12 septembre, 23:30 — point 2 fait (premier départ réel par la fenêtre à 23:17) ; PR #58 fusionnée ; reste à poser, machine à l'arrêt, le service qui repose la balise à chaque démarrage
+
+**Point de reprise en un geste :** machine à l'arrêt (`print_stats.state` =
+`standby`, vérifier), poser la persistance de la fenêtre :
+
+```
+cat packages/k1-control-v1/spool-choice-gate-v1/mainsail_overlay_patch.py | ssh k1max-root 'cat > /usr/data/k1-control-v1/state/mainsail_overlay_patch.py'
+cat packages/k1-control-v1/services/S57k1_control_gateway | ssh k1max-root 'cat > /etc/init.d/S57k1_control_gateway'
+ssh k1max-root 'chmod 644 /usr/data/k1-control-v1/state/mainsail_overlay_patch.py; chmod 755 /etc/init.d/S57k1_control_gateway; rm -f /usr/data/k1-control-v1/current/mainsail_overlay_patch.py; /etc/init.d/S57k1_control_gateway restart'
+```
+
+Attendu au restart : « balise deja en place: …/mainsail/index.html », puis
+`http://192.168.1.64:4409/` répond 200 avec la balise et la fenêtre s'ouvre
+toujours sur un départ. Sauvegarde préalable de `/etc/init.d/S57k1_control_gateway`
+(`.bak-<date>`). Ensuite STATE et HANDOFF (nouveau bloc de tête), commit
+`pilotage`, push sur `main`.
+
+### Fait le 12 septembre, 22:58–23:30
+
+- Thomas a lancé BIN4U par la fenêtre à 23:17 : journal « bobines
+  raccordees », « lance avec T1A=T1B », ligne de départ « raccorde sur la
+  page Bobines ». Point 2 du flux quotidien fait ; impression en cours.
+- Persistance de la balise après une nouvelle version de K1 Control
+  (Mainsail y est livré, rien d'autre ne le met à jour ; nginx sans
+  `sub_filter` ni `addition`) : `S57k1_control_gateway` relance
+  `mainsail_overlay_patch.py` depuis `state/` à chaque `start`, sans jamais
+  bloquer la passerelle. Écrit, testé (`test_bobines_page_v1`, 21), pas posé.
+- PR #58 fusionnée dans `main`, branche supprimée.
+
+### À savoir
+
+- Sur la machine ce soir, le script est encore dans `current/` (dossier de
+  version) et le service installé est l'ancien : la balise tient tant que la
+  version K1-CONTROL-V1.0.0 reste, le geste ci-dessus la rend durable.
+- Retour arrière de la fenêtre : `python3 …/mainsail_overlay_patch.py
+  --remove …/mainsail/index.html`, sauvegardes `.bak-20260912-2250`
+  (`nginx-active.conf`, `kctrl_print_gate.py`), `index.html.bak-20260912-225208`.
+- Fluidd et l'écran n'ont pas la fenêtre : la page `/bobines/`, dont le
+  message Klipper donne l'adresse.
+
+## 12 septembre, 22:58 — la fenêtre Bobines dans Mainsail (PR #58) : lancer depuis Mainsail, la fenêtre s'ouvre seule, raccorder, lancer ; premier départ réel à observer, puis fusion
+
+**Point de reprise en un geste :** Thomas lance un fichier depuis Mainsail.
+Attendu : rien ne chauffe, la fenêtre Bobines couvre Mainsail en une à
+trois secondes avec les filaments du fichier et les bobines du CFS ; il
+touche un filament puis sa bobine, « Lancer l'impression » ; la fenêtre dit
+« Impression lancée » puis se retire ; au journal, « bobines raccordees
+pour … », la ligne de départ « raccorde sur la page Bobines » et `cmd_T
+vtnn=` sur la bobine choisie. Ensuite : fusion de #58 (STATE et HANDOFF :
+garder tous les blocs de tête, le plus récent en premier), suppression de
+la branche, `main` repoussé.
+
+### Fait le 12 septembre, 22:10–22:58
+
+- Sur le refus de Thomas (« pas une page que je dois ouvrir à chaque
+  fois »), l'interface est devenue une fenêtre dans Mainsail : `bobines.js`
+  (l'interface, montée une fois par `mount`), `overlay.js` (shadow DOM,
+  sondage toutes les 750 ms, « Réduire » et pastille, retrait quatre
+  secondes après le lancement), balise ajoutée à l'index de Mainsail par
+  `mainsail_overlay_patch.py` (copie datée, `--remove`), trois blocs nginx
+  (`= /index.html` sans cache). La page `/bobines/` reste (`app.js`, six
+  lignes).
+- Lenteur du message d'attente corrigée : `may_hold_tool` évite
+  l'expression sur les blocs sans `T` ; BIN4U 50 Mo retenu en 2,4 s sur la
+  machine (8 s et plus avant), cube 0,25 s.
+- Installé à 22:52 machine à l'arrêt (sauvegardes `.bak-20260912-2250`,
+  `index.html.bak-20260912-225208`), vérifié dans le vrai Mainsail :
+  fenêtre en 0,4 s, réduire, rouvrir, abandonner. Détail dans STATE.
+- Tests : 58 + 20 (dont 17 node) ; suite 1371 verts, 2 rouges
+  préexistants. Doc 78 et ADR-063 complétés, README du paquet refait.
+
+### À savoir
+
+- L'attente BIN4U que Thomas avait laissée (22:24) est tombée avec le
+  redémarrage de Klipper : la relancer.
+- Une mise à jour de Mainsail qui réécrit `index.html` retire la balise :
+  `python3 /usr/data/k1-control-v1/current/mainsail_overlay_patch.py
+  /usr/data/k1-control-v1/current/www/mainsail/index.html`.
+- Retour arrière : la même commande avec `--remove`, puis les sauvegardes
+  `.bak-20260912-2250` et celles du bloc précédent.
+- Fluidd et l'écran n'ont pas la fenêtre : la page `/bobines/`, dont le
+  message Klipper donne l'adresse.
+
+## 12 septembre, 22:10 — la page Bobines installée (PR #58) : chaque départ attend le choix de Thomas ; premier départ réel à observer, puis fusion
+
+**Point de reprise en un geste :** Thomas lance un fichier depuis Mainsail.
+Attendu : rien ne chauffe, fenêtre « Choix des bobines » dans Mainsail,
+page `http://192.168.1.64:4409/bobines/` avec le fichier en attente ; il
+raccorde chaque filament d'un clic, « Lancer l'impression » ; au journal,
+« bobines raccordees pour … » puis la ligne de départ « raccorde sur la page
+Bobines » et `cmd_T vtnn=` sur la bobine choisie. Ensuite : fusion de #58
+(STATE et HANDOFF : garder tous les blocs de tête, le plus récent en
+premier), suppression de la branche, `main` repoussé.
+
+### Fait le 12 septembre, 21:24–22:10
+
+- Fusion de #53, #57 (remplace #55), #56, #54 dans `main` à 21:24–21:26.
+- Mission « choix obligatoire avant le départ » : module `kctrl_print_gate`
+  (reprend `SDCARD_PRINT_FILE`, retient sans chauffer, `KCTRL_GATE_CONFIRM`
+  / `KCTRL_GATE_CANCEL` / `KCTRL_GATE`), page `www/bobines/`, bloc nginx,
+  `START_PRINT` qui prend la table telle quelle quand la porte a confirmé le
+  fichier. 38 + 9 (+ 14 node) tests, suite 1354 verts + 2 rouges
+  préexistants (les mêmes sur `main`). Doc 78, ADR-063, ADR-062 en repli.
+- Installé à 22:02 machine à l'arrêt (sauvegardes `.bak-20260912-2210`),
+  `kctrl_mesh.py` de `main` posé au passage ; retenue prouvée à 22:05 sur
+  le cube (`pending 1`, `standby`, cibles 0, fenêtre émise, annulation
+  propre). Détail dans STATE.
+
+### À savoir
+
+- Retour arrière : recopier les trois `.bak-20260912-2210`, supprimer
+  `kctrl_print_gate.py` (+ `.pyc`) et `www/bobines/`, `S57k1_control_gateway
+  reload`, `S55klipper_service restart`.
+- Un redémarrage de Klipper pendant une attente oublie le fichier : le
+  relancer. La reprise après coupure passe sans choix.
+- Fichiers servis par la passerelle : `cat >` en root crée en 600, poser
+  755 sur le dossier et 644 sur les fichiers, sinon 403.
+- La page ne raccorde jamais seule : une bobine identique n'a qu'un badge.
+  `MATCH=1` sur `START_PRINT` force l'appariement d'ADR-062 malgré la porte.
+
 ## 12 septembre, 21:05 — points 4 et 2 installés (PR #53 + #55) après recalibrage ; premier démarrage réel à observer, puis fusion
 
 **Point de reprise en un geste :** Thomas lance une impression multi-filament
