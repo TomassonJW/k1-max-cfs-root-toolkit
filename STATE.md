@@ -1,6 +1,23 @@
 # STATE
 
-Last updated: 2026-09-11
+Last updated: 2026-09-12
+
+12 septembre, 21:05. **Points 4 et 2 du flux quotidien installés sur la
+machine (PR #53 + #55), sur le « je voudrais installer les modules » de
+Thomas, après son recalibrage complet.** Machine à l'arrêt (`standby`), Z
+sauvé 0,065 par Thomas. Déploiement 20:59–21:00 : sauvegardes
+`.bak-20260912-2100` de `kctrl_slot_map.py` et
+`k1-control-owned-start-print-v2.cfg`, copies de ces deux fichiers et de
+`kctrl_tool_change.py` (nouveau) aux versions de
+`feat/appariement-automatique-des-bobines`, Klipper relancé par
+`S55klipper_service restart`, prêt en 10 s, aucune erreur. Vérifié :
+journal « kctrl_tool_change: wrapped T0…T15 », `KCTRL_TOOLS` répond,
+`KCTRL_MATCH CHECK=1 FILE=_Cube_PLA_24m21s.gcode` répond « 2 filaments
+déclarés, 1 utilisé ; filament 1 PLA 000000 -> T1B ; filament 2 PLA 8080FF
+sans bobine de cette couleur, la plus proche T2D, déclaré mais non utilisé ;
+contrôle seul, rien écrit ». Reste à observer : le premier démarrage réel
+depuis Mainsail (lignes « appariement sur le fichier » puis `cmd_T vtnn=`
+dans le journal). Aucune PR fusionnée ; #53, #54, #55, #56 ouvertes.
 
 11 septembre, 21:00. **Boulon de plateau perdu dans la nuit, trois relevés
 refaits, outil « quatre vis seulement » écrit, testé et installé (PR #56).**

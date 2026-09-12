@@ -1,5 +1,31 @@
 # HANDOFF — index de reprise
 
+## 12 septembre, 21:05 — points 4 et 2 installés (PR #53 + #55) après recalibrage ; premier démarrage réel à observer, puis fusion
+
+**Point de reprise en un geste :** Thomas lance une impression multi-filament
+depuis Mainsail. Attendu au journal : « appariement du fichier sur les
+bobines » avec une ligne par filament, puis `cmd_T vtnn=` avec la bobine
+retenue. S'il manque une couleur, `KCTRL_SLOT SLOT=<bobine> TOOL=<T du
+fichier>` avant de relancer. Ensuite : fusion de #53, #55, #54, #56 (STATE et
+HANDOFF : garder tous les blocs de tête, le plus récent en premier), suppression
+des branches, `main` repoussé.
+
+### Fait le 12 septembre, 20:59–21:02
+
+- État vérifié `standby` avant chaque geste ; sauvegardes `.bak-20260912-2100`
+  de `kctrl_slot_map.py` et `k1-control-owned-start-print-v2.cfg` ;
+  `kctrl_tool_change.py` copié (nouveau) ; Klipper relancé, prêt en 10 s.
+- Preuves : `help` liste `KCTRL_TOOLS`, `KCTRL_MATCH`, `KCTRL_SLOT`,
+  `KCTRL_MAP` ; journal « wrapped T0,…,T15 ; not registered by the box: - » ;
+  `KCTRL_MATCH CHECK=1` sur le cube PLA rend la table complète (voir STATE).
+- Z sauvé par Thomas : 0,065 (`k1-control-saved-vars.cfg`).
+
+### À savoir
+
+- Retour arrière : recopier les deux `.bak-20260912-2100`, supprimer
+  `kctrl_tool_change.py` et son `.pyc`, relancer le service Klipper.
+- Le `.pyc` de `kctrl_slot_map` s'est bien régénéré à 21:00:14.
+
 ## 11 septembre, 21:00 — boulon perdu, plateau plié, outil « quatre vis seulement » installé (PR #56) ; PR #53, #54, #55 toujours à déployer
 
 **Point de reprise en un geste :** Thomas règle les vis avec
