@@ -17,7 +17,7 @@ ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 PACKAGE = os.path.join(ROOT, "packages", "k1-control-v1", "mesh-acquisition-v2")
 FILES = {
     "k1-control-mesh-acquisition-v2.cfg": ["KCTRL_MESH_ACQUIRE"],
-    "k1-control-mesh-reference-v2.cfg": ["KCTRL_BED_SCREWS", "KCTRL_MESH_SAVE_AS_REF", "KCTRL_Z_REPEAT"],
+    "k1-control-mesh-reference-v2.cfg": ["KCTRL_BED_SCREWS", "KCTRL_SCREWS_ONLY", "KCTRL_MESH_SAVE_AS_REF", "KCTRL_Z_REPEAT"],
 }
 REFUSED = '{% if printer.print_stats.state|string in ["printing", "paused"] %}'
 

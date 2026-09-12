@@ -1,6 +1,38 @@
 # STATE
 
-Last updated: 2026-09-10
+Last updated: 2026-09-12
+
+12 septembre, 21:05. **Points 4 et 2 du flux quotidien installés sur la
+machine (PR #53 + #55), sur le « je voudrais installer les modules » de
+Thomas, après son recalibrage complet.** Machine à l'arrêt (`standby`), Z
+sauvé 0,065 par Thomas. Déploiement 20:59–21:00 : sauvegardes
+`.bak-20260912-2100` de `kctrl_slot_map.py` et
+`k1-control-owned-start-print-v2.cfg`, copies de ces deux fichiers et de
+`kctrl_tool_change.py` (nouveau) aux versions de
+`feat/appariement-automatique-des-bobines`, Klipper relancé par
+`S55klipper_service restart`, prêt en 10 s, aucune erreur. Vérifié :
+journal « kctrl_tool_change: wrapped T0…T15 », `KCTRL_TOOLS` répond,
+`KCTRL_MATCH CHECK=1 FILE=_Cube_PLA_24m21s.gcode` répond « 2 filaments
+déclarés, 1 utilisé ; filament 1 PLA 000000 -> T1B ; filament 2 PLA 8080FF
+sans bobine de cette couleur, la plus proche T2D, déclaré mais non utilisé ;
+contrôle seul, rien écrit ». Reste à observer : le premier démarrage réel
+depuis Mainsail (lignes « appariement sur le fichier » puis `cmd_T vtnn=`
+dans le journal). Aucune PR fusionnée ; #53, #54, #55, #56 ouvertes.
+
+11 septembre, 21:00. **Boulon de plateau perdu dans la nuit, trois relevés
+refaits, outil « quatre vis seulement » écrit, testé et installé (PR #56).**
+Les relevés de 02:38, 03:08 et 03:33 sont propres en eux-mêmes mais le
+plateau bouge entre les quadrants (0,25 à 0,56 mm, contre 0,03 la veille) et
+son bord avant creuse de 0,5 mm au milieu (plat la veille) : tôle pliée par
+ses fixations, pas voilée. Le profil `k1_p001_t055_r001_n11x11` en service
+est celui de 03:33 (amplitude 1,16 mm, avant bas de 0,86 mm) ; Z sauvé 0,075
+d'avant la panne, à refaire. Thomas a imprimé SILLAGES dessus à 03:35
+(résultat non lu). Pour itérer vite sur les vis : `KCTRL_SCREWS_ONLY`
+(quatre `PROBE` aux positions des vis, contacts bruts hors rampe du firmware,
+tours en huitièmes, lit gardé chaud), installée le 11 à 20:45, machine à
+l'arrêt ; première exécution réelle à observer. Doc 77. Rien d'autre n'est
+installé : les PR #53, #54, #55 (points 4 et 2 du flux quotidien) restent à
+déployer sur accord, entre deux impressions.
 
 10 septembre, 23:30. **Points 2 et 5 traites ; PR #53 (point 4) et la
 PR du point 2 ouvertes, rien de deploye.** Toujours pendant que Thomas

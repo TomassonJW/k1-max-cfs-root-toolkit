@@ -78,6 +78,9 @@ class KctrlMesh:
             "KCTRL_SCREWS_REPORT", self.cmd_KCTRL_SCREWS_REPORT,
             desc="Turn a probed grid into a per screw correction in eighths of a turn")
         self.gcode.register_command(
+            "KCTRL_SCREWS_PROBE", self.cmd_KCTRL_SCREWS_PROBE,
+            desc="Probe the screw positions only, raw contacts, and report the turns")
+        self.gcode.register_command(
             "KCTRL_MESH_EDIT", self.cmd_KCTRL_MESH_EDIT,
             desc="Shift an edge, a corner or one point of a stored mesh profile")
         self.gcode.register_command(
@@ -410,6 +413,9 @@ class KctrlMesh:
                     "K1 Control: screw %s at X%.1f Y%.1f falls outside the "
                     "probed grid; widen MESH_MIN and MESH_MAX" % (nm, x, y))
             heights.append((nm, x, y, z))
+        self._report_heights(gcmd, heights)
+
+    def _report_heights(self, gcmd, heights):
         highest = max([h[3] for h in heights])
         lowest = min([h[3] for h in heights])
         pitch = self.screw_pitch
@@ -439,6 +445,54 @@ class KctrlMesh:
             gcmd.respond_info(
                 "   %-16s X%-5.0f Y%-5.0f  %+.4f mm  ->  %s"
                 % (nm, x, y, z, verdict))
+
+    def cmd_KCTRL_SCREWS_PROBE(self, gcmd):
+        # Four contacts, one over each screw, at the measured screw positions
+        # rather than the corners of a rectangle the rear pair does not sit on.
+        # This goes through the plain PROBE path of the probe object, not
+        # through BED_MESH_CALIBRATE, so the values are the raw contacts: the
+        # firmware ramp that tilts every stored mesh (doc 73) never touches
+        # them. The caller homes, heats and clears the mesh; this only moves
+        # and probes.
+        if not self.screws:
+            raise self.gcode.error(
+                "K1 Control: no screw position configured; add screw1..screwN "
+                "to the [kctrl_mesh] section")
+        stats = self.printer.lookup_object("print_stats", None)
+        now = self.printer.get_reactor().monotonic()
+        if stats is not None:
+            state = str(stats.get_status(now).get("state", ""))
+            if state in ("printing", "paused"):
+                raise self.gcode.error(
+                    "K1 Control: screw probing cannot run while a print is in "
+                    "progress or paused")
+        toolhead = self.printer.lookup_object("toolhead")
+        homed = str(toolhead.get_status(now).get("homed_axes", ""))
+        if not all(axis in homed for axis in "xyz"):
+            raise self.gcode.error(
+                "K1 Control: home all axes before probing the screws")
+        probe = self.printer.lookup_object("probe", None)
+        if probe is None:
+            raise self.gcode.error("K1 Control: no probe on this printer")
+        travel = gcmd.get_float("TRAVEL_Z", 5.0, minval=1.0)
+        speed = gcmd.get_float("SPEED", 150.0, above=0.0)
+        lift_speed = gcmd.get_float("LIFT_SPEED", 15.0, above=0.0)
+        gcmd.respond_info(
+            "K1 Control: probing the %d screws only, raw contacts, travel Z%.1f"
+            % (len(self.screws), travel))
+        heights = []
+        for nm, x, y in self.screws:
+            self.gcode.run_script_from_command(
+                "G90\nG1 Z%.3f F%d\nG1 X%.3f Y%.3f F%d"
+                % (travel, int(lift_speed * 60), x, y, int(speed * 60)))
+            pos = probe.run_probe(gcmd)
+            z = float(pos[2])
+            heights.append((nm, x, y, z))
+            gcmd.respond_info(
+                "K1 Control: %s X%.1f Y%.1f contact at %+.4f mm" % (nm, x, y, z))
+        self.gcode.run_script_from_command(
+            "G1 Z%.3f F%d" % (travel, int(lift_speed * 60)))
+        self._report_heights(gcmd, heights)
 
 
     # ------------------------------------------------------------------- edits

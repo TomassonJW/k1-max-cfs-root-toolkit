@@ -1,6 +1,64 @@
 # HANDOFF — index de reprise
 
-## 10 septembre, 23:30 — points 4 et 2 écrits et testés (PR #53 + PR point 2), point 5 documenté ; à déployer entre deux impressions
+## 12 septembre, 21:05 — points 4 et 2 installés (PR #53 + #55) après recalibrage ; premier démarrage réel à observer, puis fusion
+
+**Point de reprise en un geste :** Thomas lance une impression multi-filament
+depuis Mainsail. Attendu au journal : « appariement du fichier sur les
+bobines » avec une ligne par filament, puis `cmd_T vtnn=` avec la bobine
+retenue. S'il manque une couleur, `KCTRL_SLOT SLOT=<bobine> TOOL=<T du
+fichier>` avant de relancer. Ensuite : fusion de #53, #55, #54, #56 (STATE et
+HANDOFF : garder tous les blocs de tête, le plus récent en premier), suppression
+des branches, `main` repoussé.
+
+### Fait le 12 septembre, 20:59–21:02
+
+- État vérifié `standby` avant chaque geste ; sauvegardes `.bak-20260912-2100`
+  de `kctrl_slot_map.py` et `k1-control-owned-start-print-v2.cfg` ;
+  `kctrl_tool_change.py` copié (nouveau) ; Klipper relancé, prêt en 10 s.
+- Preuves : `help` liste `KCTRL_TOOLS`, `KCTRL_MATCH`, `KCTRL_SLOT`,
+  `KCTRL_MAP` ; journal « wrapped T0,…,T15 ; not registered by the box: - » ;
+  `KCTRL_MATCH CHECK=1` sur le cube PLA rend la table complète (voir STATE).
+- Z sauvé par Thomas : 0,065 (`k1-control-saved-vars.cfg`).
+
+### À savoir
+
+- Retour arrière : recopier les deux `.bak-20260912-2100`, supprimer
+  `kctrl_tool_change.py` et son `.pyc`, relancer le service Klipper.
+- Le `.pyc` de `kctrl_slot_map` s'est bien régénéré à 21:00:14.
+
+## 11 septembre, 21:00 — boulon perdu, plateau plié, outil « quatre vis seulement » installé (PR #56) ; PR #53, #54, #55 toujours à déployer
+
+**Point de reprise en un geste :** Thomas règle les vis avec
+`KCTRL_SCREWS_ONLY` (buse propre, filament hors tête ; le lit reste à 55 C
+entre les passes, `TURN_OFF_HEATERS` à la fin). Critère : écart entre vis
+sous un huitième (0,0875 mm), sans forcer une vis pour en rattraper une
+autre. Ensuite `KCTRL_MESH_CALIBRATE`, carré de calibration, `KCTRL_Z_SAVE`
+(le 0,075 date d'avant la panne). Critère du relevé : décalage entre
+quadrants sous 0,1 mm, bord avant plat.
+
+### Fait le 11 septembre
+
+- Nuit : trois relevés lus et comparés (doc 77) ; verdict donné à Thomas :
+  mesure propre, plateau qui bouge (0,25–0,56 mm entre quadrants) et bord
+  avant creusé de 0,5 mm, donc tôle contrainte par ses vis, pas voilée.
+- Soir : `KCTRL_SCREWS_PROBE` (Python, quatre `PROBE` bruts aux positions
+  mesurées des vis) et `KCTRL_SCREWS_ONLY` (macro), 16 tests, suite à 1292
+  verts + 2 rouges préexistants ; installé à 20:45 machine à l'arrêt
+  (sauvegardes `.bak-20260911-2050`), commandes visibles dans `help`.
+  Première exécution réelle pas encore observée.
+
+### À savoir
+
+- `KCTRL_BED_SCREWS` (25 points) lit un profil enregistré, incliné de 0,10
+  par le firmware : pour les vis, préférer `KCTRL_SCREWS_ONLY`.
+- Les PR #53 (enveloppe des `T`), #55 (appariement des bobines) et #54 ne
+  sont **pas** sur la machine ; le démarrage de 03:35 l'a montré (« dernier
+  choix retenu, table CFS effacée »). Déploiement sur accord, machine à
+  l'arrêt (docs 74, 75).
+- À la fusion, STATE et HANDOFF de #53/#55 et de #56 s'insèrent tous en tête :
+  garder les deux blocs, le plus récent en premier.
+
+## 10 septembre, 23:30 — points 4 et 2 écrits et testés (PR #53 + PR point 2), point 5 documenté ; à déployer entre deux impressions (remplacé par 11 sept. 21:00)
 
 **Point de reprise en un geste :** quand la machine n'imprime pas
 (`print_stats.state` ni `printing` ni `paused`, vérifié avant chaque action)
