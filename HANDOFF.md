@@ -1,5 +1,42 @@
 # HANDOFF — index de reprise
 
+## 12 septembre, 22:10 — la page Bobines installée (PR #58) : chaque départ attend le choix de Thomas ; premier départ réel à observer, puis fusion
+
+**Point de reprise en un geste :** Thomas lance un fichier depuis Mainsail.
+Attendu : rien ne chauffe, fenêtre « Choix des bobines » dans Mainsail,
+page `http://192.168.1.64:4409/bobines/` avec le fichier en attente ; il
+raccorde chaque filament d'un clic, « Lancer l'impression » ; au journal,
+« bobines raccordees pour … » puis la ligne de départ « raccorde sur la page
+Bobines » et `cmd_T vtnn=` sur la bobine choisie. Ensuite : fusion de #58
+(STATE et HANDOFF : garder tous les blocs de tête, le plus récent en
+premier), suppression de la branche, `main` repoussé.
+
+### Fait le 12 septembre, 21:24–22:10
+
+- Fusion de #53, #57 (remplace #55), #56, #54 dans `main` à 21:24–21:26.
+- Mission « choix obligatoire avant le départ » : module `kctrl_print_gate`
+  (reprend `SDCARD_PRINT_FILE`, retient sans chauffer, `KCTRL_GATE_CONFIRM`
+  / `KCTRL_GATE_CANCEL` / `KCTRL_GATE`), page `www/bobines/`, bloc nginx,
+  `START_PRINT` qui prend la table telle quelle quand la porte a confirmé le
+  fichier. 38 + 9 (+ 14 node) tests, suite 1354 verts + 2 rouges
+  préexistants (les mêmes sur `main`). Doc 78, ADR-063, ADR-062 en repli.
+- Installé à 22:02 machine à l'arrêt (sauvegardes `.bak-20260912-2210`),
+  `kctrl_mesh.py` de `main` posé au passage ; retenue prouvée à 22:05 sur
+  le cube (`pending 1`, `standby`, cibles 0, fenêtre émise, annulation
+  propre). Détail dans STATE.
+
+### À savoir
+
+- Retour arrière : recopier les trois `.bak-20260912-2210`, supprimer
+  `kctrl_print_gate.py` (+ `.pyc`) et `www/bobines/`, `S57k1_control_gateway
+  reload`, `S55klipper_service restart`.
+- Un redémarrage de Klipper pendant une attente oublie le fichier : le
+  relancer. La reprise après coupure passe sans choix.
+- Fichiers servis par la passerelle : `cat >` en root crée en 600, poser
+  755 sur le dossier et 644 sur les fichiers, sinon 403.
+- La page ne raccorde jamais seule : une bobine identique n'a qu'un badge.
+  `MATCH=1` sur `START_PRINT` force l'appariement d'ADR-062 malgré la porte.
+
 ## 12 septembre, 21:05 — points 4 et 2 installés (PR #53 + #55) après recalibrage ; premier démarrage réel à observer, puis fusion
 
 **Point de reprise en un geste :** Thomas lance une impression multi-filament

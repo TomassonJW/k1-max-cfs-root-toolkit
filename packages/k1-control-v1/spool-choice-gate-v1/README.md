@@ -23,9 +23,12 @@ l'appariement automatique (ADR-062) ne tourne pas.
 
 1. Sauvegarder `nginx-active.conf` et le `.cfg` de démarrage.
 2. Copier `kctrl_print_gate.py` dans `extras/`, le `.cfg` dans
-   `printer_data/config/`, `www/bobines/` dans `current/www/bobines/`.
-3. Ajouter le bloc de `nginx-location.conf` avant `location /` dans
-   `nginx-active.conf`, puis `/etc/init.d/S57k1_control_gateway reload`.
+   `printer_data/config/`, `www/bobines/` dans `current/www/bobines/`, puis
+   `chmod 755` le dossier et `chmod 644` ses fichiers (`cat >` en root crée
+   en 600 : la passerelle répond 403).
+3. Ajouter les deux blocs de `nginx-location.conf` (redirection `/bobines`
+   et `location /bobines/`) avant `location /` dans `nginx-active.conf`,
+   puis `/etc/init.d/S57k1_control_gateway reload`.
 4. `/etc/init.d/S55klipper_service restart` (jamais `FIRMWARE_RESTART`
    pour un module Python).
 5. Vérifier : `help` liste `KCTRL_GATE_CONFIRM` ; journal « wrapped

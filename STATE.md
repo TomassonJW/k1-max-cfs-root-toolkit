@@ -2,6 +2,29 @@
 
 Last updated: 2026-09-12
 
+12 septembre, 22:10. **Point 2 refait sur la consigne de Thomas (« je veux
+être obligé de choisir avant le départ ») : la porte de départ et la page
+Bobines, installées à 22:02 (PR #58, ouverte).** Avant cela, à 21:24–21:26,
+fusion dans `main` de #53, #57 (remplace #55, fermée), #56 et #54 ; la
+machine portait déjà #53/#57 depuis 21:00, `kctrl_mesh.py` de `main` (#54 +
+#56) posé ce soir. Déploiement machine à l'arrêt (`standby`, carte inactive,
+vérifiés avant chaque geste) : sauvegardes `.bak-20260912-2210` du `.cfg`,
+de `nginx-active.conf` et de `kctrl_mesh.py` ; `kctrl_print_gate.py`
+(nouveau), `kctrl_mesh.py`, le `.cfg` et `www/bobines/` copiés, sommes md5
+identiques au dépôt ; bloc `location /bobines/` et redirection `/bobines` →
+`/bobines/` insérés avant `location /`, passerelle rechargée (un premier
+403 : `cat >` crée en 600, droits 755/644 posés) ; Klipper relancé à
+22:02:05, prêt en 7 s, journal « kctrl_print_gate: wrapped
+SDCARD_PRINT_FILE », aucune erreur. Preuve de la retenue à 22:05 :
+`printer/print/start` du cube → `pending 1`, état `standby`, cibles 0 / 0,
+fenêtre Mainsail émise (`action:prompt_begin Choix des bobines`), filament
+1 PLA 000000 « PLA Geeetech » utilisé, identique à T1B ; filament 2 déclaré,
+non utilisé ; `KCTRL_GATE_CANCEL` → `pending 0`, fenêtre fermée, rien n'a
+chauffé. Page `http://192.168.1.64:4409/bobines/` servie (200, `no-cache`),
+vue au repos avec les six bobines réelles. L'appariement automatique
+(ADR-062) reste en repli. Reste : premier départ réel par la page, à
+observer par Thomas ; fusion de #58. Doc 78, ADR-063.
+
 12 septembre, 21:05. **Points 4 et 2 du flux quotidien installés sur la
 machine (PR #53 + #55), sur le « je voudrais installer les modules » de
 Thomas, après son recalibrage complet.** Machine à l'arrêt (`standby`), Z
