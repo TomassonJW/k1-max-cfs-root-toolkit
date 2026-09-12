@@ -2,6 +2,35 @@
 
 Last updated: 2026-09-10
 
+10 septembre, 22:05. **Point 4 ecrit et teste, PR #53 ouverte, pas
+deploye.** Sur le « GO pour tes recommandations », pendant que Thomas
+imprime (aucune action machine, lectures seules). Verifie au journal : les
+deux demarrages du soir (19:48, 20:24) font une purge stock et une ligne
+d'amorce, `z_down`/`z_restore` a 20,036 des deux cotes ; le `0,8` de la
+routine de fin est efface au fichier suivant ; Thomas a enregistre le Z
+lui-meme (`KCTRL_Z_SAVE`, 0,065, 20:15). Branche
+`feat/changement-outil-a-la-temperature-du-fichier` (2b4b143) : module
+Klipper `kctrl_tool_change.py` qui reprend `T0..T15` du module compile
+(tolere les absents), refuse net avant la commande stock (emplacement vide,
+unite absente, filament non declare, table sans entree, fiche illisible),
+aligne la fiche matiere sur la temperature du fichier (premiere couche ou
+courante), puis apres la commande stock hors demarrage : `M400`, pause si
+la tete est vide, cible remise a la valeur du fichier. `KCTRL_TOOLS` montre
+ce que fera chaque filament. `kctrl_slot_map.py` lit le bloc Orca en queue
+de fichier et publie `job_temps`, `job_types`, `job_colours`, `job_names`
+(base du point 2). Section `[kctrl_tool_change]` dans le cfg du demarrage.
+24 + 7 tests, suite a 1227 verts, 2 rouges preexistants. Doc 74, ADR-061.
+**Deploiement a proposer entre deux impressions** (`print_stats.state` ni
+`printing` ni `paused`) : copier `kctrl_tool_change.py` et
+`kctrl_slot_map.py` dans `/usr/share/klipper/klippy/extras/`, le cfg dans
+la config, sauvegardes, puis `/etc/init.d/S55klipper_service restart`
+(module Python : le service, pas `FIRMWARE_RESTART`), verifier la ligne
+`kctrl_tool_change: wrapped` au journal et `KCTRL_TOOLS`. Ensuite : point 5
+(releve auto, a provoquer sur une impression sans valeur), point 2
+(appariement couleur + matiere depuis Mainsail), a-cotes (contacts bruts
+captures par les macros de mesure, nom de sauvegarde unique dans
+`kctrl_mesh.py`).
+
 10 septembre, 12:35. **Deploye et applique, sur le « tu peux appliquer la
 PR » de Thomas.** Reponses donnees avant d'agir : pas de nouvelle mesure du
 plateau (elle ressortirait avec la meme rampe ; les 169 touches brutes du
