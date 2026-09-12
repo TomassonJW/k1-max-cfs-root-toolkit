@@ -451,7 +451,9 @@ def index_of(lines, needle):
 def test_start_print_reads_the_match_at_render_time():
     body = section("START_PRINT")
     assert "slot_map.match.get(logical)" in body
-    assert "params.MATCH|default(1)|int != 0" in body
+    # Since the Bobines page (ADR-063) the default is 0 when the gate confirmed
+    # this very file, 1 otherwise; either way it is read at render time.
+    assert "params.MATCH|default(0 if chosen else 1)|int != 0" in body
     assert "params.TOOL is not defined" in body
     assert "slot_map.job_count" in body
     assert "appariement sur le fichier" in body

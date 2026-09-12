@@ -1,0 +1,35 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="color-scheme" content="dark">
+  <title>Bobines · K1 Max</title>
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Ccircle cx='32' cy='32' r='28' fill='%234d9fff'/%3E%3Ccircle cx='32' cy='32' r='10' fill='%230b0f14'/%3E%3C/svg%3E">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <header class="top">
+    <div class="brand">
+      <span class="logo" aria-hidden="true"></span>
+      <div>
+        <h1>Bobines</h1>
+        <p class="tagline">Le fichier d'un côté, le CFS de l'autre. Raccordez, puis lancez.</p>
+      </div>
+    </div>
+    <div class="status" id="status" aria-live="polite">
+      <span class="dot" id="dot"></span>
+      <span id="state-label">Connexion…</span>
+    </div>
+  </header>
+  <div class="banner" id="offline" hidden>Imprimante injoignable. Nouvelle tentative en cours…</div>
+  <main id="main" class="main">
+    <section class="hero">
+      <p class="eyebrow">Chargement</p>
+      <h2>Lecture de l'imprimante…</h2>
+    </section>
+  </main>
+  <div class="toast" id="toast" role="status" hidden></div>
+  <script type="module" src="app.js"></script>
+</body>
+</html>
