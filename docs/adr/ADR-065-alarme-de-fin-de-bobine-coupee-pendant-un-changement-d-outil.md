@@ -3,7 +3,9 @@
 Date : 2026-09-14
 
 Statut : **acceptée ; installée le 14 septembre 2026 à 21:00**, après la fin
-du `3DBenchy_C2` ; reste à l'observer sur une impression multicouleur.
+du `3DBenchy_C2` ; **observée** le 14 septembre de 22:30 à 22:54 sur une
+impression multicouleur : cinq `T`, alarme coupée puis rallumée à chacun, aucune
+pause (document 79, section 9.5).
 
 Amende l'étape 3 d'ADR-061. Point 4 du flux quotidien (`GOALS.md`) : « le
 multi-filament en cours d'impression est bien géré ».
