@@ -1,5 +1,22 @@
 # HANDOFF — index de reprise
 
+## 14 septembre, 18:20 — copie de maillage ramenée de 70 à 65 °C : aucun trou de 50 à 70 °C
+
+**Point de reprise :** Thomas envoie un G-code par Mainsail et relance son
+impression. Pour un fichier à 61–70 °C, première couche sur le carré
+280×280 (plateau à 65), régler le Z à la main, puis :
+
+```
+KCTRL_Z_SAVE PROFILE=k1_p001_t065_r001_n11x11 Z=<valeur>
+```
+
+- Maillages : 55 (50–60 °C), 65 (61–70 °C, copie du 55, Z 0,065). Le 70
+  n'existe plus. Profil actif : le 55.
+- Retour arrière de ce geste : `.bak-20260914-1810` (`printer.cfg`,
+  `k1-control-saved-vars.cfg`), puis Klipper relancé.
+- Le bloc 18:15 ci-dessous reste juste pour l'envoi de fichiers ; ce qu'il
+  dit du 70 est remplacé par ce bloc.
+
 ## 14 septembre, 18:15 — maillage à ±5 °C et copie 70 °C installés (ADR-064) ; envoi de G-code par Mainsail réparé ; geste Bobines du 12 fait
 
 **Point de reprise :** Thomas envoie un G-code par Mainsail (Fichiers G-code →
