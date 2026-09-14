@@ -16,9 +16,32 @@ class GatewayPrivateLanNoAuthV1Tests(unittest.TestCase):
         for source in ("127.0.0.1", "10.0.0.0/8", "172.16.0.0/12", "192.168.0.0/16"):
             self.assertIn(f"allow {source};", nginx)
         self.assertIn("deny all;", nginx)
-        self.assertEqual(nginx.count("proxy_set_header Authorization \"\";"), 2)
-        self.assertEqual(nginx.count("proxy_set_header X-Real-IP 127.0.0.1;"), 2)
+        # Every proxied location strips credentials and masks the client.
+        proxied = nginx.count("proxy_pass ")
+        self.assertEqual(proxied, 3)
+        self.assertEqual(nginx.count("proxy_set_header Authorization \"\";"), proxied)
+        self.assertEqual(nginx.count("proxy_set_header X-Real-IP 127.0.0.1;"), proxied)
         self.assertNotIn("proxy_set_header X-Real-IP $remote_addr;", nginx)
+
+    def test_large_gcode_uploads_are_streamed_up_to_moonraker_limit(self) -> None:
+        # 14 September 2026: every Mainsail upload over 16 KB failed on the
+        # client body temp folder, and multi-colour files run to hundreds of MB.
+        nginx = (PACKAGE / "nginx.conf").read_text(encoding="utf-8")
+        start = nginx.index("location = /server/files/upload {")
+        block = nginx[start:nginx.index("}", start)]
+        self.assertIn("client_max_body_size 1024m;", block)
+        self.assertIn("proxy_request_buffering off;", block)
+        self.assertIn("proxy_read_timeout 900s;", block)
+        self.assertIn("proxy_pass http://k1_moonraker;", block)
+        moonraker = (ROOT / "packages" / "k1-control-v1" / "config" / "moonraker.conf").read_text(
+            encoding="utf-8"
+        )
+        self.assertIn("max_upload_size: 1024", moonraker)
+        service = (ROOT / "packages" / "k1-control-v1" / "services" / "S57k1_control_gateway").read_text(
+            encoding="utf-8"
+        )
+        self.assertIn("chmod 711 /usr/data/k1-control-v1/tmp", service)
+        self.assertLess(service.index("chmod 711"), service.index("start-stop-daemon -S"))
 
     def test_manifest_limits_the_write_set_and_preserves_rollback(self) -> None:
         manifest = json.loads((PACKAGE / "deployment-manifest.json").read_text(encoding="utf-8"))
