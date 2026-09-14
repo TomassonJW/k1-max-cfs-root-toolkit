@@ -2,8 +2,8 @@
 
 Date : 2026-09-14
 
-Statut : **acceptée ; écrite et testée ; à installer entre deux impressions**
-(copie de `kctrl_tool_change.py`, redémarrage du service Klipper).
+Statut : **acceptée ; installée le 14 septembre 2026 à 21:00**, après la fin
+du `3DBenchy_C2` ; reste à l'observer sur une impression multicouleur.
 
 Amende l'étape 3 d'ADR-061. Point 4 du flux quotidien (`GOALS.md`) : « le
 multi-filament en cours d'impression est bien géré ».
@@ -71,11 +71,12 @@ fin de bobine, relève modifiée.
 - La fenêtre sans alarme dure le temps du changement (environ 3 minutes,
   19:19:16 → 19:22:36), couverte par les contrôles ci-dessus.
 - Si le réarmement échoue après une erreur stock, c'est l'erreur stock qui
-  remonte, et l'échec est journalisé. Si Klipper redémarre en plein
-  changement, l'alarme revient armée (défaut de Klipper).
-- Jusqu'à l'installation, chaque impression multicouleur s'arrête à son
-  premier changement. `RESUME` suffit ; la suite de l'impression n'a plus
-  d'alarme, puisque la vérification stock l'a coupée.
+  remonte, et l'échec est journalisé. Un redémarrage de Klipper ne laisse
+  pas l'alarme armée : après celui de l'installation, elle était coupée
+  (21:01:06). `START_PRINT` la réarme à chaque impression.
+- Avant l'installation, chaque impression multicouleur s'arrêtait à son
+  premier changement. Après `RESUME`, la suite n'avait plus d'alarme : sur le
+  Benchy du 14, T0 et T1 sont passés sans pause, impression finie à 20:56:58.
 
 ## Preuve
 
@@ -87,6 +88,10 @@ fin de bobine, relève modifiée.
   firmware, dans `START_PRINT`. L'erreur stock n'est pas masquée par un
   rallumage impossible. Une alarme déjà coupée n'est pas touchée. Sur le
   module d'avant, 5 de ces tests échouent.
+- Installation du 14 septembre, machine au repos depuis 3 minutes : module et
+  cfg identiques à `main` (40199b3, empreintes comparées) ; service relancé
+  à 21:00:33 ; « kctrl_tool_change: wrapped T0,…,T15 » à 21:00:50 ; Klipper
+  prêt à 21:01:06 ; `KCTRL_TOOLS` répond. Sauvegardes `.bak-20260914-adr065`.
 - À observer à la première impression multicouleur après installation :
   « runout alarm off during Tn » puis « Tn fait », pas de « runout event
   detected », pas de pause.
