@@ -2,9 +2,10 @@
 
 Date : 2026-09-10
 
-Statut : **acceptée ; écrite et testée ; pas encore déployée** (déploiement sur
-accord explicite du propriétaire, machine à l'arrêt, redémarrage du service
-Klipper).
+Statut : **acceptée ; installée le 12 septembre 2026 à 21:00** (voir
+`HANDOFF.md`). Étape 3 amendée le 14 septembre par ADR-065 : l'alarme de fin
+de bobine du capteur de tête est coupée pendant la commande stock, sinon
+chaque impression multicouleur s'arrête à son premier changement.
 
 Prolonge ADR-059 et le document 67 (alignement de la fiche matière au
 démarrage) à tous les changements d'outil d'une impression. Répond au point 4
@@ -66,7 +67,8 @@ commande stock :
    de l'emplacement visé, par la même méthode que `KCTRL_MATERIAL_ALIGN`.
    Une fiche qui ne peut pas être alignée est un refus : le chargeur
    chaufferait à une valeur que personne n'a choisie.
-3. **La commande stock**, telle quelle.
+3. **La commande stock**, telle quelle ; depuis ADR-065, avec l'alarme de fin
+   de bobine du capteur de tête coupée pendant qu'elle tourne.
 4. **Après, hors démarrage** : `M400`, puis si le firmware a lui-même mis en
    pause (erreur cutter, `key841`), rien de plus qu'un message ; sinon, si le
    capteur de tête ne voit pas de filament, **pause** et message (« charger à
