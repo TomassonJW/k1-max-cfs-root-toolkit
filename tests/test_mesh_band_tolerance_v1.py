@@ -92,6 +92,16 @@ def test_a_bed_outside_every_window_is_refused_with_the_bands_named(bed):
     assert measured == "55, 70 C"
 
 
+def test_the_machine_bands_55_and_65_leave_no_degree_uncovered_from_50_to_70():
+    # Thomas, 14 September 2026: the copy sits at 65, not 70, because a
+    # five-degree hole without a mesh makes no sense.
+    profiles = [name(55), name(65)]
+    for bed in range(50, 71):
+        assert resolve(bed, profiles)[0] == name(55 if bed <= 60 else 65), bed
+    for bed in (49, 71):
+        assert resolve(bed, profiles)[0] == "", bed
+
+
 def test_an_equal_gap_goes_to_the_colder_profile_whatever_the_order():
     for order in ([name(55), name(65)], [name(65), name(55)]):
         assert resolve(60, order)[0] == name(55)

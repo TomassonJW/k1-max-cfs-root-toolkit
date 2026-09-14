@@ -2,6 +2,16 @@
 
 Last updated: 2026-09-14
 
+14 septembre, 18:20. **La copie de maillage est à 65 °C, plus à 70.**
+Thomas : « ça n'a aucun sens de laisser 5 °C sans maillage ». Machine en
+`standby`, sauvegardes `.bak-20260914-1810` de `printer.cfg` et
+`k1-control-saved-vars.cfg`. `KCTRL_MESH_COPY SOURCE=…t055… BED_TEMP=65` a
+créé `k1_p001_t065_r001_n11x11` (bloc identique au 55, Z 0,065) ; le bloc
+autosave du 70 et `z_k1_p001_t070_r001_n11x11` retirés par script (refus si
+55 et 65 différaient), Klipper relancé. Après redémarrage : `KCTRL_Z_LIST` =
+default, 55 et 65 ; 49 °C refusé, 50 et 60 → 55, 61, 65 et 70 → 65, 71
+refusé ; le 65 se charge ; profil actif remis sur le 55. Aucun code changé.
+
 14 septembre, 18:15. **Deux demandes de Thomas, installées machine à l'arrêt
 (`standby`, porte vide) : un maillage sert à ±5 °C de sa température, avec
 une copie du 55 pour 70 °C ; et l'envoi de G-code depuis le gestionnaire de
