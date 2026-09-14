@@ -2,6 +2,25 @@
 
 Last updated: 2026-09-14
 
+14 septembre, 21:40. **Départ et changements de couleur expliqués depuis les
+journaux (document 79), à la demande de Thomas ; audit en direct à faire
+pendant une impression qu'il lancera.** Le départ normal (12 septembre, 23:20,
+deux minutes) est la séquence Creality : chauffe à 200 °C, poussée du CFS seul
+jusqu'à la tête, morsure de l'extrudeur confirmée par le tampon, purge de
+140 mm à l'aveugle, essuyage, puis notre ligne d'amorce. Aucune relance sur 14
+chargements au départ du 10 au 12 septembre ; une seule coupe sur tête chargée en 19 départs
+depuis le 10 (00:53, ratée). Au changement vers le noir (14 septembre, 20:34),
+le rembobinage complet puis la réinsertion sont la relance Creality
+« l'extrudeur n'a pas mordu » : tampon « plein » à 12 lectures (20:34:55 →
+20:35:41), nouvelle coupe, rembobinage, réinsertion, prise en 7 s ; même
+relance sur le blanc (20:47:06), aucune sur le bleu. Cause de la première
+morsure ratée inconnue (pointe écrasée par la lame ou faux « plein »). Deux
+défauts de notre code confirmés et non corrigés : le départ de 18:30 a tracé la
+ligne d'amorce à 18:39:33 alors que le CFS était en erreur depuis 18:36:22 ;
+quatre tentatives de chargement enchaînées sur un filament cassé (7 minutes).
+Thomas a donné son accord pour les deux correctifs, en cours (ADR-066). Rien
+n'a été touché sur la machine.
+
 14 septembre, 21:05. **Correctif ADR-065 installé à 21:00 : l'alarme de fin
 de bobine est coupée pendant chaque changement de couleur, puis rallumée.**
 Le `3DBenchy_C2` a fini à 20:56:58 ; son dernier changement (T1, blanc) est
