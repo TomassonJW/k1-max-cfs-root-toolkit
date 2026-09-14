@@ -1,6 +1,33 @@
 # HANDOFF — index de reprise
 
-## 14 septembre, 20:50 — pause après chaque changement de couleur : alarme de fin de bobine coupée pendant le changement (ADR-065), à installer entre deux impressions
+## 14 septembre, 21:05 — alarme de fin de bobine coupée pendant les changements (ADR-065) installée ; première impression multicouleur à observer
+
+**Point de reprise :** à la prochaine impression multicouleur, lire le
+journal : « runout alarm off during Tn », « Tn fait », « runout alarm on
+again after Tn », et ni « runout event detected » ni pause. Si une pause
+revient, lire les lignes autour de `runout` dans `klippy.log` avant de
+toucher quoi que ce soit.
+
+### Fait
+
+- 21:00, machine au repos depuis 3 minutes : `kctrl_tool_change.py` et le cfg
+  copiés depuis `main` (40199b3), empreintes conformes ; service Klipper
+  relancé à 21:00:33, prêt à 21:01:06, « wrapped T0,…,T15 », `KCTRL_TOOLS`
+  répond.
+- `3DBenchy_C2` fini à 20:56:58 ; T1 (blanc) passé sans pause à 20:50:21.
+
+### À savoir
+
+- Retour arrière : remettre `kctrl_tool_change.py.bak-20260914-adr065`
+  (`/usr/share/klipper/klippy/extras/`) et
+  `k1-control-owned-start-print-v2.cfg.bak-20260914-adr065`
+  (`/usr/data/printer_data/config/`) à leur place, relancer le service.
+- Après le redémarrage, l'alarme est coupée : normal, `START_PRINT` la
+  réarme à chaque impression.
+- Rouge T2A cassé deux fois au buffer, et propositions en attente de
+  l'accord de Thomas : voir le bloc de 20:50.
+
+## 14 septembre, 20:50 — pause après chaque changement de couleur : alarme de fin de bobine coupée pendant le changement (ADR-065), à installer entre deux impressions (remplacé par 21:05)
 
 **Point de reprise :** machine à l'arrêt (`print_stats.state` ni `printing`
 ni `paused`, `idle_timeout.state` différent de `Printing`), installer depuis

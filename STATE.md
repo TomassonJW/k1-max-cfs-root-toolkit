@@ -2,6 +2,17 @@
 
 Last updated: 2026-09-14
 
+14 septembre, 21:05. **Correctif ADR-065 installé à 21:00 : l'alarme de fin
+de bobine est coupée pendant chaque changement de couleur, puis rallumée.**
+Le `3DBenchy_C2` a fini à 20:56:58 ; son dernier changement (T1, blanc) est
+passé sans pause à 20:50:21. Installation après 3 minutes de machine au
+repos : fichiers de la machine identiques à `main` d'avant, sauvegardes
+`.bak-20260914-adr065`, copie conforme (empreintes), service relancé à
+21:00:33, « wrapped T0,…,T15 » à 21:00:50, prêt à 21:01:06, `KCTRL_TOOLS`
+répond. Après le redémarrage, alarme coupée et tête vide ; `START_PRINT` la
+réarme. Reste à l'observer sur une impression multicouleur : « runout alarm
+off during Tn », aucune pause.
+
 14 septembre, 20:50. **Première impression multicouleur (`3DBenchy_C2`,
 quatre filaments) : le premier changement de couleur mettait l'impression en
 pause. Corrigé dans `kctrl_tool_change` (ADR-065), écrit et testé, à
