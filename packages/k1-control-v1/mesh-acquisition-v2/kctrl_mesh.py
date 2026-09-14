@@ -18,11 +18,17 @@
 # than through SAVE_CONFIG, which on this machine would also commit unrelated
 # pending state that must never be persisted.
 
+import collections
 import json
 import os
+import re
 import time
 
 REFERENCE_XY = (150.0, 150.0)
+# The production family, k1_p<plate>_t<bed C>_r<probe rev>_n<x>x<y>. Derived
+# names such as ..._tuned_v001 are deliberately outside it: START_PRINT only
+# resolves this exact shape, so a copy of anything else could never be used.
+PROFILE_NAME = re.compile(r"^(k1_p\d{3}_t)(\d{3})(_r\d{3}_n\d{2}x\d{2})$")
 QUADRANTS = ("K1_SUB_SW", "K1_SUB_SE", "K1_SUB_NW", "K1_SUB_NE")
 MAX_JUNCTION_SPREAD = 0.05
 # Largest correction one edit command may apply. Hand tuning on a printed square
@@ -89,6 +95,9 @@ class KctrlMesh:
         self.gcode.register_command(
             "KCTRL_MESH_APPLY", self.cmd_KCTRL_MESH_APPLY,
             desc="Apply a whole edited matrix from a JSON file, keeping a backup")
+        self.gcode.register_command(
+            "KCTRL_MESH_COPY", self.cmd_KCTRL_MESH_COPY,
+            desc="Start a mesh profile for another bed temperature from an existing one")
         # One step of history is enough for hand tuning: the operator judges a
         # correction on the next printed square, not three commands later.
         self._undo = None
@@ -856,6 +865,76 @@ class KctrlMesh:
             % (min(flat), max(flat), rx, ry))
         gcmd.respond_info(
             "K1 Control: previous matrix saved as %s" % os.path.basename(backup))
+
+    # ------------------------------------------------------------- band copies
+    def cmd_KCTRL_MESH_COPY(self, gcmd):
+        # A full calibration costs five printed cubes per band. A bed ten or
+        # fifteen degrees hotter warps only slightly more, so the operator
+        # starts the new band from the closest measured one and refines it on
+        # the printed square with KCTRL_MESH_EDIT and KCTRL_Z_SAVE (Thomas,
+        # 14 September 2026). The copy is a starting point, not a measurement,
+        # and the reply says so.
+        bed_mesh = self.printer.lookup_object("bed_mesh", None)
+        if bed_mesh is None:
+            raise self.gcode.error("K1 Control: no bed_mesh on this printer")
+        source = gcmd.get("SOURCE", bed_mesh.get_status(None).get("profile_name"))
+        temp = gcmd.get_int("BED_TEMP", minval=0, maxval=150)
+        match = PROFILE_NAME.match(source or "")
+        if match is None:
+            raise self.gcode.error(
+                "K1 Control: SOURCE must be a k1_pNNN_tNNN_rNNN_nNNxNN profile, "
+                "not %s" % (source or "none"))
+        target = "%s%03d%s" % (match.group(1), temp, match.group(3))
+        if target == source:
+            raise self.gcode.error(
+                "K1 Control: %s is already the %d C profile" % (source, temp))
+        profiles = self._profiles()
+        prof = profiles.get(source)
+        if prof is None:
+            raise self.gcode.error("K1 Control: no profile named %s" % source)
+        # Never overwrite: an existing band holds a measurement or hours of
+        # hand tuning, and neither can be recovered from its neighbour.
+        if target in profiles:
+            raise self.gcode.error(
+                "K1 Control: %s already exists; edit it, or remove it first "
+                "with BED_MESH_PROFILE REMOVE=%s" % (target, target))
+
+        points = [[float(v) for v in row] for row in prof["points"]]
+        self._write_profile(target, points, self._stored_params(prof))
+        # Registered the way bed_mesh registers a saved profile - a new
+        # dictionary, then a status refresh - so START_PRINT and the editor see
+        # the band at once, without a restart and without SAVE_CONFIG, which
+        # would commit unrelated pending state.
+        pmgr = bed_mesh.pmgr
+        registered = dict(pmgr.profiles)
+        registered[target] = {
+            "points": points,
+            "mesh_params": collections.OrderedDict(prof["mesh_params"]),
+        }
+        pmgr.profiles = registered
+        bed_mesh.update_status()
+
+        saver = self.printer.lookup_object("save_variables", None)
+        stored = saver.get_status(None)["variables"] if saver is not None else {}
+        z = stored.get("z_" + source)
+        if z is not None:
+            self.gcode.run_script_from_command(
+                "SAVE_VARIABLE VARIABLE=z_%s VALUE=%.4f" % (target, float(z)))
+
+        gcmd.respond_info(
+            "K1 Control: %s created from %s, %d x %d points copied, zero kept "
+            "at X%.0f Y%.0f" % (target, source, len(points[0]), len(points),
+                                REFERENCE_XY[0], REFERENCE_XY[1]))
+        if z is not None:
+            gcmd.respond_info(
+                "K1 Control: Z %.4f copied from %s. A starting point, not a "
+                "measurement: refine it on the square, then KCTRL_Z_SAVE"
+                % (float(z), source))
+        else:
+            gcmd.respond_info(
+                "K1 Control: %s has no saved Z, so %s has none either; print "
+                "the square, then KCTRL_Z_SAVE PROFILE=%s Z=..."
+                % (source, target, target))
 
     def cmd_KCTRL_MESH_SHOW(self, gcmd):
         name = gcmd.get("PROFILE")
