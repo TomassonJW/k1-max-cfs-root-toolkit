@@ -489,7 +489,8 @@ ENV = jinja2.Environment("{%", "%}", "{", "}", extensions=["jinja2.ext.do"])
 
 def head_of_start_print():
     body = section("START_PRINT")
-    stop = body.index("{% set profile =")
+    # The slot choice ends where the mesh resolution begins.
+    stop = body.index("{% set tolerance =")
     kept = [line for line in body[:stop].splitlines() if not line.strip().startswith("#")]
     return "\n".join(kept) + '\n{ "%s|%s|%s" % (logical, tool, slot_source) }'
 

@@ -1,5 +1,39 @@
 # HANDOFF — index de reprise
 
+## 14 septembre, 18:15 — maillage à ±5 °C et copie 70 °C installés (ADR-064) ; envoi de G-code par Mainsail réparé ; geste Bobines du 12 fait
+
+**Point de reprise :** Thomas envoie un G-code par Mainsail (Fichiers G-code →
+envoi) et relance son impression. Pour un fichier à 65–75 °C, première
+couche sur le carré 280×280 (plateau à 70), régler le Z à la main, puis :
+
+```
+KCTRL_Z_SAVE PROFILE=k1_p001_t070_r001_n11x11 Z=<valeur>
+```
+
+### Fait le 14 septembre, 17:55–18:15
+
+- Tolérance de bande (`band_tolerance_c: 5`) dans `START_PRINT` et
+  `KCTRL_PROFILE_NAME` ; `KCTRL_MESH_COPY` dans `kctrl_mesh.py`. Posés,
+  Klipper relancé à 17:58:06. `k1_p001_t070_r001_n11x11` créé depuis le 55,
+  Z 0,065 recopié, chargé après redémarrage. Profil actif : le 55.
+- Envoi de fichiers : `tmp/` en 711 par `S57k1_control_gateway`,
+  `/server/files/upload` en flux direct jusqu'à 1 Go. 156 Mo passés en 59 s.
+- Geste du 12 septembre fait au passage : `mainsail_overlay_patch.py` dans
+  `state/`, nouveau service posé, « balise deja en place », `/` et
+  `/bobines/` en 200.
+
+### À savoir
+
+- 61–64 °C : aucun maillage, refus volontaire avant chauffe ; le message
+  donne `KCTRL_MESH_COPY BED_TEMP=<t>`.
+- Le 70 est une copie, pas une mesure : si la première couche montre un
+  gondolage, calibrer la bande 70 pour de vrai.
+- Retour arrière : sauvegardes `.bak-20260914-1755` (six fichiers, voir
+  STATE), puis Klipper et passerelle relancés.
+- Sur la machine, `/tmp/kctrl_gc.py "GCODE"` envoie une commande à Klipper et
+  affiche ses réponses (le `curl` de la machine ne sait pas poster du JSON) ;
+  `/tmp` se vide au redémarrage.
+
 ## 12 septembre, 23:30 — point 2 fait (premier départ réel par la fenêtre à 23:17) ; PR #58 fusionnée ; reste à poser, machine à l'arrêt, le service qui repose la balise à chaque démarrage
 
 **Point de reprise en un geste :** machine à l'arrêt (`print_stats.state` =

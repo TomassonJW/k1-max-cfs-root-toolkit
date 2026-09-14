@@ -33,8 +33,11 @@ section gagne, donc l'inclusion doit rester après `gcode_macro.cfg`.
 
 1. Le profil de mesh est choisi par la **température de plateau du G-code**.
    `START_PRINT EXTRUDER_TEMP=190 BED_TEMP=55` résout
-   `k1_p001_t055_r001_n11x11`. Aucun repli silencieux sur un profil voisin :
-   si la bande n'existe pas, la séquence s'arrête en nommant le profil manquant.
+   `k1_p001_t055_r001_n11x11`. Un profil sert à ±5 °C de sa température
+   (`band_tolerance_c`, ADR-064) : le 55 imprime les fichiers de 50 à 60 °C,
+   le plus proche gagne, le plus froid à égalité. Hors de toute bande, la
+   séquence s'arrête avant de chauffer en listant les maillages mesurés et la
+   commande `KCTRL_MESH_COPY` qui en crée un.
 2. Le décalage Z vient du **même profil**, lu dans `save_variables`. Un profil
    sans Z accepté refuse de lancer une impression.
 3. Une seule référence géométrique. `CX_PRINT_LEVELING_CALIBRATION` est retiré :
@@ -60,7 +63,8 @@ profil Orca, sinon le décalage par profil est annulé à chaque impression.
 
 | Commande | Rôle |
 |---|---|
-| `KCTRL_PROFILE_NAME BED=55` | montre le profil et le Z que cette température résout |
+| `KCTRL_PROFILE_NAME BED_TEMP=55` | montre le profil, l'écart et le Z que cette température résout |
+| `KCTRL_MESH_COPY BED_TEMP=70 [SOURCE=]` | crée le profil d'une autre température depuis un maillage existant (actif par défaut), Z compris ; n'écrase jamais (`kctrl_mesh.py`) |
 | `KCTRL_Z_SAVE [PROFILE=] [Z=]` | enregistre le Z accepté du profil ; sans paramètre, prend le profil actif et le décalage courant |
 | `KCTRL_Z_LIST` | liste chaque profil de mesh avec son Z enregistré |
 | `KCTRL_START_CONF` | rappelle la famille de profils utilisée |
