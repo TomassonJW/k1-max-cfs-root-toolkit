@@ -1,6 +1,32 @@
 # HANDOFF — index de reprise
 
-## 14 septembre, 22:10 — départ arrêté net sur une pause, deux tentatives (ADR-066) : écrit et testé, à installer puis observer
+## 14 septembre, 22:31 — ADR-066 installé à 22:16 ; audit en direct de l'impression multicouleur lancée par Thomas à 22:30:56
+
+**Point de reprise :** suivre l'impression lancée à 22:30:56 (document 79,
+section 7), puis écrire la section « Audit en direct » du document 79 et
+classer les correctifs. À observer : départ sans pause ; si le CFS abandonne,
+arrêt net avec le message `K1 Control [étape]` ; à chaque changement « runout
+alarm off during Tn » puis « on again after Tn » sans pause (ADR-065) ; relances
+Creality « l'extrudeur n'a pas mordu ».
+
+### Fait
+
+- Copie du cfg depuis `main` (`e8cf8f8`) machine à l'arrêt, empreinte
+  conforme, Klipper prêt à 22:16:43, démarrage sans erreur, les deux macros
+  chargées, contrôle essayé à vide sans effet.
+- Retour arrière si besoin, machine à l'arrêt :
+  `k1-control-owned-start-print-v2.cfg.bak-20260914-adr066` recopié sur le cfg,
+  puis redémarrage de Klipper.
+
+### À savoir
+
+- Le journal Klipper grossit d'environ 20 Mo par heure (481 Mo le 14 septembre
+  à 22:23) : chercher par heure dans le fichier du jour, un `grep` sur tous
+  les journaux prend deux minutes.
+- Pendant un `T` passé par notre enveloppe, les lignes du module Creality
+  portent l'origine `[kctrl_tool_change:change:219]`.
+
+## 14 septembre, 22:10 — départ arrêté net sur une pause, deux tentatives (ADR-066) : écrit et testé (installé à 22:16, remplacé par 22:30)
 
 **Point de reprise :** si la PR d'ADR-066 est fusionnée mais pas installée,
 installer `k1-control-owned-start-print-v2.cfg` depuis `main` machine à

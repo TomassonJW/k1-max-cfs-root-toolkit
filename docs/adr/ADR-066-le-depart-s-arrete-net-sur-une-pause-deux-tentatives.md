@@ -3,7 +3,9 @@
 Date : 2026-09-14
 
 Statut : **acceptée** (accord de Thomas le 14 septembre au soir) ; écrite et
-testée hors machine, installation à suivre, à observer sur une impression.
+testée hors machine ; installée le 14 septembre à 22:16 (Klipper redémarré
+machine à l'arrêt, démarrage sans erreur, contrôle essayé à vide sans effet) ;
+à observer sur une impression.
 
 Amende ADR-049 (quatre tentatives). Corrige les deux défauts de notre départ
 relevés par le document 79, section 5.
