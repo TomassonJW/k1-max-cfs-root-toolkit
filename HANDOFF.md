@@ -1,5 +1,34 @@
 # HANDOFF — index de reprise
 
+## 14 septembre, 21:40 — départ et changements de couleur expliqués (document 79) ; audit en direct à faire pendant une impression lancée par Thomas
+
+**Point de reprise :** quand Thomas lance une impression multicouleur et
+prévient, suivre le protocole du document 79, section 7 : journal en direct,
+images de la webcam au départ et à chaque changement, vérification de
+l'ADR-065 au passage (bloc de 21:05), puis section « Audit en direct » dans le
+document. Ne jamais lancer, reprendre ni annuler l'impression soi-même.
+
+### Fait
+
+- Document 79 : chronologie d'un départ normal (12 septembre, 23:20) et du
+  changement vers le noir (14 septembre, 20:34), fréquences des relances sur
+  les journaux du 9 au 14, tableau de ce qui est normal ou non et de qui le
+  décide.
+- Le rembobinage complet puis la réinsertion au changement sont la relance
+  Creality « l'extrudeur n'a pas mordu » (tampon « plein » à 12 lectures) : 2
+  changements sur 3 le 14. Cause inconnue, deux hypothèses dans le document.
+- Au départ : aucune relance sur 14 chargements du 10 au 12 septembre ; une
+  seule coupe sur tête chargée en 19 départs depuis le 10.
+
+### À savoir
+
+- Deux défauts de notre code confirmés : le départ trace la ligne d'amorce
+  alors que le CFS est en erreur (18:39:33, déjà signalé par le document 70) ;
+  quatre tentatives de chargement sur un filament cassé (7 minutes). Accord de
+  Thomas reçu : arrêt net sur erreur CFS, deux tentatives au lieu de quatre,
+  correctif en cours sur sa propre branche (ADR-066).
+- Rien n'a été touché sur la machine.
+
 ## 14 septembre, 21:05 — alarme de fin de bobine coupée pendant les changements (ADR-065) installée ; première impression multicouleur à observer
 
 **Point de reprise :** à la prochaine impression multicouleur, lire le
