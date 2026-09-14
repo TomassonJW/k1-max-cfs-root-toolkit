@@ -1,5 +1,27 @@
 # HANDOFF — index de reprise
 
+## 14 septembre, 22:10 — départ arrêté net sur une pause, deux tentatives (ADR-066) : écrit et testé, à installer puis observer
+
+**Point de reprise :** si la PR d'ADR-066 est fusionnée mais pas installée,
+installer `k1-control-owned-start-print-v2.cfg` depuis `main` machine à
+l'arrêt (sauvegarde `.bak-`, copie par `cat | ssh`, empreinte, redémarrage de
+Klipper, `ready`). Puis l'audit en direct du bloc de 21:40.
+
+### Fait
+
+- `_KCTRL_ASSERT_CFS_OK` après le changement d'outil, après les tentatives,
+  avant la ligne d'amorce ; `_KCTRL_START_STOPPED` lève l'erreur. Tentatives
+  `ATTEMPT=3` et `ATTEMPT=4` retirées.
+- `tests/test_owned_start_stops_on_cfs_pause_v1.py` (12 tests) ; suite complète
+  verte. ADR-049 amendée ; document 79, section 8.
+
+### À savoir
+
+- Un départ arrêté ne se reprend plus : on relance l'impression. Une pause
+  demandée depuis l'interface pendant le départ l'arrête aussi.
+- Sur la machine, `virtual_sdcard.py` ne lit pas la pause. Un nouveau départ
+  juste après un arrêt en erreur n'a pas encore été rejoué.
+
 ## 14 septembre, 21:40 — départ et changements de couleur expliqués (document 79) ; audit en direct à faire pendant une impression lancée par Thomas
 
 **Point de reprise :** quand Thomas lance une impression multicouleur et

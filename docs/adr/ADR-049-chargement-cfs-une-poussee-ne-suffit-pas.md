@@ -3,7 +3,9 @@
 Date : 2026-09-01
 
 Statut : **accepté**, cause mesurée sur la machine, correctif déployé et vérifié
-au chargement ; pas encore rejoué depuis un départ d'impression complet
+au chargement ; pas encore rejoué depuis un départ d'impression complet.
+**Amendé par ADR-066 le 14 septembre 2026** : deux tentatives au lieu de
+quatre, et le départ s'arrête net dès que le CFS met l'impression en pause.
 
 ## Contexte
 

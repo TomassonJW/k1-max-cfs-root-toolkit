@@ -2,6 +2,15 @@
 
 Last updated: 2026-09-14
 
+14 septembre, 22:10. **Correctif ADR-066 écrit et testé hors machine, pas
+encore installé.** `START_PRINT` lit la pause à trois endroits (après le
+changement d'outil, après les tentatives, avant la ligne d'amorce). Si le CFS
+a abandonné, ou si quelqu'un a mis en pause pendant le départ : buse et plateau
+coupés, pause effacée, impression en erreur, à relancer depuis le début. Deux
+tentatives de chargement au lieu de quatre. 12 tests nouveaux, suite complète
+verte (1251). Inconnu : un nouveau départ juste après un tel arrêt n'a pas été
+rejoué sur la machine.
+
 14 septembre, 21:40. **Départ et changements de couleur expliqués depuis les
 journaux (document 79), à la demande de Thomas ; audit en direct à faire
 pendant une impression qu'il lancera.** Le départ normal (12 septembre, 23:20,

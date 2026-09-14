@@ -166,7 +166,10 @@ filament retiré à la main après l'impression (écrasée ou nette).
 
 - Accord de Thomas le 14 septembre au soir : corriger nos deux défauts de la
   section 5 avant l'audit, le départ s'arrête net si le CFS est en erreur, deux
-  tentatives de chargement au lieu de quatre. Correctif en cours (ADR-066).
+  tentatives de chargement au lieu de quatre. [FAIT] Écrit et testé hors
+  machine le 14 septembre à 22:10 (ADR-066) : le départ lit la pause après le
+  changement d'outil, après les tentatives et avant la ligne d'amorce, et
+  s'arrête chauffes coupées. Installation à suivre.
 - [FAIT] Le module CFS ne publie aucune erreur dans son objet `box` (champs lus
   le 14 septembre vers 21:45 : `filament`, `state`, `auto_refill`, `enable`,
   `filament_useup`, `same_material`, `T1` à `T4`, `cut_pos`, `t_command`,
