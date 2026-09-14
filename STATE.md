@@ -2,8 +2,18 @@
 
 Last updated: 2026-09-14
 
-14 septembre, 22:10. **Correctif ADR-066 écrit et testé hors machine, pas
-encore installé.** `START_PRINT` lit la pause à trois endroits (après le
+14 septembre, 22:31. **ADR-066 installé à 22:16 ; audit en direct armé à
+22:30 ; impression multicouleur lancée par Thomas à 22:30:56, en cours de
+suivi (départ sur `T1A`, plateau 55 °C, buse 195 °C).** Copie du
+cfg depuis `main` (`e8cf8f8`) machine à l'arrêt, empreinte conforme,
+sauvegarde `k1-control-owned-start-print-v2.cfg.bak-20260914-adr066`, Klipper
+redémarré et prêt à 22:16:43, aucune erreur de configuration ni Traceback au
+démarrage, `_KCTRL_ASSERT_CFS_OK` et `_KCTRL_START_STOPPED` chargés, contrôle
+essayé à vide (aucune pause) : aucune réponse, chauffes et état inchangés. Le
+comportement sur une vraie pause reste à observer.
+
+14 septembre, 22:10. **Correctif ADR-066 écrit et testé hors machine
+(installé à 22:16, voir au-dessus).** `START_PRINT` lit la pause à trois endroits (après le
 changement d'outil, après les tentatives, avant la ligne d'amorce). Si le CFS
 a abandonné, ou si quelqu'un a mis en pause pendant le départ : buse et plateau
 coupés, pause effacée, impression en erreur, à relancer depuis le début. Deux
