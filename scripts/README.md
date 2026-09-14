@@ -102,6 +102,21 @@ exactement six meshes, les paramètres revus et les gardes finales fermées. Le
 script n'expose aucune action de calibration et conserve ses preuves dans la
 capture privée ignorée.
 
+`audit-en-direct/` suit une impression sans rien envoyer à l'imprimante
+(document 79, sections 7 et 9). `audit-live.sh`, lancé sur le PC depuis un
+dossier hors du dépôt, lit `klippy.log` par l'alias `k1max-root`, se reconnecte
+si le flux coupe et passe chaque ligne à `audit_live.py`, qui garde une copie
+du journal, prend des images de la webcam (adresse déduite de l'alias), résume
+chaque changement de couleur sur une ligne (durée, relances, codes, pauses,
+alarme de fin de bobine) et signale tout de suite pauses, codes d'erreur et
+relances. Rejouer un journal enregistré : `python audit_live.py < journal.log`.
+Après coup, `phases.py` découpe chaque chargement en étapes datées (coupe,
+rembobinage, morsure, tampon, purge, roue de mesure), `fenetre.py` rend lisible
+une tranche horaire du journal, et `purges.sh`, exécuté sur la machine par
+`ssh k1max-root 'sh -s' < purges.sh`, relève les purges du journal courant. Aucune adresse
+privée ni secret dans ces scripts ; le journal et les images restent hors du
+dépôt.
+
 During P0/P1, scripts must default to no remote write and fail closed on ambiguity.
 
 A future remote-mutating script must:
