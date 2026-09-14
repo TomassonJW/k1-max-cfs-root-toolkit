@@ -1,6 +1,36 @@
 # STATE
 
-Last updated: 2026-09-12
+Last updated: 2026-09-14
+
+14 septembre, 18:15. **Deux demandes de Thomas, installées machine à l'arrêt
+(`standby`, porte vide) : un maillage sert à ±5 °C de sa température, avec
+une copie du 55 pour 70 °C ; et l'envoi de G-code depuis le gestionnaire de
+fichiers de Mainsail, réparé.** Sauvegardes `.bak-20260914-1755` de
+`printer.cfg`, `k1-control-owned-start-print-v2.cfg`,
+`k1-control-saved-vars.cfg`, `kctrl_mesh.py`, `nginx-active.conf` et
+`S57k1_control_gateway`. *Maillage* (ADR-064) : `START_PRINT` et
+`KCTRL_PROFILE_NAME` prennent le profil le plus proche à 5 °C près, le plus
+froid à égalité ; `KCTRL_MESH_COPY` (`kctrl_mesh.py`) crée une bande depuis
+un maillage existant. Posés (md5 `50e6e350…` et `8e2c55ad…`), Klipper
+relancé à 17:58:06 ; `KCTRL_MESH_COPY BED_TEMP=70` a créé
+`k1_p001_t070_r001_n11x11`, bloc autosave identique au 55, Z 0,065 recopié ;
+après redémarrage le 70 est chargé ; 50 et 60 °C → 55, 65 et 75 °C → 70,
+62 °C refusé avec la sortie indiquée ; profil actif remis sur le 55. Pas de
+copies 50/60/65 (la tolérance les couvre). *Envoi de fichiers* : 4 essais de
+Thomas refusés à 17:49–17:50, journal nginx « Permission denied » sur
+`tmp/nginx-client-body` : `/usr/data/k1-control-v1/tmp` était en 700 root,
+les workers www-data n'écrivaient aucun corps de plus de 16 Ko ; plafond
+100 Mo trop bas pour ses fichiers. `S57k1_control_gateway` remet `tmp` en
+711 à chaque démarrage, `/server/files/upload` passe en flux direct vers
+Moonraker jusqu'à 1024 Mo (délais 900 s). Posé à 17:59 avec le geste
+Bobines du HANDOFF précédent (script dans `state/`, « balise deja en place »),
+`nginx -t` ok, `/` et `/bobines/` 200 avec balise. Preuve depuis le PC par
+4409 : 78 Ko → 201 en 1,8 s, 156 Mo → 201 en 59 s ; fichiers de test
+supprimés. Tests : suite 1403 verts, 2 rouges préexistants
+(`test_cfs_direct_owner_offline_v1`, `test_job_lifecycle_offline_v1`) ;
+`test_stock_derived_cycle_activation_v1` instable, rouge aussi sur `main`.
+Reste : Z du 70 à affiner sur le carré, envoi réel par Mainsail à observer
+par Thomas.
 
 12 septembre, 23:30. **Premier départ réel par la fenêtre à 23:17 : Thomas
 a lancé BIN4U depuis Mainsail, raccordé T1A → T1B dans la fenêtre, « c'est
