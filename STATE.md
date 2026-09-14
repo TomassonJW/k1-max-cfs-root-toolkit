@@ -2,6 +2,27 @@
 
 Last updated: 2026-09-14
 
+14 septembre, 20:50. **Première impression multicouleur (`3DBenchy_C2`,
+quatre filaments) : le premier changement de couleur mettait l'impression en
+pause. Corrigé dans `kctrl_tool_change` (ADR-065), écrit et testé, à
+installer entre deux impressions.** Journal : T3 (bleu, T2B) part à 19:19:16
+et retire le rouge devant le capteur de tête, que `START_PRINT` arme pour la
+relève. « runout event detected » à 19:19:35 ; la pause attend la fin du
+changement et tombe à 19:22:36, 12 ms après « T3 fait ».
+`BOX_CHECK_MATERIAL_REFILL` coupe ensuite le capteur (19:22:42, « no auto
+refill »). Thomas a repris à 20:22:44. T0 (noir) est passé de 20:34:05 à
+20:37:30 sans pause, alarme toujours coupée : le changement stock tourne bien
+alarme coupée. Correctif : alarme coupée juste avant la commande stock si
+elle était armée, rallumée après `M400`, même sur erreur. Le capteur reste
+lu, la pause sur tête vide est inchangée. Tests : 31 dans le fichier
+(7 nouveaux, dont 5 rouges sur l'ancien module) ; suite 1411 verts,
+2 rouges préexistants. Plus tôt dans la soirée, rouge T2A laborieux :
+`key836` à répétition au chargement (18:18 → 18:38), `key845` à 18:36:22,
+`key847` (« empty printing ») à 19:00:52 en impression, filament cassé deux
+fois au buffer. Thomas l'a débloqué à la main (filament poussé de 1 mm,
+autre entrée du buffer). Hypothèse d'un filament cassant, non vérifiée.
+Rien n'a été touché sur la machine.
+
 14 septembre, 18:20. **La copie de maillage est à 65 °C, plus à 70.**
 Thomas : « ça n'a aucun sens de laisser 5 °C sans maillage ». Machine en
 `standby`, sauvegardes `.bak-20260914-1810` de `printer.cfg` et

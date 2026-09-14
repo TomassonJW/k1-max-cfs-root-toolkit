@@ -7,7 +7,10 @@ la fiche matière de l'emplacement visé sur la température du fichier tranché
 net quand le filament ne pointe nulle part, sur une unité absente ou un
 emplacement vide ; hors démarrage, la pause quand le changement finit sans
 filament à la tête, et la cible remise à la valeur du fichier sinon ; dans
-START_PRINT, rien de plus que l'alignement, le démarrage garde ses contrôles.
+START_PRINT, rien de plus que l'alignement, le démarrage garde ses contrôles ;
+l'alarme de fin de bobine du capteur de tête coupée pendant la commande stock
+et rallumée après, même sur erreur, sans que le capteur cesse d'être lu
+(ADR-065).
 """
 
 import importlib.util
@@ -450,6 +453,147 @@ def test_une_erreur_de_la_commande_stock_remonte_telle_quelle(tmp_path):
     with pytest.raises(CommandError):
         bench.run("T1")
     assert bench.printer.gcode.scripts == []
+
+
+# ------------------------------------------------------------ l'alarme de fin de bobine
+
+ALARM_OFF = "SET_FILAMENT_SENSOR SENSOR=filament_sensor_2 ENABLE=0"
+ALARM_ON = "SET_FILAMENT_SENSOR SENSOR=filament_sensor_2 ENABLE=1"
+
+
+class RunoutSwitch:
+    """Le capteur de tête tel que Klipper le traite sur la machine.
+
+    Réduction de note_filament_present (klippy/extras/filament_switch_sensor.py,
+    lu le 14 septembre 2026) : l'état suit toujours le capteur, armé ou non ;
+    l'alarme ne part que capteur armé, sur un passage à vide, impression en
+    cours. SET_FILAMENT_SENSOR ne touche que l'armement.
+    """
+
+    def __init__(self):
+        self.present = True
+        self.enabled = True
+        self.runouts = 0
+
+    def note(self, present):
+        if present == self.present:
+            return
+        self.present = present
+        if self.enabled and not present:
+            self.runouts += 1
+
+    def get_status(self, eventtime=None):
+        return {"filament_detected": self.present, "enabled": self.enabled}
+
+
+def armed_bench(tmp_path, **kw):
+    """Banc en cours d'impression, capteur de tête armé par START_PRINT."""
+    bench = Bench(tmp_path, z=1.0, **kw)
+    switch = RunoutSwitch()
+    bench.printer.objects["filament_switch_sensor filament_sensor_2"] = switch
+    gcode = bench.printer.gcode
+    record = gcode.run_script_from_command
+
+    def run(script):
+        record(script)
+        if script.startswith("SET_FILAMENT_SENSOR SENSOR=filament_sensor_2 "):
+            switch.enabled = script.endswith("ENABLE=1")
+    gcode.run_script_from_command = run
+    return bench, switch
+
+
+def test_un_changement_ne_declenche_plus_l_alarme_de_fin_de_bobine(tmp_path):
+    # 3DBenchy_C2, 14 septembre 2026 : T3 coupe et retire le rouge devant le
+    # capteur arme a 19:19:35, Klipper y voit une bobine vide, et sa pause
+    # attend la fin du changement : 19:22:36, 12 ms apres "T3 fait".
+    bench, switch = armed_bench(tmp_path)
+    armed_during = []
+
+    def stock(gcmd):
+        armed_during.append(switch.enabled)
+        switch.note(False)  # coupe, retrait de l'ancien filament
+        switch.note(True)   # le nouveau arrive a la tete
+        bench.stock_calls.append("T1")
+    bench.rewrap("T1", stock)
+    cmd = bench.run("T1")
+    assert armed_during == [False]
+    assert switch.runouts == 0
+    assert switch.enabled
+    assert bench.printer.gcode.scripts == [ALARM_OFF, "M400", "M104 S220", "M400", ALARM_ON]
+    assert any("T1 fait" in line for line in cmd.said)
+    # La meme commande, capteur arme et sans l'enveloppe : l'alarme part.
+    # Le banc reproduit bien l'incident.
+    stock(None)
+    assert switch.runouts == 1
+
+
+def test_alarme_coupee_le_capteur_est_toujours_lu_et_le_vide_met_en_pause(tmp_path):
+    # Couper l'alarme n'aveugle pas le changement : un nouveau filament qui
+    # n'arrive jamais a la tete est vu, et l'impression s'arrete quand meme.
+    bench, switch = armed_bench(tmp_path)
+
+    def stock(gcmd):
+        switch.note(False)
+    bench.rewrap("T1", stock)
+    cmd = bench.run("T1")
+    assert switch.runouts == 0
+    assert bench.printer.gcode.scripts == [ALARM_OFF, "M400", "PAUSE", "M400", ALARM_ON]
+    assert bench.obj.last["outcome"] == "empty"
+    assert any("mise en pause" in line for line in cmd.said)
+
+
+def test_une_erreur_de_la_commande_stock_rallume_l_alarme_puis_remonte(tmp_path):
+    bench, switch = armed_bench(tmp_path)
+
+    def broken(gcmd):
+        switch.note(False)
+        raise CommandError("Move out of range")
+    bench.rewrap("T1", broken)
+    with pytest.raises(CommandError, match="Move out of range"):
+        bench.run("T1")
+    assert switch.runouts == 0
+    assert switch.enabled
+    assert bench.printer.gcode.scripts == [ALARM_OFF, "M400", ALARM_ON]
+
+
+def test_une_alarme_qui_ne_se_rallume_pas_ne_masque_pas_l_erreur_stock(tmp_path):
+    bench, switch = armed_bench(tmp_path)
+    run = bench.printer.gcode.run_script_from_command
+
+    def shutdown(script):
+        if script == "M400":
+            raise CommandError("Printer is shutdown")
+        run(script)
+    bench.printer.gcode.run_script_from_command = shutdown
+
+    def broken(gcmd):
+        raise CommandError("Move out of range")
+    bench.rewrap("T1", broken)
+    with pytest.raises(CommandError, match="Move out of range"):
+        bench.run("T1")
+
+
+@pytest.mark.parametrize("kw,scripts,outcome", [
+    (dict(start_running=1), [ALARM_OFF, "M400", ALARM_ON], "start"),
+    (dict(paused=True), [ALARM_OFF, "M400", "M400", ALARM_ON], "paused_by_firmware"),
+])
+def test_demarrage_et_pause_du_firmware_rallument_aussi_l_alarme(tmp_path, kw, scripts, outcome):
+    bench, switch = armed_bench(tmp_path, **kw)
+    bench.run("T1")
+    assert bench.printer.gcode.scripts == scripts
+    assert switch.enabled
+    assert bench.obj.last["outcome"] == outcome
+
+
+def test_une_alarme_deja_coupee_reste_coupee(tmp_path):
+    # Fin du 3DBenchy : la verification de remplacement stock a coupe le
+    # capteur a 19:22:42. L'enveloppe ne rallume pas ce qu'elle n'a pas
+    # eteint.
+    bench, switch = armed_bench(tmp_path)
+    switch.enabled = False
+    bench.run("T1")
+    assert bench.printer.gcode.scripts == ["M400", "M104 S220"]
+    assert not switch.enabled
 
 
 # ------------------------------------------------------------ KCTRL_TOOLS

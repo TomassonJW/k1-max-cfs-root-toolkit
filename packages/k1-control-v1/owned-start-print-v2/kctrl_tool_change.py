@@ -23,7 +23,12 @@ gcode_macro with rename_existing would, and around each stock change it:
      or running, from the config block at the end of the file) and writes it
      into the material record of that slot, the way START_PRINT does for the
      first one;
-  3. calls the stock command;
+  3. calls the stock command, with the runout alarm of the head sensor off
+     if it was on, and on again once the moves are done - even when the
+     change fails. The change empties that sensor itself when it pulls the
+     old filament back; left armed, Klipper takes it for a spool run out and
+     pauses the print right after the change (ADR-065). Only the alarm is
+     off: the stock command and the check below still read the sensor;
   4. outside START_PRINT: waits for the queue, and if the head sensor sees
      no filament the print is paused with a message rather than continued
      into the void; otherwise the nozzle target is set back to the file's
@@ -114,6 +119,22 @@ class KctrlToolChange:
 
     def is_paused(self):
         return bool(self.status_of("pause_resume").get("is_paused", False))
+
+    def runout_armed(self):
+        return bool(self.status_of("filament_switch_sensor " + self.sensor)
+                    .get("enabled", False))
+
+    def set_runout(self, enable):
+        self.gcode.run_script_from_command(
+            "SET_FILAMENT_SENSOR SENSOR=%s ENABLE=%d" % (self.sensor, 1 if enable else 0))
+
+    def rearm_runout(self, name):
+        # After the queue: a retract still in the planner would empty the
+        # sensor after the alarm is back on.
+        self.gcode.run_script_from_command("M400")
+        self.set_runout(True)
+        logging.info("kctrl_tool_change: %s runout alarm on again after %s",
+                     self.sensor, name)
 
     def first_layer(self, job):
         """Below the second layer's height, in G-code coordinates."""
@@ -216,6 +237,30 @@ class KctrlToolChange:
                plan["material"], record,
                "alignee %s ->" % "/".join(str(v) for v in before) if changed else "deja a",
                plan["temp"], ", premiere couche" if plan["first_layer"] else ""))
+        # The change cuts the old filament and pulls it back past the head
+        # sensor. START_PRINT arms that sensor's runout alarm for auto refill,
+        # and armed, Klipper queues a pause that lands as soon as the change
+        # returns: 3DBenchy_C2 on 14 September 2026, runout at 19:19:35,
+        # pause at 19:22:36, 12 ms after "T3 fait".
+        armed = self.runout_armed()
+        if armed:
+            self.set_runout(False)
+            logging.info("kctrl_tool_change: %s runout alarm off during %s",
+                         self.sensor, name)
+        try:
+            self.run_stock(name, plan, stock, gcmd)
+        except Exception:
+            if armed:
+                try:
+                    self.rearm_runout(name)
+                except Exception:
+                    logging.exception("kctrl_tool_change: %s runout alarm not "
+                                      "re-armed after %s", self.sensor, name)
+            raise
+        if armed:
+            self.rearm_runout(name)
+
+    def run_stock(self, name, plan, stock, gcmd):
         stock(gcmd)
         if self.in_start():
             # START_PRINT waits for the head sensor itself, with a grace

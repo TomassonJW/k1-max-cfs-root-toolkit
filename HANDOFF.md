@@ -1,5 +1,47 @@
 # HANDOFF — index de reprise
 
+## 14 septembre, 20:50 — pause après chaque changement de couleur : alarme de fin de bobine coupée pendant le changement (ADR-065), à installer entre deux impressions
+
+**Point de reprise :** machine à l'arrêt (`print_stats.state` ni `printing`
+ni `paused`, `idle_timeout.state` différent de `Printing`), installer depuis
+`main` :
+
+```
+ssh k1max-root 'cp /usr/share/klipper/klippy/extras/kctrl_tool_change.py /usr/share/klipper/klippy/extras/kctrl_tool_change.py.bak-20260914 && cp /usr/data/printer_data/config/k1-control-owned-start-print-v2.cfg /usr/data/printer_data/config/k1-control-owned-start-print-v2.cfg.bak-20260914'
+git show main:packages/k1-control-v1/owned-start-print-v2/kctrl_tool_change.py | ssh k1max-root 'cat > /usr/share/klipper/klippy/extras/kctrl_tool_change.py'
+git show main:packages/k1-control-v1/owned-start-print-v2/k1-control-owned-start-print-v2.cfg | ssh k1max-root 'cat > /usr/data/printer_data/config/k1-control-owned-start-print-v2.cfg'
+ssh k1max-root '/etc/init.d/S55klipper_service restart'
+```
+
+Attendu : `ready`, journal « kctrl_tool_change: wrapped T0,…,T15 »,
+`KCTRL_TOOLS` répond. À la première impression multicouleur : « runout alarm
+off during Tn », « Tn fait », « runout alarm on again after Tn », sans
+« runout event detected » ni pause. Le cfg ne change que par un commentaire.
+
+### Fait
+
+- Diagnostic dans le journal de `3DBenchy_C2` : T3 part à 19:19:16, retire le
+  rouge devant le capteur de tête armé par `START_PRINT` ; « runout event
+  detected » à 19:19:35 ; pause à 19:22:36, 12 ms après « T3 fait ».
+- Correctif dans `kctrl_tool_change.py`, 7 tests (31 dans le fichier,
+  5 rouges sur l'ancien module), ADR-065, ADR-061 amendée.
+
+### À savoir
+
+- L'impression du soir finit alarme coupée depuis 19:22:42 : une bobine vide
+  d'ici la fin ne serait pas détectée. T0 (20:34:05 → 20:37:30) est passé
+  sans pause ; T1, blanc, a démarré à 20:47:54.
+- Sans l'installation, chaque impression multicouleur s'arrête à son premier
+  changement ; `RESUME` suffit, la suite n'a plus d'alarme.
+- Retour arrière : recopier les `.bak-20260914`, relancer le service.
+- Rouge T2A : `key836` à répétition au chargement (18:18 → 18:38), `key845`
+  (buse bouchée) à 18:36:22, `key847` (« empty printing ») à 19:00:52 en
+  impression ; cassé deux fois au buffer, débloqué à la main par Thomas.
+  Plier un bout en U : s'il casse net, le filament est sec.
+- En attente de l'accord de Thomas, rien d'écrit : arrêt net après deux
+  échecs de chargement au départ ; départ qui ne continue pas machine en
+  pause ; gestes manuels dans Mainsail.
+
 ## 14 septembre, 18:20 — copie de maillage ramenée de 70 à 65 °C : aucun trou de 50 à 70 °C
 
 **Point de reprise :** Thomas envoie un G-code par Mainsail et relance son
