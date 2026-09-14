@@ -2,6 +2,22 @@
 
 Last updated: 2026-09-14
 
+14 septembre, 23:30. **Impression multicouleur suivie en direct de 22:30:56 à
+22:54:21 (`MultiColo_Cube_PLA_15m31s`, cinq filaments) : aucune pause, aucun
+code d'erreur du CFS ; ADR-065 validé sur cinq changements ; départ ADR-066
+passé sans arrêt. Audit écrit (document 79, sections 9 et 10).** Chaque
+changement dure 201-202 s, dont 134 s de purge : le module Creality pousse par
+tronçons d'au moins 140 mm (`box_need_clean_length: 140` dans `box.cfg`) à
+140 mm/min, donc 280 mm pour 181 à 266 mm demandés par le trancheur (1120 mm
+poussés pour 883 demandés). Départ de 5 min 55 s, dont 80 s perdues par une
+relance Creality sur le noir T1A, buse à 200 °C (le noir a raté 2 chargements
+sur 2 le 14, les autres 1 sur 6). Source de la vitesse de 140 mm/min inconnue
+(journal « max_volumetric_speed: 14 », fiche 00001 à 10, fichier à 23-24,
+module compilé). Outils d'audit versionnés dans `scripts/audit-en-direct/`.
+Rien n'a été modifié sur la machine. Correctifs classés : volumes de purge du
+trancheur à 336 mm³ au plus quand la couleur le supporte (Thomas), vitesse de
+purge à instruire, trois gestes pour trancher la relance du noir.
+
 14 septembre, 22:31. **ADR-066 installé à 22:16 ; audit en direct armé à
 22:30 ; impression multicouleur lancée par Thomas à 22:30:56, en cours de
 suivi (départ sur `T1A`, plateau 55 °C, buse 195 °C).** Copie du

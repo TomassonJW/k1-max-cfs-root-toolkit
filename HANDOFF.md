@@ -1,6 +1,42 @@
 # HANDOFF — index de reprise
 
-## 14 septembre, 22:31 — ADR-066 installé à 22:16 ; audit en direct de l'impression multicouleur lancée par Thomas à 22:30:56
+## 14 septembre, 23:30 — audit en direct fait : impression multicouleur sans pause, purge arrondie à 280 mm, relance du noir (document 79, sections 9 et 10)
+
+**Point de reprise :** section 10 du document 79. Correctif 1 chez Thomas
+(volumes de purge dans Creality Print, 336 mm³ au plus pour les transitions vers
+une couleur plus foncée, puis un cube pour juger les couleurs). Correctif 2 à
+instruire en lecture seule : d'où vient « max_volumetric_speed: 14 », qui donne
+140 mm/min, avant de proposer un essai à Thomas. Correctif 3 : les trois gestes
+de la section 9.4 sur le noir T1A.
+
+### Fait
+
+- Impression `MultiColo_Cube_PLA_15m31s` de 22:30:56 à 22:54:21 : aucun code
+  d'erreur du CFS, aucune pause ; cinq `T` avec « runout alarm off » puis « on
+  again » (ADR-065) ; départ passé par les contrôles d'ADR-066 sans arrêt,
+  aucune tentative de chargement lancée.
+- Document 79 : §3.1 et §3.2 corrigés (longueurs poussées et non demandées),
+  §5, §6, §7 et §8 mis à jour, sections 9 « Audit en direct » et 10 « Correctifs
+  classés » ajoutées.
+- `scripts/audit-en-direct/` : suivi du journal en direct (`audit-live.sh`,
+  `audit_live.py`), découpe des chargements (`phases.py`), fenêtre de journal
+  lisible (`fenetre.py`), relevé des purges sur la machine (`purges.sh`).
+  Rejoué sur le journal enregistré : table identique à la table corrigée.
+
+### À savoir
+
+- Réglages du module CFS dans `box.cfg` : `box_first_clean_length`,
+  `box_need_clean_length` et `box_need_clean_length_max` à 140,
+  `Tn_extrude_velocity: 360` (vitesse de la purge du départ). Le module
+  (`box_wrapper`) est compilé ; ses chaînes citent `BOX_GET_FLUSH_VELOCITY_TEST`,
+  commande jamais appelée, effets inconnus.
+- Le fichier tranché déclare `filament_max_volumetric_speed = 23,24,24,24,24`,
+  tour d'amorçage activée (`prime_volume = 25`), purge dans la tour désactivée.
+- Suivi en direct arrêté après l'audit. Pour la prochaine impression : lancer
+  `scripts/audit-en-direct/audit-live.sh` depuis un dossier hors du dépôt ; le
+  journal enregistré et les images n'entrent jamais dans le dépôt.
+
+## 14 septembre, 22:31 — ADR-066 installé à 22:16 ; audit en direct de l'impression multicouleur lancée par Thomas à 22:30:56 (remplacé par 23:30)
 
 **Point de reprise :** suivre l'impression lancée à 22:30:56 (document 79,
 section 7), puis écrire la section « Audit en direct » du document 79 et
