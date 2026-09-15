@@ -2,6 +2,25 @@
 
 Last updated: 2026-09-15
 
+15 septembre, 18:00. **Garde du bus posée et vérifiée au repos (ADR-068) ;
+macros de fin essayées à blanc ; tout est en place, la prochaine impression
+tranche (pauses `key831`, fin d'impression).**
+- `/usr/share/klipper/klippy/extras/serial_485.py` remplacé par notre
+  enveloppe (sauvegarde `.bak-20260915`), pose finale à 17:52, Klipper prêt
+  à 17:52:55. Après toute réponse finie par `F7`, la question suivante attend
+  300 ms. Compteurs dans l'objet `serial_485 serial485` (`kctrl_calls`,
+  `kctrl_seen`, `kctrl_marked`, `kctrl_held`, `kctrl_unknown`) : `calls` et
+  `seen` montent au repos, donc les questions du module compilé passent par
+  la garde et leurs réponses sont lues ; `marked` et `held` restent à 0 tant
+  qu'il n'y a pas d'impression. Preuve décisive : `silences_cfs.py` sur la
+  sortie de `bus.sh` après la prochaine impression, zéro question muette
+  après `F7`.
+- `_KCTRL_UNLOAD` et `_KCTRL_UNLOAD_CHECK` se rendent sur le Klipper réel
+  (essai à blanc à 17:49, tête vide, messages attendus, rien ne bouge).
+- Retour arrière : recopier le `.bak-20260915` et redémarrer Klipper.
+- 8 tests pour la garde, 1 466 verts au total ; README du paquet
+  `cfs-bus-guard-v1` ; documents 80 et 81 mis à jour.
+
 15 septembre, 14:20. **La fin d'impression vide la tête par nos soins avant
 la fin stock (ADR-067, posé à 14:03, Klipper prêt à 14:04) ; lectures du
 journal bornées et testées ; l'audit en direct alerte sur la boucle de fin ;

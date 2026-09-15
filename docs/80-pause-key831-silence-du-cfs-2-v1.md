@@ -38,8 +38,10 @@ modifications, et remarque que le CFS 2 ne sert même pas à cette impression
    apparue que dans quatre réponses isolées. [FAIT]
 4. **Nos modifications ne sont pas en cause** : aucune des trames en jeu ne
    vient de notre code, et la pause est décidée par le module Creality. [FAIT]
-5. **Remède proposé** : retenir toute question 300 ms après une réponse finie
-   par `F7` (section 6). Rien n'est installé.
+5. **Remède posé** : la question qui suit une réponse finie par `F7` attend
+   300 ms (section 6). Posé le 15 septembre à 17:52 (ADR-068), vérifié au
+   repos : les questions du module compilé passent par la garde. Preuve
+   décisive à la prochaine impression. [FAIT]
 
 ## 2. Méthode
 
@@ -195,20 +197,21 @@ elle, continue pendant la pause.
   veille du 15 si la valeur ne repasse pas à 0 (fin d'impression,
   redémarrage).
 - [INCONNU] Si la purge de la reprise peut être raccourcie : pas étudié ici.
-- [HYPOTHÈSE] L'envoi se laisse envelopper depuis Python.
+- [FAIT] L'envoi se laisse envelopper depuis Python (ADR-068, 15 septembre à 17:52).
   `auto_addr_wrapper.py`, lisible, appelle
   `self._serial.cmd_send_data_with_response(data_send, timeout, False)` sur
   l'objet `serial_485 serial485` (interface déjà citée par ADR-036). Le module
   compilé `box_wrapper` contient les mêmes noms (`serial_485 serial485`,
   `_serial`, `cmd_send_data_with_response`) : il appelle très probablement la
-  même méthode par son nom. Une enveloppe posée sur elle verrait alors les
-  questions des deux modules. À vérifier machine au repos.
+  même méthode par son nom. La garde posée compte ses
+  questions (`kctrl_calls`, deux par seconde au repos) et lit ses réponses
+  (`kctrl_seen`) : les deux modules passent par elle.
 
 ## 6. Remèdes classés
 
 | # | Remède | Effet attendu | Qui décide | État |
 | --- | --- | --- | --- | --- |
-| 1 | Impression en cours : ne rien changer ; si elle repasse en pause, relancer | — | Thomas | en cours |
+| 1 | Impression en cours : ne rien changer ; si elle repasse en pause, relancer | — | Thomas | fini : impression finie à 12:03 (document 81) |
 | 2 | Après l'impression : vérifier que la bobine `T1A` tourne librement et que le filament n'accroche pas ; relire le journal pour voir si la veille du capteur s'arrête | retire le déclencheur du jour, pas le défaut | Thomas, puis lecture seule | à faire |
-| 3 | Garde sur le bus : aucune question ne part moins de 300 ms après une réponse finie par `F7`, par une enveloppe autour de l'envoi du transport Creality | supprime ces silences quel que soit le déclencheur ; au plus 300 ms de retard sur la question qui suit une telle réponse | Thomas (changement de production) | à instruire en lecture seule, puis essai hors impression |
-| 4 | Contrôle avant et après : `silences_cfs.py` sur le journal de la prochaine impression | preuve : zéro silence après `F7` | — | outil prêt |
+| 3 | Garde sur le bus : aucune question ne part moins de 300 ms après une réponse finie par `F7`, par une enveloppe autour de l'envoi du transport Creality | supprime ces silences quel que soit le déclencheur ; au plus 300 ms de retard sur la question qui suit une telle réponse | Thomas (« installer, tout niquel », 15 septembre) | **posé le 15 septembre à 17:52** (ADR-068, sauvegarde `serial_485.py.bak-20260915`) ; vérifié au repos : les questions du module compilé passent par la garde (`kctrl_calls`), leurs réponses sont lues (`kctrl_seen`) ; preuve décisive à la prochaine impression |
+| 4 | Contrôle avant et après : `silences_cfs.py` sur le journal de la prochaine impression | preuve : zéro silence après `F7` | — | outil prêt ; au repos après la pose (17:47 à 17:50) : 37 questions au CFS 2, 0 muette, 0 réponse finie par `F7` ; à relancer après la prochaine impression |

@@ -1,5 +1,75 @@
 # HANDOFF — index de reprise
 
+## 15 septembre, 18:00 — garde du bus posée et vérifiée au repos (ADR-068), macros de fin essayées à blanc ; tout est en place, la prochaine impression tranche
+
+**Point de reprise, dans l'ordre :**
+
+1. **Prochaine impression, du départ à la fin, avec l'audit en direct**
+   (`scripts/audit-en-direct/audit-live.sh` lancé avant le départ). Deux
+   choses à trancher :
+   - **Pauses `key831`** (garde du bus, ADR-068). Pendant l'impression,
+     `http://192.168.1.64:4409/printer/objects/query?serial_485+serial485`
+     doit montrer `kctrl_marked` > 0 et `kctrl_held` égal ; aucune pause
+     `key831`. Après l'impression, hors dépôt :
+     `ssh k1max-root 'sh -s' < scripts/audit-en-direct/bus.sh > bus.txt`
+     puis `py -3.10 scripts/audit-en-direct/silences_cfs.py bus.txt` :
+     zéro question muette après une trame finie par `F7`. S'il en reste,
+     allonger `HOLD_S` (300 ms) dans le fichier, ou la cause est ailleurs
+     (`--detail`).
+   - **Fin d'impression** (ADR-067). À la console : « K1 Control: retrait
+     (fin) de Txx (…) : coupe, puis rembobinage », « retrait (fin) de Txx
+     fait, tete vide », puis « box_end -> Exiting en N s, 0 tronçon(s) »
+     sans ALERTE. Si une ALERTE « extrude all material » ou « boucle de fin »
+     tombe : annuler depuis l'écran, sinon arrêt d'urgence ; la Pause ne fait
+     rien. Ce que fait `BOX_END` devant une tête vide est l'inconnue
+     (document 81, section 4).
+2. **Retour arrière de la garde**, si Klipper ou le bus font autre chose que
+   d'habitude :
+   `ssh k1max-root 'cp /usr/share/klipper/klippy/extras/serial_485.py.bak-20260915 /usr/share/klipper/klippy/extras/serial_485.py && /etc/init.d/S55klipper_service restart'`.
+3. **Lectures du journal** : seulement par les scripts bornés (`purges.sh`,
+   `bus.sh`, les deux `.ps1` d'audit) ou une fenêtre `dd` écrite à la main ;
+   jamais `tail -n N` ni `grep` sur `klippy.log`. Au repos, le journal grossit
+   d'environ 330 Ko par minute (une ligne par trame du bus) : 8 Mo font
+   24 minutes.
+4. Inconnues restantes, observation seulement : la boucle d'adressage du bus
+   (`Error: no response` toutes les ~2 s, adresses 3 et 4 absentes, 137 par
+   Mo de journal), `box.filament_useup` encore à 1 au repos, la condition
+   exacte de la branche « extrude all material ».
+
+### Fait (vérifié)
+
+- **Garde du bus posée** (document 80, remède 3 ; ADR-068) :
+  `/usr/share/klipper/klippy/extras/serial_485.py` remplacé (sauvegarde
+  `.bak-20260915`, le stock de deux lignes), poses à 17:44, 17:47 et 17:52
+  (forme finale, `md5 b2c2f42b…`, identique au dépôt), Klipper prêt à
+  17:52:55, ligne « kctrl serial_485: garde de 300 ms » au journal, aucune
+  erreur. Compteurs dans l'objet `serial_485 serial485` : `kctrl_calls`
+  44 → 121 en 40 s (les questions du module compilé passent par la garde),
+  `kctrl_seen` 30 → 87 (la forme de la réponse est lue), `unknown` 0 ;
+  `marked` et `held` à 0 au repos, normal (aucune réponse finie par `F7`
+  sans impression) ; `silences_cfs.py` de 17:47 à 17:50 : 37 questions au
+  CFS 2, 0 muette. 8 tests sur faux transport ; README du paquet.
+- **Macros de fin essayées à blanc** à 17:49, tête vide, au repos :
+  `_KCTRL_UNLOAD REASON=essai` → « capteur de tete deja vide, rien a
+  couper », `last` = `vide` ; `_KCTRL_UNLOAD_CHECK TOOL=T1A REASON=essai` →
+  « retrait (essai) de T1A fait, tete vide ». Rien n'a bougé ni chauffé.
+- Moonraker de la machine : `printer/gcode/script` ne prend que la forme
+  `?script=…` avec `+` pour les espaces (le corps JSON répond « Missing
+  Argument [script] ») ; `objects/list` ne liste que les objets qui ont un
+  `get_status`, d'où l'absence de `serial_485` avant la pose. Le port 4409
+  relaie `printer/objects/query` depuis le réseau.
+- Suite complète : 1 466 tests verts, les deux rouges volontaires de la CI
+  inchangés. Machine : `standby`, buse froide, 102 Mo disponibles.
+
+### Décisions prises sans demander
+
+- Deux G-code envoyés à la machine pour l'essai à blanc (ci-dessus), sans
+  mouvement ni chauffe par construction (tête vide) ; le rendu réel des
+  modèles valait la vérification après l'incident de 14:00.
+- Une seule attente par réponse finie par `F7` : la garde est levée une fois
+  la question retenue partie, la réponse suivante en ouvre une autre. Sur la
+  machine le comportement est le même ; un test le fixe.
+
 ## 15 septembre, 14:20 — la fin d'impression vide la tête par nos soins (ADR-067, posé à 14:03), lectures du journal bornées, alertes de fin dans l'audit ; garde du bus écrite, pas posée (document 81)
 
 **Point de reprise, dans l'ordre :**
