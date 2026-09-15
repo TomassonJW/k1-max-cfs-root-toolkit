@@ -2,6 +2,23 @@
 
 Last updated: 2026-09-15
 
+15 septembre, 19:00. **Audit de l'impression multicolore de 18:02 (document
+82) : fin propre en 42 s, ADR-067 validée sur une fin réelle ; zéro pause,
+zéro silence du bus sous la garde (ADR-068, preuve décisive encore à venir)
+; trois relances de chargement sur cinq, 5 sur 6 depuis le CFS 1 sur deux
+impressions.**
+- Fin : notre retrait de `T2B` en 28 s (coupe, rembobinage, « tete vide »),
+  puis `BOX_END` devant une tête vide en 14 s, 0 tronçon, aucune alerte.
+- Bus : 1 218 questions au CFS 2, 0 muette ; trois réponses finies par `F7`,
+  une question retenue 314 ms et répondue ; le rapport du capteur en veille
+  toutes les 5 s (le cas du matin) ne s'est pas produit.
+- Changements : 200 s sans relance (purge 280 mm, 2 min 14 s, 67 %), 285 à
+  290 s avec ; un chargement raté coûte 85 à 90 s. Relances `T1A`, `T2D`,
+  `T1D` ; hypothèse : le chemin du CFS 1 vers le hub, pas la bobine noire
+  seule. Geste pour trancher : échanger noir et bleu entre les deux CFS.
+- Total 26 min 01 s contre 23 min 25 s la veille, tout l'écart dans les deux
+  relances de changement.
+
 15 septembre, 18:00. **Garde du bus posée et vérifiée au repos (ADR-068) ;
 macros de fin essayées à blanc ; tout est en place, la prochaine impression
 tranche (pauses `key831`, fin d'impression).**

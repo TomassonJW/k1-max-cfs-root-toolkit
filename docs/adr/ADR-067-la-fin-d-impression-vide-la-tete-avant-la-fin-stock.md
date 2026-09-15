@@ -6,7 +6,9 @@ Statut : **acceptée** (« tente les corrections … GO ! », Thomas, le
 15 septembre) ; écrite et testée hors machine (21 tests) ; posée le
 15 septembre à 14:03, machine au repos, sauvegarde
 `k1-control-owned-start-print-v2.cfg.bak-20260915-adr067`, Klipper prêt à
-14:04:02 ; **première fin réelle à observer** (document 81, section 6).
+14:04:02 ; **validée sur la fin réelle du 15 septembre à 18:28** (document 82,
+section 4) : retrait de `T2B` en 28 s, tête vide, `BOX_END` en 14 s, 0
+tronçon, aucune alerte.
 
 ## Contexte
 
@@ -58,9 +60,8 @@ un ` ;` dans un message coupe la ligne et le modèle ne se charge plus
 ## Conséquences
 
 - Une fin normale fait deux retraits de suite : le nôtre, puis `BOX_END`
-  devant une tête vide. Ce que fait `BOX_END` dans ce cas n'est pas encore
-  observé ; l'audit en direct le mesure à la prochaine fin (`box_end` →
-  `Exiting`, tronçons poussés).
+  devant une tête vide. Observé le 15 septembre à 18:28 : `BOX_END` relit les
+  deux capteurs et rend la main en 14 s, 0 tronçon (document 82).
 - Une annulation pendant la chauffe attend la cible avant de couper ; une
   annulation cible à 0 (après un arrêt du départ, ADR-066) réchauffe la buse
   à 200 °C pour vider la tête, comme la fin stock l'aurait fait.
@@ -80,7 +81,9 @@ un ` ;` dans un message coupe la ligne et le modèle ne se charge plus
 - **Inconnu :** la branche « extrude all material » elle-même n'est pas
   supprimée, seulement privée de filament à pousser ; si `BOX_END` la prend
   quand même devant une tête vide, l'audit le dira et il faudra remplacer
-  `BOX_END` par ce qu'il fait d'autre (section 4 du document 81).
+  `BOX_END` par ce qu'il fait d'autre (section 4 du document 81). Le 15 à
+  18:28 elle n'a pas été prise (`filament_useup` à 0 en fin) ; une fin avec
+  `filament_useup` à 1, le cas du matin, reste à observer.
 
 ## Voir aussi
 
