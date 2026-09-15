@@ -136,6 +136,27 @@ class BusGuardTests(unittest.TestCase):
         self.assertEqual(guard.config.printer.reactor.pauses, [])
         self.assertGreaterEqual(guard.calls[1][0] - guard.calls[0][0], 0.28)
 
+    def test_avant_toute_reponse_le_dernier_octet_vaut_moins_un(self):
+        status = self.guard().get_status(0.0)
+        self.assertEqual(status["kctrl_last_tail"], -1)
+        self.assertEqual(status["kctrl_seen"], 0)
+
+    def test_les_compteurs_sont_lisibles_depuis_l_interface(self):
+        guard = self.guard()
+        guard.responses = [bytes([0x01, 0xF7]), 3.5, None]
+        guard.cmd_send_data_with_response(b"q1", 1.0, False)
+        guard.cmd_send_data_with_response(b"q2", 1.0, False)
+        guard.cmd_send_data_with_response(b"q3", 1.0, False)
+        status = guard.get_status(0.0)
+        self.assertEqual(status["kctrl_calls"], 3)
+        self.assertEqual(status["kctrl_seen"], 1)
+        self.assertEqual(status["kctrl_last_tail"], 0xF7)
+        self.assertEqual(status["kctrl_marked"], 1)
+        self.assertEqual(status["kctrl_held"], 1)
+        # 3.5 : forme inconnue, comptee ; None : pas de reponse, pas comptee.
+        self.assertEqual(status["kctrl_unknown"], 1)
+        self.assertEqual(status["kctrl_hold_ms"], 300)
+
     def test_la_trame_passe_telle_quelle(self):
         guard = self.guard()
         guard.responses = [b"\x01\xf7"]

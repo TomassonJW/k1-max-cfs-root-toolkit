@@ -71,7 +71,12 @@ un ` ;` dans un message coupe la ligne et le modèle ne se charge plus
   retrait, la position de purge (`BOX_GO_TO_BOX_EXTRUDE_POS`), pas le cutter.
 - Vérifié hors machine : 21 tests
   (`tests/test_owned_end_unloads_the_head_v1.py`), suite complète verte hors
-  les deux rouges volontaires de la CI.
+  les deux rouges volontaires de la CI. Essai à blanc sur la machine le
+  15 septembre à 17:49, tête vide et au repos : `_KCTRL_UNLOAD REASON=essai`
+  répond « capteur de tete deja vide, rien a couper » (`last` = `vide`) et
+  `_KCTRL_UNLOAD_CHECK TOOL=T1A REASON=essai` « retrait (essai) de T1A fait,
+  tete vide » ; les deux modèles se rendent sur le Klipper réel, rien ne
+  bouge.
 - **Inconnu :** la branche « extrude all material » elle-même n'est pas
   supprimée, seulement privée de filament à pousser ; si `BOX_END` la prend
   quand même devant une tête vide, l'audit le dira et il faudra remplacer

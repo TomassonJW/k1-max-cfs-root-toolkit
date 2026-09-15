@@ -51,7 +51,7 @@ avancer sur notre version, adaptée à la K1 Max, avec les bonnes séquences.
    l'emplacement nommé (ADR-067) ; toute lecture du journal est bornée et un
    test l'impose ; l'audit en direct alerte sur la boucle de fin, la Pause
    inutile, le journal muet et la mémoire basse. La garde du bus du document
-   80 est écrite et testée, pas posée.
+   80 est posée à 17:52 (ADR-068).
 
 ## 2. Méthode
 
@@ -147,7 +147,7 @@ L'objet `box` publie `enable`, `filament`, `state`, `auto_refill`,
 | 1 | **La fin vide la tête elle-même** : `END_PRINT` et `CANCEL_PRINT` appellent `_KCTRL_UNLOAD` avant `END_PRINT_NO_M84` : buse à sa température d'impression (200 °C au moins), `BOX_ERROR_CLEAR`, `BOX_CUT_MATERIAL`, `BOX_RETRUDE_MATERIAL_WITH_TNN TNN=<emplacement>`, puis `_KCTRL_UNLOAD_CHECK` relit le capteur de tête. L'emplacement vient du dernier changement d'outil de notre enveloppe, sinon du départ (`START_PRINT.active_tool`, nouveau), sinon `TOOL=`. Sans CFS, tête déjà vide, axes non référencés ou emplacement inconnu : un message et la fin stock fait son retrait. Aucune des deux macros ne lève (ADR-067). | `packages/k1-control-v1/owned-start-print-v2/k1-control-owned-start-print-v2.cfg` | 21 tests, `tests/test_owned_end_unloads_the_head_v1.py` ; posé le 15 septembre à 14:03 (sauvegarde `.bak-20260915-adr067`), Klipper prêt à 14:04:02, les deux macros présentes. **Première fin réelle à observer.** |
 | 2 | **Lectures du journal bornées** : fenêtre `dd bs=1048576 skip=…` de 32 Mo au repos (64 pour le bus), 3 Mo si `print_stats` vaut `printing` ou `paused`, `nice -n 19`, `cut -c1-W` avant tout `tail -n N` avec N × W ≤ 4 Mo. | `scripts/run-k1-control-cfs-read-only-audit-v1.ps1`, `packages/k1-control-v1/clean-and-reference-v1/capture_recent_cfs_history_read_only.ps1`, `scripts/audit-en-direct/purges.sh`, `scripts/audit-en-direct/bus.sh` (nouveau, pour `silences_cfs.py`) | 7 tests, `tests/test_lectures_journal_bornees_v1.py` : tout script du dépôt qui nomme `klippy.log` n'y touche que par `dd` borné, `wc -c`, `stat` ou `tail -n 0 -F`. |
 | 3 | **Alertes de l'audit en direct** : « extrude all material » pendant `box_end` ; tronçons comptés ensuite (1, 2, puis tous les 5) ; `box_end` au-delà de 150 s ; Pause pendant `box_end` ; journal muet plus de 8 s alors que les `Stats` tombaient ; `memavail` sous 40 Mo ; `filament_useup` qui change. | `scripts/audit-en-direct/audit_live.py` | 7 tests, `tests/test_audit_live_alertes_v1.py` ; rejeu des fins du 14 et du 15 (section 3). |
-| 4 | **Garde du bus** (document 80, remède 3) : enveloppe de `serial_485` qui retient 300 ms la question suivant une réponse finie par `F7`. Écrite, testée, **pas posée** : décision de Thomas. | `packages/k1-control-v1/cfs-bus-guard-v1/serial_485.py` | 6 tests, `tests/test_cfs_bus_guard_v1.py` (faux transport). |
+| 4 | **Garde du bus** (document 80, remède 3) : enveloppe de `serial_485` qui retient 300 ms la question suivant une réponse finie par `F7`. Écrite, testée, **posée le 15 septembre à 17:52** (ADR-068, sauvegarde `serial_485.py.bak-20260915`), compteurs lisibles dans l'objet `serial_485 serial485`. | `packages/k1-control-v1/cfs-bus-guard-v1/serial_485.py` | 8 tests, `tests/test_cfs_bus_guard_v1.py` (faux transport) ; au repos, `kctrl_calls` monte de deux par seconde et `kctrl_seen` avec ; preuve décisive à la prochaine impression (`silences_cfs.py`). |
 
 Incident de pose, 14:00 : Klipper en erreur au premier redémarrage, « EOL
 while scanning string literal ». Cause : Klipper lit le fichier avec
@@ -155,6 +155,12 @@ while scanning string literal ». Cause : Klipper lit le fichier avec
 `_KCTRL_UNLOAD_CHECK` coupait la ligne et le modèle Jinja ne se chargeait
 plus. Message corrigé, test ajouté (aucun ` ;` ni `#` dans un message),
 seconde pose à 14:03, prêt à 14:04:02. [FAIT]
+
+Essai à blanc du 15 septembre à 17:49, tête vide, machine au repos :
+`_KCTRL_UNLOAD REASON=essai` répond « retrait (essai), capteur de tete deja
+vide, rien a couper » (`last` = `vide`) et `_KCTRL_UNLOAD_CHECK TOOL=T1A
+REASON=essai` « retrait (essai) de T1A fait, tete vide ». Les deux modèles se
+rendent sur le Klipper réel ; aucun mouvement, aucune chauffe. [FAIT]
 
 Vérification à la prochaine fin d'impression, avec `audit-live.sh` lancé
 avant la fin : messages « K1 Control: retrait (fin) de Txx (…) : coupe, puis
@@ -166,6 +172,7 @@ dira.
 ## Voir aussi
 
 - ADR-067 — la fin d'impression vide la tête avant la fin stock
+- ADR-068 — la garde du bus est posée
 - ADR-066 — deux contraintes du rendu Jinja
 - Document 80 — pauses `key831`, garde du bus
 - Document 79 — audit des séquences de départ et de changement
