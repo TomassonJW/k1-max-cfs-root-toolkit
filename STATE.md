@@ -2,6 +2,32 @@
 
 Last updated: 2026-09-15
 
+15 septembre, 14:20. **La fin d'impression vide la tête par nos soins avant
+la fin stock (ADR-067, posé à 14:03, Klipper prêt à 14:04) ; lectures du
+journal bornées et testées ; l'audit en direct alerte sur la boucle de fin ;
+garde du bus écrite, pas posée (document 81).**
+- `END_PRINT` et `CANCEL_PRINT` appellent `_KCTRL_UNLOAD` avant
+  `END_PRINT_NO_M84` : buse à sa température (200 °C au moins), coupe,
+  `BOX_RETRUDE_MATERIAL_WITH_TNN TNN=<emplacement>` (dernier changement
+  d'outil de notre enveloppe, sinon le filament du départ, retenu dans
+  `START_PRINT.active_tool`), puis relecture du capteur de tête par
+  `_KCTRL_UNLOAD_CHECK`. Aucune erreur levée. Première fin réelle à observer
+  avec `audit-live.sh` ; ce que fait `BOX_END` devant une tête vide est
+  l'inconnue.
+- Première pose à 14:00 en erreur : Klipper coupe les ` ;` en ligne, un
+  message en avait un ; corrigé, test ajouté, seconde pose à 14:03.
+- Journal : `dd` borné (32 Mo au repos, 3 Mo en impression, `nice`, lignes
+  coupées) dans les deux `.ps1` d'audit, `purges.sh` et `bus.sh` ;
+  `tests/test_lectures_journal_bornees_v1.py` interdit tout autre accès.
+- Audit : alertes « extrude all material », tronçons, `box_end` > 150 s,
+  Pause pendant la fin, journal muet, mémoire < 40 Mo, `filament_useup` ;
+  rejeu du 15 (alertes) et du 14 (aucune).
+- `T1A` rembobiné par Thomas à 13:23 (`BOX_RETRUDE_MATERIAL_WITH_TNN
+  TNN=T1A`, 20 s) ; la tête à la purge ensuite est la séquence stock.
+- Garde du bus (document 80, remède 3) :
+  `packages/k1-control-v1/cfs-bus-guard-v1/serial_485.py`, 6 tests ; pose sur
+  décision de Thomas.
+
 15 septembre, 13:15. **Fin d'impression en boucle puis plantage de Klipper ;
 le plantage vient de notre lecture du journal.**
 - 12:03, fin de `…Shell_PLA_8h16m` : au lieu de couper et rembobiner, le

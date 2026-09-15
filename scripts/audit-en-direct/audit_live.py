@@ -43,6 +43,18 @@ URGENT = re.compile(
     r"|Starting Klippy|Transition to shutdown|[Ss]hutdown|Internal error"
     r"|Lost communication|Timer too close|purge manuelle|method:pause_resume/"
     r"|'script': '(?:PAUSE|RESUME|CANCEL_PRINT)")
+# Fin d'impression (document 81). Le 14 septembre, box_end -> Exiting en 49 s.
+# Le 15, la branche « extrude all material » a pousse 80 mm toutes les 40 s
+# pendant 17 minutes, un « filament_sensor true » a chaque tour, et la Pause
+# demandee n'a pas ete appliquee. Le meme jour, une lecture du journal depuis
+# le PC a pris la memoire (94,5 -> 9,8 Mo), le journal s'est tu 9 s, Klipper
+# s'est arrete. Les Stats tombent chaque seconde et portent memavail (en Ko).
+EXTRUDE_ALL = re.compile(r"extrude all material, last_cmd: (\w+)")
+USEUP = re.compile(r"Tn_data\[filament_useup\]: (\d)")
+STATS = re.compile(r"\bStats \d+\.\d+: .*\bmemavail=(\d+)")
+END_LONG_S = 150
+MEM_MIN_KB = 40 * 1024
+SILENCE_S = 8
 
 journal = open(os.path.join(OUT, "journal.log"), "a", encoding="utf-8", errors="replace")
 tsv_path = os.path.join(OUT, "changements.tsv")
@@ -61,6 +73,9 @@ day = 0
 last_sec = None
 now = 0
 totals = {"changes": 0, "retries": 0, "codes": [], "pauses": 0}
+ending = None
+prev_now = None
+last_stats = None
 
 
 def snap(label, delays):
@@ -154,6 +169,57 @@ for raw in sys.stdin:
         day += 86400
     last_sec = sec
     now = day + sec
+
+    # Le journal se tait quand Klipper se fige (15 septembre, 12:19:44 : notre
+    # lecture du journal prend la memoire, neuf secondes sans une ligne, puis
+    # la buse est lue a 0 C et Klipper s'arrete). Les Stats tombent chaque
+    # seconde : un trou de plus de 8 s juste apres elles n'est pas du repos.
+    if (prev_now is not None and now - prev_now > SILENCE_S
+            and last_stats is not None and prev_now - last_stats <= 10):
+        notify("%s ALERTE journal muet %d s pendant les Stats : Klipper fige (memoire ?)"
+               % (hms, now - prev_now), "muet", 30)
+    prev_now = now
+    s = STATS.search(msg)
+    if s:
+        last_stats = now
+        if int(s.group(1)) < MEM_MIN_KB:
+            notify("%s ALERTE memoire disponible %d Mo, sous 40 Mo : arreter toute lecture du journal sur la machine"
+                   % (hms, int(s.group(1)) // 1024), "mem", 30)
+        continue
+    x = USEUP.search(msg)
+    if x:
+        notify("%s CFS : filament_useup passe a %s%s" % (
+            hms, x.group(1),
+            " ; hypothese du 15 septembre : bobine tenue pour finie, la fin d'impression prendrait la branche extrude all material"
+            if x.group(1) == "0" else ""), "useup", 5)
+    if msg == "box_end":
+        ending = {"t0": now, "all": None, "segments": 0, "long": False}
+        notify("%s fin d'impression : box_end (attendu : coupe, rembobinage, Exiting en 50 s environ)" % hms)
+        snap("box_end", [0, 30, 60, 120])
+        continue
+    if ending is not None:
+        a = EXTRUDE_ALL.search(msg)
+        if a:
+            ending["all"] = a.group(1)
+            notify("%s ALERTE fin d'impression : extrude all material sur %s ; le module va pousser %s par troncons de 80 mm au lieu de couper (2 m le 15 septembre) : annuler depuis l'ecran, sinon arret d'urgence"
+                   % (hms, a.group(1), a.group(1)))
+        elif ending["all"] and msg == "filament_sensor true":
+            ending["segments"] += 1
+            n = ending["segments"]
+            if n <= 2 or n % 5 == 0:
+                notify("%s ALERTE boucle de fin : troncon numero %d, environ %d mm de %s pousses, tete toujours pleine"
+                       % (hms, n, 80 * n, ending["all"]))
+        elif "method:pause_resume/pause" in msg or "'script': 'PAUSE'" in msg:
+            notify("%s Pause demandee pendant box_end : sans effet, la macro de fin tient la file G-code ; annuler depuis l'ecran"
+                   % hms, "pause_fin", 30)
+        if not ending["long"] and now - ending["t0"] > END_LONG_S:
+            ending["long"] = True
+            notify("%s ALERTE box_end dure depuis %d s (49 s le 14 septembre)" % (hms, now - ending["t0"]))
+        if "Exiting SD card print" in msg:
+            notify("%s box_end -> Exiting en %d s, %d troncon(s) pousse(s)%s" % (
+                hms, now - ending["t0"], ending["segments"],
+                ", branche extrude all material" if ending["all"] else ""))
+            ending = None
 
     b = T_BEGIN.search(msg)
     if b:
