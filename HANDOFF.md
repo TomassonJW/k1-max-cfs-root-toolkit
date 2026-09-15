@@ -1,5 +1,141 @@
 # HANDOFF — index de reprise
 
+## 15 septembre, 13:15 — fin d'impression en boucle, plantage de Klipper causé par notre lecture du journal, retrait `T1A` bloqué (document 81 à écrire)
+
+**Point de reprise, dans l'ordre :**
+
+1. Avec Thomas, rembobiner `T1A`. Le filament a été coupé à 12:50 mais pas
+   rembobiné, et la tête est garée en X38 Y100. Voie d'ADR-044 :
+   `BOX_ERROR_CLEAR`, `M109 S220`, puis `BOX_RETRUDE_MATERIAL_WITH_TNN TNN=T1A`.
+   Tout G-code envoyé par l'agent attend l'accord de Thomas. Si l'écran reste
+   figé : redémarrer la machine (l'impression est finie).
+2. Borner les lectures du journal de la machine (voir « Danger ouvert ») et
+   ajouter un test qui l'impose.
+3. Ajouter les alertes à `scripts/audit-en-direct/audit_live.py`, avec un test
+   sur lignes synthétiques.
+4. Écrire le document 81, au format du document 80.
+5. Machine au repos, en lecture bornée : chercher « extrude all material » dans
+   les journaux tournés, et comprendre la boucle d'adressage du bus depuis 12:43.
+
+Le point de reprise du document 80 reste valable : accord de Thomas sur le
+remède 3.
+
+### Fait (vérifié dans le journal)
+
+- **Boucle de fin d'impression.** À 12:03, fin de l'impression
+  `…Shell_PLA_8h16m`. `box_end` prend la branche « extrude all material,
+  last_cmd: T1A », jamais vue le 14. Le 14, la fin normale coupe, rembobine et
+  se termine 49 s après `box_end`. Ici, le module pousse des tronçons de 80 mm
+  à 2 mm/s, toutes les ~40 s, avec un « filament_sensor true » à chaque tour :
+  25 tours de 12:04:05 à 12:20:12. Environ 2,0 m de `T1A` poussés (2 080 mm
+  commandés).
+- **Pause.** La Pause demandée par Thomas pendant la boucle n'est pas
+  appliquée : la macro de fin tient la file G-code.
+- **Plantage vers 12:20, causé par notre lecture.** À 12:19:44, nous lançons
+  `tail -n 600000 klippy.log | grep`. La mémoire disponible tombe de 94,5 à
+  9,8 Mo et le journal reste muet ~9 s. Ensuite : buse lue à 0 °C
+  (`heater_fault`), MCU buse « Missed scheduling », `key294`, arrêt.
+  « shutdown: Command request » est la propagation de l'arrêt, pas un M112.
+- **Redémarrage.** Service puis `FIRMWARE_RESTART`, à la demande de Thomas ;
+  prêt à 12:36:09. Le G-code de l'impression était fini : refuser toute reprise
+  proposée.
+- **Premier retrait, 12:49:32, depuis l'écran.** Coupe réussie à 12:50:04, puis
+  la séquence s'arrête : aucun `BOX_RETRUDE_MATERIAL`.
+- **Second retrait, 13:02:11.** « Cut sensor not triggered », `key841`, erreur
+  Python `'NoneType' object has no attribute 'name'`, `macro_cut_err`.
+  `BOX_RETRUDE_MATERIAL` rend la main en 4 ms sans rien faire. La tête se gare
+  en X38 Y100, sans chauffe.
+- **État à 13:12.** Klipper prêt, `standby`. Buse à 34 °C, cible 0. Tête en
+  X38 Y100, Z non référencé. `box connect`, 115 Mo de mémoire disponible. Écran
+  figé selon Thomas.
+- **Rien d'autre n'a changé.** Ni la machine ni les outils du dépôt ne sont
+  modifiés depuis le document 80. PR #67 (document 80 et cette passation)
+  fusionnée.
+
+### À savoir
+
+- **Danger ouvert.** Trois scripts lisent encore `klippy.log` sans fenêtre
+  bornée ni `nice` ; ne pas les lancer pendant une impression avant correction :
+  - `scripts/run-k1-control-cfs-read-only-audit-v1.ps1`, lignes 111 à 123
+    (`tail -n 160000`) ;
+  - `packages/k1-control-v1/clean-and-reference-v1/capture_recent_cfs_history_read_only.ps1`,
+    lignes 43 à 45 ;
+  - `scripts/audit-en-direct/purges.sh`.
+
+  Correctif prévu, en quatre éléments :
+  - fenêtre `dd bs=1048576 skip=…` de 32 Mo au repos ;
+  - 3 Mo seulement si `print_stats` vaut `printing` ou `paused` ;
+  - `nice -n 19` ;
+  - `cut -c1-600` avant tout `tail -n`.
+
+  Le test associé exige `nice -n 19` et un produit lignes × largeur de 4 Mo au
+  plus.
+- **Alertes prévues dans `audit_live.py`, et quand elles se déclenchent :**
+  - « extrude all material » pendant `box_end` ;
+  - tronçons comptés seulement ensuite, car une fin normale écrit aussi deux
+    « filament_sensor true » ;
+  - `box_end` au-delà de 150 s ;
+  - Pause pendant `box_end` ;
+  - journal muet plus de 8 s alors que les lignes `Stats` tournaient ;
+  - `memavail` sous 40 Mo.
+
+  Vérification : rejouer la capture du 15 (alertes attendues) et le journal du
+  14 (aucune alerte).
+- **Hypothèses et inconnues.**
+  - [HYPOTHÈSE] `box_end` a cru `T1A` épuisé, à cause de l'erreur de tension
+    du CFS 1 active depuis 03:45:58 (document 80). Il a donc « tout vidé » :
+    sans fin, puisque la bobine est attachée.
+  - [HYPOTHÈSE] `BOX_RETRUDE_MATERIAL` ne fait rien parce que le module a perdu
+    au redémarrage le filament chargé (`last_tnn: None`).
+  - [INCONNU] la condition exacte de la branche « extrude all material » ;
+  - [INCONNU] si la boucle s'arrête seule ;
+  - [INCONNU] si l'arrêt d'urgence agit tout de suite sur ce firmware ;
+  - [INCONNU] la cause de la coupe ratée de 13:02 ;
+  - [INCONNU] la boucle « set slave addr / online check » toutes les ~2 s
+    depuis 12:43 ;
+  - [INCONNU] le client webhooks qui ferme sa connexion toutes les ~11 s à
+    13:12.
+- **Consigne à Thomas en attendant.** Si une fin d'impression pousse du
+  filament en boucle : arrêt d'urgence, pas Pause.
+- **Captures brutes, hors dépôt.** Dossier brouillon de la session `1fcc4b93`,
+  dans le Temp de Claude : `logs/fin3.txt`, `crash.txt`, `stats485.txt`,
+  `retrait.txt`, `retrait2.txt`.
+
+## 15 septembre, 10:45 — pauses `key831` expliquées : le CFS 2 n'entend pas la question qui suit une réponse du CFS 1 finie par `F7` (document 80)
+
+**Point de reprise :** accord de Thomas sur le remède 3 du document 80 (retenir
+toute question 300 ms après une réponse finie par `F7`). En attendant, en
+lecture seule : dès la fin de l'impression en cours, relire le journal (la
+veille du capteur du CFS 1 s'arrête-t-elle ?) ; Thomas vérifie que la bobine
+`T1A` tourne librement. Mission garde : vérifier machine au repos que
+`box_wrapper` passe par `cmd_send_data_with_response` de l'objet
+`serial_485 serial485`, écrire l'enveloppe et ses tests hors machine, la poser
+hors impression avec l'accord de Thomas, contrôler la prochaine impression avec
+`silences_cfs.py` (zéro silence après `F7`).
+
+### Fait
+
+- Document 80 : trois pauses (05:15:21, 08:01:10, 09:24:23), déclencheur à
+  03:45:58 (tension `T1A`, capteur à 1), comptes du 15 septembre et
+  contre-épreuves (CFS 1 jamais touché, 13 septembre à `FE` et `CF` sans perte), nos
+  modifications hors de cause, remèdes classés.
+- `scripts/audit-en-direct/silences_cfs.py` : pour chaque question à un CFS,
+  trame précédente, écart et réponse ; contrôles recalculés.
+- Rien modifié sur la machine ; impression non touchée (88,7 % à 10:43 ;
+  37 silences du CFS 2 de 10:14 à 10:48, deux fois quatre de suite).
+
+### À savoir
+
+- Une pause `key831` : cinq questions d'état de suite sans réponse du même CFS
+  (`timeout_times` de 4 à 0), une toutes les 5 s. Le module interroge chaque
+  CFS branché, qu'il serve ou non.
+- Après un événement de tension, le module interroge le capteur toutes les 5 s,
+  en impression comme en pause. Le 13 septembre : 2, puis 0 au bout de 81 s,
+  puis une autre question au capteur (réponse 9) jusqu'à 12:48:48, et arrêt.
+  Le 15, la valeur reste à 1 depuis 03:45:58 (4 872 réponses à 10:47).
+- Extraction du bus : commande en tête de `silences_cfs.py`, depuis un dossier
+  hors du dépôt, en basse priorité.
+
 ## 14 septembre, 23:30 — audit en direct fait : impression multicouleur sans pause, purge arrondie à 280 mm, relance du noir (document 79, sections 9 et 10)
 
 **Point de reprise :** section 10 du document 79. Correctif 1 chez Thomas

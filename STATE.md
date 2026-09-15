@@ -1,6 +1,41 @@
 # STATE
 
-Last updated: 2026-09-14
+Last updated: 2026-09-15
+
+15 septembre, 13:15. **Fin d'impression en boucle puis plantage de Klipper ;
+le plantage vient de notre lecture du journal.**
+- 12:03, fin de `…Shell_PLA_8h16m` : au lieu de couper et rembobiner, le
+  module CFS prend la branche « extrude all material, last_cmd: T1A ». Il
+  pousse environ 2,0 m de `T1A`, par tronçons de 80 mm, jusqu'à 12:20. La Pause
+  demandée par Thomas n'est pas appliquée.
+- Vers 12:20, notre `tail -n 600000 klippy.log` fait tomber la mémoire
+  disponible à 9,8 Mo. Klipper se fige et s'arrête (buse lue à 0 °C, MCU buse).
+  Redémarré à la demande de Thomas, prêt à 12:36:09.
+- Retrait de `T1A` : coupe réussie à 12:50, mais rembobinage jamais lancé.
+  Nouvel essai à 13:02 en échec (`key841`, `macro_cut_err`), tête garée en
+  X38 Y100.
+- Trois scripts du dépôt lisent encore le journal sans borne : à corriger avant
+  tout usage en impression.
+- Document 81, alertes et correctifs : à faire (HANDOFF).
+
+15 septembre, 10:45. **Pauses `key831` de la nuit expliquées (document 80) :
+le CFS 2 n'entend pas une question d'état partie moins de 100 ms après la
+réponse du capteur du CFS 1 quand elle vaut 1, dont l'octet final `F7` est
+l'octet qui ouvre toute trame. Hors de notre code ; rien modifié sur la
+machine.** Impression `4x1x3SHELL_4x2x4 LU - Topped Rail - MultiBin
+Shell_PLA_8h16m` (lancée le 14 à 23:42:27, sur `T1A`) mise en pause par le
+module Creality à 05:15:21, 08:01:10 et 09:24:23, relancée par Thomas ; 88,7 %
+à 10:43. Déclencheur : tension du filament `T1A` signalée par le CFS 1 à
+03:45:58 ; depuis, le module interroge ce capteur toutes les 5 s et il répond
+toujours 1. Le 15 : 139 questions sur 139 perdues à moins de 100 ms de cette
+réponse, 20 sur 861 entre 100 et 300 ms, aucune au-delà ; 8 554 sur 8 554
+répondues à moins de 100 ms d'une autre réponse du CFS 1 ; aucun contrôle faux
+sur 38 966 trames. Après la reprise de 09:39, 37 silences de 10:14 à 10:48,
+deux fois quatre de suite : une pause peut revenir avant la fin. Le 13, même
+tension, réponses du capteur finies par `FE` puis `CF` : 13 questions sur 13
+répondues dans la même situation. Remède proposé, à instruire puis à décider
+par Thomas : retenir toute question 300 ms après une réponse finie par `F7`.
+Contrôle avant et après : `scripts/audit-en-direct/silences_cfs.py`.
 
 14 septembre, 23:30. **Impression multicouleur suivie en direct de 22:30:56 à
 22:54:21 (`MultiColo_Cube_PLA_15m31s`, cinq filaments) : aucune pause, aucun
