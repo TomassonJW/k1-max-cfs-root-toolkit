@@ -2,6 +2,22 @@
 
 Last updated: 2026-09-15
 
+15 septembre, 13:15. **Fin d'impression en boucle puis plantage de Klipper ;
+le plantage vient de notre lecture du journal.**
+- 12:03, fin de `…Shell_PLA_8h16m` : au lieu de couper et rembobiner, le
+  module CFS prend la branche « extrude all material, last_cmd: T1A ». Il
+  pousse environ 2,0 m de `T1A`, par tronçons de 80 mm, jusqu'à 12:20. La Pause
+  demandée par Thomas n'est pas appliquée.
+- Vers 12:20, notre `tail -n 600000 klippy.log` fait tomber la mémoire
+  disponible à 9,8 Mo. Klipper se fige et s'arrête (buse lue à 0 °C, MCU buse).
+  Redémarré à la demande de Thomas, prêt à 12:36:09.
+- Retrait de `T1A` : coupe réussie à 12:50, mais rembobinage jamais lancé.
+  Nouvel essai à 13:02 en échec (`key841`, `macro_cut_err`), tête garée en
+  X38 Y100.
+- Trois scripts du dépôt lisent encore le journal sans borne : à corriger avant
+  tout usage en impression.
+- Document 81, alertes et correctifs : à faire (HANDOFF).
+
 15 septembre, 10:45. **Pauses `key831` de la nuit expliquées (document 80) :
 le CFS 2 n'entend pas une question d'état partie moins de 100 ms après la
 réponse du capteur du CFS 1 quand elle vaut 1, dont l'octet final `F7` est
