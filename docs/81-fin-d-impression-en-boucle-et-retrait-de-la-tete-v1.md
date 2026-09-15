@@ -144,10 +144,10 @@ L'objet `box` publie `enable`, `filament`, `state`, `auto_refill`,
 
 | # | Correctif | Où | Preuve |
 | --- | --- | --- | --- |
-| 1 | **La fin vide la tête elle-même** : `END_PRINT` et `CANCEL_PRINT` appellent `_KCTRL_UNLOAD` avant `END_PRINT_NO_M84` : buse à sa température d'impression (200 °C au moins), `BOX_ERROR_CLEAR`, `BOX_CUT_MATERIAL`, `BOX_RETRUDE_MATERIAL_WITH_TNN TNN=<emplacement>`, puis `_KCTRL_UNLOAD_CHECK` relit le capteur de tête. L'emplacement vient du dernier changement d'outil de notre enveloppe, sinon du départ (`START_PRINT.active_tool`, nouveau), sinon `TOOL=`. Sans CFS, tête déjà vide, axes non référencés ou emplacement inconnu : un message et la fin stock fait son retrait. Aucune des deux macros ne lève (ADR-067). | `packages/k1-control-v1/owned-start-print-v2/k1-control-owned-start-print-v2.cfg` | 21 tests, `tests/test_owned_end_unloads_the_head_v1.py` ; posé le 15 septembre à 14:03 (sauvegarde `.bak-20260915-adr067`), Klipper prêt à 14:04:02, les deux macros présentes. **Première fin réelle à observer.** |
+| 1 | **La fin vide la tête elle-même** : `END_PRINT` et `CANCEL_PRINT` appellent `_KCTRL_UNLOAD` avant `END_PRINT_NO_M84` : buse à sa température d'impression (200 °C au moins), `BOX_ERROR_CLEAR`, `BOX_CUT_MATERIAL`, `BOX_RETRUDE_MATERIAL_WITH_TNN TNN=<emplacement>`, puis `_KCTRL_UNLOAD_CHECK` relit le capteur de tête. L'emplacement vient du dernier changement d'outil de notre enveloppe, sinon du départ (`START_PRINT.active_tool`, nouveau), sinon `TOOL=`. Sans CFS, tête déjà vide, axes non référencés ou emplacement inconnu : un message et la fin stock fait son retrait. Aucune des deux macros ne lève (ADR-067). | `packages/k1-control-v1/owned-start-print-v2/k1-control-owned-start-print-v2.cfg` | 21 tests, `tests/test_owned_end_unloads_the_head_v1.py` ; posé le 15 septembre à 14:03 (sauvegarde `.bak-20260915-adr067`), Klipper prêt à 14:04:02, les deux macros présentes. **Validé sur la fin réelle de 18:28** : retrait de `T2B` en 28 s, tête vide, `BOX_END` en 14 s, 0 tronçon, aucune alerte (document 82). |
 | 2 | **Lectures du journal bornées** : fenêtre `dd bs=1048576 skip=…` de 32 Mo au repos (64 pour le bus), 3 Mo si `print_stats` vaut `printing` ou `paused`, `nice -n 19`, `cut -c1-W` avant tout `tail -n N` avec N × W ≤ 4 Mo. | `scripts/run-k1-control-cfs-read-only-audit-v1.ps1`, `packages/k1-control-v1/clean-and-reference-v1/capture_recent_cfs_history_read_only.ps1`, `scripts/audit-en-direct/purges.sh`, `scripts/audit-en-direct/bus.sh` (nouveau, pour `silences_cfs.py`) | 7 tests, `tests/test_lectures_journal_bornees_v1.py` : tout script du dépôt qui nomme `klippy.log` n'y touche que par `dd` borné, `wc -c`, `stat` ou `tail -n 0 -F`. |
 | 3 | **Alertes de l'audit en direct** : « extrude all material » pendant `box_end` ; tronçons comptés ensuite (1, 2, puis tous les 5) ; `box_end` au-delà de 150 s ; Pause pendant `box_end` ; journal muet plus de 8 s alors que les `Stats` tombaient ; `memavail` sous 40 Mo ; `filament_useup` qui change. | `scripts/audit-en-direct/audit_live.py` | 7 tests, `tests/test_audit_live_alertes_v1.py` ; rejeu des fins du 14 et du 15 (section 3). |
-| 4 | **Garde du bus** (document 80, remède 3) : enveloppe de `serial_485` qui retient 300 ms la question suivant une réponse finie par `F7`. Écrite, testée, **posée le 15 septembre à 17:52** (ADR-068, sauvegarde `serial_485.py.bak-20260915`), compteurs lisibles dans l'objet `serial_485 serial485`. | `packages/k1-control-v1/cfs-bus-guard-v1/serial_485.py` | 8 tests, `tests/test_cfs_bus_guard_v1.py` (faux transport) ; au repos, `kctrl_calls` monte de deux par seconde et `kctrl_seen` avec ; preuve décisive à la prochaine impression (`silences_cfs.py`). |
+| 4 | **Garde du bus** (document 80, remède 3) : enveloppe de `serial_485` qui retient 300 ms la question suivant une réponse finie par `F7`. Écrite, testée, **posée le 15 septembre à 17:52** (ADR-068, sauvegarde `serial_485.py.bak-20260915`), compteurs lisibles dans l'objet `serial_485 serial485`. | `packages/k1-control-v1/cfs-bus-guard-v1/serial_485.py` | 8 tests, `tests/test_cfs_bus_guard_v1.py` (faux transport) ; au repos, `kctrl_calls` monte de deux par seconde et `kctrl_seen` avec. Impression de 18:02 : 0 silence, 0 `key831`, une question retenue ; cas du matin non reproduit, preuve décisive encore à venir (document 82). |
 
 Incident de pose, 14:00 : Klipper en erreur au premier redémarrage, « EOL
 while scanning string literal ». Cause : Klipper lit le fichier avec
@@ -169,10 +169,17 @@ rembobinage » puis « retrait (fin) de Txx fait, tete vide », puis
 sans alerte. Si `BOX_END` fait autre chose devant une tête vide, l'audit le
 dira.
 
+Fait le 15 septembre à 18:28 (document 82) : « retrait (fin) de T2B (dernier
+changement d'outil) : coupe, puis rembobinage » à 18:27:47, « retrait (fin) de
+T2B fait, tete vide » à 18:28:15, « box_end -> Exiting en 14 s, 0 troncon(s)
+pousse(s) », aucune alerte. `BOX_END` devant une tête vide relit les deux
+capteurs et rend la main. [FAIT]
+
 ## Voir aussi
 
 - ADR-067 — la fin d'impression vide la tête avant la fin stock
 - ADR-068 — la garde du bus est posée
+- Document 82 — audit de l'impression de 18:02, fin propre en 42 s
 - ADR-066 — deux contraintes du rendu Jinja
 - Document 80 — pauses `key831`, garde du bus
 - Document 79 — audit des séquences de départ et de changement

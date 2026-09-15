@@ -6,8 +6,11 @@ Statut : **acceptée** (« tu peux faire tout ce qui reste a faire, installer,
 tout niquel », Thomas, le 15 septembre) ; posée le 15 septembre à 17:44, puis
 avec ses compteurs à 17:47 et sous sa forme finale à 17:52, machine au repos,
 sauvegarde `/usr/share/klipper/klippy/extras/serial_485.py.bak-20260915` (le
-stock, deux lignes) ; vérifiée au repos ; **preuve décisive à la prochaine
-impression** (document 80, remède 4).
+stock, deux lignes) ; vérifiée au repos ; première impression sous la garde le
+15 septembre de 18:02 à 18:28 (document 82) : 1 218 questions au CFS 2, 0
+muette, 0 `key831`, une question retenue et répondue ; **preuve décisive
+encore à venir**, le cas du matin (rapport du capteur en veille toutes les
+5 s) ne s'est pas présenté.
 
 ## Contexte
 
@@ -71,8 +74,13 @@ sur l'objet `serial_485 serial485` ; le module compilé porte les mêmes noms.
 - `marked` et `held` restent à 0 au repos : aucune réponse finie par `F7`
   dans la fenêtre. `silences_cfs.py` sur les trames de 17:47 à 17:50
   (`bus.sh`, lecture bornée) : 37 questions au CFS 2, 0 muette, 0 réponse
-  finie par `F7`. La garde n'a donc pas encore eu à retenir une question :
-  la preuve décisive est la prochaine impression.
+  finie par `F7`. La garde n'avait alors pas encore eu à retenir une question.
+- Impression de 18:02 (document 82, section 5) : trois réponses finies par
+  `F7`, dont le rapport du capteur du CFS 1 à 18:06:24 ; la question suivante
+  est partie 314 ms après et a eu sa réponse en 8 ms (`kctrl_held` 1) ; les
+  deux autres questions venaient d'elles-mêmes après 800 ms. 1 218 questions
+  au CFS 2, 0 muette. Le rapport en veille toutes les 5 s, avec la question
+  au CFS 2 juste derrière, ne s'est pas produit : preuve décisive à venir.
 
 ## Conséquences
 

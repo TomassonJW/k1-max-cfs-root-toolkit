@@ -1,5 +1,49 @@
 # HANDOFF — index de reprise
 
+## 15 septembre, 19:00 — audit de l'impression de 18:02 (document 82) : fin propre en 42 s (ADR-067 validée), zéro pause, zéro silence du bus ; relances de chargement, 5 sur 6 depuis le CFS 1
+
+**Point de reprise, dans l'ordre :**
+
+1. **Relances de chargement** (document 82, section 8, geste 1) : Thomas
+   échange une bobine entre le CFS 1 et le CFS 2 (le noir en `T2B`, le bleu
+   en `T1A`) et charge chacune trois fois depuis l'écran. Si la relance suit
+   l'unité, regarder le tube CFS 1 → hub et l'entrée du hub. Deux impressions
+   cumulées : CFS 1, 5 relances sur 6 chargements ; CFS 2, 1 sur 7. Un
+   chargement raté coûte 85 à 90 s.
+2. **Garde du bus, preuve décisive encore à venir** : l'impression de 18:02
+   n'a eu qu'un rapport du capteur fini par `F7` (question suivante retenue
+   314 ms, répondue) ; le cas du matin, rapport toutes les 5 s en veille et
+   question au CFS 2 derrière, ne s'est pas présenté. À la prochaine veille :
+   `http://192.168.1.64:4409/printer/objects/query?serial_485+serial485`
+   (`kctrl_marked`, `kctrl_held`), puis `bus.sh` et `silences_cfs.py`.
+3. **Fin d'impression** : validée sur une fin réelle (`T2B`, 18:28) ; reste
+   à observer une fin avec `filament_useup` à 1 (le cas du matin), l'audit
+   en direct alerte si la boucle revient.
+4. **Lectures du journal** : seulement par les scripts bornés ou une fenêtre
+   `dd` écrite à la main ; jamais `tail -n N` ni `grep` sur `klippy.log`.
+   Recette d'audit d'une impression : document 82, section 2.
+
+### Fait (vérifié)
+
+- **Document 82** : `MultiColo_Cube_PLA_15m31s.gcode`, 18:02:28 → 18:28:29,
+  26 min 01 s, `completed`, cinq `T`, 0 pause, 0 code CFS, `key61` bruit
+  connu. Fin : « retrait (fin) de T2B … coupe, puis rembobinage » à
+  18:27:47, « fait, tete vide » à 18:28:15 (28 s), `box_end` → `Exiting` en
+  14 s, 0 tronçon, aucune alerte au rejeu de `audit_live.py`. Bus : 1 218
+  questions au CFS 2, 0 muette, 0 CRC faux ; compteurs `calls` 3 911,
+  `seen` 3 108, `marked` 3, `held` 1, `unknown` 0. Changements : 290, 284,
+  200, 201 s ; purge 280 mm (2 min 14 s) à chaque fois ; relances sur
+  `T1A`, `T2D`, `T1D` (sept poussées avant le capteur de tête, « buffer is
+  always full »).
+- ADR-067 validée, ADR-068 première impression sans pause ni silence ;
+  documents 80 et 81 mis à jour. Machine : `standby`, buse froide, 99 Mo
+  disponibles, `filament_useup` à 0.
+
+### Décisions
+
+- Aucune commande envoyée à la machine pour cet audit ; lectures bornées
+  (28 Mo) et rejeu hors dépôt.
+
 ## 15 septembre, 18:00 — garde du bus posée et vérifiée au repos (ADR-068), macros de fin essayées à blanc ; tout est en place, la prochaine impression tranche
 
 **Point de reprise, dans l'ordre :**
