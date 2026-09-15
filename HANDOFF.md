@@ -1,5 +1,64 @@
 # HANDOFF — index de reprise
 
+## 15 septembre, 14:20 — la fin d'impression vide la tête par nos soins (ADR-067, posé à 14:03), lectures du journal bornées, alertes de fin dans l'audit ; garde du bus écrite, pas posée (document 81)
+
+**Point de reprise, dans l'ordre :**
+
+1. **Prochaine fin d'impression, à observer.** Lancer
+   `scripts/audit-en-direct/audit-live.sh` avant la fin. Attendu à la console
+   et dans l'audit : « K1 Control: retrait (fin) de Txx (…) : coupe, puis
+   rembobinage », « retrait (fin) de Txx fait, tete vide », puis « fin
+   d'impression : box_end » et « box_end -> Exiting en N s, 0 tronçon(s) »,
+   sans ALERTE. Si une ALERTE « extrude all material » ou « boucle de fin »
+   tombe : annuler depuis l'écran, sinon arrêt d'urgence ; la Pause ne fait
+   rien. Ce que fait `BOX_END` devant une tête déjà vide est l'inconnue à
+   lever (document 81, section 4).
+2. **Décision de Thomas sur la garde du bus** (document 80, remède 3).
+   Fichier prêt et testé : `packages/k1-control-v1/cfs-bus-guard-v1/serial_485.py`
+   (remplace `/usr/share/klipper/klippy/extras/serial_485.py`, deux lignes en
+   stock). Pose machine à l'arrêt, avec `.bak-<date>`, puis `silences_cfs.py`
+   sur la prochaine impression via `scripts/audit-en-direct/bus.sh`.
+3. **Lectures du journal** : seulement par les scripts bornés (`purges.sh`,
+   `bus.sh`, les deux `.ps1` d'audit) ou une fenêtre `dd` écrite à la main ;
+   jamais `tail -n N` ni `grep` sur `klippy.log`.
+   `tests/test_lectures_journal_bornees_v1.py` l'impose dans le dépôt.
+4. Inconnues restantes, machine au repos : la boucle d'adressage du bus
+   (`Error: no response` toutes les ~2 s depuis 12:43), la condition exacte
+   de la branche « extrude all material », le `timeout` du bus à 12:03:17.
+
+### Fait (vérifié)
+
+- **Document 81** : chronologie du 14 (fin en 49 s) et du 15 (25 tronçons,
+  ~2 m, Pause sans effet, plantage causé par notre `tail -n`, deux retraits
+  ratés), fin stock démontée, hypothèse de la bobine « finie », correctifs.
+  La tête à la purge après un rembobinage est la séquence stock
+  (`BOX_QUIT_MATERIAL` finit par `BOX_GO_TO_BOX_EXTRUDE_POS`).
+- **ADR-067, posé à 14:03** (première pose à 14:00 en erreur : un ` ;` dans
+  un message, Klipper coupe les ` ;` en ligne ; corrigé, test ajouté). Klipper
+  prêt à 14:04:02, `_KCTRL_UNLOAD` et `_KCTRL_UNLOAD_CHECK` présents,
+  `START_PRINT.active_tool` ajouté. 21 tests.
+- **Lectures bornées** dans les deux `.ps1`, `purges.sh`, `bus.sh` (nouveau) ;
+  7 tests qui balaient `scripts/` et `packages/`.
+- **Alertes de l'audit** : rejeu du 15 (alertes à 12:03:20, 12:04:05,
+  12:04:45, 12:05:47, tous les 5 tronçons, Pause à 12:19:07) et du 14 (aucune
+  alerte, `Exiting` en 49 s). 7 tests.
+- **Garde du bus** : enveloppe + 6 tests sur faux transport ; rien posé.
+- Suite complète : 1 464 tests verts, les deux rouges volontaires de la CI
+  inchangés. Machine : `T1A` rembobiné à 13:23 par Thomas, `standby`,
+  buse froide, 102 Mo de mémoire disponible.
+
+### À savoir
+
+- `BOX_RETRUDE_MATERIAL` seul ne fait rien après un redémarrage
+  (`last_tnn: None`) : toujours nommer l'emplacement,
+  `BOX_RETRUDE_MATERIAL_WITH_TNN TNN=Txx`, ou `_KCTRL_UNLOAD TOOL=Txx
+  REASON=manuel` qui coupe d'abord.
+- Klipper lit le cfg avec `inline_comment_prefixes=(';', '#')` : aucun ` ;`
+  ni `#` dans une chaîne de macro.
+- Captures brutes hors dépôt : dossiers brouillon des sessions `1fcc4b93`
+  (`logs/fin3.txt`) et `45b6ec41` (`fin14.txt`, rejeux) dans le Temp de
+  Claude.
+
 ## 15 septembre, 13:15 — fin d'impression en boucle, plantage de Klipper causé par notre lecture du journal, retrait `T1A` bloqué (document 81 à écrire)
 
 **Point de reprise, dans l'ordre :**

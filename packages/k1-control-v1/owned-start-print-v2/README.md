@@ -68,6 +68,7 @@ profil Orca, sinon le décalage par profil est annulé à chaque impression.
 | `KCTRL_Z_SAVE [PROFILE=] [Z=]` | enregistre le Z accepté du profil ; sans paramètre, prend le profil actif et le décalage courant |
 | `KCTRL_Z_LIST` | liste chaque profil de mesh avec son Z enregistré |
 | `KCTRL_START_CONF` | rappelle la famille de profils utilisée |
+| `_KCTRL_UNLOAD [TOOL=T1A] [REASON=] [TEMP=200]` | vide la tête avant la fin stock : buse à sa température (200 °C au moins), coupe, `BOX_RETRUDE_MATERIAL_WITH_TNN` de l'emplacement nommé (dernier changement d'outil, sinon filament du départ), relecture du capteur par `_KCTRL_UNLOAD_CHECK` ; appelée par `END_PRINT` et `CANCEL_PRINT` (ADR-067, document 81) |
 
 ## Campagne de calibration associée
 

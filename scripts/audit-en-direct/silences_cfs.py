@@ -3,11 +3,13 @@ trame qui l'a precedee sur le fil, l'ecart entre les deux, et si le CFS a
 repondu. Sert a verifier la cause des pauses key831 (document 80), avant et
 apres un correctif.
 
-Extraction sur la machine, en lecture seule et en basse priorite, depuis un
-dossier hors du depot (le journal extrait n'entre jamais dans le depot) :
+Extraction sur la machine par bus.sh (lecture bornee : fenetre en octets depuis
+la fin du journal, 64 Mo au repos, 3 Mo pendant une impression, basse
+priorite), depuis un dossier hors du depot (le journal extrait n'entre jamais
+dans le depot) :
 
-  ssh k1max-root 'cd /usr/data/printer_data/logs && nice -n 19 grep -F
-    -e "retries = " -e "Serial_485: got" klippy.log | cut -c1-230' > bus.txt
+  ssh k1max-root 'sh -s' < bus.sh > bus.txt
+  ssh k1max-root 'WIN=128 sh -s' < bus.sh > bus.txt    (plus large, au repos)
 
 Usage : python silences_cfs.py bus.txt [--addr=2] [--cmd=0a] [--detail]
   --addr   adresse du CFS questionne (2 par defaut)
