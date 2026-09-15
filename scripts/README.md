@@ -113,9 +113,13 @@ relances. Rejouer un journal enregistré : `python audit_live.py < journal.log`.
 Après coup, `phases.py` découpe chaque chargement en étapes datées (coupe,
 rembobinage, morsure, tampon, purge, roue de mesure), `fenetre.py` rend lisible
 une tranche horaire du journal, et `purges.sh`, exécuté sur la machine par
-`ssh k1max-root 'sh -s' < purges.sh`, relève les purges du journal courant. Aucune adresse
-privée ni secret dans ces scripts ; le journal et les images restent hors du
-dépôt.
+`ssh k1max-root 'sh -s' < purges.sh`, relève les purges du journal courant.
+`silences_cfs.py` prend, pour chaque question envoyée à un CFS, la trame qui la
+précède sur le fil, l'écart et la réponse, et recalcule le contrôle de chaque
+trame reçue : il vérifie, avant et après correctif, la cause des pauses
+`key831` (document 80) ; l'extraction du bus à lui passer est en tête du
+script. Aucune adresse privée ni secret dans ces scripts ; le journal et les
+images restent hors du dépôt.
 
 During P0/P1, scripts must default to no remote write and fail closed on ambiguity.
 

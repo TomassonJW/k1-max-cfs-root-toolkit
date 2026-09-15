@@ -1,5 +1,40 @@
 # HANDOFF — index de reprise
 
+## 15 septembre, 10:45 — pauses `key831` expliquées : le CFS 2 n'entend pas la question qui suit une réponse du CFS 1 finie par `F7` (document 80)
+
+**Point de reprise :** accord de Thomas sur le remède 3 du document 80 (retenir
+toute question 300 ms après une réponse finie par `F7`). En attendant, en
+lecture seule : dès la fin de l'impression en cours, relire le journal (la
+veille du capteur du CFS 1 s'arrête-t-elle ?) ; Thomas vérifie que la bobine
+`T1A` tourne librement. Mission garde : vérifier machine au repos que
+`box_wrapper` passe par `cmd_send_data_with_response` de l'objet
+`serial_485 serial485`, écrire l'enveloppe et ses tests hors machine, la poser
+hors impression avec l'accord de Thomas, contrôler la prochaine impression avec
+`silences_cfs.py` (zéro silence après `F7`).
+
+### Fait
+
+- Document 80 : trois pauses (05:15:21, 08:01:10, 09:24:23), déclencheur à
+  03:45:58 (tension `T1A`, capteur à 1), comptes du 15 septembre et
+  contre-épreuves (CFS 1 jamais touché, 13 septembre à `FE` et `CF` sans perte), nos
+  modifications hors de cause, remèdes classés.
+- `scripts/audit-en-direct/silences_cfs.py` : pour chaque question à un CFS,
+  trame précédente, écart et réponse ; contrôles recalculés.
+- Rien modifié sur la machine ; impression non touchée (88,7 % à 10:43 ;
+  37 silences du CFS 2 de 10:14 à 10:48, deux fois quatre de suite).
+
+### À savoir
+
+- Une pause `key831` : cinq questions d'état de suite sans réponse du même CFS
+  (`timeout_times` de 4 à 0), une toutes les 5 s. Le module interroge chaque
+  CFS branché, qu'il serve ou non.
+- Après un événement de tension, le module interroge le capteur toutes les 5 s,
+  en impression comme en pause. Le 13 septembre : 2, puis 0 au bout de 81 s,
+  puis une autre question au capteur (réponse 9) jusqu'à 12:48:48, et arrêt.
+  Le 15, la valeur reste à 1 depuis 03:45:58 (4 872 réponses à 10:47).
+- Extraction du bus : commande en tête de `silences_cfs.py`, depuis un dossier
+  hors du dépôt, en basse priorité.
+
 ## 14 septembre, 23:30 — audit en direct fait : impression multicouleur sans pause, purge arrondie à 280 mm, relance du noir (document 79, sections 9 et 10)
 
 **Point de reprise :** section 10 du document 79. Correctif 1 chez Thomas
