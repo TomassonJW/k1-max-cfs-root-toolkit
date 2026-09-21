@@ -1,0 +1,39 @@
+{
+  "date": "2026-09-21",
+  "outcome": "CLOSED_START_FAILED_BEFORE_END",
+  "gcode_sha256": "79f6de9dfe240dfd6711edf453cc8f9713ddfec5b01611a1ae31358e9aad27cc",
+  "activation_verified": true,
+  "start_requested_once": true,
+  "mapping": "T1A:T1B",
+  "stock_internal_retry_observed": 1,
+  "first_buffer_full": "18:08:46",
+  "stock_retry_cut": "18:08:50",
+  "second_buffer_full_and_key837": "18:10:06",
+  "planned_pause_reached": false,
+  "resume_sent": false,
+  "candidate_end_executed": false,
+  "end_physically_validated": false,
+  "heaters_zero_before_emergency_stop": true,
+  "emergency_stop_sent": true,
+  "klipper_exit_after_emergency_stop": true,
+  "disabled_config_restored_exactly": true,
+  "test_gcode_removed": true,
+  "final": {
+    "state": "standby",
+    "webhooks": "ready",
+    "nozzle_target": 0.0,
+    "bed_target": 0.0,
+    "head_filament": true,
+    "T1_route": "None",
+    "T2_route": "None",
+    "end_enabled": false,
+    "homed_axes": ""
+  },
+  "startup_root_cause": "unresolved: buffer remained full despite commanded E advances; physical motor movement not measured",
+  "readonly_recorder_cold_samples": 10,
+  "recorder_does_not_measure_physical_filament_motion": true,
+  "unavailable_cold_fields": [
+    "stepper_enable.steppers",
+    "tmc2209 extruder.drv_status"
+  ]
+}
