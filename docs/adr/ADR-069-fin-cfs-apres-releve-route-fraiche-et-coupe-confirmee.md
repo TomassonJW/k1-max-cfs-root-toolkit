@@ -1,7 +1,12 @@
 # ADR-069 — Fin CFS après relève : route fraîche, coupe confirmée, arrêt sûr
 
+> Essai physique du 21 septembre 2026 : **KO, candidat restauré désactivé**.
+> La coupe est confirmée, mais la commande de retrait part au bac avant le
+> rembobinage et le contrôle final échoue (`rewind_not_confirmed`).
+> Ne pas activer/rejouer cette révision. Voir le document 90 et ADR-070.
+
 - Date : 2026-09-21.
-- Statut : **retenue pour le candidat hors imprimante**, implémentée et testée ; désactivée, non déployée. GO de Thomas pour cette étape le 21 septembre. Qualification physique fermée.
+- Statut : candidat installé puis essayé le 21 septembre ; **qualification physique KO, restauré désactivé**. Principes de route et coupe conservés ; retrait à remplacer suivant ADR-070.
 - Périmètre : fin normale et annulation après un travail CFS, en continuité d'ADR-067.
 - Preuves : [document 83](../83-fin-apres-releve-t1a-t1b-v1.md).
 
