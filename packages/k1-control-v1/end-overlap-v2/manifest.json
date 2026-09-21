@@ -1,0 +1,55 @@
+{
+  "schema": 1,
+  "name": "cfs-end-overlap-v2",
+  "enabled": true,
+  "physical_validation": false,
+  "baseline_capture": "20260921-cfs-separated-end-trial-v1/after-power-cycle-user-retract",
+  "before": {
+    "/usr/share/klipper/klippy/extras/kctrl_print_gate.py": "69578e579409b7c4d253acb8c680ceaeb25b60b40502732530a4a786e0966516",
+    "/usr/data/k1-control-v1/current/www/bobines/logic.js": "927de5ad17e04f69fd5e7f6a49e9a3b5d2bef152666d4bde9034be4d618ed4a8",
+    "/usr/data/k1-control-v1/current/www/bobines/bobines.js": "798621ae3e65405a6d51d8e1ab68e252c9c32bf7d43e51f1eeb0d2b41635ad7d",
+    "/usr/data/k1-control-v1/current/www/bobines/overlay.js": "575e771297e4dbff15214e05ae88e956bbfec0d75107669a152ad2628e73f7fe",
+    "/usr/data/printer_data/config/k1-control-owned-start-print-v2.cfg": "fb05184f8cb8d84b332741142d6ff06caa527af7b693e18aa70f8ed86941e151",
+    "/usr/share/klipper/klippy/extras/box.py": "6d7486e1a15cde03f3152eef0d771d0bdd4a90df9b5ef7ecb88bc5d944f20ac4",
+    "/usr/share/klipper/klippy/extras/box.pyc": "16bc2b96ae45540e5f52d50463cc4afba1ba8b191f6a5c1d456659e69dca9f4c",
+    "/usr/share/klipper/klippy/extras/box_wrapper.cpython-38-mipsel-linux-gnu.so": "af630c02ccdb51b57585114e5be2be7fcf91fdb10d88872eb6a0c65f048de777",
+    "/usr/share/klipper/klippy/gcode.py": "20d21ace63ac249c5e38d237898ff18d924047d4532a917124cb92eaed24cde7",
+    "/usr/share/klipper/klippy/reactor.py": "e2ee73b2b19f2c7ce0e3ff1725cf5ce1e43693fc30ed89240ece4ac32c48cc70",
+    "/usr/share/klipper/klippy/extras/virtual_sdcard.py": "e1354dac12671983af1c12bed2b0d70762237d041f0e74c51a173a5adc47c86f",
+    "/usr/share/klipper/klippy/extras/pause_resume.py": "fcb0964da497d0be25dbbd85af98846fe1f226b8d6a4049ada8e53951134e45b",
+    "/usr/share/klipper/klippy/extras/heaters.py": "45a7c35c51b019530dda6ef3cbfaab980fe5573839861b2f4460fd7adb9cf3ed",
+    "/usr/share/klipper/klippy/extras/gcode_macro.py": "5cdfce78990a89c91d3a77b57917a3437dfaa67e110c8faf531d619b492a513b",
+    "/usr/share/klipper/klippy/extras/filament_switch_sensor.py": "cc2fa8c08c67b1d8461df803b5fdb8ac07c32a954a52b85b9b3ed72168b26066",
+    "/usr/share/klipper/klippy/extras/kctrl_tool_change.py": "a203b0ec4bcbf42508daa5d2905542f6fc890740c7d1cc08bb5936d01b34b414",
+    "/usr/share/klipper/klippy/extras/kctrl_slot_map.py": "041de62865702148ec796ea9a502a9067bf11252ffd678ea8886732c48e8c134",
+    "/usr/data/printer_data/config/printer.cfg": "07864b095b39ef6d74e5b857567938fc85564146ffb604e5793cf0605cd9a45b",
+    "/usr/data/printer_data/config/box.cfg": "8bb0416d9c7a6c46792e1ac2497849befb371bc73ac9864d946ad5b588930194",
+    "/usr/data/printer_data/config/gcode_macro.cfg": "864fedde88fbb345c220ae5658f7b04779b3981bd78d68eda6fa63c59c79a04f",
+    "/usr/share/klipper/klippy/extras/kctrl_end.py": "7faaa776aa41186f949731a028b1817462d3176c8a1588fd8978bbc7385422c3",
+    "/usr/data/printer_data/config/k1-control-owned-end-candidate.cfg": "c3f2d83e6acd8f48ee28869d6e13975bb289f7fbebe46955f582f5bd1bfadaf3"
+  },
+  "files": [
+    {
+      "name": "kctrl_end.py",
+      "source": "packages/k1-control-v1/end-overlap-v2/kctrl_end.py",
+      "destination": "/usr/share/klipper/klippy/extras/kctrl_end.py",
+      "sha256": "7f5e74bf0dafc9e5dcf722f2b606824651c853b30339843b0822e72ced037613",
+      "before_sha256": "7faaa776aa41186f949731a028b1817462d3176c8a1588fd8978bbc7385422c3"
+    }
+  ],
+  "installer_sha256": "dfc80c285d6c7ece447f0faba7444d985453f9052e18fcd988e687ad5e05f7ae",
+  "backup": "/usr/data/k1-control-v1/backups/cfs-end-overlap-v2",
+  "install_effects": [
+    "replace_one_file",
+    "klipper_service_restart",
+    "restore_mesh_and_offsets_MOVE_0"
+  ],
+  "no_effects": [
+    "axis_motion",
+    "heat",
+    "filament_motion",
+    "homing",
+    "probing",
+    "print_start"
+  ]
+}
