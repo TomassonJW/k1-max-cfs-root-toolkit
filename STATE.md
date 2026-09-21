@@ -1,5 +1,22 @@
 # STATE
 
+## 21 septembre — retrait CFS séparé installé et actif, validation physique restante
+
+La mission « prépare puis installe directement, GO » est close côté pose :
+`separated-end-v1` remplace deux fichiers, est actif et au repos. 22 empreintes
+et deux backups exacts confirmés indépendamment ; tête vide, aucune route,
+chauffes zéro, axes libérés. Aucun mouvement ni essai physique pendant la pose.
+Profil `default` et offsets XYZ zéro réellement observés conservés sans mouvement.
+Lire [le document 91](docs/91-retrait-cfs-separe-installe-a-froid.md) et le paquet
+`packages/k1-control-v1/end-separated-v1/` pour la reprise et le rollback.
+Les essais V1/R2 sont clos KO ; ne pas les rejouer. Le nouveau retrait supprime
+le trajet au bac, vérifie les ACK et attend l'état CFS. Sa qualification
+physique reste à faire ; le chargement intermittent n'est pas déclaré corrigé.
+142 tests ciblés verts ; suite complète 1668 verts, les deux échecs historiques,
+2 xfail et 55 sous-tests verts. Ne pas relever le plateau depuis une position
+incertaine. Aucun nouveau GO technique nécessaire pour achever la pose autorisée.
+
+
 Last updated: 2026-09-21
 
 
