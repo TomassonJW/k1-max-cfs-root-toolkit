@@ -3,7 +3,9 @@
 Date : 21 septembre 2026. **Implémenté et vérifié en simulation ; désactivé,
 non installé, non qualifié physiquement.** Autorité : GO de Thomas pour la
 prochaine étape recommandée après le diagnostic du document 83, à savoir la
-construction et les tests hors imprimante. Aucune connexion K1 dans cette étape.
+construction et les tests hors imprimante (document 84). Le GO suivant a permis
+la qualification en lecture seule du firmware (document 85), puis la correction
+locale de l’ordre de contrôle du cutter. Aucun effet ni pose sur la K1.
 
 ## Fichiers et comportement
 
@@ -27,8 +29,9 @@ d'outil est vidée pour ne pas la réutiliser dans le nouveau travail.
 | Attente différée | Retour immédiat au lecteur G-code, puis attente de sa sortie et de `do_resume_status=False`, hors verrou de commande. Aucune écriture de ce drapeau. |
 | Lecture | Deux CFS connectés, une seule case engagée et capteur de tête connu. Route physique prioritaire ; table logique actualisée utilisée pour détecter une contradiction, jamais appliquée deux fois. |
 | Température | Consigne déjà présente, finie, entre 150 et 320 °C ; température à ±5 °C et `can_extrude=True`. Aucun chauffage ajouté ni plancher de 200 °C. La consigne ne doit pas changer pendant l'attente ou la coupe. |
-| Coupe | Une seule commande stock ; contact du cutter, marqueur de retour réussi, marqueur de déclenchement puis relâchement observés dans cette tentative. `box.cut_pos`, événements anciens, absence d'exception et `M400` ne suffisent pas. |
+| Coupe | Une seule commande stock ; contact du cutter, marqueur de retour réussi, marqueur de déclenchement observés dans cette tentative. Le relâchement peut arriver après retrait ; il ne doit pas être attendu avant celui-ci. `box.cut_pos`, événements anciens, absence d'exception et `M400` ne suffisent pas. |
 | Retrait | Route et température relues après coupe ; un seul `BOX_RETRUDE_MATERIAL_WITH_TNN` de la case physique courante, même après relève interne stock. |
+| Relâchement | Après retrait, attendre au plus 5 s le relâchement du cutter si non reçu ; son absence interdit la fin stock et coupe les chauffes. |
 | Fin | Tête vide ET aucune route engagée ; alors seulement `END_PRINT_NO_M84`, puis `M84` et arrêt des chauffes vérifié. |
 | Refus/erreur | Aucune relance ni repli sur un ancien emplacement, pas de `BOX_END` tête chargée ; coupure thermique et motif conservé. |
 
@@ -44,7 +47,8 @@ Le délai total est de 180 s, attente de sortie du fichier comprise. Un minuteur
 séparé appelle directement l'arrêt des chauffes, sans attendre le verrou G-code.
 Si une commande stock rend finalement la main après le délai, le contrôle interdit
 l'étape suivante. Le délai de 5 s de confirmation de coupe commence au retour de
-la commande et reste inclus dans les 180 s. Aucun de ces délais n'est qualifié
+la commande ; le contrôle de relâchement dispose également de 5 s après retrait.
+Ces deux attentes restent incluses dans les 180 s. Aucun de ces délais n'est qualifié
 sur une nouvelle coupe réelle.
 
 L'événement Creality `gcode:cancel`, émis avant l'acquisition du verrou dans le
@@ -85,36 +89,50 @@ et les sorties console multilignes. Il est ignoré sur un poste sans cette captu
 privée. Aucun code constructeur n'est publié. Cette compatibilité partielle
 n'est pas une exécution de Klipper complet ni une preuve du firmware actuel.
 
-Résultats finaux et anomalies antérieures : voir le document 84. Les tests ne
+Résultats actuels : **72/72** ; voir le document 85. Les anomalies antérieures
+de la suite globale sont décrites au document 84. Les tests ne
 transforment pas les anciens propriétaires CFS désactivés en routes autorisées.
 
-## Ce qui interdit encore une pose ou activation
+## Qualification en lecture seule du 21 septembre
 
-1. **Firmware exact** : comparer les composants actuels et qualifier le prédicat
-   compilé `if_in_resume`. La fin de `do_resume_status` à la sortie SD est une
-   observation de source, pas une équivalence démontrée avec ce prédicat.
-2. **Preuve de coupe** : ADR-041 établit que `box.cut_pos` n'est pas le capteur
-   réel ; les marqueurs console sont historiques (ADR-041/044). Leur présence,
-   ordre et fraîcheur après `BOX_CUT_MATERIAL` seul, en fin différée, restent à
-   qualifier. Si le relâchement n'est pas exposé dans ce contexte, la version
-   actuelle refusera le retrait ; ne pas enlever le contrôle pour la faire passer.
-3. **Intégration Klipper** : confirmer l'ordre d'enregistrement avec les macros,
-   les erreurs émises par les commandes stock, `CANCEL_PRINT_BASE`, l'accès au
-   verrou et l'API thermique sur les versions exactes. Les fausses API ne
-   reproduisent pas tout le moteur d'exécution ni le transport CFS.
-4. **Affichage** : `print_stats` peut annoncer `complete` dès la sortie du fichier,
+Le document 85 et son manifeste nettoyé épinglent le firmware `2.3.5.34` et
+16 empreintes inchangées avant/après collecte. La lecture statique du binaire
+confirme que `if_in_resume` retourne `virtual_sdcard.do_resume_status`. Les
+sources actuelles et les journaux corroborent cette lecture. Aucun attribut
+n'est forcé et aucun binaire constructeur n'a été exécuté pour l'analyse.
+
+La récupération manuelle de 09:19–09:21 confirme contact → retour OK → coupe
+déclenchée, puis retrait et enfin relâchement. L'ancien candidat refusait ce
+parcours en attendant le relâchement avant retrait. Le test avec les temps
+réels est passé de KO à OK après correction ; le relâchement absent après
+retrait reste un KO sans relance ni fin stock.
+
+Le répartiteur G-code exact est utilisé dans six tests de compatibilité,
+avec commandes physiques simulées : passage de paramètres, console multiligne,
+exceptions, cycle différé et annulation avant verrou. Les macro-renommages à
+la connexion précèdent l'enregistrement du candidat à l'état prêt. L'aide GET
+ne publie pas toutes les commandes stock : une entrée absente n'est pas la
+preuve d'une commande absente. Aucun test ne démarre Klipper complet.
+
+## Ce qui reste avant une pose ou activation
+
+1. **Affichage** : `print_stats` peut annoncer `complete` dès la sortie du fichier,
    avant le retrait différé. Le candidat expose `phase`, `pending`, `failure` et
-   `thermal_failure`, et écrit en console, mais l'écran constructeur et l'UI
-   K1 Control ne sont pas raccordés à cet état. Il faut une indication claire
-   « fin en cours » / « fin incomplète » avant activation ; un travail déclaré
-   terminé ne constitue jamais une preuve de retrait.
-5. **Pose réversible et essai réel** : préparer la liste exacte des fichiers,
-   empreintes, sauvegardes, ordre de chargement, redémarrage et retour arrière
-   après levée des points précédents. Puis seulement une validation distincte,
-   avec caméra et présence humaine utile, sur une impression sans valeur.
+   `thermal_failure`, mais l'écran et l'UI K1 Control ne sont pas raccordés.
+   Montrer « fin en cours » / « fin incomplète » avant activation. Ne pas utiliser
+   le seul statut SD pour autoriser un nouveau départ pendant la finalisation.
+2. **Paquet de pose réversible** : épingler les sources, destinations et empreintes,
+   sauvegardes, ordre d'inclusion, redémarrage, validation désactivée et retour
+   arrière. Le module et la configuration actuels restent des candidats sans
+   include, non déployés. Recontrôler les empreintes à la pose pour refuser une
+   dérive du firmware depuis la qualification.
+3. **Intégration complète et preuve physique** : les API sont vérifiées en partie,
+   pas le processus Klipper complet. Le journal de récupération utilisait le
+   retrait stock manuel sans TNN ; il ne valide pas tout le nouveau END_PRINT
+   différé avec TNN explicite. L'essai ultérieur doit confirmer une relève réelle,
+   la coupe, la bonne case rembobinée, la tête vide, le relâchement et les chauffes
+   coupées, avec caméra et présence humaine utile, sur une impression sans valeur.
 
-Prochaine étape recommandée : qualification du firmware et de l'intégration
-**à froid, en lecture seule**, sans commande filament. Elle doit soit fermer les
-points prouvables par les sources et les journaux, soit isoler les preuves qui
-exigent un essai physique ultérieur. Elle ne doit pas promettre de prouver une
-coupe réelle à froid. Ne pas se contenter de changer `enabled` en `true`.
+Prochaine préparation : affichage de la fin et paquet de pose/retour arrière.
+Ne pas réauditer le prédicat et l'ordre des signaux déjà établis pour ce hash.
+Ne pas se contenter de changer `enabled` en `true`.
