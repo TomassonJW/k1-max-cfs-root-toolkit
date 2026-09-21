@@ -1,5 +1,17 @@
 # HANDOFF — index de reprise
 
+## 22 septembre — V3 : purge et retrait confirmés ; arrêt envoyé par Codex
+
+Thomas confirme la purge puis le rembobinage. La tête se libère environ 0,9 s
+après le lancement CFS ; l'extrudeur reste programmé pour 7,5 s, comme la
+primitive constructeur. Codex envoie M112 après une image masquée par une main,
+puis le surveillant renvoie un arrêt à tort après shutdown. La fin complète
+et le parc restent non qualifiés. Accès récupéré sans effet physique :
+ready/standby, cibles zéro, tête libre, deux CFS connectés sans route, axes
+non référencés. Pas de nouvelle palpation sans nettoyage frais. Pilote V3 clos,
+interdit de rejeu ; politique locale d'arrêt unique/pause froide testée.
+Lire [le document 95](docs/95-essai-v3-retrait-observe-arret-codex.md).
+
 ## 22 septembre — essai V2 clos KO au chargement ; machine récupérée
 
 Dernier état : Thomas confirme finalement redémarrage, retrait terminé et

@@ -1,0 +1,24 @@
+{
+  "schema": 1,
+  "file": "T1B-overlap-end-trial-v3.gcode",
+  "sha256": "e443f9ff0148ab03872474f2c841f295c0cfc37d6abd338014ec328770cd2d53",
+  "required_revision": "end-overlap-v2",
+  "observer": "startup-grip-observer-v2",
+  "slot": "T1B",
+  "temperature": 200,
+  "bed_temperature": 55,
+  "status": "closed_incomplete_camera_stop",
+  "physical_validation": false,
+  "automatic_retry": false,
+  "human_observations_required": [
+    "extruder_rotation",
+    "clicks_or_strain",
+    "filament_flow",
+    "purge_blob_release",
+    "rewind_complete_before_park"
+  ],
+  "replay_allowed": false,
+  "purge_user_confirmed": true,
+  "rewind_user_confirmed": true,
+  "full_cycle_qualified": false
+}
