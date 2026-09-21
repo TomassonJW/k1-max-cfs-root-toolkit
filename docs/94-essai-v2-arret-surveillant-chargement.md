@@ -96,3 +96,28 @@ un nouveau nettoyage doivent précéder toute prochaine référence par contact.
 
 Preuve nettoyée : `inventory/redacted/20260921-cfs-overlap-end-trial-v2/result.json`.
 Captures, images et scripts locaux dans le répertoire raw de même nom, privé.
+
+## Retrait manuel non rétabli par la récupération logicielle
+
+Thomas signale ensuite devoir encore redémarrer pour obtenir le retrait.
+La demande précédente de retrait officiel était prématurée : le retour de
+Klipper à ready ne démontrait pas la disponibilité du retrait CFS avec une
+tête chargée et aucune route déclarée. Ne pas présenter cette récupération
+logicielle comme une récupération fonctionnelle du filament.
+
+Une nouvelle lecture passive capture un démarrage récent, puis une commande
+BOX_CUT_MATERIAL à 00:24:46, terminée à 00:25:21. Deux demandes M104 S200 sont
+reçues pendant la coupe et terminées après elle ; BOX_RETRUDE_MATERIAL arrive
+à 00:25:21. Le contrôle suivant voit 195,3 °C pour une cible de 200, le capteur
+de tête toujours actif et aucune route CFS. Cette observation décrit une
+récupération depuis l'interface en cours, pas un retrait réussi. Aucun ordre
+physique, chauffe, arrêt ou redémarrage envoyé par Codex pendant cette lecture.
+La confirmation de l'action manuelle et de sa fin reste attendue. Aucun nouvel
+essai de chargement n'est lancé.
+
+Thomas confirme ensuite redémarrage, retrait terminé, buse propre et plateau
+libre. Une seule lecture de confirmation voit ready/standby, capteur de tête
+libre, aucune route CFS, chauffes zéro, buse en refroidissement à 128,76 °C,
+axes XY référencés mais pas Z, tête X38 Y100. La caméra est examinée. Ce retour
+manuel récupère le filament ; il ne valide ni le chargement intermittent ni
+le retrait automatique V2. La propreté est une nouvelle confirmation humaine.

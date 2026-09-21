@@ -2,6 +2,16 @@
 
 ## 22 septembre — essai V2 clos KO au chargement ; machine récupérée
 
+Dernier état : Thomas confirme finalement redémarrage, retrait terminé et
+nettoyage buse/plateau. Une lecture et la caméra confirment tête libre, aucune
+route, cibles zéro, XY seuls référencés. Le filament est récupéré manuellement ;
+le démarrage intermittent et le retrait automatique restent non qualifiés.
+
+Actualisation : récupération logicielle seulement. Thomas signale le retrait
+officiel encore indisponible et un nouveau redémarrage nécessaire. La capture
+passive suivante voit coupe puis retrait depuis l'interface, buse en chauffe
+vers 200 °C, tête encore chargée ; fin non confirmée. Aucun nouvel essai lancé.
+
 Le surveillant a envoyé l'arrêt d'urgence après huit messages full alors que
 le capteur de tête était actif depuis 33,449 s et E encore commandé à 3 mm/s.
 Pas d'erreur console avant cet arrêt ; débit physique non confirmé. Ni pause
