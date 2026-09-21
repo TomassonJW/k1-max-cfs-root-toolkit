@@ -2,6 +2,17 @@
 
 Last updated: 2026-09-21
 
+
+21 septembre, pose réalisée. **Fin CFS installée désactivée et validée à froid**
+(document 87, capture `20260921-cfs-end-disabled-install`). La récupération
+manuelle du matin était bien terminée : aucune pause/route, tête vide, chauffes
+zéro. Les 24 chemins correspondent ; sept fichiers posés, transition réelle
+Klipper et deux validations froides, puis contrôle HTTP indépendant et navigateur
+réel Bobines/Mainsail. Aucun mouvement ni chauffe. Géométrie initiale inactive/Z
+zéro préservée, garde de pose corrigée pour ne pas imposer l’état historique.
+`kctrl_end.enabled=false`, aucun travail de fin pendant, porte normale disponible.
+Reste la qualification active du cycle ; l’état matériel n’est pas bloqué.
+
 21 septembre, étape suivante. **Affichage de fin CFS et paquet de pose désactivée
 préparés hors imprimante** (document 86). Bobines/Mainsail donnent priorité à la
 fin pendante ou échouée ; la porte bloque un nouveau départ avant ouverture SD

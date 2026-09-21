@@ -1,6 +1,8 @@
 # Pose désactivée de la fin CFS après relève — paquet de préparation
 
-Ce paquet est **hors imprimante**. Il contient sept fichiers figés, leurs
+Mise à jour du 21 septembre : **posé désactivé et validé à froid**, document 87.
+La préparation ci-dessous reste la procédure de référence ; ne pas rejouer les
+dossiers déjà consommés. Le générateur reste **hors imprimante**. Il contient sept fichiers figés, leurs
 empreintes, un plan ordonné de sauvegarde/pose/retour arrière et un validateur
 pour les lectures à froid. Il ne contient aucun transport SSH et n'exécute
 aucune commande du plan. Ce n'est pas un déployeur automatique.
@@ -34,14 +36,16 @@ console. La porte de départ est compatible avec un module absent ou désactivé
 
 ## Préflight obligatoire avant une future pose
 
-La future mission de pose doit exécuter ces contrôles, puis le plan. Le présent
-travail ne les a **pas** exécutés sur la machine.
+Toute nouvelle pose doit exécuter ces contrôles, puis le plan. La préparation initiale du
+document 86 ne les avait pas exécutés ; leur exécution réelle est consignée au document 87.
 
 1. Réserver un créneau sans lancement externe. Lire un état complet, récent
    (moins de cinq secondes avant l'arrêt du service), puis appliquer
    `validate_cold(status, installed=False)` : prêt, aucun travail/pause/choix
    en attente, deux chauffes à zéro, axes libérés, tête vide, deux CFS connectés
-   et sans route, profil `k1_p001_t055_r001_n11x11`, Z accepté `−0,04`.
+   et sans route. Conserver la géométrie observée : soit le profil
+   `k1_p001_t055_r001_n11x11` et Z `−0,04`, soit mesh inactif et Z zéro
+   comme constaté après la récupération manuelle du 21 septembre.
    Conserver la matrice du mesh et l'origine complètes comme référence.
 2. Lire les 24 chemins de `manifest.before` et appeler `check_hashes`.
    Une clé absente dans une réponse n'est **jamais** une preuve de fichier absent.
@@ -69,8 +73,10 @@ travail ne les a **pas** exécutés sur la machine.
 2. Démarrer le service. Exiger disparition de l'ancien processus/socket puis
    nouvelle instance prête dans les 60 secondes. `FIRMWARE_RESTART` ne recharge
    pas les modules Python et ne suffit pas.
-3. Remettre une seule fois le profil déjà mesuré avec la commande de
-   `restore_mesh_once`. C'est un chargement logique, pas un nouveau palpage.
+3. Si le restart a changé la géométrie logique, restaurer une seule fois
+   celle capturée avant pose : profil actif existant ou `BED_MESH_CLEAR`,
+   puis `SET_GCODE_OFFSET_BASE Z=<valeur capturée> MOVE=0`. Ne pas imposer
+   un mesh actif à une machine qui n’en avait pas. Aucun nouveau palpage.
 4. Vérifier les sept empreintes posées et les empreintes inchangées ; faire
    deux lectures indépendantes et appliquer
    `validate_cold(after, installed=True, reference=before)` à chacune.
@@ -94,7 +100,7 @@ module préalablement constatés absents. Ne pas supprimer un répertoire de cac
 Retirer les éventuels fichiers `.kctrl-next` de cette tentative seulement après
 vérification de leurs chemins. Restaurer les modes/propriétaires d'origine.
 
-Redémarrer réellement, recharger le même mesh une fois, vérifier toutes les
+Redémarrer réellement, restaurer la même géométrie logique une fois, vérifier toutes les
 empreintes et absences initiales, puis `validate_cold(installed=False,
 reference=before)`. Conserver la sauvegarde et les preuves ; ne pas les écraser
 lors d'une reprise. Si ce retour échoue, laisser Klipper arrêté et signaler KO.

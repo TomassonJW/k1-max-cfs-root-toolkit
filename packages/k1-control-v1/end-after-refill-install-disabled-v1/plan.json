@@ -73,7 +73,7 @@
     "/etc/init.d/S55klipper_service start"
   ],
   "restart_verification": "Observe old Klipper process/socket disappearance, then new process and ready (60 s maximum); HTTP success alone is insufficient.",
-  "restore_mesh_once": "BED_MESH_PROFILE LOAD=k1_p001_t055_r001_n11x11",
+  "restore_mesh_once": "Restore captured geometry only: active 11x11/-0.04 or cleared mesh/zero Z; MOVE=0, no probing.",
   "validate": {
     "payload_hashes": [
       {

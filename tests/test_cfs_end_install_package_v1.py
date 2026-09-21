@@ -133,3 +133,16 @@ def test_installed_status_must_be_disabled_and_forwarded():
 def test_reviewed_plan_matches_generator():
     reviewed = json.loads((PACKAGE / 'plan.json').read_text(encoding='utf-8'))
     assert reviewed == MOD.operation_plan(MANIFEST)
+
+
+def test_actual_recovered_idle_with_cleared_geometry():
+    status = cold()
+    status['bed_mesh'] = {'profile_name': '', 'mesh_matrix': [[]]}
+    status['gcode_move']['homing_origin'] = [0, 0, -2.7755575615628914e-17, 0]
+    assert MOD.validate_cold(status)
+    after = copy.deepcopy(status)
+    after['gcode_move']['homing_origin'][2] = 0.0
+    assert MOD.validate_cold(after, reference=status)
+    after['bed_mesh']['profile_name'] = MOD.MESH
+    with pytest.raises(ValueError):
+        MOD.validate_cold(after, reference=status)
