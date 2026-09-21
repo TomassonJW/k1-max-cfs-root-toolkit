@@ -1,5 +1,26 @@
 # HANDOFF — index de reprise
 
+## 21 septembre — retrait coordonné V2 installé ; essai physique restant
+
+Récupération manuelle terminée après extinction/rallumage : la coupe officielle
+a été sautée sur capteur de tête vide, puis le CFS a répondu OK au retrait.
+L'effort moteur rapporté ne prouve ni dommage ni absence de dommage. V1 était
+revenu idle au reboot ; les anciennes mentions « retrait en attente » et
+« V1 verrouillé en échec » ci-dessous décrivent l'état historique du KO.
+
+Sur le GO suivant, V2 est posé à froid : un fichier remplacé, backup V1 exact,
+nouveau processus Klipper confirmé, 22 empreintes et validation indépendante
+vertes. 199 tests ciblés passent. Version end-overlap-v2 active/idle,
+physical_validation=false. Aucun mouvement commandé ni chauffe ; caméra
+avant/après examinée. Aucun mesh actif et offsets zéro conservés tels que
+trouvés après le reboot manuel ; axes désormais non référencés.
+
+Buse sale, plateau propre mais haut : aucun palpage ni nouveau cycle à ce
+stade. Le prochain geste est un nettoyage frais de la buse avant préparation
+des références puis du cycle intégré supervisé. Ne pas rejouer le test V1.
+Lire [le document 93](docs/93-retrait-cfs-chevauchement-v2-pose.md).
+
+
 ## 21 septembre — essai retrait séparé KO ; chevauchement corrigé hors imprimante
 
 Coupe/relâchement OK, tête restée au cutter, retrait T1B refusé key849/0x19 ;
