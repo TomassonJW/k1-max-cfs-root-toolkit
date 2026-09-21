@@ -1,7 +1,9 @@
 # ADR-070 — Séparer le retrait CFS des déplacements de fin
 
-Statut : correction de conception retenue ; primitives à qualifier hors
-imprimante ; aucune nouvelle activation autorisée par ce document seul.
+Statut : successeur séparé installé et actif sous autorisation utilisateur
+explicite, validé à froid (document 91). Qualification physique encore ouverte.
+Les décisions ci-dessous décrivent aussi le confinement historique du candidat
+précédent, qui reste interdit de rejeu.
 Date : 21 septembre 2026. Complète ADR-069 après son premier essai de fin.
 
 ## Constat
@@ -42,3 +44,14 @@ La validation physique de la fin demeure KO. Le prochain incrément est borné
 au retrait et à son attente, avec tests de mise à jour différée, d'états
 contradictoires et d'effets interdits. La récupération doit également éviter
 un nouveau départ/probing lorsqu'une simple remise en état logicielle suffit.
+
+## Mise en œuvre du 21 septembre
+
+Les signatures et le retour des primitives ont été confirmés sur le binaire
+exact avec de faux objets et un faux transport, sans imprimante active.
+Le paquet `end-separated-v1` retient les méthodes élémentaires, exige un ACK
+booléen positif et sépare leur exécution des mouvements. Les wrappers G-code
+sont écartés pour l'appel d'effet car ils jettent cet ACK. L'attente utilise les
+notifications existantes, sans ajouter la lecture stock à délai de 3600 s.
+La pose à froid est validée ; voir document 91 et le manifeste pour les preuves,
+les limites, les deux destinations et la restauration exacte.

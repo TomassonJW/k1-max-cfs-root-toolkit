@@ -1,0 +1,74 @@
+{
+  "schema": 1,
+  "mission": "cfs-separated-end-v1",
+  "installed": {
+    "status": "INSTALLED_COLD_OK",
+    "enabled": true,
+    "revision": "separated-end-v1",
+    "backup": "/usr/data/k1-control-v1/backups/cfs-separated-end-v1",
+    "changed_files": [
+      "/usr/share/klipper/klippy/extras/kctrl_end.py",
+      "/usr/data/printer_data/config/k1-control-owned-end-candidate.cfg"
+    ],
+    "protected_files": 22,
+    "physical_validation": false,
+    "new_process_confirmed": true,
+    "mesh_profile": "default",
+    "homing_origin": [
+      0.0,
+      0.0,
+      0.0,
+      0.0
+    ],
+    "targets": [
+      0.0,
+      0.0
+    ],
+    "axes": ""
+  },
+  "independent_validation": {
+    "status": "INDEPENDENT_COLD_VALIDATION_OK",
+    "matched_files": 22,
+    "exact_backups": 2,
+    "enabled": true,
+    "revision": "separated-end-v1",
+    "phase": "idle",
+    "job_epoch": 0,
+    "targets": [
+      0,
+      0
+    ],
+    "head_detected": false,
+    "routes": [],
+    "homed_axes": "",
+    "physical_validation": false,
+    "camera_before_after": "same_pose_visual_check"
+  },
+  "tests": {
+    "targeted_passed": 142,
+    "full_passed": 1668,
+    "full_failed": 2,
+    "full_xfailed": 2,
+    "subtests_passed": 55,
+    "known_failures": [
+      "test_unload_requires_head_sensor_to_clear",
+      "test_all_canonical_scenarios_are_implemented_once"
+    ]
+  },
+  "physical_trial_executed": false,
+  "motion_commands_during_install": false,
+  "heat_commands_during_install": false,
+  "prior_trials": {
+    "startup_v1": "interrupted_by_observer",
+    "startup_r2": "cut_confirmed_premature_trip_to_bin_rewind_not_confirmed"
+  },
+  "new_physical_qualification": "pending",
+  "private_evidence": "inventory/raw/20260921-cfs-separated-end",
+  "canonical_line_endings": {
+    "normalized_after_install": true,
+    "files": 2,
+    "text_identical": true,
+    "restart_required": false,
+    "final_hashes_reverified": true
+  }
+}
