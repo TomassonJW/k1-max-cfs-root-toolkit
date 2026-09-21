@@ -55,3 +55,17 @@ sont écartés pour l'appel d'effet car ils jettent cet ACK. L'attente utilise l
 notifications existantes, sans ajouter la lecture stock à délai de 3600 s.
 La pose à froid est validée ; voir document 91 et le manifeste pour les preuves,
 les limites, les deux destinations et la restauration exacte.
+
+## Correction du 21 septembre après essai réel
+
+V1 est clos KO key849 : tête maintenue près du cutter, mais retrait refusé.
+L'attente M400 après les 35 mm retirait le chevauchement constructeur des
+15 mm lents avec le CFS. La capture R2 montre -2 mm/s au lancement CFS ;
+V1 montre 0 mm/s. Séparer les déplacements ne permet pas de sérialiser à tort
+les deux moteurs. La coordination temporelle fait partie du contrat physique.
+
+Le successeur local end-overlap-v2 attend après les 20 mm rapides, programme
+les 15 mm lents avant le CFS, puis attend après son ACK avant le parc. Le
+nouveau test simule les mouvements en file et rejette l'ancien ordre. Les
+170 tests ciblés sont verts, mais V2 n'est ni installé ni qualifié physiquement.
+La récupération du filament reste à confirmer. Voir le document 92.

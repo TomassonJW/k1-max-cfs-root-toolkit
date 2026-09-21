@@ -1,0 +1,25 @@
+{
+  "schema": 1,
+  "name": "separated-end-trial-v1",
+  "file": "T1B-separated-end-trial-v1.gcode",
+  "sha256": "2ea140ec213b783a08fe895d96b02dbfc1b54143ad4b663b25f3f30a64703024",
+  "required_revision": "separated-end-v1",
+  "slot": "T1B",
+  "temperature": 200,
+  "bed_temperature": 55,
+  "start_timeout_seconds": 900,
+  "pause_timeout_seconds": 180,
+  "resume_once": "RESUME_BASE",
+  "human_preflight": "fresh nozzle clean, clear bed, operator nearby confirmed in conversation",
+  "physical_result": "closed_ko_key849",
+  "prior_trials_replay": false,
+  "end_executed": true,
+  "resume_executed": true,
+  "targets_after_wait": [
+    0,
+    0
+  ],
+  "replay_allowed": false,
+  "purge_user_confirmed": true,
+  "rewind_user_observation": "no visible spool rewind; CFS flashing red"
+}
