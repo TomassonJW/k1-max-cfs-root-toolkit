@@ -1,0 +1,16 @@
+{
+  "test_file": "T1B-grip-diagnostic-r2.gcode",
+  "gcode_sha256": "57ecb41b52e714526b4ff4f8711f98902c1d4691f18f738cd2f16ce76b2098cf",
+  "active_config_sha256": "06663cd94d4d534da7cb49ae5e2d030ef8bb65879a9067e82a2960b852684573",
+  "disabled_config_sha256": "aad97f07b4eee6fd5e46a810664acf419264a598206387f82f99a3a1a29c61cb",
+  "nozzle": 200,
+  "bed": 55,
+  "slot": "T1B",
+  "start_timeout_seconds": 900,
+  "end_timeout_seconds": 180,
+  "resume_command": "RESUME_BASE",
+  "real_rollover_tested": false,
+  "status": "closed_load_ok_end_ko",
+  "replay_allowed": false,
+  "physical_validation": false
+}

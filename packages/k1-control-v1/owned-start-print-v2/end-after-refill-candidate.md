@@ -1,7 +1,12 @@
 # Fin après relève — candidat hors imprimante ADR-069
 
-Date : 21 septembre 2026. **Implémenté et vérifié en simulation ; désactivé,
-non installé, non qualifié physiquement.** Autorité : GO de Thomas pour la
+> Essai physique du 21 septembre 2026 : **KO, candidat restauré désactivé**.
+> La coupe est confirmée, mais la commande de retrait part au bac avant le
+> rembobinage et le contrôle final échoue (`rewind_not_confirmed`).
+> Ne pas activer/rejouer cette révision. Voir le document 90 et ADR-070.
+
+Date : 21 septembre 2026. **Installé puis essayé ; qualification physique KO,
+restauré désactivé.** Autorité historique de préparation : GO de Thomas pour la
 prochaine étape recommandée après le diagnostic du document 83, à savoir la
 construction et les tests hors imprimante (document 84). Le GO suivant a permis
 la qualification en lecture seule du firmware (document 85), puis la correction

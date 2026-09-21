@@ -1,0 +1,44 @@
+{
+  "loaded_samples": 48,
+  "run_current_values": [
+    0.5615259732951996
+  ],
+  "full_messages": 0,
+  "middle_messages": 1,
+  "corrected_guard_replay": "pass",
+  "known_external_fan_responses": [
+    1790009371.568241
+  ],
+  "physical_wheel_rotation": "user_confirmed",
+  "purge_and_blob_release": "user_confirmed",
+  "end_executed": false,
+  "result": "LOAD_SUCCEEDED_TRIAL_STOPPED_BY_OBSERVER",
+  "cause_of_stop": "external_unknown_SET_HOTEND_FAN_response_triggered_overbroad_local_observer",
+  "grip_root_cause": "unresolved_intermittent",
+  "motor_or_loading_changes": false,
+  "candidate_end_executed": false,
+  "real_rollover_tested": false,
+  "software_recovery": {
+    "ready": true,
+    "print_state": "standby",
+    "heater_targets": [
+      0,
+      0
+    ],
+    "candidate_enabled": false,
+    "exact_disabled_config_restored": true,
+    "head_sensor": true,
+    "cfs_routes": [
+      "None",
+      "None"
+    ]
+  },
+  "observer_correction": {
+    "tests_passed": 27,
+    "successful_capture_replay": "pass",
+    "previous_blockage_stop_before_cutter_seconds": 17.643,
+    "installed_on_printer": false
+  },
+  "physical_state_after_recovery": "filament_still_present_geometry_unknown",
+  "next_trial": "R2_executed_load_ok_end_ko_see_separate_evidence"
+}

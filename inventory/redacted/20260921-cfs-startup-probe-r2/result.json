@@ -1,0 +1,61 @@
+{
+  "result": "LOAD_OK_END_KO",
+  "load": {
+    "purge_and_blob_release": "user_confirmed",
+    "full_messages_before_middle": 1,
+    "motor_settings_changed": false
+  },
+  "end": {
+    "slot": "T1B",
+    "cut_contact": true,
+    "cut_return": true,
+    "cut_triggered": true,
+    "cut_release": true,
+    "rewind_acknowledged": true,
+    "head_clear_before_failure": true,
+    "route_at_failure": "T1B",
+    "failure": "rewind_not_confirmed",
+    "complete": false
+  },
+  "hidden_motion": {
+    "command": "BOX_RETRUDE_MATERIAL_WITH_TNN",
+    "first_call": "box_action.go_to_extrude_pos",
+    "binary_sha256": "af630c02ccdb51b57585114e5be2be7fcf91fdb10d88872eb6a0c65f048de777",
+    "symbol": "cmd_retrude_material_with_tnn",
+    "address": "0xf0734",
+    "attribute_reference": "0xf0948",
+    "physical_observation": "user_observed_departure_to_bin_before_rewind_complete"
+  },
+  "observer": {
+    "known_fan_responses": [],
+    "outcome": "stopped",
+    "reason": "end_failure",
+    "elapsed": 330.7649999999994,
+    "full_samples": 0,
+    "emergency_stop": "sent"
+  },
+  "recovery": {
+    "ready": true,
+    "standby": true,
+    "heater_targets": [
+      0,
+      0
+    ],
+    "candidate_enabled": false,
+    "exact_disabled_config_restored": true,
+    "head_clear": true,
+    "cfs_routes": [
+      "None",
+      "None"
+    ],
+    "motion_or_heat_commanded": false,
+    "test_gcode_removed": true
+  },
+  "remaining_unknowns": [
+    "complete_spool_rewind_before_emergency_stop",
+    "reason_for_previous_intermittent_grip_failure",
+    "whether_CFS_route_would_clear_after_a_delay"
+  ],
+  "replay_allowed": false,
+  "replacement_deployable": false
+}
