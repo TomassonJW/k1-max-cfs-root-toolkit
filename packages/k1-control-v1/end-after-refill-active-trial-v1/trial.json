@@ -1,0 +1,17 @@
+{
+  "test_file": "T1B-end-after-resume.gcode",
+  "gcode_sha256": "79f6de9dfe240dfd6711edf453cc8f9713ddfec5b01611a1ae31358e9aad27cc",
+  "active_config_sha256": "06663cd94d4d534da7cb49ae5e2d030ef8bb65879a9067e82a2960b852684573",
+  "disabled_config_sha256": "aad97f07b4eee6fd5e46a810664acf419264a598206387f82f99a3a1a29c61cb",
+  "nozzle": 200,
+  "bed": 55,
+  "slot": "T1B",
+  "start_timeout_seconds": 900,
+  "end_timeout_seconds": 180,
+  "resume_command": "RESUME_BASE",
+  "real_rollover_tested": false,
+  "status": "CLOSED_START_FAILED_BEFORE_END",
+  "replay_permitted": false,
+  "end_executed": false,
+  "active_config_retained": false
+}
