@@ -93,6 +93,8 @@ export function mount(root, options) {
   }
 
   async function poll() {
+    if (app.polling) return;
+    app.polling = true;
     try {
       const payload = await call("GET", "/printer/objects/query?kctrl_print_gate&print_stats");
       const status = (payload && payload.result && payload.result.status) || {};
@@ -101,6 +103,8 @@ export function mount(root, options) {
       app.online = true;
     } catch (_) {
       app.online = false;
+    } finally {
+      app.polling = false;
     }
     syncChoice();
     if (!overlay && app.online && app.model && app.model.view === "idle"
@@ -149,7 +153,7 @@ export function mount(root, options) {
 
   function pickSpool(slot) {
     const model = app.model;
-    if (!model || model.view !== "choice" || app.busy) return;
+    if (!app.online || !model || model.view !== "choice" || app.busy) return;
     let logical = app.active;
     if (!logical) logical = nextToConnect(model.filaments, app.assignments);
     if (!logical) {
@@ -169,7 +173,7 @@ export function mount(root, options) {
 
   async function launch() {
     const model = app.model;
-    if (!model || model.view !== "choice" || app.busy) return;
+    if (!app.online || !model || model.view !== "choice" || app.busy) return;
     const check = completeness(model.filaments, app.assignments);
     if (!check.complete) {
       toast("Il manque une bobine pour : " + check.missing.join(", "), false);
@@ -207,7 +211,7 @@ export function mount(root, options) {
 
   async function cancel() {
     const model = app.model;
-    if (!model || model.view !== "choice" || app.busy) return;
+    if (!app.online || !model || model.view !== "choice" || app.busy) return;
     if (!app.armed) { arm(); return; }
     disarm();
     app.busy = "cancel";
@@ -223,7 +227,7 @@ export function mount(root, options) {
   }
 
   async function startFile(path) {
-    if (app.busy) return;
+    if (!app.online || !app.model || app.model.view !== "idle" || app.busy) return;
     app.busy = "start:" + path;
     render();
     try {
@@ -237,13 +241,19 @@ export function mount(root, options) {
 
   // The window only: put the choice aside for this file, or bring it back.
   function minimise() {
-    if (!overlay || !app.key) return;
-    app.dismissedKey = app.key;
+    if (!overlay) return;
+    if (app.model && app.model.view === "ending") {
+      app.dismissedEndKey = app.model.endKey;
+    } else {
+      if (!app.key) return;
+      app.dismissedKey = app.key;
+    }
     render();
   }
 
   function restore() {
     app.dismissedKey = "";
+    app.dismissedEndKey = "";
     render();
   }
 
@@ -291,10 +301,12 @@ export function mount(root, options) {
     if (!app.online) return "Hors ligne";
     if (!app.installed) return "Porte absente";
     if (!model) return "Connexion…";
+    if (model.end.blocked) return model.end.title;
     if (model.state === "printing") return "Impression en cours";
     if (model.state === "paused") return "En pause";
     if (model.pending) return "Choix en attente";
     if (!model.wrapped) return "Porte inactive";
+    if (model.end.kind === "complete") return model.end.title;
     if (model.state === "complete") return "Impression terminée";
     if (model.state === "cancelled") return "Impression annulée";
     if (model.state === "error") return "Erreur d'impression";
@@ -304,6 +316,7 @@ export function mount(root, options) {
   function statusClass(model) {
     if (!app.online) return "is-offline";
     if (!model) return "";
+    if (model.end.blocked) return "is-paused";
     if (model.state === "printing") return "is-printing";
     if (model.state === "paused") return "is-paused";
     if (model.pending) return "is-choice";
@@ -367,6 +380,16 @@ export function mount(root, options) {
         "La section [kctrl_print_gate] n'est pas chargée : soit le module n'est pas installé, "
         + "soit le service Klipper n'a pas été relancé depuis. Les impressions partent sans choix.",
         "is-quiet"));
+      return;
+    }
+    if (!app.online) {
+      main.append(hero("État non vérifié", "Imprimante injoignable",
+        "La dernière lecture ne confirme pas la fin. Attendez la reconnexion avant un nouveau départ.", "is-quiet"));
+      return;
+    }
+    if (model.view === "ending") {
+      main.append(hero(model.end.title, shortName(model.printingName || "Cycle de fin"),
+        model.end.hint, "is-quiet"));
       return;
     }
     if (overlay && app.mode === "launched") renderLaunched(model);
@@ -474,7 +497,7 @@ export function mount(root, options) {
         h("button", {
           class: "btn is-primary",
           type: "button",
-          disabled: !check.complete || Boolean(app.busy),
+          disabled: !check.complete || Boolean(app.busy) || !app.online,
           onclick: launch,
         }, app.busy === "launch" ? [h("span", { class: "spinner" }), "Lancement…"] : "Lancer l'impression"))));
   }
@@ -592,7 +615,7 @@ export function mount(root, options) {
         h("button", {
           class: "btn is-small",
           type: "button",
-          disabled: Boolean(app.busy) || !model.wrapped,
+          disabled: Boolean(app.busy) || !model.wrapped || !app.online,
           onclick: () => startFile(file.path),
         }, busy ? [h("span", { class: "spinner" }), "Envoi…"] : "Choisir ses bobines")));
     }

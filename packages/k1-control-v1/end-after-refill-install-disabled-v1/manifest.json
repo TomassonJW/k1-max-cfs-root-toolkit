@@ -1,0 +1,92 @@
+{
+  "schema": 1,
+  "name": "cfs-end-ui-disabled-v1",
+  "enabled": false,
+  "deployment_executed": false,
+  "baseline_capture": "20260921-cfs-end-cold-v1",
+  "files": [
+    {
+      "name": "kctrl_end.py",
+      "source": "packages/k1-control-v1/owned-start-print-v2/kctrl_end.py",
+      "destination": "/usr/share/klipper/klippy/extras/kctrl_end.py",
+      "sha256": "74a71811b48022e00d2fc3609c0d2fd3514f81931d995ca9cf4586bed7d85f0f",
+      "before_sha256": null,
+      "baseline_provenance": "required_absent"
+    },
+    {
+      "name": "k1-control-owned-end-candidate.cfg",
+      "source": "packages/k1-control-v1/owned-start-print-v2/k1-control-owned-end-candidate.cfg",
+      "destination": "/usr/data/printer_data/config/k1-control-owned-end-candidate.cfg",
+      "sha256": "aad97f07b4eee6fd5e46a810664acf419264a598206387f82f99a3a1a29c61cb",
+      "before_sha256": null,
+      "baseline_provenance": "required_absent"
+    },
+    {
+      "name": "kctrl_print_gate.py",
+      "source": "packages/k1-control-v1/spool-choice-gate-v1/kctrl_print_gate.py",
+      "destination": "/usr/share/klipper/klippy/extras/kctrl_print_gate.py",
+      "sha256": "69578e579409b7c4d253acb8c680ceaeb25b60b40502732530a4a786e0966516",
+      "before_sha256": "0a0e8c52009e8d2e26c9676c9a034cf685981c8057dbe3aa16b313835457b052",
+      "baseline_provenance": "repository_main_expected_unverified_live"
+    },
+    {
+      "name": "logic.js",
+      "source": "packages/k1-control-v1/spool-choice-gate-v1/www/bobines/logic.js",
+      "destination": "/usr/data/k1-control-v1/current/www/bobines/logic.js",
+      "sha256": "927de5ad17e04f69fd5e7f6a49e9a3b5d2bef152666d4bde9034be4d618ed4a8",
+      "before_sha256": "b49d4b8ea4b1bdfdf07ba6ba2bcc8c2fd1e9b16ed003f9e2bcedc25eb4ec214d",
+      "baseline_provenance": "repository_main_expected_unverified_live"
+    },
+    {
+      "name": "bobines.js",
+      "source": "packages/k1-control-v1/spool-choice-gate-v1/www/bobines/bobines.js",
+      "destination": "/usr/data/k1-control-v1/current/www/bobines/bobines.js",
+      "sha256": "798621ae3e65405a6d51d8e1ab68e252c9c32bf7d43e51f1eeb0d2b41635ad7d",
+      "before_sha256": "919d9ab62120bbf48069e6a8fc38b042ae043a9f50e893e3f2f0bab4eb2e7f16",
+      "baseline_provenance": "repository_main_expected_unverified_live"
+    },
+    {
+      "name": "overlay.js",
+      "source": "packages/k1-control-v1/spool-choice-gate-v1/www/bobines/overlay.js",
+      "destination": "/usr/data/k1-control-v1/current/www/bobines/overlay.js",
+      "sha256": "575e771297e4dbff15214e05ae88e956bbfec0d75107669a152ad2628e73f7fe",
+      "before_sha256": "bc688ee2bba9f9f61d7233fa347fe744ff84b4030dcc701e1869f8cb11aee129",
+      "baseline_provenance": "repository_main_expected_unverified_live"
+    },
+    {
+      "name": "k1-control-owned-start-print-v2.cfg",
+      "source": "packages/k1-control-v1/owned-start-print-v2/k1-control-owned-start-print-v2.cfg",
+      "destination": "/usr/data/printer_data/config/k1-control-owned-start-print-v2.cfg",
+      "sha256": "fb05184f8cb8d84b332741142d6ff06caa527af7b693e18aa70f8ed86941e151",
+      "before_sha256": "f8562cbf36116e977c46f914e1af77ba16b384297ffaf0c58009ad4ea9b86503",
+      "baseline_provenance": "live_capture",
+      "append": "\n# ADR-069: candidate remains disabled; no command takeover.\n[include k1-control-owned-end-candidate.cfg]\n"
+    }
+  ],
+  "before": {
+    "/usr/share/klipper/klippy/extras/kctrl_end.py": null,
+    "/usr/data/printer_data/config/k1-control-owned-end-candidate.cfg": null,
+    "/usr/share/klipper/klippy/extras/kctrl_print_gate.py": "0a0e8c52009e8d2e26c9676c9a034cf685981c8057dbe3aa16b313835457b052",
+    "/usr/data/k1-control-v1/current/www/bobines/logic.js": "b49d4b8ea4b1bdfdf07ba6ba2bcc8c2fd1e9b16ed003f9e2bcedc25eb4ec214d",
+    "/usr/data/k1-control-v1/current/www/bobines/bobines.js": "919d9ab62120bbf48069e6a8fc38b042ae043a9f50e893e3f2f0bab4eb2e7f16",
+    "/usr/data/k1-control-v1/current/www/bobines/overlay.js": "bc688ee2bba9f9f61d7233fa347fe744ff84b4030dcc701e1869f8cb11aee129",
+    "/usr/data/printer_data/config/k1-control-owned-start-print-v2.cfg": "f8562cbf36116e977c46f914e1af77ba16b384297ffaf0c58009ad4ea9b86503",
+    "/usr/share/klipper/klippy/extras/box.py": "6d7486e1a15cde03f3152eef0d771d0bdd4a90df9b5ef7ecb88bc5d944f20ac4",
+    "/usr/share/klipper/klippy/extras/box.pyc": "16bc2b96ae45540e5f52d50463cc4afba1ba8b191f6a5c1d456659e69dca9f4c",
+    "/usr/share/klipper/klippy/extras/box_wrapper.cpython-38-mipsel-linux-gnu.so": "af630c02ccdb51b57585114e5be2be7fcf91fdb10d88872eb6a0c65f048de777",
+    "/usr/share/klipper/klippy/gcode.py": "20d21ace63ac249c5e38d237898ff18d924047d4532a917124cb92eaed24cde7",
+    "/usr/share/klipper/klippy/reactor.py": "e2ee73b2b19f2c7ce0e3ff1725cf5ce1e43693fc30ed89240ece4ac32c48cc70",
+    "/usr/share/klipper/klippy/extras/virtual_sdcard.py": "e1354dac12671983af1c12bed2b0d70762237d041f0e74c51a173a5adc47c86f",
+    "/usr/share/klipper/klippy/extras/pause_resume.py": "fcb0964da497d0be25dbbd85af98846fe1f226b8d6a4049ada8e53951134e45b",
+    "/usr/share/klipper/klippy/extras/heaters.py": "45a7c35c51b019530dda6ef3cbfaab980fe5573839861b2f4460fd7adb9cf3ed",
+    "/usr/share/klipper/klippy/extras/gcode_macro.py": "5cdfce78990a89c91d3a77b57917a3437dfaa67e110c8faf531d619b492a513b",
+    "/usr/share/klipper/klippy/extras/filament_switch_sensor.py": "cc2fa8c08c67b1d8461df803b5fdb8ac07c32a954a52b85b9b3ed72168b26066",
+    "/usr/share/klipper/klippy/extras/kctrl_tool_change.py": "a203b0ec4bcbf42508daa5d2905542f6fc890740c7d1cc08bb5936d01b34b414",
+    "/usr/share/klipper/klippy/extras/kctrl_slot_map.py": "041de62865702148ec796ea9a502a9067bf11252ffd678ea8886732c48e8c134",
+    "/usr/data/printer_data/config/printer.cfg": "07864b095b39ef6d74e5b857567938fc85564146ffb604e5793cf0605cd9a45b",
+    "/usr/data/printer_data/config/box.cfg": "8bb0416d9c7a6c46792e1ac2497849befb371bc73ac9864d946ad5b588930194",
+    "/usr/data/printer_data/config/gcode_macro.cfg": "864fedde88fbb345c220ae5658f7b04779b3981bd78d68eda6fa63c59c79a04f",
+    "/usr/share/klipper/klippy/extras/kctrl_end.pyc": null,
+    "/usr/share/klipper/klippy/extras/__pycache__/kctrl_end.cpython-38.pyc": null
+  }
+}

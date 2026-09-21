@@ -655,3 +655,55 @@ def test_the_section_is_declared_after_the_tool_change_wrapper():
     assert text.index("[kctrl_tool_change]") < text.index("[kctrl_print_gate]")
     section = text[text.index("[kctrl_print_gate]"):].split("\n\n", 1)[0]
     assert "page: http://192.168.1.64:4409/bobines/" in section
+
+
+class EndStatus:
+    def __init__(self, value):
+        self.value = value
+
+    def get_status(self, eventtime):
+        if isinstance(self.value, Exception):
+            raise self.value
+        return self.value
+
+
+@pytest.mark.parametrize("value", [
+    {"enabled": True, "pending": True, "phase": "rewinding"},
+    {"enabled": True, "pending": True, "phase": "failed"},
+    {"enabled": True, "pending": False, "phase": "failed"},
+    {"enabled": True, "pending": False, "phase": "complete", "thermal_failure": "nonzero"},
+    {"enabled": True, "pending": False, "phase": "cutting"},
+    {"enabled": True, "pending": False, "phase": "future"},
+    {"enabled": False, "pending": False, "phase": "complete"},
+    {}, None, RuntimeError("lost observation"),
+])
+@pytest.mark.parametrize("entry", ["start", "resume", "confirm"])
+def test_unfinished_end_blocks_before_sd_or_mapping(tmp_path, value, entry):
+    gate = machine(tmp_path, state="complete")
+    if entry == "confirm":
+        start(gate)
+    before = list(gate.gcode.scripts)
+    gate.printer.objects["kctrl_end"] = EndStatus(value)
+    with pytest.raises(GcmdError, match="fin precedente"):
+        if entry == "confirm":
+            confirm(gate, MAP="T1A:T1B")
+        else:
+            start(gate, **({"ISCONTINUEPRINT": "1"} if entry == "resume" else {}))
+    assert gate.gcode.scripts == before
+    if entry == "confirm":
+        assert gate.pending is not None
+
+
+@pytest.mark.parametrize("value", [
+    {"enabled": False, "pending": False, "phase": "disabled"},
+    {"enabled": True, "pending": False, "phase": "idle"},
+    {"enabled": True, "pending": False, "phase": "complete"},
+])
+def test_optional_end_status_is_published_and_released(tmp_path, value):
+    gate = machine(tmp_path)
+    assert gate.get_status()["end"] is None
+    gate.printer.objects["kctrl_end"] = EndStatus(value)
+    assert gate.get_status()["end"] == value
+    start(gate)
+    confirm(gate, MAP="T1A:T1B")
+    assert any(line.startswith(MOD.STOCK) for line in gate.gcode.scripts)

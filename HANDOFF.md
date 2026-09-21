@@ -1,5 +1,19 @@
 # HANDOFF — index de reprise
 
+## 21 septembre — interface et paquet désactivé prêts, aucune connexion K1
+
+Lire `docs/86-fin-cfs-interface-et-paquet-desactive-v1.md` et le README de
+`packages/k1-control-v1/end-after-refill-install-disabled-v1/` avant la suite.
+La mission suivante est le préflight frais puis la pose désactivée, avec les
+sept fichiers du manifeste et le plan ordonné versionné. Les bases UI/porte
+sont attendues depuis le dépôt, pas encore confirmées sur la machine ; tout
+écart impose un arrêt avant remplacement. Générateur hors réseau, pas un
+déployeur automatique. La nouvelle UI et la porte sont testées localement :
+203 tests Python ciblés, 33 Node. Aucun changement physique ni distant.
+Le défaut actuel reste installé. Pas d'activation par simple changement de
+configuration ; qualification caméra du cycle réel encore distincte.
+
+
 ## 21 septembre — qualification froide close, correctif cutter révisé
 
 Lire le [document 85](docs/85-qualification-firmware-fin-cfs-lecture-seule-v1.md)

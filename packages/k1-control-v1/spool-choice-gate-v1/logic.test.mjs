@@ -205,3 +205,108 @@ test("after the launch it sent the window says so for a moment then hides", () =
   const idle = buildModel({ kctrl_print_gate: Object.assign({}, GATE, { pending: 0 }), print_stats: { state: "standby" } });
   assert.equal(overlayMode({ dismissedKey: "", launchedAt: 0 }, idle, 50000), "hidden");
 });
+
+
+// Deferred end owns the UI even after the SD reader says complete.
+for (const phase of ["waiting", "heating", "cutting", "rewinding", "finalizing", "failed", "shutdown"]) {
+  test("end " + phase + " overrides SD completion and the launch flash", () => {
+    const model = buildModel({ print_stats: { state: "complete" },
+      kctrl_print_gate: { ...GATE, end: { enabled: true, pending: true, phase } } });
+    assert.equal(model.view, "ending");
+    assert.equal(model.end.blocked, true);
+    assert.equal(overlayMode({ launchedAt: 999, dismissedKey: pendingKey(model) }, model, 1000), "ending");
+  });
+}
+test("failure remains visible after the callback drained", () => {
+  const model = buildModel({ kctrl_print_gate: { end: {
+    enabled: true, pending: false, phase: "failed", failure: "cut_refused" } } });
+  assert.equal(model.end.title, "Fin incomplète");
+  assert.equal(model.view, "ending");
+});
+test("thermal failure takes priority and does not assert heaters stopped", () => {
+  const model = buildModel({ kctrl_print_gate: { end: {
+    enabled: true, pending: true, phase: "failed", thermal_failure: "nonzero" } } });
+  assert.match(model.end.hint, /Vérifiez immédiatement/);
+  assert.match(model.end.hint, /n'est pas confirmé/);
+});
+for (const end of [{}, { enabled: true }, { enabled: true, pending: false, phase: "new" }]) {
+  test("malformed end blocks instead of declaring completion " + JSON.stringify(end), () => {
+    assert.equal(buildModel({ kctrl_print_gate: { end } }).view, "ending");
+  });
+}
+test("absent and disabled modules keep legacy choices available", () => {
+  for (const end of [undefined, null, { enabled: false, pending: false, phase: "disabled" }]) {
+    const model = buildModel({ kctrl_print_gate: { ...GATE, end } });
+    assert.equal(model.view, "choice");
+    assert.equal(model.end.title, "");
+  }
+});
+test("cancel completion never says the print succeeded", () => {
+  const model = buildModel({ print_stats: { state: "cancelled" }, kctrl_print_gate: {
+    end: { enabled: true, pending: false, phase: "complete", reason: "annulation" } } });
+  assert.equal(model.end.blocked, false);
+  assert.match(model.end.hint, /annulée/);
+  assert.equal(model.end.title, "Cycle de fin terminé");
+});
+
+test("end can be folded to reach Mainsail stop controls; a failure opens it again", () => {
+  const status = { kctrl_print_gate: { end: { enabled: true, pending: true, phase: "rewinding", job_epoch: 4 } } };
+  const pending = buildModel(status);
+  const ui = { dismissedEndKey: pending.endKey };
+  assert.equal(overlayMode(ui, pending, 0), "minimised");
+  status.kctrl_print_gate.end.phase = "failed";
+  assert.equal(overlayMode(ui, buildModel(status), 0), "ending");
+});
+
+// Run the real shared view with a small DOM/API double: verifies wiring,
+// not just the pure labels. No browser or printer connection is involved.
+test("shared view renders end, failure and lost connection without launch controls", async () => {
+  const { mount } = await import("./www/bobines/bobines.js");
+  class Element {
+    constructor(tag) { this.tag = tag; this.children = []; this.style = {}; this.listeners = {}; }
+    append(...children) { this.children.push(...children); }
+    replaceChildren(...children) { this.children = children; }
+    setAttribute(key, value) { this[key] = value; }
+    addEventListener(key, value) { this.listeners[key] = value; }
+    querySelector() { return null; }
+    text() { return [this.textContent || "", ...this.children.map(n => typeof n === "string" ? n : n.text())].join(" "); }
+  }
+  const saved = Object.fromEntries(["Node", "document", "fetch", "setInterval", "clearInterval"].map(k => [k, globalThis[k]]));
+  const nodes = Object.fromEntries(["main", "status", "state-label", "offline", "toast"].map(k => [k, new Element("div")]));
+  let fail = false;
+  let status = { print_stats: { state: "complete", filename: "job.gcode" }, kctrl_print_gate: {
+    wrapped: 1, end: { enabled: true, pending: true, phase: "rewinding", job_epoch: 1 } } };
+  const methods = [];
+  try {
+    globalThis.Node = Element;
+    globalThis.document = { createElement: tag => new Element(tag), createTextNode: text => String(text) };
+    globalThis.setInterval = () => 1;
+    globalThis.clearInterval = () => {};
+    globalThis.fetch = async (path, options) => {
+      methods.push(options.method);
+      if (fail) throw new Error("offline");
+      return { ok: true, json: async () => ({ result: { status } }) };
+    };
+    const modes = [];
+    const app = mount({ getElementById: key => nodes[key] }, { overlay: true, onMode: mode => modes.push(mode) });
+    await new Promise(resolve => setImmediate(resolve));
+    assert.match(nodes.main.text(), /Fin en cours/);
+    assert.equal(nodes["state-label"].textContent, "Fin en cours");
+    assert.equal(modes.at(-1), "ending");
+    assert.doesNotMatch(nodes.main.text(), /Choisir ses bobines|Impression terminée/);
+    status.kctrl_print_gate.end = { enabled: true, pending: false, phase: "failed", failure: "cut_refused" };
+    await app.poll();
+    assert.match(nodes.main.text(), /Fin incomplète/);
+    fail = true;
+    await app.poll();
+    assert.match(nodes.main.text(), /Imprimante injoignable/);
+    assert.equal(nodes["state-label"].textContent, "Hors ligne");
+    assert.doesNotMatch(nodes.main.text(), /Choisir ses bobines|Impression terminée/);
+    assert.ok(methods.every(method => method === "GET"));
+    app.stop();
+  } finally {
+    for (const [key, value] of Object.entries(saved)) {
+      if (value === undefined) delete globalThis[key]; else globalThis[key] = value;
+    }
+  }
+});

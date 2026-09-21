@@ -175,6 +175,38 @@ class KctrlPrintGate:
         except Exception:
             return {}
 
+    def end_status(self):
+        # Optional on older installations. A present but unreadable owner is
+        # NOT equivalent to an absent owner: fail closed before any SD/mapping.
+        owner = self.printer.lookup_object("kctrl_end", None)
+        if owner is None:
+            return None
+        try:
+            status = owner.get_status(self.reactor.monotonic())
+            if (not isinstance(status, dict)
+                    or type(status.get("enabled")) is not bool
+                    or type(status.get("pending")) is not bool
+                    or status.get("phase") not in (
+                        "disabled", "idle", "waiting", "heating", "cutting",
+                        "rewinding", "finalizing", "complete", "failed", "shutdown")):
+                raise ValueError("invalid end status")
+            return dict(status)
+        except Exception:
+            return {"enabled": True, "pending": True, "phase": "unknown",
+                    "failure": "end_status_unavailable", "thermal_failure": ""}
+
+    def assert_end_released(self, gcmd):
+        status = self.end_status()
+        if status is None or (status["enabled"] is False
+                              and status["phase"] == "disabled"
+                              and status["pending"] is False):
+            return
+        if (status["enabled"] is not True or status["pending"]
+                or status["phase"] not in ("idle", "complete")
+                or status.get("failure") or status.get("thermal_failure")):
+            raise gcmd.error("K1 Control: fin precedente en cours ou incomplete; "
+                             "consultez Bobines avant un nouveau depart")
+
     def print_state(self):
         return str(self.status_of("print_stats").get("state", ""))
 
@@ -303,6 +335,7 @@ class KctrlPrintGate:
 
     # ----------------------------------------------------------- commands
     def cmd_SDCARD_PRINT_FILE(self, gcmd):
+        self.assert_end_released(gcmd)
         line = gcmd.get_commandline()
         found = HEAD.match(line)
         rest = found.group(1) if found is not None else ""
@@ -358,6 +391,7 @@ class KctrlPrintGate:
         "e.g. KCTRL_GATE_CONFIRM MAP=T1A:T2D,T1B:T1B")
 
     def cmd_KCTRL_GATE_CONFIRM(self, gcmd):
+        self.assert_end_released(gcmd)
         pending = self.pending
         if pending is None:
             raise gcmd.error("K1 Control: aucune impression n'attend un choix de "
@@ -490,6 +524,7 @@ class KctrlPrintGate:
             except Exception:
                 table = {}
         return {
+            "end": self.end_status(),
             "wrapped": 1 if self.wrapped else 0,
             "page": self.page,
             "pending": 1 if pending else 0,

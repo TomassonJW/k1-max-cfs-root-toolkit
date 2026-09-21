@@ -1,0 +1,154 @@
+{
+  "schema": 1,
+  "scope": "disabled installation preparation only",
+  "executable": false,
+  "activation_permitted": false,
+  "backup_directory": "/usr/data/k1-control-v1/backups/cfs-end-ui-disabled-v1",
+  "staging_directory": "/usr/data/k1-control-v1/staging/cfs-end-ui-disabled-v1",
+  "preflight": {
+    "fresh_hashes": {
+      "/usr/share/klipper/klippy/extras/kctrl_end.py": null,
+      "/usr/data/printer_data/config/k1-control-owned-end-candidate.cfg": null,
+      "/usr/share/klipper/klippy/extras/kctrl_print_gate.py": "0a0e8c52009e8d2e26c9676c9a034cf685981c8057dbe3aa16b313835457b052",
+      "/usr/data/k1-control-v1/current/www/bobines/logic.js": "b49d4b8ea4b1bdfdf07ba6ba2bcc8c2fd1e9b16ed003f9e2bcedc25eb4ec214d",
+      "/usr/data/k1-control-v1/current/www/bobines/bobines.js": "919d9ab62120bbf48069e6a8fc38b042ae043a9f50e893e3f2f0bab4eb2e7f16",
+      "/usr/data/k1-control-v1/current/www/bobines/overlay.js": "bc688ee2bba9f9f61d7233fa347fe744ff84b4030dcc701e1869f8cb11aee129",
+      "/usr/data/printer_data/config/k1-control-owned-start-print-v2.cfg": "f8562cbf36116e977c46f914e1af77ba16b384297ffaf0c58009ad4ea9b86503",
+      "/usr/share/klipper/klippy/extras/box.py": "6d7486e1a15cde03f3152eef0d771d0bdd4a90df9b5ef7ecb88bc5d944f20ac4",
+      "/usr/share/klipper/klippy/extras/box.pyc": "16bc2b96ae45540e5f52d50463cc4afba1ba8b191f6a5c1d456659e69dca9f4c",
+      "/usr/share/klipper/klippy/extras/box_wrapper.cpython-38-mipsel-linux-gnu.so": "af630c02ccdb51b57585114e5be2be7fcf91fdb10d88872eb6a0c65f048de777",
+      "/usr/share/klipper/klippy/gcode.py": "20d21ace63ac249c5e38d237898ff18d924047d4532a917124cb92eaed24cde7",
+      "/usr/share/klipper/klippy/reactor.py": "e2ee73b2b19f2c7ce0e3ff1725cf5ce1e43693fc30ed89240ece4ac32c48cc70",
+      "/usr/share/klipper/klippy/extras/virtual_sdcard.py": "e1354dac12671983af1c12bed2b0d70762237d041f0e74c51a173a5adc47c86f",
+      "/usr/share/klipper/klippy/extras/pause_resume.py": "fcb0964da497d0be25dbbd85af98846fe1f226b8d6a4049ada8e53951134e45b",
+      "/usr/share/klipper/klippy/extras/heaters.py": "45a7c35c51b019530dda6ef3cbfaab980fe5573839861b2f4460fd7adb9cf3ed",
+      "/usr/share/klipper/klippy/extras/gcode_macro.py": "5cdfce78990a89c91d3a77b57917a3437dfaa67e110c8faf531d619b492a513b",
+      "/usr/share/klipper/klippy/extras/filament_switch_sensor.py": "cc2fa8c08c67b1d8461df803b5fdb8ac07c32a954a52b85b9b3ed72168b26066",
+      "/usr/share/klipper/klippy/extras/kctrl_tool_change.py": "a203b0ec4bcbf42508daa5d2905542f6fc890740c7d1cc08bb5936d01b34b414",
+      "/usr/share/klipper/klippy/extras/kctrl_slot_map.py": "041de62865702148ec796ea9a502a9067bf11252ffd678ea8886732c48e8c134",
+      "/usr/data/printer_data/config/printer.cfg": "07864b095b39ef6d74e5b857567938fc85564146ffb604e5793cf0605cd9a45b",
+      "/usr/data/printer_data/config/box.cfg": "8bb0416d9c7a6c46792e1ac2497849befb371bc73ac9864d946ad5b588930194",
+      "/usr/data/printer_data/config/gcode_macro.cfg": "864fedde88fbb345c220ae5658f7b04779b3981bd78d68eda6fa63c59c79a04f",
+      "/usr/share/klipper/klippy/extras/kctrl_end.pyc": null,
+      "/usr/share/klipper/klippy/extras/__pycache__/kctrl_end.cpython-38.pyc": null
+    },
+    "status_validator": "validate_cold(status, installed=False)",
+    "exclusive_idle_required": true,
+    "backup_and_staging_must_not_exist": true,
+    "resolve_current_symlink_and_freeze_target": true,
+    "save_status_and_config_and_command_registry": true
+  },
+  "backup": [
+    "mkdir /usr/data/k1-control-v1/backups/cfs-end-ui-disabled-v1",
+    "cp -p /usr/share/klipper/klippy/extras/kctrl_print_gate.py /usr/data/k1-control-v1/backups/cfs-end-ui-disabled-v1/kctrl_print_gate.py.before",
+    "cp -p /usr/data/k1-control-v1/current/www/bobines/logic.js /usr/data/k1-control-v1/backups/cfs-end-ui-disabled-v1/logic.js.before",
+    "cp -p /usr/data/k1-control-v1/current/www/bobines/bobines.js /usr/data/k1-control-v1/backups/cfs-end-ui-disabled-v1/bobines.js.before",
+    "cp -p /usr/data/k1-control-v1/current/www/bobines/overlay.js /usr/data/k1-control-v1/backups/cfs-end-ui-disabled-v1/overlay.js.before",
+    "cp -p /usr/data/printer_data/config/k1-control-owned-start-print-v2.cfg /usr/data/k1-control-v1/backups/cfs-end-ui-disabled-v1/k1-control-owned-start-print-v2.cfg.before"
+  ],
+  "backup_verification": "Compare each .before to before_sha256; save mode/uid/gid and resolved destinations; abort BEFORE stop or replacement on mismatch.",
+  "install": [
+    "/etc/init.d/S55klipper_service stop",
+    "cp /usr/data/k1-control-v1/staging/cfs-end-ui-disabled-v1/kctrl_end.py /usr/share/klipper/klippy/extras/kctrl_end.py.kctrl-next",
+    "chmod 0644 /usr/share/klipper/klippy/extras/kctrl_end.py.kctrl-next",
+    "mv /usr/share/klipper/klippy/extras/kctrl_end.py.kctrl-next /usr/share/klipper/klippy/extras/kctrl_end.py",
+    "cp /usr/data/k1-control-v1/staging/cfs-end-ui-disabled-v1/k1-control-owned-end-candidate.cfg /usr/data/printer_data/config/k1-control-owned-end-candidate.cfg.kctrl-next",
+    "chmod 0644 /usr/data/printer_data/config/k1-control-owned-end-candidate.cfg.kctrl-next",
+    "mv /usr/data/printer_data/config/k1-control-owned-end-candidate.cfg.kctrl-next /usr/data/printer_data/config/k1-control-owned-end-candidate.cfg",
+    "cp /usr/data/k1-control-v1/staging/cfs-end-ui-disabled-v1/kctrl_print_gate.py /usr/share/klipper/klippy/extras/kctrl_print_gate.py.kctrl-next",
+    "chmod 0644 /usr/share/klipper/klippy/extras/kctrl_print_gate.py.kctrl-next",
+    "mv /usr/share/klipper/klippy/extras/kctrl_print_gate.py.kctrl-next /usr/share/klipper/klippy/extras/kctrl_print_gate.py",
+    "cp /usr/data/k1-control-v1/staging/cfs-end-ui-disabled-v1/logic.js /usr/data/k1-control-v1/current/www/bobines/logic.js.kctrl-next",
+    "chmod 0644 /usr/data/k1-control-v1/current/www/bobines/logic.js.kctrl-next",
+    "mv /usr/data/k1-control-v1/current/www/bobines/logic.js.kctrl-next /usr/data/k1-control-v1/current/www/bobines/logic.js",
+    "cp /usr/data/k1-control-v1/staging/cfs-end-ui-disabled-v1/bobines.js /usr/data/k1-control-v1/current/www/bobines/bobines.js.kctrl-next",
+    "chmod 0644 /usr/data/k1-control-v1/current/www/bobines/bobines.js.kctrl-next",
+    "mv /usr/data/k1-control-v1/current/www/bobines/bobines.js.kctrl-next /usr/data/k1-control-v1/current/www/bobines/bobines.js",
+    "cp /usr/data/k1-control-v1/staging/cfs-end-ui-disabled-v1/overlay.js /usr/data/k1-control-v1/current/www/bobines/overlay.js.kctrl-next",
+    "chmod 0644 /usr/data/k1-control-v1/current/www/bobines/overlay.js.kctrl-next",
+    "mv /usr/data/k1-control-v1/current/www/bobines/overlay.js.kctrl-next /usr/data/k1-control-v1/current/www/bobines/overlay.js",
+    "cp /usr/data/k1-control-v1/staging/cfs-end-ui-disabled-v1/k1-control-owned-start-print-v2.cfg /usr/data/printer_data/config/k1-control-owned-start-print-v2.cfg.kctrl-next",
+    "chmod 0644 /usr/data/printer_data/config/k1-control-owned-start-print-v2.cfg.kctrl-next",
+    "mv /usr/data/printer_data/config/k1-control-owned-start-print-v2.cfg.kctrl-next /usr/data/printer_data/config/k1-control-owned-start-print-v2.cfg",
+    "/etc/init.d/S55klipper_service start"
+  ],
+  "restart_verification": "Observe old Klipper process/socket disappearance, then new process and ready (60 s maximum); HTTP success alone is insufficient.",
+  "restore_mesh_once": "BED_MESH_PROFILE LOAD=k1_p001_t055_r001_n11x11",
+  "validate": {
+    "payload_hashes": [
+      {
+        "path": "/usr/share/klipper/klippy/extras/kctrl_end.py",
+        "sha256": "74a71811b48022e00d2fc3609c0d2fd3514f81931d995ca9cf4586bed7d85f0f"
+      },
+      {
+        "path": "/usr/data/printer_data/config/k1-control-owned-end-candidate.cfg",
+        "sha256": "aad97f07b4eee6fd5e46a810664acf419264a598206387f82f99a3a1a29c61cb"
+      },
+      {
+        "path": "/usr/share/klipper/klippy/extras/kctrl_print_gate.py",
+        "sha256": "69578e579409b7c4d253acb8c680ceaeb25b60b40502732530a4a786e0966516"
+      },
+      {
+        "path": "/usr/data/k1-control-v1/current/www/bobines/logic.js",
+        "sha256": "927de5ad17e04f69fd5e7f6a49e9a3b5d2bef152666d4bde9034be4d618ed4a8"
+      },
+      {
+        "path": "/usr/data/k1-control-v1/current/www/bobines/bobines.js",
+        "sha256": "798621ae3e65405a6d51d8e1ab68e252c9c32bf7d43e51f1eeb0d2b41635ad7d"
+      },
+      {
+        "path": "/usr/data/k1-control-v1/current/www/bobines/overlay.js",
+        "sha256": "575e771297e4dbff15214e05ae88e956bbfec0d75107669a152ad2628e73f7fe"
+      },
+      {
+        "path": "/usr/data/printer_data/config/k1-control-owned-start-print-v2.cfg",
+        "sha256": "fb05184f8cb8d84b332741142d6ff06caa527af7b693e18aa70f8ed86941e151"
+      }
+    ],
+    "unchanged_hashes": {
+      "/usr/share/klipper/klippy/extras/box.py": "6d7486e1a15cde03f3152eef0d771d0bdd4a90df9b5ef7ecb88bc5d944f20ac4",
+      "/usr/share/klipper/klippy/extras/box.pyc": "16bc2b96ae45540e5f52d50463cc4afba1ba8b191f6a5c1d456659e69dca9f4c",
+      "/usr/share/klipper/klippy/extras/box_wrapper.cpython-38-mipsel-linux-gnu.so": "af630c02ccdb51b57585114e5be2be7fcf91fdb10d88872eb6a0c65f048de777",
+      "/usr/share/klipper/klippy/gcode.py": "20d21ace63ac249c5e38d237898ff18d924047d4532a917124cb92eaed24cde7",
+      "/usr/share/klipper/klippy/reactor.py": "e2ee73b2b19f2c7ce0e3ff1725cf5ce1e43693fc30ed89240ece4ac32c48cc70",
+      "/usr/share/klipper/klippy/extras/virtual_sdcard.py": "e1354dac12671983af1c12bed2b0d70762237d041f0e74c51a173a5adc47c86f",
+      "/usr/share/klipper/klippy/extras/pause_resume.py": "fcb0964da497d0be25dbbd85af98846fe1f226b8d6a4049ada8e53951134e45b",
+      "/usr/share/klipper/klippy/extras/heaters.py": "45a7c35c51b019530dda6ef3cbfaab980fe5573839861b2f4460fd7adb9cf3ed",
+      "/usr/share/klipper/klippy/extras/gcode_macro.py": "5cdfce78990a89c91d3a77b57917a3437dfaa67e110c8faf531d619b492a513b",
+      "/usr/share/klipper/klippy/extras/filament_switch_sensor.py": "cc2fa8c08c67b1d8461df803b5fdb8ac07c32a954a52b85b9b3ed72168b26066",
+      "/usr/share/klipper/klippy/extras/kctrl_tool_change.py": "a203b0ec4bcbf42508daa5d2905542f6fc890740c7d1cc08bb5936d01b34b414",
+      "/usr/share/klipper/klippy/extras/kctrl_slot_map.py": "041de62865702148ec796ea9a502a9067bf11252ffd678ea8886732c48e8c134",
+      "/usr/data/printer_data/config/printer.cfg": "07864b095b39ef6d74e5b857567938fc85564146ffb604e5793cf0605cd9a45b",
+      "/usr/data/printer_data/config/box.cfg": "8bb0416d9c7a6c46792e1ac2497849befb371bc73ac9864d946ad5b588930194",
+      "/usr/data/printer_data/config/gcode_macro.cfg": "864fedde88fbb345c220ae5658f7b04779b3981bd78d68eda6fa63c59c79a04f"
+    },
+    "status_validator": "validate_cold(status, installed=True, reference=before)",
+    "repeat_independent_read": true,
+    "commands_must_remain_original": [
+      "START_PRINT",
+      "END_PRINT",
+      "CANCEL_PRINT"
+    ],
+    "browser": "Fresh reload Mainsail and /bobines/: new JS hashes over HTTP, gate.end disabled, no new start or filament command."
+  },
+  "rollback": [
+    "/etc/init.d/S55klipper_service stop",
+    "rm -f /usr/share/klipper/klippy/extras/kctrl_end.py",
+    "rm -f /usr/data/printer_data/config/k1-control-owned-end-candidate.cfg",
+    "cp -p /usr/data/k1-control-v1/backups/cfs-end-ui-disabled-v1/kctrl_print_gate.py.before /usr/share/klipper/klippy/extras/kctrl_print_gate.py.kctrl-next",
+    "mv /usr/share/klipper/klippy/extras/kctrl_print_gate.py.kctrl-next /usr/share/klipper/klippy/extras/kctrl_print_gate.py",
+    "cp -p /usr/data/k1-control-v1/backups/cfs-end-ui-disabled-v1/logic.js.before /usr/data/k1-control-v1/current/www/bobines/logic.js.kctrl-next",
+    "mv /usr/data/k1-control-v1/current/www/bobines/logic.js.kctrl-next /usr/data/k1-control-v1/current/www/bobines/logic.js",
+    "cp -p /usr/data/k1-control-v1/backups/cfs-end-ui-disabled-v1/bobines.js.before /usr/data/k1-control-v1/current/www/bobines/bobines.js.kctrl-next",
+    "mv /usr/data/k1-control-v1/current/www/bobines/bobines.js.kctrl-next /usr/data/k1-control-v1/current/www/bobines/bobines.js",
+    "cp -p /usr/data/k1-control-v1/backups/cfs-end-ui-disabled-v1/overlay.js.before /usr/data/k1-control-v1/current/www/bobines/overlay.js.kctrl-next",
+    "mv /usr/data/k1-control-v1/current/www/bobines/overlay.js.kctrl-next /usr/data/k1-control-v1/current/www/bobines/overlay.js",
+    "cp -p /usr/data/k1-control-v1/backups/cfs-end-ui-disabled-v1/k1-control-owned-start-print-v2.cfg.before /usr/data/printer_data/config/k1-control-owned-start-print-v2.cfg.kctrl-next",
+    "mv /usr/data/printer_data/config/k1-control-owned-start-print-v2.cfg.kctrl-next /usr/data/printer_data/config/k1-control-owned-start-print-v2.cfg",
+    "rm -f /usr/share/klipper/klippy/extras/kctrl_end.pyc",
+    "rm -f /usr/share/klipper/klippy/extras/__pycache__/kctrl_end.cpython-38.pyc",
+    "/etc/init.d/S55klipper_service start"
+  ],
+  "rollback_verification": "Compare ALL original hashes/absence and metadata; observe real restart; load previous mesh once; validate_cold(installed=False, reference=before). Remove only bytecode generated for new kctrl_end after recording its exact path. No retry of any physical command.",
+  "on_failure": "Stop the sequence. If any replacement began, restore verified backups while Klipper is stopped, then validate rollback. If rollback fails, leave Klipper stopped and report KO; do not activate or print."
+}
