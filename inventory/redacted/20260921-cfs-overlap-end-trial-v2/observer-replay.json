@@ -1,0 +1,26 @@
+{
+  "results": [
+    {
+      "capture": "20260921-cfs-startup-probe-r2",
+      "clock_spread_seconds": 0.0077,
+      "result": "no_initial_load_abort",
+      "accepted_route_seen": true,
+      "max_full": 1
+    },
+    {
+      "capture": "20260921-cfs-separated-end-trial-v1",
+      "clock_spread_seconds": 0.0105,
+      "result": "no_initial_load_abort",
+      "accepted_route_seen": true,
+      "max_full": 0
+    },
+    {
+      "capture": "20260921-cfs-overlap-end-trial-v2",
+      "clock_spread_seconds": 0.0082,
+      "result": "loading_unconfirmed_buffer_full",
+      "accepted_route_seen": false,
+      "max_full": 8
+    }
+  ],
+  "physical_validation": false
+}

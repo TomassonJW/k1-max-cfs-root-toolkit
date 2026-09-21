@@ -1,0 +1,22 @@
+{
+  "schema": 1,
+  "name": "overlap-end-trial-v2",
+  "file": "T1B-overlap-end-trial-v2.gcode",
+  "sha256": "4329d4c268ad956cd2a35ea8aa82bbeb9727fca9df5ab6da27fb830ad7839ba1",
+  "required_revision": "end-overlap-v2",
+  "slot": "T1B",
+  "temperature": 200,
+  "bed_temperature": 55,
+  "start_timeout_seconds": 900,
+  "pause_timeout_seconds": 180,
+  "resume_once": "RESUME_BASE",
+  "human_preflight": "fresh nozzle clean, clear bed, operator nearby confirmed in conversation",
+  "physical_result": "closed_ko_observer_abort_during_load",
+  "prior_trials_replay": false,
+  "end_executed": false,
+  "resume_executed": false,
+  "targets_after_wait": [0, 0],
+  "replay_allowed": false,
+  "purge_user_confirmed": false,
+  "rewind_user_observation": null
+}

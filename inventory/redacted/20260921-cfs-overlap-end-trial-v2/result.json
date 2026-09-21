@@ -1,0 +1,39 @@
+{
+  "schema": 1,
+  "status": "CLOSED_KO_OBSERVER_ABORT_DURING_LOAD",
+  "revision": "end-overlap-v2",
+  "end_executed": false,
+  "resume_executed": false,
+  "protected_files_unchanged": 22,
+  "guard_result": {
+    "known_fan_responses": [],
+    "outcome": "stopped",
+    "reason": "buffer_still_full_before_stock_retry",
+    "elapsed": 249.21899999999732,
+    "full_samples": 8,
+    "emergency_stop": "sent"
+  },
+  "head_detected_before_abort_seconds": 33.449,
+  "last_extruder_velocity_commanded": 3.0,
+  "last_live_extruder_position": 77.63537096809098,
+  "last_queued_extruder_position": 95.0,
+  "last_nozzle_target": 200.0,
+  "last_nozzle_temperature": 199.84,
+  "head_detected_at_abort": true,
+  "full_events": 8,
+  "full_span_seconds": 28.848,
+  "console_errors_before_abort": [],
+  "physical_flow_confirmed": false,
+  "physical_flow_assessment": "user_thinks_no_flow_but_was_not_attentive_uncertain",
+  "recovered_ready": true,
+  "final_targets": [
+    0,
+    0
+  ],
+  "final_homed_axes": "",
+  "final_head_detected": true,
+  "final_engaged_routes": [],
+  "physical_validation": false,
+  "no_retry": true,
+  "note": "Commanded extrusion is not proof of physical flow. Eight full messages alone do not establish a jam after head detection."
+}

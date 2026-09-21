@@ -1,5 +1,48 @@
 # STATE
 
+## 22 septembre — V3 : purge et retrait confirmés ; arrêt envoyé par Codex
+
+Thomas confirme la purge puis le rembobinage. La tête se libère environ 0,9 s
+après le lancement CFS ; l'extrudeur reste programmé pour 7,5 s, comme la
+primitive constructeur. Codex envoie M112 après une image masquée par une main,
+puis le surveillant renvoie un arrêt à tort après shutdown. La fin complète
+et le parc restent non qualifiés. Accès récupéré sans effet physique :
+ready/standby, cibles zéro, tête libre, deux CFS connectés sans route, axes
+non référencés. Pas de nouvelle palpation sans nettoyage frais. Pilote V3 clos,
+interdit de rejeu ; politique locale d'arrêt unique/pause froide testée.
+Lire [le document 95](docs/95-essai-v3-retrait-observe-arret-codex.md).
+
+## 22 septembre — essai V2 clos KO au chargement ; machine récupérée
+
+Dernier état : Thomas confirme finalement redémarrage, retrait terminé et
+nettoyage buse/plateau. Une lecture et la caméra confirment tête libre, aucune
+route, cibles zéro, XY seuls référencés. Le filament est récupéré manuellement ;
+le démarrage intermittent et le retrait automatique restent non qualifiés.
+
+Actualisation : récupération logicielle seulement. Thomas signale le retrait
+officiel encore indisponible et un nouveau redémarrage nécessaire. La capture
+passive suivante voit coupe puis retrait depuis l'interface, buse en chauffe
+vers 200 °C, tête encore chargée ; fin non confirmée. Aucun nouvel essai lancé.
+
+Le surveillant a envoyé l'arrêt d'urgence après huit messages full alors que
+le capteur de tête était actif depuis 33,449 s et E encore commandé à 3 mm/s.
+Pas d'erreur console avant cet arrêt ; débit physique non confirmé. Ni pause
+prévue ni retrait V2 exécutés. L'ancien surveillant était trop large : ne pas
+rejouer cet essai ou désactiver simplement sa protection.
+
+Service Klipper puis verrou MCU récupérés sans commande physique. État final
+ready/standby, chauffes zéro, tête chargée, aucune route déclarée après reset,
+axes non référencés ; 22 empreintes inchangées. Aucun retrait ni nouvel essai.
+La buse n'est plus réputée propre pour une palpation après cette insertion.
+Le diagnostic du chargement et la récupération filament restent nécessaires.
+Le successeur local startup-grip-observer-v2 distingue les phases : 89 tests
+verts et rejeu de trois captures. Il conserve les deux chargements réussis
+et arrête encore le cas actuel, dont la route n'était pas confirmée. Thomas
+pense qu'aucun filament n'est sorti sans en être certain ; nouvel essai demandé,
+mais retrait officiel surveillé et nettoyage restent à confirmer d'abord.
+Lire [le document 94](docs/94-essai-v2-arret-surveillant-chargement.md).
+
+
 ## 21 septembre — retrait coordonné V2 installé ; essai physique restant
 
 Récupération manuelle terminée après extinction/rallumage : la coupe officielle
