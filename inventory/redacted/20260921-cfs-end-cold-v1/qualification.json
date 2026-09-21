@@ -1,0 +1,131 @@
+{
+  "capture": "20260921-cfs-end-cold-v1",
+  "firmware": "2.3.5.34",
+  "hash_count": 16,
+  "hashes_unchanged": true,
+  "candidate_installed": false,
+  "gcode_executed": false,
+  "remote_writes": false,
+  "state": "cancelled",
+  "heater_targets": [
+    0,
+    0
+  ],
+  "axes": "",
+  "head_sensor": false,
+  "routes": {
+    "T1": "None",
+    "T2": "None"
+  },
+  "required_commands_in_help": [
+    "START_PRINT",
+    "END_PRINT",
+    "CANCEL_PRINT",
+    "CANCEL_PRINT_BASE",
+    "END_PRINT_NO_M84"
+  ],
+  "stock_commands_not_exposed_by_help": [
+    "BOX_CUT_MATERIAL",
+    "BOX_RETRUDE_MATERIAL_WITH_TNN"
+  ],
+  "hashes": {
+    "box.py": "6d7486e1a15cde03f3152eef0d771d0bdd4a90df9b5ef7ecb88bc5d944f20ac4",
+    "box.pyc": "16bc2b96ae45540e5f52d50463cc4afba1ba8b191f6a5c1d456659e69dca9f4c",
+    "box_wrapper.cpython-38-mipsel-linux-gnu.so": "af630c02ccdb51b57585114e5be2be7fcf91fdb10d88872eb6a0c65f048de777",
+    "gcode.py": "20d21ace63ac249c5e38d237898ff18d924047d4532a917124cb92eaed24cde7",
+    "reactor.py": "e2ee73b2b19f2c7ce0e3ff1725cf5ce1e43693fc30ed89240ece4ac32c48cc70",
+    "virtual_sdcard.py": "e1354dac12671983af1c12bed2b0d70762237d041f0e74c51a173a5adc47c86f",
+    "pause_resume.py": "fcb0964da497d0be25dbbd85af98846fe1f226b8d6a4049ada8e53951134e45b",
+    "heaters.py": "45a7c35c51b019530dda6ef3cbfaab980fe5573839861b2f4460fd7adb9cf3ed",
+    "gcode_macro.py": "5cdfce78990a89c91d3a77b57917a3437dfaa67e110c8faf531d619b492a513b",
+    "filament_switch_sensor.py": "cc2fa8c08c67b1d8461df803b5fdb8ac07c32a954a52b85b9b3ed72168b26066",
+    "kctrl_tool_change.py": "a203b0ec4bcbf42508daa5d2905542f6fc890740c7d1cc08bb5936d01b34b414",
+    "kctrl_slot_map.py": "041de62865702148ec796ea9a502a9067bf11252ffd678ea8886732c48e8c134",
+    "printer.cfg": "07864b095b39ef6d74e5b857567938fc85564146ffb604e5793cf0605cd9a45b",
+    "box.cfg": "8bb0416d9c7a6c46792e1ac2497849befb371bc73ac9864d946ad5b588930194",
+    "gcode_macro.cfg": "864fedde88fbb345c220ae5658f7b04779b3981bd78d68eda6fa63c59c79a04f",
+    "k1-control-owned-start-print-v2.cfg": "f8562cbf36116e977c46f914e1af77ba16b384297ffaf0c58009ad4ea9b86503"
+  },
+  "resume_predicate": {
+    "method": "MultiColorMeterialBoxWrapper.if_in_resume",
+    "method_table_address": "0x205080",
+    "code_start": "0x102928",
+    "code_end": "0x102e04",
+    "attribute_getter": "0x2bd68",
+    "return_attribute_read": "0x102bdc..0x102be8",
+    "return_value": "0x102c6c",
+    "meaning": "returns printer.lookup_object(virtual_sdcard).do_resume_status after logging it",
+    "cut_call_checks_predicate_at": "0x0ebb34..0x0ebc10",
+    "method_executed": false,
+    "confidence_scope": "static interpretation of the exact hash, cross-checked with the installed Python sources and historical log"
+  },
+  "observed_sequence": [
+    {
+      "time": "2026-09-21T09:19:48.862",
+      "event": "cut_command_received"
+    },
+    {
+      "time": "2026-09-21T09:19:48.864",
+      "event": "if_in_resume_false"
+    },
+    {
+      "time": "2026-09-21T09:20:12.186",
+      "event": "cutter_contact"
+    },
+    {
+      "time": "2026-09-21T09:20:13.313",
+      "event": "cut_return_ok"
+    },
+    {
+      "time": "2026-09-21T09:20:13.322",
+      "event": "cut_triggered"
+    },
+    {
+      "time": "2026-09-21T09:20:13.329",
+      "event": "cut_command_finished"
+    },
+    {
+      "time": "2026-09-21T09:20:13.430",
+      "event": "manual_rewind_command_received"
+    },
+    {
+      "time": "2026-09-21T09:21:27.876",
+      "event": "manual_rewind_command_finished"
+    },
+    {
+      "time": "2026-09-21T09:21:28.199",
+      "event": "cutter_release"
+    }
+  ],
+  "timezone": "Europe/Paris",
+  "observation_limits": [
+    "Recovery used BOX_RETRUDE_MATERIAL; the complete revised END_PRINT with explicit TNN has not run on hardware.",
+    "G-code dispatcher tests use fake hardware and do not start full Klipper.",
+    "A software timer cannot stop a fully blocked reactor or guarantee instantaneous CFS motor stop.",
+    "UI state and reviewed deployment/rollback package remain to be completed."
+  ],
+  "local_validation": {
+    "candidate_tests_passed": 72,
+    "full_suite_passed": 1538,
+    "full_suite_preexisting_failed": 2,
+    "full_suite_xfailed": 2,
+    "subtests_passed": 55
+  },
+  "collection": {
+    "remote_classes": [
+      "SSH architecture read",
+      "GET status/object/help",
+      "bounded file reads",
+      "sha256sum",
+      "bounded historical log read"
+    ],
+    "downloaded_sources": 9,
+    "log_window_max_bytes": 16777216,
+    "log_probe_bytes": 65536,
+    "log_probes": 13,
+    "binary_redownloaded": false,
+    "vendor_binary_executed": false,
+    "initial_api_attempt": "grep expected send_event, found callback loops; no effect, retained as partial capture",
+    "initial_sensor_query": "percent-encoded key returned empty; final plus-separated query resolved head sensor"
+  }
+}

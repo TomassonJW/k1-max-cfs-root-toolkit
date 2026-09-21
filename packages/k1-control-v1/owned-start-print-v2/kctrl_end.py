@@ -46,8 +46,9 @@ def live_route(box, boxes=2):
 class CutProof:
     """Console events scoped to one owned cut; box.cut_pos is never read.
 
-    ADR-041/044 identify these events on the real machine. Their availability
-    for BOX_CUT_MATERIAL after deferred end still needs cold/runtime validation.
+    ADR-041/044 identify these events; the 2026-09-21 recovery trace proves
+    release may arrive only after rewind. Confirm cut before rewind, and
+    release before finalization (document 85). Deferred live end is untested.
     An old event or a successful command return alone is deliberately useless.
     """
     def __init__(self):
@@ -76,9 +77,12 @@ class CutProof:
                 self.released = True
 
     @property
+    def cut_confirmed(self):
+        return self.contact and self.returned and self.triggered and not self.failed
+
+    @property
     def complete(self):
-        return (self.contact and self.returned and self.triggered
-                and self.released and not self.failed)
+        return self.cut_confirmed and self.released
 
 
 class KctrlEnd:
@@ -283,6 +287,14 @@ class KctrlEnd:
         self.gcode.run_script_from_command(text)
         self._check(run)
 
+    def _wait_cut_proof(self, run, release=False):
+        deadline = min(self.reactor.monotonic() + self.cut_timeout, run['deadline'])
+        while not (self.proof.complete if release else self.proof.cut_confirmed):
+            self._check(run)
+            if self.proof.failed or self.reactor.monotonic() >= deadline:
+                raise EndRefused('cutter_release_not_confirmed' if release else 'cut_not_confirmed')
+            self.reactor.pause(min(self.reactor.monotonic() + .05, deadline))
+
     def _finish(self, run):
         try:
             while self._busy():
@@ -326,13 +338,10 @@ class KctrlEnd:
                     self.phase = 'cutting'
                     self.proof = CutProof()
                     self._script(run, 'BOX_CUT_MATERIAL')
-                    cut_deadline = min(self.reactor.monotonic() + self.cut_timeout, run['deadline'])
-                    while not self.proof.complete:
-                        self._check(run)
-                        if self.proof.failed or self.reactor.monotonic() >= cut_deadline:
-                            raise EndRefused('cut_not_confirmed')
-                        self.reactor.pause(min(self.reactor.monotonic() + .05, cut_deadline))
-                    self.proof = None
+                    # A successful cut can keep its sensor engaged until the
+                    # rewind finishes. Waiting for release here deadlocks the
+                    # valid stock sequence observed on 2026-09-21.
+                    self._wait_cut_proof(run)
                     self._unchanged_route(run)
                     extruder = self._status('extruder')
                     actual = extruder.get('temperature')
@@ -347,6 +356,8 @@ class KctrlEnd:
                     self._script(run, 'M400')
                     if self._head() or self._route() is not None:
                         raise EndRefused('rewind_not_confirmed')
+                    self._wait_cut_proof(run, release=True)
+                    self.proof = None
                 self.phase = 'finalizing'
                 # BOX_END is inside this macro. It is permitted only after two
                 # fresh observations prove no head filament AND no CFS route.

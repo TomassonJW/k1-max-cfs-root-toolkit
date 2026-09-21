@@ -2,6 +2,18 @@
 
 Last updated: 2026-09-21
 
+21 septembre, qualification suivante. **Firmware de fin CFS vérifié en lecture
+seule ; candidat corrigé selon la chronologie réelle, 72/72 tests** (document 85).
+Le prédicat compilé retourne `do_resume_status` ; sa sortie à la fin du fichier
+justifie l'attente différée. Le cutter ne se relâche qu'après retrait dans la
+récupération observée : sa coupe est désormais exigée avant rembobinage, son
+relâchement avant finalisation. 16 empreintes identiques avant/après ; aucune
+écriture distante, commande G-code ou action physique. Cibles zéro, axes libérés,
+tête détectée vide, aucune route T1/T2. Suite : 1 538 réussis, 2 échecs antérieurs,
+2 échecs attendus et 55 sous-tests réussis. Prochaine préparation : affichage de
+fin et paquet de pose/rollback ; aucun nouvel audit identique nécessaire.
+Candidat désactivé et non installé ; défaut de fin installé toujours présent.
+
 21 septembre, suite autorisée. **Correctif ADR-069 construit et testé hors
 imprimante ; 66/66 tests ciblés, désactivé, aucune pose** (document 84).
 `kctrl_end.py` choisit la route CFS fraîche après relève, diffère la fin jusqu'à

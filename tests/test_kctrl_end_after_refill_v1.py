@@ -333,7 +333,7 @@ def test_resume_that_never_clears_times_out_without_effect():
     assert not p.gcode.scripts
 
 
-@pytest.mark.parametrize('events', [[], CUT[:1], CUT[:2], CUT[:3], list(reversed(CUT)),
+@pytest.mark.parametrize('events', [[], CUT[:1], CUT[:2], list(reversed(CUT)),
                                   ['In resume, can not cut material now'],
                                   CUT + ['!! cutter refused']])
 def test_cut_return_without_complete_proof_never_rewinds(events):
@@ -354,7 +354,7 @@ def test_old_cut_events_and_box_cut_pos_are_not_proof():
     assert not rewinds(p)
 
 
-def test_delayed_release_event_must_arrive_before_rewind():
+def test_delayed_release_event_is_required_before_finalization():
     p, c = setup()
     p.gcode.cut_events = CUT[:3]
     p.reactor.events.append([.2, lambda: p.gcode.emit(CUT[3])])
@@ -612,7 +612,7 @@ def test_disabled_candidate_ignores_firmware_cancel_event():
     assert not p.gcode.scripts
 
 
-def test_real_captured_gcode_parser_hooks_and_multiline_console(monkeypatch):
+def captured_dispatcher(monkeypatch):
     # Optional private fixture: no vendor source is redistributed. Runs here
     # against the exact captured Creality dispatcher, without starting Klipper.
     import sys
@@ -646,6 +646,11 @@ def test_real_captured_gcode_parser_hooks_and_multiline_console(monkeypatch):
     for name in ('START_PRINT', 'END_PRINT', 'CANCEL_PRINT'):
         gcode.register_command(name, lambda cmd, n=name: called.append((n, cmd.get('EXTRUDER_TEMP'))))
     p.obj['gcode'] = gcode
+    return p, gcode, called
+
+
+def test_real_captured_gcode_parser_hooks_and_multiline_console(monkeypatch):
+    p, gcode, called = captured_dispatcher(monkeypatch)
     c = END.KctrlEnd(Config(p, True))
     p.handlers['klippy:ready']()
     command = gcode.create_gcode_command('START_PRINT', 'START_PRINT EXTRUDER_TEMP=205', {})
@@ -696,3 +701,124 @@ def test_cutter_must_remain_released_at_end_of_command():
     finish(p, c)
     assert_safe_failure(p, c)
     assert not rewinds(p)
+
+
+def test_observed_recovery_release_after_rewind_is_accepted():
+    # Actual 2026-09-21 trace, relative to BOX_CUT_MATERIAL at 09:19:48.864.
+    # Cut returned at +24.465 s; the release arrived at +99.335 s, AFTER rewind.
+    p, c = setup()
+    def cut():
+        for at, line in [(23.322, CUT[0]), (24.449, CUT[1]), (24.458, CUT[2])]:
+            p.reactor.pause(at)
+            p.gcode.emit(line)
+        p.reactor.pause(24.465)
+    def rewind():
+        assert c.proof is not None and c.proof.cut_confirmed
+        assert not c.proof.released
+        p.reactor.pause(99.012)
+        p.obj['filament_switch_sensor filament_sensor_2'].status['filament_detected'] = False
+        p.obj['box'].status['T1']['filament'] = 'None'
+        p.reactor.events.append([99.335, lambda: p.gcode.emit(CUT[3])])
+    p.gcode.on_script['BOX_CUT_MATERIAL'] = cut
+    p.gcode.on_script['BOX_RETRUDE_MATERIAL_WITH_TNN TNN=T1B'] = rewind
+    finish(p, c)
+    assert c.phase == 'complete'
+    assert rewinds(p) == ['BOX_RETRUDE_MATERIAL_WITH_TNN TNN=T1B']
+    assert p.reactor.now >= 99.335
+
+
+def test_missing_release_after_rewind_refuses_finalization_without_retry():
+    p, c = setup()
+    p.gcode.cut_events = CUT[:3]
+    finish(p, c)
+    assert_safe_failure(p, c)
+    assert c.failure == 'cutter_release_not_confirmed'
+    assert len(rewinds(p)) == 1
+
+
+@pytest.mark.parametrize('failure', ['runtime_exception', 'command_error', 'console_error'])
+def test_real_dispatcher_errors_cannot_be_swallowed_by_stock(failure, monkeypatch):
+    p, gcode, _ = captured_dispatcher(monkeypatch)
+    p.sd.print_id, p.sd.cur_print_data = '', {}
+    p.send_event = lambda name: None
+    reached = []
+    def cut(cmd):
+        if failure == 'runtime_exception':
+            raise RuntimeError('synthetic cutter failure')
+        if failure == 'command_error':
+            raise gcode.error('synthetic command refusal')
+        gcode.respond_raw('!! synthetic console failure')
+    gcode.register_command('SET_FILAMENT_SENSOR', lambda cmd: None)
+    gcode.register_command('BOX_CUT_MATERIAL', cut)
+    gcode.register_command('BOX_RETRUDE_MATERIAL_WITH_TNN', lambda cmd: reached.append('rewind'))
+    gcode.register_command('END_PRINT_NO_M84', lambda cmd: reached.append('finalize'))
+    c = END.KctrlEnd(Config(p, True))
+    p.handlers['klippy:ready']()
+    gcode.run_script_from_command('START_PRINT EXTRUDER_TEMP=200')
+    gcode.run_script_from_command('END_PRINT')
+    p.sd.active = False
+    p.reactor.drain()
+    assert c.phase == 'failed'
+    assert not reached
+    assert p.heaters.calls > 0
+    assert p.obj['extruder'].status['target'] == 0
+
+
+def test_real_dispatcher_handles_full_deferred_sequence(monkeypatch):
+    p, gcode, _ = captured_dispatcher(monkeypatch)
+    reached = []
+    def cut(cmd):
+        reached.append('cut')
+        gcode.respond_info('\n'.join(line[3:] for line in CUT[:3]))
+    def rewind(cmd):
+        assert cmd.get('TNN') == 'T1B'
+        reached.append('rewind')
+        p.obj['filament_switch_sensor filament_sensor_2'].status['filament_detected'] = False
+        p.obj['box'].status['T1']['filament'] = 'None'
+        p.reactor.events.append([.3, lambda: gcode.respond_info(CUT[3][3:])])
+    for name, handler in {
+        'SET_FILAMENT_SENSOR': lambda cmd: None,
+        'BOX_CUT_MATERIAL': cut,
+        'BOX_RETRUDE_MATERIAL_WITH_TNN': rewind,
+        'M400': lambda cmd: None,
+        'END_PRINT_NO_M84': lambda cmd: reached.append('finalize'),
+        'M84': lambda cmd: reached.append('motors_off'),
+    }.items():
+        gcode.register_command(name, handler)
+    c = END.KctrlEnd(Config(p, True))
+    p.handlers['klippy:ready']()
+    gcode.run_script_from_command('START_PRINT EXTRUDER_TEMP=200')
+    p.obj['kctrl_tool_change'].last = {'tool': 'T0', 'outcome': 'done', 'slot': 'T1A'}
+    gcode.run_script_from_command('END_PRINT')
+    assert not reached
+    p.sd.active = False
+    p.reactor.drain()
+    assert reached == ['cut', 'rewind', 'finalize', 'motors_off']
+    assert c.phase == 'complete'
+    assert p.reactor.now >= .3
+
+
+def test_real_cancel_emits_event_before_waiting_for_mutex(monkeypatch):
+    p, gcode, _ = captured_dispatcher(monkeypatch)
+    order = []
+    class Mutex:
+        def __enter__(self):
+            order.append('mutex')
+            assert p.obj['extruder'].status['target'] == 0
+        def __exit__(self, *args):
+            pass
+    def event(name):
+        order.append(name)
+        p.handlers[name]()
+    p.send_event = event
+    gcode.mutex = Mutex()
+    c = END.KctrlEnd(Config(p, True))
+    p.handlers['klippy:ready']()
+    gcode.run_script_from_command('START_PRINT EXTRUDER_TEMP=200')
+    gcode.run_script_from_command('END_PRINT')
+    gcode.invoke_cancel()
+    assert order == ['gcode:cancel', 'mutex']
+    assert c.failure == 'cancelled_during_end'
+    assert gcode.gcode_handlers is gcode.ready_gcode_handlers
+    p.sd.active = False
+    p.reactor.drain()

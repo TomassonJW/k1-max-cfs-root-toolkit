@@ -1,5 +1,30 @@
 # HANDOFF — index de reprise
 
+## 21 septembre — qualification froide close, correctif cutter révisé
+
+Lire le [document 85](docs/85-qualification-firmware-fin-cfs-lecture-seule-v1.md)
+et le [manifeste nettoyé](inventory/redacted/20260921-cfs-end-cold-v1/qualification.json).
+Le GO suivant a autorisé la lecture seule du firmware ; aucun effet machine.
+16 empreintes inchangées, cibles zéro, axes libérés, capteur de tête vide,
+T1/T2 sans route, `kctrl_end` non chargé.
+
+Deux questions fermées pour le hash épinglé : `if_in_resume` retourne bien
+`do_resume_status` ; le relâchement cutter arrive après retrait dans le journal
+manuel. Le candidat attendait ce relâchement trop tôt : corrigé et reproduit
+avec les vrais temps. Confirmation de coupe avant retrait, relâchement avant
+fin stock, sans retry. 72/72 tests, dont six avec le répartiteur exact ; suite
+complète 1 538 verts, deux échecs antérieurs, deux xfail, 55 sous-tests verts.
+
+Suite unique utile : raccordement de l'état de fin à l'UI et paquet de pose/
+rollback avec empreintes et validation désactivée. Ne pas répéter la collecte
+close. Ne pas activer par simple toggle. Aucun nouveau END_PRINT différé n'a
+été testé physiquement ; la trace de récupération était un retrait manuel
+sans TNN. Une future qualification complète exigera caméra et présence utile.
+Modèle conseillé pour cette préparation : GPT-5.6 Sol/high ; Sol/medium possible
+pour l'affichage seul, conserver high pour pose et retour arrière.
+
+Les points de reprise précédents ci-dessous sont historiques.
+
 ## 21 septembre — correctif préparé et testé, aucune connexion ni installation
 
 Point de reprise actuel : [document 84](docs/84-correctif-fin-apres-releve-hors-imprimante-v1.md),

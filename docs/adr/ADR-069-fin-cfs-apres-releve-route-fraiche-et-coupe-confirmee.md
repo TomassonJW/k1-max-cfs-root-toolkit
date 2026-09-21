@@ -76,3 +76,25 @@ moteur CFS autonome. Le prédicat exact `if_in_resume`, la présence de tous les
 événements de coupe dans ce contexte, l'intégration complète et l'affichage
 avant fin réelle restent des conditions bloquantes de pose/activation.
 Aucune connexion K1 ni changement de la configuration installée dans cette étape.
+
+
+## Qualification du firmware et révision du candidat le 21 septembre
+
+Le [document 85](../85-qualification-firmware-fin-cfs-lecture-seule-v1.md) ferme
+la qualification en lecture seule : 16 empreintes inchangées, état au repos,
+aucun G-code ni effet. Le binaire exact retourne `do_resume_status` depuis
+`if_in_resume` ; attendre la sortie SD traite ce contexte sans l'écraser.
+
+La chronologie du retrait manuel établit un relâchement cutter seulement
+323 ms après le retour du rembobinage. **Décision corrigée : confirmation de
+coupe avant retrait, relâchement avant finalisation stock.** L'attente préalable
+du relâchement dans le premier candidat aurait refusé cette séquence normale.
+Le test reproduisant les temps observés échoue avant correction et passe après.
+Un relâchement absent ferme toujours la fin, coupe les chauffes et ne relance rien.
+
+72 tests ciblés passent, dont six utilisant le répartiteur exact avec des
+commandes physiques simulées. Les deux échecs antérieurs de la suite restent
+visibles. L'affichage et le paquet de pose/rollback sont la prochaine préparation ;
+la séquence physique différée complète reste non qualifiée et le candidat
+non installé. Les incertitudes de reprise et d'ordre des signaux décrites dans
+la section historique précédente sont levées pour l'empreinte épinglée.
