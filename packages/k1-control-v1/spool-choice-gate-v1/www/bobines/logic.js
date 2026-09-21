@@ -83,6 +83,39 @@ export function textOn(hex) {
   return isLight(hex) ? "#111" : "#fff";
 }
 
+// End status is published by the gate in the SAME query as print_stats.
+// null/absent = legacy installation; malformed/present = observation lost.
+export function endState(value) {
+  const result = (kind, title, hint, blocked = true) => ({ kind, title, hint, blocked });
+  if (value == null) return result("legacy", "", "", false);
+  if (value.enabled === false && value.phase === "disabled" && value.pending === false) {
+    return result("disabled", "", "", false);
+  }
+  if (value.thermal_failure) return result("failed", "Fin incomplète",
+    "L'arrêt des chauffes n'est pas confirmé. Vérifiez immédiatement l'imprimante.");
+  if (value.failure || ["failed", "shutdown"].includes(value.phase)) {
+    return result("failed", "Fin incomplète",
+      "La fin s'est arrêtée. Vérifiez le filament et la buse avant toute nouvelle impression. Aucun nouvel essai automatique.");
+  }
+  if (value.enabled !== true || typeof value.pending !== "boolean") {
+    return result("unknown", "Fin non vérifiée", "L'état de fin est indisponible. Attendez son rétablissement.");
+  }
+  const phases = {
+    waiting: "Le fichier est fini. La machine prépare la fin.",
+    heating: "Vérification de la température avant le retrait.",
+    cutting: "Coupe du filament en cours.",
+    rewinding: "Rembobinage du filament en cours.",
+    finalizing: "Rangement de la tête et arrêt des chauffes en cours.",
+  };
+  if (value.pending || phases[value.phase]) {
+    return result("pending", "Fin en cours", phases[value.phase] || "La machine termine encore son cycle.");
+  }
+  if (value.phase === "complete") return result("complete", "Cycle de fin terminé",
+    value.reason === "annulation" ? "L'impression a été annulée ; son cycle de fin est terminé." : "Le cycle de fin est terminé.", false);
+  if (value.phase === "idle") return result("idle", "", "", false);
+  return result("unknown", "Fin non vérifiée", "L'état de fin est indisponible. Attendez son rétablissement.");
+}
+
 // The page's view of the printer, from one status query.
 export function buildModel(status) {
   const gate = (status && status.kctrl_print_gate) || {};
@@ -94,7 +127,11 @@ export function buildModel(status) {
   let view = "idle";
   if (state === "printing" || state === "paused") view = "printing";
   else if (Number(gate.pending) === 1) view = "choice";
+  const end = endState(gate.end);
+  if (end.blocked) view = "ending";
   return {
+    end,
+    endKey: String((gate.end || {}).job_epoch || 0) + ":" + end.kind,
     view,
     state,
     wrapped: Number(gate.wrapped) === 1,
@@ -134,6 +171,9 @@ export const LAUNCHED_MS = 4000;
 // screens for everything else. A cancel, from here or from anywhere, and a
 // restart of Klipper both end in "hidden" on the next poll.
 export function overlayMode(state, model, now) {
+  if (model && model.view === "ending") {
+    return state.dismissedEndKey === model.endKey ? "minimised" : "ending";
+  }
   if (model && model.view === "choice") {
     const key = pendingKey(model);
     return key && key === state.dismissedKey ? "minimised" : "choice";

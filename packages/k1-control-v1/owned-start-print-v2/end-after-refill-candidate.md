@@ -114,25 +114,18 @@ la connexion précèdent l'enregistrement du candidat à l'état prêt. L'aide G
 ne publie pas toutes les commandes stock : une entrée absente n'est pas la
 preuve d'une commande absente. Aucun test ne démarre Klipper complet.
 
-## Ce qui reste avant une pose ou activation
+## Suite du document 86 : UI et paquet préparés
 
-1. **Affichage** : `print_stats` peut annoncer `complete` dès la sortie du fichier,
-   avant le retrait différé. Le candidat expose `phase`, `pending`, `failure` et
-   `thermal_failure`, mais l'écran et l'UI K1 Control ne sont pas raccordés.
-   Montrer « fin en cours » / « fin incomplète » avant activation. Ne pas utiliser
-   le seul statut SD pour autoriser un nouveau départ pendant la finalisation.
-2. **Paquet de pose réversible** : épingler les sources, destinations et empreintes,
-   sauvegardes, ordre d'inclusion, redémarrage, validation désactivée et retour
-   arrière. Le module et la configuration actuels restent des candidats sans
-   include, non déployés. Recontrôler les empreintes à la pose pour refuser une
-   dérive du firmware depuis la qualification.
-3. **Intégration complète et preuve physique** : les API sont vérifiées en partie,
-   pas le processus Klipper complet. Le journal de récupération utilisait le
-   retrait stock manuel sans TNN ; il ne valide pas tout le nouveau END_PRINT
-   différé avec TNN explicite. L'essai ultérieur doit confirmer une relève réelle,
-   la coupe, la bonne case rembobinée, la tête vide, le relâchement et les chauffes
-   coupées, avec caméra et présence humaine utile, sur une impression sans valeur.
+La porte publie maintenant l'état de fin vers Bobines et sa fenêtre Mainsail.
+Elle bloque les départs pendant une fin pendante/échouée ; l'UI ne confond plus
+la sortie du fichier et la fin du cycle. Le tactile Creality garde ses libellés.
 
-Prochaine préparation : affichage de la fin et paquet de pose/retour arrière.
-Ne pas réauditer le prédicat et l'ordre des signaux déjà établis pour ce hash.
-Ne pas se contenter de changer `enabled` en `true`.
+Le paquet `../end-after-refill-install-disabled-v1/` fixe sept fichiers, leurs
+empreintes, le plan de pose désactivée, les backups/rollback et les contrôles à
+froid. Son générateur est hors réseau. Aucun include n'a été posé sur la machine.
+
+Reste : comparer les bases en lecture fraîche, poser désactivé et valider le
+chargement réel. Puis qualifier séparément la séquence complète après relève,
+avec route TNN explicite, coupe, bon rembobinage, tête vide, relâchement, arrêt
+thermique et caméra. Ne pas réauditer le prédicat et l'ordre déjà établis ;
+ne pas se contenter de changer `enabled` en `true`.

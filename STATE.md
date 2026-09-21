@@ -2,6 +2,15 @@
 
 Last updated: 2026-09-21
 
+21 septembre, étape suivante. **Affichage de fin CFS et paquet de pose désactivée
+préparés hors imprimante** (document 86). Bobines/Mainsail donnent priorité à la
+fin pendante ou échouée ; la porte bloque un nouveau départ avant ouverture SD
+ou mapping. 203 tests Python ciblés et 33 tests Node verts. Sept fichiers figés,
+24 chemins de préflight, backups/rollback et validation froide documentés ;
+générateur local sans transport, aucun déploiement exécuté. Prochaine action :
+préflight frais puis pose désactivée et validation à froid. Défaut installé
+inchangé ; aucune connexion K1 pendant cette préparation.
+
 21 septembre, qualification suivante. **Firmware de fin CFS vérifié en lecture
 seule ; candidat corrigé selon la chronologie réelle, 72/72 tests** (document 85).
 Le prédicat compilé retourne `do_resume_status` ; sa sortie à la fin du fichier

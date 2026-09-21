@@ -62,9 +62,12 @@ const backdrop = shadow.getElementById("backdrop");
 const panel = shadow.getElementById("panel");
 const pill = shadow.getElementById("pill");
 
-function show(mode) {
+function show(mode, model) {
   host.dataset.mode = mode;
-  const open = mode === "choice" || mode === "launched";
+  const open = mode === "choice" || mode === "launched" || mode === "ending";
+  pill.textContent = model && model.view === "ending"
+    ? model.end.title + " · Ouvrir" : "Une impression attend son choix de bobines · Ouvrir";
+  shadow.getElementById("overlay-title").textContent = mode === "ending" ? "Fin d’impression" : "Bobines";
   backdrop.hidden = !open;
   pill.hidden = mode !== "minimised";
   if (mode === "choice") {
@@ -81,7 +84,7 @@ backdrop.addEventListener("click", (event) => {
   if (event.target === backdrop) api.minimise();
 });
 document.addEventListener("keydown", (event) => {
-  if (event.key === "Escape" && host.dataset.mode === "choice") api.minimise();
+  if (event.key === "Escape" && ["choice", "ending"].includes(host.dataset.mode)) api.minimise();
 });
 
 document.body.append(host);

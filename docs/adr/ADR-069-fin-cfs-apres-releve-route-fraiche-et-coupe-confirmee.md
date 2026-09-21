@@ -98,3 +98,21 @@ visibles. L'affichage et le paquet de pose/rollback sont la prochaine préparati
 la séquence physique différée complète reste non qualifiée et le candidat
 non installé. Les incertitudes de reprise et d'ordre des signaux décrites dans
 la section historique précédente sont levées pour l'empreinte épinglée.
+
+
+## 21 septembre — raccordement UI et préparation de pose (document 86)
+
+L'état de fin passe par la porte de départ dans la lecture Bobines existante.
+La fin pendante/échouée prévaut sur `print_stats.complete`. Une observation
+illisible bloque, tandis qu'un module absent ou désactivé reste compatible avec
+l'installation précédente. La porte refuse avant tout effet SD/mapping, même
+après la sortie d'un callback échoué. Aucun acquittement ni retry physique ajouté.
+La fenêtre Mainsail reste réductible pour laisser accessibles les commandes
+ d'arrêt ; un échec la rouvre. L'écran Creality n'est pas modifié.
+
+La pose future est désactivée : sept fichiers figés, ajout d'include au dernier
+rang, backups exacts, redémarrage réel, remise du mesh existant et vérification
+froide. Le plan est une donnée revue, pas une autorisation ni un déployeur.
+Les empreintes du firmware doivent rester celles du document 85 ; les bases
+UI/porte du dépôt restent à comparer sur la machine. Aucun nouveau test chaud
+ni activation n'est qualifié par les tests de ce paquet.
