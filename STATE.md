@@ -1,6 +1,19 @@
 # STATE
 
-Last updated: 2026-09-15
+Last updated: 2026-09-21
+
+21 septembre. **Incident de fin après relève T1A → T1B expliqué en lecture seule
+(document 83) ; ADR-069 proposée, aucun correctif posé.** Le dernier fichier
+`10h37m` passe sur T1B le 18 à 16:29, atteint sa fin à 19:50, mais notre macro
+vise encore T1A. Le stock refuse aussi la coupe (`if_in_resume=True`) ; notre
+séquence poursuit le retrait puis `BOX_END` malgré la tête chargée. `key839`,
+travail finalement annulé le 21 à 09:22 après coupe/retrait manuels confirmés.
+Trois défauts de sélection reproduits hors machine ; 21 assertions historiques
+et 7 tests de lecture bornée verts, qui ne qualifient pas une correction.
+Six empreintes inchangées avant/après ; au dernier contrôle, chauffes zéro,
+axes libérés, tête détectée vide, aucune pause. Priorité : route fraîche,
+coupe confirmée et sortie sûre de reprise avant une nouvelle fin autonome.
+
 
 15 septembre, 19:00. **Audit de l'impression multicolore de 18:02 (document
 82) : fin propre en 42 s, ADR-067 validée sur une fin réelle ; zéro pause,

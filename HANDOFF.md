@@ -1,5 +1,24 @@
 # HANDOFF — index de reprise
 
+## 21 septembre — incident après relève T1A → T1B, diagnostic clos ; correction proposée
+
+Lire d'abord le document 83 et l'ADR-069 **proposée**. La fin validée le 15
+ne couvre pas la relève automatique : le 18, cache T1A obsolète, coupe refusée
+« In resume », rembobinage néanmoins demandé à A, tête encore chargée, puis
+`BOX_END`. Le `10h37m` a atteint `END_PRINT` ; l'historique reste ouvert
+jusqu'à l'annulation manuelle du 21. Thomas confirme avoir rembobiné T1B.
+
+Suite : construire hors imprimante une fin fondée sur la route fraîche,
+une coupe confirmée et un arrêt thermique garanti. Qualifier le prédicat
+stock `if_in_resume` et le résultat de coupe avant toute nouvelle séquence.
+Ni forcer T1B, ni désactiver la relève, ni remettre arbitrairement un attribut
+stock à zéro. Trois reproductions synthétiques privées, 21 assertions de fin
+et 7 tests de bornage verts ; aucun code de commande modifié, aucune pose.
+Capture privée `inventory/raw/20260921-cfs-end-incident/` ; les six empreintes
+contrôlées sont inchangées. Le `12h34m` existe dans l'historique mais plus au
+chemin G-code exact fourni. Les points du 15 ci-dessous restent historiques.
+
+
 ## 15 septembre, 19:00 — audit de l'impression de 18:02 (document 82) : fin propre en 42 s (ADR-067 validée), zéro pause, zéro silence du bus ; relances de chargement, 5 sur 6 depuis le CFS 1
 
 **Point de reprise, dans l'ordre :**
