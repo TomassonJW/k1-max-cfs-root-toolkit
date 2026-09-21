@@ -1,0 +1,50 @@
+{
+  "outcome": "CLOSED_KO_KEY849",
+  "installed_revision": "separated-end-v1",
+  "physical_validation": false,
+  "purge_user_confirmed": true,
+  "cut_contact_return_trigger_release_confirmed": true,
+  "route_target": "T1B",
+  "cfs_state": "RETRUDE_ERR6",
+  "cfs_status_hex": "0x19",
+  "error": "key849",
+  "rewind_user_observation": "no visible spool rewind; CFS flashing red",
+  "head_present_after": true,
+  "end_phase": "failed",
+  "pending": false,
+  "heater_targets": [
+    0,
+    0
+  ],
+  "klipper": "ready",
+  "emergency_stop": false,
+  "park_executed": false,
+  "retry_executed": false,
+  "position_xyz": [
+    38,
+    291.5,
+    7.1925731728224775
+  ],
+  "test_file_sha256": "2ea140ec213b783a08fe895d96b02dbfc1b54143ad4b663b25f3f30a64703024",
+  "offline_successor": "end-overlap-v2",
+  "successor_installed": false,
+  "tests_passed": 170,
+  "motor_comparison": [
+    {
+      "capture": "stock_R2",
+      "cfs_request_time": "2026-09-21T19:05:27.087000",
+      "estimated_monotonic_request": 365380.35965166596,
+      "nearest_sample_delta_seconds": 0.1586471670307219,
+      "extruder_velocity_mm_s": -2.0,
+      "head_detected": false
+    },
+    {
+      "capture": "separated_V1",
+      "cfs_request_time": "2026-09-21T22:22:08.998000",
+      "estimated_monotonic_request": 377182.45095649903,
+      "nearest_sample_delta_seconds": 0.3415493339416571,
+      "extruder_velocity_mm_s": 0.0,
+      "head_detected": true
+    }
+  ]
+}

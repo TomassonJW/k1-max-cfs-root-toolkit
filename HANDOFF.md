@@ -1,5 +1,18 @@
 # HANDOFF — index de reprise
 
+## 21 septembre — essai retrait séparé KO ; chevauchement corrigé hors imprimante
+
+Coupe/relâchement OK, tête restée au cutter, retrait T1B refusé key849/0x19 ;
+CFS rouge, aucun rembobinage visible, tête encore détectée chargée. Chauffes
+zéro, Klipper prêt, phase failed, sans M112 ni nouvel essai. V1 reste installé
+et verrouillé en échec. Le M400 ajouté après les deux rétractions supprimait
+le chevauchement des 15 mm lents avec le CFS : différence réelle confirmée.
+V2 corrige cet ordre localement, 170 tests ciblés verts avec une vraie file
+simulée et un témoin négatif V1. Non installé, pas encore de paquet de pose.
+Retrait officiel de récupération demandé ; résultat humain encore attendu.
+Lire [le document 92](docs/92-retrait-cfs-chevauchement-moteurs-v2.md).
+
+
 ## 21 septembre — retrait CFS séparé installé et actif, validation physique restante
 
 La mission « prépare puis installe directement, GO » est close côté pose :

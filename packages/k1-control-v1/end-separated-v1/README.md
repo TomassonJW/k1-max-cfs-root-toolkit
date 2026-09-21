@@ -1,3 +1,7 @@
+> Historique clos KO le 21 septembre : key849, chevauchement extrudeur/CFS
+> supprimé par une attente fautive. Ne pas poser ni rejouer V1. Voir document 92
+> et end-overlap-v2, actuellement hors imprimante.
+
 # Fin séparée CFS V1 — ADR-070
 
 Ce paquet remplace uniquement `kctrl_end.py` et sa configuration incluse.
