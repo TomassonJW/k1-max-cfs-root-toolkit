@@ -1,0 +1,114 @@
+{
+  "capture": "20260921-cfs-end-disabled-install",
+  "installed": true,
+  "enabled": false,
+  "physical_validation": false,
+  "rollback_used": false,
+  "payload_count": 7,
+  "preflight_paths_matched": 24,
+  "real_process_transition": true,
+  "events": [
+    "preflight_and_backups_verified",
+    "service_stop",
+    "process_absent_confirmed",
+    "seven_payloads_installed_include_last",
+    "service_start",
+    "new_process_ready",
+    "logical_geometry_restored_once",
+    "two_independent_validations_ok"
+  ],
+  "final_status": {
+    "webhooks": {
+      "state": "ready",
+      "state_message": "Printer is ready"
+    },
+    "print_stats": {
+      "state": "standby"
+    },
+    "pause_resume": {
+      "is_paused": false
+    },
+    "extruder": {
+      "target": 0.0,
+      "temperature": 27.5
+    },
+    "heater_bed": {
+      "target": 0.0,
+      "temperature": 26.3
+    },
+    "toolhead": {
+      "homed_axes": ""
+    },
+    "gcode_move": {
+      "homing_origin": [
+        0.0,
+        0.0,
+        -0.0,
+        0.0
+      ]
+    },
+    "bed_mesh": {
+      "profile_name": "",
+      "mesh_matrix": [
+        []
+      ]
+    },
+    "box": {
+      "enable": 1,
+      "state": "connect",
+      "T1": {
+        "state": "connect",
+        "filament": "None"
+      },
+      "T2": {
+        "state": "connect",
+        "filament": "None"
+      }
+    },
+    "kctrl_print_gate": {
+      "wrapped": 1,
+      "pending": 0,
+      "end": {
+        "enabled": false,
+        "phase": "disabled",
+        "reason": "",
+        "failure": "",
+        "thermal_failure": "",
+        "job_epoch": 0,
+        "pending": false,
+        "slot": null,
+        "physical_validation": false
+      }
+    },
+    "kctrl_end": {
+      "enabled": false,
+      "phase": "disabled",
+      "reason": "",
+      "failure": "",
+      "thermal_failure": "",
+      "job_epoch": 0,
+      "pending": false,
+      "slot": null,
+      "physical_validation": false
+    },
+    "filament_switch_sensor filament_sensor_2": {
+      "filament_detected": false
+    }
+  },
+  "http_hashes": {
+    "logic.js": "927de5ad17e04f69fd5e7f6a49e9a3b5d2bef152666d4bde9034be4d618ed4a8",
+    "bobines.js": "798621ae3e65405a6d51d8e1ab68e252c9c32bf7d43e51f1eeb0d2b41635ad7d",
+    "overlay.js": "575e771297e4dbff15214e05ae88e956bbfec0d75107669a152ad2628e73f7fe"
+  },
+  "overlay_tag": true,
+  "browser_validation": {
+    "bobines": "Au repos; aucune impression en attente",
+    "mainsail": "Standby; heater targets zero",
+    "actions_sent": false
+  },
+  "geometry_restore_commands": [
+    "BED_MESH_CLEAR",
+    "SET_GCODE_OFFSET_BASE Z=-0.000000000000 MOVE=0"
+  ],
+  "physical_commands_sent": false
+}

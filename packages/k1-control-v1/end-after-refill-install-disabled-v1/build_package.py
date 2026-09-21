@@ -68,13 +68,16 @@ def validate_cold(status, installed=False, reference=None):
         need(box.get(unit, {}).get('state') == 'connect'
              and box[unit].get('filament') == 'None', 'CFS route')
     mesh = status.get('bed_mesh', {})
-    need(mesh.get('profile_name') == MESH and bool(mesh.get('mesh_matrix')), 'mesh missing')
+    active = mesh.get('profile_name') == MESH and bool(mesh.get('mesh_matrix'))
+    cleared = mesh.get('profile_name') == '' and mesh.get('mesh_matrix') in ([], [[]])
+    need(active or cleared, 'mesh missing/unknown')
     origin = status.get('gcode_move', {}).get('homing_origin')
     need(isinstance(origin, list) and len(origin) >= 3
-         and abs(origin[2] - (-0.04)) < 1e-6, 'Z changed')
+         and abs(origin[2] - (-0.04 if active else 0.0)) < 1e-6, 'Z changed')
     if reference is not None:
         need(mesh['mesh_matrix'] == reference['bed_mesh']['mesh_matrix'], 'mesh changed')
-        need(origin == reference['gcode_move']['homing_origin'], 'origin changed')
+        need(len(origin) == len(reference['gcode_move']['homing_origin']) and all(
+            abs(a-b) < 1e-8 for a,b in zip(origin, reference['gcode_move']['homing_origin'])), 'origin changed')
     gate = status.get('kctrl_print_gate', {})
     need(gate.get('wrapped') == 1 and gate.get('pending') == 0, 'gate unavailable/busy')
     if installed:
@@ -129,7 +132,7 @@ def operation_plan(manifest):
         'backup_verification': 'Compare each .before to before_sha256; save mode/uid/gid and resolved destinations; abort BEFORE stop or replacement on mismatch.',
         'install': [SERVICE + ' stop'] + install + [SERVICE + ' start'],
         'restart_verification': 'Observe old Klipper process/socket disappearance, then new process and ready (60 s maximum); HTTP success alone is insufficient.',
-        'restore_mesh_once': 'BED_MESH_PROFILE LOAD=' + MESH,
+        'restore_mesh_once': 'Restore captured geometry only: active 11x11/-0.04 or cleared mesh/zero Z; MOVE=0, no probing.',
         'validate': {
             'payload_hashes': verify,
             'unchanged_hashes': {p: v for p, v in manifest['before'].items()
