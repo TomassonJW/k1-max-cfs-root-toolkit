@@ -1,5 +1,31 @@
 # HANDOFF — index de reprise
 
+## 21 septembre — correctif préparé et testé, aucune connexion ni installation
+
+Point de reprise actuel : [document 84](docs/84-correctif-fin-apres-releve-hors-imprimante-v1.md),
+[contrat candidat](packages/k1-control-v1/owned-start-print-v2/end-after-refill-candidate.md)
+et ADR-069 retenue hors imprimante. GO de Thomas consommé pour construction et
+validation locale uniquement. `kctrl_end.py` et sa configuration désactivée
+sont séparés des macros installées, qui restent inchangées.
+
+66 tests ciblés verts : relève interne A → B, deux CFS, reprise, preuves de
+coupe, température, annulation, délai, erreurs et absence de retry. Suite locale :
+1 532 réussis, 2 échoués préexistants, 2 échecs attendus, 55 sous-tests verts.
+Les deux échecs sont reproduits sur une copie de la base `6fd0f7e` ; la CI les
+connaissait déjà. Aucun test assoupli et aucun firmware constructeur publié.
+
+Suite recommandée : qualification à froid en lecture seule du firmware exact
+et de l'intégration ; isoler ce qui exigera ensuite une preuve physique.
+`do_resume_status=False` ne prouve pas encore le prédicat compilé `if_in_resume`.
+La disponibilité de tous les marqueurs cutter et l'affichage de la fin différée
+restent à traiter avant pose/activation. Le module n'arrête pas à lui seul un
+moteur CFS autonome déjà en marche. Le défaut de fin installé reste présent.
+Pas d'effet filament, de remise à zéro arbitraire du firmware ni de simple toggle
+`enabled: true`. Modèle conseillé : GPT-6 Astra/high ; Sol/high possible pour
+la collecte bornée, avec revue approfondie avant activation.
+
+Les entrées suivantes sont historiques.
+
 ## 21 septembre — incident après relève T1A → T1B, diagnostic clos ; correction proposée
 
 Lire d'abord le document 83 et l'ADR-069 **proposée**. La fin validée le 15

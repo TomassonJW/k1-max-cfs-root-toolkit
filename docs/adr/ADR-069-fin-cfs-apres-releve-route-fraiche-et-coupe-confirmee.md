@@ -1,7 +1,7 @@
 # ADR-069 — Fin CFS après relève : route fraîche, coupe confirmée, arrêt sûr
 
 - Date : 2026-09-21.
-- Statut : **proposée**, non implémentée, non déployée.
+- Statut : **retenue pour le candidat hors imprimante**, implémentée et testée ; désactivée, non déployée. GO de Thomas pour cette étape le 21 septembre. Qualification physique fermée.
 - Périmètre : fin normale et annulation après un travail CFS, en continuité d'ADR-067.
 - Preuves : [document 83](../83-fin-apres-releve-t1a-t1b-v1.md).
 
@@ -9,7 +9,7 @@
 
 Après la relève stock T1A → T1B du 18 septembre, notre fin conserve T1A. Le firmware refuse également la coupe en contexte de reprise. La macro ignore ce refus, demande le retrait d'A et appelle la fin stock malgré une tête encore chargée. La validation de la fin multicolore du 15 septembre ne couvrait pas ce cas.
 
-## Proposition
+## Décision pour le candidat hors imprimante
 
 Garder les primitives existantes qualifiées et ajouter un contrôle explicite de la fin dans le paquet `owned-start-print-v2`, sans nouveau service ni dépendance.
 
@@ -31,7 +31,7 @@ Garder les primitives existantes qualifiées et ajouter un contrôle explicite d
 ### 3. Finir sans cascade d'effets
 
 - Vérifier tête vide et route libérée après retrait. Si c'est acquis, exécuter uniquement la finalisation prévue et couper les chauffes.
-- Si coupe, retrait, transport ou lecture échoue : arrêt des chauffes garanti, fin incomplète explicitée, preuve d'erreur conservée ; ni deuxième tentative automatique ni `BOX_END` tête chargée.
+- Si coupe, retrait, transport ou lecture échoue : arrêt des chauffes demandé et consignes vérifiées, fin incomplète explicitée, preuve d'erreur conservée ; ni deuxième tentative automatique ni `BOX_END` tête chargée.
 - L'arrêt thermique doit s'exécuter même si une commande lève : du G-code de coupure placé après une commande susceptible d'échouer ne suffit pas. Utiliser une finalisation protégée et un délai d'arrêt indépendant du succès de la séquence.
 - Séparer le nettoyage des états et la fin du travail des opérations stock sur le filament. Vérifier les effets exacts des commandes conservées. Ne pas déclarer un retrait réussi parce que le G-code s'est terminé.
 
@@ -55,4 +55,24 @@ Puis revue du diff et du résultat de coupe sur le firmware exact ; paquet de po
 
 ## Conséquences
 
-Une fin ambiguë devient un arrêt sûr explicite au lieu d'un retrait deviné. Il faudra traiter l'affichage d'une finalisation différée si elle est retenue, pour ne pas afficher « terminé » avant la fin des opérations sur le filament. Aucun changement à la relève stock, au mesh, au Z ou à la garde du bus n'est proposé ici.
+Une fin ambiguë devient un arrêt sûr explicite au lieu d'un retrait deviné. La finalisation différée est retenue dans le candidat. Il faut encore raccorder son état à l'interface, pour ne pas afficher « terminé » avant la fin des opérations sur le filament. Aucun changement à la relève stock, au mesh, au Z ou à la garde du bus n'est proposé ici.
+
+
+## Résultat hors imprimante du 21 septembre
+
+Le [document 84](../84-correctif-fin-apres-releve-hors-imprimante-v1.md) et le
+[contrat du candidat](../../packages/k1-control-v1/owned-start-print-v2/end-after-refill-candidate.md)
+fixent l'implémentation : composant `kctrl_end`, aucun remplacement de commande
+si désactivé, attente après sortie du lecteur, confirmation par événements du
+cutter (ADR-041/044), route physique fraîche, retrait unique et arrêt thermique
+indépendant du verrou G-code. Le délai total vaut 180 s ; aucun drapeau de
+reprise n'est écrit. Une annulation pendant la fin coupe les chauffes avant
+l'attente du verrou, sous réserve du comportement Creality exact à qualifier.
+
+66 tests du candidat passent. La suite locale conserve deux échecs antérieurs,
+reproduits sur la base isolée `6fd0f7e` ; ils ne sont pas masqués. Le minuteur
+reste dépendant de la boucle Klipper et ne garantit pas l'arrêt immédiat d'un
+moteur CFS autonome. Le prédicat exact `if_in_resume`, la présence de tous les
+événements de coupe dans ce contexte, l'intégration complète et l'affichage
+avant fin réelle restent des conditions bloquantes de pose/activation.
+Aucune connexion K1 ni changement de la configuration installée dans cette étape.

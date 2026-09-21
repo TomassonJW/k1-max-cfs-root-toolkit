@@ -2,6 +2,19 @@
 
 Last updated: 2026-09-21
 
+21 septembre, suite autorisée. **Correctif ADR-069 construit et testé hors
+imprimante ; 66/66 tests ciblés, désactivé, aucune pose** (document 84).
+`kctrl_end.py` choisit la route CFS fraîche après relève, diffère la fin jusqu'à
+la sortie du lecteur, exige la preuve de coupe puis un retrait unique. Les
+chauffes sont coupées et contrôlées en cas d'erreur, avec un minuteur séparé
+du verrou G-code. Aucun nouvel effet sur la machine, aucune connexion K1.
+Suite complète : 1 532 réussis, deux échecs antérieurs reproduits sur `6fd0f7e`,
+deux échecs attendus et 55 sous-tests verts. Défaut installé toujours présent.
+Prochaine étape : qualification à froid en lecture seule du firmware exact
+(`if_in_resume`, événements cutter, intégration). Affichage de la fin différée
+à compléter avant activation ; pas de simple passage à `enabled: true`.
+Les entrées ci-dessous décrivent l'historique.
+
 21 septembre. **Incident de fin après relève T1A → T1B expliqué en lecture seule
 (document 83) ; ADR-069 proposée, aucun correctif posé.** Le dernier fichier
 `10h37m` passe sur T1B le 18 à 16:29, atteint sa fin à 19:50, mais notre macro

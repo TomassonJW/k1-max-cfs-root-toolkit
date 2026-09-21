@@ -1,5 +1,17 @@
 # Owned Start Print V2
 
+## Correctif de fin après relève — 21 septembre, hors imprimante
+
+Le [candidat ADR-069](end-after-refill-candidate.md) ajoute `kctrl_end.py` et
+une configuration séparée désactivée. Il résout la case réellement engagée,
+attend la sortie du lecteur et exige une coupe confirmée avant retrait.
+66 tests propres au correctif passent. **Non installé, non qualifié physiquement** :
+aucun include ni changement de la configuration de fin existante. Le défaut
+observé après T1A → T1B reste donc présent sur la K1. Voir le
+[document 84](../../../docs/84-correctif-fin-apres-releve-hors-imprimante-v1.md)
+pour les preuves, les deux échecs préexistants de la suite globale et la suite.
+Les instructions d'installation historiques ci-dessous ne valent pas pour ce candidat.
+
 ## Départ Orca corrigé le 5 septembre 2026
 
 Le modèle actif est `orca-machine-start.gcode` dans ce paquet. Le profil Orca
