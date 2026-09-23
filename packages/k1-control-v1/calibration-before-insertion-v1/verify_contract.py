@@ -58,7 +58,10 @@ def verify() -> dict[str, object]:
     required_doc_fragments = (
         "avant l'insertion",
         "Toute insertion est présumée laisser un résidu",
-        "ne repalpe pas",
+        # Thomas, 23 September 2026: probing with the filament engaged is
+        # allowed after a fresh cleaning confirmation, which any new
+        # extrusion voids. It replaced "le chemin ... ne repalpe pas".
+        "invalide la confirmation de propreté",
     )
     for fragment in required_doc_fragments:
         if fragment not in docs:
