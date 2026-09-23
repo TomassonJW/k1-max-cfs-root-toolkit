@@ -15,7 +15,7 @@ def finite(value):
 
 def decide_start(head, upstream, requested, engaged, attempted, homed,
                  attempt_has_head, attempt_is_current, end_pending=False):
-    """Decide before clearing caches, heating, homing, cutting or selecting Tn.
+    """Decide after fresh geometry, before any material effect or selection Tn.
 
     attempted is an attributable failed insert from this live process, never
     the next job's selection. Recovery remains provisional until feed proof.

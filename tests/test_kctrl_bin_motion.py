@@ -128,3 +128,14 @@ def test_non_bin_lowering_unchanged_and_ready_not_double_wrapped():
     assert adapter.originals['z_down'] == original
     machine.action.z_down(distance=2.)
     assert machine.position[2] == 52.
+
+
+@pytest.mark.parametrize('distance', [None, float('nan'), float('inf'), -1., True, '25'])
+def test_unknown_clearance_refused_before_stock_move(distance):
+    machine = Machine()
+    machine.action.go_to_extrude_pos = lambda: machine.action.z_down(distance=distance, absolute=True)
+    adapter = motion.KctrlBinMotion(machine)
+    adapter._ready()
+    with pytest.raises(RuntimeError, match='distance de bac invalide'):
+        machine.action.go_to_extrude_pos()
+    assert machine.events == []

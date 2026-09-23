@@ -10,9 +10,12 @@ filament engagé, route logique non finalisée. Aucun M112 ni restart.
 Thomas autorise maintenant le homing avec filament engagé après son nettoyage
 manuel à 150 °C et retour à la température de contact prévue. Aucun brossage
 fixe ; décrochage en Y et vitesses normales. Plateau >=30 mm jusqu'à la sortie
-du bac. Consignes actives corrigées ; 49 tests locaux des briques candidates
-verts. Le contrôle automatique a refusé le coordinateur complet ; aucune pose
-du nouveau départ. Mission encore active. Voir [document 98](docs/98-reprise-filament-engage-et-regles-corrigees.md).
+du bac. Après autorisation explicite d'écrire/tester l'intégration locale, le
+coordinateur et le candidat complet obtiennent 280 tests ciblés verts. La fin
+V3 et son include sont conservés ; six fichiers candidats sont figés avec leurs
+empreintes. Aucune pose du nouveau départ : le déployeur transactionnel,
+ses tests et les validations froides/physiques restent dus. Mission active.
+Voir [document 98](docs/98-reprise-filament-engage-et-regles-corrigees.md).
 
 ## 23 septembre — nouveau départ interrompu : key837 au chargement T1B
 

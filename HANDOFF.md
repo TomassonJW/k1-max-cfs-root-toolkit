@@ -1,6 +1,6 @@
 # HANDOFF — index de reprise
 
-## 23 septembre — priorité : nouvelles règles et reprise encore à intégrer
+## 23 septembre — priorité : reprise intégrée localement, pose encore à préparer
 
 Lire d'abord [document 98](docs/98-reprise-filament-engage-et-regles-corrigees.md)
 et ADR-071. Purge conservée confirmée physiquement ; vitesses lentes et trajet
@@ -8,9 +8,12 @@ latéral de cet essai rejetés. Nouvelle règle : nettoyage à 150 °C avec fila
 engagé autorisé, puis homing à la température de contact prévue. Pas de brossage
 fixe. Conserver le garde XYZ et le dégagement du bac >=30 mm jusqu'à sa sortie.
 
-Les 49 tests des briques candidates passent, mais leur orchestration complète
-a été refusée par le contrôle automatique et n'existe pas sur la machine.
-Ne pas annoncer le départ corrigé ou installer ces briques seules. Dernier
+Thomas a explicitement autorisé l'écriture/test local après le refus automatique.
+L'orchestration est écrite ; 280 tests ciblés sont verts. Six fichiers candidats
+et leurs empreintes sont construits, avec conservation de l'include de fin V3.
+Le déployeur transactionnel et ses tests restent à préparer, puis viennent
+préflight froid, pose et vérifications froides. Aucun nouveau départ installé.
+Ne pas annoncer le défaut initial résolu ou installer les briques seules. Dernier
 relevé : tête sortie X210 Y273 Z59,975, chauffes zéro, filament engagé ; route
 CFS logique encore vide. Avant une nouvelle palpation, nettoyage frais requis
 car la purge a suivi la précédente confirmation. La mission n'est pas close.

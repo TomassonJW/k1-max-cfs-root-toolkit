@@ -1,7 +1,7 @@
-# ADR-071 — Décider avant le homing et protéger mécaniquement le bac
+# ADR-071 — Identifier le filament, refaire les références et protéger le bac
 
-Statut : conception autorisée par Thomas le 23 septembre 2026 ; candidat en
-construction, **pas encore installé ni qualifié physiquement**.
+Statut : conception et intégration locale autorisées par Thomas le 23 septembre
+2026 ; candidat testé, **pas encore installé ni qualifié physiquement**.
 
 ## Besoin
 
@@ -17,9 +17,10 @@ La cause exacte de l'incident initial n'est pas prouvée par ce seul constat.
 
 ## Décision
 
-Un petit coordinateur de départ doit classifier l'état **avant** l'effacement
-des caches du travail précédent, `BOX_START_PRINT`, les chauffes, les références
-et Tn. Quatre chemins : tête vide ; bon filament conservé ; prise interrompue
+Un coordinateur identifie l'état **avant** `BOX_START_PRINT`, les chauffes,
+les références et Tn. Il conserve sa preuve de tentative indépendamment du
+cache de changement d'outil remis à zéro par la fin V3. Quatre chemins : tête
+vide ; bon filament conservé ; prise interrompue
 à terminer sans réinsertion ; changement d'une route connue vers une autre.
 Un souvenir de bobine sélectionnée n'est jamais une preuve de filament engagé.
 
@@ -35,7 +36,9 @@ La classification du filament avant le homing ne donne aucun droit de
 mouvement. Le contrôle XYZ de `decide_start` reste conservé et doit être appelé
 après la nouvelle référence. La future intégration doit en plus vérifier que
 le homing précis vient de terminer dans ce départ, pas seulement que les axes
-sont déclarés référencés. Cette intégration complète n'est pas encore écrite.
+sont déclarés référencés. L'intégration locale est écrite et testée : identité
+et fichier sont figés avant les effets, la commande de référence précise est
+observée, puis la décision est exécutée avant Tn. Aucun cache XYZ n'est forgé.
 
 Le courant E doit être restauré à la valeur configurée, puis relu avant toute
 prise/purge et au début du changement d'outil. Aucun courant supérieur à la
@@ -44,14 +47,15 @@ vérifié contre le binaire exact et par observation physique, pas seulement par
 les ordres E enregistrés.
 
 La reprise après prise interrompue reste provisoire jusqu'à la confirmation du
-trajet, de l'état CFS et du débit réel. L'erreur est effacée uniquement dans ce
-chemin identifié ; aucun chargement, cutter ou retry caché n'y est permis.
+trajet, de l'état CFS et du débit réel. L'erreur est effacée uniquement dans le
+chemin de filament conservé et identifié ; aucun chargement, cutter ou retry
+caché n'y est permis.
 Les états constructeur ne sont finalisés qu'après la preuve de prise.
 
 ## Invariant mécanique prioritaire demandé par Thomas
 
 Le plateau doit être descendu d'au moins **30 mm** lorsque la tête actionne le
-bac. Ce minimum vaut pendant l'entrée, la purge, les quatre mouvements de
+bac. Ce minimum vaut pendant l'entrée, la purge, les trois allers-retours de
 décrochage, les erreurs et la sortie. Une commande de remontée du plateau est
 refusée tant que la tête n'est pas sortie vers le couloir avant.
 
@@ -87,10 +91,11 @@ Tn de réinsertion, courant nominal rétabli, purge dédiée, alarmes réarmées
 sortie du bac avant remontée, changement ultérieur et fin existante préservés.
 Les tests simulés ne prouvent ni le débit ni la sécurité physique du bac.
 
-Le 23 septembre, 49 tests locaux de politique et de garde passent. Le contrôle
-automatique a refusé l'ajout du coordinateur complet, jugé insuffisamment
-validé même comme candidat local. Aucun module de démarrage complet n'a été
-créé ni posé. Voir le document 98 pour les preuves et le périmètre restant.
+Après le refus automatique initial, Thomas autorise explicitement l'écriture
+et les tests locaux. Le candidat intégré obtient 280 tests ciblés verts ; son
+manifeste conserve les empreintes et l'inclusion de fin V3. Aucune pose : le
+déployeur transactionnel et les validations froides/physiques restent dus.
+Voir le document 98 pour les preuves et le périmètre restant.
 
 ## Convention de nettoyage
 
@@ -101,7 +106,7 @@ le filament a été retiré. Elle n'autorise aucun mouvement simultané.
 
 ## Alternatives écartées
 
-- Un seul IF après Tn : trop tard pour éviter la coupe ou le homing.
+- Un seul IF après Tn : trop tard pour éviter la coupe et la réinsertion.
 - Capteur présent donc impression autorisée : ne prouve ni route ni prise.
 - Effacement systématique des erreurs et nouvelle tentative : perd la cause
   et peut répéter les efforts mécaniques.

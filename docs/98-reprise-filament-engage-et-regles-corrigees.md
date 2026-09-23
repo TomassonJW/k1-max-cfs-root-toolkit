@@ -1,4 +1,4 @@
-# 98 — Reprise avec filament engagé : faits, règles et correctif restant
+# 98 — Reprise avec filament engagé : intégration locale et validation restante
 
 Date : 23 septembre 2026. Mission active, **non terminée**. Aucun nouveau
 correctif de départ installé ; la fin `end-rewind-confirm-v3` reste en place.
@@ -83,16 +83,57 @@ la lenteur et doit être rétabli explicitement au bon moment.
    puis construire le paquet avec empreintes, sauvegarde, restauration exacte,
    validation froide et essai physique après nouveau nettoyage.
 
-Les fichiers présents dans `retained-start-v1` sont des briques candidates,
-pas un paquet installable. Les 49 tests couvrent la classification sous garde
-XYZ, le dégagement du bac, la sortie avant remontée, les mouvements diagonaux,
-les limites de débit et la conservation de la hauteur de retour constructeur.
-L'intégration du départ, sa validation complète et son déploiement restent dus.
+## Intégration locale écrite après autorisation explicite
 
-Le contrôle automatique a refusé un brouillon qui retirait trop tôt le contrôle
-XYZ ; ce contrôle est resté intact. Il a ensuite refusé l'ajout du coordinateur
-complet, jugé insuffisamment validé même comme candidat local. Cette action
-reste bloquée ; aucune exécution indirecte n'a contourné ce refus.
+Thomas a répondu « Oui, écrire et tester l'intégration locale » au refus du
+contrôle automatique. Cette autorisation a permis d'écrire et de tester le
+coordinateur. Le contrôle XYZ refusé dans un ancien brouillon reste intact.
+Le blocage d'écriture locale est levé ; aucune installation n'a été effectuée.
+
+`kctrl_start.py` observe la fin effective d'`ACCURATE_G28` pour ce départ.
+Des axes `xyz` hérités ne suffisent pas. Une annulation, perte de référence,
+modification du fichier ou erreur nouvelle ferme le chemin avec arrêt des
+chauffes, sans M112, déplacement compensatoire ou retry ajouté. Le courant E
+est restauré à sa configuration puis relu avant le chargement ou la purge.
+
+La décision conserve le bon filament et purge sans Tn. La tête vide ou un
+changement de bobine connue utilise le Tn existant, une fois. Les deux anciens
+chargements de secours après Tn sont retirés du candidat : une perte du capteur
+après la purge ne doit pas recharger silencieusement le chemin conservé.
+Les contrôles de présence, de pause, l'amorce et le réarmement de l'alarme
+restent au point existant ; la fin V3 reste intacte.
+
+La purge conserve le Z déjà plus bas ou vise une marge de 35 mm. Elle pousse
+140 mm à au plus 6 mm/s, limités par le filament choisi, vérifie le mode PRINT
+et la consommation du tampon, effectue trois allers-retours en Y, puis sort à
+Y273. La route et `last_cmd` sont finalisés uniquement après cette réussite.
+Le tampon ne prouve pas à lui seul que du filament sort de la buse : la
+qualification visuelle reste nécessaire.
+
+La vérification isolée du binaire exact confirme que ses méthodes peuvent
+être enveloppées sur l'instance. Elle révèle aussi une attente constructeur
+de 3600 s pour la lecture d'état : le candidat envoie la même requête de
+lecture, avec 2 s maximum et sans répétition. La lecture du tampon possède
+déjà ce délai de 2 s. Aucun moteur n'a été commandé par ces sondes isolées.
+
+**280 tests ciblés verts** : séquence intégrée avec faux Klipper/CFS, deux
+CFS, fichier à plusieurs filaments, absence d'attribution, homing manquant ou
+raté, annulation, courant incorrect, ACK perdu, tampon inconnu, limites de débit,
+garde mécanique, rendu Jinja, grammaire Python 3.8, et régressions des modules
+existants de fin, changement d'outil, pause et amorce. Ce résultat ne qualifie
+pas une nouvelle prise physique et n'isole pas encore la cause du key837 initial.
+
+Le constructeur local génère six fichiers candidats et leurs empreintes :
+cinq modules ajoutés, configuration de départ remplacée. Il reconstitue
+d'abord la configuration installée à son empreinte exacte, y compris
+`[include k1-control-owned-end-candidate.cfg]`, absent de l'ancienne source
+de base. Cette inclusion et le code V3 font l'objet d'un test de conservation.
+
+`manifest.json` décrit les fichiers protégés et la restauration exacte, mais
+indique **`installer_ready=false`, `installed=false`**. Restent : déployeur
+transactionnel et tests de restauration, préflight froid frais, installation
+et vérifications froides, puis essai après nouveau nettoyage manuel et présence
+de Thomas. Aucun nouveau GO d'écriture locale n'est nécessaire.
 
 ## Preuves
 

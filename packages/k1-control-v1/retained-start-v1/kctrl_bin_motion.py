@@ -5,6 +5,8 @@ absolute clearance it requests on entry, and exit forward before its restore.
 Never repair a rejected move or synthesize a homed position.
 """
 
+import math
+
 
 class KctrlBinMotion:
     def __init__(self, config):
@@ -61,7 +63,11 @@ class KctrlBinMotion:
             if args or kwargs.get('absolute') is not True:
                 raise self.printer.command_error('K1 Control: entree de bac stock non reconnue')
             kwargs = dict(kwargs)
-            kwargs['distance'] = max(35., float(kwargs['distance']))
+            distance = kwargs.get('distance')
+            if (type(distance) not in (int, float) or not math.isfinite(distance)
+                    or distance <= 0.):
+                raise self.printer.command_error('K1 Control: distance de bac invalide')
+            kwargs['distance'] = max(35., distance)
         return self.originals['z_down'](*args, **kwargs)
 
     def restore(self, *args, **kwargs):
