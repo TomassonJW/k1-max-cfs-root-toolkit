@@ -1,5 +1,22 @@
 # GATES
 
+## 23 septembre — nouveau départ interrompu : key837 au chargement T1B
+
+Le blocage de fin est bien levé, mais le démarrage suivant échoue à la prise.
+Deux signaux de prise et des avances E sont commandés ; le CFS signale toujours
+sa réserve pleine, coupe/recharge en interne, puis émet `key837`. Le message
+K1 Control « CFS qui abandonne » vient ensuite. Les capteurs détectent bien le
+filament ; `enabled=false` désarme seulement leur alarme. Le correctif de fin
+n'a pas été exécuté et les 22 empreintes attendues sont conformes.
+
+Diagnostic passif uniquement. Machine prête, fichier en erreur, chauffes zéro,
+tête chargée, aucune route CFS validée. Aucun arrêt d'urgence, redémarrage ou
+nouvel essai. La roue n'a pas été observée par Thomas : cause exacte de la
+prise inefficace encore inconnue, aucun réglage moteur modifié sur supposition.
+Lire [le document 97](docs/97-demarrage-t1b-key837-du-23-septembre.md) avant toute
+récupération. Réutiliser le collecteur existant pour un futur essai borné avec
+observation de la roue et du débit, sans rejouer le démarrage complet à l'aveugle.
+
 ## 23 septembre — fausse fin incomplète corrigée et blocage levé
 
 Après une impression complète de Thomas, retrait T1B confirmé physiquement et
