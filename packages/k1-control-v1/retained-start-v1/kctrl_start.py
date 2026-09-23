@@ -1,4 +1,4 @@
-"""Candidate start coordinator. Disabled by default; not yet installed.
+"""Start coordinator, enabled explicitly by the reviewed configuration.
 
 PLAN only records identity. REFERENCE_READY requires an observed successful
 ACCURATE_G28 after that plan. MATERIAL then owns the one conditional step:
@@ -72,6 +72,7 @@ class KctrlStart:
             raise self.printer.config_error('kctrl_start: stock handlers missing')
         originals = {name: handlers[name] for name in names}
         originals['run_stock'] = self.change.run_stock
+        originals['change'] = self.change.change
         replaced = []
         try:
             for name in names:
@@ -80,6 +81,7 @@ class KctrlStart:
                 handler = self._reference if name == 'ACCURATE_G28' else self._manual_effect(name)
                 self.gcode.register_command(name, handler)
             self.change.run_stock = self._stock
+            self.change.change = self._selection
             self.originals = originals
             self.gcode.register_output_handler(self._output)
         except Exception:
@@ -87,6 +89,7 @@ class KctrlStart:
                 self.gcode.register_command(name, None)
                 self.gcode.register_command(name, originals[name])
             self.change.run_stock = originals['run_stock']
+            self.change.change = originals['change']
             self.originals = {}
             raise
 
@@ -192,6 +195,58 @@ class KctrlStart:
             if (not head and now_head and now_upstream
                     and getattr(self.action, 'extrude_tnn', None) == plan['physical']):
                 self.attempt = {'slot': plan['physical'], 'has_head': True}
+
+    def _same_loaded_selection(self, index):
+        """Read-only proof that this T only repeats the active tool of this job.
+
+        Z after priming or a hop is not a layer number. A redundant selection
+        must preserve the target already commanded by the file, without
+        realigning a material record or entering the stock change sequence.
+        A different tool, missing proof, or inactive job uses the usual path.
+        """
+        if not self.enabled or self.phase != 'complete' or not self.run:
+            return False
+        try:
+            run = self.run
+            job, end = self._status('print_stats'), self._status('kctrl_end')
+            if (job.get('state') != 'printing' or job.get('filename') != run['filename']
+                    or end.get('pending') is not False or end.get('phase') != 'idle'
+                    or end.get('job_epoch') != run['epoch']
+                    or self._status('pause_resume').get('is_paused') is not False
+                    or not self.reference_valid):
+                return False
+            self._xyz()
+            if (self.printer.lookup_object('kctrl_slot_map').printing_file() != run['path']
+                    or file_identity(run['path']) != run['motion']['identity']):
+                return False
+            plan = self.change.resolve(index)
+            last = self.change.last
+            if (not plan or last.get('tool') != 'T%d' % index
+                    or last.get('outcome') not in ('start', 'done')
+                    or last.get('slot') != plan['physical']
+                    or self._route() != plan['physical']
+                    or self.action.box_save.last_cmd != plan['physical']
+                    or self._sensors() != (True, True)):
+                return False
+            nozzle = self._status('extruder')
+            return (str(self._status('box')['T' + plan['physical'][1]].get('mode')) == '2'
+                    and nozzle.get('can_extrude') is True
+                    and finite(nozzle.get('target')) and 150. <= nozzle['target'] <= 300.)
+        except Exception:
+            # This probe performed no effect. The existing wrapper remains
+            # responsible for reporting an invalid mapping or doing a change.
+            return False
+
+    def _selection(self, index, stock, gcmd):
+        if not self._same_loaded_selection(index):
+            return self.originals['change'](index, stock, gcmd)
+        try:
+            self._current()
+        except Exception as error:
+            self._fail(error)
+            raise gcmd.error('K1 Control: courant extrudeur non retabli (%s)' % error)
+        gcmd.respond_info('K1 Control: T%d deja actif sur %s, consigne du fichier conservee (%g C)'
+                         % (index, self.change.last['slot'], self._status('extruder')['target']))
 
     def adopt(self, gcmd):
         """Explicit operator attribution only; never commits a CFS cache."""
@@ -444,6 +499,8 @@ class KctrlStart:
                 'reference': self.reference, 'reference_valid': self.reference_valid,
                 'branch': self.run.get('branch') if self.run else None,
                 'slot': self.run.get('slot') if self.run else None,
+                'retained_attribution': self.adopted,
+                'selection_policy': 'preserve-active-tool-target-v1',
                 'revision': 'retained-start-v1', 'physical_validation': False}
 
 

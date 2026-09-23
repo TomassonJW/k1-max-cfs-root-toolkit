@@ -4,7 +4,9 @@
   "local_candidate": true,
   "installed": false,
   "physical_validation": false,
-  "installer_ready": false,
+  "installer_ready": true,
+  "installer_sha256": "0d2bb7c1badcf73fccd251ee4b1c3b3127677f0c773f30a4818f11c20e121453",
+  "selection_patch_sha256": "cfa256e2bddb6fabcf212fc0d03ab949ca1124bf7b4901ebf055acbfd5fa6cd0",
   "before": {
     "/usr/share/klipper/klippy/extras/kctrl_print_gate.py": "69578e579409b7c4d253acb8c680ceaeb25b60b40502732530a4a786e0966516",
     "/usr/data/k1-control-v1/current/www/bobines/logic.js": "927de5ad17e04f69fd5e7f6a49e9a3b5d2bef152666d4bde9034be4d618ed4a8",
@@ -63,7 +65,7 @@
       "name": "kctrl_start.py",
       "destination": "/usr/share/klipper/klippy/extras/kctrl_start.py",
       "before_sha256": null,
-      "sha256": "f17091fdbe236c70fef710688b50a465a65fd9d84972a526a6d49666fe4a9eb8"
+      "sha256": "d112cf29c7a215eb50068488b54a4fbf85386788a093901fa45d34223d964d8c"
     },
     {
       "name": "k1-control-owned-start-print-v2.cfg",
@@ -76,7 +78,6 @@
   "backup": "/usr/data/k1-control-v1/backups/retained-start-v1",
   "pending": [
     "fresh_cold_preflight",
-    "reviewed_transactional_installer",
     "cold_install_validation",
     "fresh_manual_clean_and_physical_trial"
   ],

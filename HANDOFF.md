@@ -1,6 +1,6 @@
 # HANDOFF — index de reprise
 
-## 23 septembre — priorité : reprise intégrée localement, pose encore à préparer
+## 23 septembre — reprise réelle réussie ; dernier delta de température posé
 
 Lire d'abord [document 98](docs/98-reprise-filament-engage-et-regles-corrigees.md)
 et ADR-071. Purge conservée confirmée physiquement ; vitesses lentes et trajet
@@ -9,14 +9,28 @@ engagé autorisé, puis homing à la température de contact prévue. Pas de bro
 fixe. Conserver le garde XYZ et le dégagement du bac >=30 mm jusqu'à sa sortie.
 
 Thomas a explicitement autorisé l'écriture/test local après le refus automatique.
-L'orchestration est écrite ; 280 tests ciblés sont verts. Six fichiers candidats
-et leurs empreintes sont construits, avec conservation de l'include de fin V3.
-Le déployeur transactionnel et ses tests restent à préparer, puis viennent
-préflight froid, pose et vérifications froides. Aucun nouveau départ installé.
-Ne pas annoncer le défaut initial résolu ou installer les briques seules. Dernier
-relevé : tête sortie X210 Y273 Z59,975, chauffes zéro, filament engagé ; route
-CFS logique encore vide. Avant une nouvelle palpation, nettoyage frais requis
-car la purge a suivi la précédente confirmation. La mission n'est pas close.
+L'orchestration et les déployeurs obtiennent 376 tests ciblés verts. Les six
+fichiers sont installés et deux validations froides confirment leurs empreintes,
+la fin V3 intacte, le mesh restauré et les références effacées. Sauvegarde :
+`/usr/data/k1-control-v1/backups/retained-start-v1`. Ne pas rejouer l'installation.
+Thomas confirme le nettoyage puis la purge, l'amorce, le carré et le retrait
+« impeccable ». Le test est terminé, fin V3 complète et libérée. Captures :
+`20260923-retained-start-print-v1`. Aucun M112. Une pause visuelle du fichier
+de test, puis son refroidissement d'attente, ne font pas partie du départ normal.
+
+Le T0 répétant le filament initial remontait de 195 à 200 °C parce que le Z
+relevé faussait la déduction de couche. Un delta d'un module est installé avec
+sauvegarde `/usr/data/k1-control-v1/backups/retained-start-temperature-v1` et
+double contrôle froid. Il conserve la consigne sur une sélection déjà confirmée
+du même outil, du même fichier et de la même route. Aucun vrai changement n'est
+court-circuité. Dernière preuve : `20260923-retained-start-temperature-v1`.
+Le maintien de température après ce delta reste à observer au prochain print.
+
+État final prêt, cibles zéro, tête vide, routes vides, fin idle, références
+effacées, même mesh et courant E nominal. Retirer le carré et nettoyer la buse
+avant le prochain homing. Ne pas rejouer la pose ni le fichier de test. La prise
+depuis une tête vide et la cause unique du key837 initial restent non isolées.
+Les presets de bobines demandés sont inscrits dans ROADMAP, sans modification UI.
 
 ## 23 septembre — nouveau départ interrompu : key837 au chargement T1B
 

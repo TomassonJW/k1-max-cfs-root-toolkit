@@ -1,7 +1,9 @@
-# Retained start V1 — intégration locale testée
+# Retained start V1 — reprise réelle validée, température corrigée à froid
 
-Statut : **candidat local testé, non installé**. Le déployeur transactionnel
-reste à préparer ; le manifeste indique `installer_ready=false`.
+Statut : **installé et validé à froid le 23 septembre 2026**. Le déployeur
+transactionnel est testé ; le manifeste indique `installer_ready=true`.
+Son champ statique `installed=false` n'est pas un reçu d'état distant : la
+preuve de pose est `inventory/raw/20260923-retained-start-install-v1/`.
 
 La nouvelle règle de Thomas autorise le homing avec filament engagé après
 nettoyage manuel confirmé à 150 °C, puis retour à la température de contact
@@ -23,7 +25,8 @@ Le prochain départ doit prouver un homing frais, pas réutiliser un Z supposé.
   est reproduit à son empreinte exacte avant transformation, **inclusion de
   fin V3 comprise**. Cinq modules ajoutés et une configuration remplacée.
 
-Validation : **280 tests ciblés verts**, comprenant les régressions de fin V3,
+Validation : **376 tests ciblés verts**, comprenant les deux poses/restaurations,
+les sélections répétées et les régressions de fin V3,
 changement d'outil, pause et amorce, le rendu Jinja et la grammaire Python 3.8.
 Les tests utilisent de faux objets et aucun transport imprimante. Une sonde
 distincte dans un processus isolé a confirmé les méthodes du binaire exact,
@@ -41,6 +44,25 @@ de la bobine physique. Le choix du prochain fichier ne peut pas la remplacer.
 Une prise ratée attribuable dans le même processus peut servir au départ
 suivant ; une coupe ou opération manuelle de filament invalide cette preuve.
 
-Il manque la pose/restauration transactionnelle, les contrôles à froid et la
-qualification physique après nettoyage frais. **Ne pas installer les briques
-séparément.** Lire ADR-071 et le document 98. La fin installée reste inchangée.
+`remote_install.py` vérifie les fichiers protégés, sauvegarde la configuration,
+ajoute les cinq modules et redémarre Klipper. Une erreur de copie/démarrage
+restaure les sources exactes ; une modification étrangère interdit ce rollback.
+Il remet le mesh et les offsets sans inventer de références XYZ. La validation
+indépendante après pose est verte ; la fin V3 reste inchangée.
+
+Thomas a confirmé le cycle réel complet : purge du filament T1B conservé,
+amorce, carré de deux couches et retrait. La fin V3 est complète et libérée.
+L'essai ne requalifie pas une nouvelle insertion depuis une tête vide.
+
+Le T0 après amorce déduisait à tort une couche ultérieure du relevage Z et
+remontait de 195 à 200 °C. `kctrl_start.py` conserve désormais la consigne sur
+une sélection déjà confirmée du même outil, avec preuve du travail, des caches,
+des capteurs et de la route. Les vrais changements gardent le chemin existant.
+`remote_selection_patch.py` a posé ce delta d'un fichier avec une sauvegarde
+séparée ; sa validation froide indépendante est verte. Aucune autre impression
+n'a été lancée après ce dernier delta.
+
+**Ne pas rejouer les poses ni installer les briques séparément.** Les reçus de
+la première pose décrivent sa première empreinte ; le delta suivant est dans
+`inventory/raw/20260923-retained-start-temperature-v1/`. Lire ADR-071 et le
+document 98 pour l'état final et les limites de preuve.

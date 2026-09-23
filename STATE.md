@@ -1,20 +1,35 @@
 # STATE
 
-## 23 septembre — purge conservée réussie ; règles révisées ; intégration non posée
+## 23 septembre — reprise et fin validées en réel ; température corrigée à froid
 
-Thomas confirme débit et boule décrochée après rétablissement du courant E
-nominal et du mode PRINT T1B. Aucun nouveau homing ; ancienne référence jugée
-incertaine pour imprimer. Dernier relevé : X210 Y273 Z59,975, chauffes zéro,
-filament engagé, route logique non finalisée. Aucun M112 ni restart.
+Le paquet `retained-start-v1` est posé : cinq modules ajoutés, configuration de
+départ remplacée, sauvegarde exacte et redémarrage du service Klipper. La pose
+puis une validation indépendante sont vertes ; même mesh et mêmes offsets,
+filament resté engagé, références effacées, fin V3 inchangée. Capture privée :
+`20260923-retained-start-install-v1`. Aucun mouvement ni chauffe pendant la pose.
 
 Thomas autorise maintenant le homing avec filament engagé après son nettoyage
 manuel à 150 °C et retour à la température de contact prévue. Aucun brossage
 fixe ; décrochage en Y et vitesses normales. Plateau >=30 mm jusqu'à la sortie
 du bac. Après autorisation explicite d'écrire/tester l'intégration locale, le
-coordinateur et le candidat complet obtiennent 280 tests ciblés verts. La fin
-V3 et son include sont conservés ; six fichiers candidats sont figés avec leurs
-empreintes. Aucune pose du nouveau départ : le déployeur transactionnel,
-ses tests et les validations froides/physiques restent dus. Mission active.
+coordinateur, les deux déployeurs et leurs régressions obtiennent 376 tests ciblés
+verts. Thomas confirme le cycle réel « impeccable » : homing frais, T1B conservé,
+purge et boule décrochée, amorce, deux couches et retrait normal. Fin V3
+`complete`, sans `rewind_not_confirmed`, chauffes coupées. Ne pas rejouer le test.
+
+Son observation révèle aussi le T0 redondant qui prend le relevage après amorce
+pour une couche ultérieure et remonte prématurément de 195 à 200 °C. Le delta
+`preserve-active-tool-target-v1`, limité à `kctrl_start.py`, est posé et validé
+indépendamment à froid. Une sélection déjà prouvée conserve la consigne courante
+sans alignement de fiche ni appel CFS. Un vrai changement conserve sa route.
+Ce dernier delta n'a pas fait l'objet d'une autre impression physique.
+
+État final : prêt/standby, chauffes zéro, tête détectée vide après retrait,
+aucune route CFS, deux unités connectées, fin au repos, même mesh 11 × 11,
+courant E nominal et références effacées. Avant le prochain print : retirer le
+carré et nettoyer la buse pour le nouveau homing. La prise depuis une tête vide
+n'a pas été requalifiée par cet essai conservant le filament ; la cause unique
+du key837 initial n'est pas isolée.
 Voir [document 98](docs/98-reprise-filament-engage-et-regles-corrigees.md).
 
 ## 23 septembre — nouveau départ interrompu : key837 au chargement T1B

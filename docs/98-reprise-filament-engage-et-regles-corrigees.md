@@ -1,9 +1,10 @@
 # 98 — Reprise avec filament engagé : intégration locale et validation restante
 
-Date : 23 septembre 2026. Mission active, **non terminée**. Aucun nouveau
-correctif de départ installé ; la fin `end-rewind-confirm-v3` reste en place.
+Date : 23 septembre 2026. **Reprise et fin validées en réel par Thomas.** Le
+dernier ajustement de température est testé et installé à froid, sans nouvel
+essai physique après ce delta. La fin `end-rewind-confirm-v3` reste inchangée.
 
-## Résultat physique
+## Résultat du diagnostic physique précédent
 
 Après rétablissement du courant extrudeur nominal (0,55 A configuré,
 0,561526 A relu) et passage explicite du CFS T1B en mode PRINT, une avance
@@ -63,7 +64,7 @@ La configuration machine autorise 800 mm/s et 20000 mm/s², mais le relevé
 après l'échec donne encore **500 mm/s²**. Cet héritage explique une partie de
 la lenteur et doit être rétabli explicitement au bon moment.
 
-## Périmètre de reprise proposé, à terminer avant installation
+## Périmètre de reprise installé
 
 1. Garder le déroulement de chauffe et de homing déjà installé, avec buse
    nettoyée, contact à 100 °C, stabilisation du plateau et chargement du profil.
@@ -88,7 +89,8 @@ la lenteur et doit être rétabli explicitement au bon moment.
 Thomas a répondu « Oui, écrire et tester l'intégration locale » au refus du
 contrôle automatique. Cette autorisation a permis d'écrire et de tester le
 coordinateur. Le contrôle XYZ refusé dans un ancien brouillon reste intact.
-Le blocage d'écriture locale est levé ; aucune installation n'a été effectuée.
+Le blocage d'écriture locale est levé. L'installation décrite ci-dessous a
+ensuite été réalisée sous l'autorisation persistante de la mission.
 
 `kctrl_start.py` observe la fin effective d'`ACCURATE_G28` pour ce départ.
 Des axes `xyz` hérités ne suffisent pas. Une annulation, perte de référence,
@@ -116,7 +118,7 @@ de 3600 s pour la lecture d'état : le candidat envoie la même requête de
 lecture, avec 2 s maximum et sans répétition. La lecture du tampon possède
 déjà ce délai de 2 s. Aucun moteur n'a été commandé par ces sondes isolées.
 
-**280 tests ciblés verts** : séquence intégrée avec faux Klipper/CFS, deux
+**376 tests ciblés verts** : séquence intégrée avec faux Klipper/CFS, deux
 CFS, fichier à plusieurs filaments, absence d'attribution, homing manquant ou
 raté, annulation, courant incorrect, ACK perdu, tampon inconnu, limites de débit,
 garde mécanique, rendu Jinja, grammaire Python 3.8, et régressions des modules
@@ -129,11 +131,91 @@ d'abord la configuration installée à son empreinte exacte, y compris
 `[include k1-control-owned-end-candidate.cfg]`, absent de l'ancienne source
 de base. Cette inclusion et le code V3 font l'objet d'un test de conservation.
 
-`manifest.json` décrit les fichiers protégés et la restauration exacte, mais
-indique **`installer_ready=false`, `installed=false`**. Restent : déployeur
-transactionnel et tests de restauration, préflight froid frais, installation
-et vérifications froides, puis essai après nouveau nettoyage manuel et présence
-de Thomas. Aucun nouveau GO d'écriture locale n'est nécessaire.
+`manifest.json` décrit les fichiers protégés et la restauration exacte avec
+`installer_ready=true`. Son champ statique `installed=false` caractérise le
+paquet avant application ; il ne remplace pas le reçu de pose distant.
+
+## Pose et contrôle indépendant à froid
+
+La capture `20260923-retained-start-install-v1` obtient successivement
+`PREFLIGHT_OK`, `INSTALLED_COLD_OK` et `VALIDATED_COLD_OK`. Cinq modules sont
+ajoutés, la configuration de départ est remplacée et les 22 autres fichiers
+protégés restent exacts. La sauvegarde est
+`/usr/data/k1-control-v1/backups/retained-start-v1` ; ne pas rejouer la pose.
+
+Un redémarrage du service Klipper a chargé les modules et effacé les références.
+Seuls le mesh et les offsets sont remis, sans mouvement et sans restaurer
+XYZ. Les deux capteurs détectent toujours le filament ; chauffes zéro et fin
+V3 au repos. Une validation séparée relit les empreintes, la sauvegarde, le
+mesh, les offsets et ces états.
+
+Les 44 nouveaux tests de pose couvrent les erreurs de copie et de démarrage,
+la restauration exacte, les fichiers étrangers, la sauvegarde corrompue et
+un arrêt de service incertain. Dans ce dernier cas le déployeur ne prétend
+pas connaître l'état du service et ne devine pas une relance.
+
+Thomas confirme ensuite la buse propre et sa présence. T1B est attribué avec
+`KCTRL_RETAINED_ADOPT`, sans trame CFS ni effet physique. Le fichier court
+`K1-retained-T1B-2layer-20260923.gcode` est lancé une seule fois via le choix
+normal des bobines. Il emploie la recette du premier filament du fichier Orca
+en échec : 195 °C première couche, 200 °C ensuite, plateau 55 °C, diamètre
+1,75 mm et débit maximal 23 mm³/s. Le départ normal est suivi de T0 puis d'un
+`PAUSE_BASE` de contrôle visuel, avant deux couches de 30 × 30 mm et la fin V3.
+Ce checkpoint appartient uniquement au fichier d'essai, pas aux impressions
+normales.
+
+## Essai réel terminé et confirmé
+
+Le homing précis est observé terminé (`reference=1`, valide) à la température
+de contact. La branche `recover` garde T1B. La purge se déroule à 6 mm/s de
+filament, avec courant nominal relu et CFS en mode PRINT. Au bac, la position Z
+après compensation vaut environ 34,976 mm, au-dessus du minimum physique de
+30 mm. La tête sort avant la remontée vers l'amorce ; aucun refus de la garde.
+
+Thomas confirme « oui impeccable » pour le débit et le décrochage, puis la ligne
+d'amorce. L'attente visuelle dépassant trois minutes, les chauffes sont coupées
+sans mouvement ni retrait. Après son retour, elles sont remises sans nouvelle
+palpation ; le carré de deux couches est imprimé et la fin V3 atteint `complete`,
+sans défaut ni opération restante. Thomas confirme le carré et le retrait :
+« oui impeccable, niquel ». La tête est détectée vide et la route T1B libérée.
+Aucun M112 n'a été envoyé.
+
+Cet essai qualifie la reprise avec le filament conservé, pas une nouvelle
+insertion depuis une tête vide. Le courant et le mode PRINT ont été rétablis
+ensemble : leur succès ne démontre toujours pas lequel était la cause unique
+du key837 initial.
+
+## Température : écart observé et delta installé
+
+Le fichier de test reprend 195 °C pour sa première couche et 200 °C pour les
+suivantes. La purge conserve le plancher de 200 °C déjà employé par le chemin
+constructeur, puis le départ remet 195 °C pour l'amorce. Le T0 du fichier appelle
+ensuite l'ancien calcul de couche fondé sur Z : le relevage à 2,36 mm fait choisir
+200 °C trop tôt. La reprise constructeur répète cette sélection et le carré a
+donc été imprimé à 200 °C malgré la remise préalable à 195 °C. Le maintien à
+195 °C n'est pas revendiqué comme qualifié par cet essai.
+
+Le delta `preserve-active-tool-target-v1` intercepte uniquement une sélection
+répétant un outil déjà confirmé : même travail et empreinte de fichier, époque,
+route actuelle, cache constructeur, dernier outil réussi, deux capteurs,
+références et mode PRINT cohérents. Dans ce cas, il vérifie le courant E et
+conserve la cible courante, sans appeler le changement constructeur ni aligner
+la fiche matériau. Un autre outil ou une preuve manquante conserve le chemin
+habituel. Les M104/M109 explicites du fichier restent libres de changer la cible.
+
+Les 27 tests de comportement ajoutés couvrent 195/200/215 °C, les relevages,
+les reprises après le délai initial, les deux CFS et les preuves invalidées.
+Les 25 tests de pose couvrent le delta d'un fichier et sa restauration. Pose
+puis validation indépendante : `TEMPERATURE_PATCH_INSTALLED_COLD_OK` et
+`TEMPERATURE_PATCH_VALIDATED_COLD_OK`. Sauvegarde séparée :
+`/usr/data/k1-control-v1/backups/retained-start-temperature-v1`. Aucun effet
+physique ; la preuve visuelle de ce dernier delta reste au prochain print.
+
+L'état final est prêt/standby, cibles zéro, références effacées, tête vide,
+routes vides, deux CFS connectés, fin idle, même mesh 11 × 11 et courant E
+nominal. Le carré et la buse nécessitent la préparation habituelle avant un
+nouveau homing. Les presets de bobines demandés sont consignés dans ROADMAP ;
+aucun nouvel écran ni réglage de température par bobine n'a été installé.
 
 ## Preuves
 
@@ -142,3 +224,27 @@ Captures privées : `inventory/raw/20260923-retained-start-v1/`, notamment
 `isolated-release-and-speed-probe-r2.stdout` et les images de fin de purge.
 Les traces du binaire utilisent de faux objets dans un processus isolé : elles
 ne sont ni des commandes machine ni une validation mécanique.
+
+Pose froide : `inventory/raw/20260923-retained-start-install-v1/`.
+Essai après nettoyage : `inventory/raw/20260923-retained-start-print-v1/`.
+Delta température : `inventory/raw/20260923-retained-start-temperature-v1/`.
+
+Le G-code de test est conservé dans la capture privée avec son empreinte
+`253b0ca06058c834976845a1ff12930421356fec481fe6b553456a9ea8477269`.
+Il a été retiré de l'imprimante après vérification de cette empreinte.
+
+## Fichiers et prochaine action
+
+Code et déploiement : `retained-start-v1/kctrl_start.py`, `remote_install.py`,
+`remote_selection_patch.py`, `build_candidate.py` et `manifest.json`.
+Tests ajoutés : `test_retained_start_install.py`,
+`test_retained_start_duplicate_selection.py`, `test_retained_start_selection_patch.py` ;
+test d'intégration adapté. Le README du paquet, AGENTS, STATE, HANDOFF, ADR-071
+et ROADMAP sont alignés sur le résultat et les limites ci-dessus.
+
+La prochaine action est humaine : retirer le carré, nettoyer la buse à 150 °C
+et lancer une impression normale avec son choix de bobines. Aucun modèle Codex
+n'est nécessaire pour ce geste. Pour la future mission de presets :
+`gpt-6-sol`, raisonnement `high`, convient à l'interface et aux règles de priorité
+thermique ; `gpt-6-luna` en `high` est une option économique pour une maquette UI
+seule, avec revue séparée des effets sur l'imprimante.

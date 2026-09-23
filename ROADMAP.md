@@ -1,5 +1,19 @@
 # ROADMAP
 
+## Évolution demandée le 23 septembre — presets de bobines
+
+Thomas souhaite une gestion simple dans la page Bobines de Mainsail : retrouver
+et appliquer des presets par marque, type de filament et couleur, puis régler
+les températures associées à une bobine connue. À concevoir dans une mission
+séparée ; aucune nouvelle UI n'est installée par le correctif de reprise.
+
+Le périmètre devra distinguer les températures des opérations manuelles
+(chargement, purge, retrait) de celles d'une impression : première couche et
+couches suivantes restent celles du fichier Orca, sauf dérogation explicitement
+demandée par l'utilisateur. Éviter qu'une fiche matériau partagée par plusieurs
+bobines ne modifie silencieusement les autres presets. Prévoir aperçu des
+valeurs appliquées, duplication, modification et restauration d'un preset.
+
 ## Pilotage rapide par grandes sessions
 
 Les quatre grands Goals de reprise sont regroupés dans `GOALS.md` :

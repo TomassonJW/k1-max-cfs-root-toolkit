@@ -55,13 +55,17 @@ def build():
             before[destination] = None  # must be freshly verified absent
         files.append({'name': name, 'destination': destination,
                       'before_sha256': before[destination], 'sha256': sha(payloads[name])})
+    installer = (PACKAGE / 'remote_install.py').read_text().encode('utf-8')
+    ast.parse(installer.decode('utf-8'), feature_version=(3, 8))
     manifest = {
         'schema': 1, 'name': 'retained-start-v1', 'local_candidate': True,
-        'installed': False, 'physical_validation': False, 'installer_ready': False,
+        'installed': False, 'physical_validation': False, 'installer_ready': True,
+        'installer_sha256': sha(installer),
+        'selection_patch_sha256': sha((PACKAGE / 'remote_selection_patch.py').read_text().encode('utf-8')),
         'before': before, 'files': files,
         'protected_end_sha256': before[END_DEST],
         'backup': '/usr/data/k1-control-v1/backups/retained-start-v1',
-        'pending': ['fresh_cold_preflight', 'reviewed_transactional_installer',
+        'pending': ['fresh_cold_preflight',
                     'cold_install_validation', 'fresh_manual_clean_and_physical_trial'],
         'rollback': ['stop_klipper_after_verified_idle', 'restore_exact_start_config_backup',
                      'remove_only_five_added_modules_if_their_hashes_match',
@@ -76,4 +80,4 @@ if __name__ == '__main__':
     manifest, payloads = build()
     (PACKAGE / 'k1-control-owned-start-print-v2.cfg').write_bytes(payloads['k1-control-owned-start-print-v2.cfg'])
     (PACKAGE / 'manifest.json').write_bytes((json.dumps(manifest, indent=2) + '\n').encode('utf-8'))
-    print('RETAINED_START_LOCAL_CANDIDATE_OK files=%d installed=false installer_ready=false' % len(manifest['files']))
+    print('RETAINED_START_LOCAL_CANDIDATE_OK files=%d installed=false installer_ready=true' % len(manifest['files']))

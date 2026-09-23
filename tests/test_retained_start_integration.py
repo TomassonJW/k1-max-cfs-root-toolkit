@@ -81,7 +81,7 @@ class Machine:
             'heater_bed': {'target': 55.},
             'pause_resume': {'is_paused': False},
             'print_stats': {'filename': 'job.gcode', 'state': 'printing'},
-            'kctrl_end': {'pending': False, 'job_epoch': 1},
+            'kctrl_end': {'pending': False, 'job_epoch': 1, 'phase': 'idle'},
             'filament_switch_sensor filament_sensor_2': {'filament_detected': head, 'enabled': False},
             'filament_switch_sensor filament_sensor': {'filament_detected': True},
             'tmc2209 extruder': {'run_current': .280763, 'hold_current': .280763},
@@ -98,7 +98,9 @@ class Machine:
         self.objects['kctrl_purge_guard'] = SimpleNamespace(
             get_status=lambda _: {'installed': True, 'bin_latched': self.envelope.latched})
         self.objects['kctrl_slot_map'] = SimpleNamespace(printing_file=lambda: str(self.path))
-        self.change = SimpleNamespace(run_stock=self.stock_wrapper, last={})
+        self.change = SimpleNamespace(run_stock=self.stock_wrapper, last={},
+            change=self.selection_wrapper,
+            resolve=lambda index: {'physical': 'T1B' if index == 0 else 'T2A'})
         self.objects['kctrl_tool_change'] = self.change
         self.action = SimpleNamespace(
             communication_set_box_mode=self.set_mode, send_data=self.send_data,
@@ -219,11 +221,16 @@ class Machine:
     def commands(self): return [event[1] for event in self.events if event[0] == 'gcode']
     def commits(self): return [event for event in self.events if event[0] == 'commit']
 
+    def selection_wrapper(self, index, stock, gcmd):
+        self.events.append(('selection', index))
+        return 'original-selection-result'
+
 
 def test_disabled_has_no_hooks_or_effects(tmp_path):
     m = Machine(tmp_path, enabled=False)
     assert m.events == [] and m.owner.originals == {}
     assert m.change.run_stock == m.stock_wrapper
+    assert m.change.change == m.selection_wrapper
     with pytest.raises(RuntimeError, match='disabled'): m.plan()
     assert m.events == []
 
@@ -286,6 +293,7 @@ def test_explicit_adoption_is_no_effect_and_only_purge_can_commit(tmp_path):
     m.data['print_stats']['state'] = 'error'
     m.owner.adopt(Gcmd(SLOT='T1B'))
     assert not m.events and m.action.box_save.last_cmd is None
+    assert m.owner.get_status()['retained_attribution'] == 'T1B'
     m.data['print_stats']['state'] = 'printing'
     m.referenced()
     m.finish()
@@ -484,6 +492,7 @@ def test_ready_registration_failure_rolls_back_all_handlers(tmp_path):
     with pytest.raises(RuntimeError, match='registration_failure'): m.owner._ready()
     assert m.ready_gcode_handlers == before and not m.owner.originals
     assert m.change.run_stock == m.stock_wrapper and m.events == []
+    assert m.change.change == m.selection_wrapper
 
 
 def test_file_limits_follow_selected_filament_and_reject_bad_data(tmp_path):
@@ -571,7 +580,7 @@ def test_candidate_preserves_the_installed_end_include_and_its_exact_code():
     assert manifest['before'][builder.END_DEST] == manifest['protected_end_sha256']
     assert sum(entry['before_sha256'] is None for entry in manifest['files']) == 5
     assert len(payloads) == len(manifest['files']) == 6
-    assert manifest['installed'] is manifest['installer_ready'] is False
+    assert manifest['installed'] is False and manifest['installer_ready'] is True
 
 
 def test_generated_candidate_and_manifest_are_current():

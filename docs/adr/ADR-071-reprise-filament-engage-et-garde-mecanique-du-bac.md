@@ -1,7 +1,7 @@
 # ADR-071 — Identifier le filament, refaire les références et protéger le bac
 
 Statut : conception et intégration locale autorisées par Thomas le 23 septembre
-2026 ; candidat testé, **pas encore installé ni qualifié physiquement**.
+2026 ; **reprise et fin validées en réel ; delta de température posé à froid**.
 
 ## Besoin
 
@@ -10,7 +10,7 @@ chargement n'est pas validé. Thomas demande une relance qui conserve ce
 filament, chauffe, purge au bac et imprime. Il demande aussi la correction de
 la prise initiale par l'extrudeur, sans masquer les défauts.
 
-Le démarrage installé palpe puis appelle Tn avant son test de présence. Ce test
+Avant ce correctif, le démarrage palpe puis appelle Tn avant son test de présence. Ce test
 ne protège donc ni la référence ni le changement d'outil. La pause diminue le
 courant E à environ 0,28 A ; le démarrage ne le restaure pas explicitement.
 La cause exacte de l'incident initial n'est pas prouvée par ce seul constat.
@@ -66,7 +66,7 @@ protection jusqu'à une sortie distincte à Y <= 280. Le parcours retenu sort à
 Y273 avant toute remontée. L'enveloppe initiale X175..220 / Y>=300 couvre le
 bac installé. Le décrochage candidat suit les sorties/retours Y291,5/Y305 à
 X185,5, observés dans le trajet constructeur. Aucun brossage fixe ni balayage
-latéral. Sa validation physique reste due.
+latéral. Thomas a confirmé le débit et le décrochage pendant le cycle réel.
 
 L'adaptateur candidat `kctrl_bin_motion.py` conserve le calcul constructeur de
 la descente et de la hauteur de retour ; il augmente à 35 mm la seule consigne
@@ -83,7 +83,7 @@ il ne justifie pas un M112 automatique après chaque échec de départ.
 Le chargement du correctif doit préserver le filament. Le Klipper exact coupe
 les moteurs au restart : les références seront explicitement perdues, puis
 refaites après nettoyage confirmé. Aucune ancienne coordonnée ne sera restaurée.
-La pose future exige sauvegardes, empreintes, rollback et vérification réelle.
+La pose exige sauvegardes, empreintes, rollback et vérification réelle.
 
 Les tests doivent couvrir le parcours complet et les erreurs avant de poser :
 ordre des décisions, tête conservée après échec, homing frais puis absence de
@@ -92,10 +92,25 @@ sortie du bac avant remontée, changement ultérieur et fin existante préservé
 Les tests simulés ne prouvent ni le débit ni la sécurité physique du bac.
 
 Après le refus automatique initial, Thomas autorise explicitement l'écriture
-et les tests locaux. Le candidat intégré obtient 280 tests ciblés verts ; son
-manifeste conserve les empreintes et l'inclusion de fin V3. Aucune pose : le
-déployeur transactionnel et les validations froides/physiques restent dus.
+et les tests locaux. Le candidat intégré et ses déployeurs obtiennent 376 tests
+ciblés verts ; le manifeste conserve les empreintes et l'inclusion de fin V3.
+La pose puis la validation indépendante sont vertes dans la capture
+`20260923-retained-start-install-v1`. Les références sont effacées, le filament
+est préservé, le même mesh et les mêmes offsets sont remis sans mouvement.
+L'essai réel après nouveau nettoyage est terminé et confirmé par Thomas :
+purge conservée, amorce, deux couches et retrait normal. Ne pas rejouer la pose.
 Voir le document 98 pour les preuves et le périmètre restant.
+
+## Sélection répétée et température après l'amorce
+
+Le cycle réel révèle que le T0 suivant START_PRINT interprète le relevage de
+tête comme une couche ultérieure et remonte trop tôt de 195 à 200 °C. Le delta
+limité au coordinateur conserve la consigne du fichier lorsqu'un T répète
+l'outil déjà confirmé dans ce même travail, avec caches, capteurs et route
+cohérents. Il n'entre pas dans le changement stock ni dans l'alignement de la
+fiche matériau ; les vrais changements et les M104/M109 restent inchangés.
+La pose et son contrôle indépendant sont verts à froid. Son effet thermique
+réel reste à observer lors de la prochaine impression, sans rejouer le test.
 
 ## Convention de nettoyage
 

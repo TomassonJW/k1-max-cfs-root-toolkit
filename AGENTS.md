@@ -36,7 +36,10 @@ pour les commandes stock, les récupérations, les erreurs et les annulations.
 Viser une marge (35 mm minimum dans le nouveau candidat), conserver un plateau
 déjà plus bas, sortir d'abord vers Y273 à hauteur constante, puis seulement
 autoriser une remontée. Vérifier les coordonnées physiques après offsets/mesh.
-Voir ADR-071 ; sa garde logicielle est en préparation, pas encore installée.
+Voir ADR-071 ; sa garde logicielle est installée. Thomas a validé le cycle réel
+de reprise et de fin du 23 septembre. Le dernier delta de température est testé
+et posé à froid ; lire le document 98 et l'état frais avant toute suite, sans
+rejouer la pose ou le fichier d'essai.
 
 Thomas chauffe manuellement à 150 °C pour nettoyer la buse. Traiter cette
 consigne comme un indice de nettoyage manuel en cours, pas comme une panne,
