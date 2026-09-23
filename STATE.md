@@ -1,5 +1,19 @@
 # STATE
 
+## 23 septembre — purge conservée réussie ; règles révisées ; intégration non posée
+
+Thomas confirme débit et boule décrochée après rétablissement du courant E
+nominal et du mode PRINT T1B. Aucun nouveau homing ; ancienne référence jugée
+incertaine pour imprimer. Dernier relevé : X210 Y273 Z59,975, chauffes zéro,
+filament engagé, route logique non finalisée. Aucun M112 ni restart.
+
+Thomas autorise maintenant le homing avec filament engagé après son nettoyage
+manuel à 150 °C et retour à la température de contact prévue. Aucun brossage
+fixe ; décrochage en Y et vitesses normales. Plateau >=30 mm jusqu'à la sortie
+du bac. Consignes actives corrigées ; 49 tests locaux des briques candidates
+verts. Le contrôle automatique a refusé le coordinateur complet ; aucune pose
+du nouveau départ. Mission encore active. Voir [document 98](docs/98-reprise-filament-engage-et-regles-corrigees.md).
+
 ## 23 septembre — nouveau départ interrompu : key837 au chargement T1B
 
 Le blocage de fin est bien levé, mais le démarrage suivant échoue à la prise.

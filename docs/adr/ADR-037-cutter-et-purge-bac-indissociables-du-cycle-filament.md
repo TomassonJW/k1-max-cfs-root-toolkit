@@ -2,8 +2,15 @@
 
 Date : 2026-08-31
 
-Statut : **acceptée ; ADR-036 partiellement remplacée ; toute nouvelle action
-filament reste fermée jusqu'au successeur intégré hors imprimante**
+Révision du 23 septembre 2026 : le décrochage courant utilise les sorties et
+retours dans l'axe Y du bac, sans nettoyage sur une brosse fixe. Plateau à au
+moins 30 mm jusqu'à la sortie. Le homing avec filament engagé est autorisé
+après nettoyage manuel confirmé et à la température de contact configurée.
+
+Statut de la campagne du 31 août : **acceptée ; ADR-036 partiellement remplacée ;
+activation alors fermée jusqu'au successeur intégré hors imprimante**.
+Les effets de la mission actuelle relèvent de son autorisation explicite et
+des règles physiques révisées ci-dessus.
 
 ## Contexte
 
@@ -37,17 +44,14 @@ Les frontières suivantes deviennent indissociables :
    vérification des deux capteurs.
 2. **Chargement** : route et température explicites, chargement, vérification
    des deux capteurs, puis purge immédiate dans le vrai bac.
-3. **Décrochage** : après la purge, exécuter `3 à 4` allers-retours francs sur
-   le mécanisme du bac. Le trajet part des coordonnées déjà qualifiées : purge
-   autour de `X185,5 Y305 Z30`, approche sûre par `X203 Y273 Z32`, puis carré
-   `X203..206 / Y304..305 / Z32`. La cadence exacte du successeur devra rester
-   dans l'enveloppe physique déjà qualifiée et être relue avant pose.
+3. **Décrochage** : sorties/retours francs du bac dans l'axe Y, à X de purge
+   constant. Aucun nettoyage sur une brosse fixe. Plateau à au moins 30 mm,
+   avec marge, jusqu'à la sortie distincte vers Y273.
 4. **Preuve** : une image caméra nette doit confirmer que la boule est tombée
    et que rien ne pend sous la buse. Une phase logicielle ou un capteur filament
    ne remplace pas cette preuve.
-5. **Géométrie** : aucune référence Z, palpation ou calibration de mesh n'a lieu
-   après insertion, chargement ou purge. Toutes les mesures de contact sont
-   terminées avec buse propre avant cette frontière.
+5. **Géométrie** : buse fraîchement nettoyée et température de contact prévue.
+   Le filament peut rester engagé pendant le homing et la palpation.
 
 Le cas « bon filament déjà engagé et conservé » reste distinct : il ne va pas
 au cutter et ne retire pas le filament, mais il exige quand même une purge de
@@ -90,6 +94,6 @@ stock.
   `20260831-132914-g4-k1-control-cfs-direct-owner-physical-load-unload-v1` ;
 - résultat :
   `packages/k1-control-v1/cfs-direct-owner-physical-load-unload-v1/RESULT.md` ;
-- géométrie du bac : `CLEAN-MOTION-V1`, verdict humain `E4 OK` ;
+- géométrie courante du bac : ADR-071 ;
 - caméra : `docs/49-pilotage-camera-simple-et-autonome-v1.md` ;
-- ordre calibration/insertion : ADR-034.
+- propreté avant contact : ADR-045 révisée.

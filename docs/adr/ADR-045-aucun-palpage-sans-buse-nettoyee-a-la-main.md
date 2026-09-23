@@ -1,7 +1,7 @@
 # ADR-045 — Aucun palpage Z ni calibration sans buse nettoyée à la main
 
 Date : 2026-09-01
-Statut : accepté, contraignant, sans dérogation
+Statut : accepté ; condition filament révisée par Thomas le 23 septembre 2026
 Cible matérielle : Creality K1 Max, S12 structure 0, kit CFS.
 
 ## Règle
@@ -16,9 +16,10 @@ Sont concernés, sans exception :
 - `CX_PRINT_LEVELING_CALIBRATION` ;
 - toute séquence de démarrage d'impression qui contient l'un des précédents.
 
-Le nettoyage manuel implique que le filament soit **rétracté** au préalable :
-une buse ne peut pas être nettoyée proprement avec du filament engagé, et du
-filament en bord de buse fausse les mesures.
+Thomas nettoie à 150 °C avec une pince puis une brosse tenue à la main. Le
+filament peut rester engagé pendant ce nettoyage et le homing. Après sa
+confirmation, revenir à la température de contact configurée (100 °C dans le
+démarrage actuel) avant de palper. La chauffe seule ne vaut pas confirmation.
 
 ## Pourquoi
 
@@ -38,8 +39,8 @@ paquet `owned-start-print-v2`). Il n'existe donc **aucun** substitut automatique
 
 ## Conséquences opérationnelles
 
-1. Ordre imposé avant toute calibration : retrait du filament, puis nettoyage
-   manuel, puis seulement la chauffe et le palpage.
+1. Avant toute calibration : nettoyage manuel, stabilisation thermique prévue,
+   puis palpage. La présence de filament ne commande aucun retrait.
 2. Un agent ne lance jamais une calibration ou un palpage de sa propre
    initiative. Il annonce l'opération, attend la confirmation explicite de
    nettoyage, et seulement ensuite exécute.

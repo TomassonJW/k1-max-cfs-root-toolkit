@@ -1,10 +1,10 @@
 # Pilotage caméra simple et autonome V1
 
-> Mise à jour du 30 août 2026 : la caméra ne peut pas rendre sûre une palpation
-> après insertion. Toute insertion est présumée laisser un résidu ; les
-> calibrations et références par contact doivent être terminées avant le
-> chargement. Voir ADR-034. R3 reste une preuve froide historique et ne doit
-> jamais être posé ni exécuté.
+> Décision de Thomas du 23 septembre 2026 : nettoyage manuel à 150 °C,
+> filament engagé autorisé, puis homing après confirmation fraîche et retour
+> à la température de contact configurée (100 °C actuellement). La propreté,
+> et non l'absence de filament, conditionne la palpation. Aucun nettoyage sur
+> une brosse fixe. R3 reste une preuve froide historique, pas une recette à rejouer.
 
 Statut : **règle canonique ; pilote minimal validé, bibliothèque limitée à
 `SAFE_IDLE_PARK`**.
@@ -79,19 +79,20 @@ doute. Le LiDAR n'est ni requis ni recommandé à ce stade.
 
 - image fraîche avant tout essai physique et à chaque arrêt caméra du futur
   candidat ;
-- toutes les palpations terminées avec buse propre avant toute insertion ;
-- purge dans le vrai bac et mouvement E4 de décrochage seulement après les
-  références et mesures de contact ;
+- buse fraîchement nettoyée et température de contact prévue pour toute palpation ;
+- purge dans le vrai bac, décrochage par sorties/retours dans l'axe Y,
+  sans brossage fixe ; plateau descendu d'au moins 30 mm jusqu'à la sortie ;
 - seconde image après la ligne hors plateau et avant le modèle ;
 - surveillance caméra de la première couche avec annulation immédiate au défaut ;
-- aucun retry automatique après un effet incertain ;
+- aucun retry automatique après un effet incertain ; une image inconclusive
+  bloque l'action suivante, sans M112 automatique en l'absence de danger concret ;
 - aucun essai chaud avec R3, même après remise en état.
 
-Les détails du correctif sont figés par ADR-034 et le paquet
-`calibration-before-insertion-v1`. ADR-033 et R3 sont conservés comme preuves
-historiques de l'ordre rejeté.
+Les règles courantes figurent dans ADR-045 révisée et ADR-071. ADR-034,
+ADR-033, R3 et le paquet `calibration-before-insertion-v1` sont conservés
+comme preuves historiques ; ils ne définissent pas le démarrage courant.
 
-## Validation froide acquise
+## Historique de validation froide — ne pas rejouer comme consigne courante
 
 Le pilote minimal et R3 sont validés sans effet. Le pilote résout l'adresse par
 la configuration locale de `k1max-root`, fait uniquement un `GET` caméra,

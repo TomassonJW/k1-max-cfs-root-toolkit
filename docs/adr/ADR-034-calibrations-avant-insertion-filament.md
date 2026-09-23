@@ -1,5 +1,11 @@
 # ADR-034 — Terminer les palpations avant l'insertion du filament
 
+**Remplacée le 23 septembre 2026 sur la condition filament.** Thomas autorise
+le nettoyage manuel à 150 °C et le homing avec filament engagé. La règle active
+est ADR-045 révisée : confirmation fraîche de propreté, puis température de
+contact configurée. Le texte ci-dessous est le compte rendu de la décision
+historique, sans autorité sur le démarrage courant.
+
 ## Contexte
 
 Le 30 août 2026, Thomas a terminé les trois gestes demandés : buse nettoyée,

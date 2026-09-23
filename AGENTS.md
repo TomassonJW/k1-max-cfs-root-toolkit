@@ -6,6 +6,42 @@ Build a reproducible, evidence-driven and reversible way to diagnose and improve
 
 The printer is production hardware. It is never treated as a disposable sandbox.
 
+## Décisions courantes de Thomas — 23 septembre 2026
+
+Ces décisions remplacent les règles anciennes sur les trois points suivants.
+Les comptes rendus datés plus bas sont des preuves historiques, pas des
+instructions à rejouer.
+
+- Nettoyage manuel à 150 °C avec pince et brosse tenue à la main, filament
+  engagé autorisé. Après confirmation fraîche, homing XYZ autorisé avec ce
+  filament ; revenir à la température de contact configurée (100 °C actuellement).
+- Aucun nettoyage automatique sur une brosse fixe. Le décrochage utilise les
+  sorties/retours du bac dans l'axe Y, sans ancien balayage latéral.
+- Déplacements libres aux vitesses normales vérifiées. Les lenteurs d'un
+  diagnostic ne deviennent pas les vitesses de production. Restaurer et vérifier
+  courant extrudeur et limites de mouvement après pause ou échec.
+
+Une nouvelle extrusion invalide la confirmation de propreté pour un autre
+palpage. En cas de doute sur les références, les refaire ; ne jamais déclarer
+une ancienne position valide par SET_KINEMATIC_POSITION. La protection mécanique
+du bac ci-dessous demeure impérative.
+
+## Priorité mécanique — bac de purge, 23 septembre 2026
+
+Thomas impose un plateau descendu d'au moins **30 mm** avant toute entrée de
+la tête dans le bac, pendant la purge et le décrochage. Ne jamais remonter le
+plateau tant que la tête n'a pas quitté cette zone : le mécanisme du bac passe
+au-dessus du plateau et peut provoquer une collision grave. Cette règle vaut
+pour les commandes stock, les récupérations, les erreurs et les annulations.
+Viser une marge (35 mm minimum dans le nouveau candidat), conserver un plateau
+déjà plus bas, sortir d'abord vers Y273 à hauteur constante, puis seulement
+autoriser une remontée. Vérifier les coordonnées physiques après offsets/mesh.
+Voir ADR-071 ; sa garde logicielle est en préparation, pas encore installée.
+
+Thomas chauffe manuellement à 150 °C pour nettoyer la buse. Traiter cette
+consigne comme un indice de nettoyage manuel en cours, pas comme une panne,
+une confirmation que le nettoyage est terminé ou une permission de mouvement.
+
 ## Pilotage caméra canonique
 
 Lire `docs/49-pilotage-camera-simple-et-autonome-v1.md` avant toute nouvelle
@@ -14,16 +50,12 @@ phase Klipper ne prouve ni l'emplacement de la purge, ni le décrochage de la
 boule, ni la bonne hauteur de première couche. Codex capture et compare les
 images, pilote l'arrêt et ne demande à Thomas que les vrais gestes manuels.
 Le pilote caméra minimal et les `16` blocs Jinja de R3 ont été validés à froid,
-sans effet. Cette validation reste historique : ADR-034 interdit maintenant de
-poser ou d'exécuter R3, car cette séquence purgeait du filament avant une
-palpation Z précise. Le LiDAR n'est pas requis.
+sans effet. Cette validation reste historique et ne rend pas R3 exécutable.
+Les règles courantes de propreté et de palpation figurent ci-dessus.
+Le LiDAR n'est pas requis.
 
-Mise à jour prioritaire du 30 août 2026 : toute insertion de filament est
-présumée laisser un résidu sur la buse. Dans la version finale, toute référence
-Z précise, tout mesh et toute autre palpation par contact doivent être terminés
-avec buse propre **avant** l'insertion. Une impression qui conserve un filament
-déjà engagé ne repalpe pas ; si une nouvelle palpation devient nécessaire, elle
-doit d'abord sortir de ce chemin, désengager, nettoyer, palper, puis réinsérer.
+Compte rendu historique du 30 août 2026 : les conditions de nettoyage et de
+palpation sont désormais celles de la décision du 23 septembre ci-dessus.
 Thomas a confirmé avoir nettoyé la buse et le plateau, réengagé `T1A` avec la
 fonction officielle, puis renettoyé la buse après cette insertion. Il a ensuite
 remis le meilleur `11 × 11` en un clic dans Mainsail ; une unique lecture
@@ -64,8 +96,8 @@ rollback a restauré l'état désactivé exact. Les deux capteurs restent actifs
 le filament initial est toujours engagé. Thomas a rappelé la frontière physique
 canonique, désormais fixée par ADR-037 : avant tout retrait, placer la tête au
 cutter et couper ; après tout chargement, purger dans le vrai bac, exécuter `3
-à 4` allers-retours francs de décrochage, puis exiger une preuve caméra. Aucun
-palpage ou mesh après insertion. Ne plus proposer ni exécuter de chargement ou
+à 4` allers-retours francs de décrochage, puis exiger une preuve caméra. Les
+conditions de palpation sont révisées le 23 septembre. Ne pas exécuter de chargement ou
 retrait physique isolé de cette chorégraphie complète. La suite unique est un
 successeur intégré construit et validé hors imprimante avant tout nouvel effet.
 
@@ -850,10 +882,11 @@ passées.
 
 ## Nozzle rule — no probing without a hand-cleaned nozzle
 
-No Z probing, no mesh calibration and no print start may run until Thomas has
-cleaned the nozzle by hand and said so. Cleaning by hand requires the filament
-to be retracted first. The automatic brush never worked on this machine and was
-removed from the owned start sequence, so no automatic substitute exists.
+No Z probing, mesh calibration or print start may run until Thomas has cleaned
+the nozzle by hand and confirmed it. Since his explicit decision of 23 September,
+cleaning at 150 C and homing with retained filament are allowed. Return to the
+configured contact temperature before probing. Automatic fixed-brush cleaning
+is excluded; a purge invalidates the earlier cleanliness confirmation.
 
 A measurement taken on a dirty nozzle is not a degraded measurement, it is a
 false one, and it propagates into a persistent profile. An agent announces the
