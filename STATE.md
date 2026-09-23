@@ -1,5 +1,13 @@
 # STATE
 
+## 24 septembre, 01:01 — reprise automatique bornée en service (ADR-073)
+
+Surveillant externe à Klipper lancé au repos dans `/tmp` de la K1 : en pause
+stable d'au moins 60 s, G-code libre, axes `xyz`, après 300 s d'impression,
+il envoie `RESUME`, au plus 15 fois espacées de 150 s. Aucun module, restart,
+départ ou fin touché. Tests 6/6, lecture réelle et survie à la session SSH
+vérifiées. Non prouvé sur un vrai `key837`. [Document 100](docs/100-reprise-automatique-de-nuit.md).
+
 ## 24 septembre — reprise après changement raté : blocage corrigé et posé
 
 Le 23 septembre au soir, après un changement de filament raté (`key837`) en
