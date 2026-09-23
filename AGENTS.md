@@ -6,6 +6,13 @@ Build a reproducible, evidence-driven and reversible way to diagnose and improve
 
 The printer is production hardware. It is never treated as a disposable sandbox.
 
+## Impression en cours — règle du 24 septembre 2026
+
+Jamais de pose de module, de redémarrage de Klipper ou de service pendant une
+impression, même en pause : le redémarrage coupe les moteurs et perd la pièce.
+Toute pose attend le repos, revérifié juste avant l'arrêt. Les rechargements
+de reprise `T1A`..`T4D` sont protégés par ADR-072 (document 99).
+
 ## Décisions courantes de Thomas — 23 septembre 2026
 
 Ces décisions remplacent les règles anciennes sur les trois points suivants.

@@ -1,5 +1,28 @@
 # HANDOFF — index de reprise
 
+## 24 septembre — reprise après changement raté : blocage corrigé et posé
+
+Le 23 septembre au soir, après un changement de filament raté (`key837`) en
+cours d'impression, RESUME a rechargé et purgé correctement puis l'impression
+est restée figée : le rechargement `T1A` vidait le capteur de tête avec
+l'alarme de fin de bobine armée ; la pause qui en résultait et le fichier
+s'attendaient l'un l'autre. ADR-072 et [document 99](docs/99-reprise-apres-changement-rate-pose.md).
+
+`kctrl_tool_change.py` coupe désormais cette alarme pendant les seize
+rechargements `T1A`..`T4D` et la rallume après `M400`, sans rien ajouter
+d'autre. Posé au repos le 24 septembre à 00:48 (horloge K1) par
+`resume-reload-guard-v1` : `INSTALLED_IDLE_OK`, 16 rechargements actifs,
+0 traceback, puis `VALIDATED_IDLE_OK` indépendant. Les 19 fichiers du départ,
+de la fin, du CFS et des configurations sont relus identiques ; départ et fin
+au repos, CFS 1 et 2 connectés. Sauvegarde :
+`/usr/data/k1-control-v1/backups/resume-reload-guard-v1`.
+
+Point de reprise : Thomas peut imprimer normalement. À la première reprise
+après changement raté, lire `KCTRL_TOOLS` (« dernier rechargement de
+reprise ») et le journal borné. Ne pas rejouer la pose ; retour arrière au
+repos seulement par `deploy.py rollback`. Jamais de pose ni de redémarrage
+Klipper pendant une impression.
+
 ## 23 septembre — reprise réelle réussie ; dernier delta de température posé
 
 Lire d'abord [document 98](docs/98-reprise-filament-engage-et-regles-corrigees.md)

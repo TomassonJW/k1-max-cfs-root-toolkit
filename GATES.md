@@ -1,5 +1,25 @@
 # GATES
 
+## 24 septembre — reprise après changement raté : blocage corrigé et posé
+
+Le 23 septembre au soir, après un changement de filament raté (`key837`) en
+cours d'impression, RESUME a rechargé et purgé correctement puis l'impression
+est restée figée : le rechargement `T1A` vidait le capteur de tête avec
+l'alarme de fin de bobine armée ; la pause qui en résultait et le fichier
+s'attendaient l'un l'autre. ADR-072 et [document 99](docs/99-reprise-apres-changement-rate-pose.md).
+
+`kctrl_tool_change.py` coupe désormais cette alarme pendant les seize
+rechargements `T1A`..`T4D` et la rallume après `M400`, sans rien ajouter
+d'autre. Posé au repos le 24 septembre à 00:48 (horloge K1) par
+`resume-reload-guard-v1` : `INSTALLED_IDLE_OK`, 16 rechargements actifs,
+0 traceback, puis `VALIDATED_IDLE_OK` indépendant. Les 19 fichiers du départ,
+de la fin, du CFS et des configurations sont relus identiques ; départ et fin
+au repos, CFS 1 et 2 connectés. Sauvegarde :
+`/usr/data/k1-control-v1/backups/resume-reload-guard-v1`.
+
+Gate close OK au repos. Gate suivante : observation passive de la première
+vraie reprise après changement raté, sans action ajoutée.
+
 ## 23 septembre — nouveau départ interrompu : key837 au chargement T1B
 
 Le blocage de fin est bien levé, mais le démarrage suivant échoue à la prise.

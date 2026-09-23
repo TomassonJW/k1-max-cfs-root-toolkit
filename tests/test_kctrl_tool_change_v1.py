@@ -10,7 +10,8 @@ filament à la tête, et la cible remise à la valeur du fichier sinon ; dans
 START_PRINT, rien de plus que l'alignement, le démarrage garde ses contrôles ;
 l'alarme de fin de bobine du capteur de tête coupée pendant la commande stock
 et rallumée après, même sur erreur, sans que le capteur cesse d'être lu
-(ADR-065).
+(ADR-065) ; autour des rechargements de reprise T1A..T4D lancés par RESUME,
+la même alarme coupée et rien d'autre, sans aucune erreur ajoutée (ADR-072).
 """
 
 import importlib.util
@@ -91,6 +92,14 @@ class FakePrinter:
         self.gcode = FakeGcode()
         self.objects = {"gcode": self.gcode}
         self.reactor = FakeReactor()
+        self.events = {}
+
+    def register_event_handler(self, event, callback):
+        self.events.setdefault(event, []).append(callback)
+
+    def send_event(self, event):
+        for callback in self.events.get(event, []):
+            callback()
 
     def lookup_object(self, name, default=None):
         return self.objects.get(name, default)
@@ -171,12 +180,16 @@ class Bench:
 
     def __init__(self, tmp_path, tn_map=None, units=None, printing=True,
                  z=0.2, filament=True, paused=False, start_running=0,
-                 registered=16, **file_kw):
+                 registered=16, slots=True, **file_kw):
         self.printer = FakePrinter()
         gcode = self.printer.gcode
         self.stock_calls = []
         for index in range(registered):
             name = "T%d" % index
+            gcode.handlers[name] = self.stock_for(name)
+        # Le CFS enregistre aussi T1A..T4D, sans description (help Moonraker
+        # du 24 septembre 2026 : absents ; gcode.py les route en "T1A").
+        for name in (TOOL_CHANGE.NAMES if slots else ()):
             gcode.handlers[name] = self.stock_for(name)
         tn = tmp_path / "tn_data.json"
         tn.write_text(json.dumps({"tnn_map": tn_map or dict(LIVE_MAP)}),
@@ -226,8 +239,7 @@ class Bench:
         """Rebuild the wrapper, optionally with another stock handler."""
         handlers = self.printer.gcode.handlers
         handlers.pop("KCTRL_TOOLS", None)
-        for index in range(16):
-            tool = "T%d" % index
+        for tool in ["T%d" % index for index in range(16)] + list(TOOL_CHANGE.NAMES):
             if tool in handlers:
                 handlers[tool] = self.stock_for(tool)
         if name is not None:
@@ -596,6 +608,185 @@ def test_une_alarme_deja_coupee_reste_coupee(tmp_path):
     assert not switch.enabled
 
 
+def test_run_stock_reste_lu_a_l_appel_pour_le_demarrage_retenu(tmp_path):
+    # kctrl_start remplace run_stock une fois Klipper pret : le changement
+    # doit passer par la version remplacee, alarme coupee autour.
+    bench, switch = armed_bench(tmp_path)
+    seen = []
+    bench.obj.run_stock = lambda name, plan, stock, gcmd: seen.append(
+        (name, plan["physical"], switch.enabled))
+    bench.run("T1")
+    assert seen == [("T1", "T1B", False)]
+    assert bench.stock_calls == []
+    assert switch.enabled
+
+
+# ------------------------------------------------------------ les rechargements de reprise
+
+def test_les_seize_rechargements_de_reprise_sont_proteges(tmp_path):
+    bench = Bench(tmp_path)
+    assert bench.obj.reloads == list(TOOL_CHANGE.NAMES)
+    # Sans description, comme le CFS les enregistre : l'aide ne change pas.
+    assert bench.obj.wrapped == ["T%d" % i for i in range(16)]
+
+
+def test_un_rechargement_absent_est_laisse_sans_faire_echouer_le_chargement(tmp_path):
+    bench = Bench(tmp_path, slots=False)
+    assert bench.obj.reloads == []
+    assert "T1A" not in bench.printer.gcode.handlers
+    assert len(bench.obj.wrapped) == 16
+
+
+def test_des_rechargements_enregistres_apres_le_chargement_sont_repris_a_ready(tmp_path):
+    # Rien sur la machine ne dit quand le CFS enregistre T1A..T4D : ceux
+    # qu'il a ajoutes une fois Klipper pret sont repris a klippy:ready.
+    bench, switch = armed_bench(tmp_path, slots=False)
+    handlers = bench.printer.gcode.handlers
+    tools = {name: handlers["T%d" % index] for index, name in enumerate(TOOL_CHANGE.NAMES)}
+    for name in TOOL_CHANGE.NAMES:
+        handlers[name] = bench.stock_for(name)
+    bench.printer.send_event("klippy:ready")
+    assert bench.obj.reloads == list(TOOL_CHANGE.NAMES)
+    assert all(handlers["T%d" % index] is tools[name]
+               for index, name in enumerate(TOOL_CHANGE.NAMES))
+    bench.run("T2C")
+    assert bench.stock_calls == ["T2C"]
+    assert bench.printer.gcode.scripts == [ALARM_OFF, "M400", ALARM_ON]
+    assert bench.obj.last_reload["tool"] == "T2C"
+
+
+def test_ready_ne_reprend_pas_deux_fois_ni_ne_melange_l_ordre(tmp_path):
+    bench = Bench(tmp_path, slots=False)
+    handlers = bench.printer.gcode.handlers
+    late = list(TOOL_CHANGE.NAMES[8:])
+    for name in TOOL_CHANGE.NAMES[:8]:
+        handlers[name] = bench.stock_for(name)
+    bench.rewrap()
+    assert bench.obj.reloads == list(TOOL_CHANGE.NAMES[:8])
+    early = {name: handlers[name] for name in bench.obj.reloads}
+    for name in late:
+        handlers[name] = bench.stock_for(name)
+    bench.obj.handle_ready()
+    bench.obj.handle_ready()
+    assert bench.obj.reloads == list(TOOL_CHANGE.NAMES)
+    assert all(handlers[name] is early[name] for name in early)
+    assert bench.stock_calls == []
+
+
+def test_le_rechargement_de_reprise_ne_fige_plus_l_impression(tmp_path):
+    # 23 septembre 2026 : RESUME apres key837 relance T1A depuis
+    # virtual_sdcard ; le retrait vide le capteur arme a 23:06:44, la pause
+    # de fin de bobine prend le verrou gcode et attend le fichier, qui
+    # attend le verrou apres le rechargement fini a 23:08:01. Ici : aucune
+    # alarme pendant le rechargement, rallumee apres, rien d'autre.
+    bench, switch = armed_bench(tmp_path)
+    armed_during = []
+
+    def stock(gcmd):
+        armed_during.append(switch.enabled)
+        switch.note(False)  # retrait de ce qui reste dans la tete
+        switch.note(True)   # le filament revient a la tete, purge
+        bench.stock_calls.append("T1A")
+    bench.rewrap("T1A", stock)
+    cmd = bench.run("T1A")
+    assert armed_during == [False]
+    assert switch.runouts == 0
+    assert switch.enabled
+    assert bench.stock_calls == ["T1A"]
+    assert bench.printer.gcode.scripts == [ALARM_OFF, "M400", ALARM_ON]
+    assert cmd.said == []
+    assert bench.obj.last == {}
+    assert bench.obj.last_reload == {"tool": "T1A", "error": False,
+                                     "head": True, "paused": False}
+    # La meme commande, capteur arme et sans l'enveloppe : l'alarme part.
+    stock(None)
+    assert switch.runouts == 1
+
+
+def test_le_rechargement_ne_refuse_ni_n_aligne_rien(tmp_path):
+    # T1A est vide dans le releve du 10 septembre : un changement T0 est
+    # refuse, mais le rechargement est celui du firmware, tel quel.
+    bench, switch = armed_bench(tmp_path)
+    before = bench.db.read_bytes()
+    cmd = bench.run("T1A")
+    assert bench.stock_calls == ["T1A"]
+    assert bench.db.read_bytes() == before
+    assert cmd.said == []
+
+
+def test_le_rechargement_sans_filament_a_la_tete_ne_pose_pas_de_pause(tmp_path):
+    # virtual_sdcard execute la ligne suivante du fichier juste apres le
+    # rechargement, avant de regarder une pause : la pause reste au firmware.
+    bench, switch = armed_bench(tmp_path)
+
+    def stock(gcmd):
+        switch.note(False)
+    bench.rewrap("T1A", stock)
+    bench.run("T1A")
+    assert "PAUSE" not in bench.printer.gcode.scripts
+    assert bench.obj.last_reload["head"] is False
+    assert switch.runouts == 0
+
+
+def test_dans_start_print_le_rechargement_est_la_commande_stock_seule(tmp_path):
+    bench, switch = armed_bench(tmp_path, start_running=1)
+    bench.run("T1A")
+    assert bench.stock_calls == ["T1A"]
+    assert bench.printer.gcode.scripts == []
+    assert switch.enabled
+    assert bench.obj.last_reload == {}
+
+
+def test_une_erreur_du_rechargement_rallume_l_alarme_puis_remonte(tmp_path):
+    bench, switch = armed_bench(tmp_path)
+
+    def broken(gcmd):
+        switch.note(False)
+        raise CommandError("key837")
+    bench.rewrap("T1A", broken)
+    with pytest.raises(CommandError, match="key837"):
+        bench.run("T1A")
+    assert switch.runouts == 0
+    assert switch.enabled
+    assert bench.printer.gcode.scripts == [ALARM_OFF, "M400", ALARM_ON]
+    assert bench.obj.last_reload["error"] is True
+
+
+@pytest.mark.parametrize("failing", [ALARM_OFF, "M400", ALARM_ON])
+def test_le_rechargement_n_ajoute_jamais_d_erreur(tmp_path, failing):
+    # virtual_sdcard lance le rechargement hors du try qui arrete proprement
+    # l'impression sur une ligne en erreur : une exception de l'enveloppe
+    # sortirait de son minuteur. Seule celle de la commande stock sort.
+    bench, switch = armed_bench(tmp_path)
+    run = bench.printer.gcode.run_script_from_command
+
+    def flaky(script):
+        if script == failing:
+            raise CommandError("Command failed due to gcode cancel request")
+        run(script)
+    bench.printer.gcode.run_script_from_command = flaky
+    bench.run("T1A")
+    assert bench.stock_calls == ["T1A"]
+    assert bench.obj.last_reload["error"] is False
+
+
+def test_une_alarme_deja_coupee_reste_coupee_au_rechargement(tmp_path):
+    bench, switch = armed_bench(tmp_path)
+    switch.enabled = False
+    bench.run("T1A")
+    assert bench.stock_calls == ["T1A"]
+    assert bench.printer.gcode.scripts == []
+    assert not switch.enabled
+
+
+def test_le_rechargement_suit_la_commande_stock_sans_capteur_de_tete(tmp_path):
+    bench = Bench(tmp_path, z=1.0)
+    del bench.printer.objects["filament_switch_sensor filament_sensor_2"]
+    bench.run("T2C")
+    assert bench.stock_calls == ["T2C"]
+    assert bench.printer.gcode.scripts == []
+
+
 # ------------------------------------------------------------ KCTRL_TOOLS
 
 def test_kctrl_tools_montre_chaque_filament_et_son_emplacement(tmp_path):
@@ -621,10 +812,29 @@ def test_kctrl_tools_sans_fichier_dit_comment_en_donner_un(tmp_path):
     assert "filament 2 (T1B)" in "\n".join(cmd.said)
 
 
+def test_kctrl_tools_montre_les_rechargements_proteges_et_le_dernier(tmp_path):
+    bench = Bench(tmp_path, printing=False)
+    text = "\n".join(bench.run("KCTRL_TOOLS").said)
+    assert "rechargements de reprise proteges: T1A..T4D (16)" in text
+    assert "dernier rechargement" not in text
+    bench.run("T2B")
+    text = "\n".join(bench.run("KCTRL_TOOLS").said)
+    assert "dernier rechargement de reprise: error=False, head=True, paused=False, tool=T2B" in text
+
+
+def test_kctrl_tools_sans_rechargement_enregistre_le_dit(tmp_path):
+    bench = Bench(tmp_path, printing=False, slots=False)
+    text = "\n".join(bench.run("KCTRL_TOOLS").said)
+    assert "rechargements de reprise proteges: aucun" in text
+
+
 def test_le_statut_publie_les_commandes_reprises_et_le_dernier_changement(tmp_path):
     bench = Bench(tmp_path, z=1.0)
     bench.run("T1")
+    bench.run("T1B")
     status = bench.obj.get_status()
     assert len(status["wrapped"]) == 16
+    assert status["reloads"] == list(TOOL_CHANGE.NAMES)
     assert status["last"]["outcome"] == "done"
     assert status["last"]["slot"] == "T1B"
+    assert status["last_reload"]["tool"] == "T1B"

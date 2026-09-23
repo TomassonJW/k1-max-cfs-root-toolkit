@@ -34,10 +34,24 @@ gcode_macro with rename_existing would, and around each stock change it:
      into the void; otherwise the nozzle target is set back to the file's
      value, because the stock purge leaves it at max(record, 200).
 
+The sixteen slot commands T1A..T4D are wrapped too, for one reason: after a
+failed change, RESUME - screen, Mainsail or console - makes virtual_sdcard
+run the logical slot of the failed change (tn_cur_tnn, "T1A") before the file
+goes on. gcode.py routes "T1A" to its own handler, the same stock cmd_T as
+T0, and until now it ran with the head alarm armed. On 23 September 2026 the
+reload after key837 pulled back at 23:06:43 and the head sensor emptied at
+23:06:44. The runout pause took the gcode lock and waited for the file to
+stop; the file, done reloading and purging at 23:08:01, waited for that lock
+to run its next line. The print stayed frozen (ADR-072). Around these
+reloads only the alarm is handled: no alignment, no refusal, no check, no
+`last` - the start and the end read `last`, and a reload is not a tool change
+of the file. Inside START_PRINT they are the stock command alone.
+
 It must be loaded after [box], which is where the commands come from: this
-section lives in a file included after box.cfg. A T that the box did not
-register is left alone and listed by KCTRL_TOOLS; nothing here fails the
-Klipper start.
+section lives in a file included after box.cfg. T1A..T4D the box has not
+registered yet at load time are looked for again at klippy:ready. A T that
+the box did not register is left alone and listed by KCTRL_TOOLS; nothing
+here fails the Klipper start.
 
 The order of the sixteen names is the slicer's: T0 is the job's first
 filament and the logical slot T1A; T15 the sixteenth and T4D. Same
@@ -74,7 +88,9 @@ class KctrlToolChange:
         self.pause_on_empty = config.getint("pause_on_empty", 1, minval=0, maxval=1)
         self.wrapped = []
         self.missing = []
+        self.reloads = []
         self.last = {}
+        self.last_reload = {}
         for index in range(len(NAMES)):
             name = "T%d" % index
             stock = self.gcode.register_command(name, None)
@@ -86,14 +102,46 @@ class KctrlToolChange:
                 name, self.handler(index, stock),
                 desc="K1 Control: tool change to filament %d of the job, "
                      "aligned on the file, then the CFS command" % (index + 1))
+        self.wrap_reloads()
         self.gcode.register_command(
             "KCTRL_TOOLS", self.cmd_KCTRL_TOOLS, desc=self.cmd_KCTRL_TOOLS_help)
-        logging.info("kctrl_tool_change: wrapped %s; not registered by the box: %s",
-                     ",".join(self.wrapped) or "-", ",".join(self.missing) or "-")
+        self.printer.register_event_handler("klippy:ready", self.handle_ready)
+        logging.info("kctrl_tool_change: wrapped %s; not registered by the box: %s; "
+                     "reloads %s", ",".join(self.wrapped) or "-",
+                     ",".join(self.missing) or "-", ",".join(self.reloads) or "-")
+
+    def wrap_reloads(self):
+        """Wrap each of T1A..T4D the box has registered; return the new ones."""
+        added = []
+        for name in NAMES:
+            if name in self.reloads:
+                continue
+            # Registered by the box without a description; kept that way.
+            stock = self.gcode.register_command(name, None)
+            if stock is None:
+                continue
+            added.append(name)
+            self.gcode.register_command(name, self.reload_handler(name, stock))
+        self.reloads = [name for name in NAMES if name in self.reloads or name in added]
+        return added
+
+    def handle_ready(self):
+        # T0..T15 are there when this module loads (log of 23 September
+        # 2026, 23:41:53). Nothing on the machine says when the box registers
+        # T1A..T4D, so any it has added by now is taken here too.
+        added = self.wrap_reloads()
+        if added:
+            logging.info("kctrl_tool_change: reloads taken at ready %s; all reloads %s",
+                         ",".join(added), ",".join(self.reloads))
 
     def handler(self, index, stock):
         def call(gcmd):
             self.change(index, stock, gcmd)
+        return call
+
+    def reload_handler(self, name, stock):
+        def call(gcmd):
+            self.reload(name, stock, gcmd)
         return call
 
     # ------------------------------------------------------------ helpers
@@ -135,6 +183,34 @@ class KctrlToolChange:
         self.set_runout(True)
         logging.info("kctrl_tool_change: %s runout alarm on again after %s",
                      self.sensor, name)
+
+    def guarded(self, name, action):
+        """Run a CFS change with the runout alarm of the head sensor off.
+
+        The change empties that sensor itself when it pulls the old filament
+        back; armed, Klipper takes it for a spool run out (ADR-065), and
+        during a reload run by virtual_sdcard the runout pause and the file
+        wait on each other for ever (ADR-072). Only the alarm is off: the
+        stock command and the checks still read the sensor. It is put back,
+        even when the change fails.
+        """
+        armed = self.runout_armed()
+        if armed:
+            self.set_runout(False)
+            logging.info("kctrl_tool_change: %s runout alarm off during %s",
+                         self.sensor, name)
+        try:
+            action()
+        except Exception:
+            if armed:
+                try:
+                    self.rearm_runout(name)
+                except Exception:
+                    logging.exception("kctrl_tool_change: %s runout alarm not "
+                                      "re-armed after %s", self.sensor, name)
+            raise
+        if armed:
+            self.rearm_runout(name)
 
     def first_layer(self, job):
         """Below the second layer's height, in G-code coordinates."""
@@ -241,24 +317,55 @@ class KctrlToolChange:
         # sensor. START_PRINT arms that sensor's runout alarm for auto refill,
         # and armed, Klipper queues a pause that lands as soon as the change
         # returns: 3DBenchy_C2 on 14 September 2026, runout at 19:19:35,
-        # pause at 19:22:36, 12 ms after "T3 fait".
-        armed = self.runout_armed()
-        if armed:
-            self.set_runout(False)
+        # pause at 19:22:36, 12 ms after "T3 fait". run_stock is looked up
+        # at call time: kctrl_start replaces it once Klipper is ready.
+        self.guarded(name, lambda: self.run_stock(name, plan, stock, gcmd))
+
+    def reload(self, name, stock, gcmd):
+        """The firmware's own reload of a slot, T1A..T4D, run as it is.
+
+        RESUME after a failed change sets virtual_sdcard.resume_tnn to the
+        slot of that change, and the file resumes by running it. Nothing of
+        the file is known here, so nothing is aligned, refused or checked,
+        and `last` is left to the tool changes of the file. No PAUSE either:
+        virtual_sdcard runs the next line of the file right after this
+        reload, before it looks at a pause request. A reload that fails
+        again is left to the firmware, like the change before it.
+
+        virtual_sdcard runs this reload outside the try that turns a failed
+        line into a stopped print, so nothing added here may raise: only
+        the stock command's own exception goes out, as it did before.
+        """
+        if self.in_start():
+            stock(gcmd)
+            return
+        armed = self.runout_armed() and self.quietly(
+            name, "off", lambda: self.set_runout(False))
+        failed = True
+        try:
+            stock(gcmd)
+            failed = False
+        finally:
+            if armed:
+                self.quietly(name, "on", lambda: self.rearm_runout(name))
+            self.last_reload = {"tool": name, "error": failed,
+                                "head": self.head_sees_filament(),
+                                "paused": self.is_paused()}
+            logging.info("kctrl_tool_change: reload %s ended, %s", name, ", ".join(
+                "%s=%s" % item for item in sorted(self.last_reload.items())))
+
+    def quietly(self, name, state, action):
+        """Switch the runout alarm around a reload; log a failure, never raise."""
+        try:
+            action()
+        except Exception:
+            logging.exception("kctrl_tool_change: %s runout alarm not switched "
+                              "%s around %s", self.sensor, state, name)
+            return False
+        if state == "off":
             logging.info("kctrl_tool_change: %s runout alarm off during %s",
                          self.sensor, name)
-        try:
-            self.run_stock(name, plan, stock, gcmd)
-        except Exception:
-            if armed:
-                try:
-                    self.rearm_runout(name)
-                except Exception:
-                    logging.exception("kctrl_tool_change: %s runout alarm not "
-                                      "re-armed after %s", self.sensor, name)
-            raise
-        if armed:
-            self.rearm_runout(name)
+        return True
 
     def run_stock(self, name, plan, stock, gcmd):
         stock(gcmd)
@@ -307,7 +414,13 @@ class KctrlToolChange:
         target = gcmd.get("FILE", None) or slot_map.printing_file()
         lines = ["K1 Control: commandes T enveloppees: %s; laissees au CFS: %s"
                  % (", ".join(self.wrapped) or "aucune",
-                    ", ".join(self.missing) or "aucune")]
+                    ", ".join(self.missing) or "aucune"),
+                 "  rechargements de reprise proteges: %s" % (
+                     "%s..%s (%d)" % (self.reloads[0], self.reloads[-1], len(self.reloads))
+                     if self.reloads else "aucun")]
+        if self.last_reload:
+            lines.append("  dernier rechargement de reprise: %s" % ", ".join(
+                "%s=%s" % (k, v) for k, v in sorted(self.last_reload.items())))
         if not target:
             lines.append("  aucun fichier en cours; KCTRL_TOOLS FILE=/chemin/du/fichier.gcode")
             gcmd.respond_info("\n".join(lines))
@@ -352,7 +465,9 @@ class KctrlToolChange:
         return {
             "wrapped": list(self.wrapped),
             "missing": list(self.missing),
+            "reloads": list(self.reloads),
             "last": dict(self.last),
+            "last_reload": dict(self.last_reload),
         }
 
 
