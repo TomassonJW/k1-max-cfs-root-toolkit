@@ -1,5 +1,13 @@
 # HANDOFF — index de reprise
 
+## 24 septembre, 01:01 — reprise automatique de nuit en service (ADR-073)
+
+`/tmp/kctrl_autoresume.py --arm` tourne sur la K1 pendant l'impression de nuit
+de Thomas ; il fait `RESUME` après une pause stable, 15 fois au plus, puis sort
+seul à la fin. Point de reprise : lire `tail -c 4000 /tmp/kctrl_autoresume.log`
+(document 100), puis intégrer la reprise bornée dans K1 Control à partir des
+`pause_seen` réels. Le processus disparaît au prochain redémarrage de la K1.
+
 ## 24 septembre — reprise après changement raté : blocage corrigé et posé
 
 Le 23 septembre au soir, après un changement de filament raté (`key837`) en
