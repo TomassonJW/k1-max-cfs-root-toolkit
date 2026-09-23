@@ -1,5 +1,23 @@
 # GATES
 
+## 23 septembre — fausse fin incomplète corrigée et blocage levé
+
+Après une impression complète de Thomas, retrait T1B confirmé physiquement et
+acquitté `OK` par le CFS, V2 échouait sur `rewind_not_confirmed` : elle attendait
+que la mémoire de route se vide spontanément. V3 ajoute uniquement la mise à
+jour logicielle constructeur après ACK et tête vide stable. Les séquences de
+chargement, coupe et moteurs restent identiques.
+
+`end-rewind-confirm-v3` est installé et validé à froid : un fichier remplacé,
+22 empreintes vérifiées, backup exact, même mesh 11 × 11 et mêmes offsets.
+La garde de départ lit désormais `idle`, sans défaut ni opération en cours ;
+tête vide, aucune route, deux CFS connectés, cibles zéro, axes non référencés.
+Aucune chauffe, aucun mouvement/filament, aucune impression et aucun M112.
+184 tests ciblés verts ; suite entière : 1883 verts, 2 xfail et les deux échecs
+délibérés déjà documentés par la CI. Pas de nouvelle fin physique exécutée.
+La prochaine impression normale vérifiera cette dernière confirmation.
+Lire [le document 96](docs/96-fin-rewind-not-confirmed-correction.md).
+
 ## 22 septembre — V3 : purge et retrait confirmés ; arrêt envoyé par Codex
 
 Thomas confirme la purge puis le rembobinage. La tête se libère environ 0,9 s
