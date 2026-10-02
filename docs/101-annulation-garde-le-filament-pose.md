@@ -9,6 +9,11 @@ de Thomas.
 
 Preuves :
 
+- aucune impression pendant la pose : l'historique Moonraker donne la dernière
+  impression `…Body2_PETG_6m46s.gcode` terminée (`completed`) à 12:36:23 et
+  aucune autre ensuite ; l'installateur a exigé `print_stats` au repos, SD
+  inactive, pas de pause, `idle_timeout` hors `Printing`, chauffes à zéro et
+  aucun mouvement, deux fois au préflight puis une fois juste avant l'arrêt ;
 - `PREFLIGHT_OK` réel : 19 fichiers épinglés identiques, cible égale à la V3
   installée (`18778298…`), candidat compilé par le Python de Klipper ;
 - `INSTALLED_IDLE_OK` : sauvegarde, remplacement atomique, redémarrage,
