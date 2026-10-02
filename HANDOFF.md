@@ -1,5 +1,18 @@
 # HANDOFF — index de reprise
 
+## 2 octobre, 12:53 — annulation qui garde le filament, posée (ADR-074)
+
+Après une annulation, Thomas peut relancer directement : la fin
+`cancel-retained-v4` garde le filament en tête, coupe les chauffes et libère
+le départ, qui garde le même emplacement. Posée au repos après la fin de son
+impression, validée indépendamment. Point de reprise : à la première vraie
+annulation, lire le message console (« garde en tete », « sans emplacement
+prouve » ou « annulation incomplete ») et la ligne `kctrl_end: retained cancel`
+du journal (lecture bornée). Ne pas rejouer la pose ; retour arrière au repos
+seulement par `deploy.py rollback`. Le surveillant ADR-073 a disparu au
+redémarrage de la K1 : le relancer seulement si Thomas le redemande.
+Deux tests hors sujet échouent déjà sur `main` (document 101, Limites).
+
 ## 24 septembre, 01:01 — reprise automatique de nuit en service (ADR-073)
 
 `/tmp/kctrl_autoresume.py --arm` tourne sur la K1 pendant l'impression de nuit

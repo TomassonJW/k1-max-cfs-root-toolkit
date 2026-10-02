@@ -1,5 +1,14 @@
 # GATES
 
+## 2 octobre — annulation qui garde le filament : posée (ADR-074)
+
+`kctrl_end.py` V4 posé au repos le 2 octobre à 12:53 par
+`cancel-retained-end-v4` : préflight réel vert, `INSTALLED_IDLE_OK`,
+`VALIDATED_IDLE_OK`, 19 fichiers épinglés identiques, sauvegarde
+`/usr/data/k1-control-v1/backups/cancel-retained-end-v4`. Gate close OK au
+repos. Gate suivante : observation passive de la première vraie annulation
+avec filament en tête, puis du départ direct qui suit. [Document 101](docs/101-annulation-garde-le-filament-pose.md).
+
 ## 24 septembre — reprise après changement raté : blocage corrigé et posé
 
 Le 23 septembre au soir, après un changement de filament raté (`key837`) en

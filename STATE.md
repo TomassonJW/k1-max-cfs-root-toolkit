@@ -1,5 +1,19 @@
 # STATE
 
+## 2 octobre, 12:53 — une annulation garde le filament et libère le départ (ADR-074)
+
+Une annulation laissait la fin en `failed` (buse descendue à 140 °C par la
+commande stock avant la coupe) et bloquait tout nouveau départ ; le
+redémarrage qui la libérait perdait la route CFS. `kctrl_end.py` V4 ne coupe
+ni ne rembobine plus à l'annulation : tête chargée, il sort du bac si besoin,
+fait la fin stock sans ses commandes `BOX_*`, coupe les chauffes et se libère
+en gardant l'emplacement. Posé au repos : `INSTALLED_IDLE_OK`, puis
+`VALIDATED_IDLE_OK`, 19 fichiers épinglés identiques. Tests 85 + 35. Pas
+encore observé sur une vraie annulation. [Document 101](docs/101-annulation-garde-le-filament-pose.md).
+
+Le surveillant de reprise de nuit (ADR-073) n'existe plus : `/tmp` a été
+effacé par un redémarrage de la K1.
+
 ## 24 septembre, 01:01 — reprise automatique bornée en service (ADR-073)
 
 Surveillant externe à Klipper lancé au repos dans `/tmp` de la K1 : en pause
