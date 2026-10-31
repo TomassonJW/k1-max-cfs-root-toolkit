@@ -45,7 +45,8 @@ redirection.
 l'impression ; le même au repos, de 10 à 21 minutes après la fin, puis
 31 relevés à 10 s de 20:00 à 20:04. Une veille côté PC relevait aussi les
 compteurs disque toutes les 2 minutes, puis toutes les 5 minutes au repos,
-jusqu'à 20:00. Le registre de santé de la puce (EXT_CSD) est lu par
+jusqu'à 20:15 ; ses relevés sont utilisés jusqu'à 20:00. Le registre de
+santé de la puce (EXT_CSD) est lu par
 debugfs, le noyau 4.4 ne l'exposant pas ailleurs : une commande de lecture,
 rien n'est écrit. Une relance de Klipper et une pause sont lues dans des
 extraits bornés des journaux (sections 5 et 9).
@@ -370,13 +371,15 @@ dépend. Seule l'option 4 y touche, d'où ses conditions.
   (23 septembre).
 - Pause vers 98 % de l'impression : la veille l'a vue en pause à 19:01 et
   19:03, de nouveau en impression à 19:05, terminée à 19:07. Origine non
-  cherchée.
+  cherchée ; lien avec le bug de fin d'impression ci-dessous non vérifié.
 - Arrêt d'urgence de Klipper à 19:16:12, neuf minutes après la fin :
-  « Shutdown due to webhooks request », tête à X185,5 Y305 Z53,9. Klipper
-  repart à 19:18:27, puis Creality envoie de lui-même un `firmware_restart`
-  (« auto firmware restart ») à 19:18:49 ; Klipper répond de nouveau à
-  19:19:14. Les scripts de cette mesure n'envoyaient que des lectures.
-  Origine non cherchée.
+  « Shutdown due to webhooks request », tête à X185,5 Y305 Z53,9. Thomas l'a
+  déclenché lui-même après un gros bug en fin d'impression, qu'il traite dans
+  une autre session. Klipper repart à 19:18:27, puis Creality envoie de
+  lui-même un `firmware_restart` (« auto firmware restart ») à 19:18:49 ;
+  Klipper répond de nouveau à 19:19:14. Les scripts de cette mesure
+  n'envoyaient que des lectures, et aucune entre le sondage de 19:07:46 et le
+  relevé au repos lancé à 19:17:46.
 
 ## 10. Sources
 

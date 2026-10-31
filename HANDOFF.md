@@ -8,7 +8,8 @@ chaque minute d'impression, surtout par les serveurs Creality réglés en
 débogage ; au repos, environ 24 Mo par minute, surtout le dialogue CFS de
 `klippy.log`. La puce déclare 70 à 80 % de vie consommée pour sa mémoire de
 type A. Rien changé sur la K1.
-Point de reprise : la décision de Thomas sur la parade. Sans mission :
+Point de reprise : la décision de Thomas sur la parade, pas avant qu'il ait
+clos le bug de fin d'impression du 31 octobre. Sans mission :
 éteindre la K1 quand elle ne sert pas. Parade 1 (`log_level` de 1 à 3 dans
 `/usr/data/creality/userdata/log/log_config.json`) : si oui, mission séparée,
 au repos revérifié juste avant : sauvegarde et empreinte, un seul chiffre
@@ -18,8 +19,8 @@ impression) ; retour arrière en deux minutes. Jamais pendant une impression ;
 ne pas toucher au montage `sync` sans ADR ni décision de Thomas. Relire chaque
 mois le registre de santé de la puce (EXT_CSD, octets 267 à 269, par debugfs,
 en lecture seule) et garder hors machine une copie de l'état de K1 Control.
-Constat annexe à éclaircir à part : arrêt d'urgence de Klipper par requête
-webhooks à 19:16, neuf minutes après la fin de l'impression (section 9).
+L'arrêt d'urgence de 19:16 vu pendant la mesure vient de Thomas, après ce bug,
+traité dans une autre session (section 9).
 [Document 103](docs/103-ecritures-flash-cause-usure-parade.md).
 
 ## 31 octobre - plan de gestion des bobines (document 102, ADR-075 proposée)

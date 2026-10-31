@@ -19,9 +19,9 @@ recommandée, non appliquée : éteindre la K1 quand elle ne sert pas, puis
 `log_level` de 1 à 3 dans `log_config.json`, au repos (environ 10 Mo par
 minute attendus en impression). Filtrer le dialogue CFS de `klippy.log` ou
 retirer le `sync` demanderait chacun une mission et une ADR. Lecture seule,
-aucun fichier ni réglage changé sur la K1. Constat annexe non investigué :
-arrêt d'urgence de Klipper par requête webhooks à 19:16, neuf minutes après
-la fin de l'impression, puis relance automatique par Creality.
+aucun fichier ni réglage changé sur la K1. L'arrêt d'urgence de 19:16 vu
+pendant la mesure vient de Thomas, après un bug de fin d'impression traité
+dans une autre session.
 [Document 103](docs/103-ecritures-flash-cause-usure-parade.md).
 
 ## 31 octobre - plan de gestion des bobines, rien d'installé
