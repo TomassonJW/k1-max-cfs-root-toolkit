@@ -12,10 +12,12 @@ Point de reprise : la parade 1 (`log_level` de 1 à 3 dans
 `/usr/data/creality/userdata/log/log_config.json`) est posée depuis le
 31 octobre à 23:48 (`INSTALLED_OK` puis `VALIDATED_OK`), sur GO de Thomas,
 sauvegarde sous `/usr/data/k1-control-v1/backups/flash-log-level-v1/`, paquet
-`packages/k1-control-v1/flash-log-level-v1/`. Rien n'est redémarré : effet au
-prochain allumage fait par Thomas, à vérifier par `mesure.py` en arrière-plan
-au repos et pendant une impression (attendu : environ 19 et 10 Mo par minute,
-contre 23,6 et 46,6). Retour arrière : `deploy.py rollback`, au repos. Sans
+`packages/k1-control-v1/flash-log-level-v1/`. Thomas a rallumé la K1 le
+1er novembre vers 00:22 : au repos, `mesure.py` lit 19,3 Mo/min sur 3 minutes
+et des journaux Creality presque muets (5,7 ko/min contre 63 à 153). Reste la
+mesure en impression : `mesure.py 61 10` en arrière-plan, 6 minutes après le
+départ (attendu : environ 10 Mo par minute, contre 46,6). Retour arrière :
+`deploy.py rollback`, au repos. Sans
 mission : éteindre la K1 quand elle ne sert pas. Jamais pendant une impression ;
 ne pas toucher au montage `sync` sans ADR ni décision de Thomas. Relire chaque
 mois le registre de santé de la puce (EXT_CSD, octets 267 à 269, par debugfs,

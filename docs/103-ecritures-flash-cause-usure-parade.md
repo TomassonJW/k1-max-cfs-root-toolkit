@@ -3,7 +3,8 @@
 Date : 31 octobre 2026. Statut : diagnostic en lecture seule clos ; option 1
 de la parade posée sur la K1 le 31 octobre à 23:48, sur GO de Thomas
 (`packages/k1-control-v1/flash-log-level-v1/`) : un seul fichier Creality
-changé, sauvegardé, rien redémarré ; effet au prochain allumage, à mesurer.
+changé, sauvegardé, rien redémarré. Effet vérifié au repos après le
+rallumage du 1er novembre (section 7) ; reste la mesure en impression.
 
 ## 1. En bref
 
@@ -29,7 +30,9 @@ changé, sauvegardé, rien redémarré ; effet au prochain allumage, à mesurer.
   retour arrière en deux minutes : environ 10 Mo par minute attendus en
   impression, 4 à 5 fois moins, peu d'effet au repos. Le bavardage CFS de
   `klippy.log` demande une mission à part, car l'audit du bus le lit. Le
-  niveau 3 est posé depuis le 31 octobre à 23:48 (section 7).
+  niveau 3 est posé depuis le 31 octobre à 23:48 ; après rallumage, au
+  repos, les journaux Creality passent de 63 à 153 ko/min à 6 et la flash à
+  19,3 Mo/min (section 7).
 
 ## 2. Méthode et limites
 
@@ -291,6 +294,15 @@ documente lui-même 0 défaut, 1 débogage, 2 information, 3 avertissement,
   et avant l'impression de nuit, verrou K1 pris entre les deux sessions.
   Préflight vert à 23:48:10, `INSTALLED_OK` à 23:48:19, `VALIDATED_OK` à
   23:48:21 (niveau 3, reçu `INSTALLED_OK`). Aucun redémarrage ni G-code.
+- Effet mesuré au repos : Thomas a rallumé la K1 le 1er novembre vers
+  00:22. De 00:33:40 à 00:36:41 (180 s, 12 min après l'allumage, niveau 3,
+  `standby`) : 19,3 Mo/min sur la flash (avant : 23,6 en moyenne, 20,6 à
+  26,5 par tranche de 5 minutes), 77 requêtes par seconde (avant : 82 à
+  106) ; journaux Creality 5,7 ko/min, tous dans `master-server.log` (avant :
+  63 à 153 ko/min) ; `klippy.log` 345 ko/min, inchangé. Les programmes
+  Creality respectent donc le réglage après rallumage. Sur 3 minutes, la
+  baisse de la flash reste à confirmer sur une durée plus longue ; celle des
+  journaux est nette. En impression : à mesurer.
 - Validation : `deploy.py validate`, qui ne lit que le fichier ; après
   l'allumage, `mesure.py` au repos puis pendant l'impression suivante, en
   arrière-plan (mêmes compteurs que la section 2, plus le temps depuis
