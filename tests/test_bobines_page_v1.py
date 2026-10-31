@@ -218,8 +218,10 @@ def test_the_gate_module_is_the_one_the_page_reads():
 
 @pytest.mark.skipif(shutil.which("node") is None, reason="node absent")
 def test_the_pure_logic_passes_under_node():
+    # Hors terminal, node --test écrit en TAP ou en spec selon sa version :
+    # TAP imposé, pour que la ligne de bilan lue ci-dessous existe partout.
     result = subprocess.run(
-        ["node", "--test", os.path.join(PACKAGE, "logic.test.mjs")],
+        ["node", "--test", "--test-reporter=tap", os.path.join(PACKAGE, "logic.test.mjs")],
         capture_output=True, text=True, timeout=120)
     assert result.returncode == 0, result.stdout + result.stderr
     assert "# fail 0" in result.stdout
