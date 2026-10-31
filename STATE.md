@@ -6,9 +6,12 @@ Plan V1 écrit pour gérer les bobines dans Mainsail (document 102) : composant
 Moonraker `kctrl_spools`, stockage JSON sur la K1, matière et couleur
 synchronisées dans les deux sens par `KCTRL_FILAMENT` au repos avec relecture,
 décompte par segment depuis la position E (purges comprises), fenêtre Bobines
-dans Mainsail. ADR-075 proposée, en attente de Thomas. Aucune commande et aucun
-fichier sur la K1. Le « reste 100 % » de la fenêtre de départ pour une bobine
-sans puce n'est pas une mesure ; le lot H le remplace.
+dans Mainsail. ADR-075 proposée, en attente de Thomas. Sur la K1, lectures
+seules pendant une impression, aucun fichier ni réglage changé : marge large en
+mémoire et processeur ; la K1 écrit d'elle-même environ 40 Mo par minute sur sa
+flash (8,5 Go en 3 h 43 depuis son démarrage), rien de K1 Control. Le « reste
+100 % » de la fenêtre de départ pour une bobine sans puce n'est pas une mesure ;
+le lot H le remplace.
 [Document 102](docs/102-gestion-des-bobines-plan-v1.md).
 
 ## 2 octobre, 12:53 — une annulation garde le filament et libère le départ (ADR-074)

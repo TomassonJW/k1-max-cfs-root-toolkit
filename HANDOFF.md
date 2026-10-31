@@ -11,7 +11,10 @@ Thomas sur le lieu des données (ADR-075 : K1 Control sur la K1, recommandé, ou
 Spoolman sur le Proxmox) ; puis les lots A à K hors imprimante, la pose au
 repos du seul Moonraker dédié et les deux gestes de qualification (retrait et
 remise d'une bobine, impression multicouleur pesée avant et après).
-[Document 102](docs/102-gestion-des-bobines-plan-v1.md).
+Mesuré pendant une impression : mémoire et processeur gardent une large marge.
+Constat annexe : la K1 écrit d'elle-même environ 40 Mo par minute sur sa flash
+(8,5 Go en 3 h 43 depuis son démarrage), rien de K1 Control ; enquête à part.
+[Document 102](docs/102-gestion-des-bobines-plan-v1.md), section 3.
 
 ## 2 octobre, 12:53 — annulation qui garde le filament, posée (ADR-074)
 

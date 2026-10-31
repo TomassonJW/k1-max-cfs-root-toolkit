@@ -83,9 +83,13 @@ Faits du dépôt, vérifiés dans le code le 31 octobre :
 - mesuré le 31 octobre en lecture seule, pendant une impression : 95 Mo de
   mémoire disponibles sur 209, le Moonraker dédié à 22 Mo et 5 % d'un cœur,
   Klipper à 41 % d'un cœur, l'ensemble à 49 % des deux cœurs ; 5 Go libres
-  sous `/usr/data`, dont 272 Ko pour tout l'état de K1 Control ; la machine
-  écrivait déjà environ 7,7 Mo en 10 secondes sur sa mémoire flash. Le
-  composant s'ajoute à ce Moonraker, sans nouveau programme.
+  sous `/usr/data`, dont 272 Ko pour tout l'état de K1 Control. La machine
+  écrit déjà d'elle-même environ 40 Mo par minute sur sa mémoire flash (mesuré
+  sur une minute), soit 8,5 Go en 3 h 43 depuis son démarrage, plus que la
+  capacité de la flash (7,8 Go) : dans la minute, seuls les journaux de
+  Creality et de Klipper et un petit fichier d'état de Creality changent, rien
+  sous K1 Control. Le noyau n'expose pas l'usure de la flash. Le composant
+  s'ajoute au Moonraker dédié, sans nouveau programme.
 
 ## 4. Architecture
 
@@ -102,9 +106,12 @@ vit hors du chemin de l'impression.
 - Stockage sous `/usr/data/k1-control-v1/state/spools/`, en JSON :
   écriture atomique (fichier temporaire, synchronisation disque, renommage),
   trois copies tournantes, journal en ajout seul et borné, export et import
-  complets depuis la fenêtre. Écritures sur action de Thomas, changement
-  d'emplacement, fin d'impression, plus un point de reprise par minute pendant
-  une impression : l'usure de la mémoire flash reste négligeable.
+  complets depuis la fenêtre. La bibliothèque n'est réécrite que sur action de
+  Thomas, quand le contenu d'un emplacement change et en fin d'impression.
+  Pendant une impression, seul un petit fichier de reprise de taille fixe,
+  quelques Ko (un total par emplacement et le segment en cours), est réécrit
+  chaque minute et à chaque changement d'outil, plus une ligne de journal par
+  changement. L'usure de la mémoire flash reste négligeable (section 3).
 - Interface : un module séparé, `/bobines/spools.js`, chargé à part par
   `overlay.js`. Une erreur dans ce module laisse la fenêtre de départ intacte.
   Même feuille de style.
@@ -290,6 +297,9 @@ Tous hors imprimante, sauf L.
   captures envoyées à Thomas.
 - Mémoire : composant chargé dans un Moonraker local avec 200 bobines, mesuré
   sous les limites de ressources.
+- Écritures : sur une impression rejouée avec beaucoup de changements, seul le
+  petit fichier de reprise est réécrit, à taille fixe ; la bibliothèque ne l'est
+  qu'en fin d'impression.
 
 ## 12. Pose et qualification
 
@@ -303,7 +313,8 @@ Pose (lot K), au repos seulement, revérifié juste avant l'arrêt du service :
    répond 403) ;
 4. redémarrage du seul Moonraker dédié. Klipper n'est pas touché ;
 5. validation : composant chargé, `failed_components` vide, points d'entrée qui
-   répondent, mémoire sous la limite, rendu réel dans Mainsail ;
+   répondent, Moonraker dédié sous 45 Mo et au moins 70 Mo libres, rendu réel
+   dans Mainsail ;
 6. retour arrière exact au premier écart.
 
 Qualification (lot L), deux gestes de Thomas :
@@ -314,6 +325,8 @@ Qualification (lot L), deux gestes de Thomas :
 2. sa prochaine vraie impression multicouleur, bobines pesées avant et après :
    l'écart entre pesée et décompte doit rester dans la précision de la balance
    plus la perte de coupe mesurée. Sinon, on trouve la cause avant de clore.
+   Pendant cette impression, une lecture passive de la mémoire, du processeur
+   et des écritures sur la flash est comparée aux mesures de la section 3.
 
 ## 13. Risques et parades
 
@@ -325,9 +338,9 @@ Qualification (lot L), deux gestes de Thomas :
 | Écriture qui ne prend pas | relecture obligatoire, écart affiché, pas de nouvelle tentative automatique |
 | Bobine changée sans être vue | présence lue en continu ; autre matière ou couleur → « à vérifier » |
 | Perte des données | trois copies, journal, export sur le PC |
-| Usure de la mémoire flash | écritures rares : actions, fins, une par minute en impression |
+| Usure de la mémoire flash | bibliothèque réécrite rarement ; en impression, un petit fichier de taille fixe (section 4) ; marge mesurée en section 3 |
 | Moonraker redémarré pendant une impression | pose au repos seulement (règle du 24 septembre) ; un plantage n'arrête pas l'impression et le décompte reprend depuis le disque |
-| Mémoire de la K1 | composant sans dépendance, mesuré hors imprimante puis à la pose |
+| Mémoire et processeur de la K1 | composant sans dépendance dans le Moonraker existant ; marge mesurée en impression (section 3), remesurée à la pose et pendant la première impression |
 
 ## 14. Hors V1
 
