@@ -49,7 +49,7 @@ fichier de 50 Mo (section « Pourquoi c'était lent »).
    et à droite toutes les bobines du CFS, unité par unité, avec couleur,
    matière et reste en pourcentage ; un emplacement vide est hachuré et
    inactif. La même interface existe en page seule,
-   `http://192.168.1.64:4409/bobines/`, pour un téléphone, Fluidd ou
+   `/bobines/` sur la passerelle (port 4409), pour un téléphone, Fluidd ou
    l'écran.
 3. **Un clic sur un filament, un clic sur une bobine.** Le filament suivant
    s'active tout seul. Sous chaque bobine, pendant qu'un filament est actif,

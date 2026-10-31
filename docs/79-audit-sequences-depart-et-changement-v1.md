@@ -162,8 +162,8 @@ section 9.4.
    blanc, lumière de la chambre allumée, et prévient. L'agent ne lance, ne
    reprend et n'annule jamais une impression.
 2. L'agent suit le journal pendant toute l'impression et prend des images de la
-   webcam (`http://192.168.1.64:8080/?action=snapshot`) au départ et à chaque
-   changement.
+   webcam (`http://<adresse résolue par k1max-root>:8080/?action=snapshot`) au
+   départ et à chaque changement.
 3. Pour chaque séquence : image, ligne de journal, auteur (Creality ou nous),
    durée, filament jeté, anomalie.
 4. Vérifie aussi l'ADR-065 : « runout alarm off during Tn », « runout alarm on

@@ -557,7 +557,7 @@ SDCARD_PRINT_FILE », aucune erreur. Preuve de la retenue à 22:05 :
 fenêtre Mainsail émise (`action:prompt_begin Choix des bobines`), filament
 1 PLA 000000 « PLA Geeetech » utilisé, identique à T1B ; filament 2 déclaré,
 non utilisé ; `KCTRL_GATE_CANCEL` → `pending 0`, fenêtre fermée, rien n'a
-chauffé. Page `http://192.168.1.64:4409/bobines/` servie (200, `no-cache`),
+chauffé. Page `/bobines/` (passerelle, port 4409) servie (200, `no-cache`),
 vue au repos avec les six bobines réelles. L'appariement automatique
 (ADR-062) reste en repli. Reste : premier départ réel par la page, à
 observer par Thomas ; fusion de #58. Doc 78, ADR-063.
