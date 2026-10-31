@@ -5,7 +5,8 @@
 Thomas veut gérer ses bobines dans Mainsail : fenêtre, synchro avec le CFS,
 reste en grammes et en mètres, bibliothèque des bobines vides, décompte après
 chaque impression, stock. Plan V1 : [document 102](docs/102-gestion-des-bobines-plan-v1.md),
-ADR-075 proposée. Une tranche, construite hors imprimante, posée au repos.
+ADR-075 acceptée : données dans K1 Control, sur la K1. Une tranche,
+construite hors imprimante, posée au repos.
 
 Suite prévue, hors V1 : les presets demandés le 23 septembre, bâtis sur la
 bibliothèque du document 102. Retrouver et appliquer des presets par marque,

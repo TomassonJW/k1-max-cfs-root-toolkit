@@ -1,8 +1,8 @@
 # 102 - Gestion des bobines dans Mainsail : plan V1
 
 Date : 31 octobre 2026. Statut : plan. Rien n'est installé, la K1 n'a pas été
-touchée. Le lieu de stockage des données est une décision de Thomas :
-[ADR-075](adr/ADR-075-les-bobines-vivent-dans-k1-control.md), proposée.
+touchée. Lieu des données : K1 Control, sur la K1, choisi par Thomas
+([ADR-075](adr/ADR-075-les-bobines-vivent-dans-k1-control.md), acceptée).
 
 ## 1. La demande
 

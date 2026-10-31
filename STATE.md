@@ -1,12 +1,14 @@
 # STATE
 
-## 31 octobre - plan de gestion des bobines, rien d'installé
+## 31 octobre - gestion des bobines : plan accepté, rien d'installé
 
 Plan V1 écrit pour gérer les bobines dans Mainsail (document 102) : composant
 Moonraker `kctrl_spools`, stockage JSON sur la K1, matière et couleur
 synchronisées dans les deux sens par `KCTRL_FILAMENT` au repos avec relecture,
 décompte par segment depuis la position E (purges comprises), fenêtre Bobines
-dans Mainsail. ADR-075 proposée, en attente de Thomas. Sur la K1, lectures
+dans Mainsail. ADR-075 acceptée par Thomas : les données vivent dans K1
+Control, sur la K1 ; construction hors imprimante des lots A à K sur la branche
+`feat/spool-manager-v1`. Sur la K1, lectures
 seules pendant une impression, aucun fichier ni réglage changé : marge large en
 mémoire et processeur ; la K1 écrit d'elle-même environ 40 Mo par minute sur sa
 flash (8,5 Go en 3 h 43 depuis son démarrage), rien de K1 Control. Le « reste

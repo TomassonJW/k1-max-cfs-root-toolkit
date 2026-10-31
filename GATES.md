@@ -2,10 +2,10 @@
 
 ## 31 octobre - gestion des bobines : plan, aucune gate machine ouverte
 
-Plan V1 écrit (document 102), ADR-075 proposée. Aucune gate machine n'est
-ouverte. Gate suivante, après la réponse de Thomas sur ADR-075 : construction
-hors imprimante des lots A à K, puis pose au repos du seul Moonraker dédié et
-qualification par deux gestes ([document 102](docs/102-gestion-des-bobines-plan-v1.md), section 12).
+Plan V1 écrit (document 102), ADR-075 acceptée par Thomas. Aucune gate
+machine n'est ouverte. Gate en cours : construction hors imprimante des lots A
+à K ; ensuite pose au repos du seul Moonraker dédié et qualification par deux
+gestes ([document 102](docs/102-gestion-des-bobines-plan-v1.md), section 12).
 
 ## 2 octobre — annulation qui garde le filament : posée (ADR-074)
 
