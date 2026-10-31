@@ -202,6 +202,13 @@ Chaque pose a son backup, son diff, ses critères OK/KO et son rollback. Aucune
 pose suivante ne commence si l'écran, Creality Web/Print, le CFS ou Klipper
 régressent.
 
+Adresse privée : la configuration de départ posée porte encore l'adresse de la
+K1 dans `[kctrl_print_gate] page:`, en deux copies épinglées par empreinte. La
+prochaine pose de cette configuration, au repos et avec l'accord de Thomas, la
+remplace par une page déduite de l'adresse de la machine au démarrage ;
+`tests/test_no_private_address_v1.py` tient la liste exacte des fichiers
+concernés.
+
 Exit: système complet installé et prêt pour Gate G5.
 
 ## P5 — Production validation
