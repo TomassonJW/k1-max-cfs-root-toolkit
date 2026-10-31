@@ -1444,10 +1444,11 @@ def _print_end(library, params, context):
     """The count of a finished print, applied once per job.
 
     `segments` come from kctrl_spools_counter: the slot each one ran on, or
-    none when the slot was not proved, and the millimetres the extruder
-    pushed. `spools` is which spool was expected in each slot when the print
-    started. A segment without a proved slot or without a spool goes to the
-    list to attribute: Thomas decides with one click, nothing is guessed.
+    none when the slot was not proved, the spool when the counter knew it,
+    and the millimetres the extruder pushed. `spools` is which spool the
+    library put in each slot, for a segment that names none. A segment
+    without a proved slot or without a spool goes to the list to attribute:
+    Thomas decides with one click, nothing is guessed.
     """
     _only(params, ("job", "file", "start", "end", "outcome", "segments", "spools", "planned",
                    "notes"))
@@ -1465,14 +1466,18 @@ def _print_end(library, params, context):
         if mm <= 0:
             continue
         slot = segment.get("slot") or ""
-        spool = library["spools"].get(expected.get(slot, "")) if slot else None
+        ident = segment.get("spool")
+        if not isinstance(ident, str) or not ident:
+            ident = str(expected.get(slot) or "") if slot else ""
+        spool = library["spools"].get(ident) if ident else None
         if spool is None or segment.get("reason"):
             library["counters"]["segment"] += 1
             unassigned.append({
                 "id": "S%03d" % library["counters"]["segment"], "job": job, "slot": slot,
                 "mm": round_half_away(mm, 1), "on": context.now,
-                "reason": segment.get("reason") or ("aucune bobine liée à %s" % slot if slot
-                                                    else "emplacement non prouvé"),
+                "reason": segment.get("reason") or (
+                    "bobine %s introuvable" % label(ident) if ident
+                    else "aucune bobine liée à %s" % slot if slot else "emplacement non prouvé"),
             })
             continue
         gpm = fiche_gpm(library["filaments"][spool["filament"]])

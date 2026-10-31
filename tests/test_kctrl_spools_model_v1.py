@@ -841,6 +841,18 @@ def test_a_segment_without_a_proved_slot_or_spool_waits_for_one_click():
     refused(dismissed, "assign_segment", {"segment": "S002", "spool": "B002"}, "segment introuvable")
 
 
+def test_a_segment_names_its_spool_when_the_counter_knew_it():
+    library = in_cfs(with_spools(), "B001", "T1A", seen({"T1A": RED_PLA}))
+    work = act(library, "print_end", {"job": "job-9", "spools": {"T1A": "B001"}, "segments": [
+        {"slot": "T1A", "spool": "B002", "mm": 1000.0},
+        {"slot": "T1A", "mm": 500.0},
+        {"slot": "T1A", "spool": "B099", "mm": 200.0}]}, internal=True)
+    assert work["spools"]["B002"]["counted_g"] == model.round_half_away(model.grams_of_mm(1000.0, PLA), 2)
+    assert work["spools"]["B001"]["counted_g"] == model.round_half_away(model.grams_of_mm(500.0, PLA), 2)
+    assert [(item["slot"], item["mm"], item["reason"]) for item in work["unassigned"]] == [
+        ("T1A", 200.0, "bobine B-099 introuvable")]
+
+
 def test_the_history_and_the_list_to_attribute_stay_bounded():
     library = with_spools()
     for index in range(25):
