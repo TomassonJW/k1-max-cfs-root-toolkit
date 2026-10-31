@@ -1,5 +1,29 @@
 # STATE
 
+## 31 octobre - écritures sur la flash : cause trouvée, usure lue, parade proposée, rien changé
+
+Les 46 Mo par minute écrits sur la flash pendant une impression viennent du
+montage `sync` de `/usr/data`, posé par le script d'usine de Creality sur une
+partition sans journal ext4 : chaque ligne de journal (90 à 110 par seconde,
+0,8 Mo de texte par minute, surtout `master-server` et `display-server` réglés
+en débogage, puis `klippy.log`) force la réécriture d'une page de 4 Kio, du
+bloc qui décrit le fichier et un vidage du cache de la puce, 59 fois le texte.
+Au repos, la K1 écrit encore environ 24 Mo par minute (1,4 Go par heure),
+surtout le dialogue CFS de Creality dans `klippy.log`. Les fichiers d'état
+Creality pèsent moins d'une écriture par seconde ; K1 Control n'écrit rien.
+Usure : la puce eMMC de 7,8 Go (probablement une iNAND 7250) déclare 70 à 80 %
+de vie consommée pour sa mémoire de type A, 0 à 10 % pour le type B, réserve
+normale ; historique inconnu, registre à relire chaque mois. Rester allumée
+sans imprimer multiplie par 3,5 l'usure d'une journée de 4 h d'impression. Parade
+recommandée, non appliquée : éteindre la K1 quand elle ne sert pas, puis
+`log_level` de 1 à 3 dans `log_config.json`, au repos (environ 10 Mo par
+minute attendus en impression). Filtrer le dialogue CFS de `klippy.log` ou
+retirer le `sync` demanderait chacun une mission et une ADR. Lecture seule,
+aucun fichier ni réglage changé sur la K1. Constat annexe non investigué :
+arrêt d'urgence de Klipper par requête webhooks à 19:16, neuf minutes après
+la fin de l'impression, puis relance automatique par Creality.
+[Document 103](docs/103-ecritures-flash-cause-usure-parade.md).
+
 ## 31 octobre - plan de gestion des bobines, rien d'installé
 
 Plan V1 écrit pour gérer les bobines dans Mainsail (document 102) : composant
