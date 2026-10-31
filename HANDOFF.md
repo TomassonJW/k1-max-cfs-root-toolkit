@@ -7,18 +7,16 @@ partition sans journal ext4, multiplie par 59 les 0,8 Mo de journaux écrits
 chaque minute d'impression, surtout par les serveurs Creality réglés en
 débogage ; au repos, environ 24 Mo par minute, surtout le dialogue CFS de
 `klippy.log`. La puce déclare 70 à 80 % de vie consommée pour sa mémoire de
-type A. Rien changé sur la K1.
+type A. Parade 1 posée le 31 octobre à 23:48.
 Point de reprise : la parade 1 (`log_level` de 1 à 3 dans
-`/usr/data/creality/userdata/log/log_config.json`) est prête et testée hors
-imprimante, préflight réel vert le 31 octobre à 23:28, non posée : paquet
-`packages/k1-control-v1/flash-log-level-v1/`. Pose sur accord de Thomas, au
-repos revérifié, après l'impression de nuit et la pose de la garde de purge,
-sans autre pose en cours : `deploy.py preflight`, `install`, puis `validate`.
-Rien n'est redémarré : effet au prochain allumage fait par Thomas, puis
-`mesure.py` en arrière-plan au repos et pendant l'impression suivante
-(attendu : environ 19 et 10 Mo par minute, contre 23,6 et 46,6). Retour
-arrière : `deploy.py rollback`, au repos. Sans mission : éteindre la K1 quand
-elle ne sert pas. Jamais pendant une impression ;
+`/usr/data/creality/userdata/log/log_config.json`) est posée depuis le
+31 octobre à 23:48 (`INSTALLED_OK` puis `VALIDATED_OK`), sur GO de Thomas,
+sauvegarde sous `/usr/data/k1-control-v1/backups/flash-log-level-v1/`, paquet
+`packages/k1-control-v1/flash-log-level-v1/`. Rien n'est redémarré : effet au
+prochain allumage fait par Thomas, à vérifier par `mesure.py` en arrière-plan
+au repos et pendant une impression (attendu : environ 19 et 10 Mo par minute,
+contre 23,6 et 46,6). Retour arrière : `deploy.py rollback`, au repos. Sans
+mission : éteindre la K1 quand elle ne sert pas. Jamais pendant une impression ;
 ne pas toucher au montage `sync` sans ADR ni décision de Thomas. Relire chaque
 mois le registre de santé de la puce (EXT_CSD, octets 267 à 269, par debugfs,
 en lecture seule) et garder hors machine une copie de l'état de K1 Control.

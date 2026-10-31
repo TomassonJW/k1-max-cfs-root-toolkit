@@ -1,9 +1,9 @@
 # 103 - Écritures sur la flash : cause, usure et parade
 
 Date : 31 octobre 2026. Statut : diagnostic en lecture seule clos ; option 1
-de la parade préparée et testée hors imprimante
-(`packages/k1-control-v1/flash-log-level-v1/`), non posée. Aucun fichier
-écrit ni réglage changé sur la K1.
+de la parade posée sur la K1 le 31 octobre à 23:48, sur GO de Thomas
+(`packages/k1-control-v1/flash-log-level-v1/`) : un seul fichier Creality
+changé, sauvegardé, rien redémarré ; effet au prochain allumage, à mesurer.
 
 ## 1. En bref
 
@@ -29,7 +29,7 @@ de la parade préparée et testée hors imprimante
   retour arrière en deux minutes : environ 10 Mo par minute attendus en
   impression, 4 à 5 fois moins, peu d'effet au repos. Le bavardage CFS de
   `klippy.log` demande une mission à part, car l'audit du bus le lit. Le
-  paquet de pose est prêt (section 7) ; rien n'est appliqué.
+  niveau 3 est posé depuis le 31 octobre à 23:48 (section 7).
 
 ## 2. Méthode et limites
 
@@ -252,7 +252,7 @@ démarrage. C'est un minimum : il ne s'enregistre qu'à un arrêt propre du
 système, et chaque coupure à l'interrupteur perd la session en cours. Ce seul
 démarrage, 5 h 56 dont 4 h 37 d'impression, a écrit 14,1 Go.
 
-## 7. Parade proposée : option 1 prête, non posée
+## 7. Parade : option 1 posée le 31 octobre
 
 ### Geste immédiat : éteindre la K1 quand elle ne sert pas
 
@@ -287,6 +287,10 @@ documente lui-même 0 défaut, 1 débogage, 2 information, 3 avertissement,
   lancement des programmes, le nouveau niveau vaut au prochain allumage, fait
   par Thomas. Le fichier Creality n'est pas versionné, seules ses empreintes
   (avant `027ab3db…`, après `fcd855a5…`). Jamais pendant une impression.
+- Pose : le 31 octobre 2026, sur GO de Thomas, juste après la garde de purge
+  et avant l'impression de nuit, verrou K1 pris entre les deux sessions.
+  Préflight vert à 23:48:10, `INSTALLED_OK` à 23:48:19, `VALIDATED_OK` à
+  23:48:21 (niveau 3, reçu `INSTALLED_OK`). Aucun redémarrage ni G-code.
 - Validation : `deploy.py validate`, qui ne lit que le fichier ; après
   l'allumage, `mesure.py` au repos puis pendant l'impression suivante, en
   arrière-plan (mêmes compteurs que la section 2, plus le temps depuis
