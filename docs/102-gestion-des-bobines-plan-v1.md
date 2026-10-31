@@ -79,7 +79,13 @@ Faits du dépôt, vérifiés dans le code le 31 octobre :
   et de même couleur, prouvée une fois le 5 septembre (`T1A` → `T1B`) ;
 - le Moonraker dédié de K1 Control (Python 3.8.2) porte déjà un composant à
   nous, `calibration-ui-v1/k1_control.py`. Limites de ressources : Moonraker au
-  repos sous 45 Mo, au moins 70 Mo libres après son démarrage.
+  repos sous 45 Mo, au moins 70 Mo libres après son démarrage ;
+- mesuré le 31 octobre en lecture seule, pendant une impression : 95 Mo de
+  mémoire disponibles sur 209, le Moonraker dédié à 22 Mo et 5 % d'un cœur,
+  Klipper à 41 % d'un cœur, l'ensemble à 49 % des deux cœurs ; 5 Go libres
+  sous `/usr/data`, dont 272 Ko pour tout l'état de K1 Control ; la machine
+  écrivait déjà environ 7,7 Mo en 10 secondes sur sa mémoire flash. Le
+  composant s'ajoute à ce Moonraker, sans nouveau programme.
 
 ## 4. Architecture
 
