@@ -1,0 +1,5598 @@
+{
+ "commit": "c0c852b7ecad6ad603478e8b5e099b2151b1b5a8",
+ "copyright": "Copyright (c) 2024 Donkie",
+ "entries": [
+  {
+   "key": "3D Printing Canada|1000|149|inconnue",
+   "lines": [
+    {
+     "density": 1.24,
+     "material": "PLA",
+     "name": "Budget PLA"
+    }
+   ],
+   "manufacturer": "3D Printing Canada",
+   "net_g": 1000.0,
+   "spool_material": "inconnue",
+   "tare_g": 149.0
+  },
+  {
+   "key": "3D Printing Canada|1000|230|inconnue",
+   "lines": [
+    {
+     "density": 1.27,
+     "material": "PETG",
+     "name": "Budget PETG"
+    }
+   ],
+   "manufacturer": "3D Printing Canada",
+   "net_g": 1000.0,
+   "spool_material": "inconnue",
+   "tare_g": 230.0
+  },
+  {
+   "key": "3D-Fuel|1000|225|inconnue",
+   "lines": [
+    {
+     "density": 1.22,
+     "material": "PLA+",
+     "name": "PLA+"
+    }
+   ],
+   "manufacturer": "3D-Fuel",
+   "net_g": 1000.0,
+   "spool_material": "inconnue",
+   "tare_g": 225.0
+  },
+  {
+   "key": "3DHoJor|1000|168.7|inconnue",
+   "lines": [
+    {
+     "density": 1.06,
+     "material": "ABS+",
+     "name": "ABS+"
+    },
+    {
+     "density": 1.27,
+     "material": "PETG",
+     "name": "Basic PETG"
+    },
+    {
+     "density": 1.24,
+     "material": "PLA",
+     "name": "Basic PLA"
+    },
+    {
+     "density": 1.24,
+     "material": "PLA",
+     "name": "Crystal Rainbow PLA"
+    },
+    {
+     "density": 1.23,
+     "material": "PLA",
+     "name": "Lite PLA"
+    },
+    {
+     "density": 1.17,
+     "material": "PLA",
+     "name": "Matte PLA"
+    },
+    {
+     "density": 1.24,
+     "material": "PLA-CF",
+     "name": "PLA-CF"
+    },
+    {
+     "density": 1.25,
+     "material": "PLA",
+     "name": "Pro PLA"
+    },
+    {
+     "density": 1.24,
+     "material": "PLA",
+     "name": "Rapid PLA"
+    },
+    {
+     "density": 1.21,
+     "material": "PLA",
+     "name": "Silk PLA"
+    },
+    {
+     "density": 1.23,
+     "material": "PLA",
+     "name": "Silk PLA"
+    },
+    {
+     "density": 1.24,
+     "material": "PLA",
+     "name": "Silk Rainbow PLA"
+    },
+    {
+     "density": 1.24,
+     "material": "TPU-95A",
+     "name": "TPU-95A"
+    },
+    {
+     "density": 1.24,
+     "material": "PLA",
+     "name": "Wood PLA"
+    }
+   ],
+   "manufacturer": "3DHoJor",
+   "net_g": 1000.0,
+   "spool_material": "inconnue",
+   "tare_g": 168.7
+  },
+  {
+   "key": "3DJAKE|1000|220|inconnue",
+   "lines": [
+    {
+     "density": 1.22,
+     "material": "PLA",
+     "name": "Silk PLA"
+    }
+   ],
+   "manufacturer": "3DJAKE",
+   "net_g": 1000.0,
+   "spool_material": "inconnue",
+   "tare_g": 220.0
+  },
+  {
+   "key": "3DJAKE|1000|231|inconnue",
+   "lines": [
+    {
+     "density": 1.24,
+     "material": "PCTG",
+     "name": "PCTG"
+    },
+    {
+     "density": 1.24,
+     "material": "PETG",
+     "name": "PETG"
+    }
+   ],
+   "manufacturer": "3DJAKE",
+   "net_g": 1000.0,
+   "spool_material": "inconnue",
+   "tare_g": 231.0
+  },
+  {
+   "key": "3DJAKE|1000|240|inconnue",
+   "lines": [
+    {
+     "density": 1.07,
+     "material": "ASA",
+     "name": "ASA"
+    },
+    {
+     "density": 1.24,
+     "material": "PLA",
+     "name": "PLA"
+    }
+   ],
+   "manufacturer": "3DJAKE",
+   "net_g": 1000.0,
+   "spool_material": "inconnue",
+   "tare_g": 240.0
+  },
+  {
+   "key": "3DO|1000|220|inconnue",
+   "lines": [
+    {
+     "density": 1.24,
+     "material": "PLA",
+     "name": "PLA"
+    }
+   ],
+   "manufacturer": "3DO",
+   "net_g": 1000.0,
+   "spool_material": "inconnue",
+   "tare_g": 220.0
+  },
+  {
+   "key": "3DXTECH|500|240|plastique",
+   "lines": [
+    {
+     "density": 1.2,
+     "material": "PC",
+     "name": "3DXMAX™ PC"
+    },
+    {
+     "density": 1.14,
+     "material": "PC+ABS",
+     "name": "3DXMAX™ PC+ABS"
+    },
+    {
+     "density": 1.11,
+     "material": "ABS",
+     "name": "CarbonX™ Carbon Fiber ABS"
+    },
+    {
+     "density": 1.16,
+     "material": "PA12",
+     "name": "CarbonX™ Carbon Fiber PA12"
+    },
+    {
+     "density": 1.17,
+     "material": "PA6",
+     "name": "CarbonX™ Carbon Fiber PA6"
+    },
+    {
+     "density": 1.29,
+     "material": "PLA",
+     "name": "CarbonX™ Carbon Fiber PLA"
+    }
+   ],
+   "manufacturer": "3DXTECH",
+   "net_g": 500.0,
+   "spool_material": "plastique",
+   "tare_g": 240.0
+  },
+  {
+   "key": "3DXTECH|750|310|plastique",
+   "lines": [
+    {
+     "density": 1.11,
+     "material": "ABS",
+     "name": "CarbonX™ Carbon Fiber ABS"
+    },
+    {
+     "density": 1.11,
+     "material": "ASA",
+     "name": "CarbonX™ Carbon Fiber ASA"
+    },
+    {
+     "density": 1.36,
+     "material": "PC",
+     "name": "CarbonX™ Carbon Fiber PC"
+    },
+    {
+     "density": 1.34,
+     "material": "PETG",
+     "name": "CarbonX™ Carbon Fiber PETG"
+    },
+    {
+     "density": 1.29,
+     "material": "PLA",
+     "name": "CarbonX™ Carbon Fiber PLA"
+    },
+    {
+     "density": 1.36,
+     "material": "PC",
+     "name": "CarbonX™ ezPC™ Carbon Fiber"
+    },
+    {
+     "density": 1.2,
+     "material": "PC",
+     "name": "ezPC™"
+    }
+   ],
+   "manufacturer": "3DXTECH",
+   "net_g": 750.0,
+   "spool_material": "plastique",
+   "tare_g": 310.0
+  },
+  {
+   "key": "3DXTECH|1000|340|plastique",
+   "lines": [
+    {
+     "density": 1.07,
+     "material": "ASA",
+     "name": "3DXMAX™ ASA"
+    },
+    {
+     "density": 1.04,
+     "material": "HIPS",
+     "name": "3DXMAX™ HIPS"
+    },
+    {
+     "density": 1.05,
+     "material": "ABS",
+     "name": "3DXTECH™ ABS"
+    },
+    {
+     "density": 1.17,
+     "material": "PA6",
+     "name": "CarbonX™ Carbon Fiber PA6"
+    },
+    {
+     "density": 1.2,
+     "material": "PA6",
+     "name": "Obsidian™ Carbon Fiber PA6"
+    },
+    {
+     "density": 1.22,
+     "material": "PA6",
+     "name": "Obsidian™ Glass Fiber PA6"
+    }
+   ],
+   "manufacturer": "3DXTECH",
+   "net_g": 1000.0,
+   "spool_material": "plastique",
+   "tare_g": 340.0
+  },
+  {
+   "key": "3DXTECH|2000|945|plastique",
+   "lines": [
+    {
+     "density": 1.2,
+     "material": "PC",
+     "name": "3DXMAX™ PC"
+    },
+    {
+     "density": 1.14,
+     "material": "PC+ABS",
+     "name": "3DXMAX™ PC+ABS"
+    },
+    {
+     "density": 1.11,
+     "material": "ABS",
+     "name": "CarbonX™ Carbon Fiber ABS"
+    },
+    {
+     "density": 1.11,
+     "material": "ASA",
+     "name": "CarbonX™ Carbon Fiber ASA"
+    },
+    {
+     "density": 1.16,
+     "material": "PA12",
+     "name": "CarbonX™ Carbon Fiber PA12"
+    },
+    {
+     "density": 1.17,
+     "material": "PA6",
+     "name": "CarbonX™ Carbon Fiber PA6"
+    },
+    {
+     "density": 1.36,
+     "material": "PC",
+     "name": "CarbonX™ Carbon Fiber PC"
+    },
+    {
+     "density": 1.34,
+     "material": "PETG",
+     "name": "CarbonX™ Carbon Fiber PETG"
+    },
+    {
+     "density": 1.29,
+     "material": "PLA",
+     "name": "CarbonX™ Carbon Fiber PLA"
+    },
+    {
+     "density": 1.36,
+     "material": "PC",
+     "name": "CarbonX™ ezPC™ Carbon Fiber"
+    },
+    {
+     "density": 1.2,
+     "material": "PA6",
+     "name": "Obsidian™ Carbon Fiber PA6"
+    }
+   ],
+   "manufacturer": "3DXTECH",
+   "net_g": 2000.0,
+   "spool_material": "plastique",
+   "tare_g": 945.0
+  },
+  {
+   "key": "3DXTECH|4000|1000|plastique",
+   "lines": [
+    {
+     "density": 1.07,
+     "material": "ASA",
+     "name": "3DXMAX™ ASA"
+    },
+    {
+     "density": 1.04,
+     "material": "HIPS",
+     "name": "3DXMAX™ HIPS"
+    },
+    {
+     "density": 1.05,
+     "material": "ABS",
+     "name": "3DXTECH™ ABS"
+    }
+   ],
+   "manufacturer": "3DXTECH",
+   "net_g": 4000.0,
+   "spool_material": "plastique",
+   "tare_g": 1000.0
+  },
+  {
+   "key": "Abaflex|1000|100|carton",
+   "lines": [
+    {
+     "density": 1.223,
+     "material": "PLA",
+     "name": "PLA"
+    }
+   ],
+   "manufacturer": "Abaflex",
+   "net_g": 1000.0,
+   "spool_material": "carton",
+   "tare_g": 100.0
+  },
+  {
+   "key": "add:north|500|175|plastique",
+   "lines": [
+    {
+     "density": 1.1,
+     "material": "PA",
+     "name": "Adura FDA PA"
+    },
+    {
+     "density": 1.1,
+     "material": "PA",
+     "name": "Adura PA"
+    },
+    {
+     "density": 1.2,
+     "material": "PA-CF",
+     "name": "Adura X PA-CF"
+    },
+    {
+     "density": 1.21,
+     "material": "TPU-95A",
+     "name": "EasyFlex TPU-95A"
+    },
+    {
+     "density": 1.3,
+     "material": "PC",
+     "name": "PC Blend HT LCF"
+    },
+    {
+     "density": 1.15,
+     "material": "PLA+WOOD",
+     "name": "PLA Wood PLA+WOOD"
+    },
+    {
+     "density": 1.3,
+     "material": "PETG-CF",
+     "name": "Rigid X PETG-CF"
+    },
+    {
+     "density": 1.1,
+     "material": "TPU-85A",
+     "name": "TPU Pro Matte 85A TPU-85A"
+    },
+    {
+     "density": 1.1,
+     "material": "TPU-95A",
+     "name": "TPU Pro Matte 95A TPU-95A"
+    }
+   ],
+   "manufacturer": "add:north",
+   "net_g": 500.0,
+   "spool_material": "plastique",
+   "tare_g": 175.0
+  },
+  {
+   "key": "add:north|750|207|plastique",
+   "lines": [
+    {
+     "density": 1.33,
+     "material": "PA",
+     "name": "Addbor N25 PA"
+    },
+    {
+     "density": 1.24,
+     "material": "PLA",
+     "name": "E-PLA"
+    },
+    {
+     "density": 1.3,
+     "material": "PETG",
+     "name": "ESD PETG"
+    },
+    {
+     "density": 1.37,
+     "material": "PLA",
+     "name": "HT-PLA Pro Matte"
+    },
+    {
+     "density": 1.27,
+     "material": "PETG",
+     "name": "PETG"
+    },
+    {
+     "density": 1.25,
+     "material": "PETG",
+     "name": "PETG Flame Retardant V0"
+    },
+    {
+     "density": 1.27,
+     "material": "PETG",
+     "name": "PETG PRO Matte"
+    },
+    {
+     "density": 1.26,
+     "material": "PLA",
+     "name": "PLA Premium Silk"
+    },
+    {
+     "density": 1.04,
+     "material": "ABS",
+     "name": "rABS"
+    },
+    {
+     "density": 1.27,
+     "material": "PETG",
+     "name": "rPETG Matte"
+    },
+    {
+     "density": 1.26,
+     "material": "PLA",
+     "name": "Textura™ Flare PLA"
+    },
+    {
+     "density": 1.26,
+     "material": "PLA",
+     "name": "Textura™ PLA"
+    },
+    {
+     "density": 1.26,
+     "material": "PLA",
+     "name": "X-PLA"
+    },
+    {
+     "density": 1.25,
+     "material": "PLA",
+     "name": "X-PLA High Speed"
+    }
+   ],
+   "manufacturer": "add:north",
+   "net_g": 750.0,
+   "spool_material": "plastique",
+   "tare_g": 207.0
+  },
+  {
+   "key": "add:north|1000|238|plastique",
+   "lines": [
+    {
+     "density": 1.3,
+     "material": "PVDF",
+     "name": "Adamant S1 PVDF"
+    },
+    {
+     "density": 1.18,
+     "material": "PA",
+     "name": "Addlantis PA"
+    },
+    {
+     "density": 1.2,
+     "material": "PA-CF",
+     "name": "Adura X PA-CF"
+    },
+    {
+     "density": 1.3,
+     "material": "PC",
+     "name": "PC Blend HT LCF"
+    },
+    {
+     "density": 1.24,
+     "material": "PETG",
+     "name": "PETG Economy"
+    },
+    {
+     "density": 1.25,
+     "material": "PLA-CF",
+     "name": "PLA CF PLA-CF"
+    },
+    {
+     "density": 1.24,
+     "material": "PLA",
+     "name": "PLA Economy"
+    },
+    {
+     "density": 1.15,
+     "material": "PLA+WOOD",
+     "name": "PLA Wood PLA+WOOD"
+    },
+    {
+     "density": 1.3,
+     "material": "PETG-CF",
+     "name": "Rigid X PETG-CF"
+    },
+    {
+     "density": 1.24,
+     "material": "PLA",
+     "name": "rPLA RE-ADD"
+    },
+    {
+     "density": 1.1,
+     "material": "TPU-85A",
+     "name": "TPU Pro Matte 85A TPU-85A"
+    },
+    {
+     "density": 1.1,
+     "material": "TPU-95A",
+     "name": "TPU Pro Matte 95A TPU-95A"
+    }
+   ],
+   "manufacturer": "add:north",
+   "net_g": 1000.0,
+   "spool_material": "plastique",
+   "tare_g": 238.0
+  },
+  {
+   "key": "add:north|2300|600|plastique",
+   "lines": [
+    {
+     "density": 1.24,
+     "material": "PLA",
+     "name": "E-PLA"
+    },
+    {
+     "density": 1.37,
+     "material": "PLA",
+     "name": "HT-PLA Pro Matte"
+    },
+    {
+     "density": 1.27,
+     "material": "PETG",
+     "name": "PETG"
+    },
+    {
+     "density": 1.27,
+     "material": "PETG",
+     "name": "PETG PRO Matte"
+    },
+    {
+     "density": 1.26,
+     "material": "PLA",
+     "name": "X-PLA"
+    }
+   ],
+   "manufacturer": "add:north",
+   "net_g": 2300.0,
+   "spool_material": "plastique",
+   "tare_g": 600.0
+  },
+  {
+   "key": "add:north|5000|780|plastique",
+   "lines": [
+    {
+     "density": 1.27,
+     "material": "PETG",
+     "name": "PETG"
+    },
+    {
+     "density": 1.26,
+     "material": "PLA",
+     "name": "X-PLA"
+    }
+   ],
+   "manufacturer": "add:north",
+   "net_g": 5000.0,
+   "spool_material": "plastique",
+   "tare_g": 780.0
+  },
+  {
+   "key": "AmazonBasics|1000|232|plastique",
+   "lines": [
+    {
+     "density": 1.25,
+     "material": "PLA",
+     "name": "PLA"
+    }
+   ],
+   "manufacturer": "AmazonBasics",
+   "net_g": 1000.0,
+   "spool_material": "plastique",
+   "tare_g": 232.0
+  },
+  {
+   "key": "AmazonBasics|1000|252|inconnue",
+   "lines": [
+    {
+     "density": 1.27,
+     "material": "ABS",
+     "name": "ABS"
+    }
+   ],
+   "manufacturer": "AmazonBasics",
+   "net_g": 1000.0,
+   "spool_material": "inconnue",
+   "tare_g": 252.0
+  },
+  {
+   "key": "AmazonBasics|1000|266|inconnue",
+   "lines": [
+    {
+     "density": 1.25,
+     "material": "PLA",
+     "name": "Silk PLA"
+    }
+   ],
+   "manufacturer": "AmazonBasics",
+   "net_g": 1000.0,
+   "spool_material": "inconnue",
+   "tare_g": 266.0
+  },
+  {
+   "key": "AmazonBasics|1000|390|inconnue",
+   "lines": [
+    {
+     "density": 1.29,
+     "material": "PETG",
+     "name": "PETG"
+    }
+   ],
+   "manufacturer": "AmazonBasics",
+   "net_g": 1000.0,
+   "spool_material": "inconnue",
+   "tare_g": 390.0
+  },
+  {
+   "key": "Ambrosia|1000|130|carton",
+   "lines": [
+    {
+     "density": 1.03,
+     "material": "ABS",
+     "name": "ABS"
+    },
+    {
+     "density": 1.08,
+     "material": "ASA",
+     "name": "ASA"
+    },
+    {
+     "density": 1.09,
+     "material": "ASA-CF",
+     "name": "ASA-CF"
+    },
+    {
+     "density": 1.1,
+     "material": "ASA-GF",
+     "name": "ASA-GF"
+    },
+    {
+     "density": 1.08,
+     "material": "ASA",
+     "name": "Dolos Color Shifting ASA"
+    },
+    {
+     "density": 1.25,
+     "material": "PLA",
+     "name": "Dolos Color Shifting PLA"
+    },
+    {
+     "density": 1.36,
+     "material": "PC-CF",
+     "name": "PC-CF"
+    },
+    {
+     "density": 1.14,
+     "material": "PCABS",
+     "name": "PCABS"
+    },
+    {
+     "density": 1.27,
+     "material": "PETG",
+     "name": "PETG"
+    },
+    {
+     "density": 1.25,
+     "material": "PLA",
+     "name": "PLA"
+    },
+    {
+     "density": 1.25,
+     "material": "PLA",
+     "name": "Silk PLA"
+    },
+    {
+     "density": 1.23,
+     "material": "TPU",
+     "name": "TPU"
+    },
+    {
+     "density": 1.09,
+     "material": "ABS",
+     "name": "Über ABS"
+    }
+   ],
+   "manufacturer": "Ambrosia",
+   "net_g": 1000.0,
+   "spool_material": "carton",
+   "tare_g": 130.0
+  },
+  {
+   "key": "Ambrosia|1000|130|inconnue",
+   "lines": [
+    {
+     "density": 1.08,
+     "material": "ASA",
+     "name": "Galactic ASA"
+    },
+    {
+     "density": 1.25,
+     "material": "PLA",
+     "name": "Galactic PLA"
+    },
+    {
+     "density": 1.03,
+     "material": "ABS",
+     "name": "Matte ABS"
+    },
+    {
+     "density": 1.14,
+     "material": "PC+ABS",
+     "name": "PC+ABS"
+    }
+   ],
+   "manufacturer": "Ambrosia",
+   "net_g": 1000.0,
+   "spool_material": "inconnue",
+   "tare_g": 130.0
+  },
+  {
+   "key": "Ambrosia|1000|174|carton",
+   "lines": [
+    {
+     "density": 1.21,
+     "material": "PHA",
+     "name": "PHA"
+    }
+   ],
+   "manufacturer": "Ambrosia",
+   "net_g": 1000.0,
+   "spool_material": "carton",
+   "tare_g": 174.0
+  },
+  {
+   "key": "Ambrosia|2000|632|carton",
+   "lines": [
+    {
+     "density": 1.08,
+     "material": "ASA",
+     "name": "ASA"
+    }
+   ],
+   "manufacturer": "Ambrosia",
+   "net_g": 2000.0,
+   "spool_material": "carton",
+   "tare_g": 632.0
+  },
+  {
+   "key": "Ambrosia|5000|819|carton",
+   "lines": [
+    {
+     "density": 1.08,
+     "material": "ASA",
+     "name": "ASA"
+    }
+   ],
+   "manufacturer": "Ambrosia",
+   "net_g": 5000.0,
+   "spool_material": "carton",
+   "tare_g": 819.0
+  },
+  {
+   "key": "AmeLeis|250|250|inconnue",
+   "lines": [
+    {
+     "density": 1.24,
+     "material": "PLA",
+     "name": "PLA"
+    }
+   ],
+   "manufacturer": "AmeLeis",
+   "net_g": 250.0,
+   "spool_material": "inconnue",
+   "tare_g": 250.0
+  },
+  {
+   "key": "AmeLeis|1000|250|inconnue",
+   "lines": [
+    {
+     "density": 1.24,
+     "material": "PLA",
+     "name": "PLA"
+    }
+   ],
+   "manufacturer": "AmeLeis",
+   "net_g": 1000.0,
+   "spool_material": "inconnue",
+   "tare_g": 250.0
+  },
+  {
+   "key": "ANYCUBIC|1000|125|carton",
+   "lines": [
+    {
+     "density": 1.26,
+     "material": "PLA",
+     "name": "High Speed PLA"
+    },
+    {
+     "density": 1.24,
+     "material": "PLA",
+     "name": "Matte PLA"
+    },
+    {
+     "density": 1.23,
+     "material": "PLA",
+     "name": "PLA"
+    }
+   ],
+   "manufacturer": "ANYCUBIC",
+   "net_g": 1000.0,
+   "spool_material": "carton",
+   "tare_g": 125.0
+  },
+  {
+   "key": "ANYCUBIC|1000|127|plastique",
+   "lines": [
+    {
+     "density": 1.05,
+     "material": "ABS",
+     "name": "ABS"
+    },
+    {
+     "density": 1.24,
+     "material": "PLA",
+     "name": "Basic PLA"
+    },
+    {
+     "density": 1.24,
+     "material": "PLA",
+     "name": "Glow PLA"
+    },
+    {
+     "density": 1.2,
+     "material": "PLA",
+     "name": "Metal PLA"
+    },
+    {
+     "density": 1.3,
+     "material": "PETG",
+     "name": "PETG"
+    },
+    {
+     "density": 1.23,
+     "material": "PLA+",
+     "name": "PLA+"
+    },
+    {
+     "density": 1.23,
+     "material": "TPU",
+     "name": "TPU"
+    }
+   ],
+   "manufacturer": "ANYCUBIC",
+   "net_g": 1000.0,
+   "spool_material": "plastique",
+   "tare_g": 127.0
+  },
+  {
+   "key": "Artillery|1000|155|inconnue",
+   "lines": [
+    {
+     "density": 1.24,
+     "material": "PLA",
+     "name": "Basic PLA"
+    }
+   ],
+   "manufacturer": "Artillery",
+   "net_g": 1000.0,
+   "spool_material": "inconnue",
+   "tare_g": 155.0
+  },
+  {
+   "key": "AURAPOL|850|250|plastique",
+   "lines": [
+    {
+     "density": 1.039,
+     "material": "ASA",
+     "name": "ASA"
+    }
+   ],
+   "manufacturer": "AURAPOL",
+   "net_g": 850.0,
+   "spool_material": "plastique",
+   "tare_g": 250.0
+  },
+  {
+   "key": "AURAPOL|1000|250|plastique",
+   "lines": [
+    {
+     "density": 1.259,
+     "material": "PETG",
+     "name": "PETG"
+    },
+    {
+     "density": 1.223,
+     "material": "PLA",
+     "name": "PLA"
+    }
+   ],
+   "manufacturer": "AURAPOL",
+   "net_g": 1000.0,
+   "spool_material": "plastique",
+   "tare_g": 250.0
+  },
+  {
+   "key": "AzureFilm|1000|164|inconnue",
+   "lines": [
+    {
+     "density": 1.12,
+     "material": "TPU",
+     "name": "85A TPU"
+    },
+    {
+     "density": 1.16,
+     "material": "TPU",
+     "name": "98A TPU"
+    },
+    {
+     "density": 1.24,
+     "material": "CF",
+     "name": "Carbon Fiber CF"
+    },
+    {
+     "density": 1.4,
+     "material": "CF",
+     "name": "Carbon Fiber CF"
+    },
+    {
+     "density": 1.24,
+     "material": "PLA",
+     "name": "Glitter PLA"
+    },
+    {
+     "density": 1.35,
+     "material": "PLA",
+     "name": "Matte PLA"
+    },
+    {
+     "density": 1.07,
+     "material": "ASA",
+     "name": "Original ASA"
+    },
+    {
+     "density": 1.04,
+     "material": "PC",
+     "name": "PC ABS"
+    },
+    {
+     "density": 1.29,
+     "material": "PCTG",
+     "name": "PCTG"
+    },
+    {
+     "density": 1.29,
+     "material": "PETG",
+     "name": "PETG"
+    },
+    {
+     "density": 1.24,
+     "material": "PLA",
+     "name": "PLA"
+    },
+    {
+     "density": 1.13,
+     "material": "ABS",
+     "name": "Plus ABS"
+    },
+    {
+     "density": 1.13,
+     "material": "ABS",
+     "name": "Prime ABS"
+    },
+    {
+     "density": 1.15,
+     "material": "ASA",
+     "name": "Prime ASA"
+    },
+    {
+     "density": 1.27,
+     "material": "PLA",
+     "name": "Prime PLA"
+    },
+    {
+     "density": 1.24,
+     "material": "PLA",
+     "name": "Silk PLA"
+    }
+   ],
+   "manufacturer": "AzureFilm",
+   "net_g": 1000.0,
+   "spool_material": "inconnue",
+   "tare_g": 164.0
+  },
+  {
+   "key": "Bambu Lab|500|250|inconnue",
+   "lines": [
+    {
+     "density": 1.09,
+     "material": "PA6-CF",
+     "name": "PA6-CF"
+    },
+    {
+     "density": 1.06,
+     "material": "PAHT-CF",
+     "name": "PAHT-CF"
+    },
+    {
+     "density": 1.29,
+     "material": "PET-CF",
+     "name": "PET-CF"
+    },
+    {
+     "density": 1.27,
+     "material": "PVA",
+     "name": "PVA"
+    },
+    {
+     "density": 1.16,
+     "material": "ABS",
+     "name": "Support for ABS"
+    },
+    {
+     "density": 1.17,
+     "material": "PA",
+     "name": "Support for PA"
+    },
+    {
+     "density": 1.33,
+     "material": "PLA",
+     "name": "Support for PLA"
+    },
+    {
+     "density": 1.28,
+     "material": "PLA",
+     "name": "Support for PLA/PETG"
+    }
+   ],
+   "manufacturer": "Bambu Lab",
+   "net_g": 500.0,
+   "spool_material": "inconnue",
+   "tare_g": 250.0
+  },
+  {
+   "key": "Bambu Lab|1000|250|inconnue",
+   "lines": [
+    {
+     "density": 1.05,
+     "material": "ABS",
+     "name": "ABS"
+    },
+    {
+     "density": 1.08,
+     "material": "ABS-GF",
+     "name": "ABS-GF"
+    },
+    {
+     "density": 1.21,
+     "material": "PLA",
+     "name": "Aero PLA"
+    },
+    {
+     "density": 0.99,
+     "material": "ASA",
+     "name": "ASA"
+    },
+    {
+     "density": 1.05,
+     "material": "ASA",
+     "name": "ASA"
+    },
+    {
+     "density": 1.02,
+     "material": "ASA-CF",
+     "name": "ASA-CF"
+    },
+    {
+     "density": 1.26,
+     "material": "TPU",
+     "name": "For AMS TPU"
+    },
+    {
+     "density": 1.19,
+     "material": "PC",
+     "name": "FR PC"
+    },
+    {
+     "density": 1.19,
+     "material": "PLA",
+     "name": "Galaxy PLA"
+    },
+    {
+     "density": 1.26,
+     "material": "PLA",
+     "name": "Glow PLA"
+    },
+    {
+     "density": 1.28,
+     "material": "PETG",
+     "name": "HF PETG"
+    },
+    {
+     "density": 1.22,
+     "material": "TPU-95A",
+     "name": "HF TPU-95A"
+    },
+    {
+     "density": 1.4,
+     "material": "PLA",
+     "name": "Lite PLA"
+    },
+    {
+     "density": 1.37,
+     "material": "PETG",
+     "name": "Matte PETG"
+    },
+    {
+     "density": 1.31,
+     "material": "PLA",
+     "name": "Matte PLA"
+    },
+    {
+     "density": 1.25,
+     "material": "PLA",
+     "name": "Metallic PLA"
+    },
+    {
+     "density": 1.09,
+     "material": "PA6-CF",
+     "name": "PA6-CF"
+    },
+    {
+     "density": 1.09,
+     "material": "PA6-GF",
+     "name": "PA6-GF"
+    },
+    {
+     "density": 1.06,
+     "material": "PAHT-CF",
+     "name": "PAHT-CF"
+    },
+    {
+     "density": 1.2,
+     "material": "PC",
+     "name": "PC"
+    },
+    {
+     "density": 1.29,
+     "material": "PET-CF",
+     "name": "PET-CF"
+    },
+    {
+     "density": 1.25,
+     "material": "PETG",
+     "name": "PETG"
+    },
+    {
+     "density": 1.25,
+     "material": "PETG-CF",
+     "name": "PETG-CF"
+    },
+    {
+     "density": 1.22,
+     "material": "PLA",
+     "name": "PLA"
+    },
+    {
+     "density": 1.24,
+     "material": "PLA",
+     "name": "PLA"
+    },
+    {
+     "density": 1.21,
+     "material": "PLA+WOOD",
+     "name": "PLA+WOOD"
+    },
+    {
+     "density": 1.22,
+     "material": "PLA-CF",
+     "name": "PLA-CF"
+    },
+    {
+     "density": 1.26,
+     "material": "PPS-CF",
+     "name": "PPS-CF"
+    },
+    {
+     "density": 1.24,
+     "material": "PLA",
+     "name": "Pure PLA"
+    },
+    {
+     "density": 1.32,
+     "material": "PLA",
+     "name": "Silk PLA"
+    },
+    {
+     "density": 1.27,
+     "material": "PLA",
+     "name": "Silk+ PLA"
+    },
+    {
+     "density": 1.26,
+     "material": "PLA",
+     "name": "Sparkle PLA"
+    },
+    {
+     "density": 1.21,
+     "material": "PLA",
+     "name": "Tough+ PLA"
+    },
+    {
+     "density": 1.22,
+     "material": "TPU",
+     "name": "TPU"
+    },
+    {
+     "density": 1.24,
+     "material": "TPU-85A",
+     "name": "TPU-85A"
+    },
+    {
+     "density": 1.24,
+     "material": "TPU-90A",
+     "name": "TPU-90A"
+    },
+    {
+     "density": 1.22,
+     "material": "PLA",
+     "name": "Translucent PLA"
+    }
+   ],
+   "manufacturer": "Bambu Lab",
+   "net_g": 1000.0,
+   "spool_material": "inconnue",
+   "tare_g": 250.0
+  },
+  {
+   "key": "BIQU|1000|250|inconnue",
+   "lines": [
+    {
+     "density": 1.24,
+     "material": "PLA",
+     "name": "GO PLA"
+    }
+   ],
+   "manufacturer": "BIQU",
+   "net_g": 1000.0,
+   "spool_material": "inconnue",
+   "tare_g": 250.0
+  },
+  {
+   "key": "CC3D|1000|180|plastique",
+   "lines": [
+    {
+     "density": 1.08,
+     "material": "ABS",
+     "name": "ABS+"
+    },
+    {
+     "density": 1.27,
+     "material": "PETG",
+     "name": "PETG"
+    },
+    {
+     "density": 1.21,
+     "material": "PLA",
+     "name": "Silk PLA"
+    }
+   ],
+   "manufacturer": "CC3D",
+   "net_g": 1000.0,
+   "spool_material": "plastique",
+   "tare_g": 180.0
+  },
+  {
+   "key": "CHCKX|1000|145|inconnue",
+   "lines": [
+    {
+     "density": 1.24,
+     "material": "PETG",
+     "name": "PETG"
+    }
+   ],
+   "manufacturer": "CHCKX",
+   "net_g": 1000.0,
+   "spool_material": "inconnue",
+   "tare_g": 145.0
+  },
+  {
+   "key": "Closin|1000|146|plastique",
+   "lines": [
+    {
+     "density": 1.27,
+     "material": "PETG",
+     "name": "PETG"
+    }
+   ],
+   "manufacturer": "Closin",
+   "net_g": 1000.0,
+   "spool_material": "plastique",
+   "tare_g": 146.0
+  },
+  {
+   "key": "CR3D|1000|231|inconnue",
+   "lines": [
+    {
+     "density": 1.05,
+     "material": "ABS",
+     "name": "ABS"
+    },
+    {
+     "density": 1.18,
+     "material": "ABS+GF20",
+     "name": "ABS FibCR20 ABS+GF20"
+    }
+   ],
+   "manufacturer": "CR3D",
+   "net_g": 1000.0,
+   "spool_material": "inconnue",
+   "tare_g": 231.0
+  },
+  {
+   "key": "CR3D|1000|248|inconnue",
+   "lines": [
+    {
+     "density": 1.24,
+     "material": "PETG",
+     "name": "PETG"
+    }
+   ],
+   "manufacturer": "CR3D",
+   "net_g": 1000.0,
+   "spool_material": "inconnue",
+   "tare_g": 248.0
+  },
+  {
+   "key": "Creality|1000|120|carton",
+   "lines": [
+    {
+     "density": 1.04,
+     "material": "ABS",
+     "name": "Hyper ABS"
+    }
+   ],
+   "manufacturer": "Creality",
+   "net_g": 1000.0,
+   "spool_material": "carton",
+   "tare_g": 120.0
+  },
+  {
+   "key": "Creality|1000|120|inconnue",
+   "lines": [
+    {
+     "density": 1.25,
+     "material": "PLA",
+     "name": "Ender-PLA"
+    },
+    {
+     "density": 1.24,
+     "material": "PLA",
+     "name": "Hyper PLA"
+    },
+    {
+     "density": 1.24,
+     "material": "PLA",
+     "name": "Hyper RFID PLA"
+    },
+    {
+     "density": 1.24,
+     "material": "PLA",
+     "name": "PLA"
+    }
+   ],
+   "manufacturer": "Creality",
+   "net_g": 1000.0,
+   "spool_material": "inconnue",
+   "tare_g": 120.0
+  },
+  {
+   "key": "Creality|1000|225|plastique",
+   "lines": [
+    {
+     "density": 1.25,
+     "material": "PETG",
+     "name": "CR-PETG"
+    }
+   ],
+   "manufacturer": "Creality",
+   "net_g": 1000.0,
+   "spool_material": "plastique",
+   "tare_g": 225.0
+  },
+  {
+   "key": "Das Filament|800|212|inconnue",
+   "lines": [
+    {
+     "density": 1.24,
+     "material": "PLA",
+     "name": "PLA"
+    }
+   ],
+   "manufacturer": "Das Filament",
+   "net_g": 800.0,
+   "spool_material": "inconnue",
+   "tare_g": 212.0
+  },
+  {
+   "key": "Das Filament|800|250|inconnue",
+   "lines": [
+    {
+     "density": 1.29,
+     "material": "PETG",
+     "name": "PETG"
+    }
+   ],
+   "manufacturer": "Das Filament",
+   "net_g": 800.0,
+   "spool_material": "inconnue",
+   "tare_g": 250.0
+  },
+  {
+   "key": "Deeplee|1000|113|plastique",
+   "lines": [
+    {
+     "density": 1.24,
+     "material": "PLA+",
+     "name": "High Speed 2.0 PLA+"
+    }
+   ],
+   "manufacturer": "Deeplee",
+   "net_g": 1000.0,
+   "spool_material": "plastique",
+   "tare_g": 113.0
+  },
+  {
+   "key": "Deeplee|1000|140|carton",
+   "lines": [
+    {
+     "density": 1.25,
+     "material": "PLA",
+     "name": "PLA"
+    },
+    {
+     "density": 1.25,
+     "material": "PLA+",
+     "name": "PLA+"
+    }
+   ],
+   "manufacturer": "Deeplee",
+   "net_g": 1000.0,
+   "spool_material": "carton",
+   "tare_g": 140.0
+  },
+  {
+   "key": "Devil Design|1000|260|inconnue",
+   "lines": [
+    {
+     "density": 1.04,
+     "material": "ABS+",
+     "name": "ABS+"
+    },
+    {
+     "density": 1.07,
+     "material": "ASA",
+     "name": "ASA"
+    },
+    {
+     "density": 1.05,
+     "material": "HIPS",
+     "name": "HIPS"
+    },
+    {
+     "density": 1.23,
+     "material": "PETG",
+     "name": "PETG"
+    },
+    {
+     "density": 1.24,
+     "material": "PLA",
+     "name": "PLA"
+    },
+    {
+     "density": 1.23,
+     "material": "PLA",
+     "name": "SILK PLA"
+    },
+    {
+     "density": 1.23,
+     "material": "TPU-55D",
+     "name": "TPU-55D"
+    }
+   ],
+   "manufacturer": "Devil Design",
+   "net_g": 1000.0,
+   "spool_material": "inconnue",
+   "tare_g": 260.0
+  },
+  {
+   "key": "ELEGOO|1000|154|carton",
+   "lines": [
+    {
+     "density": 1.09,
+     "material": "ASA",
+     "name": "ASA"
+    },
+    {
+     "density": 1.26,
+     "material": "PLA",
+     "name": "Matte PLA"
+    },
+    {
+     "density": 1.29,
+     "material": "PETG",
+     "name": "PETG PRO"
+    },
+    {
+     "density": 1.26,
+     "material": "PLA",
+     "name": "PLA"
+    },
+    {
+     "density": 1.3,
+     "material": "PLA+",
+     "name": "PLA+"
+    },
+    {
+     "density": 1.29,
+     "material": "PETG",
+     "name": "RAPID PETG"
+    },
+    {
+     "density": 1.23,
+     "material": "PLA+",
+     "name": "RAPID PLA+"
+    }
+   ],
+   "manufacturer": "ELEGOO",
+   "net_g": 1000.0,
+   "spool_material": "carton",
+   "tare_g": 154.0
+  },
+  {
+   "key": "ELEGOO|1000|154|plastique",
+   "lines": [
+    {
+     "density": 1.25,
+     "material": "PLA",
+     "name": "Silk PLA"
+    }
+   ],
+   "manufacturer": "ELEGOO",
+   "net_g": 1000.0,
+   "spool_material": "plastique",
+   "tare_g": 154.0
+  },
+  {
+   "key": "Eryone|1000|187|inconnue",
+   "lines": [
+    {
+     "density": 1.27,
+     "material": "PETG",
+     "name": "PETG"
+    },
+    {
+     "density": 1.24,
+     "material": "PLA",
+     "name": "PLA"
+    },
+    {
+     "density": 1.24,
+     "material": "PLA",
+     "name": "Silk PLA"
+    }
+   ],
+   "manufacturer": "Eryone",
+   "net_g": 1000.0,
+   "spool_material": "inconnue",
+   "tare_g": 187.0
+  },
+  {
+   "key": "eSun|1000|153|carton",
+   "lines": [
+    {
+     "density": 1.256,
+     "material": "PLA",
+     "name": "PLA-Silk Magic"
+    }
+   ],
+   "manufacturer": "eSun",
+   "net_g": 1000.0,
+   "spool_material": "carton",
+   "tare_g": 153.0
+  },
+  {
+   "key": "eSun|1000|154|inconnue",
+   "lines": [
+    {
+     "density": 1.23,
+     "material": "PLA",
+     "name": "PLA-Silk Mystic"
+    }
+   ],
+   "manufacturer": "eSun",
+   "net_g": 1000.0,
+   "spool_material": "inconnue",
+   "tare_g": 154.0
+  },
+  {
+   "key": "eSun|1000|160|carton",
+   "lines": [
+    {
+     "density": 1.27,
+     "material": "PETG",
+     "name": "Basic PETG"
+    }
+   ],
+   "manufacturer": "eSun",
+   "net_g": 1000.0,
+   "spool_material": "carton",
+   "tare_g": 160.0
+  },
+  {
+   "key": "eSun|1000|170|carton",
+   "lines": [
+    {
+     "density": 1.24,
+     "material": "PLA+",
+     "name": "ePLA+HS"
+    },
+    {
+     "density": 1.1,
+     "material": "PLA",
+     "name": "PLA"
+    },
+    {
+     "density": 1.23,
+     "material": "PLA+",
+     "name": "PLA+"
+    },
+    {
+     "density": 1.24,
+     "material": "PLA",
+     "name": "PLA-Basic"
+    },
+    {
+     "density": 1.23,
+     "material": "PLA",
+     "name": "PLA-lite"
+    },
+    {
+     "density": 1.2,
+     "material": "PLA",
+     "name": "PLA-Luminous"
+    },
+    {
+     "density": 1.329,
+     "material": "PLA",
+     "name": "PLA-Matte"
+    }
+   ],
+   "manufacturer": "eSun",
+   "net_g": 1000.0,
+   "spool_material": "carton",
+   "tare_g": 170.0
+  },
+  {
+   "key": "eSun|1000|220|plastique",
+   "lines": [
+    {
+     "density": 1.26,
+     "material": "PETG-CF",
+     "name": "PETG-CF"
+    }
+   ],
+   "manufacturer": "eSun",
+   "net_g": 1000.0,
+   "spool_material": "plastique",
+   "tare_g": 220.0
+  },
+  {
+   "key": "eSun|1000|240|inconnue",
+   "lines": [
+    {
+     "density": 1.06,
+     "material": "ABS+",
+     "name": "ABS+"
+    },
+    {
+     "density": 1.21,
+     "material": "PLA",
+     "name": "ePLA-Silk"
+    },
+    {
+     "density": 1.05,
+     "material": "HIPS",
+     "name": "HIPS"
+    },
+    {
+     "density": 1.27,
+     "material": "PETG",
+     "name": "PETG"
+    },
+    {
+     "density": 1.21,
+     "material": "TPU-95A",
+     "name": "TPU-95A"
+    }
+   ],
+   "manufacturer": "eSun",
+   "net_g": 1000.0,
+   "spool_material": "inconnue",
+   "tare_g": 240.0
+  },
+  {
+   "key": "Extrudr|500|260|plastique",
+   "lines": [
+    {
+     "density": 1.03,
+     "material": "PA12-CF",
+     "name": "DuraPro PA12-CF"
+    },
+    {
+     "density": 1.22,
+     "material": "TPU-CF",
+     "name": "FLEX - - Hard TPU-CF"
+    },
+    {
+     "density": 1.2,
+     "material": "TPU",
+     "name": "FLEX - - Medium-ESD TPU"
+    }
+   ],
+   "manufacturer": "Extrudr",
+   "net_g": 500.0,
+   "spool_material": "plastique",
+   "tare_g": 260.0
+  },
+  {
+   "key": "Extrudr|700|260|plastique",
+   "lines": [
+    {
+     "density": 1.2,
+     "material": "PCPBT-CF",
+     "name": "DuraPro PCPBT-CF"
+    }
+   ],
+   "manufacturer": "Extrudr",
+   "net_g": 700.0,
+   "spool_material": "plastique",
+   "tare_g": 260.0
+  },
+  {
+   "key": "Extrudr|750|260|plastique",
+   "lines": [
+    {
+     "density": 1.06,
+     "material": "ABS",
+     "name": "DuraPro ABS"
+    },
+    {
+     "density": 1.05,
+     "material": "ASA",
+     "name": "DuraPro ASA"
+    },
+    {
+     "density": 1.14,
+     "material": "ASA-CF",
+     "name": "DuraPro ASA-CF"
+    },
+    {
+     "density": 1.1,
+     "material": "ASA-GF",
+     "name": "DuraPro ASA-GF"
+    },
+    {
+     "density": 1.01,
+     "material": "PA12",
+     "name": "DuraPro PA12"
+    },
+    {
+     "density": 1.2,
+     "material": "PCPBT",
+     "name": "DuraPro PCPBT"
+    },
+    {
+     "density": 1.2,
+     "material": "TPU",
+     "name": "FLEX - - Medium TPU"
+    },
+    {
+     "density": 1.18,
+     "material": "TPU",
+     "name": "FLEX - - Semisoft TPU"
+    },
+    {
+     "density": 1.2,
+     "material": "TPU",
+     "name": "FLEX - Hard TPU"
+    }
+   ],
+   "manufacturer": "Extrudr",
+   "net_g": 750.0,
+   "spool_material": "plastique",
+   "tare_g": 260.0
+  },
+  {
+   "key": "Extrudr|800|260|plastique",
+   "lines": [
+    {
+     "density": 1.25,
+     "material": "BIOFUSION",
+     "name": "BIOFUSION"
+    },
+    {
+     "density": 1.21,
+     "material": "PCTG",
+     "name": "PCTG"
+    },
+    {
+     "density": 1.29,
+     "material": "PETG",
+     "name": "PETG"
+    },
+    {
+     "density": 1.35,
+     "material": "GREENTEC",
+     "name": "Pro GREENTEC"
+    },
+    {
+     "density": 1.2,
+     "material": "GREENTEC-CF",
+     "name": "Pro GREENTEC-CF"
+    },
+    {
+     "density": 1.23,
+     "material": "WOOD",
+     "name": "WOOD"
+    },
+    {
+     "density": 1.29,
+     "material": "PETG-CF",
+     "name": "X PETG-CF"
+    }
+   ],
+   "manufacturer": "Extrudr",
+   "net_g": 800.0,
+   "spool_material": "plastique",
+   "tare_g": 260.0
+  },
+  {
+   "key": "Extrudr|1000|260|carton",
+   "lines": [
+    {
+     "density": 1.41,
+     "material": "PETG",
+     "name": "X - REC PETG"
+    }
+   ],
+   "manufacturer": "Extrudr",
+   "net_g": 1000.0,
+   "spool_material": "carton",
+   "tare_g": 260.0
+  },
+  {
+   "key": "Extrudr|1000|260|plastique",
+   "lines": [
+    {
+     "density": 1.24,
+     "material": "PLA",
+     "name": "Basic PLA"
+    },
+    {
+     "density": 1.24,
+     "material": "PLA",
+     "name": "HS PLA"
+    },
+    {
+     "density": 1.41,
+     "material": "PETG",
+     "name": "MATT PETG"
+    },
+    {
+     "density": 1.3,
+     "material": "PLA",
+     "name": "NX2-MATT PLA"
+    }
+   ],
+   "manufacturer": "Extrudr",
+   "net_g": 1000.0,
+   "spool_material": "plastique",
+   "tare_g": 260.0
+  },
+  {
+   "key": "Extrudr|1100|260|plastique",
+   "lines": [
+    {
+     "density": 1.45,
+     "material": "FLAX",
+     "name": "FLAX"
+    },
+    {
+     "density": 1.3,
+     "material": "GREENTEC",
+     "name": "GREENTEC"
+    },
+    {
+     "density": 1.25,
+     "material": "PEARL",
+     "name": "PEARL"
+    },
+    {
+     "density": 1.29,
+     "material": "PETG",
+     "name": "PETG"
+    }
+   ],
+   "manufacturer": "Extrudr",
+   "net_g": 1100.0,
+   "spool_material": "plastique",
+   "tare_g": 260.0
+  },
+  {
+   "key": "Extrudr|2000|600|plastique",
+   "lines": [
+    {
+     "density": 1.06,
+     "material": "ABS",
+     "name": "DuraPro ABS"
+    },
+    {
+     "density": 1.05,
+     "material": "ASA",
+     "name": "DuraPro ASA"
+    },
+    {
+     "density": 1.14,
+     "material": "ASA-CF",
+     "name": "DuraPro ASA-CF"
+    },
+    {
+     "density": 1.01,
+     "material": "PA12",
+     "name": "DuraPro PA12"
+    },
+    {
+     "density": 1.03,
+     "material": "PA12-CF",
+     "name": "DuraPro PA12-CF"
+    },
+    {
+     "density": 1.2,
+     "material": "PCPBT",
+     "name": "DuraPro PCPBT"
+    },
+    {
+     "density": 1.22,
+     "material": "TPU-CF",
+     "name": "FLEX - - Hard TPU-CF"
+    },
+    {
+     "density": 1.2,
+     "material": "TPU",
+     "name": "FLEX - - Medium TPU"
+    },
+    {
+     "density": 1.2,
+     "material": "TPU",
+     "name": "FLEX - - Medium-ESD TPU"
+    },
+    {
+     "density": 1.18,
+     "material": "TPU",
+     "name": "FLEX - - Semisoft TPU"
+    },
+    {
+     "density": 1.2,
+     "material": "TPU",
+     "name": "FLEX - Hard TPU"
+    },
+    {
+     "density": 1.23,
+     "material": "WOOD",
+     "name": "WOOD"
+    }
+   ],
+   "manufacturer": "Extrudr",
+   "net_g": 2000.0,
+   "spool_material": "plastique",
+   "tare_g": 600.0
+  },
+  {
+   "key": "Extrudr|2500|600|plastique",
+   "lines": [
+    {
+     "density": 1.24,
+     "material": "PLA",
+     "name": "Basic PLA"
+    },
+    {
+     "density": 1.45,
+     "material": "FLAX",
+     "name": "FLAX"
+    },
+    {
+     "density": 1.3,
+     "material": "GREENTEC",
+     "name": "GREENTEC"
+    },
+    {
+     "density": 1.41,
+     "material": "PETG",
+     "name": "MATT PETG"
+    },
+    {
+     "density": 1.3,
+     "material": "PLA",
+     "name": "NX2-MATT PLA"
+    },
+    {
+     "density": 1.21,
+     "material": "PCTG",
+     "name": "PCTG"
+    },
+    {
+     "density": 1.25,
+     "material": "PEARL",
+     "name": "PEARL"
+    },
+    {
+     "density": 1.29,
+     "material": "PETG",
+     "name": "PETG"
+    },
+    {
+     "density": 1.35,
+     "material": "GREENTEC",
+     "name": "Pro GREENTEC"
+    },
+    {
+     "density": 1.2,
+     "material": "GREENTEC-CF",
+     "name": "Pro GREENTEC-CF"
+    },
+    {
+     "density": 1.29,
+     "material": "PETG-CF",
+     "name": "X PETG-CF"
+    }
+   ],
+   "manufacturer": "Extrudr",
+   "net_g": 2500.0,
+   "spool_material": "plastique",
+   "tare_g": 600.0
+  },
+  {
+   "key": "Extrudr|5000|820|plastique",
+   "lines": [
+    {
+     "density": 1.24,
+     "material": "PLA",
+     "name": "Basic PLA"
+    },
+    {
+     "density": 1.05,
+     "material": "ASA",
+     "name": "DuraPro ASA"
+    },
+    {
+     "density": 1.2,
+     "material": "TPU",
+     "name": "FLEX - - Medium TPU"
+    },
+    {
+     "density": 1.3,
+     "material": "GREENTEC",
+     "name": "GREENTEC"
+    },
+    {
+     "density": 1.3,
+     "material": "PLA",
+     "name": "NX2-MATT PLA"
+    },
+    {
+     "density": 1.29,
+     "material": "PETG",
+     "name": "PETG"
+    },
+    {
+     "density": 1.35,
+     "material": "GREENTEC",
+     "name": "Pro GREENTEC"
+    },
+    {
+     "density": 1.2,
+     "material": "GREENTEC-CF",
+     "name": "Pro GREENTEC-CF"
+    },
+    {
+     "density": 1.29,
+     "material": "PETG-CF",
+     "name": "X PETG-CF"
+    }
+   ],
+   "manufacturer": "Extrudr",
+   "net_g": 5000.0,
+   "spool_material": "plastique",
+   "tare_g": 820.0
+  },
+  {
+   "key": "Extrudr|10000|1020|carton",
+   "lines": [
+    {
+     "density": 1.41,
+     "material": "PETG",
+     "name": "X - REC PETG"
+    }
+   ],
+   "manufacturer": "Extrudr",
+   "net_g": 10000.0,
+   "spool_material": "carton",
+   "tare_g": 1020.0
+  },
+  {
+   "key": "Extrudr|10000|1020|plastique",
+   "lines": [
+    {
+     "density": 1.24,
+     "material": "PLA",
+     "name": "Basic PLA"
+    },
+    {
+     "density": 1.06,
+     "material": "ABS",
+     "name": "DuraPro ABS"
+    },
+    {
+     "density": 1.05,
+     "material": "ASA",
+     "name": "DuraPro ASA"
+    },
+    {
+     "density": 1.45,
+     "material": "FLAX",
+     "name": "FLAX"
+    },
+    {
+     "density": 1.3,
+     "material": "GREENTEC",
+     "name": "GREENTEC"
+    },
+    {
+     "density": 1.3,
+     "material": "PLA",
+     "name": "NX2-MATT PLA"
+    },
+    {
+     "density": 1.25,
+     "material": "PEARL",
+     "name": "PEARL"
+    },
+    {
+     "density": 1.29,
+     "material": "PETG",
+     "name": "PETG"
+    },
+    {
+     "density": 1.35,
+     "material": "GREENTEC",
+     "name": "Pro GREENTEC"
+    },
+    {
+     "density": 1.2,
+     "material": "GREENTEC-CF",
+     "name": "Pro GREENTEC-CF"
+    },
+    {
+     "density": 1.23,
+     "material": "WOOD",
+     "name": "WOOD"
+    },
+    {
+     "density": 1.29,
+     "material": "PETG-CF",
+     "name": "X PETG-CF"
+    }
+   ],
+   "manufacturer": "Extrudr",
+   "net_g": 10000.0,
+   "spool_material": "plastique",
+   "tare_g": 1020.0
+  },
+  {
+   "key": "Fiberlogy|750|260|inconnue",
+   "lines": [
+    {
+     "density": 1.07,
+     "material": "ASA",
+     "name": "ASA"
+    }
+   ],
+   "manufacturer": "Fiberlogy",
+   "net_g": 750.0,
+   "spool_material": "inconnue",
+   "tare_g": 260.0
+  },
+  {
+   "key": "Fillamentum|750|230|inconnue",
+   "lines": [
+    {
+     "density": 1.07,
+     "material": "ASA",
+     "name": "Extrafill ASA"
+    },
+    {
+     "density": 1.24,
+     "material": "PLA",
+     "name": "Extrafill PLA"
+    }
+   ],
+   "manufacturer": "Fillamentum",
+   "net_g": 750.0,
+   "spool_material": "inconnue",
+   "tare_g": 230.0
+  },
+  {
+   "key": "Fillamentum|2500|590|inconnue",
+   "lines": [
+    {
+     "density": 1.07,
+     "material": "ASA",
+     "name": "Extrafill ASA"
+    },
+    {
+     "density": 1.24,
+     "material": "PLA",
+     "name": "Extrafill PLA"
+    }
+   ],
+   "manufacturer": "Fillamentum",
+   "net_g": 2500.0,
+   "spool_material": "inconnue",
+   "tare_g": 590.0
+  },
+  {
+   "key": "FlashForge|250|142|inconnue",
+   "lines": [
+    {
+     "density": 1.25,
+     "material": "PLA",
+     "name": "Starter PLA"
+    }
+   ],
+   "manufacturer": "FlashForge",
+   "net_g": 250.0,
+   "spool_material": "inconnue",
+   "tare_g": 142.0
+  },
+  {
+   "key": "FlashForge|500|142|inconnue",
+   "lines": [
+    {
+     "density": 1.25,
+     "material": "PLA",
+     "name": "PLA"
+    }
+   ],
+   "manufacturer": "FlashForge",
+   "net_g": 500.0,
+   "spool_material": "inconnue",
+   "tare_g": 142.0
+  },
+  {
+   "key": "FlashForge|1000|120|inconnue",
+   "lines": [
+    {
+     "density": 1.25,
+     "material": "PLA",
+     "name": "PLA Pro"
+    }
+   ],
+   "manufacturer": "FlashForge",
+   "net_g": 1000.0,
+   "spool_material": "inconnue",
+   "tare_g": 120.0
+  },
+  {
+   "key": "FlashForge|1000|170|inconnue",
+   "lines": [
+    {
+     "density": 1.25,
+     "material": "PLA",
+     "name": "PLA"
+    }
+   ],
+   "manufacturer": "FlashForge",
+   "net_g": 1000.0,
+   "spool_material": "inconnue",
+   "tare_g": 170.0
+  },
+  {
+   "key": "Formfutura|250|130|carton",
+   "lines": [
+    {
+     "density": 1.24,
+     "material": "PLA",
+     "name": "EasyFil ePLA"
+    },
+    {
+     "density": 1.24,
+     "material": "PLA",
+     "name": "EasyFil PLA"
+    },
+    {
+     "density": 1.23,
+     "material": "PETG",
+     "name": "ReForm - rPET PETG"
+    }
+   ],
+   "manufacturer": "Formfutura",
+   "net_g": 250.0,
+   "spool_material": "carton",
+   "tare_g": 130.0
+  },
+  {
+   "key": "Formfutura|500|130|carton",
+   "lines": [
+    {
+     "density": 1.23,
+     "material": "PETG",
+     "name": "ReForm - rPET PETG"
+    }
+   ],
+   "manufacturer": "Formfutura",
+   "net_g": 500.0,
+   "spool_material": "carton",
+   "tare_g": 130.0
+  },
+  {
+   "key": "Formfutura|750|150|carton",
+   "lines": [
+    {
+     "density": 1.23,
+     "material": "PETG",
+     "name": "ReForm - rPET PETG"
+    }
+   ],
+   "manufacturer": "Formfutura",
+   "net_g": 750.0,
+   "spool_material": "carton",
+   "tare_g": 150.0
+  },
+  {
+   "key": "Formfutura|750|160|carton",
+   "lines": [
+    {
+     "density": 1.24,
+     "material": "PLA",
+     "name": "EasyFil PLA"
+    }
+   ],
+   "manufacturer": "Formfutura",
+   "net_g": 750.0,
+   "spool_material": "carton",
+   "tare_g": 160.0
+  },
+  {
+   "key": "Formfutura|1000|185|carton",
+   "lines": [
+    {
+     "density": 1.23,
+     "material": "PETG",
+     "name": "ReForm - rPET PETG"
+    }
+   ],
+   "manufacturer": "Formfutura",
+   "net_g": 1000.0,
+   "spool_material": "carton",
+   "tare_g": 185.0
+  },
+  {
+   "key": "Formfutura|1000|210|carton",
+   "lines": [
+    {
+     "density": 1.24,
+     "material": "PLA",
+     "name": "EasyFil ePLA"
+    }
+   ],
+   "manufacturer": "Formfutura",
+   "net_g": 1000.0,
+   "spool_material": "carton",
+   "tare_g": 210.0
+  },
+  {
+   "key": "Formfutura|2300|265|carton",
+   "lines": [
+    {
+     "density": 1.24,
+     "material": "PLA",
+     "name": "EasyFil ePLA"
+    },
+    {
+     "density": 1.24,
+     "material": "PLA",
+     "name": "EasyFil PLA"
+    },
+    {
+     "density": 1.23,
+     "material": "PETG",
+     "name": "ReForm - rPET PETG"
+    }
+   ],
+   "manufacturer": "Formfutura",
+   "net_g": 2300.0,
+   "spool_material": "carton",
+   "tare_g": 265.0
+  },
+  {
+   "key": "Formfutura|2300|600|plastique",
+   "lines": [
+    {
+     "density": 1.24,
+     "material": "PLA",
+     "name": "EasyFil ePLA"
+    },
+    {
+     "density": 1.24,
+     "material": "PLA",
+     "name": "EasyFil PLA"
+    },
+    {
+     "density": 1.23,
+     "material": "PETG",
+     "name": "ReForm - rPET PETG"
+    }
+   ],
+   "manufacturer": "Formfutura",
+   "net_g": 2300.0,
+   "spool_material": "plastique",
+   "tare_g": 600.0
+  },
+  {
+   "key": "Formfutura|4500|330|carton",
+   "lines": [
+    {
+     "density": 1.24,
+     "material": "PLA",
+     "name": "EasyFil ePLA"
+    },
+    {
+     "density": 1.24,
+     "material": "PLA",
+     "name": "EasyFil PLA"
+    }
+   ],
+   "manufacturer": "Formfutura",
+   "net_g": 4500.0,
+   "spool_material": "carton",
+   "tare_g": 330.0
+  },
+  {
+   "key": "Formfutura|4500|815|plastique",
+   "lines": [
+    {
+     "density": 1.24,
+     "material": "PLA",
+     "name": "EasyFil ePLA"
+    },
+    {
+     "density": 1.24,
+     "material": "PLA",
+     "name": "EasyFil PLA"
+    }
+   ],
+   "manufacturer": "Formfutura",
+   "net_g": 4500.0,
+   "spool_material": "plastique",
+   "tare_g": 815.0
+  },
+  {
+   "key": "Formfutura|8000|1040|plastique",
+   "lines": [
+    {
+     "density": 1.24,
+     "material": "PLA",
+     "name": "EasyFil ePLA"
+    },
+    {
+     "density": 1.24,
+     "material": "PLA",
+     "name": "EasyFil PLA"
+    }
+   ],
+   "manufacturer": "Formfutura",
+   "net_g": 8000.0,
+   "spool_material": "plastique",
+   "tare_g": 1040.0
+  },
+  {
+   "key": "Fusion|1000|150|inconnue",
+   "lines": [
+    {
+     "density": 1.05,
+     "material": "ABS+GLOSS",
+     "name": "ABS+GLOSS"
+    },
+    {
+     "density": 1.05,
+     "material": "ABS+MATTE",
+     "name": "ABS+MATTE"
+    },
+    {
+     "density": 1.08,
+     "material": "ASA",
+     "name": "ASA"
+    },
+    {
+     "density": 1.08,
+     "material": "EASYASA",
+     "name": "EASYASA"
+    },
+    {
+     "density": 1.35,
+     "material": "HTPET+",
+     "name": "HTPET+"
+    },
+    {
+     "density": 1.22,
+     "material": "HTPLA+",
+     "name": "HTPLA+"
+    },
+    {
+     "density": 1.24,
+     "material": "PLA",
+     "name": "PLA"
+    }
+   ],
+   "manufacturer": "Fusion",
+   "net_g": 1000.0,
+   "spool_material": "inconnue",
+   "tare_g": 150.0
+  },
+  {
+   "key": "Fusion|1000|200|inconnue",
+   "lines": [
+    {
+     "density": 1.24,
+     "material": "PCTG",
+     "name": "PCTG"
+    }
+   ],
+   "manufacturer": "Fusion",
+   "net_g": 1000.0,
+   "spool_material": "inconnue",
+   "tare_g": 200.0
+  },
+  {
+   "key": "GEEETECH|1000|180|plastique",
+   "lines": [
+    {
+     "density": 1.04,
+     "material": "ABS+",
+     "name": "ABS+"
+    },
+    {
+     "density": 1.24,
+     "material": "PLA",
+     "name": "Luminous PLA"
+    },
+    {
+     "density": 1.31,
+     "material": "PLA",
+     "name": "Matte PLA"
+    },
+    {
+     "density": 1.25,
+     "material": "PETG",
+     "name": "PETG"
+    },
+    {
+     "density": 1.24,
+     "material": "PLA",
+     "name": "PLA"
+    }
+   ],
+   "manufacturer": "GEEETECH",
+   "net_g": 1000.0,
+   "spool_material": "plastique",
+   "tare_g": 180.0
+  },
+  {
+   "key": "gembird|1000|200|carton",
+   "lines": [
+    {
+     "density": 1.01,
+     "material": "ABS",
+     "name": "ABS"
+    }
+   ],
+   "manufacturer": "gembird",
+   "net_g": 1000.0,
+   "spool_material": "carton",
+   "tare_g": 200.0
+  },
+  {
+   "key": "GST3D|900|200|plastique",
+   "lines": [
+    {
+     "density": 1.05,
+     "material": "ASA",
+     "name": "ASA"
+    }
+   ],
+   "manufacturer": "GST3D",
+   "net_g": 900.0,
+   "spool_material": "plastique",
+   "tare_g": 200.0
+  },
+  {
+   "key": "GST3D|1000|200|plastique",
+   "lines": [
+    {
+     "density": 1.21,
+     "material": "TPU",
+     "name": "93A TPU"
+    },
+    {
+     "density": 1.04,
+     "material": "ABS",
+     "name": "ABS"
+    },
+    {
+     "density": 1.26,
+     "material": "PETG",
+     "name": "PETG"
+    },
+    {
+     "density": 1.3,
+     "material": "PETG-CF",
+     "name": "PETG-CF"
+    },
+    {
+     "density": 1.24,
+     "material": "PLA+",
+     "name": "PLA+"
+    },
+    {
+     "density": 1.24,
+     "material": "PLA",
+     "name": "Silk PLA"
+    }
+   ],
+   "manufacturer": "GST3D",
+   "net_g": 1000.0,
+   "spool_material": "plastique",
+   "tare_g": 200.0
+  },
+  {
+   "key": "Hatchbox|1000|251|inconnue",
+   "lines": [
+    {
+     "density": 1.04,
+     "material": "ABS",
+     "name": "ABS"
+    }
+   ],
+   "manufacturer": "Hatchbox",
+   "net_g": 1000.0,
+   "spool_material": "inconnue",
+   "tare_g": 251.0
+  },
+  {
+   "key": "Hatchbox|1000|251|plastique",
+   "lines": [
+    {
+     "density": 1.27,
+     "material": "PLA",
+     "name": "PLA"
+    },
+    {
+     "density": 1.27,
+     "material": "PLA",
+     "name": "Sparkle PLA"
+    },
+    {
+     "density": 1.27,
+     "material": "PLA",
+     "name": "Transparent PLA"
+    }
+   ],
+   "manufacturer": "Hatchbox",
+   "net_g": 1000.0,
+   "spool_material": "plastique",
+   "tare_g": 251.0
+  },
+  {
+   "key": "Inland|1000|150|inconnue",
+   "lines": [
+    {
+     "density": 1.24,
+     "material": "PLA",
+     "name": "High Speed PLA"
+    },
+    {
+     "density": 1.24,
+     "material": "PLA",
+     "name": "Matte PLA"
+    },
+    {
+     "density": 1.24,
+     "material": "PLA",
+     "name": "PLA"
+    },
+    {
+     "density": 1.24,
+     "material": "PLA",
+     "name": "Silk PLA"
+    },
+    {
+     "density": 1.24,
+     "material": "PLA",
+     "name": "Tough PLA"
+    },
+    {
+     "density": 1.24,
+     "material": "PLA",
+     "name": "Translucent PLA"
+    }
+   ],
+   "manufacturer": "Inland",
+   "net_g": 1000.0,
+   "spool_material": "inconnue",
+   "tare_g": 150.0
+  },
+  {
+   "key": "Inslogic|1000|232|inconnue",
+   "lines": [
+    {
+     "density": 1.05,
+     "material": "ASA",
+     "name": "ASA"
+    },
+    {
+     "density": 1.26,
+     "material": "PLA",
+     "name": "High-Speed Pro PLA"
+    },
+    {
+     "density": 1.3,
+     "material": "PLA",
+     "name": "Matte PLA"
+    },
+    {
+     "density": 1.26,
+     "material": "PETG",
+     "name": "Pro PETG"
+    },
+    {
+     "density": 1.2,
+     "material": "PLA",
+     "name": "Pro PLA"
+    }
+   ],
+   "manufacturer": "Inslogic",
+   "net_g": 1000.0,
+   "spool_material": "inconnue",
+   "tare_g": 232.0
+  },
+  {
+   "key": "JAYO|1100|120|carton",
+   "lines": [
+    {
+     "density": 1.24,
+     "material": "PLA",
+     "name": "PLA"
+    },
+    {
+     "density": 1.24,
+     "material": "PLA+",
+     "name": "PLA+"
+    },
+    {
+     "density": 1.24,
+     "material": "TPU",
+     "name": "Silk TPU"
+    }
+   ],
+   "manufacturer": "JAYO",
+   "net_g": 1100.0,
+   "spool_material": "carton",
+   "tare_g": 120.0
+  },
+  {
+   "key": "JAYO|1100|120|inconnue",
+   "lines": [
+    {
+     "density": 1.25,
+     "material": "PETG",
+     "name": "PETG"
+    },
+    {
+     "density": 1.24,
+     "material": "PLA",
+     "name": "PLA"
+    }
+   ],
+   "manufacturer": "JAYO",
+   "net_g": 1100.0,
+   "spool_material": "inconnue",
+   "tare_g": 120.0
+  },
+  {
+   "key": "kexcelled|1000|250|inconnue",
+   "lines": [
+    {
+     "density": 1.08,
+     "material": "ABS",
+     "name": "The K5 T ABS"
+    },
+    {
+     "density": 1.24,
+     "material": "TPU",
+     "name": "The K8 64D TPU"
+    }
+   ],
+   "manufacturer": "kexcelled",
+   "net_g": 1000.0,
+   "spool_material": "inconnue",
+   "tare_g": 250.0
+  },
+  {
+   "key": "Kingroon|1000|142|inconnue",
+   "lines": [
+    {
+     "density": 1.23,
+     "material": "PLA",
+     "name": "Basic PLA"
+    }
+   ],
+   "manufacturer": "Kingroon",
+   "net_g": 1000.0,
+   "spool_material": "inconnue",
+   "tare_g": 142.0
+  },
+  {
+   "key": "Kingroon|1000|142|plastique",
+   "lines": [
+    {
+     "density": 1.26,
+     "material": "PETG",
+     "name": "PETG"
+    }
+   ],
+   "manufacturer": "Kingroon",
+   "net_g": 1000.0,
+   "spool_material": "plastique",
+   "tare_g": 142.0
+  },
+  {
+   "key": "L3D|1000|210|inconnue",
+   "lines": [
+    {
+     "density": 1.24,
+     "material": "PLA",
+     "name": "Basic PLA"
+    },
+    {
+     "density": 1.27,
+     "material": "PETG",
+     "name": "PETG"
+    },
+    {
+     "density": 1.24,
+     "material": "PLA",
+     "name": "Silk PLA"
+    }
+   ],
+   "manufacturer": "L3D",
+   "net_g": 1000.0,
+   "spool_material": "inconnue",
+   "tare_g": 210.0
+  },
+  {
+   "key": "Landu|1000|189|inconnue",
+   "lines": [
+    {
+     "density": 1.24,
+     "material": "PLA",
+     "name": "Metal PLA"
+    }
+   ],
+   "manufacturer": "Landu",
+   "net_g": 1000.0,
+   "spool_material": "inconnue",
+   "tare_g": 189.0
+  },
+  {
+   "key": "LOVOON|1000|200|inconnue",
+   "lines": [
+    {
+     "density": 1.24,
+     "material": "PLA",
+     "name": "Silk Magic Color PLA"
+    }
+   ],
+   "manufacturer": "LOVOON",
+   "net_g": 1000.0,
+   "spool_material": "inconnue",
+   "tare_g": 200.0
+  },
+  {
+   "key": "MarsWork|1000|250|inconnue",
+   "lines": [
+    {
+     "density": 1.24,
+     "material": "PLA",
+     "name": "Basic PLA"
+    }
+   ],
+   "manufacturer": "MarsWork",
+   "net_g": 1000.0,
+   "spool_material": "inconnue",
+   "tare_g": 250.0
+  },
+  {
+   "key": "Nobufil|1000|234|inconnue",
+   "lines": [
+    {
+     "density": 1.27,
+     "material": "PETG",
+     "name": "Matte PETG"
+    },
+    {
+     "density": 1.19,
+     "material": "PLAX",
+     "name": "Matte PLAX"
+    },
+    {
+     "density": 1.27,
+     "material": "PETG",
+     "name": "PETG"
+    },
+    {
+     "density": 1.19,
+     "material": "PLA-CF",
+     "name": "PLA-CF"
+    }
+   ],
+   "manufacturer": "Nobufil",
+   "net_g": 1000.0,
+   "spool_material": "inconnue",
+   "tare_g": 234.0
+  },
+  {
+   "key": "Numakers|1000|200|inconnue",
+   "lines": [
+    {
+     "density": 1.23,
+     "material": "PLA+",
+     "name": "CF PLA+"
+    },
+    {
+     "density": 1.24,
+     "material": "PLA+",
+     "name": "Marble PLA+"
+    },
+    {
+     "density": 1.27,
+     "material": "PETG",
+     "name": "PETG"
+    },
+    {
+     "density": 1.24,
+     "material": "PLA+",
+     "name": "PLA+"
+    },
+    {
+     "density": 1.23,
+     "material": "PLA",
+     "name": "SILK PLA"
+    },
+    {
+     "density": 1.24,
+     "material": "PLA+",
+     "name": "Wood PLA+"
+    }
+   ],
+   "manufacturer": "Numakers",
+   "net_g": 1000.0,
+   "spool_material": "inconnue",
+   "tare_g": 200.0
+  },
+  {
+   "key": "Numakers|1000|260|inconnue",
+   "lines": [
+    {
+     "density": 1.05,
+     "material": "ABS",
+     "name": "ABS"
+    },
+    {
+     "density": 1.05,
+     "material": "ASA",
+     "name": "ASA"
+    }
+   ],
+   "manufacturer": "Numakers",
+   "net_g": 1000.0,
+   "spool_material": "inconnue",
+   "tare_g": 260.0
+  },
+  {
+   "key": "Overture|1000|132|carton",
+   "lines": [
+    {
+     "density": 1.14,
+     "material": "ASA",
+     "name": "ASA"
+    },
+    {
+     "density": 1.25,
+     "material": "PETG",
+     "name": "PETG"
+    }
+   ],
+   "manufacturer": "Overture",
+   "net_g": 1000.0,
+   "spool_material": "carton",
+   "tare_g": 132.0
+  },
+  {
+   "key": "Overture|1000|147|carton",
+   "lines": [
+    {
+     "density": 1.15,
+     "material": "ABS",
+     "name": "ABS"
+    }
+   ],
+   "manufacturer": "Overture",
+   "net_g": 1000.0,
+   "spool_material": "carton",
+   "tare_g": 147.0
+  },
+  {
+   "key": "Overture|1000|155|carton",
+   "lines": [
+    {
+     "density": 1.3,
+     "material": "PLA",
+     "name": "Matte PLA"
+    },
+    {
+     "density": 1.24,
+     "material": "PLA",
+     "name": "PLA"
+    },
+    {
+     "density": 1.3,
+     "material": "PLA",
+     "name": "Rock PLA"
+    },
+    {
+     "density": 1.19,
+     "material": "PLA",
+     "name": "Silk PLA"
+    }
+   ],
+   "manufacturer": "Overture",
+   "net_g": 1000.0,
+   "spool_material": "carton",
+   "tare_g": 155.0
+  },
+  {
+   "key": "Overture|1000|174|carton",
+   "lines": [
+    {
+     "density": 1.19,
+     "material": "TPU",
+     "name": "High Speed 95A TPU"
+    }
+   ],
+   "manufacturer": "Overture",
+   "net_g": 1000.0,
+   "spool_material": "carton",
+   "tare_g": 174.0
+  },
+  {
+   "key": "Patron EG|1000|250|inconnue",
+   "lines": [
+    {
+     "density": 1.24,
+     "material": "PLA",
+     "name": "Marble PLA"
+    }
+   ],
+   "manufacturer": "Patron EG",
+   "net_g": 1000.0,
+   "spool_material": "inconnue",
+   "tare_g": 250.0
+  },
+  {
+   "key": "Polar Filament|1000|190|carton",
+   "lines": [
+    {
+     "density": 1.27,
+     "material": "PETG",
+     "name": "PETG"
+    },
+    {
+     "density": 1.24,
+     "material": "PLA",
+     "name": "PLA"
+    }
+   ],
+   "manufacturer": "Polar Filament",
+   "net_g": 1000.0,
+   "spool_material": "carton",
+   "tare_g": 190.0
+  },
+  {
+   "key": "Polymaker|500|190|carton",
+   "lines": [
+    {
+     "density": 1.06,
+     "material": "PA",
+     "name": "Fiberon™ PA12-CF10"
+    },
+    {
+     "density": 1.17,
+     "material": "PA",
+     "name": "Fiberon™ PA6-CF20"
+    },
+    {
+     "density": 1.2,
+     "material": "PA",
+     "name": "Fiberon™ PA6-GF25"
+    }
+   ],
+   "manufacturer": "Polymaker",
+   "net_g": 500.0,
+   "spool_material": "carton",
+   "tare_g": 190.0
+  },
+  {
+   "key": "Polymaker|600|125|carton",
+   "lines": [
+    {
+     "density": 0.8,
+     "material": "PLA",
+     "name": "PolyWood™ PLA"
+    }
+   ],
+   "manufacturer": "Polymaker",
+   "net_g": 600.0,
+   "spool_material": "carton",
+   "tare_g": 125.0
+  },
+  {
+   "key": "Polymaker|750|125|carton",
+   "lines": [
+    {
+     "density": 1.1,
+     "material": "PVB",
+     "name": "PolyCast™ PVB"
+    },
+    {
+     "density": 1.13,
+     "material": "PVA",
+     "name": "PolyDissolve™ S1 (PVA)"
+    },
+    {
+     "density": 1.12,
+     "material": "TPU",
+     "name": "PolyFlex™ TPU90"
+    },
+    {
+     "density": 1.22,
+     "material": "TPU",
+     "name": "PolyFlex™ TPU95"
+    },
+    {
+     "density": 1.19,
+     "material": "PC",
+     "name": "PolyMax™ PC"
+    },
+    {
+     "density": 1.24,
+     "material": "PETG",
+     "name": "PolyMax™ PETG"
+    },
+    {
+     "density": 1.21,
+     "material": "PLA",
+     "name": "PolyMax™ PLA"
+    },
+    {
+     "density": 1.12,
+     "material": "PA",
+     "name": "PolyMide™ CoPA"
+    },
+    {
+     "density": 1.1,
+     "material": "PVB",
+     "name": "PolySmooth™ PVB"
+    }
+   ],
+   "manufacturer": "Polymaker",
+   "net_g": 750.0,
+   "spool_material": "carton",
+   "tare_g": 125.0
+  },
+  {
+   "key": "Polymaker|800|200|carton",
+   "lines": [
+    {
+     "density": 0.8,
+     "material": "PLA",
+     "name": "PolyLite™ LW-PLA"
+    }
+   ],
+   "manufacturer": "Polymaker",
+   "net_g": 800.0,
+   "spool_material": "carton",
+   "tare_g": 200.0
+  },
+  {
+   "key": "Polymaker|1000|140|carton",
+   "lines": [
+    {
+     "density": 1.24,
+     "material": "PLA",
+     "name": "Panchroma™ (Formerly PolyLite™) Silk PLA"
+    },
+    {
+     "density": 1.24,
+     "material": "PLA",
+     "name": "Panchroma™ (Formerly PolyLite™) Starlight PLA"
+    },
+    {
+     "density": 1.24,
+     "material": "PLA",
+     "name": "Panchroma™ Celestial PLA"
+    },
+    {
+     "density": 1.37,
+     "material": "PLA",
+     "name": "Panchroma™ Dual PLA"
+    },
+    {
+     "density": 1.24,
+     "material": "PLA",
+     "name": "Panchroma™ Marble (Formerly PolyTerra™ Marble) PLA"
+    },
+    {
+     "density": 1.19,
+     "material": "PLA",
+     "name": "Panchroma™ Regular PLA"
+    },
+    {
+     "density": 1.16,
+     "material": "TPU",
+     "name": "PolyFlex™ TPU95-HF"
+    },
+    {
+     "density": 1.22,
+     "material": "PLA",
+     "name": "PolyLite CosPLA"
+    },
+    {
+     "density": 1.24,
+     "material": "PLA",
+     "name": "PolyLite CosPLA"
+    },
+    {
+     "density": 1.12,
+     "material": "ABS",
+     "name": "PolyLite™ ABS"
+    },
+    {
+     "density": 1.13,
+     "material": "ASA",
+     "name": "PolyLite™ ASA"
+    },
+    {
+     "density": 1.19,
+     "material": "PC",
+     "name": "PolyLite™ PC"
+    },
+    {
+     "density": 1.25,
+     "material": "PETG",
+     "name": "PolyLite™ PETG"
+    },
+    {
+     "density": 1.17,
+     "material": "PLA",
+     "name": "PolyLite™ PLA"
+    },
+    {
+     "density": 1.22,
+     "material": "PLA",
+     "name": "PolyLite™ PLA Pro"
+    },
+    {
+     "density": 1.1,
+     "material": "PC",
+     "name": "Polymaker PC-ABS"
+    },
+    {
+     "density": 1.2,
+     "material": "PC",
+     "name": "Polymaker PC-PBT"
+    },
+    {
+     "density": 1.2,
+     "material": "PC",
+     "name": "PolyMax™ PC-FR"
+    },
+    {
+     "density": 1.23,
+     "material": "PLA",
+     "name": "PolySonic™ PLA"
+    },
+    {
+     "density": 1.23,
+     "material": "PLA",
+     "name": "PolySonic™ PLA Pro"
+    }
+   ],
+   "manufacturer": "Polymaker",
+   "net_g": 1000.0,
+   "spool_material": "carton",
+   "tare_g": 140.0
+  },
+  {
+   "key": "Polymaker|1000|140|inconnue",
+   "lines": [
+    {
+     "density": 1.24,
+     "material": "PLA",
+     "name": "Panchroma™ (Formerly PolyLite™) Luminous PLA"
+    },
+    {
+     "density": 1.24,
+     "material": "PLA",
+     "name": "Panchroma™ Matte (Formerly PolyTerra™) PLA"
+    }
+   ],
+   "manufacturer": "Polymaker",
+   "net_g": 1000.0,
+   "spool_material": "inconnue",
+   "tare_g": 140.0
+  },
+  {
+   "key": "Polymaker|1000|250|plastique",
+   "lines": [
+    {
+     "density": 1.17,
+     "material": "PLA",
+     "name": "PolyLite™ PLA"
+    }
+   ],
+   "manufacturer": "Polymaker",
+   "net_g": 1000.0,
+   "spool_material": "plastique",
+   "tare_g": 250.0
+  },
+  {
+   "key": "Polymaker|2000|370|carton",
+   "lines": [
+    {
+     "density": 1.17,
+     "material": "PA",
+     "name": "Fiberon™ PA6-CF20"
+    },
+    {
+     "density": 1.2,
+     "material": "PA",
+     "name": "Fiberon™ PA6-GF25"
+    }
+   ],
+   "manufacturer": "Polymaker",
+   "net_g": 2000.0,
+   "spool_material": "carton",
+   "tare_g": 370.0
+  },
+  {
+   "key": "Polymaker|3000|425|carton",
+   "lines": [
+    {
+     "density": 1.19,
+     "material": "PLA",
+     "name": "Panchroma™ Regular PLA"
+    },
+    {
+     "density": 1.1,
+     "material": "PVB",
+     "name": "PolyCast™ PVB"
+    },
+    {
+     "density": 1.12,
+     "material": "ABS",
+     "name": "PolyLite™ ABS"
+    },
+    {
+     "density": 1.13,
+     "material": "ASA",
+     "name": "PolyLite™ ASA"
+    },
+    {
+     "density": 1.19,
+     "material": "PC",
+     "name": "PolyLite™ PC"
+    },
+    {
+     "density": 1.25,
+     "material": "PETG",
+     "name": "PolyLite™ PETG"
+    },
+    {
+     "density": 1.17,
+     "material": "PLA",
+     "name": "PolyLite™ PLA"
+    },
+    {
+     "density": 1.22,
+     "material": "PLA",
+     "name": "PolyLite™ PLA Pro"
+    },
+    {
+     "density": 1.19,
+     "material": "PC",
+     "name": "PolyMax™ PC"
+    },
+    {
+     "density": 1.21,
+     "material": "PLA",
+     "name": "PolyMax™ PLA"
+    }
+   ],
+   "manufacturer": "Polymaker",
+   "net_g": 3000.0,
+   "spool_material": "carton",
+   "tare_g": 425.0
+  },
+  {
+   "key": "Polymaker|3000|425|inconnue",
+   "lines": [
+    {
+     "density": 1.24,
+     "material": "PLA",
+     "name": "Panchroma™ Matte (Formerly PolyTerra™) PLA"
+    }
+   ],
+   "manufacturer": "Polymaker",
+   "net_g": 3000.0,
+   "spool_material": "inconnue",
+   "tare_g": 425.0
+  },
+  {
+   "key": "Polymaker|5000|819|plastique",
+   "lines": [
+    {
+     "density": 1.19,
+     "material": "PLA",
+     "name": "Panchroma™ Regular PLA"
+    },
+    {
+     "density": 1.22,
+     "material": "PLA",
+     "name": "PolyLite CosPLA"
+    },
+    {
+     "density": 1.24,
+     "material": "PLA",
+     "name": "PolyLite CosPLA"
+    },
+    {
+     "density": 1.12,
+     "material": "ABS",
+     "name": "PolyLite™ ABS"
+    },
+    {
+     "density": 1.13,
+     "material": "ASA",
+     "name": "PolyLite™ ASA"
+    },
+    {
+     "density": 1.25,
+     "material": "PETG",
+     "name": "PolyLite™ PETG"
+    },
+    {
+     "density": 1.17,
+     "material": "PLA",
+     "name": "PolyLite™ PLA"
+    },
+    {
+     "density": 1.22,
+     "material": "PLA",
+     "name": "PolyLite™ PLA Pro"
+    }
+   ],
+   "manufacturer": "Polymaker",
+   "net_g": 5000.0,
+   "spool_material": "plastique",
+   "tare_g": 819.0
+  },
+  {
+   "key": "Printed Solid|1000|297|plastique",
+   "lines": [
+    {
+     "density": 1.27,
+     "material": "PETG",
+     "name": "Jessie PETG"
+    },
+    {
+     "density": 1.24,
+     "material": "PLA",
+     "name": "Jessie PLA"
+    }
+   ],
+   "manufacturer": "Printed Solid",
+   "net_g": 1000.0,
+   "spool_material": "plastique",
+   "tare_g": 297.0
+  },
+  {
+   "key": "Printy Please|1000|190|inconnue",
+   "lines": [
+    {
+     "density": 1.09,
+     "material": "ABS",
+     "name": "ABS"
+    }
+   ],
+   "manufacturer": "Printy Please",
+   "net_g": 1000.0,
+   "spool_material": "inconnue",
+   "tare_g": 190.0
+  },
+  {
+   "key": "Professional LAB|1000|180|inconnue",
+   "lines": [
+    {
+     "density": 1.05,
+     "material": "ABS",
+     "name": "ABS"
+    },
+    {
+     "density": 1.24,
+     "material": "ASA",
+     "name": "ASA"
+    },
+    {
+     "density": 1.24,
+     "material": "PLA",
+     "name": "Galaxy PLA"
+    },
+    {
+     "density": 1.29,
+     "material": "PLA",
+     "name": "Glow PLA"
+    },
+    {
+     "density": 1.25,
+     "material": "PLA",
+     "name": "HS PLA"
+    },
+    {
+     "density": 1.25,
+     "material": "PLA",
+     "name": "Marble PLA"
+    },
+    {
+     "density": 1.24,
+     "material": "PLA",
+     "name": "Matte PLA"
+    },
+    {
+     "density": 1.25,
+     "material": "PLA",
+     "name": "Meta PLA"
+    },
+    {
+     "density": 1.22,
+     "material": "PA12-CF15",
+     "name": "PA12-CF15"
+    },
+    {
+     "density": 1.24,
+     "material": "PLA",
+     "name": "Pastel PLA"
+    },
+    {
+     "density": 1.27,
+     "material": "PETG",
+     "name": "PETG"
+    },
+    {
+     "density": 1.25,
+     "material": "PLA",
+     "name": "PLA"
+    },
+    {
+     "density": 1.25,
+     "material": "PLA+",
+     "name": "PLA+"
+    },
+    {
+     "density": 1.26,
+     "material": "PLA-CF",
+     "name": "PLA-CF"
+    },
+    {
+     "density": 1.24,
+     "material": "PLA",
+     "name": "Silk Dual PLA"
+    },
+    {
+     "density": 1.24,
+     "material": "PLA",
+     "name": "Silk PLA"
+    },
+    {
+     "density": 1.24,
+     "material": "PLA",
+     "name": "Silk Tri PLA"
+    },
+    {
+     "density": 1.25,
+     "material": "TPU",
+     "name": "TPU"
+    },
+    {
+     "density": 1.26,
+     "material": "PETG",
+     "name": "Transparent PETG"
+    },
+    {
+     "density": 1.21,
+     "material": "PLA",
+     "name": "Wood PLA"
+    }
+   ],
+   "manufacturer": "Professional LAB",
+   "net_g": 1000.0,
+   "spool_material": "inconnue",
+   "tare_g": 180.0
+  },
+  {
+   "key": "Professional LAB|1000|190|inconnue",
+   "lines": [
+    {
+     "density": 1.24,
+     "material": "PETG",
+     "name": "Matte PETG"
+    }
+   ],
+   "manufacturer": "Professional LAB",
+   "net_g": 1000.0,
+   "spool_material": "inconnue",
+   "tare_g": 190.0
+  },
+  {
+   "key": "Professional LAB|1000|250|inconnue",
+   "lines": [
+    {
+     "density": 1.25,
+     "material": "PETG-CF",
+     "name": "PETG-CF"
+    }
+   ],
+   "manufacturer": "Professional LAB",
+   "net_g": 1000.0,
+   "spool_material": "inconnue",
+   "tare_g": 250.0
+  },
+  {
+   "key": "Protopasta|100|75|carton",
+   "lines": [
+    {
+     "density": 1.85,
+     "material": "PLA",
+     "name": "Composite Iron PLA"
+    },
+    {
+     "density": 2.3,
+     "material": "PLA",
+     "name": "Composite PLA"
+    },
+    {
+     "density": 2.3,
+     "material": "PLA",
+     "name": "Composite Steel PLA"
+    }
+   ],
+   "manufacturer": "Protopasta",
+   "net_g": 100.0,
+   "spool_material": "carton",
+   "tare_g": 75.0
+  },
+  {
+   "key": "Protopasta|500|75|carton",
+   "lines": [
+    {
+     "density": 1.24,
+     "material": "PLA",
+     "name": "Amber Alchemy Translucent PLA"
+    },
+    {
+     "density": 1.2,
+     "material": "PETG",
+     "name": "Carbon Fiber PETG"
+    },
+    {
+     "density": 1.15,
+     "material": "PLA",
+     "name": "Carbon Fiber PLA"
+    },
+    {
+     "density": 1.24,
+     "material": "PLA",
+     "name": "cMatte PLA"
+    },
+    {
+     "density": 1.14,
+     "material": "PLA",
+     "name": "Composite Carbon Fiber PLA"
+    },
+    {
+     "density": 1.24,
+     "material": "PLA",
+     "name": "Composite Conductive PLA"
+    },
+    {
+     "density": 1.85,
+     "material": "PLA",
+     "name": "Composite Iron PLA"
+    },
+    {
+     "density": 2.3,
+     "material": "PLA",
+     "name": "Composite PLA"
+    },
+    {
+     "density": 2.3,
+     "material": "PLA",
+     "name": "Composite Steel PLA"
+    },
+    {
+     "density": 1.24,
+     "material": "PLA",
+     "name": "Ecto Ooze Translucent PLA"
+    },
+    {
+     "density": 1.24,
+     "material": "TPE",
+     "name": "Flexible TPE"
+    },
+    {
+     "density": 1.24,
+     "material": "PLA",
+     "name": "Fluorescent PLA"
+    },
+    {
+     "density": 1.2,
+     "material": "PETG",
+     "name": "Glitter PETG"
+    },
+    {
+     "density": 1.24,
+     "material": "PLA",
+     "name": "Glitter PLA"
+    },
+    {
+     "density": 1.24,
+     "material": "PLA",
+     "name": "Gloop! Translucent PLA"
+    },
+    {
+     "density": 1.24,
+     "material": "PLA",
+     "name": "Green Glow-in-the-Dark PLA"
+    },
+    {
+     "density": 1.24,
+     "material": "PLA",
+     "name": "Marble PLA"
+    },
+    {
+     "density": 1.14,
+     "material": "PLA",
+     "name": "Matte Fiber PLA"
+    },
+    {
+     "density": 1.2,
+     "material": "PETG",
+     "name": "Metallic PETG"
+    },
+    {
+     "density": 1.24,
+     "material": "PLA",
+     "name": "Metallic PLA"
+    },
+    {
+     "density": 1.24,
+     "material": "PLA",
+     "name": "Multicolor PLA"
+    },
+    {
+     "density": 1.24,
+     "material": "PLA",
+     "name": "Opaque PLA"
+    },
+    {
+     "density": 1.24,
+     "material": "PLA",
+     "name": "Pearl PLA"
+    },
+    {
+     "density": 1.24,
+     "material": "PLA",
+     "name": "PLA"
+    },
+    {
+     "density": 1.24,
+     "material": "PLA",
+     "name": "Recycled PLA"
+    },
+    {
+     "density": 1.24,
+     "material": "TPE",
+     "name": "Rigid TPE"
+    },
+    {
+     "density": 1.24,
+     "material": "PLA",
+     "name": "Satin PLA"
+    },
+    {
+     "density": 1.24,
+     "material": "PLA",
+     "name": "Static Dissipative Carbon Fiber PLA"
+    },
+    {
+     "density": 1.24,
+     "material": "PETG",
+     "name": "Static Dissipative PETG"
+    },
+    {
+     "density": 1.24,
+     "material": "PLA",
+     "name": "Static Dissipative PLA"
+    },
+    {
+     "density": 1.24,
+     "material": "PLA",
+     "name": "Thermochromic PLA"
+    },
+    {
+     "density": 1.24,
+     "material": "PLA",
+     "name": "Totally Translucent PLA"
+    },
+    {
+     "density": 1.2,
+     "material": "PETG",
+     "name": "Translucent PETG"
+    },
+    {
+     "density": 1.24,
+     "material": "PLA",
+     "name": "Translucent PLA"
+    }
+   ],
+   "manufacturer": "Protopasta",
+   "net_g": 500.0,
+   "spool_material": "carton",
+   "tare_g": 75.0
+  },
+  {
+   "key": "Protopasta|1000|75|carton",
+   "lines": [
+    {
+     "density": 1.24,
+     "material": "PLA",
+     "name": "Amber Alchemy Translucent PLA"
+    },
+    {
+     "density": 1.24,
+     "material": "PLA",
+     "name": "Basic PLA"
+    },
+    {
+     "density": 1.2,
+     "material": "PETG",
+     "name": "Carbon Fiber PETG"
+    },
+    {
+     "density": 1.15,
+     "material": "PLA",
+     "name": "Carbon Fiber PLA"
+    },
+    {
+     "density": 1.24,
+     "material": "PLA",
+     "name": "cMatte PLA"
+    },
+    {
+     "density": 1.24,
+     "material": "PLA",
+     "name": "Composite Conductive PLA"
+    },
+    {
+     "density": 1.24,
+     "material": "PLA",
+     "name": "Ecto Ooze Translucent PLA"
+    },
+    {
+     "density": 1.24,
+     "material": "TPE",
+     "name": "Flexible TPE"
+    },
+    {
+     "density": 1.24,
+     "material": "PLA",
+     "name": "Fluorescent PLA"
+    },
+    {
+     "density": 1.2,
+     "material": "PETG",
+     "name": "Glitter PETG"
+    },
+    {
+     "density": 1.24,
+     "material": "PLA",
+     "name": "Glitter PLA"
+    },
+    {
+     "density": 1.24,
+     "material": "PLA",
+     "name": "Gloop! Translucent PLA"
+    },
+    {
+     "density": 1.24,
+     "material": "PLA",
+     "name": "Green Glow-in-the-Dark PLA"
+    },
+    {
+     "density": 1.24,
+     "material": "PLA",
+     "name": "High Flow PLA"
+    },
+    {
+     "density": 1.24,
+     "material": "PLA",
+     "name": "Marble PLA"
+    },
+    {
+     "density": 1.2,
+     "material": "PETG",
+     "name": "Metallic PETG"
+    },
+    {
+     "density": 1.24,
+     "material": "PLA",
+     "name": "Metallic PLA"
+    },
+    {
+     "density": 1.24,
+     "material": "PLA",
+     "name": "Multicolor PLA"
+    },
+    {
+     "density": 1.2,
+     "material": "PLA",
+     "name": "Opaque PLA"
+    },
+    {
+     "density": 1.24,
+     "material": "PLA",
+     "name": "Opaque PLA"
+    },
+    {
+     "density": 1.24,
+     "material": "PLA",
+     "name": "Pearl PLA"
+    },
+    {
+     "density": 1.24,
+     "material": "PLA",
+     "name": "PLA"
+    },
+    {
+     "density": 1.24,
+     "material": "PETG",
+     "name": "Recycled PETG"
+    },
+    {
+     "density": 1.24,
+     "material": "PLA",
+     "name": "Recycled PLA"
+    },
+    {
+     "density": 1.24,
+     "material": "TPE",
+     "name": "Rigid TPE"
+    },
+    {
+     "density": 1.24,
+     "material": "PLA",
+     "name": "Satin PLA"
+    },
+    {
+     "density": 1.2,
+     "material": "PETG",
+     "name": "Simply PETG"
+    },
+    {
+     "density": 1.24,
+     "material": "PLA",
+     "name": "Static Dissipative Carbon Fiber PLA"
+    },
+    {
+     "density": 1.24,
+     "material": "PETG",
+     "name": "Static Dissipative PETG"
+    },
+    {
+     "density": 1.24,
+     "material": "PLA",
+     "name": "Static Dissipative PLA"
+    },
+    {
+     "density": 1.24,
+     "material": "PLA",
+     "name": "Thermochromic PLA"
+    },
+    {
+     "density": 1.24,
+     "material": "PLA",
+     "name": "Totally Translucent PLA"
+    },
+    {
+     "density": 1.2,
+     "material": "PETG",
+     "name": "Translucent PETG"
+    },
+    {
+     "density": 1.24,
+     "material": "PLA",
+     "name": "Translucent PLA"
+    }
+   ],
+   "manufacturer": "Protopasta",
+   "net_g": 1000.0,
+   "spool_material": "carton",
+   "tare_g": 75.0
+  },
+  {
+   "key": "Protopasta|1500|75|carton",
+   "lines": [
+    {
+     "density": 1.85,
+     "material": "PLA",
+     "name": "Composite Iron PLA"
+    },
+    {
+     "density": 2.3,
+     "material": "PLA",
+     "name": "Composite PLA"
+    },
+    {
+     "density": 2.3,
+     "material": "PLA",
+     "name": "Composite Steel PLA"
+    }
+   ],
+   "manufacturer": "Protopasta",
+   "net_g": 1500.0,
+   "spool_material": "carton",
+   "tare_g": 75.0
+  },
+  {
+   "key": "Protopasta|2000|75|carton",
+   "lines": [
+    {
+     "density": 1.24,
+     "material": "PLA",
+     "name": "Composite Conductive PLA"
+    },
+    {
+     "density": 1.85,
+     "material": "PLA",
+     "name": "Composite Iron PLA"
+    },
+    {
+     "density": 2.3,
+     "material": "PLA",
+     "name": "Composite Steel PLA"
+    }
+   ],
+   "manufacturer": "Protopasta",
+   "net_g": 2000.0,
+   "spool_material": "carton",
+   "tare_g": 75.0
+  },
+  {
+   "key": "Protopasta|3000|75|carton",
+   "lines": [
+    {
+     "density": 1.24,
+     "material": "PLA",
+     "name": "Basic PLA"
+    },
+    {
+     "density": 1.2,
+     "material": "PETG",
+     "name": "Carbon Fiber PETG"
+    },
+    {
+     "density": 1.15,
+     "material": "PLA",
+     "name": "Carbon Fiber PLA"
+    },
+    {
+     "density": 1.14,
+     "material": "PLA",
+     "name": "Composite Carbon Fiber PLA"
+    },
+    {
+     "density": 1.14,
+     "material": "PLA",
+     "name": "Matte Fiber PLA"
+    },
+    {
+     "density": 1.2,
+     "material": "PLA",
+     "name": "Opaque PLA"
+    },
+    {
+     "density": 1.2,
+     "material": "PETG",
+     "name": "Simply PETG"
+    }
+   ],
+   "manufacturer": "Protopasta",
+   "net_g": 3000.0,
+   "spool_material": "carton",
+   "tare_g": 75.0
+  },
+  {
+   "key": "Prusament|500|193|plastique",
+   "lines": [
+    {
+     "density": 1.1,
+     "material": "PVB",
+     "name": "PVB"
+    }
+   ],
+   "manufacturer": "Prusament",
+   "net_g": 500.0,
+   "spool_material": "plastique",
+   "tare_g": 193.0
+  },
+  {
+   "key": "Prusament|500|220|plastique",
+   "lines": [
+    {
+     "density": 1.25,
+     "material": "TPU-95A",
+     "name": "TPU-95A"
+    }
+   ],
+   "manufacturer": "Prusament",
+   "net_g": 500.0,
+   "spool_material": "plastique",
+   "tare_g": 220.0
+  },
+  {
+   "key": "Prusament|500|278|plastique",
+   "lines": [
+    {
+     "density": 1.09,
+     "material": "PVB",
+     "name": "(NFC) PVB"
+    },
+    {
+     "density": 1.23,
+     "material": "TPU-95A",
+     "name": "(NFC) TPU-95A"
+    },
+    {
+     "density": 1.27,
+     "material": "PEI",
+     "name": "1010 (NFC) PEI"
+    }
+   ],
+   "manufacturer": "Prusament",
+   "net_g": 500.0,
+   "spool_material": "plastique",
+   "tare_g": 278.0
+  },
+  {
+   "key": "Prusament|650|278|plastique",
+   "lines": [
+    {
+     "density": 0.91,
+     "material": "PP-CF",
+     "name": "(NFC) PP-CF"
+    }
+   ],
+   "manufacturer": "Prusament",
+   "net_g": 650.0,
+   "spool_material": "plastique",
+   "tare_g": 278.0
+  },
+  {
+   "key": "Prusament|800|193|plastique",
+   "lines": [
+    {
+     "density": 1.07,
+     "material": "ASA",
+     "name": "ASA"
+    }
+   ],
+   "manufacturer": "Prusament",
+   "net_g": 800.0,
+   "spool_material": "plastique",
+   "tare_g": 193.0
+  },
+  {
+   "key": "Prusament|800|200|plastique",
+   "lines": [
+    {
+     "density": 1.22,
+     "material": "PC-CF",
+     "name": "PC Blend Carbon Fiber PC-CF"
+    }
+   ],
+   "manufacturer": "Prusament",
+   "net_g": 800.0,
+   "spool_material": "plastique",
+   "tare_g": 200.0
+  },
+  {
+   "key": "Prusament|800|278|plastique",
+   "lines": [
+    {
+     "density": 1.07,
+     "material": "ASA",
+     "name": "(NFC) ASA"
+    },
+    {
+     "density": 1.11,
+     "material": "PA11-CF",
+     "name": "(NFC) PA11-CF"
+    }
+   ],
+   "manufacturer": "Prusament",
+   "net_g": 800.0,
+   "spool_material": "plastique",
+   "tare_g": 278.0
+  },
+  {
+   "key": "Prusament|850|193|plastique",
+   "lines": [
+    {
+     "density": 1.07,
+     "material": "ASA",
+     "name": "ASA"
+    }
+   ],
+   "manufacturer": "Prusament",
+   "net_g": 850.0,
+   "spool_material": "plastique",
+   "tare_g": 193.0
+  },
+  {
+   "key": "Prusament|850|278|plastique",
+   "lines": [
+    {
+     "density": 1.05,
+     "material": "PP-GF",
+     "name": "(NFC) PP-GF"
+    },
+    {
+     "density": 1.21,
+     "material": "PC-CF",
+     "name": "Space Grade (NFC) PC-CF"
+    }
+   ],
+   "manufacturer": "Prusament",
+   "net_g": 850.0,
+   "spool_material": "plastique",
+   "tare_g": 278.0
+  },
+  {
+   "key": "Prusament|900|278|plastique",
+   "lines": [
+    {
+     "density": 1.22,
+     "material": "PC",
+     "name": "Blend (NFC) PC"
+    }
+   ],
+   "manufacturer": "Prusament",
+   "net_g": 900.0,
+   "spool_material": "plastique",
+   "tare_g": 278.0
+  },
+  {
+   "key": "Prusament|970|186|plastique",
+   "lines": [
+    {
+     "density": 1.22,
+     "material": "PC",
+     "name": "Blend PC"
+    }
+   ],
+   "manufacturer": "Prusament",
+   "net_g": 970.0,
+   "spool_material": "plastique",
+   "tare_g": 186.0
+  },
+  {
+   "key": "Prusament|970|193|plastique",
+   "lines": [
+    {
+     "density": 1.24,
+     "material": "PLA",
+     "name": "Blend PLA"
+    }
+   ],
+   "manufacturer": "Prusament",
+   "net_g": 970.0,
+   "spool_material": "plastique",
+   "tare_g": 193.0
+  },
+  {
+   "key": "Prusament|1000|186|plastique",
+   "lines": [
+    {
+     "density": 1.22,
+     "material": "PC",
+     "name": "Blend PC"
+    }
+   ],
+   "manufacturer": "Prusament",
+   "net_g": 1000.0,
+   "spool_material": "plastique",
+   "tare_g": 186.0
+  },
+  {
+   "key": "Prusament|1000|193|plastique",
+   "lines": [
+    {
+     "density": 1.27,
+     "material": "PETG",
+     "name": "PETG"
+    },
+    {
+     "density": 1.24,
+     "material": "PLA",
+     "name": "PLA"
+    }
+   ],
+   "manufacturer": "Prusament",
+   "net_g": 1000.0,
+   "spool_material": "plastique",
+   "tare_g": 193.0
+  },
+  {
+   "key": "Prusament|1000|278|plastique",
+   "lines": [
+    {
+     "density": 1.27,
+     "material": "PETG",
+     "name": "(NFC) PETG"
+    },
+    {
+     "density": 4.0,
+     "material": "PETG",
+     "name": "(NFC) PETG"
+    },
+    {
+     "density": 1.27,
+     "material": "PETG-CF",
+     "name": "(NFC) PETG-CF"
+    },
+    {
+     "density": 1.24,
+     "material": "PLA",
+     "name": "(NFC) PLA"
+    },
+    {
+     "density": 1.2,
+     "material": "WOOD",
+     "name": "(NFC) WOOD"
+    },
+    {
+     "density": 1.24,
+     "material": "PLA",
+     "name": "Blend (NFC) PLA"
+    },
+    {
+     "density": 1.82,
+     "material": "PETG",
+     "name": "Magnetite 40% (NFC) PETG"
+    },
+    {
+     "density": 1.24,
+     "material": "PLA",
+     "name": "rPLA (NFC)"
+    },
+    {
+     "density": 1.27,
+     "material": "PETG",
+     "name": "V0 (NFC) PETG"
+    }
+   ],
+   "manufacturer": "Prusament",
+   "net_g": 1000.0,
+   "spool_material": "plastique",
+   "tare_g": 278.0
+  },
+  {
+   "key": "Prusament|2000|219|plastique",
+   "lines": [
+    {
+     "density": 1.27,
+     "material": "PETG",
+     "name": "PETG"
+    },
+    {
+     "density": 1.24,
+     "material": "PLA",
+     "name": "PLA"
+    }
+   ],
+   "manufacturer": "Prusament",
+   "net_g": 2000.0,
+   "spool_material": "plastique",
+   "tare_g": 219.0
+  },
+  {
+   "key": "Prusament|2000|370|plastique",
+   "lines": [
+    {
+     "density": 1.27,
+     "material": "PETG",
+     "name": "(NFC) PETG"
+    },
+    {
+     "density": 1.24,
+     "material": "PLA",
+     "name": "(NFC) PLA"
+    },
+    {
+     "density": 1.22,
+     "material": "PC",
+     "name": "Blend (NFC) PC"
+    }
+   ],
+   "manufacturer": "Prusament",
+   "net_g": 2000.0,
+   "spool_material": "plastique",
+   "tare_g": 370.0
+  },
+  {
+   "key": "QIDI Tech|500|245|inconnue",
+   "lines": [
+    {
+     "density": 1.3,
+     "material": "ABS-GF25",
+     "name": "ABS-GF25"
+    }
+   ],
+   "manufacturer": "QIDI Tech",
+   "net_g": 500.0,
+   "spool_material": "inconnue",
+   "tare_g": 245.0
+  },
+  {
+   "key": "QIDI Tech|750|245|inconnue",
+   "lines": [
+    {
+     "density": 1.36,
+     "material": "PPS-GF20",
+     "name": "PPS-GF20"
+    }
+   ],
+   "manufacturer": "QIDI Tech",
+   "net_g": 750.0,
+   "spool_material": "inconnue",
+   "tare_g": 245.0
+  },
+  {
+   "key": "QIDI Tech|750|245|plastique",
+   "lines": [
+    {
+     "density": 1.3,
+     "material": "PPS-CF",
+     "name": "PPS-CF"
+    }
+   ],
+   "manufacturer": "QIDI Tech",
+   "net_g": 750.0,
+   "spool_material": "plastique",
+   "tare_g": 245.0
+  },
+  {
+   "key": "QIDI Tech|1000|245|inconnue",
+   "lines": [
+    {
+     "density": 1.21,
+     "material": "TPU",
+     "name": "95A HF TPU"
+    },
+    {
+     "density": 1.01,
+     "material": "PEBA",
+     "name": "95A PEBA"
+    },
+    {
+     "density": 1.08,
+     "material": "PC",
+     "name": "ABS-FR PC"
+    },
+    {
+     "density": 1.3,
+     "material": "ABS-GF25",
+     "name": "ABS-GF25"
+    },
+    {
+     "density": 1.07,
+     "material": "ASA",
+     "name": "Aero ASA"
+    },
+    {
+     "density": 0.74,
+     "material": "TPU",
+     "name": "Aero TPU"
+    },
+    {
+     "density": 1.26,
+     "material": "PETG",
+     "name": "Basic PETG"
+    },
+    {
+     "density": 1.17,
+     "material": "PLA",
+     "name": "Basic PLA"
+    },
+    {
+     "density": 1.32,
+     "material": "PLA",
+     "name": "Matte Basic PLA"
+    },
+    {
+     "density": 1.32,
+     "material": "PLA",
+     "name": "Matte Rapido PLA"
+    },
+    {
+     "density": 1.06,
+     "material": "ABS",
+     "name": "Metal Rapido ABS"
+    },
+    {
+     "density": 1.2,
+     "material": "PLA",
+     "name": "Metal Rapido PLA"
+    },
+    {
+     "density": 1.04,
+     "material": "ABS",
+     "name": "Odorless Rapido ABS"
+    },
+    {
+     "density": 1.2,
+     "material": "PPA-CF",
+     "name": "PAHT PPA-CF"
+    },
+    {
+     "density": 1.27,
+     "material": "PPA-GF",
+     "name": "PAHT PPA-GF"
+    },
+    {
+     "density": 1.3,
+     "material": "PET-CF",
+     "name": "PET-CF"
+    },
+    {
+     "density": 1.38,
+     "material": "PET-GF",
+     "name": "PET-GF"
+    },
+    {
+     "density": 1.31,
+     "material": "PETG-CF",
+     "name": "PETG-CF"
+    },
+    {
+     "density": 1.26,
+     "material": "PETG-GF",
+     "name": "PETG-GF"
+    },
+    {
+     "density": 1.28,
+     "material": "PLA-CF",
+     "name": "PLA-CF"
+    },
+    {
+     "density": 1.04,
+     "material": "ABS",
+     "name": "Rapido ABS"
+    },
+    {
+     "density": 1.31,
+     "material": "PETG",
+     "name": "Rapido PETG"
+    },
+    {
+     "density": 1.22,
+     "material": "PLA",
+     "name": "Rapido PLA"
+    },
+    {
+     "density": 1.1,
+     "material": "PA12",
+     "name": "S-White Support PA12"
+    },
+    {
+     "density": 1.24,
+     "material": "PLA",
+     "name": "Silk Rapido PLA"
+    },
+    {
+     "density": 1.26,
+     "material": "PETG",
+     "name": "Translucent PETG"
+    },
+    {
+     "density": 1.21,
+     "material": "PPA",
+     "name": "UltraPA PPA"
+    },
+    {
+     "density": 1.23,
+     "material": "PPA-CF25",
+     "name": "UltraPA PPA-CF25"
+    },
+    {
+     "density": 1.23,
+     "material": "PLA",
+     "name": "Wood PLA"
+    }
+   ],
+   "manufacturer": "QIDI Tech",
+   "net_g": 1000.0,
+   "spool_material": "inconnue",
+   "tare_g": 245.0
+  },
+  {
+   "key": "QIDI Tech|1000|245|plastique",
+   "lines": [
+    {
+     "density": 1.07,
+     "material": "ASA",
+     "name": "ASA"
+    },
+    {
+     "density": 1.09,
+     "material": "PA12-CF",
+     "name": "PA12-CF"
+    },
+    {
+     "density": 1.2,
+     "material": "PAHT-CF",
+     "name": "PAHT-CF"
+    },
+    {
+     "density": 1.24,
+     "material": "PETG",
+     "name": "PETG-Tough"
+    }
+   ],
+   "manufacturer": "QIDI Tech",
+   "net_g": 1000.0,
+   "spool_material": "plastique",
+   "tare_g": 245.0
+  },
+  {
+   "key": "R3D|1000|100|carton",
+   "lines": [
+    {
+     "density": 1.27,
+     "material": "PLA",
+     "name": "PLA BASIC"
+    },
+    {
+     "density": 1.27,
+     "material": "PETG",
+     "name": "Translucent PETG"
+    }
+   ],
+   "manufacturer": "R3D",
+   "net_g": 1000.0,
+   "spool_material": "carton",
+   "tare_g": 100.0
+  },
+  {
+   "key": "R3D|1000|127|plastique",
+   "lines": [
+    {
+     "density": 1.27,
+     "material": "PETG",
+     "name": "PETG"
+    },
+    {
+     "density": 1.27,
+     "material": "PLA",
+     "name": "PLA BASIC"
+    },
+    {
+     "density": 1.27,
+     "material": "PETG",
+     "name": "Translucent PETG"
+    }
+   ],
+   "manufacturer": "R3D",
+   "net_g": 1000.0,
+   "spool_material": "plastique",
+   "tare_g": 127.0
+  },
+  {
+   "key": "R3D|1000|140|carton",
+   "lines": [
+    {
+     "density": 1.27,
+     "material": "PETG",
+     "name": "PETG"
+    }
+   ],
+   "manufacturer": "R3D",
+   "net_g": 1000.0,
+   "spool_material": "carton",
+   "tare_g": 140.0
+  },
+  {
+   "key": "R3D|3000|320|plastique",
+   "lines": [
+    {
+     "density": 1.27,
+     "material": "PETG",
+     "name": "PETG"
+    }
+   ],
+   "manufacturer": "R3D",
+   "net_g": 3000.0,
+   "spool_material": "plastique",
+   "tare_g": 320.0
+  },
+  {
+   "key": "RatRig|1000|219.2|inconnue",
+   "lines": [
+    {
+     "density": 1.04,
+     "material": "ABS",
+     "name": "Punkfil ABS"
+    },
+    {
+     "density": 1.05,
+     "material": "ASA",
+     "name": "Punkfil ASA"
+    },
+    {
+     "density": 1.27,
+     "material": "PETG",
+     "name": "Punkfil PETG"
+    },
+    {
+     "density": 1.29,
+     "material": "PETG-CF10",
+     "name": "Punkfil PETG-CF10"
+    }
+   ],
+   "manufacturer": "RatRig",
+   "net_g": 1000.0,
+   "spool_material": "inconnue",
+   "tare_g": 219.2
+  },
+  {
+   "key": "REDLINE FILAMENT|1000|155|carton",
+   "lines": [
+    {
+     "density": 1.11,
+     "material": "ASA-X",
+     "name": "ASA-X"
+    },
+    {
+     "density": 1.24,
+     "material": "PLA",
+     "name": "PLA"
+    }
+   ],
+   "manufacturer": "REDLINE FILAMENT",
+   "net_g": 1000.0,
+   "spool_material": "carton",
+   "tare_g": 155.0
+  },
+  {
+   "key": "Renkforce|1000|126|inconnue",
+   "lines": [
+    {
+     "density": 1.24,
+     "material": "PETG",
+     "name": "PETG"
+    }
+   ],
+   "manufacturer": "Renkforce",
+   "net_g": 1000.0,
+   "spool_material": "inconnue",
+   "tare_g": 126.0
+  },
+  {
+   "key": "Rosa3D|1000|250|plastique",
+   "lines": [
+    {
+     "density": 1.05,
+     "material": "ABS",
+     "name": "ABS"
+    },
+    {
+     "density": 1.07,
+     "material": "ASA",
+     "name": "ASA"
+    },
+    {
+     "density": 1.24,
+     "material": "PLA",
+     "name": "PLA Starter"
+    }
+   ],
+   "manufacturer": "Rosa3D",
+   "net_g": 1000.0,
+   "spool_material": "plastique",
+   "tare_g": 250.0
+  },
+  {
+   "key": "Rosa3D|2500|700|plastique",
+   "lines": [
+    {
+     "density": 1.05,
+     "material": "ABS",
+     "name": "ABS"
+    }
+   ],
+   "manufacturer": "Rosa3D",
+   "net_g": 2500.0,
+   "spool_material": "plastique",
+   "tare_g": 700.0
+  },
+  {
+   "key": "Siddament|1000|160|plastique",
+   "lines": [
+    {
+     "density": 1.05,
+     "material": "ABS",
+     "name": "ABS"
+    },
+    {
+     "density": 1.22,
+     "material": "PETG",
+     "name": "PETG"
+    }
+   ],
+   "manufacturer": "Siddament",
+   "net_g": 1000.0,
+   "spool_material": "plastique",
+   "tare_g": 160.0
+  },
+  {
+   "key": "Siddament|1000|200|plastique",
+   "lines": [
+    {
+     "density": 1.23,
+     "material": "PETG",
+     "name": "Matte PETG"
+    },
+    {
+     "density": 1.23,
+     "material": "PETG",
+     "name": "PETG"
+    },
+    {
+     "density": 1.22,
+     "material": "PETG-CF",
+     "name": "PETG-CF"
+    },
+    {
+     "density": 1.22,
+     "material": "PETG-CF",
+     "name": "V2 PETG-CF"
+    }
+   ],
+   "manufacturer": "Siddament",
+   "net_g": 1000.0,
+   "spool_material": "plastique",
+   "tare_g": 200.0
+  },
+  {
+   "key": "Siddament|1000|240|plastique",
+   "lines": [
+    {
+     "density": 1.23,
+     "material": "PETG",
+     "name": "HS Metallic PETG"
+    },
+    {
+     "density": 1.23,
+     "material": "PETG",
+     "name": "PETG"
+    }
+   ],
+   "manufacturer": "Siddament",
+   "net_g": 1000.0,
+   "spool_material": "plastique",
+   "tare_g": 240.0
+  },
+  {
+   "key": "Siddament|1000|300|plastique",
+   "lines": [
+    {
+     "density": 1.23,
+     "material": "PETG-GF",
+     "name": "PETG-GF"
+    }
+   ],
+   "manufacturer": "Siddament",
+   "net_g": 1000.0,
+   "spool_material": "plastique",
+   "tare_g": 300.0
+  },
+  {
+   "key": "Siddament|1000|400|plastique",
+   "lines": [
+    {
+     "density": 1.23,
+     "material": "PETG",
+     "name": "Matte V2 PETG"
+    },
+    {
+     "density": 1.23,
+     "material": "PETG",
+     "name": "V2 PETG"
+    }
+   ],
+   "manufacturer": "Siddament",
+   "net_g": 1000.0,
+   "spool_material": "plastique",
+   "tare_g": 400.0
+  },
+  {
+   "key": "SMARTFIL|1000|130|plastique",
+   "lines": [
+    {
+     "density": 1.24,
+     "material": "PLA",
+     "name": "PLA-Basic"
+    }
+   ],
+   "manufacturer": "SMARTFIL",
+   "net_g": 1000.0,
+   "spool_material": "plastique",
+   "tare_g": 130.0
+  },
+  {
+   "key": "Snapmaker|500|154|inconnue",
+   "lines": [
+    {
+     "density": 1.24,
+     "material": "PLA",
+     "name": "Breakaway Support PLA"
+    },
+    {
+     "density": 1.22,
+     "material": "PVA",
+     "name": "PVA"
+    }
+   ],
+   "manufacturer": "Snapmaker",
+   "net_g": 500.0,
+   "spool_material": "inconnue",
+   "tare_g": 154.0
+  },
+  {
+   "key": "Snapmaker|750|154|inconnue",
+   "lines": [
+    {
+     "density": 1.17,
+     "material": "PLA",
+     "name": "Wood PLA"
+    }
+   ],
+   "manufacturer": "Snapmaker",
+   "net_g": 750.0,
+   "spool_material": "inconnue",
+   "tare_g": 154.0
+  },
+  {
+   "key": "Snapmaker|1000|154|inconnue",
+   "lines": [
+    {
+     "density": 1.04,
+     "material": "ABS",
+     "name": "(RFID) ABS"
+    },
+    {
+     "density": 1.13,
+     "material": "ASA",
+     "name": "(RFID) ASA"
+    },
+    {
+     "density": 1.04,
+     "material": "ABS",
+     "name": "ABS"
+    },
+    {
+     "density": 1.24,
+     "material": "PLA",
+     "name": "Glow-in-the-dark PLA"
+    },
+    {
+     "density": 1.22,
+     "material": "TPU-95A",
+     "name": "HF (RFID) TPU-95A"
+    },
+    {
+     "density": 1.3,
+     "material": "PETG",
+     "name": "HF PETG"
+    },
+    {
+     "density": 1.216,
+     "material": "TPU-95A",
+     "name": "HF TPU-95A"
+    },
+    {
+     "density": 1.31,
+     "material": "PLA",
+     "name": "Matte PLA"
+    },
+    {
+     "density": 1.12,
+     "material": "PA",
+     "name": "Nylon PA"
+    },
+    {
+     "density": 1.26,
+     "material": "PETG",
+     "name": "PETG"
+    },
+    {
+     "density": 1.3,
+     "material": "PETG",
+     "name": "PETG"
+    },
+    {
+     "density": 1.24,
+     "material": "PLA",
+     "name": "PLA"
+    },
+    {
+     "density": 1.24,
+     "material": "PLA",
+     "name": "Silk Dual-Color PLA"
+    },
+    {
+     "density": 1.24,
+     "material": "PLA",
+     "name": "Silk PLA"
+    },
+    {
+     "density": 1.23,
+     "material": "PLA",
+     "name": "SnapSpeed PLA"
+    },
+    {
+     "density": 1.12,
+     "material": "TPU-90A",
+     "name": "TPU-90A"
+    },
+    {
+     "density": 1.22,
+     "material": "TPU-95A",
+     "name": "TPU-95A"
+    },
+    {
+     "density": 1.17,
+     "material": "PLA",
+     "name": "Wood (RFID) PLA"
+    }
+   ],
+   "manufacturer": "Snapmaker",
+   "net_g": 1000.0,
+   "spool_material": "inconnue",
+   "tare_g": 154.0
+  },
+  {
+   "key": "Soleyin|1000|290|plastique",
+   "lines": [
+    {
+     "density": 1.25,
+     "material": "PLA",
+     "name": "Ultra PLA"
+    }
+   ],
+   "manufacturer": "Soleyin",
+   "net_g": 1000.0,
+   "spool_material": "plastique",
+   "tare_g": 290.0
+  },
+  {
+   "key": "Spectrum|1000|206|plastique",
+   "lines": [
+    {
+     "density": 1.12,
+     "material": "ASA-CF",
+     "name": "The Filament ASA-CF"
+    }
+   ],
+   "manufacturer": "Spectrum",
+   "net_g": 1000.0,
+   "spool_material": "plastique",
+   "tare_g": 206.0
+  },
+  {
+   "key": "Spectrum|1000|245|plastique",
+   "lines": [
+    {
+     "density": 1.27,
+     "material": "PCTG",
+     "name": "PCTG"
+    }
+   ],
+   "manufacturer": "Spectrum",
+   "net_g": 1000.0,
+   "spool_material": "plastique",
+   "tare_g": 245.0
+  },
+  {
+   "key": "Sunlu|800|189|plastique",
+   "lines": [
+    {
+     "density": 1.01,
+     "material": "PP",
+     "name": "2.0 PP"
+    },
+    {
+     "density": 0.84,
+     "material": "PLA",
+     "name": "Lightweight PLA"
+    }
+   ],
+   "manufacturer": "Sunlu",
+   "net_g": 800.0,
+   "spool_material": "plastique",
+   "tare_g": 189.0
+  },
+  {
+   "key": "Sunlu|1000|130|plastique",
+   "lines": [
+    {
+     "density": 1.23,
+     "material": "TPU-95A",
+     "name": "TPU-95A"
+    }
+   ],
+   "manufacturer": "Sunlu",
+   "net_g": 1000.0,
+   "spool_material": "plastique",
+   "tare_g": 130.0
+  },
+  {
+   "key": "Sunlu|1000|189|inconnue",
+   "lines": [
+    {
+     "density": 1.02,
+     "material": "ABS",
+     "name": "ABS"
+    }
+   ],
+   "manufacturer": "Sunlu",
+   "net_g": 1000.0,
+   "spool_material": "inconnue",
+   "tare_g": 189.0
+  },
+  {
+   "key": "Sunlu|1000|189|plastique",
+   "lines": [
+    {
+     "density": 1.22,
+     "material": "PETG",
+     "name": "2.0 PETG"
+    },
+    {
+     "density": 1.21,
+     "material": "PLA+",
+     "name": "2.0 PLA+"
+    },
+    {
+     "density": 1.016,
+     "material": "ABS-GF",
+     "name": "ABS-GF"
+    },
+    {
+     "density": 1.23,
+     "material": "PLA",
+     "name": "Anti-string PLA"
+    },
+    {
+     "density": 1.04,
+     "material": "ASA",
+     "name": "ASA"
+    },
+    {
+     "density": 1.1,
+     "material": "PA",
+     "name": "Easy PA"
+    },
+    {
+     "density": 1.15,
+     "material": "ABS",
+     "name": "FR ABS"
+    },
+    {
+     "density": 1.26,
+     "material": "PLA",
+     "name": "High Speed Marble PLA"
+    },
+    {
+     "density": 1.28,
+     "material": "PETG",
+     "name": "High Speed Matte PETG"
+    },
+    {
+     "density": 1.36,
+     "material": "PLA",
+     "name": "High Speed Matte PLA"
+    },
+    {
+     "density": 1.28,
+     "material": "PLA",
+     "name": "High Speed PLA"
+    },
+    {
+     "density": 1.23,
+     "material": "PLA",
+     "name": "Lite PLA"
+    },
+    {
+     "density": 1.31,
+     "material": "PLA",
+     "name": "Matte PLA"
+    },
+    {
+     "density": 1.21,
+     "material": "PLA",
+     "name": "Meta PLA"
+    },
+    {
+     "density": 1.08,
+     "material": "PA12-CF",
+     "name": "PA12-CF"
+    },
+    {
+     "density": 1.12,
+     "material": "PA6-CF",
+     "name": "PA6-CF"
+    },
+    {
+     "density": 1.269,
+     "material": "PA6-GF",
+     "name": "PA6-GF"
+    },
+    {
+     "density": 1.15,
+     "material": "PC",
+     "name": "PC"
+    },
+    {
+     "density": 1.081,
+     "material": "PC+ABS",
+     "name": "PC+ABS"
+    },
+    {
+     "density": 1.1965,
+     "material": "PEEK",
+     "name": "PEEK"
+    },
+    {
+     "density": 1.27,
+     "material": "PETG",
+     "name": "PETG"
+    },
+    {
+     "density": 1.23,
+     "material": "PETG-CF",
+     "name": "PETG-CF"
+    },
+    {
+     "density": 1.23,
+     "material": "PLA",
+     "name": "PLA"
+    },
+    {
+     "density": 1.21,
+     "material": "PLA+",
+     "name": "PLA+"
+    },
+    {
+     "density": 1.23,
+     "material": "PLA-CF",
+     "name": "PLA-CF"
+    },
+    {
+     "density": 1.25,
+     "material": "PLA+",
+     "name": "Silk 2.0 PLA+"
+    },
+    {
+     "density": 1.23,
+     "material": "PLA+",
+     "name": "Silk PLA+"
+    },
+    {
+     "density": 1.21,
+     "material": "TPU",
+     "name": "Silk TPU"
+    },
+    {
+     "density": 1.23,
+     "material": "TPU-90A",
+     "name": "TPU-90A"
+    },
+    {
+     "density": 1.23,
+     "material": "PLA",
+     "name": "Transparent PLA"
+    },
+    {
+     "density": 1.17,
+     "material": "WOOD",
+     "name": "WOOD"
+    }
+   ],
+   "manufacturer": "Sunlu",
+   "net_g": 1000.0,
+   "spool_material": "plastique",
+   "tare_g": 189.0
+  },
+  {
+   "key": "TECBEARS|1000|157|inconnue",
+   "lines": [
+    {
+     "density": 1.24,
+     "material": "PETG",
+     "name": "PETG"
+    }
+   ],
+   "manufacturer": "TECBEARS",
+   "net_g": 1000.0,
+   "spool_material": "inconnue",
+   "tare_g": 157.0
+  },
+  {
+   "key": "TECBEARS|1000|250|inconnue",
+   "lines": [
+    {
+     "density": 1.24,
+     "material": "PLA",
+     "name": "Plus High Speed PLA"
+    }
+   ],
+   "manufacturer": "TECBEARS",
+   "net_g": 1000.0,
+   "spool_material": "inconnue",
+   "tare_g": 250.0
+  },
+  {
+   "key": "TECBEARS|1100|127|inconnue",
+   "lines": [
+    {
+     "density": 1.25,
+     "material": "PLA",
+     "name": "PLA"
+    }
+   ],
+   "manufacturer": "TECBEARS",
+   "net_g": 1100.0,
+   "spool_material": "inconnue",
+   "tare_g": 127.0
+  },
+  {
+   "key": "Tinmorry|1000|160|carton",
+   "lines": [
+    {
+     "density": 1.24,
+     "material": "PLA",
+     "name": "PLA"
+    }
+   ],
+   "manufacturer": "Tinmorry",
+   "net_g": 1000.0,
+   "spool_material": "carton",
+   "tare_g": 160.0
+  },
+  {
+   "key": "UniTak3D|1000|217|inconnue",
+   "lines": [
+    {
+     "density": 1.26,
+     "material": "PLA",
+     "name": "Matte PLA"
+    }
+   ],
+   "manufacturer": "UniTak3D",
+   "net_g": 1000.0,
+   "spool_material": "inconnue",
+   "tare_g": 217.0
+  },
+  {
+   "key": "Voolt3D|1000|187|plastique",
+   "lines": [
+    {
+     "density": 1.24,
+     "material": "PLA",
+     "name": "PLA"
+    }
+   ],
+   "manufacturer": "Voolt3D",
+   "net_g": 1000.0,
+   "spool_material": "plastique",
+   "tare_g": 187.0
+  },
+  {
+   "key": "VOXELPLA|1000|217|plastique",
+   "lines": [
+    {
+     "density": 1.27,
+     "material": "PETG",
+     "name": "PETG"
+    },
+    {
+     "density": 1.24,
+     "material": "PLA",
+     "name": "PLA"
+    }
+   ],
+   "manufacturer": "VOXELPLA",
+   "net_g": 1000.0,
+   "spool_material": "plastique",
+   "tare_g": 217.0
+  },
+  {
+   "key": "ZIRO 3D|1000|250|inconnue",
+   "lines": [
+    {
+     "density": 1.24,
+     "material": "PLA",
+     "name": "Gradiant Matte PLA"
+    }
+   ],
+   "manufacturer": "ZIRO 3D",
+   "net_g": 1000.0,
+   "spool_material": "inconnue",
+   "tare_g": 250.0
+  }
+ ],
+ "format": "kctrl_spools.tares",
+ "license": "MIT",
+ "source": "SpoolmanDB"
+}
