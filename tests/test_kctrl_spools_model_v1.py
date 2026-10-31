@@ -612,6 +612,48 @@ def test_the_box_is_read_without_its_serial_number_or_uuid():
     assert not any(slot["connected"] for slot in model.observe_box({"T1": "x"}).values())
 
 
+UNIDENTIFIED = ("-1", "-1", "unknown", "-1")  # T1A read at rest on 31 October 2026
+
+
+def test_a_spool_without_chip_or_identity_is_present_and_an_emptied_slot_is_not():
+    found = seen({"T1A": UNIDENTIFIED, "T1B": ("-1", "-1", "none", "-1"), "T1D": ("000001", "0ffffff")})
+    assert found["T1A"] == {"connected": True, "present": True, "material": "", "colour": "", "chip": None}
+    assert not found["T1B"]["present"] and not found["T1C"]["present"]
+    assert found["T1D"]["present"] and found["T1D"]["material"] == "000001"
+    assert not found["T3A"]["present"]
+
+
+def test_a_spool_the_cfs_cannot_identify_gets_its_identity_written():
+    observations = seen({"T1A": UNIDENTIFIED})
+    library = in_cfs(with_spools(), "B001", "T1A", observations)
+    library, events = observe(library, observations)
+    assert events == [] and library["slots"]["T1A"]["arrived"]
+    view = view_of(model.slot_views(library, observations, MATERIALS), "T1A")
+    assert view["status"] == "a_verifier"
+    assert model.gcode_of_plan(view["plan"]) == "KCTRL_FILAMENT SLOT=T1A MATERIAL=000001 COLOR=0ff1e1e"
+    assert model.readback_ok(view["plan"], seen({"T1A": RED_PLA})["T1A"])
+    assert not model.readback_ok(view["plan"], observations["T1A"])
+    refused(library, "adopt_cfs", {"slot": "T1A"}, "rien à adopter", context=ctx(observations=observations))
+
+
+def test_an_identity_lost_at_the_cfs_is_not_a_removal():
+    present = seen({"T1A": RED_PLA})
+    library, _ = observe(in_cfs(with_spools(), "B001", "T1A", present), present)
+    library, events = observe(library, seen({"T1A": UNIDENTIFIED}))
+    assert [event["detail"] for event in events] == ["matière ou couleur changée au CFS"]
+    assert library["spools"]["B001"]["state"] == "cfs"
+    library, events = observe(library, seen({}))
+    assert library["spools"]["B001"]["state"] == "a_ranger"
+
+
+def test_an_unidentified_slot_pairs_with_nobody_and_could_hold_any_spool_out_of_the_cfs():
+    observations = seen({"T1A": UNIDENTIFIED, "T1B": UNIDENTIFIED, "T2A": RED_PLA})
+    assert model.refill_impact(observations, "T1A", "000001", "FF1E1E") == {
+        "gained": ["T2A"], "lost": [], "partners": ["T2A"]}
+    view = view_of(model.slot_views(with_spools(), observations, MATERIALS), "T1B")
+    assert view["status"] == "inconnue" and view["candidates"] == ["B002", "B001", "B003"]
+
+
 def test_each_slot_shows_what_the_cfs_holds_against_what_thomas_expects():
     library = with_spools()
     library = act(library, "create_spool", {"filament": "F002", "empty_spool": "V001"})                       # B004

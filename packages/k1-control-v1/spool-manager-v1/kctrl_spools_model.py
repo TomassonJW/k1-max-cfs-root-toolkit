@@ -52,6 +52,11 @@ EMPTY_MATERIALS = ("-1", "None", "")
 # vender is "none" in an empty slot, "unknown" for a spool without a chip and
 # -1 when the unit is absent; anything else names the maker the chip gave.
 NO_CHIP = ("none", "unknown", "-1", "None", "")
+# A spool without a chip that nobody declared shows the -1 material of an empty
+# slot; only its vender tells it apart. Read at rest on 31 October 2026: T1A,
+# printed from after a refill, "unknown" with material and colour -1; T1B,
+# emptied by the end of its spool, "none".
+NO_SPOOL = ("none", "-1", "None", "")
 COLOUR_HEX = re.compile(r"[0-9A-F]{6}")
 CREALITY_ID = re.compile(r"[0-9A-Za-z]{5}")
 SLOT_MATERIAL = re.compile(r"0[0-9A-Za-z]{5}")
@@ -209,7 +214,9 @@ def observe_box(box: Dict[str, Any]) -> Dict[str, Dict[str, Any]]:
     """{slot: observation} from the box object's status.
 
     Only the fields named here are read: the units also publish their serial
-    number and uuid, which are never read, kept, logged or shown.
+    number and uuid, which are never read, kept, logged or shown. A spool the
+    CFS cannot identify is present with an empty material and colour: its
+    identity is exactly what a write gives it.
     """
     found = {}
     for number in BOXES:
@@ -219,14 +226,16 @@ def observe_box(box: Dict[str, Any]) -> Dict[str, Dict[str, Any]]:
         connected = str(unit.get("state", "None")) == "connect"
         for index, letter in enumerate(SLOTS):
             material = _item(unit.get("material_type"), index)
-            present = connected and material not in EMPTY_MATERIALS
+            vender = _item(unit.get("vender"), index)
+            identified = material not in EMPTY_MATERIALS
+            present = connected and (identified or vender not in NO_SPOOL)
             found["T" + number + letter] = {
                 "connected": connected,
                 "present": present,
-                "material": material if present else "",
-                "colour": colour_key(_item(unit.get("color_value"), index)) if present else "",
-                "chip": chip_remaining(_item(unit.get("vender"), index),
-                                       _item(unit.get("remain_len"), index)) if present else None,
+                "material": material if present and identified else "",
+                "colour": colour_key(_item(unit.get("color_value"), index))
+                if present and identified else "",
+                "chip": chip_remaining(vender, _item(unit.get("remain_len"), index)) if present else None,
             }
     return found
 
@@ -539,7 +548,8 @@ def candidates(library: Dict[str, Any], observation: Dict[str, Any],
 
     Same material id and colour first, then same type and colour; among them
     the spools just taken out of the CFS before those in stock, the most
-    recently touched first. Never more than eight, never linked on its own.
+    recently touched first. A spool the CFS cannot identify could be any of
+    them. Never more than eight, never linked on its own.
     """
     kind = (materials.get(material_key(observation["material"])) or {}).get("type", "")
     scored = []
@@ -547,9 +557,11 @@ def candidates(library: Dict[str, Any], observation: Dict[str, Any],
         if spool["state"] not in ("a_ranger", "stock"):
             continue
         fiche = library["filaments"][spool["filament"]]
-        if fiche["colour"] != observation["colour"]:
+        if not observation["material"]:
+            rank = 0
+        elif fiche["colour"] != observation["colour"]:
             continue
-        if same_identity(fiche, observation):
+        elif same_identity(fiche, observation):
             rank = 0
         elif kind and fiche["material"] == kind:
             rank = 1
@@ -565,8 +577,11 @@ def refill_impact(observations: Dict[str, Dict[str, Any]], slot: str,
 
     Its groups are same material id and same colour (same_material in the box
     status); writing another identity makes some partners and loses others.
+    A slot without identity is in no group.
     """
     def partners(identity: Tuple[str, str]) -> List[str]:
+        if not identity[0]:
+            return []
         return sorted(name for name, seen in observations.items()
                       if name != slot and seen.get("present")
                       and (seen["material"], seen["colour"]) == identity)
@@ -1267,6 +1282,8 @@ def _adopt_cfs(library, params, context):
     observation = context.observations.get(slot) or {}
     if not observation.get("present"):
         raise ModelError("%s est vide au CFS" % slot)
+    if not observation["material"]:
+        raise ModelError("le CFS n'a pas identifié la bobine en %s : rien à adopter" % slot)
     current = library["filaments"][spool["filament"]]
     if same_identity(current, observation):
         return [], {"id": spool["id"], "filament": current["id"]}
