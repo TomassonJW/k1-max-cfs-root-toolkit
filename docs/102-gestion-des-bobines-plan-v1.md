@@ -55,6 +55,15 @@ Faits du dépôt, vérifiés dans le code le 31 octobre :
 - un emplacement compte comme chargé quand son unité est connectée et que son
   matériau n'est pas `-1` (`kctrl_slot_map.slot_identities`). Matériau :
   identifiant Creality (`000003`). Couleur : `0rrggbb` ;
+- cette règle manque une bobine sans puce que personne n'a déclarée. Lecture
+  passive au repos du 31 octobre : `T1A`, imprimée depuis une relève
+  automatique, montre matériau et couleur `-1` comme un emplacement vide, mais
+  `vender` `unknown` ; `T1B`, vidée par sa vraie fin de bobine, montre `none`.
+  Les bobines sans puce déclarées montrent `unknown` et `remain_len` `100`,
+  l'emplacement non identifié `-1`, une unité absente `-1` partout. Le
+  composant lit donc la présence aussi dans `vender` : `none` vide, `unknown`
+  bobine sans puce, `-1` unité absente. Une seule lecture, confirmée au
+  geste 1 du lot L ;
 - écrire matériau et couleur au repos est déjà fait par
   `KCTRL_FILAMENT SLOT=T2C MATERIAL=000003 COLOR=0ffffff`
   (`BOX_MODIFY_TN_DATA`, puis `BOX_UPDATE_SAME_MATERIAL_LIST`) ;
@@ -274,7 +283,7 @@ Tous hors imprimante, sauf L.
 | E | Bobines, états, stock, lieux, archives | chaque transition d'état testée, aucune bobine perdue |
 | F | Synchro CFS : lecture continue, écriture au repos, relecture, attente pendant l'impression, « à vérifier » | refus prouvé pendant une impression, écart affiché si la relecture diffère |
 | G | Décompte : segments, bornes, points de reprise, « à attribuer », bilan de fin | rejeux de la section 11 verts |
-| H | Fenêtre de départ : vrai reste, avertissement non bloquant, plus de faux 100 %, repli. JavaScript seulement, `kctrl_print_gate.py` inchangé | tests existants verts, plus composant absent, reste insuffisant, bobine à puce |
+| H | Fenêtre de départ : vrai reste, avertissement non bloquant, plus de faux 100 %, bobine sans puce non identifiée montrée comme telle et non comme vide, repli. JavaScript seulement, `kctrl_print_gate.py` inchangé | tests existants verts, plus composant absent, reste insuffisant, bobine à puce, bobine non identifiée |
 | I | Bouton et fenêtre Bobines dans Mainsail | rendu réel bureau et téléphone, zéro erreur console |
 | J | Laboratoire : faux Moonraker qui rejoue des états réels, rendu Chrome | tous les lots jouables sans la K1 |
 | K | Paquet de pose : manifeste, empreintes, sauvegarde, liste exacte des fichiers écrits, déployeur, validateur, retour arrière exact | préflight réel vert en lecture seule |
@@ -320,8 +329,8 @@ Pose (lot K), au repos seulement, revérifié juste avant l'arrêt du service :
 Qualification (lot L), deux gestes de Thomas :
 
 1. retirer puis remettre une bobine, au repos : la fenêtre la passe « à
-   ranger », puis la reconnaît. Ce geste dit comment le CFS signale une bobine
-   sans puce, inconnue aujourd'hui ;
+   ranger », puis la reconnaît. Ce geste confirme comment le CFS signale une
+   bobine sans puce, lu une seule fois le 31 octobre (section 3) ;
 2. sa prochaine vraie impression multicouleur, bobines pesées avant et après :
    l'écart entre pesée et décompte doit rester dans la précision de la balance
    plus la perte de coupe mesurée. Sinon, on trouve la cause avant de clore.
