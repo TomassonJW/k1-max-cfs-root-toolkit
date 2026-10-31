@@ -1,7 +1,9 @@
 # 103 - Écritures sur la flash : cause, usure et parade
 
-Date : 31 octobre 2026. Statut : diagnostic en lecture seule clos ; parade
-proposée, non appliquée. Aucun fichier écrit ni réglage changé sur la K1.
+Date : 31 octobre 2026. Statut : diagnostic en lecture seule clos ; option 1
+de la parade préparée et testée hors imprimante
+(`packages/k1-control-v1/flash-log-level-v1/`), non posée. Aucun fichier
+écrit ni réglage changé sur la K1.
 
 ## 1. En bref
 
@@ -26,8 +28,8 @@ proposée, non appliquée. Aucun fichier écrit ni réglage changé sur la K1.
   3 (avertissements) dans `log_config.json`, au repos, avec sauvegarde et
   retour arrière en deux minutes : environ 10 Mo par minute attendus en
   impression, 4 à 5 fois moins, peu d'effet au repos. Le bavardage CFS de
-  `klippy.log` demande une mission à part, car l'audit du bus le lit. Rien
-  n'est appliqué.
+  `klippy.log` demande une mission à part, car l'audit du bus le lit. Le
+  paquet de pose est prêt (section 7) ; rien n'est appliqué.
 
 ## 2. Méthode et limites
 
@@ -250,7 +252,7 @@ démarrage. C'est un minimum : il ne s'enregistre qu'à un arrêt propre du
 système, et chaque coupure à l'interrupteur perd la session en cours. Ce seul
 démarrage, 5 h 56 dont 4 h 37 d'impression, a écrit 14,1 Go.
 
-## 7. Parade proposée, non appliquée
+## 7. Parade proposée : option 1 prête, non posée
 
 ### Geste immédiat : éteindre la K1 quand elle ne sert pas
 
@@ -274,17 +276,27 @@ documente lui-même 0 défaut, 1 débogage, 2 information, 3 avertissement,
   l'effet est faible : les lignes Creality n'y font que 9 par seconde sur 45,
   de 24 à environ 19 Mo/min. Le niveau 2 ne servirait à rien : les lignes
   actuelles sont déjà des INFO.
-- Procédure, mission à part, au repos revérifié juste avant : sauvegarder le
-  fichier et son empreinte sous
-  `/usr/data/k1-control-v1/backups/flash-log-level-v1/` ; changer ce seul
-  chiffre ; redémarrer la K1 au repos, puisque le fichier n'est
-  vraisemblablement lu qu'au lancement des programmes. Jamais pendant une
-  impression.
-- Validation : le même échantillonneur au repos puis pendant l'impression
-  suivante ; écran, application et page web Creality fonctionnels ;
-  `print_file_name.json` toujours réécrit (reprise après coupure intacte).
-- Retour arrière : remettre le fichier sauvegardé, empreinte identique, puis
-  redémarrer au repos. Deux minutes.
+- Procédure : paquet `packages/k1-control-v1/flash-log-level-v1/`, préparé
+  le 31 octobre et testé hors imprimante (`deploy.py preflight`, vert sur la
+  K1 le 31 octobre à 23:28, puis `install`). L'installateur lit le fichier,
+  exige son empreinte d'origine, calcule le changement de ce seul chiffre et
+  exige l'empreinte attendue ; il sauvegarde fichier, mode et manifeste sous
+  `/usr/data/k1-control-v1/backups/flash-log-level-v1/`, relit le repos par
+  le socket de Klipper juste avant d'écrire, puis remplace le fichier d'un
+  bloc. Il ne redémarre rien : le fichier n'étant vraisemblablement lu qu'au
+  lancement des programmes, le nouveau niveau vaut au prochain allumage, fait
+  par Thomas. Le fichier Creality n'est pas versionné, seules ses empreintes
+  (avant `027ab3db…`, après `fcd855a5…`). Jamais pendant une impression.
+- Validation : `deploy.py validate`, qui ne lit que le fichier ; après
+  l'allumage, `mesure.py` au repos puis pendant l'impression suivante, en
+  arrière-plan (mêmes compteurs que la section 2, plus le temps depuis
+  l'allumage ; essayé en lecture seule le 31 octobre à 23:28, au repos :
+  23,4 Mo/min sur 5 s, niveau 1) ; écran, application et page web Creality
+  fonctionnels ; `print_file_name.json` toujours réécrit (reprise après
+  coupure intacte).
+- Retour arrière : `deploy.py rollback`, au repos ; il remet le fichier
+  sauvegardé, empreinte identique, et l'ancien niveau revient au prochain
+  allumage. Deux minutes.
 - Risques : perte des traces INFO utiles à la rétro-ingénierie (le
   document 55 s'appuie sur des lignes INFO de `master-server.log`) : remettre
   1 le temps d'une enquête. Aucun composant de K1 Control ne lit ces journaux

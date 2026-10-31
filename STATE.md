@@ -15,9 +15,11 @@ Usure : la puce eMMC de 7,8 Go (probablement une iNAND 7250) déclare 70 à 80 %
 de vie consommée pour sa mémoire de type A, 0 à 10 % pour le type B, réserve
 normale ; historique inconnu, registre à relire chaque mois. Rester allumée
 sans imprimer multiplie par 3,5 l'usure d'une journée de 4 h d'impression. Parade
-recommandée, non appliquée : éteindre la K1 quand elle ne sert pas, puis
-`log_level` de 1 à 3 dans `log_config.json`, au repos (environ 10 Mo par
-minute attendus en impression). Filtrer le dialogue CFS de `klippy.log` ou
+recommandée : éteindre la K1 quand elle ne sert pas, puis `log_level` de 1 à 3
+dans `log_config.json` (environ 10 Mo par minute attendus en impression) ; ce
+second geste est prêt (paquet `flash-log-level-v1`, testé hors imprimante,
+préflight réel vert), non posé : pose au repos, effet au prochain allumage.
+Filtrer le dialogue CFS de `klippy.log` ou
 retirer le `sync` demanderait chacun une mission et une ADR. Lecture seule,
 aucun fichier ni réglage changé sur la K1. L'arrêt d'urgence de 19:16 vu
 pendant la mesure vient de Thomas, après un bug de fin d'impression traité
