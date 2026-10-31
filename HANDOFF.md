@@ -1,5 +1,21 @@
 # HANDOFF — index de reprise
 
+## 31 octobre - plan de gestion des bobines (document 102, ADR-075 proposée)
+
+Thomas veut gérer ses bobines dans Mainsail : bouton et fenêtre, synchro avec
+le CFS dans les deux sens, reste en grammes et en mètres, bibliothèque des
+bobines vides, décompte après chaque impression, stock. Aucun outil existant ne
+couvre huit emplacements, des bobines sans puce et les purges par bobine. Plan
+de A à Z écrit, rien installé, K1 non touchée. Point de reprise : la réponse de
+Thomas sur le lieu des données (ADR-075 : K1 Control sur la K1, recommandé, ou
+Spoolman sur le Proxmox) ; puis les lots A à K hors imprimante, la pose au
+repos du seul Moonraker dédié et les deux gestes de qualification (retrait et
+remise d'une bobine, impression multicouleur pesée avant et après).
+Mesuré pendant une impression : mémoire et processeur gardent une large marge.
+Constat annexe : la K1 écrit d'elle-même environ 40 Mo par minute sur sa flash
+(8,5 Go en 3 h 43 depuis son démarrage), rien de K1 Control ; enquête à part.
+[Document 102](docs/102-gestion-des-bobines-plan-v1.md), section 3.
+
 ## 2 octobre, 12:53 — annulation qui garde le filament, posée (ADR-074)
 
 Après une annulation, Thomas peut relancer directement : la fin
