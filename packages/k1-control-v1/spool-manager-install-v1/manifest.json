@@ -1,0 +1,127 @@
+{
+  "schema": 1,
+  "name": "spool-manager-install-v1",
+  "adr": "ADR-075",
+  "document": "docs/102-gestion-des-bobines-plan-v1.md",
+  "surveyed": false,
+  "files": [
+    {
+      "source": "packages/k1-control-v1/spool-manager-v1/kctrl_spools_store.py",
+      "destination": "/usr/data/k1-control-v1/current/moonraker/moonraker/moonraker/components/kctrl_spools_store.py",
+      "before_sha256": null,
+      "sha256": "ee76604078f5dc5ef59d58ff01ceefc77d90a7345afd0f4a533c4cd6ed3c6638",
+      "mode": "0644"
+    },
+    {
+      "source": "packages/k1-control-v1/spool-manager-v1/kctrl_spools_model.py",
+      "destination": "/usr/data/k1-control-v1/current/moonraker/moonraker/moonraker/components/kctrl_spools_model.py",
+      "before_sha256": null,
+      "sha256": "202503bc2210ba797fa2205300d52d940508c763f4843b673704cab64526a001",
+      "mode": "0644"
+    },
+    {
+      "source": "packages/k1-control-v1/spool-manager-v1/kctrl_spools_counter.py",
+      "destination": "/usr/data/k1-control-v1/current/moonraker/moonraker/moonraker/components/kctrl_spools_counter.py",
+      "before_sha256": null,
+      "sha256": "34ba613b5f556389dd47eaa4f303c7c5f6bbca162376fbd75c9e042989fbf4de",
+      "mode": "0644"
+    },
+    {
+      "source": "packages/k1-control-v1/spool-manager-v1/kctrl_spools.py",
+      "destination": "/usr/data/k1-control-v1/current/moonraker/moonraker/moonraker/components/kctrl_spools.py",
+      "before_sha256": null,
+      "sha256": "45c0d8af7015a62fbfd49ac4ec57f735af20433151cdc5fd785e750ad9530f3f",
+      "mode": "0644"
+    },
+    {
+      "source": "packages/k1-control-v1/spool-choice-gate-v1/www/bobines/styles.css",
+      "destination": "/usr/data/k1-control-v1/current/www/bobines/styles.css",
+      "before_sha256": "fc20dcef4e4c0c1eee0f9a301de8d8b295fa795088df57e7534e8a58ea3abaa8",
+      "sha256": "80c26e024e3b0c940bdd4c2651dec228d2dacda37b47271b82c4857260f2bad5",
+      "mode": "0644"
+    },
+    {
+      "source": "packages/k1-control-v1/spool-choice-gate-v1/www/bobines/bobines.js",
+      "destination": "/usr/data/k1-control-v1/current/www/bobines/bobines.js",
+      "before_sha256": "798621ae3e65405a6d51d8e1ab68e252c9c32bf7d43e51f1eeb0d2b41635ad7d",
+      "sha256": "52760957f8d3b32997e1236ea4b744efc1047c16b11eb06a7a987a69a4417ed4",
+      "mode": "0644"
+    },
+    {
+      "source": "packages/k1-control-v1/spool-choice-gate-v1/www/bobines/logic.js",
+      "destination": "/usr/data/k1-control-v1/current/www/bobines/logic.js",
+      "before_sha256": "927de5ad17e04f69fd5e7f6a49e9a3b5d2bef152666d4bde9034be4d618ed4a8",
+      "sha256": "3f7513c8bf6eecea1452519438c862b8d901784718c7e1bf07b4519fa2ae8ab8",
+      "mode": "0644"
+    },
+    {
+      "source": "packages/k1-control-v1/spool-choice-gate-v1/www/bobines/overlay.js",
+      "destination": "/usr/data/k1-control-v1/current/www/bobines/overlay.js",
+      "before_sha256": "575e771297e4dbff15214e05ae88e956bbfec0d75107669a152ad2628e73f7fe",
+      "sha256": "209589d7961d6badd74a25ec08748e3dd0e916e19b82be8f02d6004b741cacec",
+      "mode": "0644"
+    },
+    {
+      "source": "packages/k1-control-v1/spool-choice-gate-v1/www/bobines/spools.js",
+      "destination": "/usr/data/k1-control-v1/current/www/bobines/spools.js",
+      "before_sha256": null,
+      "sha256": "60711eada60f472d2e18d8b20342d193ffcbeaae1e0c475eace77b8d1f0725cc",
+      "mode": "0644"
+    },
+    {
+      "source": "packages/k1-control-v1/spool-choice-gate-v1/www/bobines/spools-logic.js",
+      "destination": "/usr/data/k1-control-v1/current/www/bobines/spools-logic.js",
+      "before_sha256": null,
+      "sha256": "4506ce153cee24b4a8f28cf3b7f2e3fcf831856313c7cb2b94c11630614cbbb8",
+      "mode": "0644"
+    },
+    {
+      "source": "packages/k1-control-v1/spool-choice-gate-v1/www/bobines/tares.json",
+      "destination": "/usr/data/k1-control-v1/current/www/bobines/tares.json",
+      "before_sha256": null,
+      "sha256": "4064be64bb26a52285d5d182b982ea59b71c810fd37900fc2861f867fb612c7c",
+      "mode": "0644"
+    },
+    {
+      "source": "packages/k1-control-v1/spool-choice-gate-v1/www/bobines/LICENSE-SpoolmanDB.txt",
+      "destination": "/usr/data/k1-control-v1/current/www/bobines/LICENSE-SpoolmanDB.txt",
+      "before_sha256": null,
+      "sha256": "0e32583112190cdace7fcba056c3ccadc1e4952b6fa0f6210c8e6faa8048411e",
+      "mode": "0644"
+    }
+  ],
+  "moonraker_conf": {
+    "before_sha256": null,
+    "sha256": null,
+    "path": "/usr/data/k1-control-v1/current/config/moonraker.conf",
+    "section": "[kctrl_spools]",
+    "block": "# K1 Control spool manager (document 102, ADR-075).\n[kctrl_spools]\nstate_path: /usr/data/k1-control-v1/state/spools\nmaterial_database: /usr/data/creality/userdata/box/material_database.json\ngcodes_path: /usr/data/printer_data/gcodes\n"
+  },
+  "nginx": {
+    "before_sha256": null,
+    "sha256": null,
+    "path": "/usr/data/k1-control-v1/state/nginx-active.conf",
+    "anchor": "        location ~ ^/(access|api|machine|printer|server)/ {\n",
+    "block": "        # K1 Control spool manager (document 102, ADR-075): a write to the CFS\n        # can outlast nginx's 60 s default and the window waits 65 s for it.\n        # `^~` keeps the regex location below from taking these requests.\n        location ^~ /machine/k1_control/spools/ {\n            proxy_pass http://k1_moonraker;\n            proxy_read_timeout 90s;\n            proxy_set_header Host $http_host;\n            proxy_set_header X-Real-IP 127.0.0.1;\n            proxy_set_header Authorization \"\";\n        }\n\n"
+  },
+  "state_dir": "/usr/data/k1-control-v1/state/spools",
+  "backup": "/usr/data/k1-control-v1/backups/spool-manager-install-v1",
+  "budget": {
+    "rss_kb": 46080,
+    "available_kb": 71680,
+    "swap_growth_kb": 8192
+  },
+  "installer_sha256": "68a71f0a777f207bb621bba1d391d6ace5b537d0b703980e0e0ce2344680a4f8",
+  "effects": {
+    "moonraker_restart_idle_only": true,
+    "gateway_reload": true,
+    "klipper_restart": false,
+    "gcode": false,
+    "heating": false,
+    "motion": false,
+    "filament": false,
+    "cfs_write": false,
+    "printer_cfg_change": false
+  },
+  "protected": {}
+}
