@@ -36,10 +36,10 @@ sauvegarde sous `/usr/data/k1-control-v1/backups/flash-log-level-v1/`, paquet
 `packages/k1-control-v1/flash-log-level-v1/`. Thomas a rallumé la K1 le
 1er novembre vers 00:22 : `mesure.py` lit 12,0 Mo/min en impression sur
 10 minutes (contre 46,6 ; attendu 8 à 12) et 19,3 au repos sur 3 minutes
-(contre 23,6), avec des journaux Creality presque muets (6 ko/min). Reste :
-fusionner la PR #88 après celle de la garde de purge (document 104). Retour
-arrière : `deploy.py rollback`, au repos. Sans
-mission : éteindre la K1 quand elle ne sert pas. Jamais pendant une impression ;
+(contre 23,6), avec des journaux Creality presque muets (6 ko/min). La
+reprise après coupure reste intacte. Parade close (PR #88) ; retour arrière :
+`deploy.py rollback`, au repos. Sans mission : éteindre la K1 quand elle ne
+sert pas. Jamais pendant une impression ;
 ne pas toucher au montage `sync` sans ADR ni décision de Thomas. Relire chaque
 mois le registre de santé de la puce (EXT_CSD, octets 267 à 269, par debugfs,
 en lecture seule) et garder hors machine une copie de l'état de K1 Control.
