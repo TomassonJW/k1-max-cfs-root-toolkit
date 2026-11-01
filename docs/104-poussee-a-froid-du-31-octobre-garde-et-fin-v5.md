@@ -200,4 +200,6 @@ sont à relire avec cette correction.
 3. Échange de cases pour T1A, puis vérification du capteur si l'erreur suit la
    case.
 4. Pose de la fin V5 au repos revérifié, Thomas présent, préflight d'abord ;
-   surveillance locale de la première fin sous V5.
+   surveillance locale de la première fin sous V5 par
+   `packages/k1-control-v1/end-watch-v1/watch_end.py`, essai à blanc d'abord
+   (README du paquet).
