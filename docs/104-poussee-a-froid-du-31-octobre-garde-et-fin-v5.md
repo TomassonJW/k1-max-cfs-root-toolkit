@@ -83,6 +83,11 @@ au document 88 ; rien n'a été redémarré. À 07:39, la K1 n'est pas rallumée
 dans le tube ; tête au-dessus du bac, plateau à 57 mm ; chauffes coupées ; un
 peu de matière a pu couler. La caméra était dans le noir.
 
+Preuves, hors Git, dans `inventory/raw/20261101-night-end-watch/` de la copie
+principale du dépôt : script et journal de la surveillance, extraits du
+journal Klipper des deux soirs, empreintes `SHA256SUMS`. Les extraits portent
+des identifiants CFS : jamais à publier.
+
 Ce que la nuit apprend :
 
 - `key839` ne vient pas de la coupe : il tombe à la première interrogation du
