@@ -9,6 +9,7 @@ import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
 import * as logic from "./www/bobines/spools-logic.js";
 import { colourName } from "./www/bobines/logic.js";
+import { mountManager } from "./www/bobines/spools.js";
 
 const VECTORS = JSON.parse(readFileSync(new URL("../spool-manager-v1/calculator-vectors.json", import.meta.url), "utf8"));
 // The model's string literals, joined where Python splits them over two lines.
@@ -356,4 +357,418 @@ test("journal tones and the entries that touch a spool", () => {
   assert.equal(logic.touches({ kind: "impression", spools: ["B002", "B001"] }, "B001"), true);
   assert.equal(logic.touches({ kind: "import" }, "B001"), false);
   assert.equal(logic.touches({ spool: "B001" }, ""), false);
+});
+
+// ---------------------------------------------------------------- window
+// A fake DOM just large enough for the window: elements, text, events, focus
+// and the rectangles the placement reads. Timers never fire on their own.
+class FakeNode {
+  constructor() { this.parentNode = null; }
+  get isConnected() {
+    for (let node = this; node; node = node.parentNode) if (node.isRoot) return true;
+    return false;
+  }
+  remove() { if (this.parentNode) this.parentNode.removeChild(this); }
+}
+class FakeText extends FakeNode {
+  constructor(data) { super(); this.data = String(data); }
+  get textContent() { return this.data; }
+  set textContent(value) { this.data = String(value); }
+}
+class FakeElement extends FakeNode {
+  constructor(tag) {
+    super();
+    this.tagName = String(tag).toUpperCase();
+    Object.assign(this, { children: [], attributes: {}, dataset: {}, style: { cssText: "" }, className: "", hidden: false,
+      disabled: false, checked: false, value: "", files: null, title: "", scrollTop: 0, innerHTML: "", listeners: {}, rect: null, queries: {} });
+  }
+  get textContent() { return this.children.map((child) => child.textContent).join(""); }
+  set textContent(value) { this.replaceChildren(String(value)); }
+  append(...items) {
+    for (const item of items) {
+      const node = typeof item === "string" ? new FakeText(item) : item;
+      if (node.parentNode) node.parentNode.removeChild(node);
+      node.parentNode = this;
+      this.children.push(node);
+    }
+  }
+  replaceChildren(...items) {
+    for (const child of this.children) child.parentNode = null;
+    this.children = [];
+    this.append(...items);
+  }
+  removeChild(child) {
+    this.children = this.children.filter((item) => item !== child);
+    child.parentNode = null;
+    return child;
+  }
+  setAttribute(name, value) { this.attributes[name] = String(value); if (name === "id") this.id = String(value); }
+  getAttribute(name) { return Object.prototype.hasOwnProperty.call(this.attributes, name) ? this.attributes[name] : null; }
+  addEventListener(type, listener) { (this.listeners[type] = this.listeners[type] || []).push(listener); }
+  removeEventListener(type, listener) { this.listeners[type] = (this.listeners[type] || []).filter((item) => item !== listener); }
+  dispatch(type, extra) {
+    const event = { type, target: this, currentTarget: this, preventDefault() {}, stopPropagation() {}, ...extra };
+    for (const listener of this.listeners[type] || []) listener(event);
+  }
+  click() { if (!this.disabled) this.dispatch("click"); }
+  focus() {
+    let node = this;
+    while (node && !node.isRoot) node = node.parentNode;
+    if (node) node.activeElement = this;
+  }
+  setSelectionRange(start, end) { this.selectionStart = start; this.selectionEnd = end; }
+  getBoundingClientRect() {
+    if (this.rect) return this.rect;
+    if (this.className.includes("spools-launch")) {
+      const width = this.className.includes("is-compact") ? 36 : 110;
+      return { left: 0, top: 0, right: width, bottom: 36, width, height: 36 };
+    }
+    return { left: 0, top: 0, right: 0, bottom: 0, width: 0, height: 0 };
+  }
+  querySelectorAll(selector) {
+    if (selector.includes("button")) return this.queries.controls || [];
+    if (selector.includes("h1")) return this.queries.titles || [];
+    return [];
+  }
+}
+class FakeRoot extends FakeElement {
+  constructor() { super("#shadow-root"); this.isRoot = true; this.activeElement = null; this.host = null; }
+}
+class FakeDocument {
+  constructor() {
+    this.hidden = false; this.listeners = {}; this.documentElement = { clientWidth: 1280 };
+    this.body = new FakeElement("body"); this.start = null; this.bars = [];
+  }
+  createElement(tag) { return new FakeElement(tag); }
+  createTextNode(text) { return new FakeText(text); }
+  getElementById(id) { return id === "kctrl-bobines" ? this.start : null; }
+  querySelectorAll(selector) { return selector === "header.v-app-bar" ? this.bars : []; }
+  addEventListener(type, listener) { (this.listeners[type] = this.listeners[type] || []).push(listener); }
+  removeEventListener(type, listener) { this.listeners[type] = (this.listeners[type] || []).filter((item) => item !== listener); }
+  fire(type, extra) { for (const listener of this.listeners[type] || []) listener({ type, ...extra }); }
+}
+
+function patch(values) {
+  const saved = Object.keys(values).map((key) => [key, Object.getOwnPropertyDescriptor(globalThis, key)]);
+  for (const [key, value] of Object.entries(values)) Object.defineProperty(globalThis, key, { value, configurable: true, writable: true });
+  return () => {
+    for (const [key, descriptor] of saved) {
+      if (descriptor) Object.defineProperty(globalThis, key, descriptor);
+      else delete globalThis[key];
+    }
+  };
+}
+const flush = async () => { for (let i = 0; i < 10; i += 1) await new Promise((resolve) => setImmediate(resolve)); };
+const copy = (value) => JSON.parse(JSON.stringify(value));
+
+// Synthetic library: one CFS unit, three spools, two fiches, one empty spool.
+const MATERIALS = [{ id: "90001", type: "PLA", brand: "Exemple", name: "PLA Test" }];
+function sampleSpool(id, changes) {
+  return Object.assign({
+    id, label: "B-" + id.slice(1), filament: "F001", empty_spool: "V001", initial_net_g: 1000, state: "stock", slot: "", place: "",
+    notes: "", remaining: { net_g: 800, exhausted: false, shown: { g: 800, percent: 80, m: 268.3 }, gross_g: 1050 },
+    low: false, basis: { kind: "neuve", value_g: null, on: 900 }, last_gap: null, updated: 900, created: 800,
+  }, changes);
+}
+function sampleSlot(slot, status, changes) {
+  return Object.assign({
+    slot, status, spool: null, pending: null, last_write: null, candidates: [], plan: null,
+    observed: { connected: true, present: true, material: "090001", colour: "0FF0000", chip: null, type: "PLA" },
+  }, changes);
+}
+function fiche(colour) {
+  return { manufacturer: "Exemple", name: "", material: "PLA", colour, diameter_mm: 1.75, density: 1.24, creality_id: "90001", notes: "" };
+}
+function sampleStatus() {
+  return {
+    version: "1.0.0", revision: 3, read_only: "",
+    klippy: { connected: true, cfs_ready: true, printing: false },
+    store: { source: "library.json", revision: 3, fallback: false, damaged: [], fresh: false, quarantined: "", locked: "" },
+    materials: { count: 1, error: "" },
+    counter: { restored: true, refused: false, live: { period: null, route: "", spools: [], waiting_mm: 0 } },
+    slots: [
+      sampleSlot("T1A", "ok", { spool: "B001" }),
+      sampleSlot("T1B", "vide", { observed: { connected: true, present: false, material: "", colour: "", chip: null, type: "" } }),
+      sampleSlot("T1C", "a_verifier", { spool: "B002",
+        observed: { connected: true, present: true, material: "090001", colour: "0FF0000", chip: 80, type: "PLA" },
+        plan: { slot: "T1C", spool: "B002", material: "090001", colour: "00000FF", impact: { gained: [], lost: [], partners: [] } } }),
+      sampleSlot("T1D", "inconnue", { candidates: ["B003"],
+        observed: { connected: true, present: true, material: "", colour: "0FFFFFF", chip: null, type: "PETG" } }),
+    ],
+    slots_error: "",
+    attention: ["T1C : à vérifier", "T1D : bobine inconnue"],
+    spools: [
+      sampleSpool("B001", { state: "cfs", slot: "T1A" }),
+      sampleSpool("B002", { state: "cfs", slot: "T1C", filament: "F002" }),
+      sampleSpool("B003", { place: "Étagère" }),
+    ],
+    filaments: { F001: fiche("FF0000"), F002: fiche("0000FF") },
+    empty_spools: { V001: { manufacturer: "Exemple", name: "Bobine 1 kg", spool_material: "plastique", tare_g: 250, nominal_net_g: 1000,
+      source: "manuel", catalogue: "", notes: "" } },
+    unassigned: [], prints: [], settings: { low_g: 100, cut_loss_mm: 0 },
+    pending_cfs: [], counting_verified: false, unsaved_writes: [], reports_waiting: 0,
+  };
+}
+function withRevision(status, revision) {
+  status.revision = revision;
+  status.store = Object.assign({}, status.store, { revision });
+  return status;
+}
+function withSpool(status, id, changes, revision) {
+  status.spools = status.spools.map((spool) => (spool.id === id ? Object.assign({}, spool, changes) : spool));
+  return withRevision(status, revision);
+}
+function fakeFetch(routes, calls) {
+  return async (url, init) => {
+    const path = String(url).replace("/machine/k1_control/spools/", "").split("?")[0];
+    const method = (init && init.method) || "GET";
+    const body = init && init.body ? JSON.parse(init.body) : null;
+    calls.push({ method, path, body });
+    let route = routes[method + " " + path];
+    if (typeof route === "function") route = route(body);
+    const [status, payload] = route || [404, { error: { message: "Not Found" } }];
+    return { ok: status >= 200 && status < 300, status, json: async () => payload };
+  };
+}
+function harness(t, options) {
+  const opts = options || {};
+  const doc = new FakeDocument();
+  const calls = [];
+  const server = { status: opts.status || sampleStatus() };
+  const clock = { now: 1000, tick: null, warnings: [] };
+  const routes = Object.assign({
+    "GET status": () => [200, { result: server.status }],
+    "GET materials": [200, { result: { materials: MATERIALS, error: "" } }],
+    "GET journal": [200, { result: { entries: [] } }],
+  }, opts.routes);
+  let timers = 0;
+  const restore = patch({
+    document: doc, Node: FakeNode, fetch: fakeFetch(routes, calls),
+    window: { innerWidth: 1280, confirm: () => true, addEventListener() {}, removeEventListener() {} },
+    setTimeout: () => (timers += 1), clearTimeout: () => {},
+    setInterval: (callback) => { clock.tick = callback; return 1; }, clearInterval: () => {},
+    requestAnimationFrame: (callback) => { callback(); return 1; },
+  });
+  // A button swallows what its action throws into console.warn: none may happen.
+  t.mock.method(console, "warn", (...args) => { clock.warnings.push(args.map(String).join(" ")); });
+  const root = new FakeRoot();
+  const api = mountManager(root, { now: () => clock.now, confirm: () => true });
+  t.after(() => { api.stop(); restore(); });
+  const node = (ref) => { const found = api.state.refs[ref]; assert.ok(found, "no element " + ref); return found; };
+  return {
+    api, doc, server, node, launch: root.children[0], panel: root.children[1],
+    posts: () => calls.filter((call) => call.method === "POST").map((call) => [call.path, call.body]),
+    reads: () => calls.filter((call) => call.method === "GET" && call.path === "status").length,
+    advance(ms) { clock.now += ms; },
+    tick() { clock.tick(); },
+    click(ref) { const target = node(ref); assert.equal(target.disabled, false, ref + " is disabled"); target.click(); },
+    type(ref, value) { const target = node(ref); target.value = value; target.dispatch("input"); },
+    choose(ref, value) { const target = node(ref); target.value = value; target.dispatch("change"); },
+    text: () => root.children[1].textContent,
+    toast: () => root.children[2].textContent,
+    quiet() { assert.deepEqual(clock.warnings, []); },
+  };
+}
+async function opened(t, options) {
+  const ui = harness(t, options);
+  await flush();
+  ui.api.open();
+  await flush();
+  return ui;
+}
+
+test("the Bobines button appears once the library answers, with what needs a look", async (t) => {
+  const ui = harness(t);
+  assert.equal(ui.launch.hidden, true);
+  await flush();
+  assert.equal(ui.launch.hidden, false);
+  const badge = ui.launch.children.find((child) => child.className === "spools-badge");
+  assert.equal(badge.textContent, "2");
+  assert.equal(badge.hidden, false);
+  assert.match(ui.launch.getAttribute("aria-label"), /2 points à voir/);
+  ui.quiet();
+});
+
+test("no button on a K1 without the spool manager", async (t) => {
+  const ui = harness(t, { routes: { "GET status": [404, { error: { message: "Not Found" } }] } });
+  await flush();
+  assert.equal(ui.launch.hidden, true);
+  assert.equal(ui.api.state.installed, false);
+  ui.quiet();
+});
+
+test("settings are sent with the library revision and the answer is taken", async (t) => {
+  const ui = await opened(t, { routes: {
+    "POST action": [200, { result: { result: { changed: ["low_g"] }, status: withRevision(sampleStatus(), 4) } }],
+  } });
+  ui.click("head-settings");
+  ui.type("f-low_g", "50");
+  ui.click("settings-save");
+  await flush();
+  assert.deepEqual(ui.posts(), [["action", { action: "settings", params: { low_g: 50 }, revision: 3 }]]);
+  assert.equal(ui.api.state.status.revision, 4);
+  assert.match(ui.toast(), /Réglages enregistrés/);
+  ui.quiet();
+});
+
+test("a library changed meanwhile keeps what was typed and says so", async (t) => {
+  const ui = await opened(t, { routes: {
+    "POST action": [409, { error: { message: "La bibliothèque a changé entre-temps (révision 4)." } }],
+  } });
+  ui.click("tab-stock");
+  ui.click("row-B003");
+  ui.type("f-notes", "Rangée au sec");
+  ui.server.status = withRevision(sampleStatus(), 4);
+  ui.click("identity-save");
+  await flush();
+  assert.equal(ui.posts().length, 1);
+  assert.equal(ui.node("f-notes").value, "Rangée au sec");
+  assert.match(ui.text(), /a changé entre-temps : vérifie puis refais l'action/);
+  assert.equal(ui.api.state.sheet.revision, 4);
+  ui.quiet();
+});
+
+test("a CFS write during a print is queued, and the window says so", async (t) => {
+  const printing = sampleStatus();
+  printing.klippy.printing = true;
+  const answer = { slot: "T1C", queued: true, written: false, result: "en_attente", detail: "écriture programmée pour la fin de l'impression" };
+  const after = withRevision(copy(printing), 4);
+  const ui = await opened(t, { status: printing, routes: { "POST cfs-write": [200, { result: { result: answer, status: after } }] } });
+  ui.click("slot-T1C");
+  ui.click("cfs-write");
+  await flush();
+  assert.deepEqual(ui.posts(), [["cfs-write", { slot: "T1C", revision: 3 }]]);
+  assert.equal(ui.toast(), "T1C : écriture programmée pour la fin de l'impression.");
+  ui.quiet();
+});
+
+test("the status is read every 30 s closed, every 5 s open, never while hidden", async (t) => {
+  const ui = harness(t);
+  await flush();
+  assert.equal(ui.reads(), 1);
+  ui.advance(29999); ui.tick(); await flush();
+  assert.equal(ui.reads(), 1);
+  ui.advance(1); ui.doc.hidden = true; ui.tick(); await flush();
+  assert.equal(ui.reads(), 1);
+  ui.doc.hidden = false; ui.doc.fire("visibilitychange"); await flush();
+  assert.equal(ui.reads(), 2);
+  ui.api.open(); await flush();
+  assert.equal(ui.reads(), 3);
+  ui.advance(4999); ui.tick(); await flush();
+  assert.equal(ui.reads(), 3);
+  ui.advance(1); ui.tick(); await flush();
+  assert.equal(ui.reads(), 4);
+  ui.quiet();
+});
+
+test("Escape closes the window, unless the start window is open over it", async (t) => {
+  const ui = await opened(t);
+  ui.doc.start = { dataset: { mode: "choice" } };
+  ui.doc.fire("keydown", { key: "Escape" });
+  assert.equal(ui.panel.hidden, false);
+  ui.doc.start.dataset.mode = "hidden";
+  ui.doc.fire("keydown", { key: "Escape" });
+  assert.equal(ui.panel.hidden, true);
+  assert.equal(ui.api.state.open, false);
+  ui.quiet();
+});
+
+test("during a print the import waits; read only still allows export and import", async (t) => {
+  const printing = sampleStatus();
+  printing.klippy.printing = true;
+  const ui = await opened(t, { status: printing });
+  assert.match(ui.text(), /Impression en cours/);
+  ui.click("head-settings");
+  assert.equal(ui.node("import").disabled, true);
+  assert.equal(ui.node("export").disabled, false);
+  const locked = sampleStatus();
+  locked.read_only = "stockage en lecture seule";
+  ui.server.status = locked;
+  await ui.api.refresh();
+  await flush();
+  assert.match(ui.text(), /Lecture seule : stockage en lecture seule\./);
+  assert.equal(ui.node("import").disabled, false);
+  assert.equal(ui.node("settings-save").disabled, true);
+  ui.quiet();
+});
+
+test("a spool edit sends only what changed, and a required number cannot be emptied", async (t) => {
+  const after = withSpool(sampleStatus(), "B003", { empty_spool: "" }, 4);
+  const ui = await opened(t, { routes: {
+    "POST action": [200, { result: { result: { id: "B003", changed: ["empty_spool"] }, status: after } }],
+  } });
+  ui.click("tab-stock");
+  ui.click("row-B003");
+  ui.choose("f-empty_spool", "");
+  ui.click("identity-save");
+  await flush();
+  assert.deepEqual(ui.posts(), [["action", { action: "edit_spool", params: { id: "B003", empty_spool: "" }, revision: 3 }]]);
+  ui.type("f-initial_net_g", "");
+  ui.click("identity-save");
+  await flush();
+  assert.equal(ui.posts().length, 1);
+  assert.match(ui.text(), /Net neuf : valeur attendue\./);
+  ui.quiet();
+});
+
+test("a new spool on a new fiche creates the fiche, then the spool in stock", async (t) => {
+  const withFiche = withRevision(sampleStatus(), 4);
+  withFiche.filaments.F003 = fiche("00FF00");
+  const withBoth = withRevision(copy(withFiche), 5);
+  withBoth.spools.push(sampleSpool("B004", { filament: "F003", empty_spool: "", place: "Boîte 2" }));
+  const answers = [[{ id: "F003" }, withFiche], [{ id: "B004" }, withBoth]];
+  let served = 0;
+  const ui = await opened(t, { routes: { "POST action": () => {
+    const [result, status] = answers[served++];
+    return [200, { result: { result, status } }];
+  } } });
+  ui.click("tab-stock");
+  ui.click("new-spool");
+  ui.click("seg-fiche_mode-new");
+  ui.type("f-manufacturer", "Exemple");
+  ui.choose("f-material", "PLA");
+  ui.type("f-colour", "00ff00");
+  ui.type("f-initial_net_g", "1000");
+  ui.type("f-place", "Boîte 2");
+  ui.click("create-spool");
+  await flush();
+  const posts = ui.posts();
+  assert.deepEqual(posts.map(([, body]) => body.action), ["create_filament", "create_spool"]);
+  assert.equal(posts[0][1].params.material, "PLA");
+  assert.equal(posts[0][1].params.colour, "00FF00");
+  const spool = posts[1][1].params;
+  assert.equal(spool.filament, "F003");
+  assert.equal(spool.state, "stock");
+  assert.equal(spool.place, "Boîte 2");
+  assert.equal(spool.initial_net_g, 1000);
+  assert.equal("slot" in spool, false);
+  assert.equal(posts[1][1].revision, 4);
+  assert.equal(ui.api.state.sheet, null);
+  assert.match(ui.toast(), /B-004 créée, en stock\./);
+  ui.quiet();
+});
+
+test("the button sits in the top bar when there is room, compact or under it otherwise", async (t) => {
+  const ui = harness(t);
+  await flush();
+  const rect = (left, top, width, height) => ({ left, top, width, height, right: left + width, bottom: top + height });
+  const bar = new FakeElement("header");
+  const menu = new FakeElement("button");
+  const right = new FakeElement("button");
+  const title = new FakeElement("div");
+  bar.queries = { controls: [menu, right], titles: [title] };
+  menu.rect = rect(8, 6, 36, 36);
+  ui.doc.bars = [bar];
+  const layout = (width, rightAt, titleEnd) => {
+    ui.doc.documentElement.clientWidth = width;
+    bar.rect = rect(0, 0, width, 48);
+    right.rect = rect(rightAt, 6, 40, 36);
+    title.rect = rect(60, 12, titleEnd - 60, 24);
+    ui.api.place();
+    return [ui.launch.style.cssText, ui.launch.className.includes("is-compact")];
+  };
+  assert.deepEqual(layout(1280, 1000, 300), ["top:6px;right:288px", false]);
+  assert.deepEqual(layout(400, 300, 200), ["top:6px;right:108px", true]);
+  assert.deepEqual(layout(400, 300, 280), ["top:56px;right:16px", true]);
+  ui.quiet();
 });
