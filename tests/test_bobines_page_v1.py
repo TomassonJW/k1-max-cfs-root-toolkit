@@ -21,7 +21,10 @@ PACKAGE = os.path.join(ROOT, "packages", "k1-control-v1", "spool-choice-gate-v1"
 PAGE = os.path.join(PACKAGE, "www", "bobines")
 GATEWAY = os.path.join(ROOT, "packages", "k1-control-v1", "gateway-private-lan-no-auth-v1",
                        "nginx.conf")
-PAGE_FILES = ["index.html", "styles.css", "app.js", "bobines.js", "overlay.js", "logic.js"]
+PAGE_FILES = ["index.html", "styles.css", "app.js", "bobines.js", "overlay.js", "logic.js",
+              "spools.js", "spools-logic.js"]
+SPOOL_COMPONENT = os.path.join(ROOT, "packages", "k1-control-v1", "spool-manager-v1",
+                               "kctrl_spools.py")
 
 # Mainsail's index.html as installed on the machine, trimmed to what matters.
 MAINSAIL_INDEX = (
@@ -112,6 +115,50 @@ def test_app_talks_to_moonraker_with_the_exact_routes_and_commands():
     assert "KCTRL_GATE_CONFIRM MAP=" in text
     assert '"KCTRL_GATE_CANCEL"' in text
     assert 'from "./logic.js"' in text
+
+
+def test_the_start_window_only_reads_the_spool_manager():
+    # Document 102 : la fenêtre de départ montre le reste de chaque bobine et
+    # ce que le fichier prévoit, sans jamais écrire au gestionnaire ni au CFS.
+    text = read(PAGE, "bobines.js")
+    assert 'const SPOOLS = "/machine/k1_control/spools/";' in text
+    assert 'call("GET", SPOOLS + "status")' in text
+    assert 'call("GET", SPOOLS + "planned?file=" + encodeURIComponent(file))' in text
+    assert text.count("SPOOLS +") == 2
+    assert "cfs-write" not in text
+    assert '"action"' not in text
+
+
+def test_the_spool_manager_rides_on_the_window_tag_without_breaking_it():
+    # Document 102 : le gestionnaire vit dans sa propre racine shadow, chargé
+    # après la fenêtre de départ ; son échec la laisse intacte.
+    overlay = read(PAGE, "overlay.js")
+    manager = read(PAGE, "spools.js")
+    loading = overlay.index('import("./spools.js")')
+    assert overlay.index("document.body.append(host)") < loading
+    assert ".catch(" in overlay[loading:]
+    assert "export function start()" in manager
+    assert "export function mountManager(root, options)" in manager
+    assert 'host.id = "kctrl-spools";' in manager
+    assert "attachShadow" in manager
+    assert 'new URL("./styles.css", import.meta.url)' in manager
+
+
+def test_the_spool_manager_uses_only_the_routes_the_component_serves():
+    manager = read(PAGE, "spools.js")
+    component = read(SPOOL_COMPONENT)
+    assert 'const API = "/machine/k1_control/spools/";' in manager
+    assert 'PREFIX = "/machine/k1_control/spools/"' in component
+    served = dict(re.findall(r'\("([a-z-]+)", RequestType\.(GET|POST), self\._', component))
+    read_routes = set(re.findall(r'call\("GET", API \+ "([a-z-]+)', manager))
+    written = set(re.findall(r'send\("([a-z-]+)"', manager))
+    assert read_routes == {"status", "materials", "journal", "export"}
+    assert written == {"action", "cfs-write", "import"}
+    assert 'call("POST", API + path' in manager
+    for name in read_routes:
+        assert served[name] == "GET", name
+    for name in written:
+        assert served[name] == "POST", name
 
 
 def test_app_never_connects_a_spool_on_its_own():
@@ -216,12 +263,23 @@ def test_the_gate_module_is_the_one_the_page_reads():
         assert key in app
 
 
-@pytest.mark.skipif(shutil.which("node") is None, reason="node absent")
-def test_the_pure_logic_passes_under_node():
+def run_node_tests(name):
     # Hors terminal, node --test écrit en TAP ou en spec selon sa version :
     # TAP imposé, pour que la ligne de bilan lue ci-dessous existe partout.
+    # Les textes de la fenêtre sont en français : sortie lue en UTF-8.
     result = subprocess.run(
-        ["node", "--test", "--test-reporter=tap", os.path.join(PACKAGE, "logic.test.mjs")],
-        capture_output=True, text=True, timeout=120)
+        ["node", "--test", "--test-reporter=tap", os.path.join(PACKAGE, name)],
+        capture_output=True, text=True, encoding="utf-8", timeout=120)
     assert result.returncode == 0, result.stdout + result.stderr
     assert "# fail 0" in result.stdout
+
+
+@pytest.mark.skipif(shutil.which("node") is None, reason="node absent")
+def test_the_pure_logic_passes_under_node():
+    run_node_tests("logic.test.mjs")
+
+
+@pytest.mark.skipif(shutil.which("node") is None, reason="node absent")
+def test_the_spool_manager_passes_under_node():
+    # La logique pure du gestionnaire et sa fenêtre sur un faux DOM.
+    run_node_tests("spools-logic.test.mjs")

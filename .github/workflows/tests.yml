@@ -104,3 +104,6 @@ jobs:
 
       - name: Bobines page logic
         run: node --test packages/k1-control-v1/spool-choice-gate-v1/logic.test.mjs
+
+      - name: Spool manager logic
+        run: node --test packages/k1-control-v1/spool-choice-gate-v1/spools-logic.test.mjs

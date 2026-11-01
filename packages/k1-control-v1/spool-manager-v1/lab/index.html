@@ -1,0 +1,108 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Labo bobines</title>
+<link rel="icon" href="data:,">
+<style>
+  /* A copy of the Mainsail v2.18.2 frame the button sits in: same classes on
+     the top bar, same 48 px, same dark theme. Nothing here is Mainsail code. */
+  :root { color-scheme: dark; }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: #121212; color: rgba(255,255,255,.87);
+         font: 14px/1.5 Roboto, "Segoe UI", system-ui, sans-serif; }
+  header.v-app-bar { position: fixed; top: 0; left: 0; right: 0; z-index: 8; height: 48px;
+                     background: #1e1e1e; box-shadow: 0 2px 4px rgba(0,0,0,.4); }
+  .v-toolbar__content { display: flex; align-items: center; height: 48px; padding: 4px 8px; gap: 4px; }
+  .v-toolbar__title { font-size: 1.15rem; font-weight: 500; white-space: nowrap;
+                      overflow: hidden; text-overflow: ellipsis; padding-left: 8px; }
+  .spacer { flex: 1 1 auto; }
+  .v-btn { display: inline-flex; align-items: center; justify-content: center; gap: 6px;
+           height: 36px; min-width: 36px; padding: 0 12px; border: 0; border-radius: 4px;
+           background: transparent; color: inherit; font: 500 .85rem/1 inherit;
+           letter-spacing: .06em; text-transform: uppercase; cursor: pointer; }
+  .v-btn:hover { background: rgba(255,255,255,.08); }
+  .v-btn.primary { background: #2196f3; color: #fff; }
+  .v-btn.error { background: #ff5252; color: #fff; }
+  .v-btn.icon { width: 36px; padding: 0; border-radius: 50%; font-size: 1.1rem; }
+  nav { position: fixed; top: 48px; bottom: 0; left: 0; width: 220px; background: #1e1e1e;
+        border-right: 1px solid rgba(255,255,255,.12); padding: 8px 0; }
+  nav a { display: block; padding: 10px 20px; color: inherit; text-decoration: none; }
+  nav a[aria-current] { background: rgba(33,150,243,.16); color: #64b5f6; }
+  main { margin: 48px 0 0 220px; padding: 16px; display: grid; gap: 16px;
+         grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); }
+  .card { background: #1e1e1e; border-radius: 4px; padding: 16px;
+          box-shadow: 0 1px 3px rgba(0,0,0,.5); }
+  .card h2 { margin: 0 0 12px; font-size: 1rem; font-weight: 500; }
+  .card p { margin: 0 0 8px; color: rgba(255,255,255,.7); }
+  .row { display: flex; flex-wrap: wrap; gap: 8px; }
+  .row .v-btn { background: rgba(255,255,255,.08); }
+  output { display: block; margin-top: 8px; color: rgba(255,255,255,.6); font-size: .85rem; }
+  .wide { display: inline-flex; }
+  @media (max-width: 959px) { .wide { display: none; } }
+  @media (max-width: 599px) { nav { display: none; } main { margin-left: 0; } }
+</style>
+</head>
+<body>
+<header class="topbar v-sheet theme--dark v-toolbar v-toolbar--dense v-toolbar--flat v-app-bar v-app-bar--clipped v-app-bar--fixed">
+  <div class="v-toolbar__content">
+    <button class="v-btn icon" type="button" aria-label="Menu">☰</button>
+    <div class="v-toolbar__title">K1 Max (labo)</div>
+    <div class="spacer"></div>
+    <button class="v-btn primary wide" type="button">Upload &amp; Print</button>
+    <button class="v-btn icon error" type="button" aria-label="Arrêt d'urgence">⏻</button>
+    <button class="v-btn icon" type="button" aria-label="Notifications">🔔</button>
+    <button class="v-btn icon" type="button" aria-label="Plus">⋮</button>
+  </div>
+</header>
+<nav aria-label="Navigation">
+  <a href="/" aria-current="page">Tableau de bord</a>
+  <a href="#">Console</a>
+  <a href="#">Fichiers G-code</a>
+  <a href="#">Historique</a>
+  <a href="#">Machine</a>
+</nav>
+<main>
+  <section class="card">
+    <h2>Imprimante</h2>
+    <p>K1 Max fictive au repos : deux CFS en ligne, deux absents, base matériau synthétique.</p>
+    <p>Rien ne part vers une vraie imprimante.</p>
+  </section>
+  <section class="card">
+    <h2>Fichiers</h2>
+    <p>lab-cube.gcode, pied Orca synthétique : 1234,5 mm et 3,7 g.</p>
+  </section>
+  <section class="card">
+    <h2>Labo</h2>
+    <p>Joue une impression sur la fausse K1 pour voir le décompte.</p>
+    <div class="row">
+      <button class="v-btn" type="button" data-action="start">Lancer</button>
+      <button class="v-btn" type="button" data-action="extrude" data-mm="500">Extruder 500 mm</button>
+      <button class="v-btn" type="button" data-action="end">Finir</button>
+      <button class="v-btn" type="button" data-action="rest">Repos</button>
+    </div>
+    <output id="lab-state" aria-live="polite"></output>
+    <p><a href="/bobines/" style="color:#64b5f6">Fenêtre de départ seule</a></p>
+  </section>
+</main>
+<script>
+  const shown = document.getElementById("lab-state");
+  for (const button of document.querySelectorAll("[data-action]")) {
+    button.addEventListener("click", async () => {
+      const query = new URLSearchParams({ action: button.dataset.action, mm: button.dataset.mm || "0" });
+      try {
+        const response = await fetch("/lab/simulate?" + query, { method: "POST", cache: "no-store" });
+        const payload = await response.json();
+        shown.textContent = response.ok
+          ? "Impression : " + payload.result.print + ", E " + payload.result.e_mm + " mm"
+          : payload.error.message;
+      } catch (error) {
+        shown.textContent = "Labo injoignable";
+      }
+    });
+  }
+</script>
+<script type="module" src="/bobines/overlay.js"></script>
+</body>
+</html>

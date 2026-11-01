@@ -31,7 +31,7 @@
     },
     {
       "name": "logic.js",
-      "source": "packages/k1-control-v1/spool-choice-gate-v1/www/bobines/logic.js",
+      "source": "packages/k1-control-v1/end-after-refill-install-disabled-v1/frozen/www/bobines/logic.js",
       "destination": "/usr/data/k1-control-v1/current/www/bobines/logic.js",
       "sha256": "927de5ad17e04f69fd5e7f6a49e9a3b5d2bef152666d4bde9034be4d618ed4a8",
       "before_sha256": "b49d4b8ea4b1bdfdf07ba6ba2bcc8c2fd1e9b16ed003f9e2bcedc25eb4ec214d",
@@ -39,7 +39,7 @@
     },
     {
       "name": "bobines.js",
-      "source": "packages/k1-control-v1/spool-choice-gate-v1/www/bobines/bobines.js",
+      "source": "packages/k1-control-v1/end-after-refill-install-disabled-v1/frozen/www/bobines/bobines.js",
       "destination": "/usr/data/k1-control-v1/current/www/bobines/bobines.js",
       "sha256": "798621ae3e65405a6d51d8e1ab68e252c9c32bf7d43e51f1eeb0d2b41635ad7d",
       "before_sha256": "919d9ab62120bbf48069e6a8fc38b042ae043a9f50e893e3f2f0bab4eb2e7f16",
@@ -47,7 +47,7 @@
     },
     {
       "name": "overlay.js",
-      "source": "packages/k1-control-v1/spool-choice-gate-v1/www/bobines/overlay.js",
+      "source": "packages/k1-control-v1/end-after-refill-install-disabled-v1/frozen/www/bobines/overlay.js",
       "destination": "/usr/data/k1-control-v1/current/www/bobines/overlay.js",
       "sha256": "575e771297e4dbff15214e05ae88e956bbfec0d75107669a152ad2628e73f7fe",
       "before_sha256": "bc688ee2bba9f9f61d7233fa347fe744ff84b4030dcc701e1869f8cb11aee129",

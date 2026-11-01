@@ -100,17 +100,23 @@ L'arrêt d'urgence de 19:16 vu pendant la mesure vient de Thomas, après ce bug,
 traité dans une autre session (section 9).
 [Document 103](docs/103-ecritures-flash-cause-usure-parade.md).
 
-## 31 octobre - plan de gestion des bobines (document 102, ADR-075 proposée)
+## 31 octobre - gestion des bobines (document 102, ADR-075 acceptée)
 
 Thomas veut gérer ses bobines dans Mainsail : bouton et fenêtre, synchro avec
 le CFS dans les deux sens, reste en grammes et en mètres, bibliothèque des
 bobines vides, décompte après chaque impression, stock. Aucun outil existant ne
-couvre huit emplacements, des bobines sans puce et les purges par bobine. Plan
-de A à Z écrit, rien installé, K1 non touchée. Point de reprise : la réponse de
-Thomas sur le lieu des données (ADR-075 : K1 Control sur la K1, recommandé, ou
-Spoolman sur le Proxmox) ; puis les lots A à K hors imprimante, la pose au
-repos du seul Moonraker dédié et les deux gestes de qualification (retrait et
-remise d'une bobine, impression multicouleur pesée avant et après).
+couvre huit emplacements, des bobines sans puce et les purges par bobine.
+Thomas a choisi K1 Control sur la K1 (ADR-075). Au 1er novembre, lots A à K
+écrits et testés hors imprimante : composant, stockage, décompte, catalogue des
+bobines vides, reste dans la fenêtre de départ, fenêtre Bobines dans la barre
+de Mainsail, labo local, rendu vérifié sur le vrai Mainsail en lecture seule et
+paquet de pose `spool-manager-install-v1`. Relevé et préflight verts sur la K1
+au repos à 19:34, en lecture seule ; rien posé ni écrit. PR brouillon #95, CI
+verte. Point de reprise : `packages/k1-control-v1/spool-manager-v1/REPRISE.md`,
+section 9 : après la fin V5 (point 6 du verrou de la K1), nouveau relevé et
+préflight, puis pose au repos du seul Moonraker dédié et les deux gestes de
+qualification (retrait et remise d'une bobine, impression multicouleur pesée
+avant et après).
 Mesuré pendant une impression : mémoire et processeur gardent une large marge.
 Constat annexe : la K1 écrit d'elle-même environ 40 Mo par minute sur sa flash
 (8,5 Go en 3 h 43 depuis son démarrage), rien de K1 Control ; enquête à part.
