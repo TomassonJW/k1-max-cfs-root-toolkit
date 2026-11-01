@@ -22,11 +22,12 @@ ouvrir un fichier du dépôt seulement pour un détail qui manque ici.
   - lot H : la fenêtre de départ montre le reste de chaque bobine (5c41acf) ;
   - lot I, première moitié : logique pure de la fenêtre et ses 24 tests (6e74438) ;
   - lot I, seconde moitié : fenêtre `spools.js`, CSS, chargement par `overlay.js`, 11 tests d'interface sur un faux DOM, contrôle de chaque route contre le composant, étape CI « Spool manager logic » (4312d27) ;
-  - lot J : labo hors imprimante et rendu vérifié sur le vrai Mainsail en lecture seule (e6b2db9, 1f80609, bc8cab8, 15fe072, 701fbb3), section 12.
-- Pas commencé : K, la pose, L et la clôture (section 9).
-- Rien de ce module n'est posé sur la K1. Aucune écriture, pose ni G-code n'a été faite pour cette mission.
-- Derniers résultats, le 1er novembre après 701fbb3 : suite complète 2832 passés, 6 ignorés, 2 désélectionnés, 2 xfail, 41 sous-tests ; `node --test` : `mesh_editor_ui.test.mjs` 7/7, `logic.test.mjs` 43/43, `spools-logic.test.mjs` 35/35.
-- Pilotage : synchronisé avec `main` le 1er novembre (8846197), conflits de `HANDOFF.md` et `STATE.md` résolus en gardant tout `main`. La PR #94 de `main` touche `STATE.md` : resynchroniser avant le merge.
+  - lot J : labo hors imprimante et rendu vérifié sur le vrai Mainsail en lecture seule (e6b2db9, 1f80609, bc8cab8, 15fe072, 701fbb3), section 12 ;
+  - lot K : paquet de pose `spool-manager-install-v1` (1165513, 15bb85b), relevé et préflight verts sur la K1 au repos le 1er novembre à 19:34, sans rien écrire, section 9.
+- Pas commencé : la pose, L et la clôture (section 9).
+- Rien de ce module n'est posé sur la K1. Aucune écriture, pose ni G-code n'a été faite pour cette mission ; seuls le relevé et le préflight du lot K l'ont lue, au repos.
+- Derniers résultats, le 1er novembre après 15bb85b : suite complète 2957 passés, 6 ignorés, 2 désélectionnés, 2 xfail, 41 sous-tests, dont 125 pour `tests/test_spool_manager_install_v1.py` ; `node --test` : `mesh_editor_ui.test.mjs` 7/7, `logic.test.mjs` 43/43, `spools-logic.test.mjs` 35/35.
+- Pilotage : synchronisé avec `main` le 1er novembre (8846197), conflits de `HANDOFF.md` et `STATE.md` résolus en gardant tout `main`. Depuis, `main` a reçu les PR #96 et #94 : resynchroniser avant le merge.
 
 ## 2. Règles machine de la mission
 
@@ -853,8 +854,8 @@ Fait dans l'ordre prévu le 1er novembre. Écarts au plan : `overlay.js` charge 
 ## 9. Après le lot I
 
 - **Lot J, labo** : fait, section 12.
-- **Lot K, paquet de pose** : section `[kctrl_spools]` ; paquet sans `__pycache__` ; préflight en lecture seule (permis au repos sans le verrou) ; fichiers www en 755/644 ; `proxy_read_timeout` de nginx pour `/machine/` ; cinq manifestes épinglent les empreintes de `logic.js`, `bobines.js` et `overlay.js` sur la K1 (`end-after-refill-install-disabled-v1`, `end-overlap-v2`, `end-rewind-confirm-v3`, `end-separated-v1`, `retained-start-v1`) : leurs préflights se fermeront après la pose, à écrire dans le paquet ; après le point 6 de la file, relire ce qui est vraiment posé et épingler ces empreintes-là.
-- **Pose** : après le point 6 de la file, verrou pris, repos revérifié juste avant, accord de Thomas ; seul le Moonraker dédié redémarre ; sauvegarde, empreintes et rollback exacts.
+- **Lot K, paquet de pose** : fait (1165513, 15bb85b), `packages/k1-control-v1/spool-manager-install-v1/` et son `README.md`. Section `[kctrl_spools]`, bloc de la passerelle avec `proxy_read_timeout` pour `/machine/`, pages en 755/644, sans `__pycache__`, sauvegarde et retour arrière exacts, 125 tests. Relevé (`deploy.py survey`) et préflight verts sur la K1 au repos le 1er novembre à 19:33 et 19:34 : 12 fichiers, 16 fichiers épinglés, 49 fiches matériau lues, 95,8 Mo libres, rien écrit ; reçus dans `inventory/raw/20261101-spool-manager-install-v1/`, hors Git. Les préflights et retours arrière des cinq paquets qui épinglent les anciennes pages (`end-after-refill-install-disabled-v1`, `end-overlap-v2`, `end-rewind-confirm-v3`, `end-separated-v1`, `retained-start-v1`) se fermeront après la pose.
+- **Pose** : après le point 6 de la file (fin V5, session purge), relire `VERROU-K1.md` (dossier de notes partagé des sessions, hors dépôt) et prendre le verrou. Refaire `python packages/k1-control-v1/spool-manager-install-v1/deploy.py survey` : si la fin V5 a changé une page ou un fichier épinglé, recopier les empreintes dans `SURVEY` et `PAGES_BEFORE` de `build_manifest.py`, reconstruire le manifeste et relancer les 125 tests. Puis `preflight`, repos revérifié juste avant, Thomas présent, `install` puis `validate` ; se retirer du verrou et prévenir les sessions. Seul le Moonraker dédié redémarre.
 - **Lot L** : qualification avec Thomas dans le vrai Mainsail (ouvrir, éditer, peser, écrire au CFS au repos, une impression comptée).
 - **Clôture** : synchro avec `main`, mise à jour de `STATE`, `HANDOFF` et des autres fichiers de pilotage (ce dossier y est fondu puis supprimé), PR #95 sortie du brouillon, CI verte, merge, suppression des branches distantes `feat/spool-manager-v1` et `claude/spool-manager-ui-1471c8`.
 
@@ -891,6 +892,8 @@ et `node --test packages/k1-control-v1/spool-choice-gate-v1/spools-logic.test.mj
 - `figure(null)` rend "0" : passer par `metres()` et `grams()` pour les valeurs absentes.
 - Un nombre "" ou None vaut « inchangé » côté modèle : le client refuse lui-même un nombre obligatoire vidé.
 - La classe `spools-label` est réservée au libellé du bouton.
+- Relevé du 1er novembre : `www/bobines/package.json` n'est pas sur la K1, donc jamais épinglé ; `klippy_connection.py` est sous `components/` dans le Moonraker v0.9.3 ; `moonraker.conf` est en 600, mode gardé ; la passerelle en service est exactement le `nginx.conf` de `gateway-private-lan-no-auth-v1`, ce que vérifie le test du manifeste.
+- `deploy.py` refuse localement, sans rien envoyer, un `remote_install.py` dont l'empreinte diffère du manifeste : reconstruire le manifeste après chaque changement de l'installateur.
 
 ## 12. Lot J : fait (1er novembre)
 

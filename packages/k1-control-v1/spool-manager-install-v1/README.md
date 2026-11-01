@@ -1,6 +1,7 @@
 # Spool manager install V1 - pose du gestionnaire de bobines
 
-Statut : **préparé hors imprimante, non posé**. ADR-075, document 102.
+Statut : **relevé et préflight verts sur la K1 au repos le 1er novembre à
+19:34, sans rien écrire ; non posé**. ADR-075, document 102.
 
 - `remote_install.py` : relevé, préflight, pose, validation et retour arrière.
   Le repos est prouvé par deux lectures identiques de Klipper, avant l'arrêt et
@@ -19,7 +20,8 @@ Déroulé :
 1. `survey`, en lecture seule au repos : empreintes de `moonraker.conf` et de
    `nginx-active.conf` avant et après insertion, fichiers à épingler. Les
    recopier dans `SURVEY` de `build_manifest.py` puis reconstruire le
-   manifeste ; d'ici là, tout autre mode est refusé.
+   manifeste ; d'ici là, tout autre mode est refusé. Après la pose d'un autre
+   paquet sur la K1 (la fin V5), refaire le relevé.
 2. `preflight` : tout est vérifié sans rien écrire, dont l'import réel des
    quatre composants dans le Python de Moonraker et la base matériaux.
 3. `install`, verrou de la machine pris, repos revérifié juste avant, Thomas
