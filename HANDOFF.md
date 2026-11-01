@@ -34,13 +34,15 @@ l'ancienne garde (`c90de4c3…`) et refusent désormais au préflight.
 
 ## 1er novembre - macros de Mainsail : question de Thomas, rien posé
 
-Thomas ne se repère plus dans les 62 macros visibles de Mainsail. Aucune n'est
-à supprimer : d'autres macros et le code Creality les appellent. Proposition :
-groupes du mode expert de Mainsail, écrits dans la clé `mainsail.macros` de la
-base Moonraker, absente aujourd'hui ; retour arrière : effacer la clé, sans
-redémarrage. Point de reprise : sa réponse, puis ses idées de nouvelles
-macros, chacune dans un paquet K1 Control testé hors imprimante et posé au
-repos.
+Thomas ne se repère plus dans les 55 macros affichées par Mainsail (83 en
+tout : 21 commencent par `_`, 7 remplacent une commande de Klipper et
+n'apparaissent pas). Aucune n'est à supprimer : d'autres macros et le code
+Creality les appellent. Proposition : 3 groupes du mode expert de Mainsail,
+11 boutons (bobines, plateau, réglages), écrits dans la clé `mainsail.macros`
+de la base Moonraker, absente aujourd'hui ; retour arrière : effacer la clé,
+sans redémarrage. Point de reprise : sa réponse, puis ses idées de nouvelles
+macros, réunies dans un paquet K1 Control testé hors imprimante et posé au
+repos, après la fin V5.
 
 ## 31 octobre - écritures sur la flash : cause, usure, parade (document 103)
 
