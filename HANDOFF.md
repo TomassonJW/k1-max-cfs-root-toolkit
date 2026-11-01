@@ -32,17 +32,27 @@ arrière : V5 d'abord, garde ensuite. Les installateurs plus anciens épinglent
 l'ancienne garde (`c90de4c3…`) et refusent désormais au préflight.
 [Document 104](docs/104-poussee-a-froid-du-31-octobre-garde-et-fin-v5.md).
 
-## 1er novembre - macros de Mainsail : question de Thomas, rien posé
+## 1er novembre - macros de Mainsail : outil prêt, rien posé
 
 Thomas ne se repère plus dans les 55 macros affichées par Mainsail (83 en
 tout : 21 commencent par `_`, 7 remplacent une commande de Klipper et
 n'apparaissent pas). Aucune n'est à supprimer : d'autres macros et le code
-Creality les appellent. Proposition : 3 groupes du mode expert de Mainsail,
-11 boutons (bobines, plateau, réglages), écrits dans la clé `mainsail.macros`
-de la base Moonraker, absente aujourd'hui ; retour arrière : effacer la clé,
-sans redémarrage. Point de reprise : sa réponse, puis ses idées de nouvelles
-macros, réunies dans un paquet K1 Control testé hors imprimante et posé au
-repos, après la fin V5.
+Creality les appellent. Thomas a validé le rangement (« Oui, range-les ») :
+mode expert de Mainsail, 3 panneaux et 11 boutons, Bobines toujours affiché,
+Plateau et Réglages au repos seulement. Outil
+`packages/k1-control-v1/mainsail-ui/mainsail_macro_groups.py`, 29 tests
+ciblés verts ; il remplace l'essai du 1er septembre, qui écrivait sous des
+clés que Mainsail ne lit pas (README du paquet). Rien n'est écrit : la K1 ne
+répondait plus au réseau à 10:13 (ni ping, ni passerelle), avant la première
+lecture. La clé `macros` de l'espace `mainsail` était absente au matin.
+Point de reprise : K1 rallumée et au repos, verrou K1 pris, `--dry-run`,
+lecture de l'espace `mainsail` (clés éventuelles de septembre à la racine),
+`--apply` avec la sauvegarde sous
+`inventory/raw/20261101-mainsail-macro-groups/`, capture de Mainsail, puis
+Thomas recharge sa page. Retour arrière : `--rollback` avec la même
+sauvegarde, sans redémarrage. Ensuite : ses idées de nouvelles macros,
+réunies dans un paquet K1 Control testé hors imprimante et posé au repos,
+après la fin V5.
 
 ## 31 octobre - écritures sur la flash : cause, usure, parade (document 103)
 
