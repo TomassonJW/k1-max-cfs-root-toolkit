@@ -1,4 +1,4 @@
-# 104 - Poussée à froid du 31 octobre : garde en service, fin V5 prête (ADR-076)
+# 104 - Poussée à froid du 31 octobre : garde en service, fin V5 prête (ADR-076), récidive du 1er novembre
 
 ## Incident
 
@@ -57,6 +57,48 @@ redémarrage. L'impression de nuit est partie à 00:45 avec elle, sur la fin V4.
 Sauvegarde : `/usr/data/k1-control-v1/backups/cold-push-guard-v1`. Retour
 arrière au repos seulement, après celui de la fin V5. Ne rejouer ni la pose ni
 la sonde.
+
+## Nuit du 1er novembre : même chaîne, arrêtée au début de la poussée
+
+L'impression de nuit s'est terminée normalement. Sa fin a reproduit la chaîne
+du 31 octobre, buse chaude cette fois. Heures de Paris, journal Klipper de la
+K1 :
+
+| Heure | Fait |
+|---|---|
+| 00:49:08 | erreur filament sur T1A en fin de chargement, `filament_useup` à 1 |
+| 07:13:50 | interrogation CFS en impression : `FILAMENT_ERR`, rien de lancé |
+| 07:13:52 | fin du fichier, la fin V4 démarre |
+| 07:13:54 | interrogation suivante : `key839` sur la case A du CFS 1, puis « extrude all material, last_cmd: T1A », consigne buse 195 °C |
+| 07:13:57 | coupe confirmée ; fin V4 en échec (`firmware_reported_error`), sans rembobinage |
+| 07:14:06 | garde du bac : plateau déjà bas (Z 56,95), rien à descendre ; tête vers le bac (X185,5 Y305) |
+| 07:14:08 | poussée stock de 80 mm à 2,33 mm/s lancée ; arrêt d'urgence de la surveillance locale |
+
+Le relevé du mouvement au moment de l'arrêt montre moins de 0,2 mm poussés sur
+les 80 mm prévus. La garde à froid n'avait pas à refuser : la buse était à
+194 °C. Klipper a quitté seul à 07:14:14 sur une exception TMC Creality, comme
+au document 88 ; rien n'a été redémarré. À 07:39, la K1 n'est pas rallumée.
+
+État physique laissé : filament coupé dans la tête, pas rembobiné, partie haute
+dans le tube ; tête au-dessus du bac, plateau à 57 mm ; chauffes coupées ; un
+peu de matière a pu couler. La caméra était dans le noir.
+
+Ce que la nuit apprend :
+
+- `key839` ne vient pas de la coupe : il tombe à la première interrogation du
+  CFS après la fin du fichier (3,8 s après le 31 octobre, 1,5 s cette nuit).
+  Pendant l'impression, la même interrogation rendait `FILAMENT_ERR` sans rien
+  lancer. Ce qui le déclenche, la fin du fichier ou la mise hors service du
+  capteur de tête par la fin V4, ne se distingue pas dans le journal.
+- La fin V5 coupe l'auto-remplacement dès la fin du fichier, avant de mettre le
+  capteur hors service : environ une seconde avant l'interrogation de 07:13:54,
+  trois secondes le 31 octobre. Probable, pas prouvé : l'interrogation revient
+  toutes les 4,1 à 4,8 s ; si c'est la fin du fichier qui déclenche, une fin
+  qui tombe juste avant une interrogation peut arriver trop tard (environ une
+  fois sur neuf, estimation) ; et aucun journal ne montre encore `FILAMENT_ERR`
+  avec l'auto-remplacement à 0.
+- La correction à la source reste la fausse erreur de T1A : les deux fins
+  d'impression sur T1A depuis son apparition ont lancé la routine.
 
 ## Fin V5, prête, pas posée
 
@@ -118,12 +160,14 @@ Fin V5, une fois posée :
 
 - Comportement stock sur `FILAMENT_ERR` avec l'auto-remplacement à 0 : connu
   par des notes tierces seulement.
+- Déclencheur exact de `key839` : fin du fichier ou capteur de tête mis hors
+  service par la fin (section « Nuit du 1er novembre »).
 - Effet d'une poussée refusée sur le moteur du CFS pendant une routine stock.
 - Cause de la fausse erreur sur T1A. Capteur de la case A suspecté : après
   extinction, Thomas a dû manipuler la bobine pour que la LED se rallume.
   Échanger T1A avec une autre case avant de démonter le CFS.
-- `filament_useup` vaut 1 depuis 18:56, même après extinction ; rôle exact
-  inconnu.
+- `filament_useup` vaut 1 depuis le 31 octobre à 18:56, même après extinction ;
+  encore 1 à 00:53 et à 07:13. Rôle exact et moyen de le remettre à 0 inconnus.
 - `box.t_command` valait `T0` pendant l'impression de nuit ; les deux
   installateurs exigent qu'il soit vide au repos. S'il le reste après la fin,
   le préflight V5 refusera (`cfs_command_present`).
@@ -143,8 +187,12 @@ sont à relire avec cette correction.
 
 ## Suite
 
-1. Fin de l'impression de nuit : surveillance locale, arrêt d'urgence
-   seulement si l'extrudeur pousse après la fin.
-2. Pose de la fin V5 au repos revérifié, Thomas présent, préflight d'abord.
+1. Rallumage de la K1 par Thomas. Avant, sortir la tête du bac à la main vers
+   l'avant (Y273), plateau toujours bas.
+2. Thomas présent : homing XY, sortie du bout coupé et nettoyage de la buse à
+   150 °C, puis rembobinage de T1A. Lire `box.filament_useup` avant tout geste
+   filament.
 3. Échange de cases pour T1A, puis vérification du capteur si l'erreur suit la
    case.
+4. Pose de la fin V5 au repos revérifié, Thomas présent, préflight d'abord ;
+   surveillance locale de la première fin sous V5.

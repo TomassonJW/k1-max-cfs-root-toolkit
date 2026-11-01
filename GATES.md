@@ -6,9 +6,13 @@
 31 octobre à 23:46 : `PREFLIGHT_OK` (23 fichiers épinglés identiques),
 `INSTALLED_IDLE_OK`, `VALIDATED_IDLE_OK`, `PROBE_REFUSED_OK`, sauvegarde
 `/usr/data/k1-control-v1/backups/cold-push-guard-v1`. Gate close OK au repos.
-Gate suivante : pose de la fin V5 `end-no-stock-flush-v5` au repos revérifié,
-Thomas présent, préflight d'abord ; puis observation passive de la première
-fin réelle sous V5. [Document 104](docs/104-poussee-a-froid-du-31-octobre-garde-et-fin-v5.md).
+Fin de l'impression de nuit, le 1er novembre à 07:13, sous la fin V4 : routine
+stock relancée par `key839`, arrêtée par l'arrêt d'urgence de la surveillance
+locale à 07:14:08, moins de 0,2 mm poussés ; K1 à rallumer par Thomas.
+Gate suivante : rallumage, puis sortie du bout coupé et nettoyage, Thomas
+présent ; ensuite pose de la fin V5 `end-no-stock-flush-v5` au repos revérifié,
+Thomas présent, préflight d'abord ; puis surveillance de la première fin
+réelle sous V5. [Document 104](docs/104-poussee-a-froid-du-31-octobre-garde-et-fin-v5.md).
 
 ## 31 octobre - gestion des bobines : plan, aucune gate machine ouverte
 

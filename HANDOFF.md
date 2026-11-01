@@ -1,21 +1,30 @@
 # HANDOFF — index de reprise
 
-## 1er novembre - poussée à froid du 31 octobre : garde posée, fin V5 à poser (ADR-076)
+## 1er novembre, 07:40 - fin de nuit arrêtée par l'arrêt d'urgence, K1 à rallumer (ADR-076)
 
 La garde `cold-push-guard-v1` est en service depuis le 31 octobre à 23:46 :
 toute poussée de filament sous 170 °C sans consigne suffisante est refusée,
-chemins stock compris. La fin V5 `end-no-stock-flush-v5` est prête, pas posée :
-elle coupe l'auto-remplacement CFS avant la coupe, le relit avant chaque effet
-et le remet après. L'impression de nuit `_obj_4_Level 2_PLA_6h41m` est partie à
-00:45 sur `T1A`, sous la garde et la fin V4 ; fin attendue vers 07:30.
+chemins stock compris. La fin V5 `end-no-stock-flush-v5` est prête, pas posée.
+L'impression de nuit a fini normalement à 07:13:52 ; la routine Creality
+relancée par `key839` sur `T1A` a été arrêtée par l'arrêt d'urgence de la
+surveillance locale à 07:14:08, moins de 0,2 mm poussés (document 104, section
+« Nuit du 1er novembre »). Klipper a quitté seul ensuite. État à 07:39 : K1 pas
+rallumée, filament coupé dans la tête et pas rembobiné, tête au-dessus du bac
+(X185,5 Y305), plateau à 57 mm, chauffes coupées ; `box.t_command` valait `T0`
+et `filament_useup` 1 juste avant l'arrêt.
 Point de reprise :
-1. lecture passive de la fin de nuit : phase de `kctrl_end`, `cold_refused`,
-   cibles et `box.t_command` ;
-2. pose de la V5 au repos revérifié, Thomas présent : `deploy.py preflight`,
+1. Thomas sort la tête du bac à la main vers l'avant, plateau laissé bas, puis
+   rallume la K1. Ne jamais redémarrer Klipper à sa place ; ne déclarer aucune
+   position par `SET_KINEMATIC_POSITION` ;
+2. Thomas présent : homing XY, sortie du bout coupé, nettoyage de la buse à
+   150 °C, T1A rembobinée ; lire `box.filament_useup`, les cibles et
+   `cold_refused` avant tout geste filament ;
+3. avec Thomas, échange de cases pour `T1A` avant tout démontage du CFS ;
+4. pose de la V5 au repos revérifié, Thomas présent : `deploy.py preflight`,
    puis `install`, puis `validate` (document 104, section « Fin V5 ») ; si
    `box.t_command` reste `T0` au repos, le préflight refuse
-   (`cfs_command_present`) : comprendre avant tout autre geste ;
-3. avec Thomas, échange de cases pour `T1A` avant tout démontage du CFS.
+   (`cfs_command_present`) : comprendre avant tout autre geste ; surveillance
+   locale de la première fin sous V5.
 Ne rejouer ni la pose ni la sonde de la garde. Retour arrière : V5 d'abord,
 garde ensuite. Les installateurs plus anciens épinglent l'ancienne garde
 (`c90de4c3…`) et refusent désormais au préflight.
