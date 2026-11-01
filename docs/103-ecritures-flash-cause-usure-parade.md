@@ -1,7 +1,11 @@
 # 103 - Écritures sur la flash : cause, usure et parade
 
-Date : 31 octobre 2026. Statut : diagnostic en lecture seule clos ; parade
-proposée, non appliquée. Aucun fichier écrit ni réglage changé sur la K1.
+Date : 31 octobre 2026. Statut : diagnostic en lecture seule clos ; option 1
+de la parade posée sur la K1 le 31 octobre à 23:48, sur GO de Thomas
+(`packages/k1-control-v1/flash-log-level-v1/`) : un seul fichier Creality
+changé, sauvegardé, rien redémarré. Effet mesuré après le rallumage du
+1er novembre (section 7) : 12,0 Mo/min en impression au lieu de 46,6, et
+19,3 au repos au lieu de 23,6.
 
 ## 1. En bref
 
@@ -26,8 +30,11 @@ proposée, non appliquée. Aucun fichier écrit ni réglage changé sur la K1.
   3 (avertissements) dans `log_config.json`, au repos, avec sauvegarde et
   retour arrière en deux minutes : environ 10 Mo par minute attendus en
   impression, 4 à 5 fois moins, peu d'effet au repos. Le bavardage CFS de
-  `klippy.log` demande une mission à part, car l'audit du bus le lit. Rien
-  n'est appliqué.
+  `klippy.log` demande une mission à part, car l'audit du bus le lit. Le
+  niveau 3 est posé depuis le 31 octobre à 23:48. Après rallumage, la flash
+  reçoit 12,0 Mo/min en impression au lieu de 46,6, presque 4 fois moins,
+  et 19,3 au repos au lieu de 23,6 ; les journaux Creality tombent à
+  6 ko/min (section 7).
 
 ## 2. Méthode et limites
 
@@ -88,7 +95,7 @@ sur place (même inode) :
 
 | Fichier | Réécriture observée |
 | --- | --- |
-| `config/print_file_name.json` | toutes les 15 à 16 s, 44 fois en 667 s ; le Klipper de Creality le relit pour reprendre une impression après une coupure de courant (`virtual_sdcard.py`) |
+| `config/print_file_name.json` | toutes les 15 à 16 s, 44 fois en 667 s ; écrit et relu par le Klipper de Creality (`virtual_sdcard.py`, par `gcode_move.py`) pour reprendre une impression après une coupure de courant ; il ne le réécrit toutes les 15 s qu'au-delà de la couche 6 ou de 3 mm de hauteur |
 | `config/gcode_layer.json` | à chaque couche, 21 à 22 s ici ; le même module y écrit le numéro de couche |
 | `config/z_pos.json` | toutes les 223 à 227 s ici ; relu par `print_stats.py` |
 | `box/material_box_info.json`, `box/material_modify_info.json` | 17 fois en 667 s, de 4 à 143 s d'écart |
@@ -231,17 +238,20 @@ mois.
   chaque écriture de 4 Kio forcée sur la flash peut occuper une page interne
   plus grande. Ces trois valeurs ne sont pas sourcées.
 - Rythme : 2,8 Go par heure d'impression (46,6 Mo/min) ; 1,4 Go par heure
-  allumée sans imprimer (23,6 Mo/min, section 5).
+  allumée sans imprimer (23,6 Mo/min, section 5). Avec le niveau 3 : 0,72 Go
+  par heure d'impression (12,0 Mo/min) et environ 1,2 au repos (19,3 Mo/min,
+  sur 3 minutes), section 7.
 
 | Usage par jour | Écrit par jour | Amplification 1 (23,5 To) | 3 (7,8 To) | 8 (2,9 To) |
 | --- | --- | --- | --- | --- |
 | 4 h d'impression, éteinte ensuite | 11 Go | 5,7 ans | 1,9 an | 8,6 mois |
 | 8 h d'impression, éteinte ensuite | 22 Go | 2,9 ans | 11,5 mois | 4,3 mois |
 | 4 h d'impression, allumée 24 h sur 24 | 40 Go | 1,6 an | 6,5 mois | 2,4 mois |
+| 4 h d'impression au niveau 3, éteinte ensuite | 2,9 Go | 22 ans | 7,4 ans | 2,8 ans |
 
 Rester allumée sans imprimer multiplie par 3,5 l'usure d'une journée de 4 h.
-Éteindre après usage et appliquer la parade 1 la ramènerait de 40 à environ
-2,4 Go, seize fois moins ; la zone A gagnerait d'autant si son usure
+Éteindre après usage avec la parade 1 la ramène de 40 à environ 2,9 Go
+mesurés, quatorze fois moins ; la zone A gagnerait d'autant si son usure
 suit le nombre d'écritures (hypothèse).
 
 **Déjà consommé.** Le compteur ext4 de `/usr/data` affiche 43 Go enregistrés
@@ -250,7 +260,7 @@ démarrage. C'est un minimum : il ne s'enregistre qu'à un arrêt propre du
 système, et chaque coupure à l'interrupteur perd la session en cours. Ce seul
 démarrage, 5 h 56 dont 4 h 37 d'impression, a écrit 14,1 Go.
 
-## 7. Parade proposée, non appliquée
+## 7. Parade : option 1 posée le 31 octobre
 
 ### Geste immédiat : éteindre la K1 quand elle ne sert pas
 
@@ -274,17 +284,56 @@ documente lui-même 0 défaut, 1 débogage, 2 information, 3 avertissement,
   l'effet est faible : les lignes Creality n'y font que 9 par seconde sur 45,
   de 24 à environ 19 Mo/min. Le niveau 2 ne servirait à rien : les lignes
   actuelles sont déjà des INFO.
-- Procédure, mission à part, au repos revérifié juste avant : sauvegarder le
-  fichier et son empreinte sous
-  `/usr/data/k1-control-v1/backups/flash-log-level-v1/` ; changer ce seul
-  chiffre ; redémarrer la K1 au repos, puisque le fichier n'est
-  vraisemblablement lu qu'au lancement des programmes. Jamais pendant une
-  impression.
-- Validation : le même échantillonneur au repos puis pendant l'impression
-  suivante ; écran, application et page web Creality fonctionnels ;
-  `print_file_name.json` toujours réécrit (reprise après coupure intacte).
-- Retour arrière : remettre le fichier sauvegardé, empreinte identique, puis
-  redémarrer au repos. Deux minutes.
+- Procédure : paquet `packages/k1-control-v1/flash-log-level-v1/`, préparé
+  le 31 octobre et testé hors imprimante (`deploy.py preflight`, vert sur la
+  K1 le 31 octobre à 23:28, puis `install`). L'installateur lit le fichier,
+  exige son empreinte d'origine, calcule le changement de ce seul chiffre et
+  exige l'empreinte attendue ; il sauvegarde fichier, mode et manifeste sous
+  `/usr/data/k1-control-v1/backups/flash-log-level-v1/`, relit le repos par
+  le socket de Klipper juste avant d'écrire, puis remplace le fichier d'un
+  bloc. Il ne redémarre rien : le fichier n'étant vraisemblablement lu qu'au
+  lancement des programmes, le nouveau niveau vaut au prochain allumage, fait
+  par Thomas. Le fichier Creality n'est pas versionné, seules ses empreintes
+  (avant `027ab3db…`, après `fcd855a5…`). Jamais pendant une impression.
+- Pose : le 31 octobre 2026, sur GO de Thomas, juste après la garde de purge
+  et avant l'impression de nuit, verrou K1 pris entre les deux sessions.
+  Préflight vert à 23:48:10, `INSTALLED_OK` à 23:48:19, `VALIDATED_OK` à
+  23:48:21 (niveau 3, reçu `INSTALLED_OK`). Aucun redémarrage ni G-code.
+- Effet mesuré au repos : Thomas a rallumé la K1 le 1er novembre vers
+  00:22. De 00:33:40 à 00:36:41 (180 s, 12 min après l'allumage, niveau 3,
+  `standby`) : 19,3 Mo/min sur la flash (avant : 23,6 en moyenne, 20,6 à
+  26,5 par tranche de 5 minutes), 77 requêtes par seconde (avant : 82 à
+  106) ; journaux Creality 5,7 ko/min, tous dans `master-server.log` (avant :
+  63 à 153 ko/min) ; `klippy.log` 345 ko/min, inchangé. Les programmes
+  Creality respectent donc le réglage après rallumage. Sur 3 minutes, la
+  baisse de la flash reste à confirmer sur une durée plus longue ; celle des
+  journaux est nette.
+- Effet mesuré en impression : le 1er novembre de 00:51:52 à 01:01:55
+  (602 s, 6 min après le départ de l'impression de nuit, niveau 3,
+  `printing` du début à la fin) : 12,0 Mo/min sur la flash (avant : 46,6),
+  de 11,1 à 13,9 d'une minute à l'autre ; 47,9 requêtes par seconde (avant :
+  186) ; journaux Creality 6,4 ko/min, tous dans `master-server.log`
+  (avant : 611 ko/min pour les quatre) ; `klippy.log` 249 ko/min (avant :
+  177) ; 47 fois le texte (avant : 59). Presque 4 fois moins, en haut de la
+  fourchette attendue (8 à 12) : `klippy.log` grossit ici 41 % plus vite que
+  le 31 octobre. Les quatre serveurs Creality tournent (lecture de 01:03).
+- Reprise après coupure intacte : `print_file_name.json`, que le Klipper de
+  Creality écrit lui-même, est resté daté de 00:50:08 jusqu'à la couche 6,
+  comme le veut son code (section 3), puis a été réécrit à 01:20:38
+  (couche 8) et à 01:21:39 (couche 10). La parade n'y change rien. Pendant
+  la mesure, avant la couche 7, il n'était pas réécrit : environ
+  4 réécritures par minute en moins, négligeable devant 48 requêtes par
+  seconde.
+- Validation : `deploy.py validate`, qui ne lit que le fichier ; après
+  l'allumage, `mesure.py` au repos puis pendant l'impression suivante, en
+  arrière-plan (mêmes compteurs que la section 2, plus le temps depuis
+  l'allumage ; essayé en lecture seule le 31 octobre à 23:28, au repos :
+  23,4 Mo/min sur 5 s, niveau 1) ; écran, application et page web Creality
+  fonctionnels ; `print_file_name.json` toujours réécrit (reprise après
+  coupure intacte).
+- Retour arrière : `deploy.py rollback`, au repos ; il remet le fichier
+  sauvegardé, empreinte identique, et l'ancien niveau revient au prochain
+  allumage. Deux minutes.
 - Risques : perte des traces INFO utiles à la rétro-ingénierie (le
   document 55 s'appuie sur des lignes INFO de `master-server.log`) : remettre
   1 le temps d'une enquête. Aucun composant de K1 Control ne lit ces journaux
@@ -297,7 +346,8 @@ Qui lit ce fichier : huit programmes Creality contiennent le nom
 `web-server`, `wifi-server`, `upgrade-server`, `audio-server`, `Monitor`),
 mais aucun ne contient `log_level` ni `log_route` : la lecture passe
 vraisemblablement par une bibliothèque commune, non vérifiée. Le respect du
-réglage reste donc à prouver par la mesure. `klippy.log` n'en dépend pas.
+réglage est prouvé par la mesure après rallumage. `klippy.log` n'en dépend
+pas.
 
 ### Option 2 : journaux Creality en mémoire vive
 
@@ -345,9 +395,9 @@ dépend. Seule l'option 4 y touche, d'où ses conditions.
 
 ## 8. Inconnues
 
-- si les programmes Creality respectent `log_config.json`, quand ils le
-  lisent, et depuis quand le niveau 1 est actif (fichier daté du 7 juin
-  2026) ;
+- quand les programmes Creality lisent `log_config.json` (ils le
+  respectent après rallumage, section 7), et depuis quand le niveau 1 était
+  actif (fichier daté du 7 juin 2026) ;
 - l'amplification interne de la puce ;
 - l'identité exacte de la puce (`DG4008` vers `SDINBDG4-8G` non confirmé) et
   le sens de ses mémoires de type A et B ;

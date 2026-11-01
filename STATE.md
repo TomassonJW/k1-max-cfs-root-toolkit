@@ -19,7 +19,7 @@ mutants détectés, pas posée. Impression de nuit partie à 00:45 sous la garde
 la fin V4.
 [Document 104](docs/104-poussee-a-froid-du-31-octobre-garde-et-fin-v5.md).
 
-## 31 octobre - écritures sur la flash : cause trouvée, usure lue, parade proposée, rien changé
+## 31 octobre - écritures sur la flash : cause trouvée, usure lue, parade 1 posée
 
 Les 46 Mo par minute écrits sur la flash pendant une impression viennent du
 montage `sync` de `/usr/data`, posé par le script d'usine de Creality sur une
@@ -34,11 +34,15 @@ Usure : la puce eMMC de 7,8 Go (probablement une iNAND 7250) déclare 70 à 80 %
 de vie consommée pour sa mémoire de type A, 0 à 10 % pour le type B, réserve
 normale ; historique inconnu, registre à relire chaque mois. Rester allumée
 sans imprimer multiplie par 3,5 l'usure d'une journée de 4 h d'impression. Parade
-recommandée, non appliquée : éteindre la K1 quand elle ne sert pas, puis
-`log_level` de 1 à 3 dans `log_config.json`, au repos (environ 10 Mo par
-minute attendus en impression). Filtrer le dialogue CFS de `klippy.log` ou
-retirer le `sync` demanderait chacun une mission et une ADR. Lecture seule,
-aucun fichier ni réglage changé sur la K1. L'arrêt d'urgence de 19:16 vu
+recommandée : éteindre la K1 quand elle ne sert pas, puis `log_level` de 1 à 3
+dans `log_config.json` (environ 10 Mo par minute attendus en impression) ; ce
+second geste est posé depuis le 31 octobre à 23:48 (paquet
+`flash-log-level-v1`, sauvegarde sur la K1, rien redémarré) ; après le
+rallumage du 1er novembre, la flash reçoit 12,0 Mo/min en impression sur
+10 minutes (contre 46,6) et 19,3 au repos sur 3 minutes (contre 23,6), les
+journaux Creality étant presque muets (6 ko/min). Filtrer le dialogue CFS de
+`klippy.log` ou retirer le `sync` demanderait chacun une mission et une ADR.
+Seul changement sur la K1 : ce fichier Creality. L'arrêt d'urgence de 19:16 vu
 pendant la mesure vient de Thomas, après un bug de fin d'impression traité
 dans une autre session.
 [Document 103](docs/103-ecritures-flash-cause-usure-parade.md).

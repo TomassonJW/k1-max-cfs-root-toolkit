@@ -28,15 +28,18 @@ partition sans journal ext4, multiplie par 59 les 0,8 Mo de journaux écrits
 chaque minute d'impression, surtout par les serveurs Creality réglés en
 débogage ; au repos, environ 24 Mo par minute, surtout le dialogue CFS de
 `klippy.log`. La puce déclare 70 à 80 % de vie consommée pour sa mémoire de
-type A. Rien changé sur la K1.
-Point de reprise : la décision de Thomas sur la parade, pas avant qu'il ait
-clos le bug de fin d'impression du 31 octobre. Sans mission :
-éteindre la K1 quand elle ne sert pas. Parade 1 (`log_level` de 1 à 3 dans
-`/usr/data/creality/userdata/log/log_config.json`) : si oui, mission séparée,
-au repos revérifié juste avant : sauvegarde et empreinte, un seul chiffre
-changé, redémarrage au repos, puis le même échantillonneur au repos et
-pendant l'impression suivante (attendu : environ 10 Mo par minute en
-impression) ; retour arrière en deux minutes. Jamais pendant une impression ;
+type A. Parade 1 posée le 31 octobre à 23:48.
+Point de reprise : la parade 1 (`log_level` de 1 à 3 dans
+`/usr/data/creality/userdata/log/log_config.json`) est posée depuis le
+31 octobre à 23:48 (`INSTALLED_OK` puis `VALIDATED_OK`), sur GO de Thomas,
+sauvegarde sous `/usr/data/k1-control-v1/backups/flash-log-level-v1/`, paquet
+`packages/k1-control-v1/flash-log-level-v1/`. Thomas a rallumé la K1 le
+1er novembre vers 00:22 : `mesure.py` lit 12,0 Mo/min en impression sur
+10 minutes (contre 46,6 ; attendu 8 à 12) et 19,3 au repos sur 3 minutes
+(contre 23,6), avec des journaux Creality presque muets (6 ko/min). La
+reprise après coupure reste intacte. Parade close (PR #88) ; retour arrière :
+`deploy.py rollback`, au repos. Sans mission : éteindre la K1 quand elle ne
+sert pas. Jamais pendant une impression ;
 ne pas toucher au montage `sync` sans ADR ni décision de Thomas. Relire chaque
 mois le registre de santé de la puce (EXT_CSD, octets 267 à 269, par debugfs,
 en lecture seule) et garder hors machine une copie de l'état de K1 Control.
