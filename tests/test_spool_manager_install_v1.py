@@ -961,6 +961,11 @@ def test_le_manifeste_du_depot_suit_le_candidat_et_l_installateur(installer):
     filled = all(manifest[key][field] for key in ('moonraker_conf', 'nginx')
                  for field in ('before_sha256', 'sha256'))
     assert manifest['surveyed'] is (filled and bool(manifest['protected']))
+    if manifest['surveyed']:
+        # The survey found the gateway of the repository on the printer.
+        live = GATEWAY_CONF.read_bytes()
+        assert nginx['before_sha256'] == sha(live)
+        assert nginx['sha256'] == sha(m.nginx_candidate(live))
     written = {path for path, _, _ in m.changes(manifest)}
     assert set(manifest['protected']) <= set(m.PIN_CANDIDATES)
     assert not set(manifest['protected']) & written

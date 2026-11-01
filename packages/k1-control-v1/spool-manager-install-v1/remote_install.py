@@ -67,7 +67,7 @@ CALIBRATION_CLOSED = ('idle', 'accepted', 'cancelled', 'failed', 'mesh_rejected'
 READY_SECONDS = 120
 SPOOLS_SECONDS = 60
 MOONRAKER_FILES = ['moonraker.py', 'server.py', 'common.py', 'confighelper.py', 'eventloop.py',
-                   'klippy_connection.py', 'utils/__init__.py', 'components/klippy_apis.py']
+                   'components/klippy_connection.py', 'utils/__init__.py', 'components/klippy_apis.py']
 # Read by the survey: what the installation relies on without changing it.
 PIN_CANDIDATES = [MOONRAKER_ROOT + '/moonraker/' + name for name in MOONRAKER_FILES] + [
     MOONRAKER_SERVICE, GATEWAY_SERVICE, K1C + '/state/mainsail_overlay_patch.py', MAINSAIL_INDEX,

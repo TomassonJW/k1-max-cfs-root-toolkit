@@ -33,11 +33,51 @@ PAGES_BEFORE = {
     'tares.json': None,
     'LICENSE-SpoolmanDB.txt': None,
 }
-# Read on the printer at rest by `deploy.py survey`; None until then.
+# Read on the printer at rest by `deploy.py survey`, 1 November 2026 at 19:33.
+# The live gateway is the gateway-private-lan-no-auth-v1 nginx.conf; the
+# Bobines package.json is not on the printer, so it is not pinned.
+MOONRAKER = '/usr/data/k1-control-v1/current/moonraker/moonraker/moonraker/'
 SURVEY = {
-    'moonraker_conf': {'before_sha256': None, 'sha256': None},
-    'nginx': {'before_sha256': None, 'sha256': None},
-    'protected': {},
+    'moonraker_conf': {
+        'before_sha256': '2dbd34d7a89c40cd6664dce47999d5917a632c97be9954127deead709af1ec5e',
+        'sha256': 'ed49f72ebeecb3eb10f32ba919853b312bc4d1b6f0745f4087fedf34de6b8483'},
+    'nginx': {
+        'before_sha256': '6d3ef270ee81a426c59aedcaa0c07d7ee067339050f94a8b30e5abecf74b9999',
+        'sha256': '1b3bab181acbaed92e5228cd0d9499ea2d3d374a3233fbc4add26d646bb87347'},
+    'protected': {
+        MOONRAKER + 'moonraker.py':
+            'c0111c255c60b3465798e4abf70de4492e1b16e016cebffe51c252a9cec94116',
+        MOONRAKER + 'server.py':
+            'fdb8aa99331acbd493d31b18643d4d6f8a54857009cd097e118f407e539184df',
+        MOONRAKER + 'common.py':
+            '9692a592a27206db3e17df3579b6e4686830222c83ce74ea5cc450543bf0e905',
+        MOONRAKER + 'confighelper.py':
+            '5513d654bd7facb20c00369590661255a496c61c5097aa40e9c5aa622b4e08f6',
+        MOONRAKER + 'eventloop.py':
+            'ae8ca4f7bab170ead3333abebf455e9c8ce258462cd6a352489f767f0b63c1f9',
+        MOONRAKER + 'components/klippy_connection.py':
+            '23f8fad5fc7a83b1787587624328cd534fb90a8dc5c29c56d501afd2206737f2',
+        MOONRAKER + 'utils/__init__.py':
+            'f9252faa005cfb31993d48c2ef87a2f31422e9944a079d759e8a82ff1e566c3b',
+        MOONRAKER + 'components/klippy_apis.py':
+            '59887a8982f59b7a3be9bf5a13f7b41559b2921011e3298788fb53d3bd60f22a',
+        '/etc/init.d/S56k1_control_moonraker':
+            'c0ba49e10b05ea5d43a90c74413efba142ed302b2f11aeb8fc581ac675f94d4e',
+        '/etc/init.d/S57k1_control_gateway':
+            'ba82fb803641dd190de9909ea3270be9c2024f645c41ea59ff1411084107e34b',
+        '/usr/data/k1-control-v1/state/mainsail_overlay_patch.py':
+            'db2d94d17b34796373bd62e7edadf7c196daaa7772da687aa843640dd61b1c54',
+        '/usr/data/k1-control-v1/current/www/mainsail/index.html':
+            'ab7237694495207f7deccd1a825c0daaba8d6f1123ddfaf804c0251f9e2bf4df',
+        '/usr/data/k1-control-v1/current/www/bobines/app.js':
+            '520a3fc0c4329b61f4e6f82f88cd0155a422ceb4a165c0d6438cf9352b2465c7',
+        '/usr/data/k1-control-v1/current/www/bobines/index.html':
+            '83209ebacbbdb97ecf6fcd0db404a7f25237a25496b605b2a7748c4d45a6b309',
+        '/usr/data/printer_data/config/k1-control-owned-start-print-v2.cfg':
+            '61bd5f6519a5387eb233a30de6ee9a84d86de7ea88593d5c9cc35b288215d6e9',
+        '/usr/share/klipper/klippy/extras/kctrl_print_gate.py':
+            '69578e579409b7c4d253acb8c680ceaeb25b60b40502732530a4a786e0966516',
+    },
 }
 # Document 102: Moonraker at most 45 MiB, at least 70 MiB left, swap +8 MiB at most.
 BUDGET = {'rss_kb': 46080, 'available_kb': 71680, 'swap_growth_kb': 8192}
