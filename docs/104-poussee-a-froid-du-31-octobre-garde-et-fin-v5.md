@@ -105,6 +105,43 @@ Ce que la nuit apprend :
 - La correction à la source reste la fausse erreur de T1A : les deux fins
   d'impression sur T1A depuis son apparition ont lancé la routine.
 
+## Matin du 1er novembre : retrait normal de T1A à chaud
+
+Thomas présent. Heures de Paris, reçus des commandes et journal Klipper de la
+K1 :
+
+| Heure | Fait |
+|---|---|
+| 08:36 | K1 rallumée par Thomas |
+| 08:47:29-45 | rembobinage de T1A à froid, axes non référencés : refusé après 13,5 s (`key849`, « failed to exit connections »), sortie A toujours occupée ; erreur de méthode, la tête n'avait pas rétracté le filament à chaud |
+| 09:07 | CFS 1 remis au repos (IDLE, arrêt moteur), `G28 X Y`, `BED_MESH_CLEAR` ; Z non référencé |
+| 09:17-09:18 | buse à 220 °C ; `BOX_CUT_MATERIAL` : capteur de coupe déclenché puis relâché, tête à Y291,5 |
+| 09:19 | rétraction de la tête `E-20` puis `E-15` ; rembobinage refusé en 24 ms (`RETRUDE_ERR4`), capteur de bobine A lu vide |
+| 09:20:44 | buse ramenée à 150 °C |
+| 09:27:07-21 | capteur de bobine A relu présent ; rembobinage réussi en 13,5 s, sortie A libre, capteur de tête libre |
+| 09:33 | nettoyage de la buse confirmé par Thomas ; 09:35:38, chauffes coupées, cibles relues à zéro deux fois |
+
+À 09:41:39, la K1 est au repos : `standby`, cibles zéro, XY référencés, Z non
+référencé, tête à X38 Y291,5, `t_command` vide, `filament_useup` et
+`auto_refill` à 1. Les seules commandes de l'extrudeur sont les deux
+rétractions de 09:19.
+
+Ce que la matinée apprend :
+
+- Un rembobinage ne vient qu'après la procédure normale : chauffe, coupe au
+  cutter, rétraction de la tête à chaud, puis `BOX_RETRUDE_PROCESS`. À froid,
+  la tête tient encore le filament et le CFS refuse (`key849`).
+- Un `RETRUDE_ERR4` immédiat (24 ms, rien ne tourne) veut dire que le capteur
+  de bobine de la case lit vide : attendre qu'il relise présent, puis relancer
+  le seul rembobinage, sans rechauffer.
+- Le capteur de bobine de la case A a lu vide à 09:19 puis présent à 09:27,
+  bobine pleine : nouvel indice contre ce capteur (section « Inconnues »).
+
+Preuves, hors Git, dans `inventory/raw/20261101-t1a-hot-unload/` de la copie
+principale du dépôt : reçus des commandes, extraits du journal Klipper, trois
+images de la caméra, relevé des macros, empreintes `SHA256SUMS`. Les reçus
+portent des identifiants CFS : jamais à publier.
+
 ## Fin V5, prête, pas posée
 
 `packages/k1-control-v1/end-no-stock-flush-v5/` remplace `kctrl_end.py`
@@ -169,13 +206,16 @@ Fin V5, une fois posée :
   service par la fin (section « Nuit du 1er novembre »).
 - Effet d'une poussée refusée sur le moteur du CFS pendant une routine stock.
 - Cause de la fausse erreur sur T1A. Capteur de la case A suspecté : après
-  extinction, Thomas a dû manipuler la bobine pour que la LED se rallume.
+  extinction, Thomas a dû manipuler la bobine pour que la LED se rallume ; le
+  1er novembre, il a lu vide à 09:19 puis présent à 09:27, bobine pleine.
   Échanger T1A avec une autre case avant de démonter le CFS.
 - `filament_useup` vaut 1 depuis le 31 octobre à 18:56, même après extinction ;
-  encore 1 à 00:53 et à 07:13. Rôle exact et moyen de le remettre à 0 inconnus.
-- `box.t_command` valait `T0` pendant l'impression de nuit ; les deux
-  installateurs exigent qu'il soit vide au repos. S'il le reste après la fin,
-  le préflight V5 refusera (`cfs_command_present`).
+  encore 1 à 00:53, à 07:13 et à 09:41 après le rembobinage. Rôle exact et
+  moyen de le remettre à 0 inconnus.
+- `box.t_command` valait `T0` pendant l'impression de nuit ; il est vide au
+  repos à 09:27 et à 09:41. Les deux installateurs exigent qu'il soit vide au
+  repos : s'il revient à `T0` après une fin, le préflight V5 refusera
+  (`cfs_command_present`).
 - Écritures sur la flash de `BOX_ENABLE_AUTO_REFILL` : non mesurées.
 - Enregistrement de `BOX_ENABLE_AUTO_REFILL` au démarrage : sa méthode est dans
   la même classe stock que les primitives déjà exigées par la V4. S'il
@@ -192,14 +232,11 @@ sont à relire avec cette correction.
 
 ## Suite
 
-1. Rallumage de la K1 par Thomas. Avant, sortir la tête du bac à la main vers
-   l'avant (Y273), plateau toujours bas.
-2. Thomas présent : homing XY, sortie du bout coupé et nettoyage de la buse à
-   150 °C, puis rembobinage de T1A. Lire `box.filament_useup` avant tout geste
-   filament.
-3. Échange de cases pour T1A, puis vérification du capteur si l'erreur suit la
-   case.
-4. Pose de la fin V5 au repos revérifié, Thomas présent, préflight d'abord ;
+1. Fait le 1er novembre : rallumage à 08:36, retrait normal de T1A à chaud et
+   nettoyage de la buse de 09:07 à 09:35 (section « Matin du 1er novembre »).
+2. Échange de cases pour T1A, puis vérification du capteur si l'erreur suit la
+   case. Lire `box.filament_useup` avant tout geste filament.
+3. Pose de la fin V5 au repos revérifié, Thomas présent, préflight d'abord ;
    surveillance locale de la première fin sous V5 par
    `packages/k1-control-v1/end-watch-v1/watch_end.py`, essai à blanc d'abord
    (README du paquet).
