@@ -317,6 +317,13 @@ documente lui-même 0 défaut, 1 débogage, 2 information, 3 avertissement,
   177) ; 47 fois le texte (avant : 59). Presque 4 fois moins, en haut de la
   fourchette attendue (8 à 12) : `klippy.log` grossit ici 41 % plus vite que
   le 31 octobre. Les quatre serveurs Creality tournent (lecture de 01:03).
+- Reprise après coupure intacte : `print_file_name.json`, que le Klipper de
+  Creality écrit lui-même, est resté daté de 00:50:08 jusqu'à la couche 6,
+  comme le veut son code (section 3), puis a été réécrit à 01:20:38
+  (couche 8) et à 01:21:39 (couche 10). La parade n'y change rien. Pendant
+  la mesure, avant la couche 7, il n'était pas réécrit : environ
+  4 réécritures par minute en moins, négligeable devant 48 requêtes par
+  seconde.
 - Validation : `deploy.py validate`, qui ne lit que le fichier ; après
   l'allumage, `mesure.py` au repos puis pendant l'impression suivante, en
   arrière-plan (mêmes compteurs que la section 2, plus le temps depuis
