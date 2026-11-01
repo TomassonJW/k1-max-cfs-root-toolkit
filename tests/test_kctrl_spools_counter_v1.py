@@ -13,6 +13,7 @@ import ast
 import copy
 import importlib.util
 import json
+import types
 from pathlib import Path
 
 import pytest
@@ -20,12 +21,13 @@ import pytest
 ROOT = Path(__file__).resolve().parents[1]
 PACKAGE = ROOT / "packages" / "k1-control-v1" / "spool-manager-v1"
 TOOL_CHANGE = ROOT / "packages" / "k1-control-v1" / "owned-start-print-v2" / "kctrl_tool_change.py"
+END_V5 = ROOT / "packages" / "k1-control-v1" / "end-no-stock-flush-v5" / "kctrl_end.py"
 FIXTURE = (ROOT / "packages" / "k1-control-v1" / "cfs-stock-unload-guard-adapter-offline-v1"
            / "fixtures" / "unique-route.json")
 
 
-def load(name):
-    spec = importlib.util.spec_from_file_location(name, str(PACKAGE / (name + ".py")))
+def load(name, path=None):
+    spec = importlib.util.spec_from_file_location(name, str(path or PACKAGE / (name + ".py")))
     module = importlib.util.module_from_spec(spec)
     spec.loader.exec_module(module)
     return module
@@ -34,6 +36,7 @@ def load(name):
 counter = load("kctrl_spools_counter")
 model = load("kctrl_spools_model")
 store = load("kctrl_spools_store")
+end_v5 = load("kctrl_end_v5", END_V5)
 MATERIALS, _ = model.read_materials(str(PACKAGE / "lab" / "material_database.synthetic.json"))
 BOX = json.loads(FIXTURE.read_text(encoding="utf-8"))["result"]["status"]["box"]
 T0 = 1_790_000_000
@@ -1019,3 +1022,92 @@ def test_the_other_messages_of_kctrl_tool_change_announce_nothing(name):
     rig.observe()
     rig.say(NOT_ANNOUNCEMENTS[name])
     assert rig.s["expect"] is None
+
+
+# ---------------------------------------------------------------- the end V5
+def phases_of(path):
+    """The phases an end module publishes: the strings it gives self.phase."""
+    found = set()
+    for node in ast.walk(ast.parse(path.read_text(encoding="utf-8"))):
+        if not isinstance(node, ast.Assign):
+            continue
+        for target in node.targets:
+            pairs = [(target, node.value)]
+            if isinstance(target, ast.Tuple) and isinstance(node.value, ast.Tuple):
+                pairs = zip(target.elts, node.value.elts)
+            for name, value in pairs:
+                if isinstance(name, ast.Attribute) and name.attr == "phase":
+                    found |= {leaf.value for leaf in ast.walk(value)
+                              if isinstance(leaf, ast.Constant) and isinstance(leaf.value, str)}
+    return found
+
+
+def test_the_end_v5_rests_in_the_phases_the_counter_waits_for():
+    phases = phases_of(END_V5)
+    assert set(end_v5.ACTIVE) <= phases
+    assert phases - set(end_v5.ACTIVE) == set(counter.END_IDLE)
+
+
+class EndV5Rig(Rig):
+    """The same printer, kctrl_end publishing the status of the end V5 itself."""
+
+    def __init__(self, **values):
+        super().__init__(**values)
+        self.run, self.seen = None, []
+
+    def start(self, file="cube.gcode", reset=True):
+        self.run = None  # V5 forgets the run of the job before
+        super().start(file, reset)
+
+    def status(self):
+        status = super().status()
+        if "kctrl_end" in status:
+            active = self.phase in end_v5.ACTIVE
+            if active and self.run is None:
+                self.run = {"route": self.route}  # the route its run withdraws
+            end = types.SimpleNamespace(
+                enabled=self.phase != "disabled", phase=self.phase, reason="", failure="",
+                thermal_failure="", epoch=self.epoch, inflight=active, run=self.run,
+                refill_saved=None, refill_pending=False, originals={})
+            status["kctrl_end"] = end_v5.KctrlEnd.get_status(end)
+            self.seen.append(self.phase)
+        return status
+
+
+def test_a_job_ended_by_the_end_v5_gives_the_same_report():
+    reports = []
+    for make in (Rig, EndV5Rig):
+        rig = make()
+        rig.observe()
+        rig.start()
+        rig.push(1000)
+        rig.end()
+        reports.append(rig.report())
+    assert reports[0] == reports[1]
+    assert reports[1]["segments"] == [{"slot": "T1A", "spool": "B001", "mm": 965.0}]
+    assert set(rig.seen) == set(end_v5.ACTIVE) | {"idle", "complete"}
+
+
+@pytest.mark.parametrize("phase", end_v5.ACTIVE)
+def test_a_job_stays_open_while_the_end_v5_works(phase):
+    rig = EndV5Rig()
+    rig.observe()
+    rig.start()
+    rig.push(500)
+    rig.observe(state="complete", phase=phase)
+    assert rig.observe(seconds=counter.SETTLE_S + 1) == []
+    assert rig.s["period"]["kind"] == "job"
+
+
+@pytest.mark.parametrize("phase", counter.END_IDLE)
+def test_a_job_closes_once_the_end_v5_rests(phase):
+    rig = EndV5Rig()
+    rig.observe()
+    rig.start()
+    rig.push(500)
+    rig.observe(state="complete", phase="finalizing")
+    rig.observe(phase=phase)
+    rig.observe(seconds=counter.SETTLE_S)
+    report = rig.report()
+    assert report["outcome"] == "complete"
+    assert report["segments"] == [{"slot": "T1A", "spool": "B001", "mm": 500.0}]

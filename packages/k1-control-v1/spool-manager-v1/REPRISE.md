@@ -26,12 +26,12 @@ ouvrir un fichier du dépôt seulement pour un détail qui manque ici.
   - lot K : paquet de pose `spool-manager-install-v1` (1165513, 15bb85b), relevé et préflight verts sur la K1 au repos le 1er novembre à 19:34, sans rien écrire, section 9.
 - Pas commencé : la pose, L et la clôture (section 9).
 - Rien de ce module n'est posé sur la K1. Aucune écriture, pose ni G-code n'a été faite pour cette mission ; seuls le relevé et le préflight du lot K l'ont lue, au repos.
-- Derniers résultats, le 1er novembre après 15bb85b : suite complète 2957 passés, 6 ignorés, 2 désélectionnés, 2 xfail, 41 sous-tests, dont 125 pour `tests/test_spool_manager_install_v1.py` ; `node --test` : `mesh_editor_ui.test.mjs` 7/7, `logic.test.mjs` 43/43, `spools-logic.test.mjs` 35/35.
-- Pilotage : synchronisé avec `main` le 1er novembre (8846197), conflits de `HANDOFF.md` et `STATE.md` résolus en gardant tout `main`. Depuis, `main` a reçu les PR #96 et #94 : resynchroniser avant le merge.
+- Derniers résultats, le 1er novembre après la synchro 9d5d0bc : suite complète 3096 passés, 6 ignorés, 2 désélectionnés, 2 xfail, 41 sous-tests, dont 125 pour `tests/test_spool_manager_install_v1.py` et 13 qui passent le compteur et le composant sur le vrai statut de la fin V5 (`end-no-stock-flush-v5`) ; `node --test` : `mesh_editor_ui.test.mjs` 7/7, `logic.test.mjs` 43/43, `spools-logic.test.mjs` 35/35.
+- Pilotage : synchronisé avec `main` le 1er novembre (8846197, conflits de `HANDOFF.md` et `STATE.md` résolus en gardant tout `main`, puis 9d5d0bc pour les PR #96 et #94, sans conflit). Resynchroniser juste avant le merge si `main` bouge encore.
 
 ## 2. Règles machine de la mission
 
-- File du verrou `VERROU-K1.md` : point 6 = pose de la fin V5 par la session purge, Thomas présent, quand il le décide ; point 7 = la pose de ce module. Prendre le verrou avant toute écriture, pose ou G-code. Les lectures seules au repos restent libres. Ce fichier n'est pas dans le dépôt : demander son chemin à la session purge.
+- File du verrou `VERROU-K1.md` : point 6 = pose de la fin V5 par la session purge, Thomas présent, quand il le décide ; point 7 = la pose de ce module. Prendre le verrou avant toute écriture, pose ou G-code. Les lectures seules au repos restent libres. Ce fichier n'est pas dans le dépôt : il est dans le dossier de notes partagé des sessions.
 - Jamais de pose, de redémarrage de Klipper ou de service pendant une impression, même en pause (règle du 24 septembre). Revérifier le repos juste avant l'arrêt.
 - Écrire une bobine au CFS est un G-code : rien avant la pose qualifiée et le verrou.
 - Accès : alias SSH `k1max-root`, scripts passés par stdin (`sh -s` ou `python3 -`), ni bash ni sftp sur la machine, copie par `cat | ssh`. Pages statiques en 755/644 (un `cat >` en root crée du 600 et nginx répond 403). Jamais `tail -n` sur `klippy.log`. Retirer `sn` et `uuid` de toute lecture.

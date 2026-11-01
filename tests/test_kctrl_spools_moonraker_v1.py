@@ -8,6 +8,7 @@ numéro de série et l'uuid du CFS ne sont jamais gardés ; la bibliothèque ne 
 réécrit pas d'elle-même pendant une impression.
 """
 
+import ast
 import asyncio
 import copy
 import enum
@@ -499,6 +500,16 @@ def test_the_rest_reading():
     status["kctrl_end"].update(phase="failed", pending=False, auto_refill_restore_pending=True)
     status["box"]["auto_refill"] = 0
     assert adapter.rest_problem(status) == ""
+
+
+def test_what_is_read_from_kctrl_end_is_what_the_end_v5_publishes():
+    source = ROOT / "packages" / "k1-control-v1" / "end-no-stock-flush-v5" / "kctrl_end.py"
+    tree = ast.parse(source.read_text(encoding="utf-8"))
+    [status] = [node for node in ast.walk(tree)
+                if isinstance(node, ast.FunctionDef) and node.name == "get_status"]
+    [result] = [node.value for node in ast.walk(status) if isinstance(node, ast.Return)]
+    published = {key.value for key in result.keys}
+    assert set(adapter.OBJECTS["kctrl_end"]) | set(adapter.REST_QUERY["kctrl_end"]) <= published
 
 
 def test_writes_queued_during_a_print_go_out_at_its_end_in_slot_order(make):
