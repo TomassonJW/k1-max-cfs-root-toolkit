@@ -2,9 +2,8 @@
 
 ## 1er novembre, 10:51 - macros de Mainsail rangées en trois panneaux
 
-La K1, injoignable de 10:13 à 10:41 (ni ping, ni passerelle), a redémarré
-vers 10:41 (99 s de fonctionnement à 10:42:48) ; cause non établie ici.
-Klipper `ready` à 10:42:11. Sur le GO de Thomas (« Oui, range-les »),
+Thomas a éteint la K1 avant 10:13 et l'a rallumée vers 10:41 (99 s de
+fonctionnement à 10:42:48), confirmé par lui. Klipper `ready` à 10:42:11. Sur le GO de Thomas (« Oui, range-les »),
 `mainsail_macro_groups.py` a relu `standby` puis écrit à 10:44:22 la seule clé
 `macros` de l'espace `mainsail` de la base Moonraker : mode expert, panneaux
 Bobines, Plateau et Réglages, 11 boutons. Relue identique, aucune autre clé
