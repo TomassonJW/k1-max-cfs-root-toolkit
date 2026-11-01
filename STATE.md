@@ -1,5 +1,22 @@
 # STATE
 
+## 1er novembre, 07:40 - fin de nuit : même chaîne qu'au 31 octobre, arrêtée au début de la poussée
+
+L'impression de nuit s'est terminée normalement à 07:13:52. À la première
+interrogation CFS qui a suivi, 1,5 s plus tard, `key839` sur `T1A`
+(`filament_useup` et `auto_refill` à 1) a relancé la routine Creality
+« extrude all material » ; la fin V4 a coupé le filament à 07:13:57 puis
+échoué sans rembobiner. La routine a mené la tête au bac, plateau déjà bas
+(Z 56,95, garde du bac), et lancé une poussée de 80 mm à 195 °C. La
+surveillance locale l'a arrêtée par un arrêt d'urgence à 07:14:08 : moins de
+0,2 mm poussés. Klipper a quitté seul à 07:14:14 (exception TMC Creality) ;
+rien redémarré. À 07:39, K1 pas rallumée : filament coupé dans la tête, pas
+rembobiné, tête au-dessus du bac. La fin V5 aurait coupé l'auto-remplacement
+environ une seconde avant `key839` : probable, pas prouvé. La cause à la source
+reste la fausse erreur de `T1A`.
+[Document 104](docs/104-poussee-a-froid-du-31-octobre-garde-et-fin-v5.md),
+section « Nuit du 1er novembre ».
+
 ## 1er novembre, 03:40 - poussée à froid du 31 octobre : garde en service, fin V5 prête (ADR-076)
 
 Le 31 octobre à 19:07, à la fin d'une impression, le CFS signalait `T1A` en
