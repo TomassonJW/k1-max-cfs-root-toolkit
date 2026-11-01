@@ -15,6 +15,15 @@ Gate suivante : échange de cases pour `T1A` avec Thomas ; puis pose de la fin
 V5 `end-no-stock-flush-v5` au repos revérifié, Thomas présent, préflight
 d'abord ; puis surveillance de la première fin réelle sous V5. [Document 104](docs/104-poussee-a-froid-du-31-octobre-garde-et-fin-v5.md).
 
+## 1er novembre - garde capteur CFS : construite hors imprimante, aucune gate machine ouverte (ADR-077)
+
+`cfs-sensor-guard-v1` construit et testé hors imprimante, jamais posé ; aucune
+lecture ni écriture sur la K1. 126 tests ciblés verts, 18 mutants sur 18 tués.
+Gate de pose future, après la pose de la fin V5 et la validation de sa
+première fin : sauvegarde, préflight, pose et validation au repos revérifié,
+Thomas présent, retour arrière prêt ; la garde capteur se retire avant la V5.
+[Document 105](docs/105-garde-capteur-cfs-contredit-et-fin-sure.md).
+
 ## 31 octobre - gestion des bobines : plan, aucune gate machine ouverte
 
 Plan V1 écrit (document 102), ADR-075 acceptée par Thomas. Aucune gate
