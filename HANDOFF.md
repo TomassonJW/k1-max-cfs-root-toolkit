@@ -32,6 +32,23 @@ arrière : V5 d'abord, garde ensuite. Les installateurs plus anciens épinglent
 l'ancienne garde (`c90de4c3…`) et refusent désormais au préflight.
 [Document 104](docs/104-poussee-a-froid-du-31-octobre-garde-et-fin-v5.md).
 
+## 1er novembre, 16:15 - garde capteur CFS (ADR-077) : prête hors imprimante, à poser après la fin V5
+
+`packages/k1-control-v1/cfs-sensor-guard-v1` : module `kctrl_sensor_guard`,
+`enabled: False`, aucun script de pose. 126 tests ciblés
+(`tests/test_kctrl_sensor_guard_v1.py`) rejouent les fins du 15 septembre, du
+31 octobre et du 1er novembre (document 105).
+Point de reprise : rien à poser avant la pose de la fin V5 et la validation de
+sa première fin (section ci-dessus). Ensuite, mission de pose : script
+d'installation avec sauvegarde, préflight, validation et retour arrière, au
+repos revérifié, Thomas présent, préflight d'abord. Ordre de pose : garde à
+froid (en service), fin V5, garde capteur. Retour arrière : garde capteur
+d'abord ; activée, elle exige `[kctrl_end]` activé, sinon Klipper refuse de
+démarrer. La garde lit `kctrl_end.phase` : une nouvelle étape de la fin qui
+pousse exprès doit entrer dans `END_PUSH_PHASES`, et un test vérifie que
+`END_ACTIVE` reste égal à `kctrl_end.ACTIVE`.
+[Document 105](docs/105-garde-capteur-cfs-contredit-et-fin-sure.md).
+
 ## 1er novembre, 10:51 - macros de Mainsail rangées : 3 panneaux, 11 boutons
 
 Thomas ne se repère plus dans les 55 macros affichées par Mainsail (83 en
