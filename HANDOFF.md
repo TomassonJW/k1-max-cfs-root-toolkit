@@ -1,5 +1,26 @@
 # HANDOFF — index de reprise
 
+## 1er novembre - poussée à froid du 31 octobre : garde posée, fin V5 à poser (ADR-076)
+
+La garde `cold-push-guard-v1` est en service depuis le 31 octobre à 23:46 :
+toute poussée de filament sous 170 °C sans consigne suffisante est refusée,
+chemins stock compris. La fin V5 `end-no-stock-flush-v5` est prête, pas posée :
+elle coupe l'auto-remplacement CFS avant la coupe, le relit avant chaque effet
+et le remet après. L'impression de nuit `_obj_4_Level 2_PLA_6h41m` est partie à
+00:45 sur `T1A`, sous la garde et la fin V4 ; fin attendue vers 07:30.
+Point de reprise :
+1. lecture passive de la fin de nuit : phase de `kctrl_end`, `cold_refused`,
+   cibles et `box.t_command` ;
+2. pose de la V5 au repos revérifié, Thomas présent : `deploy.py preflight`,
+   puis `install`, puis `validate` (document 104, section « Fin V5 ») ; si
+   `box.t_command` reste `T0` au repos, le préflight refuse
+   (`cfs_command_present`) : comprendre avant tout autre geste ;
+3. avec Thomas, échange de cases pour `T1A` avant tout démontage du CFS.
+Ne rejouer ni la pose ni la sonde de la garde. Retour arrière : V5 d'abord,
+garde ensuite. Les installateurs plus anciens épinglent l'ancienne garde
+(`c90de4c3…`) et refusent désormais au préflight.
+[Document 104](docs/104-poussee-a-froid-du-31-octobre-garde-et-fin-v5.md).
+
 ## 31 octobre - écritures sur la flash : cause, usure, parade (document 103)
 
 Diagnostic en lecture seule clos : le montage `sync` d'usine de `/usr/data`,
