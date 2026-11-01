@@ -1,5 +1,65 @@
 # HANDOFF — index de reprise
 
+## 1er novembre - poussée à froid du 31 octobre : garde posée, fin V5 à poser (ADR-076)
+
+La garde `cold-push-guard-v1` est en service depuis le 31 octobre à 23:46 :
+toute poussée de filament sous 170 °C sans consigne suffisante est refusée,
+chemins stock compris. La fin V5 `end-no-stock-flush-v5` est prête, pas posée :
+elle coupe l'auto-remplacement CFS avant la coupe, le relit avant chaque effet
+et le remet après. L'impression de nuit `_obj_4_Level 2_PLA_6h41m` est partie à
+00:45 sur `T1A`, sous la garde et la fin V4 ; fin attendue vers 07:30.
+Point de reprise :
+1. lecture passive de la fin de nuit : phase de `kctrl_end`, `cold_refused`,
+   cibles et `box.t_command` ;
+2. pose de la V5 au repos revérifié, Thomas présent : `deploy.py preflight`,
+   puis `install`, puis `validate` (document 104, section « Fin V5 ») ; si
+   `box.t_command` reste `T0` au repos, le préflight refuse
+   (`cfs_command_present`) : comprendre avant tout autre geste ;
+3. avec Thomas, échange de cases pour `T1A` avant tout démontage du CFS.
+Ne rejouer ni la pose ni la sonde de la garde. Retour arrière : V5 d'abord,
+garde ensuite. Les installateurs plus anciens épinglent l'ancienne garde
+(`c90de4c3…`) et refusent désormais au préflight.
+[Document 104](docs/104-poussee-a-froid-du-31-octobre-garde-et-fin-v5.md).
+
+## 31 octobre - écritures sur la flash : cause, usure, parade (document 103)
+
+Diagnostic en lecture seule clos : le montage `sync` d'usine de `/usr/data`,
+partition sans journal ext4, multiplie par 59 les 0,8 Mo de journaux écrits
+chaque minute d'impression, surtout par les serveurs Creality réglés en
+débogage ; au repos, environ 24 Mo par minute, surtout le dialogue CFS de
+`klippy.log`. La puce déclare 70 à 80 % de vie consommée pour sa mémoire de
+type A. Rien changé sur la K1.
+Point de reprise : la décision de Thomas sur la parade, pas avant qu'il ait
+clos le bug de fin d'impression du 31 octobre. Sans mission :
+éteindre la K1 quand elle ne sert pas. Parade 1 (`log_level` de 1 à 3 dans
+`/usr/data/creality/userdata/log/log_config.json`) : si oui, mission séparée,
+au repos revérifié juste avant : sauvegarde et empreinte, un seul chiffre
+changé, redémarrage au repos, puis le même échantillonneur au repos et
+pendant l'impression suivante (attendu : environ 10 Mo par minute en
+impression) ; retour arrière en deux minutes. Jamais pendant une impression ;
+ne pas toucher au montage `sync` sans ADR ni décision de Thomas. Relire chaque
+mois le registre de santé de la puce (EXT_CSD, octets 267 à 269, par debugfs,
+en lecture seule) et garder hors machine une copie de l'état de K1 Control.
+L'arrêt d'urgence de 19:16 vu pendant la mesure vient de Thomas, après ce bug,
+traité dans une autre session (section 9).
+[Document 103](docs/103-ecritures-flash-cause-usure-parade.md).
+
+## 31 octobre - plan de gestion des bobines (document 102, ADR-075 proposée)
+
+Thomas veut gérer ses bobines dans Mainsail : bouton et fenêtre, synchro avec
+le CFS dans les deux sens, reste en grammes et en mètres, bibliothèque des
+bobines vides, décompte après chaque impression, stock. Aucun outil existant ne
+couvre huit emplacements, des bobines sans puce et les purges par bobine. Plan
+de A à Z écrit, rien installé, K1 non touchée. Point de reprise : la réponse de
+Thomas sur le lieu des données (ADR-075 : K1 Control sur la K1, recommandé, ou
+Spoolman sur le Proxmox) ; puis les lots A à K hors imprimante, la pose au
+repos du seul Moonraker dédié et les deux gestes de qualification (retrait et
+remise d'une bobine, impression multicouleur pesée avant et après).
+Mesuré pendant une impression : mémoire et processeur gardent une large marge.
+Constat annexe : la K1 écrit d'elle-même environ 40 Mo par minute sur sa flash
+(8,5 Go en 3 h 43 depuis son démarrage), rien de K1 Control ; enquête à part.
+[Document 102](docs/102-gestion-des-bobines-plan-v1.md), section 3.
+
 ## 2 octobre, 12:53 — annulation qui garde le filament, posée (ADR-074)
 
 Après une annulation, Thomas peut relancer directement : la fin

@@ -1,5 +1,22 @@
 # GATES
 
+## 1er novembre - garde à froid posée, fin V5 prête (ADR-076)
+
+`kctrl_purge_guard.py` révision `cold-push-guard-v1` posé au repos le
+31 octobre à 23:46 : `PREFLIGHT_OK` (23 fichiers épinglés identiques),
+`INSTALLED_IDLE_OK`, `VALIDATED_IDLE_OK`, `PROBE_REFUSED_OK`, sauvegarde
+`/usr/data/k1-control-v1/backups/cold-push-guard-v1`. Gate close OK au repos.
+Gate suivante : pose de la fin V5 `end-no-stock-flush-v5` au repos revérifié,
+Thomas présent, préflight d'abord ; puis observation passive de la première
+fin réelle sous V5. [Document 104](docs/104-poussee-a-froid-du-31-octobre-garde-et-fin-v5.md).
+
+## 31 octobre - gestion des bobines : plan, aucune gate machine ouverte
+
+Plan V1 écrit (document 102), ADR-075 proposée. Aucune gate machine n'est
+ouverte. Gate suivante, après la réponse de Thomas sur ADR-075 : construction
+hors imprimante des lots A à K, puis pose au repos du seul Moonraker dédié et
+qualification par deux gestes ([document 102](docs/102-gestion-des-bobines-plan-v1.md), section 12).
+
 ## 2 octobre — annulation qui garde le filament : posée (ADR-074)
 
 `kctrl_end.py` V4 posé au repos le 2 octobre à 12:53 par

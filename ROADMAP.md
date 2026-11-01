@@ -1,18 +1,21 @@
 # ROADMAP
 
-## Évolution demandée le 23 septembre — presets de bobines
+## Gestion des bobines dans Mainsail (31 octobre)
 
-Thomas souhaite une gestion simple dans la page Bobines de Mainsail : retrouver
-et appliquer des presets par marque, type de filament et couleur, puis régler
-les températures associées à une bobine connue. À concevoir dans une mission
-séparée ; aucune nouvelle UI n'est installée par le correctif de reprise.
+Thomas veut gérer ses bobines dans Mainsail : fenêtre, synchro avec le CFS,
+reste en grammes et en mètres, bibliothèque des bobines vides, décompte après
+chaque impression, stock. Plan V1 : [document 102](docs/102-gestion-des-bobines-plan-v1.md),
+ADR-075 proposée. Une tranche, construite hors imprimante, posée au repos.
 
-Le périmètre devra distinguer les températures des opérations manuelles
-(chargement, purge, retrait) de celles d'une impression : première couche et
-couches suivantes restent celles du fichier Orca, sauf dérogation explicitement
-demandée par l'utilisateur. Éviter qu'une fiche matériau partagée par plusieurs
-bobines ne modifie silencieusement les autres presets. Prévoir aperçu des
-valeurs appliquées, duplication, modification et restauration d'un preset.
+Suite prévue, hors V1 : les presets demandés le 23 septembre, bâtis sur la
+bibliothèque du document 102. Retrouver et appliquer des presets par marque,
+type de filament et couleur, puis régler les températures d'une bobine connue.
+Distinguer les températures des opérations manuelles (chargement, purge,
+retrait) de celles d'une impression : première couche et couches suivantes
+restent celles du fichier Orca, sauf dérogation explicitement demandée. Une
+fiche matériau partagée par plusieurs bobines ne doit jamais modifier les
+autres presets en silence. Aperçu des valeurs appliquées, duplication,
+modification et restauration d'un preset.
 
 ## Pilotage rapide par grandes sessions
 

@@ -1,5 +1,62 @@
 # STATE
 
+## 1er novembre, 03:40 - poussée à froid du 31 octobre : garde en service, fin V5 prête (ADR-076)
+
+Le 31 octobre à 19:07, à la fin d'une impression, le CFS signalait `T1A` en
+erreur filament depuis le relais `T1B -> T1A` de 19:01, bobine pleine. Pendant
+la coupe de la fin V4, `key839` a lancé la routine Creality « extrude all
+material » ; la fin V4 s'est arrêtée en échec et a coupé la chauffe, mais la
+routine a poussé douze fois pendant que la buse refroidissait de 159 à 36 °C,
+jusqu'à l'arrêt d'urgence de Thomas à 19:16. PTFE sorti de son raccord ; tête
+vidée et `T1A` rembobinée le soir même, rien de cassé. Creality a commenté le
+refus d'extrusion à froid de Klipper. Garde à froid `cold-push-guard-v1` posée
+au repos le 31 octobre à 23:46 : `PREFLIGHT_OK` (23 fichiers épinglés
+identiques), `INSTALLED_IDLE_OK`, `VALIDATED_IDLE_OK`, puis `PROBE_REFUSED_OK`
+(poussée de 0,5 mm refusée buse à 24 °C, E inchangé) ; relue active après le
+redémarrage de la K1 par Thomas. Fin V5 `end-no-stock-flush-v5` : coupe
+l'auto-remplacement CFS avant la coupe et le remet ensuite ; 173 tests et sept
+mutants détectés, pas posée. Impression de nuit partie à 00:45 sous la garde et
+la fin V4.
+[Document 104](docs/104-poussee-a-froid-du-31-octobre-garde-et-fin-v5.md).
+
+## 31 octobre - écritures sur la flash : cause trouvée, usure lue, parade proposée, rien changé
+
+Les 46 Mo par minute écrits sur la flash pendant une impression viennent du
+montage `sync` de `/usr/data`, posé par le script d'usine de Creality sur une
+partition sans journal ext4 : chaque ligne de journal (90 à 110 par seconde,
+0,8 Mo de texte par minute, surtout `master-server` et `display-server` réglés
+en débogage, puis `klippy.log`) force la réécriture d'une page de 4 Kio, du
+bloc qui décrit le fichier et un vidage du cache de la puce, 59 fois le texte.
+Au repos, la K1 écrit encore environ 24 Mo par minute (1,4 Go par heure),
+surtout le dialogue CFS de Creality dans `klippy.log`. Les fichiers d'état
+Creality pèsent moins d'une écriture par seconde ; K1 Control n'écrit rien.
+Usure : la puce eMMC de 7,8 Go (probablement une iNAND 7250) déclare 70 à 80 %
+de vie consommée pour sa mémoire de type A, 0 à 10 % pour le type B, réserve
+normale ; historique inconnu, registre à relire chaque mois. Rester allumée
+sans imprimer multiplie par 3,5 l'usure d'une journée de 4 h d'impression. Parade
+recommandée, non appliquée : éteindre la K1 quand elle ne sert pas, puis
+`log_level` de 1 à 3 dans `log_config.json`, au repos (environ 10 Mo par
+minute attendus en impression). Filtrer le dialogue CFS de `klippy.log` ou
+retirer le `sync` demanderait chacun une mission et une ADR. Lecture seule,
+aucun fichier ni réglage changé sur la K1. L'arrêt d'urgence de 19:16 vu
+pendant la mesure vient de Thomas, après un bug de fin d'impression traité
+dans une autre session.
+[Document 103](docs/103-ecritures-flash-cause-usure-parade.md).
+
+## 31 octobre - plan de gestion des bobines, rien d'installé
+
+Plan V1 écrit pour gérer les bobines dans Mainsail (document 102) : composant
+Moonraker `kctrl_spools`, stockage JSON sur la K1, matière et couleur
+synchronisées dans les deux sens par `KCTRL_FILAMENT` au repos avec relecture,
+décompte par segment depuis la position E (purges comprises), fenêtre Bobines
+dans Mainsail. ADR-075 proposée, en attente de Thomas. Sur la K1, lectures
+seules pendant une impression, aucun fichier ni réglage changé : marge large en
+mémoire et processeur ; la K1 écrit d'elle-même environ 40 Mo par minute sur sa
+flash (8,5 Go en 3 h 43 depuis son démarrage), rien de K1 Control. Le « reste
+100 % » de la fenêtre de départ pour une bobine sans puce n'est pas une mesure ;
+le lot H le remplace.
+[Document 102](docs/102-gestion-des-bobines-plan-v1.md).
+
 ## 2 octobre, 12:53 — une annulation garde le filament et libère le départ (ADR-074)
 
 Une annulation laissait la fin en `failed` (buse descendue à 140 °C par la
