@@ -48,7 +48,7 @@ La pose ferme les préflights et retours arrière des paquets qui épinglent les
 anciennes pages : `end-overlap-v2`, `end-rewind-confirm-v3`,
 `end-separated-v1`, `retained-start-v1` et `end-after-refill-install-disabled-v1`.
 
-Validation : **125 tests ciblés verts** (`tests/test_spool_manager_install_v1.py`),
+Validation : **126 tests ciblés verts** (`tests/test_spool_manager_install_v1.py`),
 avec un faux Klipper, de faux services, un faux Moonraker et une fausse
 passerelle dans un arbre temporaire, plus l'import réel des quatre composants.
 **Pas de pose sans le verrou de la machine.**

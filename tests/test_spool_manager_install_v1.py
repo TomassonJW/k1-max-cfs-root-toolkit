@@ -971,6 +971,19 @@ def test_le_manifeste_du_depot_suit_le_candidat_et_l_installateur(installer):
     assert not set(manifest['protected']) & written
 
 
+def test_la_fin_v5_et_les_bobines_se_posent_dans_n_importe_quel_ordre(installer):
+    # Neither package writes a file the other pins or writes: each preflight
+    # stays green after the other pose. A file both pin keeps one fingerprint.
+    end = json.loads((ROOT / 'packages/k1-control-v1/end-no-stock-flush-v5/manifest.json')
+                     .read_text(encoding='utf-8'))
+    manifest = json.loads((PACKAGE / 'manifest.json').read_text(encoding='utf-8'))
+    spools = {path for path, _, _ in installer.changes(manifest)}
+    assert end['destination'] not in spools | set(manifest['protected'])
+    assert not spools & (set(end['protected']) | {end['destination']})
+    for path in set(end['protected']) & set(manifest['protected']):
+        assert end['protected'][path] == manifest['protected'][path], path
+
+
 def decode(script):
     line, _, rest = script.partition(b'\n')
     prefix = 'REQUEST_B64 = '
