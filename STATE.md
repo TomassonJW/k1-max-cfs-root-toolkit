@@ -1,5 +1,24 @@
 # STATE
 
+## 1er novembre, 03:40 - poussée à froid du 31 octobre : garde en service, fin V5 prête (ADR-076)
+
+Le 31 octobre à 19:07, à la fin d'une impression, le CFS signalait `T1A` en
+erreur filament depuis le relais `T1B -> T1A` de 19:01, bobine pleine. Pendant
+la coupe de la fin V4, `key839` a lancé la routine Creality « extrude all
+material » ; la fin V4 s'est arrêtée en échec et a coupé la chauffe, mais la
+routine a poussé douze fois pendant que la buse refroidissait de 159 à 36 °C,
+jusqu'à l'arrêt d'urgence de Thomas à 19:16. PTFE sorti de son raccord ; tête
+vidée et `T1A` rembobinée le soir même, rien de cassé. Creality a commenté le
+refus d'extrusion à froid de Klipper. Garde à froid `cold-push-guard-v1` posée
+au repos le 31 octobre à 23:46 : `PREFLIGHT_OK` (23 fichiers épinglés
+identiques), `INSTALLED_IDLE_OK`, `VALIDATED_IDLE_OK`, puis `PROBE_REFUSED_OK`
+(poussée de 0,5 mm refusée buse à 24 °C, E inchangé) ; relue active après le
+redémarrage de la K1 par Thomas. Fin V5 `end-no-stock-flush-v5` : coupe
+l'auto-remplacement CFS avant la coupe et le remet ensuite ; 173 tests et sept
+mutants détectés, pas posée. Impression de nuit partie à 00:45 sous la garde et
+la fin V4.
+[Document 104](docs/104-poussee-a-froid-du-31-octobre-garde-et-fin-v5.md).
+
 ## 31 octobre - écritures sur la flash : cause trouvée, usure lue, parade proposée, rien changé
 
 Les 46 Mo par minute écrits sur la flash pendant une impression viennent du

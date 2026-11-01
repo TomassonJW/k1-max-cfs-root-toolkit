@@ -13,6 +13,15 @@ impression, même en pause : le redémarrage coupe les moteurs et perd la pièce
 Toute pose attend le repos, revérifié juste avant l'arrêt. Les rechargements
 de reprise `T1A`..`T4D` sont protégés par ADR-072 (document 99).
 
+## Fin d'impression et buse froide - décision de Thomas du 31 octobre 2026
+
+Une impression finie se termine par le retrait du filament ; une annulation le
+garde (ADR-074). Jamais de poussée de filament buse froide : la garde
+`cold-push-guard-v1` la refuse depuis le 31 octobre, chemins stock compris. Ne
+jamais la retirer sans décision de Thomas, et jamais avant la fin V5. Remettre
+`auto_refill` à 0 n'arrête pas une routine stock déjà lancée par une erreur
+CFS (ADR-076, document 104).
+
 ## Décisions courantes de Thomas — 23 septembre 2026
 
 Ces décisions remplacent les règles anciennes sur les trois points suivants.
