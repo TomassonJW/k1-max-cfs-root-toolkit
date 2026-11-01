@@ -1,36 +1,48 @@
 # HANDOFF — index de reprise
 
-## 1er novembre, 07:40 - fin de nuit arrêtée par l'arrêt d'urgence, K1 à rallumer (ADR-076)
+## 1er novembre, 09:42 - T1A retirée à chaud, buse nettoyée ; échange de cases puis fin V5 (ADR-076)
 
 La garde `cold-push-guard-v1` est en service depuis le 31 octobre à 23:46 :
 toute poussée de filament sous 170 °C sans consigne suffisante est refusée,
 chemins stock compris. La fin V5 `end-no-stock-flush-v5` est prête, pas posée.
-L'impression de nuit a fini normalement à 07:13:52 ; la routine Creality
-relancée par `key839` sur `T1A` a été arrêtée par l'arrêt d'urgence de la
-surveillance locale à 07:14:08, moins de 0,2 mm poussés (document 104, section
-« Nuit du 1er novembre »). Klipper a quitté seul ensuite. État à 07:39 : K1 pas
-rallumée, filament coupé dans la tête et pas rembobiné, tête au-dessus du bac
-(X185,5 Y305), plateau à 57 mm, chauffes coupées ; `box.t_command` valait `T0`
-et `filament_useup` 1 juste avant l'arrêt.
+La fin de l'impression de nuit, le 1er novembre à 07:13, a relancé la routine
+Creality par `key839` sur `T1A` ; l'arrêt d'urgence de la surveillance locale
+l'a stoppée à 07:14:08 (document 104, section « Nuit du 1er novembre »). Le
+matin, Thomas présent, `T1A` a été retirée par la procédure normale à chaud
+(chauffe, coupe au cutter, rétraction de la tête, rembobinage) et la buse
+nettoyée à 150 °C (section « Matin du 1er novembre »). État à 09:41:39 :
+`standby`, cibles zéro, XY référencés, Z non référencé, tête à X38 Y291,5,
+capteur de tête libre, `t_command` vide, `filament_useup` et `auto_refill` à 1.
+Propreté de la buse confirmée par Thomas à 09:33, valable jusqu'à la
+prochaine extrusion.
 Point de reprise :
-1. Thomas sort la tête du bac à la main vers l'avant, plateau laissé bas, puis
-   rallume la K1. Ne jamais redémarrer Klipper à sa place ; ne déclarer aucune
-   position par `SET_KINEMATIC_POSITION` ;
-2. Thomas présent : homing XY, sortie du bout coupé, nettoyage de la buse à
-   150 °C, T1A rembobinée ; lire `box.filament_useup`, les cibles et
-   `cold_refused` avant tout geste filament ;
-3. avec Thomas, échange de cases pour `T1A` avant tout démontage du CFS ;
-4. pose de la V5 au repos revérifié, Thomas présent : `deploy.py preflight`,
+1. avec Thomas, échange de cases pour `T1A` avant tout démontage du CFS ; si
+   l'erreur suit la case, vérifier le capteur de bobine de la case A, qui a lu
+   vide puis présent le 1er novembre ;
+2. pose de la V5 au repos revérifié, Thomas présent : `deploy.py preflight`,
    puis `install`, puis `validate` (document 104, section « Fin V5 ») ; si
-   `box.t_command` reste `T0` au repos, le préflight refuse
+   `box.t_command` n'est pas vide au repos, le préflight refuse
    (`cfs_command_present`) : comprendre avant tout autre geste ; surveillance
    locale de la première fin sous V5 par
    `packages/k1-control-v1/end-watch-v1/watch_end.py`, essai à blanc d'abord
    (README du paquet).
-Ne rejouer ni la pose ni la sonde de la garde. Retour arrière : V5 d'abord,
-garde ensuite. Les installateurs plus anciens épinglent l'ancienne garde
-(`c90de4c3…`) et refusent désormais au préflight.
+Retrait d'un filament : toujours la procédure normale à chaud, jamais un
+rembobinage à froid. Ne rejouer ni la pose ni la sonde de la garde. Retour
+arrière : V5 d'abord, garde ensuite. Les installateurs plus anciens épinglent
+l'ancienne garde (`c90de4c3…`) et refusent désormais au préflight.
 [Document 104](docs/104-poussee-a-froid-du-31-octobre-garde-et-fin-v5.md).
+
+## 1er novembre - macros de Mainsail : question de Thomas, rien posé
+
+Thomas ne se repère plus dans les 55 macros affichées par Mainsail (83 en
+tout : 21 commencent par `_`, 7 remplacent une commande de Klipper et
+n'apparaissent pas). Aucune n'est à supprimer : d'autres macros et le code
+Creality les appellent. Proposition : 3 groupes du mode expert de Mainsail,
+11 boutons (bobines, plateau, réglages), écrits dans la clé `mainsail.macros`
+de la base Moonraker, absente aujourd'hui ; retour arrière : effacer la clé,
+sans redémarrage. Point de reprise : sa réponse, puis ses idées de nouvelles
+macros, réunies dans un paquet K1 Control testé hors imprimante et posé au
+repos, après la fin V5.
 
 ## 31 octobre - écritures sur la flash : cause, usure, parade (document 103)
 

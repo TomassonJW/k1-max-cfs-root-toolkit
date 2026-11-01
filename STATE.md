@@ -1,5 +1,20 @@
 # STATE
 
+## 1er novembre, 09:42 - T1A retirée à chaud, buse nettoyée, K1 au repos
+
+Thomas a rallumé la K1 à 08:36. Un premier rembobinage de `T1A` à froid, à
+08:47, a été refusé par le CFS (`key849`) : la tête tenait encore le filament,
+une erreur de méthode. Le retrait a ensuite suivi la procédure normale, Thomas
+présent : homing XY à 09:07, buse à 220 °C, coupe au cutter prouvée par son
+capteur à 09:18, rétraction de la tête, puis rembobinage réussi à 09:27, après
+un refus immédiat à 09:19 où le capteur de bobine de la case A lisait vide.
+Nettoyage de la buse à 150 °C par Thomas, chauffes coupées à 09:35:38. À
+09:41:39 : `standby`, cibles zéro, XY référencés, Z non référencé, capteur de
+tête libre, `t_command` vide, `filament_useup` et `auto_refill` à 1. Restent
+l'échange de cases pour `T1A`, puis la pose de la fin V5.
+[Document 104](docs/104-poussee-a-froid-du-31-octobre-garde-et-fin-v5.md),
+section « Matin du 1er novembre ».
+
 ## 1er novembre, 07:40 - fin de nuit : même chaîne qu'au 31 octobre, arrêtée au début de la poussée
 
 L'impression de nuit s'est terminée normalement à 07:13:52. À la première
