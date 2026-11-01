@@ -756,7 +756,7 @@ test("a new spool on a new fiche creates the fiche, then the spool in stock", as
   ui.quiet();
 });
 
-test("the button sits over the top bar when there is room, round, or at the bottom right of a full bar", async (t) => {
+test("the button sits over the top bar when there is room, round, or at the bottom right of a full bar, above the start pill", async (t) => {
   const ui = harness(t);
   await flush();
   const rect = (left, top, width, height) => ({ left, top, width, height, right: left + width, bottom: top + height });
@@ -783,6 +783,15 @@ test("the button sits over the top bar when there is room, round, or at the bott
   // « Sauvegarde de la configuration » is wide enough to start left of the middle.
   assert.deepEqual(layout(1265, 380, 221, 304), ["top:6px;bottom:auto;right:893px;z-index:9", false]);
   assert.deepEqual(layout(400, 300, 200, 48), ["top:6px;bottom:auto;right:108px;z-index:9", true]);
+  assert.deepEqual(layout(375, 167, 159, 48), ["bottom:16px;right:16px", true]);
+  // The start window folded to its pill takes the corner: the round button goes 8 px above it, then back down.
+  const pill = new FakeElement("button");
+  pill.rect = rect(175, 752, 182, 42);
+  ui.doc.start = { dataset: { mode: "minimised" }, shadowRoot: { getElementById: (id) => (id === "pill" ? pill : null) } };
+  ui.doc.documentElement.clientHeight = 812;
+  assert.deepEqual(layout(375, 167, 159, 48), ["bottom:68px;right:16px", true]);
+  assert.deepEqual(layout(1905, 1010, 221, 304), ["top:6px;bottom:auto;right:903px;z-index:9", false]);
+  pill.hidden = true;
   assert.deepEqual(layout(375, 167, 159, 48), ["bottom:16px;right:16px", true]);
   ui.quiet();
 });

@@ -617,6 +617,10 @@ export function mountManager(root, options) {
       right = Math.max(8, Math.round(viewport - room[1]));
       spot = "top:" + top + "px;bottom:auto;right:" + right + "px;z-index:" + aboveBar(found.node);
       panelTop = top + 44;
+    } else {
+      const pill = startPill();
+      const height = document.documentElement.clientHeight || window.innerHeight || 0;
+      if (pill && height) spot = "bottom:" + Math.max(16, Math.round(height - pill.top + 8)) + "px;right:16px";
     }
     panelTop = Math.round(panelTop);
     const key = form + ":" + spot + ":" + panelTop + ":" + viewport;
@@ -643,6 +647,13 @@ export function mountManager(root, options) {
     for (const [start, end] of taken) { keep(from, start); from = Math.max(from, end); }
     keep(from, rect.right - 8);
     return best;
+  }
+  // The start window folded to its pill holds the bottom right corner: the round button stacks above it.
+  function startPill() {
+    const start = document.getElementById("kctrl-bobines");
+    const pill = start && start.shadowRoot ? start.shadowRoot.getElementById("pill") : null;
+    const box = pill && !pill.hidden ? pill.getBoundingClientRect() : null;
+    return box && box.height ? box : null;
   }
   // Mainsail lifts its bar onto a layer of its own (8 in v2.18.2): the button goes one higher.
   function aboveBar(bar) {
