@@ -1,5 +1,25 @@
 # STATE
 
+## 1er novembre, 16:15 - garde capteur CFS contredit : construite et testée hors imprimante, pas posée (ADR-077)
+
+Paquet `cfs-sensor-guard-v1` : module Klipper `kctrl_sensor_guard`, désactivé
+par défaut, qui tourne sur la K1 sans le PC. Pendant l'impression, un slot qui
+signale un défaut de filament sans preuve d'une vraie fin (masque
+`connections` ou ligne de queue) pendant 180 s et 400 mm, tête chargée, marque
+l'impression : auto-remplacement coupé, relu deux fois à 0, rétabli au
+`START_PRINT` suivant. Après la fin du fichier, pendant 15 min, une poussée
+nette de plus de 1 mm hors des étapes de coupe, de rembobinage et de
+finalisation de la fin K1 Control arrête la machine avant la mise en file.
+Rejouée hors imprimante sur les fins du 15 septembre, du 31 octobre et du
+1er novembre : la première poussée stock de 80 mm après la fin arrête la
+machine, 0 mm sorti ; la vraie fin de T1B du 31 octobre et la suite du
+13 septembre ne sont jamais marquées. 126 tests ciblés verts, 18 mutants sur
+18 tués. Compromis : une vraie fin de bobine pendant une impression marquée
+donnerait probablement une pause au lieu d'un relais. Aucune lecture ni
+écriture sur la K1. Pose après celle de la fin V5 et la validation de sa
+première fin.
+[Document 105](docs/105-garde-capteur-cfs-contredit-et-fin-sure.md).
+
 ## 1er novembre, 10:51 - macros de Mainsail rangées en trois panneaux
 
 La K1, injoignable de 10:13 à 10:41 (ni ping, ni passerelle), a redémarré
