@@ -608,37 +608,47 @@ export function mountManager(root, options) {
     }
     const viewport = document.documentElement.clientWidth || window.innerWidth || 0;
     const found = findBar();
-    let form = "compact", top = 72, right = 16;
-    if (found) {
-      const rect = found.rect;
-      const half = rect.left + rect.width / 2;
-      let edge = rect.right - 8, controlsStart = rect.left + 8, titleStart = rect.left + 8;
-      for (const control of found.node.querySelectorAll(CONTROLS)) {
-        const box = control.getBoundingClientRect();
-        if (!box.width || !box.height) continue;
-        if (box.left + box.width / 2 >= half) edge = Math.min(edge, box.left - 8);
-        else controlsStart = Math.max(controlsStart, box.right + 8);
-      }
-      for (const title of found.node.querySelectorAll(TITLES)) {
-        const box = title.getBoundingClientRect();
-        if (!box.width || !box.height) continue;
-        if (box.left < half) titleStart = Math.max(titleStart, box.right + 8);
-      }
-      const middle = rect.top + (rect.height - 36) / 2;
-      const room = edge - Math.max(controlsStart, titleStart);
-      if (room >= (app.fullWidth || 120)) { form = "full"; top = middle; right = Math.max(8, viewport - edge); }
-      else if (room >= 44) { top = middle; right = Math.max(8, viewport - edge); }
-      else { top = rect.bottom + 8; right = 16; }
+    // A full bar leaves the round button floating at the bottom right, where scrolling clears what it covers.
+    let form = "compact", spot = "bottom:16px;right:16px", right = 16, panelTop = found ? found.rect.bottom + 8 : 72;
+    const room = found ? widestGap(found.node, found.rect) : null;
+    if (room && room[1] - room[0] >= 44) {
+      const top = Math.round(found.rect.top + (found.rect.height - 36) / 2);
+      if (room[1] - room[0] >= (app.fullWidth || 120)) form = "full";
+      right = Math.max(8, Math.round(viewport - room[1]));
+      spot = "top:" + top + "px;bottom:auto;right:" + right + "px;z-index:" + aboveBar(found.node);
+      panelTop = top + 44;
     }
-    top = Math.round(top); right = Math.round(right);
-    const key = form + ":" + top + ":" + right + ":" + viewport;
+    panelTop = Math.round(panelTop);
+    const key = form + ":" + spot + ":" + panelTop + ":" + viewport;
     if (key === app.placed) return;
     app.placed = key;
     if (app.form !== form) { app.form = form; renderLaunch(); }
-    launch.style.cssText = "top:" + top + "px;right:" + right + "px";
+    launch.style.cssText = spot;
     const width = Math.min(760, viewport - 32);
     const panelRight = Math.max(16, Math.min(right, viewport - 16 - width));
-    panel.style.cssText = "--spools-top:" + (top + 44) + "px;--spools-right:" + panelRight + "px";
+    panel.style.cssText = "--spools-top:" + panelTop + "px;--spools-right:" + panelRight + "px";
+  }
+  // The widest free stretch of the bar, 8 px clear of what Mainsail shows in it.
+  function widestGap(bar, rect) {
+    const taken = [];
+    for (const selector of [CONTROLS, TITLES]) {
+      for (const node of bar.querySelectorAll(selector)) {
+        const box = node.getBoundingClientRect();
+        if (box.width && box.height) taken.push([box.left - 8, box.right + 8]);
+      }
+    }
+    taken.sort((a, b) => a[0] - b[0]);
+    let from = rect.left + 8, best = null;
+    const keep = (start, end) => { if (end > start && (!best || end - start >= best[1] - best[0])) best = [start, end]; };
+    for (const [start, end] of taken) { keep(from, start); from = Math.max(from, end); }
+    keep(from, rect.right - 8);
+    return best;
+  }
+  // Mainsail lifts its bar onto a layer of its own (8 in v2.18.2): the button goes one higher.
+  function aboveBar(bar) {
+    let layer = NaN;
+    try { layer = parseInt(getComputedStyle(bar).zIndex, 10); } catch (_) { /* no layout to read */ }
+    return Number.isFinite(layer) ? Math.max(6, layer + 1) : 6;
   }
   function pane(title, number, ...children) {
     return h("section", { class: "pane spools-pane" },

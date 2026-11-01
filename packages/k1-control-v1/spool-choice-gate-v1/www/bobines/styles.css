@@ -785,7 +785,7 @@ h1, h2, h3, p { margin: 0; }
 :where(.spools) :is(h2, h3, h4, p, ul, ol, dl, dd) { margin: 0; }
 :where(.spools) :is(ul, ol) { padding: 0; list-style: none; }
 .spools-launch {
-  position: fixed; top: 72px; right: 16px; z-index: 6;
+  position: fixed; right: 16px; bottom: 16px; z-index: 6;
   display: inline-flex; align-items: center; gap: 8px;
   height: 36px; padding: 0 14px 0 10px; border-radius: 999px;
   background: var(--panel-2); color: var(--ink); border: 1px solid var(--line-strong);

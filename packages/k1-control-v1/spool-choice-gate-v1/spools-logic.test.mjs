@@ -555,6 +555,7 @@ function harness(t, options) {
     setTimeout: () => (timers += 1), clearTimeout: () => {},
     setInterval: (callback) => { clock.tick = callback; return 1; }, clearInterval: () => {},
     requestAnimationFrame: (callback) => { callback(); return 1; },
+    getComputedStyle: (node) => ({ zIndex: node.zIndex || "auto" }),
   });
   // A button swallows what its action throws into console.warn: none may happen.
   t.mock.method(console, "warn", (...args) => { clock.warnings.push(args.map(String).join(" ")); });
@@ -755,27 +756,33 @@ test("a new spool on a new fiche creates the fiche, then the spool in stock", as
   ui.quiet();
 });
 
-test("the button sits in the top bar when there is room, compact or under it otherwise", async (t) => {
+test("the button sits over the top bar when there is room, round, or at the bottom right of a full bar", async (t) => {
   const ui = harness(t);
   await flush();
   const rect = (left, top, width, height) => ({ left, top, width, height, right: left + width, bottom: top + height });
+  // Mainsail v2.18.2: menu and title on the left, its buttons up to the right edge, the bar on layer 8.
   const bar = new FakeElement("header");
   const menu = new FakeElement("button");
-  const right = new FakeElement("button");
+  const save = new FakeElement("button");
+  const others = new FakeElement("button");
   const title = new FakeElement("div");
-  bar.queries = { controls: [menu, right], titles: [title] };
-  menu.rect = rect(8, 6, 36, 36);
+  bar.queries = { controls: [menu, save, others], titles: [title] };
+  bar.zIndex = "8";
+  menu.rect = rect(4, 0, 48, 48);
   ui.doc.bars = [bar];
-  const layout = (width, rightAt, titleEnd) => {
+  const layout = (width, buttonsAt, titleEnd, saveWidth) => {
     ui.doc.documentElement.clientWidth = width;
     bar.rect = rect(0, 0, width, 48);
-    right.rect = rect(rightAt, 6, 40, 36);
     title.rect = rect(60, 12, titleEnd - 60, 24);
+    save.rect = rect(buttonsAt, 6, saveWidth, 36);
+    others.rect = rect(buttonsAt + saveWidth, 6, width - 16 - buttonsAt - saveWidth, 36);
     ui.api.place();
     return [ui.launch.style.cssText, ui.launch.className.includes("is-compact")];
   };
-  assert.deepEqual(layout(1280, 1000, 300), ["top:6px;right:288px", false]);
-  assert.deepEqual(layout(400, 300, 200), ["top:6px;right:108px", true]);
-  assert.deepEqual(layout(400, 300, 280), ["top:56px;right:16px", true]);
+  assert.deepEqual(layout(1905, 1010, 221, 304), ["top:6px;bottom:auto;right:903px;z-index:9", false]);
+  // « Sauvegarde de la configuration » is wide enough to start left of the middle.
+  assert.deepEqual(layout(1265, 380, 221, 304), ["top:6px;bottom:auto;right:893px;z-index:9", false]);
+  assert.deepEqual(layout(400, 300, 200, 48), ["top:6px;bottom:auto;right:108px;z-index:9", true]);
+  assert.deepEqual(layout(375, 167, 159, 48), ["bottom:16px;right:16px", true]);
   ui.quiet();
 });
