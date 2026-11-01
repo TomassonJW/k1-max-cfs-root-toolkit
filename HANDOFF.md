@@ -24,8 +24,9 @@ Point de reprise :
    puis `install`, puis `validate` (document 104, section « Fin V5 ») ; si
    `box.t_command` reste `T0` au repos, le préflight refuse
    (`cfs_command_present`) : comprendre avant tout autre geste ; surveillance
-   locale de la première fin sous V5 (script de la nuit, hors Git :
-   `inventory/raw/20261101-night-end-watch/watch_end.py`, copie principale).
+   locale de la première fin sous V5 par
+   `packages/k1-control-v1/end-watch-v1/watch_end.py`, essai à blanc d'abord
+   (README du paquet).
 Ne rejouer ni la pose ni la sonde de la garde. Retour arrière : V5 d'abord,
 garde ensuite. Les installateurs plus anciens épinglent l'ancienne garde
 (`c90de4c3…`) et refusent désormais au préflight.
