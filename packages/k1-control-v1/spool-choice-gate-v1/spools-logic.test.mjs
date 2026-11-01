@@ -274,6 +274,13 @@ test("the stock filters offer only what the chosen spools hold", () => {
   assert.deepEqual(facets.colours.map((colour) => colour.key).sort(), ["0000FF", "00FF00", "FF1E1E"]);
   assert.deepEqual(facets.places, ["Boîte sèche", "Étagère 2"]);
   assert.deepEqual(logic.stockFacets(SPOOLS, FICHES, "archivees").places, []);
+  const navy = { F1: { colour: "2C3E50" }, F2: { colour: "34495E" }, F3: { colour: "FFFFFF" } };
+  const shades = [{ id: "B1", filament: "F1", state: "stock" }, { id: "B2", filament: "F2", state: "stock" },
+    { id: "B3", filament: "F3", state: "stock" }];
+  assert.equal(colourName("2C3E50"), colourName("34495E"));
+  assert.deepEqual(logic.stockFacets(shades, navy, "rangees").colours.map((colour) => colour.name),
+    [colourName("FFFFFF"), colourName("2C3E50") + " #2C3E50", colourName("34495E") + " #34495E"]
+      .sort((a, b) => a.localeCompare(b)));
 });
 
 test("candidates, and who uses a fiche", () => {

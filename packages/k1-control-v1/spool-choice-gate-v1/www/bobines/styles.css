@@ -813,20 +813,20 @@ h1, h2, h3, p { margin: 0; }
 }
 .spools-panel:focus { outline: none; }
 
-.spools-head { display: flex; align-items: center; gap: 12px; padding: 14px 16px 10px; border-bottom: 1px solid var(--line); }
+.spools-head { flex: none; display: flex; align-items: center; gap: 12px; padding: 14px 16px 10px; border-bottom: 1px solid var(--line); }
 .spools-title { flex: 1; min-width: 0; }
 .spools-title h2 { font-size: 18px; font-weight: 700; }
 .spools-summary { color: var(--ink-soft); font-size: 13px; }
 .spools-head-actions { display: flex; gap: 6px; }
 
-.spools-banners { display: grid; gap: 6px; padding: 10px 16px 0; }
+.spools-banners { flex: none; display: grid; gap: 6px; padding: 10px 16px 0; }
 .spools-banner { padding: 8px 12px; border-radius: var(--radius-sm); border: 1px solid var(--line); background: var(--panel); font-size: 13px; }
 .spools-banner.is-warn { background: var(--warn-soft); border-color: var(--warn); }
 .spools-banner.is-danger { background: var(--danger-soft); border-color: var(--danger); }
 .spools-banner.is-accent { background: var(--accent-soft); border-color: var(--accent); }
 .spools-banner.is-faint { color: var(--ink-faint); }
 
-.spools-tabs { display: flex; gap: 4px; padding: 10px 16px 0; overflow-x: auto; border-bottom: 1px solid var(--line); }
+.spools-tabs { flex: none; display: flex; gap: 4px; padding: 10px 16px 0; overflow-x: auto; border-bottom: 1px solid var(--line); }
 .spools-tab {
   display: inline-flex; align-items: center; gap: 6px; padding: 8px 12px; border: 0; border-bottom: 2px solid transparent;
   background: none; color: var(--ink-soft); font-weight: 600; cursor: pointer; white-space: nowrap;
@@ -950,6 +950,16 @@ textarea.spools-input { width: 100%; resize: vertical; }
   .spools-compare, .spools-form { grid-template-columns: 1fr; }
   .spools-linked { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .spools-head, .spools-body { padding: 12px; }
+  /* The summary takes its own line under the title and the buttons. */
+  .spools-head { display: grid; grid-template-columns: minmax(0, 1fr) auto auto; gap: 2px 8px; }
+  .spools-title { display: contents; }
+  .spools-title h2 { grid-area: 1 / 1; }
+  .spools-head > .status { grid-area: 1 / 2; }
+  .spools-head-actions { grid-area: 1 / 3; }
+  .spools-summary { grid-area: 2 / 1 / 3 / -1; }
+  /* What remains goes under the name, which keeps the whole width. */
+  .spools-row:not(.is-static) { display: grid; grid-template-columns: auto minmax(0, 1fr); gap: 2px 10px; }
+  .spools-row:not(.is-static) > .spools-remain { grid-column: 2; }
 }
 
 @media (prefers-reduced-motion: reduce) {

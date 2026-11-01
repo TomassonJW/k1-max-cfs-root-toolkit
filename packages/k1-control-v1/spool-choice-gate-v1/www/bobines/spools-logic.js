@@ -420,9 +420,13 @@ export function stockFacets(spools, fiches, scope) {
     if (colour) colours.set(colour, colourName(colour));
     if (spool.place) places.add(spool.place);
   }
+  // Two shades can share a name: the hex then tells them apart in the list.
+  const named = [...colours.values()];
+  const shared = new Set(named.filter((name, index) => named.indexOf(name) !== index));
   return {
     materials: [...materials].sort(),
-    colours: [...colours].map(([key, name]) => ({ key, name })).sort((a, b) => a.name.localeCompare(b.name) || (a.key < b.key ? -1 : 1)),
+    colours: [...colours].map(([key, name]) => ({ key, name: shared.has(name) ? name + " #" + key : name }))
+      .sort((a, b) => a.name.localeCompare(b.name) || (a.key < b.key ? -1 : 1)),
     places: [...places].sort((a, b) => a.localeCompare(b)),
   };
 }
