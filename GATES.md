@@ -19,7 +19,8 @@ d'abord ; puis surveillance de la première fin réelle sous V5. [Document 104](
 
 Plan V1 écrit (document 102), ADR-075 acceptée par Thomas. Aucune gate
 machine n'est ouverte. Gate en cours : construction hors imprimante des lots A
-à K ; ensuite pose au repos du seul Moonraker dédié et qualification par deux
+à K ; A à I faits et testés au 1er novembre (PR brouillon #95), J et K restent ;
+ensuite pose au repos du seul Moonraker dédié et qualification par deux
 gestes ([document 102](docs/102-gestion-des-bobines-plan-v1.md), section 12).
 
 ## 2 octobre — annulation qui garde le filament : posée (ADR-074)

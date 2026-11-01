@@ -11,7 +11,7 @@ ouvrir un fichier du dépôt seulement pour un détail qui manque ici.
 
 ## 1. État
 
-- Branche `feat/spool-manager-v1`, partie de `main` à 373f262 (merge de la PR #85), poussée.
+- Branche `claude/spool-manager-ui-1471c8`, suite de `feat/spool-manager-v1` (partie de `main` à 373f262), poussée ; PR brouillon #95 vers `main`, CI verte.
 - Fait, testé et poussé :
   - ADR-075 acceptée par Thomas : la bibliothèque vit dans K1 Control, sur la K1 (c4e2bc2) ;
   - lot A : stockage atomique de la bibliothèque, du journal et des points de reprise (bee8cee) ;
@@ -20,11 +20,12 @@ ouvrir un fichier du dépôt seulement pour un détail qui manque ici.
   - lot G : décompte de ce que chaque bobine donne pendant une impression (ab0281f) ; une bobine sans puce que le CFS ne sait pas identifier compte comme présente (6c23f8d, f960eaa) ;
   - lot F : bibliothèque servie par Moonraker, synchronisation CFS (dedd3fa), document 102 aligné sur le code (4d1be19) ;
   - lot H : la fenêtre de départ montre le reste de chaque bobine (5c41acf) ;
-  - lot I, première moitié : logique pure de la fenêtre et ses 24 tests (6e74438).
-- Pas commencé : la seconde moitié du lot I (section 8), puis J, K, la pose, L et la PR (section 9).
+  - lot I, première moitié : logique pure de la fenêtre et ses 24 tests (6e74438) ;
+  - lot I, seconde moitié : fenêtre `spools.js`, CSS, chargement par `overlay.js`, 11 tests d'interface sur un faux DOM, contrôle de chaque route contre le composant, étape CI « Spool manager logic » (4312d27).
+- Pas commencé : J, K, la pose, L et la clôture (section 9).
 - Rien de ce module n'est posé sur la K1. Aucune écriture, pose ni G-code n'a été faite pour cette mission.
-- Derniers résultats, relancés sur 6e74438 le 1er novembre : suite complète 2344 passés, 6 ignorés, 2 désélectionnés, 2 xfail, 41 sous-tests ; `node --test` de `spools-logic.test.mjs` 24/24.
-- Pilotage : la branche n'a retouché que `STATE`, `HANDOFF`, `GATES` et `ROADMAP`, en acceptant ADR-075 (c4e2bc2, 16 lignes). La session purge les modifie sur `main`, qui a avancé depuis la base (PR #86 à #92). Une fusion à blanc du 1er novembre donne deux conflits, `HANDOFF.md` et `STATE.md` ; `GATES.md`, `ROADMAP.md` et `logic.test.mjs` fusionnent seuls. Synchroniser juste avant la PR, garder tout ce que `main` apporte, puis mettre le pilotage à jour pour cette mission.
+- Derniers résultats, après la synchronisation avec `main` (8846197) le 1er novembre : suite complète 2788 passés, 6 ignorés, 2 désélectionnés, 2 xfail, 41 sous-tests ; `node --test` : `logic.test.mjs` 43/43, `spools-logic.test.mjs` 35/35.
+- Pilotage : synchronisé avec `main` le 1er novembre (8846197), conflits de `HANDOFF.md` et `STATE.md` résolus en gardant tout `main`. La PR #94 de `main` touche `STATE.md` : resynchroniser avant le merge.
 
 ## 2. Règles machine de la mission
 
@@ -33,7 +34,7 @@ ouvrir un fichier du dépôt seulement pour un détail qui manque ici.
 - Écrire une bobine au CFS est un G-code : rien avant la pose qualifiée et le verrou.
 - Accès : alias SSH `k1max-root`, scripts passés par stdin (`sh -s` ou `python3 -`), ni bash ni sftp sur la machine, copie par `cat | ssh`. Pages statiques en 755/644 (un `cat >` en root crée du 600 et nginx répond 403). Jamais `tail -n` sur `klippy.log`. Retirer `sn` et `uuid` de toute lecture.
 - La pose redémarre seulement le Moonraker dédié. Budget : Moonraker ≤ 45 Mio, ≥ 70 Mio libres, croissance du swap ≤ 8 Mio. Le relevé reste léger et ne tourne que page visible.
-- Dépôt public : aucune adresse, aucun identifiant de session, numéro de série ni contenu de la base matériau Creality dans Git. Fixtures synthétiques seulement. Sur cette branche, le README de `spool-choice-gate-v1` et `logic.test.mjs` contiennent encore une adresse privée que `main` a retirée (PR #86) : ne jamais la recopier ; la synchro la fait disparaître. `inventory/raw/` est privé.
+- Dépôt public : aucune adresse, aucun identifiant de session, numéro de série ni contenu de la base matériau Creality dans Git. Fixtures synthétiques seulement. La synchronisation du 1er novembre a retiré l'adresse privée que portaient l'ancien README de `spool-choice-gate-v1` et `logic.test.mjs` : ne jamais la recopier. `inventory/raw/` est privé.
 
 ## 3. Fichiers
 
@@ -47,9 +48,9 @@ ouvrir un fichier du dépôt seulement pour un détail qui manque ici.
 | `.../spool-manager-v1/calculator-vectors.json` | vecteurs du calculateur, partagés Python et JS |
 | `.../spool-manager-v1/build_tares.py` | construit `tares.json` depuis SpoolmanDB |
 | `.../spool-manager-v1/lab/material_database.synthetic.json` | base matériau synthétique (tests, labo) |
-| `packages/k1-control-v1/spool-choice-gate-v1/www/bobines/` | `overlay.js`, `bobines.js` (fenêtre de départ), `logic.js`, `spools-logic.js`, `styles.css`, `tares.json`, `LICENSE-SpoolmanDB.txt`, `package.json` (`"type":"module"`) |
+| `packages/k1-control-v1/spool-choice-gate-v1/www/bobines/` | `overlay.js`, `bobines.js` (fenêtre de départ), `spools.js` (gestionnaire), `logic.js`, `spools-logic.js`, `styles.css`, `tares.json`, `LICENSE-SpoolmanDB.txt`, `package.json` (`"type":"module"`) |
 | `.../spool-choice-gate-v1/mainsail_overlay_patch.py` | ajoute `<script type="module" src="/bobines/overlay.js"></script>` avec le marqueur `<!-- k1-control: bobines -->` |
-| `.../spool-choice-gate-v1/spools-logic.test.mjs` | 24 tests de la logique ; y ajouter les tests d'interface |
+| `.../spool-choice-gate-v1/spools-logic.test.mjs` | 35 tests : 24 de la logique, 11 de la fenêtre sur un faux DOM |
 | `tests/test_bobines_page_v1.py` | contrôles des pages : `PAGE_FILES`, pas d'`http`, liens relatifs, TAP node |
 | `tests/test_kctrl_spools_{model,store,counter,moonraker,tares,py38}_v1.py` | tests Python du module |
 | `packages/k1-control-v1/end-after-refill-install-disabled-v1/frozen/www/bobines/` | copies gelées de `bobines.js`, `logic.js`, `overlay.js` (voir section 11) |
@@ -844,22 +845,9 @@ Tests prioritaires :
 10. Une nouvelle bobine poste create_filament puis create_spool, sans slot pour le stock.
 11. Placement : complet avec de la place, compact à l'étroit, sous la barre sans place.
 
-## 8. Reste du lot I, dans l'ordre
+## 8. Lot I, seconde moitié : fait (4312d27)
 
-1. Écrire `www/bobines/spools.js` (section 5), d'un bloc.
-2. Ajouter les tests d'interface (section 7) à `spools-logic.test.mjs`.
-3. `overlay.js` (91 lignes ; ligne 11 `import { mount } from "./bobines.js";`, dernière ligne `document.body.append(host);`) : ajouter une phrase à l'en-tête et, à la fin :
-
-   ```js
-   // The spool manager loads on its own: an error there leaves this window intact.
-   import("./spools.js").then((module) => module.start()).catch((error) => console.warn("K1 Control: gestion des bobines indisponible", error));
-   ```
-
-   Garder le texte du marqueur que pytest cherche.
-4. `styles.css` : le bloc de la section 6.
-5. `tests/test_bobines_page_v1.py` : ajouter "spools.js" et "spools-logic.js" à `PAGE_FILES` (aujourd'hui index.html, styles.css, app.js, bobines.js, overlay.js, logic.js) ; lancer `spools-logic.test.mjs` en TAP node comme `logic.test.mjs` ; vérifier l'`import("./spools.js")` de l'overlay. Les contrôles existants (pas d'`http`, liens relatifs, `bobines.js` avec `SPOOLS +` deux fois et sans "cfs-write" ni `"action"`) doivent rester verts.
-6. CI : dans le job Node de `.github/workflows/tests.yml`, après « Bobines page logic », une étape « Spool manager logic » qui lance `node --test packages/k1-control-v1/spool-choice-gate-v1/spools-logic.test.mjs`.
-7. Tests ciblés, `node --test` des deux fichiers, suite complète (section 10) ; contrôles avant commit (section 11) ; commit ; push.
+Fait dans l'ordre prévu le 1er novembre. Écarts au plan : `overlay.js` charge `spools.js` juste après `document.body.append(host)`, dans un `import()` à part avec son `.catch` ; les tests de page vérifient en plus que chaque route de la fenêtre existe dans le composant avec la même méthode.
 
 ## 9. Après le lot I
 
@@ -867,7 +855,7 @@ Tests prioritaires :
 - **Lot K, paquet de pose** : section `[kctrl_spools]` ; paquet sans `__pycache__` ; préflight en lecture seule (permis au repos sans le verrou) ; fichiers www en 755/644 ; `proxy_read_timeout` de nginx pour `/machine/` ; cinq manifestes épinglent les empreintes de `logic.js`, `bobines.js` et `overlay.js` sur la K1 (`end-after-refill-install-disabled-v1`, `end-overlap-v2`, `end-rewind-confirm-v3`, `end-separated-v1`, `retained-start-v1`) : leurs préflights se fermeront après la pose, à écrire dans le paquet ; après le point 6 de la file, relire ce qui est vraiment posé et épingler ces empreintes-là.
 - **Pose** : après le point 6 de la file, verrou pris, repos revérifié juste avant, accord de Thomas ; seul le Moonraker dédié redémarre ; sauvegarde, empreintes et rollback exacts.
 - **Lot L** : qualification avec Thomas dans le vrai Mainsail (ouvrir, éditer, peser, écrire au CFS au repos, une impression comptée).
-- **Clôture** : synchro avec `main`, mise à jour de `STATE`, `HANDOFF` et des autres fichiers de pilotage (ce dossier y est fondu puis supprimé), PR vers `main` avec CI verte, merge, suppression de la branche distante `feat/spool-manager-v1`.
+- **Clôture** : synchro avec `main`, mise à jour de `STATE`, `HANDOFF` et des autres fichiers de pilotage (ce dossier y est fondu puis supprimé), PR #95 sortie du brouillon, CI verte, merge, suppression des branches distantes `feat/spool-manager-v1` et `claude/spool-manager-ui-1471c8`.
 
 ## 10. CI locale
 

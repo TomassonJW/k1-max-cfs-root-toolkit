@@ -95,20 +95,21 @@ pendant la mesure vient de Thomas, après un bug de fin d'impression traité
 dans une autre session.
 [Document 103](docs/103-ecritures-flash-cause-usure-parade.md).
 
-## 31 octobre - gestion des bobines : plan accepté, rien d'installé
+## 31 octobre - gestion des bobines : lots A à I construits, rien d'installé
 
 Plan V1 écrit pour gérer les bobines dans Mainsail (document 102) : composant
 Moonraker `kctrl_spools`, stockage JSON sur la K1, matière et couleur
 synchronisées dans les deux sens par `KCTRL_FILAMENT` au repos avec relecture,
 décompte par segment depuis la position E (purges comprises), fenêtre Bobines
 dans Mainsail. ADR-075 acceptée par Thomas : les données vivent dans K1
-Control, sur la K1 ; construction hors imprimante des lots A à K sur la branche
-`feat/spool-manager-v1`. Sur la K1, lectures
+Control, sur la K1. Au 1er novembre, lots A à I construits et testés hors
+imprimante (PR brouillon #95, CI verte) ; restent le labo (J), le paquet de pose
+(K), la pose et la qualification. Sur la K1, lectures
 seules pendant une impression, aucun fichier ni réglage changé : marge large en
 mémoire et processeur ; la K1 écrit d'elle-même environ 40 Mo par minute sur sa
 flash (8,5 Go en 3 h 43 depuis son démarrage), rien de K1 Control. Le « reste
 100 % » de la fenêtre de départ pour une bobine sans puce n'est pas une mesure ;
-le lot H le remplace.
+le lot H, construit, le remplacera à la pose.
 [Document 102](docs/102-gestion-des-bobines-plan-v1.md).
 
 ## 2 octobre, 12:53 — une annulation garde le filament et libère le départ (ADR-074)
