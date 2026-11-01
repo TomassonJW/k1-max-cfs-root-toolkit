@@ -490,6 +490,15 @@ def test_the_rest_reading():
     status = rest_status()
     del status["box"]
     assert adapter.rest_problem(status) == "CFS illisible"
+    # The V5 end says "complete" before it restores auto_refill, still pending.
+    status = rest_status()
+    status["kctrl_end"].update(phase="complete", pending=True)
+    assert adapter.rest_problem(status) == "fin d'impression en cours"
+    # After a failed end V5 keeps auto_refill off until the next start: not ours to read.
+    status = rest_status()
+    status["kctrl_end"].update(phase="failed", pending=False, auto_refill_restore_pending=True)
+    status["box"]["auto_refill"] = 0
+    assert adapter.rest_problem(status) == ""
 
 
 def test_writes_queued_during_a_print_go_out_at_its_end_in_slot_order(make):
