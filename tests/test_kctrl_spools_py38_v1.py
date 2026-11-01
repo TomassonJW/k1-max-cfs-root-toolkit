@@ -112,7 +112,7 @@ def imports(tree):
 
 def test_every_module_of_the_package_is_classified():
     stems = {path.stem for path in SOURCES}
-    assert stems - TOOLS <= CORE | {ADAPTER}, stems - TOOLS - CORE - {ADAPTER}
+    assert stems - TOOLS == CORE | {ADAPTER}, (stems - TOOLS) ^ (CORE | {ADAPTER})
     assert {"kctrl_spools_store", "kctrl_spools_model"} <= stems
 
 
@@ -153,8 +153,6 @@ def test_the_core_imports_only_the_standard_library_and_no_transport(path):
 
 def test_the_adapter_imports_only_its_core_and_moonraker():
     path = PACKAGE / (ADAPTER + ".py")
-    if not path.exists():
-        pytest.skip("adaptateur pas encore écrit (lot F)")
     stdlib = getattr(sys, "stdlib_module_names", None)
     if stdlib is None:
         pytest.skip("sys.stdlib_module_names demande Python 3.10")
