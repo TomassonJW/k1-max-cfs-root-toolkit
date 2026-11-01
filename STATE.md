@@ -19,11 +19,11 @@ recommandée : éteindre la K1 quand elle ne sert pas, puis `log_level` de 1 à 
 dans `log_config.json` (environ 10 Mo par minute attendus en impression) ; ce
 second geste est posé depuis le 31 octobre à 23:48 (paquet
 `flash-log-level-v1`, sauvegarde sur la K1, rien redémarré) ; après le
-rallumage du 1er novembre, au repos sur 3 minutes : journaux Creality presque
-muets (5,7 ko/min contre 63 à 153) et 19,3 Mo/min sur la flash ; mesure en
-impression à faire. Filtrer le dialogue CFS de `klippy.log` ou
-retirer le `sync` demanderait chacun une mission et une ADR. Seul changement
-sur la K1 : ce fichier Creality. L'arrêt d'urgence de 19:16 vu
+rallumage du 1er novembre, la flash reçoit 12,0 Mo/min en impression sur
+10 minutes (contre 46,6) et 19,3 au repos sur 3 minutes (contre 23,6), les
+journaux Creality étant presque muets (6 ko/min). Filtrer le dialogue CFS de
+`klippy.log` ou retirer le `sync` demanderait chacun une mission et une ADR.
+Seul changement sur la K1 : ce fichier Creality. L'arrêt d'urgence de 19:16 vu
 pendant la mesure vient de Thomas, après un bug de fin d'impression traité
 dans une autre session.
 [Document 103](docs/103-ecritures-flash-cause-usure-parade.md).
