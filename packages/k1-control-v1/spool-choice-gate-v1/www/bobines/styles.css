@@ -752,6 +752,7 @@ h1, h2, h3, p { margin: 0; }
   right: 18px;
   bottom: 18px;
   z-index: 2147483000;
+  max-width: calc(100vw - 36px);
   display: inline-flex;
   align-items: center;
   gap: 10px;
