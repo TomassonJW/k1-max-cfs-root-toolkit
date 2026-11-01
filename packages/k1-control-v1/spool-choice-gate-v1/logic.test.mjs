@@ -15,7 +15,7 @@ const slot = (type, colour, loaded = 1, remain = 80) => ({ loaded, type, colour,
 
 const GATE = {
   wrapped: 1,
-  page: "http://192.168.1.64:4409/bobines/",
+  page: "http://192.0.2.10:4409/bobines/", // documentation address (RFC 5737)
   pending: 1,
   file: "/usr/data/printer_data/gcodes/_Cube_PLA_24m21s.gcode",
   name: "_Cube_PLA_24m21s.gcode",

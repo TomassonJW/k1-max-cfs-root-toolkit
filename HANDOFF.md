@@ -377,7 +377,7 @@ chemin G-code exact fourni. Les points du 15 ci-dessous restent historiques.
    n'a eu qu'un rapport du capteur fini par `F7` (question suivante retenue
    314 ms, répondue) ; le cas du matin, rapport toutes les 5 s en veille et
    question au CFS 2 derrière, ne s'est pas présenté. À la prochaine veille :
-   `http://192.168.1.64:4409/printer/objects/query?serial_485+serial485`
+   `http://<adresse résolue par k1max-root>:4409/printer/objects/query?serial_485+serial485`
    (`kctrl_marked`, `kctrl_held`), puis `bus.sh` et `silences_cfs.py`.
 3. **Fin d'impression** : validée sur une fin réelle (`T2B`, 18:28) ; reste
    à observer une fin avec `filament_useup` à 1 (le cas du matin), l'audit
@@ -415,7 +415,7 @@ chemin G-code exact fourni. Les points du 15 ci-dessous restent historiques.
    (`scripts/audit-en-direct/audit-live.sh` lancé avant le départ). Deux
    choses à trancher :
    - **Pauses `key831`** (garde du bus, ADR-068). Pendant l'impression,
-     `http://192.168.1.64:4409/printer/objects/query?serial_485+serial485`
+     `http://<adresse résolue par k1max-root>:4409/printer/objects/query?serial_485+serial485`
      doit montrer `kctrl_marked` > 0 et `kctrl_held` égal ; aucune pause
      `key831`. Après l'impression, hors dépôt :
      `ssh k1max-root 'sh -s' < scripts/audit-en-direct/bus.sh > bus.txt`
@@ -917,7 +917,7 @@ ssh k1max-root 'chmod 644 /usr/data/k1-control-v1/state/mainsail_overlay_patch.p
 ```
 
 Attendu au restart : « balise deja en place: …/mainsail/index.html », puis
-`http://192.168.1.64:4409/` répond 200 avec la balise et la fenêtre s'ouvre
+la passerelle (port 4409) répond 200 avec la balise et la fenêtre s'ouvre
 toujours sur un départ. Sauvegarde préalable de `/etc/init.d/S57k1_control_gateway`
 (`.bak-<date>`). Ensuite STATE et HANDOFF (nouveau bloc de tête), commit
 `pilotage`, push sur `main`.
@@ -992,7 +992,7 @@ la branche, `main` repoussé.
 
 **Point de reprise en un geste :** Thomas lance un fichier depuis Mainsail.
 Attendu : rien ne chauffe, fenêtre « Choix des bobines » dans Mainsail,
-page `http://192.168.1.64:4409/bobines/` avec le fichier en attente ; il
+page `/bobines/` (passerelle, port 4409) avec le fichier en attente ; il
 raccorde chaque filament d'un clic, « Lancer l'impression » ; au journal,
 « bobines raccordees pour … » puis la ligne de départ « raccorde sur la page
 Bobines » et `cmd_T vtnn=` sur la bobine choisie. Ensuite : fusion de #58
