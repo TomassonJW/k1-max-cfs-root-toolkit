@@ -1,5 +1,21 @@
 # STATE
 
+## 1er novembre, 10:51 - macros de Mainsail rangées en trois panneaux
+
+La K1, injoignable de 10:13 à 10:41 (ni ping, ni passerelle), a redémarré
+vers 10:41 (99 s de fonctionnement à 10:42:48) ; cause non établie ici.
+Klipper `ready` à 10:42:11. Sur le GO de Thomas (« Oui, range-les »),
+`mainsail_macro_groups.py` a relu `standby` puis écrit à 10:44:22 la seule clé
+`macros` de l'espace `mainsail` de la base Moonraker : mode expert, panneaux
+Bobines, Plateau et Réglages, 11 boutons. Relue identique, aucune autre clé
+changée, aucun redémarrage, aucun G-code, aucun fichier sur la K1. Une
+première ouverture de Mainsail a pris des 502 de la passerelle ; à 10:46:33
+tout répondait et la page rechargée s'est connectée, cause non établie.
+Captures sur écran large et sur téléphone conformes. À 10:50 : `standby`,
+aucune clé changée depuis la pose. Sauvegarde hors Git, retour arrière par
+`--rollback` sans redémarrage.
+[README du paquet](packages/k1-control-v1/mainsail-ui/README.md).
+
 ## 1er novembre, 09:42 - T1A retirée à chaud, buse nettoyée, K1 au repos
 
 Thomas a rallumé la K1 à 08:36. Un premier rembobinage de `T1A` à froid, à

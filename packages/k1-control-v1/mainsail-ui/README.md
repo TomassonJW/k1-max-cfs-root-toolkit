@@ -1,8 +1,11 @@
 # Macros de Mainsail - trois panneaux
 
-Statut : **écrit et testé hors imprimante, jamais lancé**. Thomas a validé le
-rangement le 1er novembre 2026 ; la K1 ne répondait plus au réseau à 10:13,
-avant la première lecture : rien n'est écrit dans sa base.
+Statut : **posé le 1er novembre 2026 à 10:44:22**, sur le GO de Thomas
+(« Oui, range-les »), K1 relue au repos juste avant. Seule la clé `macros` de
+l'espace `mainsail` a été écrite, relue identique ; aucune autre clé n'a
+changé. Sauvegarde hors Git, sous
+`inventory/raw/20261101-mainsail-macro-groups/`. Captures de Mainsail sur
+écran large et sur téléphone : trois panneaux, 11 boutons, couleurs prévues.
 
 - `mainsail_macro_groups.py` : l'outil, lancé sur le PC, jamais sur la K1.
   `plan()` calcule les écritures sur une lecture, sans réseau ; `run()` lit,
@@ -35,6 +38,11 @@ panneaux viennent juste après lui. L'entrée Macros reste : Mainsail la cache e
 mode expert et la remet à sa place en mode simple. Une taille d'écran sans mise
 en page enregistrée, ou sans panneau Macros, est laissée à Mainsail, qui ajoute
 les panneaux au bas de sa première colonne.
+
+Sur la K1, aucune mise en page n'était enregistrée sous `dashboard` : les trois
+panneaux sont au bas de la première colonne, sur écran large comme sur
+téléphone. Thomas les déplace, s'il le souhaite, dans les réglages de
+Mainsail, section Tableau de bord.
 
 ## Lancer
 
@@ -119,11 +127,17 @@ avec un seul groupe « K1 Control ». D'après le code de Mainsail v2.18.2 :
   deux étapes que `KCTRL_MESH_CALIBRATE` enchaîne déjà, et rien pour les
   bobines.
 
-S'il a jamais tourné, et sur quelle base, n'est pas connu. Ses clés
-éventuelles sont inertes ; la première lecture dira si elles existent.
+Il a tourné : la lecture du 1er novembre montre ses clés à la racine de
+l'espace, le groupe `macrogroups.k1control` avec ses 7 macros et les quatre
+mises en page `mobileLayout`, `tabletLayout1`, `desktopLayout1` et
+`widescreenLayout1`, chacune avec `macrogroup_k1control` affiché et `macros`
+masqué. Mainsail ne les lit pas : elles restent en place, inertes, et la pose
+ne les touche pas.
 
 Validation : **29 tests ciblés verts** (`tests/test_mainsail_macro_groups.py`) :
-fausse Moonraker en mémoire, aucun réseau. Le format suit le code de Mainsail
-v2.18.2 : `src/store/gui/macros/` (actions, mutations, getters),
-`src/store/gui/getters.ts`, `src/components/settings/SettingsMacrosTabExpert.vue`
-et `src/components/panels/MacrogroupPanel.vue`.
+fausse Moonraker en mémoire, aucun réseau. Pose réelle : `apply OK`, second
+essai à blanc `nothing to write`, relecture indépendante à 10:50 sans écart.
+Le format suit le code de Mainsail v2.18.2 : `src/store/gui/macros/`
+(actions, mutations, getters), `src/store/gui/getters.ts`,
+`src/components/settings/SettingsMacrosTabExpert.vue` et
+`src/components/panels/MacrogroupPanel.vue`.

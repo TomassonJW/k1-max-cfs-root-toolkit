@@ -32,27 +32,30 @@ arrière : V5 d'abord, garde ensuite. Les installateurs plus anciens épinglent
 l'ancienne garde (`c90de4c3…`) et refusent désormais au préflight.
 [Document 104](docs/104-poussee-a-froid-du-31-octobre-garde-et-fin-v5.md).
 
-## 1er novembre - macros de Mainsail : outil prêt, rien posé
+## 1er novembre, 10:51 - macros de Mainsail rangées : 3 panneaux, 11 boutons
 
 Thomas ne se repère plus dans les 55 macros affichées par Mainsail (83 en
 tout : 21 commencent par `_`, 7 remplacent une commande de Klipper et
-n'apparaissent pas). Aucune n'est à supprimer : d'autres macros et le code
-Creality les appellent. Thomas a validé le rangement (« Oui, range-les ») :
-mode expert de Mainsail, 3 panneaux et 11 boutons, Bobines toujours affiché,
-Plateau et Réglages au repos seulement. Outil
-`packages/k1-control-v1/mainsail-ui/mainsail_macro_groups.py`, 29 tests
-ciblés verts ; il remplace l'essai du 1er septembre, qui écrivait sous des
-clés que Mainsail ne lit pas (README du paquet). Rien n'est écrit : la K1 ne
-répondait plus au réseau à 10:13 (ni ping, ni passerelle), avant la première
-lecture. La clé `macros` de l'espace `mainsail` était absente au matin.
-Point de reprise : K1 rallumée et au repos, verrou K1 pris, `--dry-run`,
-lecture de l'espace `mainsail` (clés éventuelles de septembre à la racine),
-`--apply` avec la sauvegarde sous
-`inventory/raw/20261101-mainsail-macro-groups/`, capture de Mainsail, puis
-Thomas recharge sa page. Retour arrière : `--rollback` avec la même
-sauvegarde, sans redémarrage. Ensuite : ses idées de nouvelles macros,
-réunies dans un paquet K1 Control testé hors imprimante et posé au repos,
-après la fin V5.
+n'apparaissent pas). Aucune n'est supprimée : d'autres macros et le code
+Creality les appellent. Sur son GO (« Oui, range-les »),
+`packages/k1-control-v1/mainsail-ui/mainsail_macro_groups.py` a écrit le
+1er novembre à 10:44:22 la seule clé `macros` de l'espace `mainsail`, K1
+relue au repos juste avant : mode expert, panneaux Bobines (toujours
+affiché), Plateau et Réglages (au repos seulement), 11 boutons. Relue
+identique, aucune autre clé changée, aucun redémarrage ni G-code ; second
+essai à blanc : rien à écrire. Captures sur écran large et sur téléphone :
+les trois panneaux sont au bas de la première colonne, aucune mise en page
+n'étant enregistrée. Les clés de l'essai du 1er septembre existent à la
+racine de l'espace, inertes, laissées en place (README du paquet).
+Sauvegarde hors Git :
+`inventory/raw/20261101-mainsail-macro-groups/mainsail-before.json`.
+Point de reprise : Thomas recharge sa page de Mainsail (un onglet resté
+ouvert réécrirait l'ancien réglage en enregistrant) ; il déplace ou retouche
+les panneaux dans les réglages de Mainsail, sections Tableau de bord et
+Macros. Une macro nouvelle n'apparaît qu'une fois rangée dans un groupe.
+Retour arrière : `--rollback` avec la même sauvegarde, sans redémarrage.
+Ensuite : ses idées de nouvelles macros, réunies dans un paquet K1 Control
+testé hors imprimante et posé au repos, après la fin V5.
 
 ## 31 octobre - écritures sur la flash : cause, usure, parade (document 103)
 
