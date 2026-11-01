@@ -69,7 +69,8 @@ Faits du dépôt, vérifiés dans le code le 31 octobre :
   (`BOX_MODIFY_TN_DATA`, puis `BOX_UPDATE_SAME_MATERIAL_LIST`) ;
 - le reste `remain_len` vient du matériel CFS (`BOX_GET_REMAIN_LEN`, lecture
   RFID). Pour une bobine sans puce ce n'est pas une mesure ; la fenêtre de
-  départ l'affiche pourtant en « reste 100 % » (`logic.js`, `remainingLabel`).
+  départ l'affichait pourtant en « reste 100 % » jusqu'au lot H, qui retire ce
+  chiffre (`remainingLabel` supprimé de `logic.js`).
   On ne l'écrit jamais : relu du matériel, il touche aussi la logique de fin de
   bobine (prudence, non testé exprès) ;
 - l'emplacement engagé est connu : `kctrl_tool_change.last` donne l'outil,
@@ -134,9 +135,9 @@ vit hors du chemin de l'impression.
 - Interface : un module séparé, `/bobines/spools.js`, chargé à part par
   `overlay.js`. Une erreur dans ce module laisse la fenêtre de départ intacte.
   Même feuille de style.
-- Repli : si le composant ne répond pas, la fenêtre de départ garde son
-  affichage actuel, sans le faux « 100 % ». La gestion des bobines ne bloque
-  jamais un départ.
+- Repli : si le composant ne répond pas deux fois de suite, la fenêtre de
+  départ revient à son affichage sans reste, sans le faux « 100 % », et
+  réessaie toutes les 30 s. La gestion des bobines ne bloque jamais un départ.
 
 ## 5. Modèle de données
 
@@ -316,8 +317,18 @@ Pertes :
 
 Au départ, la fenêtre de choix affiche le vrai reste de chaque bobine et
 prévient sans bloquer si le fichier demande plus : « T2B : reste ~38 g, le
-fichier en demande ~52 g ». Tant qu'aucune pesée n'a vérifié le décompte, elle
-le dit : « décompte non encore vérifié par pesée ».
+fichier en demande ~52 g », ou « marge faible » sous 10 % de marge. Le besoin
+vient des grammes du trancheur, sinon de sa longueur pesée avec la fiche ; il
+ne compte pas les purges. Tant qu'aucune pesée n'a vérifié le décompte, elle
+le dit : « décompte non encore vérifié par pesée ». Le reste affiché n'est
+celui de la bibliothèque que si l'emplacement montre bien sa bobine ; sinon
+« à vérifier », le chiffre de la puce pour une bobine à puce inconnue, ou rien.
+Une bobine sans puce que le CFS n'a pas nommée apparaît « non identifiée »,
+pas « vide » : elle ne peut pas servir à ce départ, puisque le CFS ne reçoit
+aucune écriture tant qu'un départ attend. La fenêtre le dit et propose
+d'abandonner, de l'identifier avec le bouton Bobines, puis de relancer. Elle
+lit le gestionnaire toutes les 5 s tant qu'elle est à l'écran, en lecture
+seule, et ce que le fichier prévoit une seule fois par départ.
 
 ## 9. Interface
 
@@ -372,7 +383,7 @@ Tous hors imprimante, sauf L.
   pause et reprise, redémarrage de Klipper, emplacement inconnu.
 - Vecteurs du calculateur, identiques en Python et en JavaScript.
 - Tests de la fenêtre de départ existants, plus : composant absent, reste
-  insuffisant, bobine à puce.
+  insuffisant, bobine à puce, bobine non identifiée.
 - Rendu dans un vrai Chrome contre une fausse API locale, comme
   MESH-EDITOR-OFFLINE-V1 : bureau et largeur téléphone, zéro erreur console,
   captures envoyées à Thomas.

@@ -870,3 +870,26 @@ def test_malformed_requests_are_refused_with_their_reason(make):
     rig.component._on_disconnect()
     rig.refused("cfs-write", {"slot": "T1A"}, 503, "Klipper non connecté")
     assert rig.apis.gcodes == []
+
+
+def test_the_start_window_reads_a_file_s_planned_use_once_until_it_changes(make, monkeypatch):
+    rig = make()
+    (rig.gcodes / "cube.gcode").write_bytes(FOOTER.encode("ascii"))
+    reads = []
+    read = adapter.spools.read_planned
+    monkeypatch.setattr(adapter.spools, "read_planned", lambda path: reads.append(path) or read(path))
+    answer = rig.call("planned", {"file": "cube.gcode"})
+    assert answer == {"file": "cube.gcode", "planned": [{"mm": 1234.5, "g": 3.7}, {"mm": 0.0, "g": 0.0}],
+                      "note": "2 filament(s) prévu(s)"}
+    answer["planned"][0]["g"] = 99.0
+    assert rig.call("planned", {"file": "cube.gcode"})["planned"][0]["g"] == 3.7
+    assert len(reads) == 1
+    (rig.gcodes / "cube.gcode").write_bytes(("G1 X2\n" + FOOTER).encode("ascii"))
+    assert rig.call("planned", {"file": "cube.gcode"})["planned"][0]["mm"] == 1234.5
+    assert len(reads) == 2
+    assert rig.call("planned", {"file": "../cube.gcode"}) == {
+        "file": "../cube.gcode", "planned": [], "note": "fichier hors du dossier des impressions"}
+    assert rig.call("planned", {"file": "absent.gcode"})["note"].startswith("fichier illisible")
+    rig.refused("planned", {}, 400, "fichier attendu")
+    rig.refused("planned", {"file": "  "}, 400, "fichier attendu")
+    assert len(reads) == 3 and rig.apis.gcodes == []

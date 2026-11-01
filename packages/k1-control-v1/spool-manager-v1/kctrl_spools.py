@@ -165,6 +165,7 @@ class KctrlSpools(object):
         self.materials_warned = ""
         self.materials_stat = None  # type: Optional[Tuple[float, int]]
         self.materials_checked = 0.0
+        self.planned_cache = None  # type: Optional[Tuple[Any, List[Dict[str, float]], str]]
         self.counter = counting.Counter()
         self.merged = {}  # type: Dict[str, Dict[str, Any]]
         self.observations = {}  # type: Dict[str, Dict[str, Any]]
@@ -189,6 +190,7 @@ class KctrlSpools(object):
                 ("materials", RequestType.GET, self._materials),
                 ("action", RequestType.POST, self._action),
                 ("journal", RequestType.GET, self._journal),
+                ("planned", RequestType.GET, self._planned_request),
                 ("export", RequestType.GET, self._export),
                 ("import", RequestType.POST, self._import),
                 ("cfs-write", RequestType.POST, self._cfs_write)):
@@ -518,7 +520,15 @@ class KctrlSpools(object):
         path = os.path.realpath(os.path.join(root, name))
         if not path.startswith(root + os.sep):
             return [], "fichier hors du dossier des impressions"
-        return spools.read_planned(path)
+        # The start window asks for the file it waits on: one file is kept,
+        # read again only when its size or date changes.
+        key = (path, _stat(path))
+        cached = self.planned_cache
+        if cached is not None and cached[0] == key:
+            return copy.deepcopy(cached[1]), cached[2]
+        planned, note = spools.read_planned(path)
+        self.planned_cache = (key, planned, note)
+        return copy.deepcopy(planned), note
 
     async def _flush_writes(self, now: float) -> None:
         """The writes queued during a print, once the K1 rests; never resent."""
@@ -660,6 +670,13 @@ class KctrlSpools(object):
             raise self.server.error("limite mal formée", 400)
         limit = max(1, min(JOURNAL_SHOWN, limit))
         return {"entries": await self._run(self.store.read_journal, limit)}
+
+    async def _planned_request(self, web_request: WebRequest) -> Dict[str, Any]:
+        name = web_request.get_args().get("file")
+        if not isinstance(name, str) or not name.strip():
+            raise self.server.error("fichier attendu", 400)
+        planned, note = await self._run(self._planned, name)
+        return {"file": name, "planned": planned, "note": note}
 
     async def _export(self, web_request: WebRequest) -> Dict[str, Any]:
         if self.store.locked:

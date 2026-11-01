@@ -114,6 +114,18 @@ def test_app_talks_to_moonraker_with_the_exact_routes_and_commands():
     assert 'from "./logic.js"' in text
 
 
+def test_the_start_window_only_reads_the_spool_manager():
+    # Document 102 : la fenêtre de départ montre le reste de chaque bobine et
+    # ce que le fichier prévoit, sans jamais écrire au gestionnaire ni au CFS.
+    text = read(PAGE, "bobines.js")
+    assert 'const SPOOLS = "/machine/k1_control/spools/";' in text
+    assert 'call("GET", SPOOLS + "status")' in text
+    assert 'call("GET", SPOOLS + "planned?file=" + encodeURIComponent(file))' in text
+    assert text.count("SPOOLS +") == 2
+    assert "cfs-write" not in text
+    assert '"action"' not in text
+
+
 def test_app_never_connects_a_spool_on_its_own():
     text = read(PAGE, "bobines.js")
     # A new pending file starts from an empty choice; only a click assigns.
