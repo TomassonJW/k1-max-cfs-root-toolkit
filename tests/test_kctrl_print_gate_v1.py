@@ -325,8 +325,9 @@ def test_no_stock_handler_means_no_gate_and_no_crash(tmp_path):
 
 
 def test_the_page_address_comes_from_the_config(tmp_path):
-    gate = machine(tmp_path, page="http://192.168.1.64:4409/bobines/")
-    assert gate.get_status()["page"] == "http://192.168.1.64:4409/bobines/"
+    # A documentation address (RFC 5737): the K1's own stays out of the repository.
+    gate = machine(tmp_path, page="http://192.0.2.10:4409/bobines/")
+    assert gate.get_status()["page"] == "http://192.0.2.10:4409/bobines/"
     assert machine(tmp_path).get_status()["page"] == "/bobines/"
 
 

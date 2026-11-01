@@ -1,5 +1,100 @@
 # STATE
 
+## 1er novembre, 10:51 - macros de Mainsail rangées en trois panneaux
+
+La K1, injoignable de 10:13 à 10:41 (ni ping, ni passerelle), a redémarré
+vers 10:41 (99 s de fonctionnement à 10:42:48) ; cause non établie ici.
+Klipper `ready` à 10:42:11. Sur le GO de Thomas (« Oui, range-les »),
+`mainsail_macro_groups.py` a relu `standby` puis écrit à 10:44:22 la seule clé
+`macros` de l'espace `mainsail` de la base Moonraker : mode expert, panneaux
+Bobines, Plateau et Réglages, 11 boutons. Relue identique, aucune autre clé
+changée, aucun redémarrage, aucun G-code, aucun fichier sur la K1. Une
+première ouverture de Mainsail a pris des 502 de la passerelle ; à 10:46:33
+tout répondait et la page rechargée s'est connectée, cause non établie.
+Captures sur écran large et sur téléphone conformes. À 10:50 : `standby`,
+aucune clé changée depuis la pose. Sauvegarde hors Git, retour arrière par
+`--rollback` sans redémarrage.
+[README du paquet](packages/k1-control-v1/mainsail-ui/README.md).
+
+## 1er novembre, 09:42 - T1A retirée à chaud, buse nettoyée, K1 au repos
+
+Thomas a rallumé la K1 à 08:36. Un premier rembobinage de `T1A` à froid, à
+08:47, a été refusé par le CFS (`key849`) : la tête tenait encore le filament,
+une erreur de méthode. Le retrait a ensuite suivi la procédure normale, Thomas
+présent : homing XY à 09:07, buse à 220 °C, coupe au cutter prouvée par son
+capteur à 09:18, rétraction de la tête, puis rembobinage réussi à 09:27, après
+un refus immédiat à 09:19 où le capteur de bobine de la case A lisait vide.
+Nettoyage de la buse à 150 °C par Thomas, chauffes coupées à 09:35:38. À
+09:41:39 : `standby`, cibles zéro, XY référencés, Z non référencé, capteur de
+tête libre, `t_command` vide, `filament_useup` et `auto_refill` à 1. Restent
+l'échange de cases pour `T1A`, puis la pose de la fin V5.
+[Document 104](docs/104-poussee-a-froid-du-31-octobre-garde-et-fin-v5.md),
+section « Matin du 1er novembre ».
+
+## 1er novembre, 07:40 - fin de nuit : même chaîne qu'au 31 octobre, arrêtée au début de la poussée
+
+L'impression de nuit s'est terminée normalement à 07:13:52. À la première
+interrogation CFS qui a suivi, 1,5 s plus tard, `key839` sur `T1A`
+(`filament_useup` et `auto_refill` à 1) a relancé la routine Creality
+« extrude all material » ; la fin V4 a coupé le filament à 07:13:57 puis
+échoué sans rembobiner. La routine a mené la tête au bac, plateau déjà bas
+(Z 56,95, garde du bac), et lancé une poussée de 80 mm à 195 °C. La
+surveillance locale l'a arrêtée par un arrêt d'urgence à 07:14:08 : moins de
+0,2 mm poussés. Klipper a quitté seul à 07:14:14 (exception TMC Creality) ;
+rien redémarré. À 07:39, K1 pas rallumée : filament coupé dans la tête, pas
+rembobiné, tête au-dessus du bac. La fin V5 aurait coupé l'auto-remplacement
+environ une seconde avant `key839` : probable, pas prouvé. La cause à la source
+reste la fausse erreur de `T1A`.
+[Document 104](docs/104-poussee-a-froid-du-31-octobre-garde-et-fin-v5.md),
+section « Nuit du 1er novembre ».
+
+## 1er novembre, 03:40 - poussée à froid du 31 octobre : garde en service, fin V5 prête (ADR-076)
+
+Le 31 octobre à 19:07, à la fin d'une impression, le CFS signalait `T1A` en
+erreur filament depuis le relais `T1B -> T1A` de 19:01, bobine pleine. Pendant
+la coupe de la fin V4, `key839` a lancé la routine Creality « extrude all
+material » ; la fin V4 s'est arrêtée en échec et a coupé la chauffe, mais la
+routine a poussé douze fois pendant que la buse refroidissait de 159 à 36 °C,
+jusqu'à l'arrêt d'urgence de Thomas à 19:16. PTFE sorti de son raccord ; tête
+vidée et `T1A` rembobinée le soir même, rien de cassé. Creality a commenté le
+refus d'extrusion à froid de Klipper. Garde à froid `cold-push-guard-v1` posée
+au repos le 31 octobre à 23:46 : `PREFLIGHT_OK` (23 fichiers épinglés
+identiques), `INSTALLED_IDLE_OK`, `VALIDATED_IDLE_OK`, puis `PROBE_REFUSED_OK`
+(poussée de 0,5 mm refusée buse à 24 °C, E inchangé) ; relue active après le
+redémarrage de la K1 par Thomas. Fin V5 `end-no-stock-flush-v5` : coupe
+l'auto-remplacement CFS avant la coupe et le remet ensuite ; 173 tests et sept
+mutants détectés, pas posée. Impression de nuit partie à 00:45 sous la garde et
+la fin V4.
+[Document 104](docs/104-poussee-a-froid-du-31-octobre-garde-et-fin-v5.md).
+
+## 31 octobre - écritures sur la flash : cause trouvée, usure lue, parade 1 posée
+
+Les 46 Mo par minute écrits sur la flash pendant une impression viennent du
+montage `sync` de `/usr/data`, posé par le script d'usine de Creality sur une
+partition sans journal ext4 : chaque ligne de journal (90 à 110 par seconde,
+0,8 Mo de texte par minute, surtout `master-server` et `display-server` réglés
+en débogage, puis `klippy.log`) force la réécriture d'une page de 4 Kio, du
+bloc qui décrit le fichier et un vidage du cache de la puce, 59 fois le texte.
+Au repos, la K1 écrit encore environ 24 Mo par minute (1,4 Go par heure),
+surtout le dialogue CFS de Creality dans `klippy.log`. Les fichiers d'état
+Creality pèsent moins d'une écriture par seconde ; K1 Control n'écrit rien.
+Usure : la puce eMMC de 7,8 Go (probablement une iNAND 7250) déclare 70 à 80 %
+de vie consommée pour sa mémoire de type A, 0 à 10 % pour le type B, réserve
+normale ; historique inconnu, registre à relire chaque mois. Rester allumée
+sans imprimer multiplie par 3,5 l'usure d'une journée de 4 h d'impression. Parade
+recommandée : éteindre la K1 quand elle ne sert pas, puis `log_level` de 1 à 3
+dans `log_config.json` (environ 10 Mo par minute attendus en impression) ; ce
+second geste est posé depuis le 31 octobre à 23:48 (paquet
+`flash-log-level-v1`, sauvegarde sur la K1, rien redémarré) ; après le
+rallumage du 1er novembre, la flash reçoit 12,0 Mo/min en impression sur
+10 minutes (contre 46,6) et 19,3 au repos sur 3 minutes (contre 23,6), les
+journaux Creality étant presque muets (6 ko/min). Filtrer le dialogue CFS de
+`klippy.log` ou retirer le `sync` demanderait chacun une mission et une ADR.
+Seul changement sur la K1 : ce fichier Creality. L'arrêt d'urgence de 19:16 vu
+pendant la mesure vient de Thomas, après un bug de fin d'impression traité
+dans une autre session.
+[Document 103](docs/103-ecritures-flash-cause-usure-parade.md).
+
 ## 31 octobre - gestion des bobines : plan accepté, rien d'installé
 
 Plan V1 écrit pour gérer les bobines dans Mainsail (document 102) : composant
@@ -573,7 +668,7 @@ SDCARD_PRINT_FILE », aucune erreur. Preuve de la retenue à 22:05 :
 fenêtre Mainsail émise (`action:prompt_begin Choix des bobines`), filament
 1 PLA 000000 « PLA Geeetech » utilisé, identique à T1B ; filament 2 déclaré,
 non utilisé ; `KCTRL_GATE_CANCEL` → `pending 0`, fenêtre fermée, rien n'a
-chauffé. Page `http://192.168.1.64:4409/bobines/` servie (200, `no-cache`),
+chauffé. Page `/bobines/` (passerelle, port 4409) servie (200, `no-cache`),
 vue au repos avec les six bobines réelles. L'appariement automatique
 (ADR-062) reste en repli. Reste : premier départ réel par la page, à
 observer par Thomas ; fusion de #58. Doc 78, ADR-063.

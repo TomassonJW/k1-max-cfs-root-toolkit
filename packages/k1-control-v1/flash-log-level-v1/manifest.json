@@ -1,0 +1,24 @@
+{
+  "schema": 1,
+  "name": "flash-log-level-v1",
+  "document": "docs/103-ecritures-flash-cause-usure-parade.md",
+  "destination": "/usr/data/creality/userdata/log/log_config.json",
+  "size": 157,
+  "before_sha256": "027ab3db2764a26e821b4db7cae7547ac1866e1711f3f089a9e5faa411d5c02d",
+  "sha256": "fcd855a57588b7e61431ab9e0872fb95a55b913a3f27fb0f11383a1dd0a13586",
+  "installer_sha256": "40668221d31ab984dd491461b8c1818647731b692ad6932436bf72375b6a1a4f",
+  "backup": "/usr/data/k1-control-v1/backups/flash-log-level-v1",
+  "effects": {
+    "klipper_restart": false,
+    "service_restart": false,
+    "reboot": false,
+    "heating": false,
+    "motion": false,
+    "filament": false,
+    "klipper_config_change": false,
+    "creality_log_level": [
+      1,
+      3
+    ]
+  }
+}

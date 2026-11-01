@@ -1,5 +1,88 @@
 # HANDOFF — index de reprise
 
+## 1er novembre, 09:42 - T1A retirée à chaud, buse nettoyée ; échange de cases puis fin V5 (ADR-076)
+
+La garde `cold-push-guard-v1` est en service depuis le 31 octobre à 23:46 :
+toute poussée de filament sous 170 °C sans consigne suffisante est refusée,
+chemins stock compris. La fin V5 `end-no-stock-flush-v5` est prête, pas posée.
+La fin de l'impression de nuit, le 1er novembre à 07:13, a relancé la routine
+Creality par `key839` sur `T1A` ; l'arrêt d'urgence de la surveillance locale
+l'a stoppée à 07:14:08 (document 104, section « Nuit du 1er novembre »). Le
+matin, Thomas présent, `T1A` a été retirée par la procédure normale à chaud
+(chauffe, coupe au cutter, rétraction de la tête, rembobinage) et la buse
+nettoyée à 150 °C (section « Matin du 1er novembre »). État à 09:41:39 :
+`standby`, cibles zéro, XY référencés, Z non référencé, tête à X38 Y291,5,
+capteur de tête libre, `t_command` vide, `filament_useup` et `auto_refill` à 1.
+Propreté de la buse confirmée par Thomas à 09:33, valable jusqu'à la
+prochaine extrusion.
+Point de reprise :
+1. avec Thomas, échange de cases pour `T1A` avant tout démontage du CFS ; si
+   l'erreur suit la case, vérifier le capteur de bobine de la case A, qui a lu
+   vide puis présent le 1er novembre ;
+2. pose de la V5 au repos revérifié, Thomas présent : `deploy.py preflight`,
+   puis `install`, puis `validate` (document 104, section « Fin V5 ») ; si
+   `box.t_command` n'est pas vide au repos, le préflight refuse
+   (`cfs_command_present`) : comprendre avant tout autre geste ; surveillance
+   locale de la première fin sous V5 par
+   `packages/k1-control-v1/end-watch-v1/watch_end.py`, essai à blanc d'abord
+   (README du paquet).
+Retrait d'un filament : toujours la procédure normale à chaud, jamais un
+rembobinage à froid. Ne rejouer ni la pose ni la sonde de la garde. Retour
+arrière : V5 d'abord, garde ensuite. Les installateurs plus anciens épinglent
+l'ancienne garde (`c90de4c3…`) et refusent désormais au préflight.
+[Document 104](docs/104-poussee-a-froid-du-31-octobre-garde-et-fin-v5.md).
+
+## 1er novembre, 10:51 - macros de Mainsail rangées : 3 panneaux, 11 boutons
+
+Thomas ne se repère plus dans les 55 macros affichées par Mainsail (83 en
+tout : 21 commencent par `_`, 7 remplacent une commande de Klipper et
+n'apparaissent pas). Aucune n'est supprimée : d'autres macros et le code
+Creality les appellent. Sur son GO (« Oui, range-les »),
+`packages/k1-control-v1/mainsail-ui/mainsail_macro_groups.py` a écrit le
+1er novembre à 10:44:22 la seule clé `macros` de l'espace `mainsail`, K1
+relue au repos juste avant : mode expert, panneaux Bobines (toujours
+affiché), Plateau et Réglages (au repos seulement), 11 boutons. Relue
+identique, aucune autre clé changée, aucun redémarrage ni G-code ; second
+essai à blanc : rien à écrire. Captures sur écran large et sur téléphone :
+les trois panneaux sont au bas de la première colonne, aucune mise en page
+n'étant enregistrée. Les clés de l'essai du 1er septembre existent à la
+racine de l'espace, inertes, laissées en place (README du paquet).
+Sauvegarde hors Git :
+`inventory/raw/20261101-mainsail-macro-groups/mainsail-before.json`.
+Point de reprise : Thomas recharge sa page de Mainsail (un onglet resté
+ouvert réécrirait l'ancien réglage en enregistrant) ; il déplace ou retouche
+les panneaux dans les réglages de Mainsail, sections Tableau de bord et
+Macros. Une macro nouvelle n'apparaît qu'une fois rangée dans un groupe.
+Retour arrière : `--rollback` avec la même sauvegarde, sans redémarrage.
+Ensuite : ses idées de nouvelles macros, réunies dans un paquet K1 Control
+testé hors imprimante et posé au repos, après la fin V5.
+
+## 31 octobre - écritures sur la flash : cause, usure, parade (document 103)
+
+Diagnostic en lecture seule clos : le montage `sync` d'usine de `/usr/data`,
+partition sans journal ext4, multiplie par 59 les 0,8 Mo de journaux écrits
+chaque minute d'impression, surtout par les serveurs Creality réglés en
+débogage ; au repos, environ 24 Mo par minute, surtout le dialogue CFS de
+`klippy.log`. La puce déclare 70 à 80 % de vie consommée pour sa mémoire de
+type A. Parade 1 posée le 31 octobre à 23:48.
+Point de reprise : la parade 1 (`log_level` de 1 à 3 dans
+`/usr/data/creality/userdata/log/log_config.json`) est posée depuis le
+31 octobre à 23:48 (`INSTALLED_OK` puis `VALIDATED_OK`), sur GO de Thomas,
+sauvegarde sous `/usr/data/k1-control-v1/backups/flash-log-level-v1/`, paquet
+`packages/k1-control-v1/flash-log-level-v1/`. Thomas a rallumé la K1 le
+1er novembre vers 00:22 : `mesure.py` lit 12,0 Mo/min en impression sur
+10 minutes (contre 46,6 ; attendu 8 à 12) et 19,3 au repos sur 3 minutes
+(contre 23,6), avec des journaux Creality presque muets (6 ko/min). La
+reprise après coupure reste intacte. Parade close (PR #88) ; retour arrière :
+`deploy.py rollback`, au repos. Sans mission : éteindre la K1 quand elle ne
+sert pas. Jamais pendant une impression ;
+ne pas toucher au montage `sync` sans ADR ni décision de Thomas. Relire chaque
+mois le registre de santé de la puce (EXT_CSD, octets 267 à 269, par debugfs,
+en lecture seule) et garder hors machine une copie de l'état de K1 Control.
+L'arrêt d'urgence de 19:16 vu pendant la mesure vient de Thomas, après ce bug,
+traité dans une autre session (section 9).
+[Document 103](docs/103-ecritures-flash-cause-usure-parade.md).
+
 ## 31 octobre - gestion des bobines (document 102, ADR-075 acceptée)
 
 Thomas veut gérer ses bobines dans Mainsail : bouton et fenêtre, synchro avec
@@ -330,7 +413,7 @@ chemin G-code exact fourni. Les points du 15 ci-dessous restent historiques.
    n'a eu qu'un rapport du capteur fini par `F7` (question suivante retenue
    314 ms, répondue) ; le cas du matin, rapport toutes les 5 s en veille et
    question au CFS 2 derrière, ne s'est pas présenté. À la prochaine veille :
-   `http://192.168.1.64:4409/printer/objects/query?serial_485+serial485`
+   `http://<adresse résolue par k1max-root>:4409/printer/objects/query?serial_485+serial485`
    (`kctrl_marked`, `kctrl_held`), puis `bus.sh` et `silences_cfs.py`.
 3. **Fin d'impression** : validée sur une fin réelle (`T2B`, 18:28) ; reste
    à observer une fin avec `filament_useup` à 1 (le cas du matin), l'audit
@@ -368,7 +451,7 @@ chemin G-code exact fourni. Les points du 15 ci-dessous restent historiques.
    (`scripts/audit-en-direct/audit-live.sh` lancé avant le départ). Deux
    choses à trancher :
    - **Pauses `key831`** (garde du bus, ADR-068). Pendant l'impression,
-     `http://192.168.1.64:4409/printer/objects/query?serial_485+serial485`
+     `http://<adresse résolue par k1max-root>:4409/printer/objects/query?serial_485+serial485`
      doit montrer `kctrl_marked` > 0 et `kctrl_held` égal ; aucune pause
      `key831`. Après l'impression, hors dépôt :
      `ssh k1max-root 'sh -s' < scripts/audit-en-direct/bus.sh > bus.txt`
@@ -870,7 +953,7 @@ ssh k1max-root 'chmod 644 /usr/data/k1-control-v1/state/mainsail_overlay_patch.p
 ```
 
 Attendu au restart : « balise deja en place: …/mainsail/index.html », puis
-`http://192.168.1.64:4409/` répond 200 avec la balise et la fenêtre s'ouvre
+la passerelle (port 4409) répond 200 avec la balise et la fenêtre s'ouvre
 toujours sur un départ. Sauvegarde préalable de `/etc/init.d/S57k1_control_gateway`
 (`.bak-<date>`). Ensuite STATE et HANDOFF (nouveau bloc de tête), commit
 `pilotage`, push sur `main`.
@@ -945,7 +1028,7 @@ la branche, `main` repoussé.
 
 **Point de reprise en un geste :** Thomas lance un fichier depuis Mainsail.
 Attendu : rien ne chauffe, fenêtre « Choix des bobines » dans Mainsail,
-page `http://192.168.1.64:4409/bobines/` avec le fichier en attente ; il
+page `/bobines/` (passerelle, port 4409) avec le fichier en attente ; il
 raccorde chaque filament d'un clic, « Lancer l'impression » ; au journal,
 « bobines raccordees pour … » puis la ligne de départ « raccorde sur la page
 Bobines » et `cmd_T vtnn=` sur la bobine choisie. Ensuite : fusion de #58

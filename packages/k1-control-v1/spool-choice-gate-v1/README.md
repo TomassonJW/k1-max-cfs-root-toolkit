@@ -61,9 +61,9 @@ l'appariement automatique (ADR-062) ne tourne pas.
 5. `/etc/init.d/S55klipper_service restart` (jamais `FIRMWARE_RESTART`
    pour un module Python).
 6. Vérifier : `help` liste `KCTRL_GATE_CONFIRM` ; journal « wrapped
-   SDCARD_PRINT_FILE » ; `http://192.168.1.64:4409/` contient la balise ;
-   `http://192.168.1.64:4409/bobines/overlay.js` répond 200 ; un départ
-   ouvre la fenêtre dans Mainsail.
+   SDCARD_PRINT_FILE » ; sur la passerelle (port 4409), `/` contient la
+   balise et `/bobines/overlay.js` répond 200 ; un départ ouvre la fenêtre
+   dans Mainsail.
 
 ## Retour arrière
 
