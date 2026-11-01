@@ -95,16 +95,17 @@ pendant la mesure vient de Thomas, après un bug de fin d'impression traité
 dans une autre session.
 [Document 103](docs/103-ecritures-flash-cause-usure-parade.md).
 
-## 31 octobre - gestion des bobines : lots A à I construits, rien d'installé
+## 31 octobre - gestion des bobines : lots A à J construits, rien d'installé
 
 Plan V1 écrit pour gérer les bobines dans Mainsail (document 102) : composant
 Moonraker `kctrl_spools`, stockage JSON sur la K1, matière et couleur
 synchronisées dans les deux sens par `KCTRL_FILAMENT` au repos avec relecture,
 décompte par segment depuis la position E (purges comprises), fenêtre Bobines
 dans Mainsail. ADR-075 acceptée par Thomas : les données vivent dans K1
-Control, sur la K1. Au 1er novembre, lots A à I construits et testés hors
-imprimante (PR brouillon #95, CI verte) ; restent le labo (J), le paquet de pose
-(K), la pose et la qualification. Sur la K1, lectures
+Control, sur la K1. Au 1er novembre, lots A à J construits et testés hors
+imprimante (PR brouillon #95, CI verte), dont le labo et le rendu sur le vrai
+Mainsail relayé en lecture seule ; restent le paquet de pose (K), la pose et la
+qualification. Sur la K1, lectures
 seules pendant une impression, aucun fichier ni réglage changé : marge large en
 mémoire et processeur ; la K1 écrit d'elle-même environ 40 Mo par minute sur sa
 flash (8,5 Go en 3 h 43 depuis son démarrage), rien de K1 Control. Le « reste

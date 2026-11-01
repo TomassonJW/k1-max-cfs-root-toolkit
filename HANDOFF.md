@@ -89,12 +89,13 @@ Thomas veut gérer ses bobines dans Mainsail : bouton et fenêtre, synchro avec
 le CFS dans les deux sens, reste en grammes et en mètres, bibliothèque des
 bobines vides, décompte après chaque impression, stock. Aucun outil existant ne
 couvre huit emplacements, des bobines sans puce et les purges par bobine.
-Thomas a choisi K1 Control sur la K1 (ADR-075). Au 1er novembre, lots A à I
+Thomas a choisi K1 Control sur la K1 (ADR-075). Au 1er novembre, lots A à J
 écrits et testés hors imprimante : composant, stockage, décompte, catalogue des
-bobines vides, reste dans la fenêtre de départ, fenêtre Bobines au-dessus de la
-barre de Mainsail. PR brouillon #95, CI verte ; rien posé, K1 non touchée.
-Point de reprise : `packages/k1-control-v1/spool-manager-v1/REPRISE.md`, lot J
-(labo local) puis K (paquet de pose) ; ensuite, après la pose de la fin V5, la
+bobines vides, reste dans la fenêtre de départ, fenêtre Bobines dans la barre
+de Mainsail, labo local et rendu vérifié sur le vrai Mainsail en lecture seule.
+PR brouillon #95, CI verte ; rien posé, K1 non touchée.
+Point de reprise : `packages/k1-control-v1/spool-manager-v1/REPRISE.md`, lot K
+(paquet de pose) ; ensuite, après la pose de la fin V5, la
 pose au repos du seul Moonraker dédié et les deux gestes de qualification
 (retrait et remise d'une bobine, impression multicouleur pesée avant et après).
 Mesuré pendant une impression : mémoire et processeur gardent une large marge.

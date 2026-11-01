@@ -436,7 +436,7 @@ Qualification (lot L), deux gestes de Thomas :
 | Perte des données | trois copies, journal, export sur le PC |
 | Usure de la mémoire flash | bibliothèque réécrite rarement, jamais pour un changement d'emplacement pendant une impression ; en impression, un petit fichier de taille fixe (section 4) ; marge mesurée en section 3 |
 | Moonraker redémarré pendant une impression | pose au repos seulement (règle du 24 septembre) ; un plantage n'arrête pas l'impression et le décompte reprend depuis le disque ; repris plus de 5 min après, ce qui a bougé va « à attribuer » |
-| Mémoire et processeur de la K1 | composant sans dépendance dans le Moonraker existant ; marge mesurée en impression (section 3), remesurée à la pose et pendant la première impression ; pic d'un export mesuré au lot J avec 200 bobines |
+| Mémoire et processeur de la K1 | composant sans dépendance dans le Moonraker existant ; marge mesurée en impression (section 3), remesurée à la pose et pendant la première impression ; au lot J, sur le PC avec 200 bobines : 425 Kio gardés, 574 Kio au pic d'un export, à remesurer sur la K1 |
 
 ## 14. Hors V1
 

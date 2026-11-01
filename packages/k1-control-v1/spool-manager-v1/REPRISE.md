@@ -21,10 +21,11 @@ ouvrir un fichier du dépôt seulement pour un détail qui manque ici.
   - lot F : bibliothèque servie par Moonraker, synchronisation CFS (dedd3fa), document 102 aligné sur le code (4d1be19) ;
   - lot H : la fenêtre de départ montre le reste de chaque bobine (5c41acf) ;
   - lot I, première moitié : logique pure de la fenêtre et ses 24 tests (6e74438) ;
-  - lot I, seconde moitié : fenêtre `spools.js`, CSS, chargement par `overlay.js`, 11 tests d'interface sur un faux DOM, contrôle de chaque route contre le composant, étape CI « Spool manager logic » (4312d27).
-- Pas commencé : J, K, la pose, L et la clôture (section 9).
+  - lot I, seconde moitié : fenêtre `spools.js`, CSS, chargement par `overlay.js`, 11 tests d'interface sur un faux DOM, contrôle de chaque route contre le composant, étape CI « Spool manager logic » (4312d27) ;
+  - lot J : labo hors imprimante et rendu vérifié sur le vrai Mainsail en lecture seule (e6b2db9, 1f80609, bc8cab8, 15fe072, 701fbb3), section 12.
+- Pas commencé : K, la pose, L et la clôture (section 9).
 - Rien de ce module n'est posé sur la K1. Aucune écriture, pose ni G-code n'a été faite pour cette mission.
-- Derniers résultats, après la synchronisation avec `main` (8846197) le 1er novembre : suite complète 2788 passés, 6 ignorés, 2 désélectionnés, 2 xfail, 41 sous-tests ; `node --test` : `logic.test.mjs` 43/43, `spools-logic.test.mjs` 35/35.
+- Derniers résultats, le 1er novembre après 701fbb3 : suite complète 2832 passés, 6 ignorés, 2 désélectionnés, 2 xfail, 41 sous-tests ; `node --test` : `mesh_editor_ui.test.mjs` 7/7, `logic.test.mjs` 43/43, `spools-logic.test.mjs` 35/35.
 - Pilotage : synchronisé avec `main` le 1er novembre (8846197), conflits de `HANDOFF.md` et `STATE.md` résolus en gardant tout `main`. La PR #94 de `main` touche `STATE.md` : resynchroniser avant le merge.
 
 ## 2. Règles machine de la mission
@@ -189,9 +190,9 @@ chaque entrée = `{key:"Maker|net|tare|spool_material", lines:[{density,material
 ### Mainsail et empilement
 
 - Mainsail v2.18.2 (Vue 2, Vuetify 2) derrière nginx sur le port 4409, sans authentification ; `/bobines/` est servi avec `Cache-Control "no-store" always`.
-- Barre du haut : `header.v-app-bar.topbar`, 48 px, clipped-left ; elle contient l'icône de navigation, le logo, `.v-toolbar__title`, le sélecteur d'imprimante, un espace, des boutons et des menus. À vérifier au lot J.
+- Barre du haut, relevée au lot J : `header.topbar.v-app-bar`, 48 px, fixe, couche 8 ; elle contient l'icône de navigation, le logo, `.v-toolbar__title`, le sélecteur d'imprimante, un espace, des boutons et des menus. Le bouton large « Sauvegarde de la configuration » y apparaît tant qu'une sauvegarde est en attente sur la K1 (c'est le cas au 1er novembre). Sous 1264 px, le tiroir de navigation devient temporaire avec un voile `.v-overlay` en couche 7.
 - `overlay.js` est un module : `import("./spools.js")` se résout à côté de lui.
-- Couches : v-app-bar z 5 ; bouton z 6 ; fenêtre z 2147482000 ; toast z 2147482001 ; fenêtre de départ z 2147483000, son mode dans `#kctrl-bobines` `dataset.mode` ("hidden", "choice", "launched", "ending", "minimised").
+- Couches : barre z 8 ; bouton dans la barre z 9 (couche de la barre + 1) ; bouton rond z 6, sous le voile du tiroir tant qu'il est ouvert ; fenêtre z 2147482000 ; toast z 2147482001 ; fenêtre de départ et sa pastille z 2147483000, son mode dans `#kctrl-bobines` `dataset.mode` ("hidden", "choice", "launched", "ending", "minimised").
 - nginx : ligne 16 `client_max_body_size 100m`, ligne 75 `1024m`, ligne 79 `proxy_read_timeout 900s`. Vérifier au lot K que ce délai couvre `/machine/` : le défaut de 60 s est sous les 65 s de `cfs-write`.
 
 ## 5. Conception de `www/bobines/spools.js`
@@ -843,7 +844,7 @@ Tests prioritaires :
 8. En impression, le bandeau s'affiche et l'import est désactivé ; en lecture seule sans verrou, l'import reste actif.
 9. edit_spool garde `empty_spool:""` ; un « Net neuf » vidé donne « Net neuf : valeur attendue. » sans POST.
 10. Une nouvelle bobine poste create_filament puis create_spool, sans slot pour le stock.
-11. Placement : complet avec de la place, compact à l'étroit, sous la barre sans place.
+11. Placement : complet avec de la place, compact à l'étroit, rond en bas à droite quand la barre est pleine, 8 px au-dessus de la pastille de départ quand elle est affichée.
 
 ## 8. Lot I, seconde moitié : fait (4312d27)
 
@@ -851,7 +852,7 @@ Fait dans l'ordre prévu le 1er novembre. Écarts au plan : `overlay.js` charge 
 
 ## 9. Après le lot I
 
-- **Lot J, labo** : un faux Moonraker local, idéalement le vrai composant Python sur la base synthétique de `lab/`, qui sert les pages et l'API ; rendu dans le navigateur sur bureau et téléphone ; zéro erreur console ; 200 bobines ; vérifier le placement sur la vraie barre de Mainsail v2.18.2 ; captures à Thomas.
+- **Lot J, labo** : fait, section 12.
 - **Lot K, paquet de pose** : section `[kctrl_spools]` ; paquet sans `__pycache__` ; préflight en lecture seule (permis au repos sans le verrou) ; fichiers www en 755/644 ; `proxy_read_timeout` de nginx pour `/machine/` ; cinq manifestes épinglent les empreintes de `logic.js`, `bobines.js` et `overlay.js` sur la K1 (`end-after-refill-install-disabled-v1`, `end-overlap-v2`, `end-rewind-confirm-v3`, `end-separated-v1`, `retained-start-v1`) : leurs préflights se fermeront après la pose, à écrire dans le paquet ; après le point 6 de la file, relire ce qui est vraiment posé et épingler ces empreintes-là.
 - **Pose** : après le point 6 de la file, verrou pris, repos revérifié juste avant, accord de Thomas ; seul le Moonraker dédié redémarre ; sauvegarde, empreintes et rollback exacts.
 - **Lot L** : qualification avec Thomas dans le vrai Mainsail (ouvrir, éditer, peser, écrire au CFS au repos, une impression comptée).
@@ -890,3 +891,13 @@ et `node --test packages/k1-control-v1/spool-choice-gate-v1/spools-logic.test.mj
 - `figure(null)` rend "0" : passer par `metres()` et `grams()` pour les valeurs absentes.
 - Un nombre "" ou None vaut « inchangé » côté modèle : le client refuse lui-même un nombre obligatoire vidé.
 - La classe `spools-label` est réservée au libellé du bouton.
+
+## 12. Lot J : fait (1er novembre)
+
+- Labo `lab/lab_server.py` : le vrai composant `kctrl_spools` sur un faux Moonraker, K1 au repos, deux CFS en ligne, base matériau synthétique, 200 bobines entre CFS, stock et archives ; écoute sur 127.0.0.1 seulement. Une impression jouée de 1000 mm décompte 3,03 g sur la bonne bobine. Mémoire mesurée sur le PC à 200 bobines : 425 Kio gardés, 574 Kio au pic d'un export (`test_spools_lab_v1.py`), à remesurer sur la K1 à la pose.
+- `--mainsail` relaie le vrai Mainsail en lecture seule (adresse dans `K1_GATEWAY`, jamais dans le dépôt) ; les routes `/machine/k1_control/spools/` restent servies par le labo et aucune écriture ne part vers la K1.
+- Rendu vérifié sur la vraie barre à 1920, 1280, 768 px (bouton dans la barre, couche 9, élément du dessus à son centre), à 1024 px avec la sauvegarde de configuration en attente et à 375 px (bouton rond en bas à droite). Fenêtre ouverte : pleine page sur téléphone sans défilement horizontal, 760 px alignés sur le bouton au bureau. Relevé : une seule instance, 5 s fenêtre ouverte. Dans le labo à 375 px, barre pleine : le bouton rond passe 8 px au-dessus de la pastille de départ, sans la chevaucher.
+- Zéro erreur console venant du module. Deux erreurs de Mainsail vues à travers le relais, non vérifiées sur le port 4409 : enregistrement du service worker et `net::ERR_NO_BUFFER_SPACE` sur le flux caméra.
+- Corrigé en route : onglets écrasés par une longue liste et largeur téléphone (e6b2db9) ; bouton dessiné sous la vraie barre, couche 8 (bc8cab8) ; bouton rond sous la pastille de départ (15fe072) ; pastille collée au bord gauche sur téléphone (701fbb3).
+- Limite connue : sur téléphone, le bouton rond peut couvrir le bord d'une carte (« +0.05 » de l'offset Z, page en haut) ; un défilement le dégage.
+- Captures envoyées à Thomas : bureau, téléphone, bouton rond, bouton au-dessus de la pastille.
