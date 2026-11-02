@@ -1,7 +1,9 @@
 # Spool manager install V1 - pose du gestionnaire de bobines
 
-Statut : **relevé et préflight verts sur la K1 au repos le 1er novembre à
-19:34, sans rien écrire ; non posé**. ADR-075, document 102.
+Statut : **posé et validé sur la K1 au repos le 2 novembre à 08:40**
+(`INSTALLED_IDLE_OK`, puis `VALIDATED_OK`), après la fin V5 et un nouveau
+relevé identique à celui du 1er novembre ; qualification avec Thomas à faire.
+ADR-075, document 102.
 
 - `remote_install.py` : relevé, préflight, pose, validation et retour arrière.
   Le repos est prouvé par deux lectures identiques de Klipper, avant l'arrêt et

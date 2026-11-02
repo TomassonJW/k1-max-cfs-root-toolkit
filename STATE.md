@@ -1,5 +1,23 @@
 # STATE
 
+## 2 novembre, 08:43 - module bobines posé et validé au repos (ADR-075)
+
+Après la fin V5, dans l'ordre du verrou K1 et sur la demande de Thomas
+(« Faire dans l'ordre prévu? ») : relevé à 08:39:50 identique à celui du
+1er novembre et au manifeste, `PREFLIGHT_OK` (16 fichiers épinglés,
+49 matières), puis `deploy.py install` de 08:40:33 à 08:40:51 : repos
+revérifié, sauvegarde sur la K1, seul le Moonraker K1 Control redémarré,
+`INSTALLED_IDLE_OK` ; `validate` : `VALIDATED_OK`. Bibliothèque neuve
+(révision 0, aucune bobine), huit emplacements CFS lus dont six à voir,
+Moonraker à 27 Mo, swap +20 ko. Ni Klipper, ni G-code, ni écriture CFS, aucun
+mouvement. Dans le vrai Mainsail, le bouton « Bobines » est dans la barre du
+haut et ouvre la fenêtre par-dessus l'écran ; sur téléphone, bouton rond en
+bas à droite. Les préflights et retours arrière de `end-overlap-v2`,
+`end-rewind-confirm-v3`, `end-separated-v1`, `retained-start-v1` et
+`end-after-refill-install-disabled-v1`, qui figent les anciennes pages,
+refusent désormais. Reste la qualification avec Thomas (lot L).
+[Document 102](docs/102-gestion-des-bobines-plan-v1.md).
+
 ## 2 novembre, 08:37 - fin V5 posée et validée au repos (ADR-076)
 
 Sur le GO de Thomas (« Ok, go pour la pose, je suis pas loin »), dans l'ordre

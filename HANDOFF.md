@@ -1,5 +1,20 @@
 # HANDOFF — index de reprise
 
+## 2 novembre, 08:43 - module bobines posé et validé ; qualification avec Thomas
+
+`spool-manager-install-v1` tourne sur la K1 depuis le 2 novembre à 08:40
+(`INSTALLED_IDLE_OK`, `VALIDATED_OK`) : bouton « Bobines » dans la barre de
+Mainsail, bibliothèque neuve. Verrou K1 rendu à 08:43. PR brouillon #95.
+Point de reprise : `packages/k1-control-v1/spool-manager-v1/REPRISE.md`,
+section 9 :
+1. lot L avec Thomas dans le vrai Mainsail : type de bobine vide, bobine
+   créée et pesée sur un emplacement, une écriture au CFS au repos (verrou K1
+   repris avant), retrait et remise d'une bobine, une impression multicouleur
+   pesée avant et après, comparée au journal ;
+2. clôture : `REPRISE.md` versé ici puis supprimé, pilotage, PR #95 fusionnée.
+Retour arrière : `deploy.py rollback` au repos, avant celui des cinq paquets
+qui figent les anciennes pages (README du paquet de pose).
+
 ## 2 novembre, 08:37 - fin V5 posée et validée ; module bobines ensuite
 
 `end-no-stock-flush-v5` tourne sur la K1 depuis le 2 novembre à 08:36
