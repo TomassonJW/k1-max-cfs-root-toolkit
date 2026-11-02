@@ -1,10 +1,10 @@
 # HANDOFF — index de reprise
 
-## 2 novembre, 09:37 - fin V5 posée et validée ; module bobines ensuite
+## 2 novembre, 08:37 - fin V5 posée et validée ; module bobines ensuite
 
-`end-no-stock-flush-v5` tourne sur la K1 depuis le 2 novembre à 09:36
+`end-no-stock-flush-v5` tourne sur la K1 depuis le 2 novembre à 08:36
 (`INSTALLED_IDLE_OK`, `VALIDATED_IDLE_OK`, document 104, section « Fin V5,
-posée »). Verrou K1 rendu à 09:37 à la session bobines pour son point 7.
+posée »). Verrou K1 rendu à 08:37 à la session bobines pour son point 7.
 Point de reprise :
 1. première impression sous V5 : surveillance locale de sa fin par
    `packages/k1-control-v1/end-watch-v1/watch_end.py`, essai à blanc d'abord

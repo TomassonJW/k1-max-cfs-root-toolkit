@@ -156,8 +156,8 @@ et rend la valeur d'`auto_refill` lue. Son retour arrière passe avant celui de
 la garde : après lui, plus rien ne remet l'auto-remplacement au départ, et le
 reçu dit la valeur lue après le redémarrage.
 
-Pose le 2 novembre, sur le GO de Thomas : `PREFLIGHT_OK` à 09:31, puis
-`install` de 09:35:47 à 09:36:19, `INSTALLED_IDLE_OK`, aucun traceback dans le
+Pose le 2 novembre, sur le GO de Thomas : `PREFLIGHT_OK` à 08:31, puis
+`install` de 08:35:47 à 08:36:19, `INSTALLED_IDLE_OK`, aucun traceback dans le
 journal depuis l'arrêt, puis `VALIDATED_IDLE_OK` : révision
 `end-no-stock-flush-v5`, phase `idle`, `auto_refill` 1,
 `auto_refill_saved` vide, `auto_refill_restore_pending` faux. Sauvegarde sur la

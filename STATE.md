@@ -1,14 +1,14 @@
 # STATE
 
-## 2 novembre, 09:37 - fin V5 posée et validée au repos (ADR-076)
+## 2 novembre, 08:37 - fin V5 posée et validée au repos (ADR-076)
 
 Sur le GO de Thomas (« Ok, go pour la pose, je suis pas loin »), dans l'ordre
-du verrou K1 (fin V5, puis module bobines) : préflight `PREFLIGHT_OK` à 09:31
-(23 fichiers épinglés), puis `deploy.py install` de 09:35:47 à 09:36:19 :
+du verrou K1 (fin V5, puis module bobines) : préflight `PREFLIGHT_OK` à 08:31
+(23 fichiers épinglés), puis `deploy.py install` de 08:35:47 à 08:36:19 :
 repos revérifié, sauvegarde sur la K1, Klipper redémarré,
 `INSTALLED_IDLE_OK`, aucun traceback ; `validate` : `VALIDATED_IDLE_OK`.
 `kctrl_end` tourne en révision `end-no-stock-flush-v5`, phase `idle`,
-`auto_refill` 1, rien de sauvegardé ni à remettre. Relecture à 09:36:26 :
+`auto_refill` 1, rien de sauvegardé ni à remettre. Relecture à 08:36:26 :
 `standby`, cibles zéro, `t_command` vide, garde à froid en service. Aucune
 chauffe, aucun mouvement, aucun filament. L'échange de cases pour `T1A` n'est
 pas fait. Suite : surveiller la première fin réelle sous V5 ; la garde capteur

@@ -2,7 +2,7 @@
 
 ## 2 novembre - fin V5 posée et validée au repos (ADR-076)
 
-`kctrl_end.py` révision `end-no-stock-flush-v5` posé le 2 novembre à 09:36,
+`kctrl_end.py` révision `end-no-stock-flush-v5` posé le 2 novembre à 08:36,
 Thomas pas loin : `PREFLIGHT_OK` (23 fichiers épinglés), `INSTALLED_IDLE_OK`,
 `VALIDATED_IDLE_OK`, sauvegarde
 `/usr/data/k1-control-v1/backups/end-no-stock-flush-v5`. Gate de pose close OK
