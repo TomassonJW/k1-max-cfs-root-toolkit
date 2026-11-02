@@ -142,7 +142,7 @@ principale du dépôt : reçus des commandes, extraits du journal Klipper, trois
 images de la caméra, relevé des macros, empreintes `SHA256SUMS`. Les reçus
 portent des identifiants CFS : jamais à publier.
 
-## Fin V5, prête, pas posée
+## Fin V5, posée le 2 novembre
 
 `packages/k1-control-v1/end-no-stock-flush-v5/` remplace `kctrl_end.py`
 (`cancel-retained-v4` vers `end-no-stock-flush-v5`). Elle coupe
@@ -155,6 +155,15 @@ exige la garde à froid en service, épingle 23 fichiers (dont la garde
 et rend la valeur d'`auto_refill` lue. Son retour arrière passe avant celui de
 la garde : après lui, plus rien ne remet l'auto-remplacement au départ, et le
 reçu dit la valeur lue après le redémarrage.
+
+Pose le 2 novembre, sur le GO de Thomas : `PREFLIGHT_OK` à 09:31, puis
+`install` de 09:35:47 à 09:36:19, `INSTALLED_IDLE_OK`, aucun traceback dans le
+journal depuis l'arrêt, puis `VALIDATED_IDLE_OK` : révision
+`end-no-stock-flush-v5`, phase `idle`, `auto_refill` 1,
+`auto_refill_saved` vide, `auto_refill_restore_pending` faux. Sauvegarde sur la
+K1 sous `/usr/data/k1-control-v1/backups/end-no-stock-flush-v5`, reçus locaux
+hors Git sous `inventory/raw/20261101-end-no-stock-flush-v5/`. Aucune chauffe,
+aucun mouvement, aucun filament.
 
 ## Preuves
 
@@ -236,7 +245,7 @@ sont à relire avec cette correction.
    nettoyage de la buse de 09:07 à 09:35 (section « Matin du 1er novembre »).
 2. Échange de cases pour T1A, puis vérification du capteur si l'erreur suit la
    case. Lire `box.filament_useup` avant tout geste filament.
-3. Pose de la fin V5 au repos revérifié, Thomas présent, préflight d'abord ;
-   surveillance locale de la première fin sous V5 par
+3. Fait le 2 novembre : pose de la fin V5 au repos (section « Fin V5 »).
+   Reste la surveillance locale de la première fin sous V5 par
    `packages/k1-control-v1/end-watch-v1/watch_end.py`, essai à blanc d'abord
    (README du paquet).
