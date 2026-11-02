@@ -1,5 +1,21 @@
 # HANDOFF — index de reprise
 
+## 2 novembre, 08:37 - fin V5 posée et validée ; module bobines ensuite
+
+`end-no-stock-flush-v5` tourne sur la K1 depuis le 2 novembre à 08:36
+(`INSTALLED_IDLE_OK`, `VALIDATED_IDLE_OK`, document 104, section « Fin V5,
+posée »). Verrou K1 rendu à 08:37 à la session bobines pour son point 7.
+Point de reprise :
+1. première impression sous V5 : surveillance locale de sa fin par
+   `packages/k1-control-v1/end-watch-v1/watch_end.py`, essai à blanc d'abord
+   (README du paquet) ; à la fin, lire `kctrl_end` (`phase`, `failure`,
+   `auto_refill_saved`, `auto_refill_restore_pending`) et `box.auto_refill` ;
+2. une fois cette fin validée, mission de pose de la garde capteur CFS
+   (section du 1er novembre, 16:15) ;
+3. échange de cases pour `T1A` avec Thomas, toujours à faire.
+Retour arrière de la V5 : `deploy.py rollback`, au repos, garde capteur
+retirée d'abord si elle est posée.
+
 ## 1er novembre, 09:42 - T1A retirée à chaud, buse nettoyée ; échange de cases puis fin V5 (ADR-076)
 
 La garde `cold-push-guard-v1` est en service depuis le 31 octobre à 23:46 :

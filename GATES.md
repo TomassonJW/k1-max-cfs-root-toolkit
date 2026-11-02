@@ -1,5 +1,16 @@
 # GATES
 
+## 2 novembre - fin V5 posée et validée au repos (ADR-076)
+
+`kctrl_end.py` révision `end-no-stock-flush-v5` posé le 2 novembre à 08:36,
+Thomas pas loin : `PREFLIGHT_OK` (23 fichiers épinglés), `INSTALLED_IDLE_OK`,
+`VALIDATED_IDLE_OK`, sauvegarde
+`/usr/data/k1-control-v1/backups/end-no-stock-flush-v5`. Gate de pose close OK
+au repos. Gate suivante : première fin réelle sous V5, surveillée par
+`end-watch-v1` (essai à blanc d'abord) ; puis pose de la garde capteur CFS.
+Retour arrière : garde capteur d'abord, V5 ensuite, garde à froid en dernier.
+[Document 104](docs/104-poussee-a-froid-du-31-octobre-garde-et-fin-v5.md).
+
 ## 1er novembre - garde à froid posée, fin V5 prête (ADR-076)
 
 `kctrl_purge_guard.py` révision `cold-push-guard-v1` posé au repos le
