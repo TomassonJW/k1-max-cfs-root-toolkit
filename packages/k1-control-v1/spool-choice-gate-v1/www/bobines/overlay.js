@@ -8,6 +8,9 @@
 //
 // Shadow DOM: Mainsail's styles never reach the window and the window's never
 // reach Mainsail. Everything is fetched from /bobines/ on the same origin.
+//
+// The same tag brings the spool manager (spools.js, document 102): its own
+// shadow root, its button above Mainsail's top bar, its own failures.
 import { mount } from "./bobines.js";
 
 const POLL_MS = 750;
@@ -88,3 +91,8 @@ document.addEventListener("keydown", (event) => {
 });
 
 document.body.append(host);
+
+// Loaded apart: an error in the spool manager leaves the start window intact.
+import("./spools.js")
+  .then((module) => module.start())
+  .catch((error) => console.warn("K1 Control: gestion des bobines indisponible", error));

@@ -1,0 +1,20 @@
+{
+ "_note": "Synthetic fixture in the layout of the K1 material database (result.list[].base, type under meterialType). Written for the tests and the lab; none of these records was copied from the printer.",
+ "result": {
+  "list": [
+   {"base": {"id": "00001", "brand": "Generic", "name": "Generic PLA", "meterialType": "PLA", "density": "1.24", "diameter": "1.75"}, "kvParam": {"nozzle_temperature": "220"}},
+   {"base": {"id": "00002", "brand": "Generic", "name": "Generic PLA-Silk", "meterialType": "PLA-SILK", "density": 1.24, "diameter": 1.75}, "kvParam": {"nozzle_temperature": "225"}},
+   {"base": {"id": "00003", "brand": "Generic", "name": "Generic PETG", "meterialType": "PETG", "density": 1.27, "diameter": 1.75}, "kvParam": {"nozzle_temperature": "240"}},
+   {"base": {"id": "00004", "brand": "Generic", "name": "Generic ABS", "meterialType": "ABS", "density": 1.04, "diameter": 1.75}, "kvParam": {"nozzle_temperature": "250"}},
+   {"base": {"id": "00005", "brand": "Generic", "name": "Generic TPU", "meterialType": "TPU", "density": 1.21, "diameter": 1.75}, "kvParam": {"nozzle_temperature": "230"}},
+   {"base": {"id": "01001", "brand": "Creality", "name": "Hyper PLA", "meterialType": "PLA", "density": 1.26, "diameter": 1.75}, "kvParam": {"nozzle_temperature": "220"}},
+   {"base": {"id": "01002", "brand": "Creality", "name": "CR-PLA", "meterialType": "PLA", "density": 1.24, "diameter": 1.75}, "kvParam": {"nozzle_temperature": "215"}},
+   {"base": {"id": "01003", "brand": "Creality", "name": "Hyper PETG", "meterialType": "PETG", "density": 1.27, "diameter": 1.75}, "kvParam": {"nozzle_temperature": "245"}},
+   {"base": {"id": "02001", "brand": "Acme Filaments", "name": "Acme PLA", "meterialType": "PLA", "density": 1.25, "diameter": 1.75}, "kvParam": {"nozzle_temperature": "210"}},
+   {"base": {"id": "03001", "brand": "Nodensity", "name": "Mystery PA", "meterialType": "PA", "diameter": 1.75}, "kvParam": {"nozzle_temperature": "260"}},
+   {"base": {"id": "12", "brand": "Broken", "name": "Short id", "meterialType": "PLA", "density": 1.24}},
+   {"base": {"id": "04001", "brand": "Broken", "name": "No type", "density": 1.24}},
+   {"kvParam": {"nozzle_temperature": "200"}}
+  ]
+ }
+}

@@ -1,6 +1,7 @@
 # ADR-075 - Les bobines vivent dans K1 Control, sur la K1
 
-Date : 31 octobre 2026. Statut : proposée, à trancher par Thomas.
+Date : 31 octobre 2026. Statut : acceptée par Thomas le 31 octobre 2026,
+option 1.
 
 ## Contexte
 
@@ -10,7 +11,7 @@ synchro avec le CFS ([document 102](../102-gestion-des-bobines-plan-v1.md)).
 Il faut choisir où vivent ces données. C'est une décision de propriété des
 données et de déploiement : elle revient à Thomas.
 
-## Option 1 - K1 Control, sur la K1 (recommandée)
+## Option 1 - K1 Control, sur la K1 (retenue)
 
 Un composant du Moonraker dédié et des fichiers JSON sous
 `/usr/data/k1-control-v1/state/spools/`.
@@ -47,17 +48,17 @@ Contre :
   est injoignable ;
 - la K1 dépend d'un autre serveur pour une fonction quotidienne.
 
-## Décision proposée
+## Décision
 
-Option 1, avec un modèle de données calqué sur Spoolman (fabricant, filament,
+Option 1, choisie par Thomas le 31 octobre 2026 (« Oui, dans la K1 ») après la
+mesure des ressources de la K1 pendant une impression (document 102,
+section 3). Le modèle de données est calqué sur Spoolman (fabricant, filament,
 bobine, mêmes unités) : si Thomas installe Spoolman un jour, un export suffit,
 sans ressaisie.
 
 ## Conséquences
 
-- Aucun code n'est écrit avant la réponse de Thomas.
-- Le document 102 décrit l'option 1. Si Thomas choisit l'option 2, les lots A,
-  B, C et E deviennent un client Spoolman et le plan est réécrit avant tout
-  code.
-- Dans les deux cas, Klipper n'est pas modifié, la pose ne redémarre que le
-  Moonraker dédié, au repos, et le reste RFID du CFS n'est jamais écrit.
+- Les lots A à K du document 102 se construisent et se prouvent hors
+  imprimante ; la pose attend leurs preuves (sections 11 et 12).
+- Klipper n'est pas modifié, la pose ne redémarre que le Moonraker dédié, au
+  repos, et le reste RFID du CFS n'est jamais écrit.

@@ -1,5 +1,15 @@
 # GATES
 
+## 2 novembre - module bobines posé et validé au repos (ADR-075)
+
+Paquet `spool-manager-install-v1` posé le 2 novembre à 08:40, après la fin V5 :
+relevé identique au manifeste, `PREFLIGHT_OK`, `INSTALLED_IDLE_OK`,
+`VALIDATED_OK`, seul le Moonraker K1 Control redémarré, sauvegarde sur la K1.
+Gate de pose close OK au repos. Gate suivante : qualification avec Thomas
+(lot L) ; une écriture au CFS reprend d'abord le verrou K1. Retour arrière :
+`deploy.py rollback` au repos, avant celui des cinq paquets qui figent les
+anciennes pages ([document 102](docs/102-gestion-des-bobines-plan-v1.md)).
+
 ## 2 novembre - fin V5 posée et validée au repos (ADR-076)
 
 `kctrl_end.py` révision `end-no-stock-flush-v5` posé le 2 novembre à 08:36,
@@ -37,10 +47,11 @@ Thomas présent, retour arrière prêt ; la garde capteur se retire avant la V5.
 
 ## 31 octobre - gestion des bobines : plan, aucune gate machine ouverte
 
-Plan V1 écrit (document 102), ADR-075 proposée. Aucune gate machine n'est
-ouverte. Gate suivante, après la réponse de Thomas sur ADR-075 : construction
-hors imprimante des lots A à K, puis pose au repos du seul Moonraker dédié et
-qualification par deux gestes ([document 102](docs/102-gestion-des-bobines-plan-v1.md), section 12).
+Plan V1 écrit (document 102), ADR-075 acceptée par Thomas. Aucune gate
+machine n'est ouverte. Gate en cours : construction hors imprimante des lots A
+à K ; A à J faits et testés au 1er novembre (PR brouillon #95), K reste ;
+ensuite pose au repos du seul Moonraker dédié et qualification par deux
+gestes ([document 102](docs/102-gestion-des-bobines-plan-v1.md), section 12).
 
 ## 2 octobre — annulation qui garde le filament : posée (ADR-074)
 

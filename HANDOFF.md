@@ -1,5 +1,82 @@
 # HANDOFF — index de reprise
 
+## 3 novembre, 01:46 - module bobines qualifié (gestes 1 à 4), PR #95 fusionnée
+
+Le module bobines (document 102, ADR-075) tourne sur la K1 depuis le
+2 novembre à 08:40. Thomas a fait les gestes 1 à 4 du lot L dans le vrai
+Mainsail : type de bobine vide, bobine créée et pesée, écriture au CFS au
+repos, retrait et remise d'une bobine. Le geste 4 a révélé un défaut : une
+bobine retirée garde au CFS sa matière et sa couleur mais passe `vender` à
+`none`, et le module la croyait encore là. Corrigé (42466cf), posé le
+3 novembre à 01:40 par le nouveau mode `deploy.py update` (`UPDATED_IDLE_OK`,
+`VALIDATED_OK`) : un seul fichier remplacé, seul le Moonraker K1 Control
+redémarré, bibliothèque gardée (7 bobines, révision 25). Revu en direct : le
+retrait passe la bobine « à ranger », la remise la montre « inconnue » avec sa
+candidate, « C'est elle » la raccroche. Verrou K1 rendu à 01:46.
+
+Reste, sans verrou ni pose :
+1. geste 5, quand Thomas le décide : peser une bobine avant et après une
+   impression multicouleur, comparer au journal de la fenêtre. Le décompte
+   tourne déjà après chaque impression (purges et coupes comprises) ;
+   `counting_verified` reste faux jusque-là ;
+2. presets par marque, type et couleur (ROADMAP, hors V1).
+
+Pour toucher au module ensuite :
+- changer une page ou un composant : modifier la source, `python
+  packages/k1-control-v1/spool-manager-install-v1/build_manifest.py`, tests,
+  puis au repos et verrou pris `deploy.py update` et `deploy.py validate`. Le
+  mode remplace seulement les fichiers posés le 2 novembre
+  (`installed_sha256`) dont la source a changé, copie les anciens sous
+  `update-<horodatage>` dans la sauvegarde de la K1 et les remet seul en cas
+  d'échec (prouvé le 3 novembre à 01:39 par un vrai échec, rendu exact).
+  Après une seconde mise à jour, recopier les nouvelles empreintes posées dans
+  `INSTALLED` de `build_manifest.py` ;
+- retour arrière complet : `deploy.py rollback` au repos, avant celui des cinq
+  paquets qui figent les anciennes pages (`end-after-refill-install-disabled-v1`,
+  `end-overlap-v2`, `end-rewind-confirm-v3`, `end-separated-v1`,
+  `retained-start-v1`) : leurs préflights et retours arrière refusent depuis
+  la pose. Après une nouvelle version de K1 Control, recopier les empreintes
+  du relevé (`deploy.py survey`) dans `SURVEY` et `PAGES_BEFORE`.
+
+Fichiers : modèle `kctrl_spools_model.py`, composant `kctrl_spools.py`,
+stockage `kctrl_spools_store.py`, décompte `kctrl_spools_counter.py` sous
+`packages/k1-control-v1/spool-manager-v1/` ; pages sous
+`packages/k1-control-v1/spool-choice-gate-v1/www/bobines/` (`spools.js`,
+`spools-logic.js`, `overlay.js`, `styles.css`, `tares.json` tiré de
+SpoolmanDB, licence MIT) ; labo hors imprimante `spool-manager-v1/lab/`.
+Tests : `tests/test_kctrl_spools_*_v1.py`, `tests/test_spool_manager_install_v1.py`,
+`tests/test_bobines_page_v1.py`, `node --test` sur `spools-logic.test.mjs`.
+
+Pièges :
+- les pages ne contiennent aucun `http://`, `href="` ni `src="` littéral, un
+  SVG sans `xmlns` ;
+- un fichier figé par un ancien paquet ne doit pas dériver : geler l'ancienne
+  copie et y pointer le manifeste, comme `frozen/www/bobines/` ;
+- `deploy.py` refuse un `remote_install.py` dont l'empreinte diffère du
+  manifeste : reconstruire le manifeste après chaque changement ;
+- `moonraker.conf` est en 600, mode gardé ; `www/bobines/package.json`
+  n'est jamais posé ;
+- sur téléphone, le bouton rond peut couvrir le bord d'une carte ; un
+  défilement le dégage. Deux erreurs de Mainsail vues en console (service
+  worker, flux caméra), étrangères au module ;
+- une seule instance du relevé tourne, 5 s fenêtre ouverte, rien fenêtre
+  fermée. Le relevé de la fenêtre de départ (750 ms) est plus ancien.
+
+## 2 novembre, 08:43 - module bobines posé et validé ; qualification avec Thomas
+
+`spool-manager-install-v1` tourne sur la K1 depuis le 2 novembre à 08:40
+(`INSTALLED_IDLE_OK`, `VALIDATED_OK`) : bouton « Bobines » dans la barre de
+Mainsail, bibliothèque neuve. Verrou K1 rendu à 08:43. PR brouillon #95.
+Point de reprise : l'ancien `REPRISE.md` (fondu le 3 novembre dans la section du jour),
+section 9 :
+1. lot L avec Thomas dans le vrai Mainsail : type de bobine vide, bobine
+   créée et pesée sur un emplacement, une écriture au CFS au repos (verrou K1
+   repris avant), retrait et remise d'une bobine, une impression multicouleur
+   pesée avant et après, comparée au journal ;
+2. clôture : `REPRISE.md` versé ici puis supprimé, pilotage, PR #95 fusionnée.
+Retour arrière : `deploy.py rollback` au repos, avant celui des cinq paquets
+qui figent les anciennes pages (README du paquet de pose).
+
 ## 2 novembre, 08:37 - fin V5 posée et validée ; module bobines ensuite
 
 `end-no-stock-flush-v5` tourne sur la K1 depuis le 2 novembre à 08:36
@@ -116,17 +193,23 @@ L'arrêt d'urgence de 19:16 vu pendant la mesure vient de Thomas, après ce bug,
 traité dans une autre session (section 9).
 [Document 103](docs/103-ecritures-flash-cause-usure-parade.md).
 
-## 31 octobre - plan de gestion des bobines (document 102, ADR-075 proposée)
+## 31 octobre - gestion des bobines (document 102, ADR-075 acceptée)
 
 Thomas veut gérer ses bobines dans Mainsail : bouton et fenêtre, synchro avec
 le CFS dans les deux sens, reste en grammes et en mètres, bibliothèque des
 bobines vides, décompte après chaque impression, stock. Aucun outil existant ne
-couvre huit emplacements, des bobines sans puce et les purges par bobine. Plan
-de A à Z écrit, rien installé, K1 non touchée. Point de reprise : la réponse de
-Thomas sur le lieu des données (ADR-075 : K1 Control sur la K1, recommandé, ou
-Spoolman sur le Proxmox) ; puis les lots A à K hors imprimante, la pose au
-repos du seul Moonraker dédié et les deux gestes de qualification (retrait et
-remise d'une bobine, impression multicouleur pesée avant et après).
+couvre huit emplacements, des bobines sans puce et les purges par bobine.
+Thomas a choisi K1 Control sur la K1 (ADR-075). Au 1er novembre, lots A à K
+écrits et testés hors imprimante : composant, stockage, décompte, catalogue des
+bobines vides, reste dans la fenêtre de départ, fenêtre Bobines dans la barre
+de Mainsail, labo local, rendu vérifié sur le vrai Mainsail en lecture seule et
+paquet de pose `spool-manager-install-v1`. Relevé et préflight verts sur la K1
+au repos à 19:34, en lecture seule ; rien posé ni écrit. PR brouillon #95, CI
+verte. Point de reprise : l'ancien `REPRISE.md` (fondu le 3 novembre dans la section du jour),
+section 9 : après la fin V5 (point 6 du verrou de la K1), nouveau relevé et
+préflight, puis pose au repos du seul Moonraker dédié et les deux gestes de
+qualification (retrait et remise d'une bobine, impression multicouleur pesée
+avant et après).
 Mesuré pendant une impression : mémoire et processeur gardent une large marge.
 Constat annexe : la K1 écrit d'elle-même environ 40 Mo par minute sur sa flash
 (8,5 Go en 3 h 43 depuis son démarrage), rien de K1 Control ; enquête à part.

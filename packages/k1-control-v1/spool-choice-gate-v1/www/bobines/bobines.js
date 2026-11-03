@@ -15,12 +15,16 @@
 import {
   NAMES, assign, buildModel, colourName, compatibility, completeness, elapsedLabel,
   isLight, mapParam, nextToConnect, normaliseHex, overlayMode, pendingKey,
-  remainingLabel, shortName, summaryLine, usedFilaments,
+  shortName, slotRemaining, spoolSlots, startNotes, summaryLine, unidentified, usedFilaments,
 } from "./logic.js";
 
 const POLL_MS = 1000;
 const TIMEOUT_MS = 4000;
 const FILES_MS = 15000;
+// The spool manager (document 102), read only and only while on screen.
+const SPOOLS = "/machine/k1_control/spools/";
+const SPOOLS_MS = 5000;
+const SPOOLS_RETRY_MS = 30000;
 
 export function mount(root, options) {
   const settings = options || {};
@@ -48,6 +52,13 @@ export function mount(root, options) {
     armedTimer: 0,
     files: [],
     filesAt: 0,
+    // What the spool manager says of each slot, null without it; what the
+    // waiting file plans per filament, read once per waiting file.
+    spools: null,
+    spoolsAt: 0,
+    spoolsFails: 0,
+    spoolsLoading: false,
+    planned: { key: "", items: null },
     signature: "",
     toastTimer: 0,
     // Window only: what is on screen, the file put aside, the launch sent.
@@ -112,6 +123,58 @@ export function mount(root, options) {
       loadFiles();
     }
     render();
+    if (app.online && onScreen() && !app.spoolsLoading
+      && Date.now() - app.spoolsAt > (app.spoolsFails >= 2 ? SPOOLS_RETRY_MS : SPOOLS_MS)) {
+      loadSpools();
+    }
+    loadPlanned();
+  }
+
+  // The window is on screen only while it shows something; the page, while
+  // its tab is in front.
+  function onScreen() {
+    if (typeof document !== "undefined" && document.hidden) return false;
+    return !overlay || (app.mode !== "hidden" && app.mode !== "minimised");
+  }
+
+  // What is left on each spool. A convenience like the file list: two
+  // failures in a row and the cards go back to saying nothing about it, and
+  // the start never waits on it.
+  async function loadSpools() {
+    app.spoolsAt = Date.now();
+    app.spoolsLoading = true;
+    try {
+      const payload = await call("GET", SPOOLS + "status");
+      app.spools = spoolSlots(payload && payload.result);
+      app.spoolsFails = 0;
+    } catch (_) {
+      app.spoolsFails += 1;
+      if (app.spoolsFails >= 2) app.spools = null;
+    } finally {
+      app.spoolsLoading = false;
+    }
+    loadPlanned();
+    render();
+  }
+
+  // What the waiting file plans per filament, asked once per waiting file;
+  // without an answer the shortfall warnings are simply not shown.
+  async function loadPlanned() {
+    const model = app.model;
+    const key = app.spools && model && model.view === "choice" ? pendingKey(model) : "";
+    if (!key || app.planned.key === key) return;
+    app.planned = { key, items: null };
+    const file = model.file || model.name.replace(/^\//, "");
+    try {
+      const payload = await call("GET", SPOOLS + "planned?file=" + encodeURIComponent(file));
+      const result = (payload && payload.result) || {};
+      if (app.planned.key === key && Array.isArray(result.planned)) {
+        app.planned = { key, items: result.planned };
+        render();
+      }
+    } catch (_) {
+      // Not retried for this file: the warnings are a convenience.
+    }
   }
 
   async function loadFiles() {
@@ -358,7 +421,7 @@ export function mount(root, options) {
 
     const signature = JSON.stringify([
       model, app.installed, app.online, app.assignments, app.active, app.busy,
-      app.armed, app.files, app.mode,
+      app.armed, app.files, app.mode, app.spools, app.planned,
     ]);
     if (signature === app.signature) {
       const live = ui.main.querySelector("#elapsed");
@@ -482,9 +545,14 @@ export function mount(root, options) {
           : (check.complete ? "touchez une bobine prise pour la changer" : ""))),
       spoolGrid(model, activeEntry, true, app.assignments)));
 
-    // Launch.
+    // Launch, under what the spool manager has to say about it.
     const summary = summaryLine(model.filaments, app.assignments);
+    const notes = startNotes(model, app.assignments, app.spools,
+      app.planned.key === app.key ? app.planned : null);
     ui.main.append(h("section", { class: "actions" },
+      notes.length
+        ? h("ul", { class: "warnings" }, notes.map((note) => h("li", { class: "is-" + note.level }, note.text)))
+        : null,
       h("div", { class: "summary " + (check.complete ? "is-ready" : "") }, summary),
       h("div", { class: "buttons" },
         h("button", {
@@ -513,7 +581,8 @@ export function mount(root, options) {
   // `owners` maps a filament to the spool it holds: the operator's choice
   // while choosing, the confirmed map of a print launched from here, nothing
   // otherwise, so a badge never shows a pairing that is not the current one.
-  function spoolGrid(model, activeEntry, clickable, owners) {
+  // `before` says the remaining shown predates the print running.
+  function spoolGrid(model, activeEntry, clickable, owners, before) {
     const grid = h("div", { class: "spool-grid" });
     if (model.units.length === 0) {
       grid.append(h("p", { class: "empty" }, "Aucune unité CFS connectée."));
@@ -527,8 +596,13 @@ export function mount(root, options) {
         const owner = taken[slot.name];
         const ownerEntry = owner ? model.filaments.find((entry) => entry.logical === owner) : null;
         const fit = activeEntry && slot.loaded ? compatibility(activeEntry, slot) : null;
+        const known = app.spools ? app.spools.slots[slot.name] : null;
+        const rest = slot.loaded ? slotRemaining(known) : null;
+        const unknown = !slot.loaded && unidentified(known);
+        const restNotes = rest ? [rest.note, before && rest.kind === "spool" ? "avant cette impression" : ""]
+          .filter(Boolean) : [];
         const classes = ["spool"];
-        if (!slot.loaded) classes.push("is-empty");
+        if (!slot.loaded) classes.push(unknown ? "is-unknown" : "is-empty");
         if (!clickable) classes.push("is-static");
         if (owner) classes.push("is-taken");
         if (fit && fit.exact) classes.push("is-exact");
@@ -548,10 +622,11 @@ export function mount(root, options) {
               h("span", { class: "kind" }, slot.type || "matière ?"),
               h("span", { class: "colour" }, colour ? colourName(colour) : "sans couleur",
                 colour ? [h("br"), h("span", { class: "hex" }, "#" + colour)] : null),
-              remainingLabel(slot.remain) ? h("span", { class: "remain" }, remainingLabel(slot.remain)) : null,
+              rest ? h("span", { class: "remain" + (rest.level ? " is-" + rest.level : "") }, rest.text) : null,
+              ...restNotes.map((note) => h("span", { class: "remain-note" }, note)),
               fit ? h("span", { class: "fit is-" + fit.level }, fit.label) : null,
             ]
-            : h("span", { class: "kind" }, "vide")));
+            : h("span", { class: "kind" }, unknown ? "non identifiée" : "vide")));
       }
     }
     return grid;
@@ -587,7 +662,7 @@ export function mount(root, options) {
     ui.main.append(heroNode);
     ui.main.append(h("section", { class: "pane pane-spools is-wide" },
       h("h3", null, h("span", null, "Les bobines du CFS")),
-      spoolGrid(model, null, false, fromPage ? model.confirmedMap : {})));
+      spoolGrid(model, null, false, fromPage ? model.confirmedMap : {}, true)));
   }
 
   function renderIdle(model) {

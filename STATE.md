@@ -1,5 +1,38 @@
 # STATE
 
+## 3 novembre, 01:46 - module bobines qualifié avec Thomas, gestes 1 à 4
+
+Lot L dans le vrai Mainsail : type de bobine vide, bobine créée et pesée,
+écriture au CFS au repos, retrait et remise d'une bobine. Défaut du geste 4 :
+une bobine retirée garde au CFS sa matière et sa couleur avec `vender`
+`none`, et restait affichée. Corrigé (`vender` `none` vaut vide), posé au
+repos le 3 novembre à 01:40 par `deploy.py update` : premier essai refusé par
+la comparaison des bobines et rendu exact (`UPDATE_FAILED_ROLLED_BACK`), second
+`UPDATED_IDLE_OK` puis `VALIDATED_OK`. Un fichier remplacé, seul le Moonraker
+K1 Control redémarré, ni Klipper ni G-code. Revu en direct : retrait vu, remise
+« inconnue » avec sa candidate, « C'est elle » la raccroche à `T1B`. 7 bobines,
+révision 25, Moonraker à 26 Mo. Geste 5 (impression pesée) à faire ;
+`counting_verified` reste faux d'ici là. PR #95 fusionnée.
+[Document 102](docs/102-gestion-des-bobines-plan-v1.md).
+
+## 2 novembre, 08:43 - module bobines posé et validé au repos (ADR-075)
+
+Après la fin V5, dans l'ordre du verrou K1 et sur la demande de Thomas
+(« Faire dans l'ordre prévu? ») : relevé à 08:39:50 identique à celui du
+1er novembre et au manifeste, `PREFLIGHT_OK` (16 fichiers épinglés,
+49 matières), puis `deploy.py install` de 08:40:33 à 08:40:51 : repos
+revérifié, sauvegarde sur la K1, seul le Moonraker K1 Control redémarré,
+`INSTALLED_IDLE_OK` ; `validate` : `VALIDATED_OK`. Bibliothèque neuve
+(révision 0, aucune bobine), huit emplacements CFS lus dont six à voir,
+Moonraker à 27 Mo, swap +20 ko. Ni Klipper, ni G-code, ni écriture CFS, aucun
+mouvement. Dans le vrai Mainsail, le bouton « Bobines » est dans la barre du
+haut et ouvre la fenêtre par-dessus l'écran ; sur téléphone, bouton rond en
+bas à droite. Les préflights et retours arrière de `end-overlap-v2`,
+`end-rewind-confirm-v3`, `end-separated-v1`, `retained-start-v1` et
+`end-after-refill-install-disabled-v1`, qui figent les anciennes pages,
+refusent désormais. Reste la qualification avec Thomas (lot L).
+[Document 102](docs/102-gestion-des-bobines-plan-v1.md).
+
 ## 2 novembre, 08:37 - fin V5 posée et validée au repos (ADR-076)
 
 Sur le GO de Thomas (« Ok, go pour la pose, je suis pas loin »), dans l'ordre
@@ -130,18 +163,24 @@ pendant la mesure vient de Thomas, après un bug de fin d'impression traité
 dans une autre session.
 [Document 103](docs/103-ecritures-flash-cause-usure-parade.md).
 
-## 31 octobre - plan de gestion des bobines, rien d'installé
+## 31 octobre - gestion des bobines : lots A à K construits, rien d'installé
 
 Plan V1 écrit pour gérer les bobines dans Mainsail (document 102) : composant
 Moonraker `kctrl_spools`, stockage JSON sur la K1, matière et couleur
 synchronisées dans les deux sens par `KCTRL_FILAMENT` au repos avec relecture,
 décompte par segment depuis la position E (purges comprises), fenêtre Bobines
-dans Mainsail. ADR-075 proposée, en attente de Thomas. Sur la K1, lectures
-seules pendant une impression, aucun fichier ni réglage changé : marge large en
-mémoire et processeur ; la K1 écrit d'elle-même environ 40 Mo par minute sur sa
+dans Mainsail. ADR-075 acceptée par Thomas : les données vivent dans K1
+Control, sur la K1. Au 1er novembre, lots A à K construits et testés hors
+imprimante (PR brouillon #95, CI verte), dont le labo, le rendu sur le vrai
+Mainsail relayé en lecture seule et le paquet de pose
+`spool-manager-install-v1`, dont le relevé et le préflight sont verts sur la K1
+au repos à 19:34, sans rien écrire. Restent la pose, après la fin V5 et un
+nouveau relevé, et la qualification. Sur la K1, lectures seules, aucun fichier
+ni réglage changé ; pendant une impression, marge large en mémoire et
+processeur ; la K1 écrit d'elle-même environ 40 Mo par minute sur sa
 flash (8,5 Go en 3 h 43 depuis son démarrage), rien de K1 Control. Le « reste
 100 % » de la fenêtre de départ pour une bobine sans puce n'est pas une mesure ;
-le lot H le remplace.
+le lot H, construit, le remplacera à la pose.
 [Document 102](docs/102-gestion-des-bobines-plan-v1.md).
 
 ## 2 octobre, 12:53 — une annulation garde le filament et libère le départ (ADR-074)

@@ -7,6 +7,11 @@ empreintes, un plan ordonné de sauvegarde/pose/retour arrière et un validateur
 pour les lectures à froid. Il ne contient aucun transport SSH et n'exécute
 aucune commande du plan. Ce n'est pas un déployeur automatique.
 
+Mise à jour du 1er novembre : les trois fichiers Bobines de `main` évoluent
+avec le gestionnaire de bobines (document 102). Les versions posées ici sont
+figées dans `frozen/www/bobines/` avec les mêmes empreintes ; le générateur lit
+ces copies et non plus la page en cours.
+
 ## Construire et relire
 
 Depuis la racine du dépôt :

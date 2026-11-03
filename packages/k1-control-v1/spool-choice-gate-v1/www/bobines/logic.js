@@ -245,10 +245,172 @@ export function compatibility(filament, slot) {
   return { level: "colour", label: "même matière, autre couleur", exact: false };
 }
 
-export function remainingLabel(remain) {
-  const value = Number(remain);
-  if (!Number.isFinite(value) || value < 0) return "";
-  return "reste " + Math.round(value) + " %";
+// ------------------------------------------------- what is left on a spool
+// The spool manager (document 102), when installed, says what each slot
+// holds and what is left on it. Without it the cards say nothing about what
+// is left: the CFS's own figure is 100 % for every chipless spool, which is
+// not a measure.
+
+// A number in French: comma decimal, `decimals` places at most, none when
+// the value is whole, rounded half away from zero, never "-0".
+export function figure(value, decimals = 1) {
+  const number = Number(value);
+  if (!Number.isFinite(number)) return "";
+  const scale = 10 ** decimals;
+  const rounded = Math.sign(number) * Math.round(Math.abs(number) * scale) / scale;
+  return String(rounded === 0 ? 0 : rounded).replace(".", ",");
+}
+
+// Grams as a person reads them: one decimal under ten, whole above.
+export function gramsLabel(value) {
+  return figure(value, Math.abs(Number(value)) < 10 ? 1 : 0);
+}
+
+// The manager's status, keyed by slot: its verdict, what the CFS shows, the
+// spool the library puts there and that spool's fiche. null when the answer
+// is not the manager's.
+export function spoolSlots(status) {
+  if (!status || !Array.isArray(status.slots)) return null;
+  const spools = {};
+  for (const spool of Array.isArray(status.spools) ? status.spools : []) {
+    if (spool && spool.id) spools[spool.id] = spool;
+  }
+  const fiches = status.filaments && typeof status.filaments === "object" ? status.filaments : {};
+  const slots = {};
+  for (const view of status.slots) {
+    if (!view || typeof view.slot !== "string") continue;
+    const spool = (view.spool && spools[view.spool]) || null;
+    slots[view.slot] = {
+      status: String(view.status || ""),
+      observed: view.observed || {},
+      spool,
+      fiche: (spool && fiches[spool.filament]) || null,
+    };
+  }
+  return {
+    slots,
+    verified: status.counting_verified === true,
+    printing: Boolean(status.klippy && status.klippy.printing),
+  };
+}
+
+// What the card of a slot says is left, or null to say nothing: the
+// library's count when its spool is the one the CFS shows, else the figure a
+// chip carries.
+export function slotRemaining(known) {
+  if (!known) return null;
+  if (known.status === "a_verifier") {
+    return { text: "à vérifier", level: "warn", kind: "check", counted: false, note: "" };
+  }
+  const spool = known.spool;
+  if (spool && (known.status === "ok" || known.status === "en_attente_cfs")) {
+    const remaining = spool.remaining || {};
+    const note = known.status === "en_attente_cfs" ? "écriture au CFS en attente" : "";
+    if (remaining.exhausted) {
+      return { text: "épuisée selon le décompte", level: "low", kind: "spool", counted: true, note };
+    }
+    const shown = remaining.shown;
+    if (shown && Number.isFinite(Number(shown.g))) {
+      const parts = ["~" + figure(shown.g, 0) + " g"];
+      if (shown.percent != null) parts.push(figure(shown.percent, 0) + " %");
+      if (shown.m != null) parts.push(figure(shown.m) + " m");
+      return {
+        text: parts.join(" · "), level: spool.low ? "low" : "", kind: "spool",
+        counted: Number(spool.counted_g) > 0, note,
+      };
+    }
+  }
+  const chip = known.observed ? known.observed.chip : null;
+  if (typeof chip === "number" && Number.isFinite(chip)) {
+    return { text: "puce " + figure(chip, 0) + " %", level: "", kind: "chip", counted: false, note: "" };
+  }
+  return null;
+}
+
+// A chipless spool the CFS holds but could not name: the start window cannot
+// give it to a filament, and it is not an empty slot either.
+export function unidentified(known) {
+  return Boolean(known && known.observed && known.observed.present === true && !known.observed.material);
+}
+
+export function unidentifiedSlots(model, info) {
+  if (!info) return [];
+  return model.slots
+    .filter((slot) => Number(slot.loaded) !== 1 && unidentified(info.slots[slot.name]))
+    .map((slot) => ({ slot: slot.name, label: info.slots[slot.name].spool ? info.slots[slot.name].spool.label || "" : "" }));
+}
+
+// While a start waits, the CFS takes no write: the way to use such a spool
+// is to put this start aside.
+export function unidentifiedNote(items) {
+  if (!items.length) return "";
+  const one = items.length === 1;
+  return items.map((item) => item.slot + (item.label ? " (" + item.label + ")" : "")).join(", ")
+    + (one ? " : bobine sans puce que le CFS n'a pas identifiée, elle ne peut pas servir à ce départ."
+      : " : bobines sans puce que le CFS n'a pas identifiées, elles ne peuvent pas servir à ce départ.")
+    + " Pour " + (one ? "l'utiliser" : "les utiliser") + " : abandonner, " + (one ? "l'identifier" : "les identifier")
+    + " avec le bouton Bobines de Mainsail, puis relancer le fichier.";
+}
+
+// The grams a file plans for one filament: the slicer's own figure, or its
+// length weighed with the spool's fiche when the slicer gave none.
+export function plannedGrams(item, fiche) {
+  if (!item) return null;
+  const grams = Number(item.g);
+  if (Number.isFinite(grams) && grams > 0) return grams;
+  const mm = Number(item.mm);
+  const density = fiche ? Number(fiche.density) : NaN;
+  const diameter = fiche ? Number(fiche.diameter_mm) : NaN;
+  if (!(mm > 0) || !(density > 0) || !(diameter > 0)) return null;
+  const radius = diameter / 2;
+  return mm / 1000 * density * Math.PI * radius * radius;
+}
+
+// Under this share above what the file plans, a spool is said to be tight.
+export const MARGIN = 0.1;
+
+// Spools that may not hold what the file plans for their filament. The
+// count is an estimate and the CFS purges are not in the file: a warning,
+// never a block.
+export function shortfalls(filaments, assignments, info, planned) {
+  const out = [];
+  if (!info || !planned || !Array.isArray(planned.items)) return out;
+  for (const entry of usedFilaments(filaments)) {
+    const slot = assignments[entry.logical];
+    const known = slot ? info.slots[slot] : null;
+    if (!known || !known.spool || !(known.status === "ok" || known.status === "en_attente_cfs")) continue;
+    const left = known.spool.remaining ? known.spool.remaining.net_g : null;
+    if (typeof left !== "number" || !Number.isFinite(left)) continue;
+    const need = plannedGrams(planned.items[entry.index], known.fiche);
+    if (need == null) continue;
+    if (left < need) {
+      out.push({ slot, level: "short",
+        text: slot + " : reste ~" + gramsLabel(left) + " g, le fichier en demande ~" + gramsLabel(need) + " g" });
+    } else if (left < need * (1 + MARGIN)) {
+      out.push({ slot, level: "tight",
+        text: slot + " : reste ~" + gramsLabel(left) + " g pour ~" + gramsLabel(need) + " g demandés, marge faible" });
+    }
+  }
+  return out;
+}
+
+// The count adds the file's figures and the CFS's motion; until a weighing
+// has checked it once, a remaining that rests on it says so.
+export function countingUnverified(info) {
+  if (!info || info.verified) return false;
+  return Object.values(info.slots).some((known) => known.spool
+    && (known.status === "ok" || known.status === "en_attente_cfs")
+    && (Number(known.spool.counted_g) > 0 || Boolean(known.spool.remaining && known.spool.remaining.exhausted)));
+}
+
+// The notes over the launch button, most pressing first. None blocks.
+export function startNotes(model, assignments, info, planned) {
+  if (!info) return [];
+  const notes = shortfalls(model.filaments, assignments, info, planned);
+  const unknown = unidentifiedSlots(model, info);
+  if (unknown.length) notes.push({ slot: "", level: "warn", text: unidentifiedNote(unknown) });
+  if (countingUnverified(info)) notes.push({ slot: "", level: "faint", text: "décompte non encore vérifié par pesée" });
+  return notes;
 }
 
 export function elapsedLabel(sinceSeconds, nowSeconds) {
