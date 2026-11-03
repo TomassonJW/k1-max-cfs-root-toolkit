@@ -16,9 +16,10 @@ document 103 est retenue.
 Thomas veut gérer ses bobines dans Mainsail : fenêtre, synchro avec le CFS,
 reste en grammes et en mètres, bibliothèque des bobines vides, décompte après
 chaque impression, stock. Plan V1 : [document 102](docs/102-gestion-des-bobines-plan-v1.md),
-ADR-075 acceptée : données dans K1 Control, sur la K1. Une tranche,
-construite hors imprimante (lots A à K faits le 1er novembre), posée au repos
-après la fin V5.
+ADR-075 acceptée : données dans K1 Control, sur la K1. Lots A à K
+construits hors imprimante, posés au repos le 2 novembre à 08:40, gestes 1 à 4
+qualifiés avec Thomas le 3 novembre (PR #95). Reste le geste 5 : une
+impression multicouleur pesée avant et après, comparée au journal.
 
 Suite prévue, hors V1 : les presets demandés le 23 septembre, bâtis sur la
 bibliothèque du document 102. Retrouver et appliquer des presets par marque,

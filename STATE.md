@@ -1,5 +1,20 @@
 # STATE
 
+## 3 novembre, 01:46 - module bobines qualifié avec Thomas, gestes 1 à 4
+
+Lot L dans le vrai Mainsail : type de bobine vide, bobine créée et pesée,
+écriture au CFS au repos, retrait et remise d'une bobine. Défaut du geste 4 :
+une bobine retirée garde au CFS sa matière et sa couleur avec `vender`
+`none`, et restait affichée. Corrigé (`vender` `none` vaut vide), posé au
+repos le 3 novembre à 01:40 par `deploy.py update` : premier essai refusé par
+la comparaison des bobines et rendu exact (`UPDATE_FAILED_ROLLED_BACK`), second
+`UPDATED_IDLE_OK` puis `VALIDATED_OK`. Un fichier remplacé, seul le Moonraker
+K1 Control redémarré, ni Klipper ni G-code. Revu en direct : retrait vu, remise
+« inconnue » avec sa candidate, « C'est elle » la raccroche à `T1B`. 7 bobines,
+révision 25, Moonraker à 26 Mo. Geste 5 (impression pesée) à faire ;
+`counting_verified` reste faux d'ici là. PR #95 fusionnée.
+[Document 102](docs/102-gestion-des-bobines-plan-v1.md).
+
 ## 2 novembre, 08:43 - module bobines posé et validé au repos (ADR-075)
 
 Après la fin V5, dans l'ordre du verrou K1 et sur la demande de Thomas
