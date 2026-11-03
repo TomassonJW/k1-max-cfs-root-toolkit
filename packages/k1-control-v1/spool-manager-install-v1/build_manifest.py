@@ -79,6 +79,22 @@ SURVEY = {
             '69578e579409b7c4d253acb8c680ceaeb25b60b40502732530a4a786e0966516',
     },
 }
+# Each file as installed on 2 November 2026 at 08:40: `update` replaces only
+# these, with the spool state kept.
+INSTALLED = {
+    'kctrl_spools_store.py': 'ee76604078f5dc5ef59d58ff01ceefc77d90a7345afd0f4a533c4cd6ed3c6638',
+    'kctrl_spools_model.py': '202503bc2210ba797fa2205300d52d940508c763f4843b673704cab64526a001',
+    'kctrl_spools_counter.py': '34ba613b5f556389dd47eaa4f303c7c5f6bbca162376fbd75c9e042989fbf4de',
+    'kctrl_spools.py': '45c0d8af7015a62fbfd49ac4ec57f735af20433151cdc5fd785e750ad9530f3f',
+    'styles.css': '80c26e024e3b0c940bdd4c2651dec228d2dacda37b47271b82c4857260f2bad5',
+    'bobines.js': '52760957f8d3b32997e1236ea4b744efc1047c16b11eb06a7a987a69a4417ed4',
+    'logic.js': '3f7513c8bf6eecea1452519438c862b8d901784718c7e1bf07b4519fa2ae8ab8',
+    'overlay.js': '209589d7961d6badd74a25ec08748e3dd0e916e19b82be8f02d6004b741cacec',
+    'spools.js': '60711eada60f472d2e18d8b20342d193ffcbeaae1e0c475eace77b8d1f0725cc',
+    'spools-logic.js': '4506ce153cee24b4a8f28cf3b7f2e3fcf831856313c7cb2b94c11630614cbbb8',
+    'tares.json': '4064be64bb26a52285d5d182b982ea59b71c810fd37900fc2861f867fb612c7c',
+    'LICENSE-SpoolmanDB.txt': '0e32583112190cdace7fcba056c3ccadc1e4952b6fa0f6210c8e6faa8048411e',
+}
 # Document 102: Moonraker at most 45 MiB, at least 70 MiB left, swap +8 MiB at most.
 BUDGET = {'rss_kb': 46080, 'available_kb': 71680, 'swap_growth_kb': 8192}
 
@@ -97,10 +113,12 @@ def installer():
 def main():
     m = installer()
     files = [{'source': SPOOLS + name, 'destination': m.COMPONENTS + '/' + name,
-              'before_sha256': None, 'sha256': sha(ROOT / SPOOLS / name), 'mode': '0644'}
+              'before_sha256': None, 'installed_sha256': INSTALLED[name],
+              'sha256': sha(ROOT / SPOOLS / name), 'mode': '0644'}
              for name in COMPONENTS]
     files += [{'source': PAGES + name, 'destination': m.WWW + '/' + name,
-               'before_sha256': before, 'sha256': sha(ROOT / PAGES / name), 'mode': '0644'}
+               'before_sha256': before, 'installed_sha256': INSTALLED[name],
+               'sha256': sha(ROOT / PAGES / name), 'mode': '0644'}
               for name, before in PAGES_BEFORE.items()]
     surveyed = all(SURVEY[key][field] for key in ('moonraker_conf', 'nginx')
                    for field in ('before_sha256', 'sha256')) and bool(SURVEY['protected'])

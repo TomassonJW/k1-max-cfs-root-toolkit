@@ -623,6 +623,11 @@ def test_a_spool_without_chip_or_identity_is_present_and_an_emptied_slot_is_not(
     assert not found["T3A"]["present"]
 
 
+def test_a_spool_taken_out_keeps_its_material_but_reads_empty():
+    found = seen({"T1B": ("000001", "0000000", "none", "100")})
+    assert not found["T1B"]["present"]
+
+
 def test_a_spool_the_cfs_cannot_identify_gets_its_identity_written():
     observations = seen({"T1A": UNIDENTIFIED})
     library = in_cfs(with_spools(), "B001", "T1A", observations)

@@ -1,12 +1,12 @@
 #!/usr/bin/env python3
 """Run remote_install.py on the printer in one mode; keep the answer locally.
 
-    python deploy.py survey|preflight|install|validate|rollback
+    python deploy.py survey|preflight|install|validate|rollback|update
 
 The candidate is the four components of packages/k1-control-v1/spool-manager-v1/
 and the eight Bobines pages of packages/k1-control-v1/spool-choice-gate-v1/www/
 bobines/, each checked against manifest.json before anything leaves the
-workstation; only preflight and install carry them. The request travels on
+workstation; only preflight, install and update carry them. The request travels on
 stdin of `ssh k1max-root python3 -`: nothing is written on the printer by the
 transport. Answers go to inventory/raw, which Git ignores.
 """
@@ -25,7 +25,7 @@ MANIFEST = PACKAGE / 'manifest.json'
 INSTALLER = PACKAGE / 'remote_install.py'
 RAW = ROOT / 'inventory/raw/20261101-spool-manager-install-v1'
 HOST = 'k1max-root'
-MODES = ('survey', 'preflight', 'install', 'validate', 'rollback')
+MODES = ('survey', 'preflight', 'install', 'validate', 'rollback', 'update')
 
 
 def request(mode):
@@ -34,7 +34,7 @@ def request(mode):
     if hashlib.sha256(installer).hexdigest() != manifest['installer_sha256']:
         raise SystemExit('remote_install.py differs from manifest.json; rebuild the manifest')
     body = {'mode': mode, 'manifest': manifest}
-    if mode in ('preflight', 'install'):
+    if mode in ('preflight', 'install', 'update'):
         payload = {}
         for entry in manifest['files']:
             data = (ROOT / entry['source']).read_bytes()

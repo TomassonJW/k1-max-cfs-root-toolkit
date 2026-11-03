@@ -55,7 +55,9 @@ NO_CHIP = ("none", "unknown", "-1", "None", "")
 # A spool without a chip that nobody declared shows the -1 material of an empty
 # slot; only its vender tells it apart. Read at rest on 31 October 2026: T1A,
 # printed from after a refill, "unknown" with material and colour -1; T1B,
-# emptied by the end of its spool, "none".
+# emptied by the end of its spool, "none". A spool taken out keeps its
+# material and colour but turns its vender to "none" (T1B, 3 November 2026), so
+# "none" means an empty slot whatever the material says.
 NO_SPOOL = ("none", "-1", "None", "")
 COLOUR_HEX = re.compile(r"[0-9A-F]{6}")
 CREALITY_ID = re.compile(r"[0-9A-Za-z]{5}")
@@ -228,7 +230,7 @@ def observe_box(box: Dict[str, Any]) -> Dict[str, Dict[str, Any]]:
             material = _item(unit.get("material_type"), index)
             vender = _item(unit.get("vender"), index)
             identified = material not in EMPTY_MATERIALS
-            present = connected and (identified or vender not in NO_SPOOL)
+            present = connected and vender != "none" and (identified or vender not in NO_SPOOL)
             found["T" + number + letter] = {
                 "connected": connected,
                 "present": present,

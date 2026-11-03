@@ -40,6 +40,16 @@ passerelle persiste : `S57k1_control_gateway` ne régénère pas
 `nginx-active.conf`. Après une nouvelle version de K1 Control, recopier
 composants, pages et section.
 
+`update`, au repos et verrou pris, pose par-dessus l'installation les seuls
+fichiers dont la source a changé depuis la pose du 2 novembre
+(`installed_sha256` du manifeste). Bibliothèque, `moonraker.conf` et passerelle
+restent tels quels ; le Moonraker de K1 Control ne redémarre que si un
+composant change. Les fichiers remplacés sont copiés d'abord sous
+`update-<date>` dans la sauvegarde et remis au moindre écart
+(`UPDATE_FAILED_ROLLED_BACK`). Premier usage le 3 novembre à 01:40 : correctif
+de détection du retrait, `UPDATED_IDLE_OK` puis `VALIDATED_OK`. Le retour
+arrière complet reste valable après une mise à jour.
+
 Après un retour arrière ou un échec remis en place, la sauvegarde est rangée
 sous un nom daté. `ROLLBACK_INCOMPLETE`, `INSTALL_FAILED_RECOVERY_INCOMPLETE` et
 `INSTALL_STOPPED_NOT_AT_REST` la laissent en place. Dans ce dernier cas, la K1 a
@@ -50,7 +60,7 @@ La pose ferme les préflights et retours arrière des paquets qui épinglent les
 anciennes pages : `end-overlap-v2`, `end-rewind-confirm-v3`,
 `end-separated-v1`, `retained-start-v1` et `end-after-refill-install-disabled-v1`.
 
-Validation : **126 tests ciblés verts** (`tests/test_spool_manager_install_v1.py`),
+Validation : **134 tests ciblés verts** (`tests/test_spool_manager_install_v1.py`),
 avec un faux Klipper, de faux services, un faux Moonraker et une fausse
 passerelle dans un arbre temporaire, plus l'import réel des quatre composants.
 **Pas de pose sans le verrou de la machine.**

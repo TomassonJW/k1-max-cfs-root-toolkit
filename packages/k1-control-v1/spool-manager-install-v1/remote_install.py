@@ -11,7 +11,8 @@ no heating, no motion, no write to the CFS.
 Modes: `survey` reads what the manifest must pin and sends nothing;
 `preflight` checks everything, imports the candidate in Moonraker's own
 interpreter from stdin and writes nothing; `install`, `validate` and
-`rollback` as in the earlier packages. Klipper is read through
+`rollback` as in the earlier packages; `update` replaces, over an
+installation, the files whose source changed and keeps the spool state. Klipper is read through
 /tmp/klippy_uds, Moonraker on 127.0.0.1:7125 and the gateway on
 127.0.0.1:4409, the way Mainsail sees it.
 """
@@ -656,7 +657,8 @@ def run(request):
     protected = manifest['protected']
     assert not set(written) & set(protected), 'target_also_protected'
     mode = request['mode']
-    assert mode in ('survey', 'preflight', 'install', 'validate', 'rollback'), 'invalid_mode'
+    assert mode in ('survey', 'preflight', 'install', 'validate', 'rollback', 'update'), \
+        'invalid_mode'
 
     if mode == 'survey':
         return survey(manifest)
@@ -699,6 +701,8 @@ def run(request):
         'payload_files_changed'
     for entry in manifest['files']:
         assert sha(payload[entry['destination']]) == entry['sha256'], 'payload_hash_changed'
+    if mode == 'update':
+        return update(manifest, payload)
     pinned(protected)
     for entry in manifest['files']:
         assert digest(entry['destination']) == entry['before_sha256'], \
@@ -792,6 +796,126 @@ def run(request):
                            problems=problems, state_moved_to=moved)
         return retire('failed', receipt('INSTALL_FAILED_ROLLED_BACK', error=str(error),
                                         state_moved_to=moved))
+
+
+def update(manifest, payload):
+    """Over an installation: the files whose source changed since the pose
+    are replaced, the spool state, moonraker.conf and the gateway stay. Only
+    K1 Control's Moonraker restarts, and only when a component changed. The
+    files replaced are copied first under the backup; a failure puts them back."""
+    protected = manifest['protected']
+    pinned(protected)
+    stable()
+    backup_intact(manifest)
+    todo = []
+    for entry in manifest['files']:
+        now = digest(entry['destination'])
+        assert now in (entry['installed_sha256'], entry['sha256']), \
+            'update_foreign_file_' + Path(entry['destination']).name
+        if now != entry['sha256']:
+            todo.append(entry)
+    assert todo, 'update_nothing_to_do'
+    for key in ('moonraker_conf', 'nginx'):
+        assert digest(manifest[key]['path']) == manifest[key]['sha256'], \
+            'update_config_changed_' + key
+    assert not any(os.path.exists(entry['destination'] + STAGE_SUFFIX) for entry in todo), \
+        'stale_stage_file'
+    info = api('/server/info')
+    check_server(info, True)
+    assert info['klippy_state'] == 'ready', 'moonraker_klippy_not_ready'
+    calibration_idle()
+    sources = {Path(path).name[:-3]: data for path, data in payload.items()
+               if str(Path(path).parent) == COMPONENTS}
+    import_check(sources)
+    before = spools_ready(True)
+    restart = any(str(Path(entry['destination']).parent) == COMPONENTS for entry in todo)
+    kept = BACKUP / ('update-%d' % int(time.time()))
+    kept.mkdir()
+    modes = {}
+    for entry in todo:
+        path = entry['destination']
+        (kept / Path(path).name).write_bytes(Path(path).read_bytes())
+        assert digest(kept / Path(path).name) == entry['installed_sha256'], 'backup_corrupt'
+        modes[path] = oct(stat.S_IMODE(os.stat(path).st_mode))
+    (kept / 'modes.json').write_text(json.dumps(modes), encoding='utf-8')
+    names = [Path(entry['destination']).name for entry in todo]
+    # Checked again right before the stop, as for the installation.
+    idle(state())
+    calibration_idle()
+    oldpid = running(MOONRAKER_PID, 'moonraker_not_running')
+    memory = meminfo()
+    try:
+        if restart:
+            oldpid = stop_moonraker()
+        pinned(protected)
+        for entry in todo:
+            replace(entry['destination'], payload[entry['destination']], int(entry['mode'], 8))
+        if restart:
+            cache = Path(COMPONENTS) / '__pycache__'
+            for name in bytecode():
+                (cache / name).unlink()
+        for entry in manifest['files']:
+            assert digest(entry['destination']) == entry['sha256'], \
+                'candidate_hash_mismatch_' + Path(entry['destination']).name
+        pid = oldpid
+        if restart:
+            service(MOONRAKER_SERVICE, 'start')
+            pid, started = wait_moonraker(oldpid, True)
+            new = sorted(set(started.get('warnings') or []) - set(info.get('warnings') or []))
+            assert not new, 'new_moonraker_warnings: ' + ' | '.join(new)[:300]
+        value = wait_spools()
+        assert sorted(spool['id'] for spool in value['spools']) ==             sorted(spool['id'] for spool in before['spools']), 'update_spools_changed'
+        gateway(manifest)
+        used = budget(manifest, pid, memory)
+        stable()
+        pinned(protected)
+        return {'status': 'UPDATED_IDLE_OK', 'files': names, 'restarted': restart,
+                'kept_in': str(kept), 'revision': value['revision'],
+                'spools': len(value['spools']), 'memory': used}
+    except Exception as error:
+        problem = rest_problem()
+        if problem:
+            return {'status': 'UPDATE_STOPPED_NOT_AT_REST', 'error': str(error), 'rest': problem,
+                    'kept_in': str(kept), 'moonraker_running': bool(alive(MOONRAKER_PID))}
+        problems = revert_update(todo, kept, oldpid, restart)
+        return {'status': 'UPDATE_FAILED_RECOVERY_INCOMPLETE' if problems
+                else 'UPDATE_FAILED_ROLLED_BACK', 'error': str(error), 'problems': problems,
+                'kept_in': str(kept)}
+
+
+def revert_update(todo, kept, oldpid, restart):
+    """The files of a failed update back from its copy, then Moonraker again."""
+    try:
+        if restart and alive(MOONRAKER_PID):
+            stop_moonraker()
+        assert not (restart and oldpid and (PROC / oldpid).exists()), 'old_process_remains'
+    except Exception as error:
+        return ['moonraker_not_stopped: ' + str(error)[:300]]
+    problems = []
+    try:
+        modes = json.loads((kept / 'modes.json').read_text(encoding='utf-8'))
+        for entry in todo:
+            path = entry['destination']
+            source = kept / Path(path).name
+            assert digest(source) == entry['installed_sha256'], 'backup_corrupt'
+            if digest(path) != entry['installed_sha256']:
+                replace(path, source.read_bytes(), int(modes[path], 8))
+            assert digest(path) == entry['installed_sha256'], \
+                'revert_hash_mismatch_' + Path(path).name
+        if restart:
+            cache = Path(COMPONENTS) / '__pycache__'
+            for name in bytecode():
+                (cache / name).unlink()
+    except Exception as error:
+        problems.append(str(error)[:300])
+    if restart:
+        for step in (lambda: service(MOONRAKER_SERVICE, 'start'),
+                     lambda: wait_moonraker(oldpid, True)):
+            try:
+                step()
+            except Exception as error:
+                problems.append(str(error)[:300])
+    return problems
 
 
 def back_up(manifest):

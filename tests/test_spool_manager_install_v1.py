@@ -358,7 +358,7 @@ class Machine:
             before = Path(destination).read_bytes() if name in OLD_PAGES else None
             files.append({'source': 'synthetic/' + name, 'destination': destination,
                           'before_sha256': sha(before) if before else None,
-                          'sha256': sha(data), 'mode': '0644'})
+                          'installed_sha256': sha(data), 'sha256': sha(data), 'mode': '0644'})
         conf = Path(m.MOONRAKER_CONF).read_bytes()
         nginx = Path(m.NGINX_CONF).read_bytes()
         self.manifest = {
@@ -376,7 +376,7 @@ class Machine:
 
     def request(self, mode):
         value = {'mode': mode, 'manifest': copy.deepcopy(self.manifest)}
-        if mode in ('preflight', 'install'):
+        if mode in ('preflight', 'install', 'update'):
             value['payload'] = {path: base64.b64encode(data).decode()
                                 for path, data in self.candidates.items()}
         return value
@@ -945,6 +945,7 @@ def test_le_manifeste_du_depot_suit_le_candidat_et_l_installateur(installer):
             assert name[:-3] in m.MODULES and entry['before_sha256'] is None
         else:
             assert folder == m.WWW and entry['before_sha256'] == build.PAGES_BEFORE[name]
+        assert entry['installed_sha256'] == build.INSTALLED[name]
     assert sorted(names) == sorted([name + '.py' for name in m.MODULES] + list(build.PAGES_BEFORE))
     conf, nginx = manifest['moonraker_conf'], manifest['nginx']
     assert conf['path'] == m.MOONRAKER_CONF and conf['section'].encode() == m.SECTION
@@ -991,6 +992,96 @@ def decode(script):
     return json.loads(base64.b64decode(ast.literal_eval(line.decode()[len(prefix):]))), rest
 
 
+def revise(machine, name):
+    """A new source for one installed file: what `update` is for."""
+    for entry in machine.manifest['files']:
+        if Path(entry['destination']).name == name:
+            data = ('/* synthetic %s, revised */\n' % name).encode()
+            machine.candidates[entry['destination']] = data
+            entry['sha256'] = sha(data)
+            return entry['destination']
+    raise AssertionError(name)
+
+
+def installed(machine):
+    assert machine.run('install')['status'] == 'INSTALLED_IDLE_OK'
+    machine.spools.update(spools=[{'id': 'B002', 'state': 'stock'}, {'id': 'B001', 'state': 'cfs'}])
+    (Path(machine.m.STATE_DIR) / 'journal.jsonl').write_text('{"kept": true}\n')
+    machine.actions.clear()
+    machine.imports.clear()
+
+
+def test_la_mise_a_jour_remplace_le_composant_change_et_garde_les_bobines(machine):
+    m = machine.m
+    installed(machine)
+    target = revise(machine, 'kctrl_spools_model.py')
+    old = Path(target).read_bytes()
+    result = machine.run('update')
+    assert result['status'] == 'UPDATED_IDLE_OK', result
+    assert result['files'] == ['kctrl_spools_model.py'] and result['restarted'] is True
+    assert machine.actions == [(S56, 'stop'), (S56, 'start')] and machine.loaded
+    assert machine.imports == [sorted(m.MODULES)] and machine.at_after()
+    assert (Path(m.STATE_DIR) / 'journal.jsonl').read_text() == '{"kept": true}\n'
+    kept = Path(result['kept_in'])
+    assert kept.parent == m.BACKUP and (kept / 'kctrl_spools_model.py').read_bytes() == old
+    assert machine.run('validate')['status'] == 'VALIDATED_OK'
+    with pytest.raises(AssertionError, match='update_nothing_to_do'):
+        machine.run('update')
+
+
+def test_une_page_seule_se_met_a_jour_sans_redemarrer(machine):
+    installed(machine)
+    revise(machine, 'spools.js')
+    result = machine.run('update')
+    assert result['status'] == 'UPDATED_IDLE_OK' and result['restarted'] is False
+    assert machine.actions == [] and machine.at_after()
+
+
+@pytest.mark.parametrize('setup,error', [
+    pytest.param(lambda machine: machine.failing_starts.add(2), 'service_start_failed',
+                 id='start_failed'),
+    pytest.param(lambda machine: machine.after_start.update(rss=50000),
+                 'moonraker_rss_over_budget_50000', id='rss'),
+])
+def test_une_mise_a_jour_qui_echoue_remet_les_fichiers_poses(machine, setup, error):
+    m = machine.m
+    installed(machine)
+    target = revise(machine, 'kctrl_spools_model.py')
+    old = Path(target).read_bytes()
+    setup(machine)
+    result = machine.run('update')
+    assert result['status'] == 'UPDATE_FAILED_ROLLED_BACK', result
+    assert error in result['error']
+    # A Moonraker that never came up is not stopped again.
+    assert machine.actions[:2] == [(S56, 'stop'), (S56, 'start')]
+    assert machine.actions[2:] in ([(S56, 'start')], [(S56, 'stop'), (S56, 'start')])
+    assert Path(target).read_bytes() == old and machine.loaded
+    assert (Path(m.STATE_DIR) / 'journal.jsonl').exists()
+
+
+@pytest.mark.parametrize('setup,error', [
+    pytest.param(lambda machine: machine.spools.update(pending_cfs={'T1A': {'grams': 500}}),
+                 'spools_writes_pending', id='cfs_write_pending'),
+    pytest.param(lambda machine: Path(machine.m.COMPONENTS, 'kctrl_spools.py').write_bytes(b'x'),
+                 'update_foreign_file_kctrl_spools.py', id='foreign_file'),
+    pytest.param(lambda machine: machine.status['print_stats'].update(state='printing'),
+                 'job_busy', id='printing'),
+])
+def test_la_mise_a_jour_refuse_sans_rien_toucher(machine, setup, error):
+    installed(machine)
+    revise(machine, 'kctrl_spools_model.py')
+    setup(machine)
+    before = machine.tree()
+    with pytest.raises(AssertionError, match=error):
+        machine.run('update')
+    assert machine.tree() == before and machine.actions == []
+
+
+def test_la_mise_a_jour_avant_la_pose_est_refusee(machine):
+    with pytest.raises(AssertionError, match='backup_corrupt'):
+        machine.run('update')
+
+
 def test_l_envoi_du_releve_ne_porte_que_l_installateur():
     deploy = load('deploy')
     body, rest = decode(deploy.request('survey'))
@@ -1001,6 +1092,7 @@ def test_l_envoi_du_releve_ne_porte_que_l_installateur():
 def test_l_envoi_du_preflight_porte_les_douze_fichiers_du_manifeste():
     deploy = load('deploy')
     body, _ = decode(deploy.request('preflight'))
+    assert sorted(decode(deploy.request('update'))[0]['payload']) == sorted(body['payload'])
     entries = {entry['destination']: entry['source'] for entry in body['manifest']['files']}
     assert sorted(body['payload']) == sorted(entries) and len(entries) == 12
     for destination, value in body['payload'].items():

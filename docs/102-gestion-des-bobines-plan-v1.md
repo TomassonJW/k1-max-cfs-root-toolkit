@@ -63,7 +63,10 @@ Faits du dépôt, vérifiés dans le code le 31 octobre :
   l'emplacement non identifié `-1`, une unité absente `-1` partout. Le
   composant lit donc la présence aussi dans `vender` : `none` vide, `unknown`
   bobine sans puce, `-1` unité absente. Une seule lecture, confirmée au
-  geste 1 du lot L ;
+  geste 1 du lot L. Le geste 4 (3 novembre, retrait de `T1B`) a montré qu'une
+  bobine retirée garde matériau et couleur mais passe `vender` à `none` : `none`
+  vaut donc vide quel que soit le matériau. Correctif posé le 3 novembre à
+  01:40 par le mode `update` du paquet de pose, bibliothèque gardée ;
 - écrire matériau et couleur au repos est déjà fait par
   `KCTRL_FILAMENT SLOT=T2C MATERIAL=000003 COLOR=0ffffff`
   (`BOX_MODIFY_TN_DATA`, puis `BOX_UPDATE_SAME_MATERIAL_LIST`) ;
