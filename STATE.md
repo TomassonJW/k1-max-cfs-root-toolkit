@@ -1,5 +1,18 @@
 # STATE
 
+## 4 novembre - geste 5 validé, première fin réelle sous V5 bonne
+
+Petite impression en quatre couleurs de 23:32 à 00:25, 18,6 g décomptés,
+bobines pesées avant et après par Thomas : « ça correspond », à la précision
+d'une balance peu fine sur très peu de matière. Pas de pesée saisie dans la
+fenêtre : `counting_verified` reste faux. Fin V5 à 00:25, non surveillée en
+direct et relue après coup : rembobinage de `T1D` accusé, `phase=complete`,
+`auto_refill` rendu, tête libre, cibles zéro. Le premier essai de 23:21 s'est
+arrêté sur le filament rouge cassé, réparé à la main par Thomas ;
+`kctrl_purge_guard` a refusé la remontée du plateau dans le bac pendant
+l'erreur. `box.t_command` reste à `T1` au repos, à prévoir pour le prochain
+préflight. Détail dans `HANDOFF.md`.
+
 ## 3 novembre, 01:46 - module bobines qualifié avec Thomas, gestes 1 à 4
 
 Lot L dans le vrai Mainsail : type de bobine vide, bobine créée et pesée,
@@ -11,8 +24,8 @@ la comparaison des bobines et rendu exact (`UPDATE_FAILED_ROLLED_BACK`), second
 `UPDATED_IDLE_OK` puis `VALIDATED_OK`. Un fichier remplacé, seul le Moonraker
 K1 Control redémarré, ni Klipper ni G-code. Revu en direct : retrait vu, remise
 « inconnue » avec sa candidate, « C'est elle » la raccroche à `T1B`. 7 bobines,
-révision 25, Moonraker à 26 Mo. Geste 5 (impression pesée) à faire ;
-`counting_verified` reste faux d'ici là. PR #95 fusionnée.
+révision 25, Moonraker à 26 Mo. Geste 5 fait le 4 novembre (section au-dessus).
+PR #95 fusionnée.
 [Document 102](docs/102-gestion-des-bobines-plan-v1.md).
 
 ## 2 novembre, 08:43 - module bobines posé et validé au repos (ADR-075)

@@ -1,5 +1,43 @@
 # HANDOFF — index de reprise
 
+## 4 novembre - impression multicouleur pesée (geste 5) et première vraie fin sous V5
+
+Thomas a imprimé un petit bateau en quatre couleurs le 4 novembre, de 23:32 à
+00:25, et a pesé ses bobines avant et après : « ça correspond ». Décompté :
+`T2A` 7,41 g + 0,18 g d'un épisode à la main, `T2B` 5,54 g, `T1B` 3,18 g,
+`T1D` 2,27 g, 18,6 g en tout, quatre changements routés, zéro segment non
+attribué. Geste 5 validé par Thomas, avec sa limite : balance peu précise sur
+très peu de matière. C'est une absence d'erreur grossière, pas une mesure de
+justesse ; `cut_loss_mm` n'est pas réglé, et la lecture passive de la mémoire
+prévue pendant cette impression n'a pas été faite. Thomas n'a pas saisi sa
+pesée dans la fenêtre : `counting_verified` reste donc faux et la mention
+« décompte pas encore vérifié » reste affichée jusqu'à la première pesée
+saisie après une impression, à faire sur une plus grosse pièce.
+
+Un premier essai à 23:21 s'est arrêté à 23:25 sur `key836` (extrusion bloquée) :
+Thomas rapporte son filament rouge cassé dans la machine, réparé à la main,
+lien avec cette erreur probable, pas prouvé. Pendant cette erreur, la routine stock a voulu remonter le plateau de
+Z35 à Z4,8 dans la zone du bac : `kctrl_purge_guard` l'a refusé
+(`purge_bed_clearance_below_30mm`), ce qui a coupé la routine et interrompu le
+départ. La garde ADR-071 a servi. Le second essai, à 23:32, s'est terminé normalement.
+
+Première fin réelle sous V5, à 00:25, relue après coup, personne ne l'a
+surveillée en direct : rembobinage de `T1D` de 00:25:08 à 00:25:24, accusé,
+`phase=complete`, ni échec ni défaut thermique, `auto_refill` rendu à 1,
+`filament_useup` à 0, capteur de tête libre, cibles zéro, aucune poussée à
+froid refusée.
+
+Deux points relevés au repos, sans effet connu sur l'impression :
+- `box.t_command` reste à `T1` après cette fin. Même comportement que `T0`
+  (document 96) et `T1A` (document 92) : hypothèse d'un champ constructeur
+  obsolète, vidé au redémarrage. Tout préflight qui exige qu'il soit vide
+  refusera tant qu'il ne l'est pas : à prévoir pour la pose de la garde capteur ;
+- `box.filament` reste à 1 alors que la tête est vide : sens inconnu.
+
+Reste : pose de la garde capteur CFS (ADR-077, document 105, `enabled: False`,
+pas encore de script de pose), que cette fin débloque ; échange de cases pour
+`T1A` avec Thomas ; presets par marque, type et couleur (ROADMAP, hors V1).
+
 ## 3 novembre, 01:46 - module bobines qualifié (gestes 1 à 4), PR #95 fusionnée
 
 Le module bobines (document 102, ADR-075) tourne sur la K1 depuis le
@@ -15,10 +53,7 @@ retrait passe la bobine « à ranger », la remise la montre « inconnue » avec
 candidate, « C'est elle » la raccroche. Verrou K1 rendu à 01:46.
 
 Reste, sans verrou ni pose :
-1. geste 5, quand Thomas le décide : peser une bobine avant et après une
-   impression multicouleur, comparer au journal de la fenêtre. Le décompte
-   tourne déjà après chaque impression (purges et coupes comprises) ;
-   `counting_verified` reste faux jusque-là ;
+1. geste 5 : fait le 4 novembre (section au-dessus) ;
 2. presets par marque, type et couleur (ROADMAP, hors V1).
 
 Pour toucher au module ensuite :

@@ -246,6 +246,6 @@ sont à relire avec cette correction.
 2. Échange de cases pour T1A, puis vérification du capteur si l'erreur suit la
    case. Lire `box.filament_useup` avant tout geste filament.
 3. Fait le 2 novembre : pose de la fin V5 au repos (section « Fin V5 »).
-   Reste la surveillance locale de la première fin sous V5 par
-   `packages/k1-control-v1/end-watch-v1/watch_end.py`, essai à blanc d'abord
-   (README du paquet).
+   Première fin réelle le 5 novembre à 00:25, sans la surveillance locale
+   prévue, relue après coup : `phase=complete`, rembobinage de `T1D` accusé,
+   `auto_refill` rendu, tête libre (`HANDOFF.md`, section du 4 novembre).
