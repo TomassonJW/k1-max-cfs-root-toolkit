@@ -18,8 +18,9 @@ reste en grammes et en mètres, bibliothèque des bobines vides, décompte aprè
 chaque impression, stock. Plan V1 : [document 102](docs/102-gestion-des-bobines-plan-v1.md),
 ADR-075 acceptée : données dans K1 Control, sur la K1. Lots A à K
 construits hors imprimante, posés au repos le 2 novembre à 08:40, gestes 1 à 4
-qualifiés avec Thomas le 3 novembre (PR #95). Reste le geste 5 : une
-impression multicouleur pesée avant et après, comparée au journal.
+qualifiés avec Thomas le 3 novembre (PR #95), geste 5 le 4 : petite impression
+multicouleur pesée, conforme à la précision de la balance. Une pesée sur une
+plus grosse pièce, saisie dans la fenêtre, mesurera la justesse.
 
 Suite prévue, hors V1 : les presets demandés le 23 septembre, bâtis sur la
 bibliothèque du document 102. Retrouver et appliquer des presets par marque,

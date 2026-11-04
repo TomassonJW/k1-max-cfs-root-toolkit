@@ -426,6 +426,14 @@ Qualification (lot L), deux gestes de Thomas :
    Pendant cette impression, une lecture passive de la mémoire, du processeur
    et des écritures sur la flash est comparée aux mesures de la section 3.
 
+Résultat du 4 novembre : les deux gestes sont validés par Thomas. La remise
+d'une bobine sans puce la montre « inconnue » avec sa candidate, un clic la
+raccroche. L'impression pesée, 18,6 g sur quatre bobines, ne montre pas d'écart
+visible, à la précision d'une balance peu fine. Restent ouverts : `cut_loss_mm`
+non réglé, justesse non mesurée, lecture passive non faite. Thomas n'ayant pas
+saisi sa pesée, `counting_verified` reste faux jusqu'à la première pesée saisie
+après une impression.
+
 ## 13. Risques et parades
 
 | Risque | Parade |
@@ -463,7 +471,7 @@ Qualification (lot L), deux gestes de Thomas :
   avec relecture ; s'il tombe, le départ fonctionne comme aujourd'hui.
 - **Risque de panne de la fenêtre, du calculateur, de la bibliothèque et du
   stock** : proche de zéro après les preuves hors imprimante et le rendu réel.
-- **Justesse des grammes et des mètres** : pas prouvée avant la pesée de la
-  première impression. Les inconnues sont nommées (présence d'une bobine sans
+- **Justesse des grammes et des mètres** : pas d'erreur grossière à la pesée
+  du 4 novembre, justesse pas encore mesurée. Les inconnues sont nommées (présence d'une bobine sans
   puce, perte de coupe, attribution après une relève automatique) et fermées
   par la qualification, jamais devinées.
