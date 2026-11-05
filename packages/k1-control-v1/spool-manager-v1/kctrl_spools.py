@@ -57,6 +57,11 @@ REST_QUERY = {
     "kctrl_print_gate": ["pending"],
     "box": list(BOX_FIELDS),
 }
+# box.t_command is the last tool command the file sent, or "": it stays after
+# the end of a print and only a restart empties it (document 105, section 11).
+# Rest is proved by the other fields of REST_QUERY.
+TOOL_MEMORY = frozenset(["", *("T%d" % index for index in range(16)),
+                         *("T%s%s" % (box, slot) for box in "1234" for slot in "ABCD")])
 PRINTING_NOW = "impression en cours"
 TICK_S = 2
 SLOT_SETTLE_S = 3  # a slot reading holds that long before it is synced
@@ -132,8 +137,9 @@ def rest_problem(status: Any) -> str:
         return "CFS illisible"
     if box.get("enable") != 1 or box.get("state") != "connect":
         return "CFS non prêt"
-    if box.get("t_command"):
-        return "le CFS exécute une commande"
+    command = box.get("t_command")
+    if not isinstance(command, str) or command not in TOOL_MEMORY:
+        return "commande CFS inconnue"
     return ""
 
 
