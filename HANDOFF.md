@@ -1,12 +1,11 @@
 # HANDOFF — index de reprise
 
-## 5 novembre - garde capteur CFS : paquet de pose prêt, pas posée
+## 5 novembre, 01:23 - garde capteur CFS posée et validée au repos
 
-Paquet `packages/k1-control-v1/cfs-sensor-guard-v1` complet : `remote_install.py`,
-`deploy.py`, `build_manifest.py`, `manifest.json`, `sections.cfg` à
-`enabled: True`, `tests/test_cfs_sensor_guard_install.py`. Sur la K1, en lecture
-seule : `SURVEY_OK` sans écart sur 23 épingles, module absent, puis
-`PREFLIGHT_OK`. Rien écrit, rien redémarré.
+Sur l'accord de Thomas, `cfs-sensor-guard-v1` est posée : `INSTALLED_IDLE_OK`
+puis `VALIDATED_IDLE_OK`, Klipper redémarré une fois, ni chauffe, ni mouvement,
+ni filament. Relecture indépendante bonne (document 105, section 12). Paquet
+fusionné par la PR #100 : relevé sans écart sur 23 épingles, `PREFLIGHT_OK`.
 
 Le premier relevé a refusé (`guard_already_running`) : Klipper répond `{}` pour
 un objet non chargé, le banc le croyait absent. Corrigé.
@@ -18,9 +17,15 @@ encore le vide et se ferment après une impression à changement d'outil, jusqu'
 prochain redémarrage : à prévoir pour toute remise à jour, y compris le mode
 `update` du module bobines.
 
-Reprise : poser au repos revérifié avec l'accord de Thomas, verrou K1 pris,
-`deploy.py install` puis `deploy.py validate`. Retour arrière : garde capteur
-d'abord.
+Depuis la pose, la configuration de fin vaut `8ecf4a40...` : les paquets qui
+épinglent l'ancienne `c3f2d83e...` (fin V5, garde à froid,
+`resume-reload-guard-v1`) refusent leur préflight et leur retour arrière tant
+que la garde est là. Retour arrière : `deploy.py rollback` de la garde d'abord.
+
+Reprise : relire la première impression sous la garde (aucun arrêt, aucune
+marque à tort, `blind` nul, `tap_dropped` à 0). Une poussée, un chargement ou un
+retrait à la main dans les 15 min après une fin arrête la machine :
+`KCTRL_SENSOR_GUARD_RELEASE` d'abord.
 
 ## 4 novembre - impression multicouleur pesée (geste 5) et première vraie fin sous V5
 

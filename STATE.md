@@ -1,12 +1,14 @@
 # STATE
 
-## 5 novembre - garde capteur CFS prête à poser, pas posée
+## 5 novembre, 01:23 - garde capteur CFS posée et validée au repos
 
-Paquet de pose `cfs-sensor-guard-v1` écrit et testé hors imprimante. Relevé et
-préflight verts sur la K1 en lecture seule, 23 fichiers épinglés identiques,
-rien écrit. `box.t_command` tranché : mémoire du dernier `Tn`, pas une commande
-en cours ; le préflight l'accepte s'il est connu et stable. Les paquets plus
-anciens exigent encore le vide. Détail : document 105, section 11.
+`cfs-sensor-guard-v1` en service dans Klipper : `INSTALLED_IDLE_OK`,
+`VALIDATED_IDLE_OK`, relecture indépendante bonne, Klipper redémarré une fois,
+ni chauffe, ni mouvement, ni filament. Pas encore vue sur une impression.
+`box.t_command` : mémoire du dernier `Tn`, pas une commande en cours, vidée par
+le redémarrage ; les paquets plus anciens exigent encore le vide. Une poussée à
+la main dans les 15 min après une fin arrête la machine :
+`KCTRL_SENSOR_GUARD_RELEASE` d'abord. Détail : document 105, sections 11 et 12.
 
 ## 4 novembre - geste 5 validé, première fin réelle sous V5 bonne
 

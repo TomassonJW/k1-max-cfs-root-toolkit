@@ -373,9 +373,11 @@ Limites principales ; la liste complète est dans le README :
    à 00:25.
 2. Fait : paquet de pose écrit, relevé puis préflight verts sur la K1 le
    5 novembre, en lecture seule (section 11).
-3. Pose au repos revérifié, avec l'accord de Thomas. Retour arrière : garde
-   capteur d'abord, puis fin V5, garde à froid en dernier.
-4. Backlog : borner la poussée nette en `finalizing` ; filtrer le bavardage CFS
+3. Fait : posée au repos le 5 novembre à 01:23 (section 12). Retour arrière :
+   garde capteur d'abord, puis fin V5, garde à froid en dernier.
+4. Première impression sous la garde, à relire : aucun arrêt, aucune marque à
+   tort, `blind` nul, `tap_dropped` à 0.
+5. Backlog : borner la poussée nette en `finalizing` ; filtrer le bavardage CFS
    au handler du fichier si l'option 4 du document 103 est retenue.
 
 ## 11. Préparation de la pose, 5 novembre 2026
@@ -407,3 +409,21 @@ premier relevé a répondu `guard_already_running` pour cette raison ; le banc
 hors imprimante supposait l'objet absent, c'est corrigé.
 
 [INCONNU] `box.filament` vaut 1 tête vide : rapporté, jamais jugé.
+
+## 12. Pose, 5 novembre 2026
+
+Accord de Thomas, verrou K1 pris. Préflight à 01:22:27, `deploy.py install` de
+01:22:30 à 01:23:06, `INSTALLED_IDLE_OK` puis `VALIDATED_IDLE_OK` à 01:23:08.
+Klipper redémarré une fois. Aucune chauffe, aucun mouvement, aucun filament.
+
+Relecture indépendante : module `2f4ceb96...` et configuration `8ecf4a40...` en
+0644, sauvegarde en place, `hook = inside_cold_guard`, `failure` vide, `blind`
+nul, 16 réponses CFS vues, 0 perdue, garde à froid `cold_installed`, fin V5 en
+`idle`, `standby`, cibles zéro. Aucun traceback.
+
+[FAIT] `box.t_command` est revenu à vide au redémarrage, comme prévu en
+section 11. [FAIT] Le maillage actif affiche `default` après le redémarrage :
+`START_PRINT` recharge le maillage et le Z.
+
+[INCONNU] La garde n'a pas encore vu d'impression : marque, coupe et règle de
+fin ne sont prouvées que sur les rejeux hors imprimante.

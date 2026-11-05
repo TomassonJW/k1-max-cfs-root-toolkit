@@ -2,10 +2,9 @@
 
 ## Garde capteur CFS (1er novembre)
 
-Paquet `cfs-sensor-guard-v1` prêt à poser (ADR-077,
-[document 105](docs/105-garde-capteur-cfs-contredit-et-fin-sure.md)), relevé et
-préflight verts sur la K1 le 5 novembre. Suite : pose au repos revérifié, avec
-l'accord de Thomas. Backlog : assouplir l'exigence `box.t_command` vide des
+`cfs-sensor-guard-v1` posée et validée au repos le 5 novembre (ADR-077,
+[document 105](docs/105-garde-capteur-cfs-contredit-et-fin-sure.md)). Suite :
+relire la première impression sous la garde. Backlog : assouplir l'exigence `box.t_command` vide des
 paquets plus anciens (document 105, section 11) ; borner la
 poussée nette dans la phase `finalizing` de la fin K1 Control, où une boucle
 stock dans `BOX_END` comme le 15 septembre n'est pas arrêtée ; filtrer le
