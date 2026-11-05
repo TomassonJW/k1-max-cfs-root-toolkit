@@ -430,7 +430,10 @@ def installer():
     ({'toolhead': {'estimated_print_time': None}}, 'motion_clock_unknown'),
     ({'box': {'state': 'disconnect'}}, 'cfs_not_ready'),
     ({'box': {'enable': 0}}, 'cfs_not_ready'),
-    ({'box': {'t_command': 'T1A'}}, 'cfs_command_present'),
+    ({'box': {'t_command': 'T16'}}, 'cfs_command_unknown'),
+    ({'box': {'t_command': 'G28'}}, 'cfs_command_unknown'),
+    ({'box': {'t_command': None}}, 'cfs_command_unknown'),
+    ({'box': {'t_command': DROP}}, 'field_missing_box.t_command'),
     ({'kctrl_end': {'pending': True}}, 'end_busy'),
     ({'kctrl_end': {'phase': 'rewinding'}}, 'end_active'),
     ({'kctrl_start': {'phase': 'loading'}}, 'start_busy'),
@@ -448,6 +451,18 @@ def test_rien_ne_redemarre_hors_du_repos(installer, changes, error):
 def test_les_proprietaires_au_repos_laissent_passer(installer, end, start):
     installer.idle(status(kctrl_end={'phase': end, 'pending': 0},
                           kctrl_start={'phase': start}, kctrl_print_gate={'pending': False}))
+
+
+@pytest.mark.parametrize('command', ['', 'T0', 'T1', 'T15', 'T1A', 'T4D'])
+def test_la_memoire_du_dernier_outil_n_est_pas_une_commande_en_cours(installer, command):
+    # Document 105, section 11 : ce champ garde le dernier outil de la derniere impression.
+    installer.idle(status(box={'t_command': command}))
+
+
+def test_le_dernier_outil_qui_change_entre_deux_lectures_arrete_tout(machine):
+    machine.hooks[2] = lambda mm: mm.status['box'].update(t_command='T2')
+    with pytest.raises(AssertionError, match='cfs_command_changed'):
+        machine.m.stable()
 
 
 def test_un_mouvement_entre_deux_lectures_arrete_tout(machine):
@@ -564,6 +579,9 @@ def test_une_seconde_pose_est_refusee_sans_rien_toucher(machine):
                  id='print_started'),
     pytest.param(lambda machine: machine.hooks.update({3: unreadable}), 'klippy_socket_closed',
                  id='klipper_unreadable'),
+    pytest.param(lambda machine: machine.hooks.update({
+        3: lambda mm: mm.status['box'].update(t_command='T2')}), 'cfs_command_changed',
+        id='tool_command_arrived'),
     pytest.param(lambda machine: setattr(machine, 'nginx_answer',
                                          (1, 'nginx: [emerg] unexpected "}"')),
                  'nginx_test_failed', id='nginx_refused'),
@@ -1027,6 +1045,26 @@ def test_la_mise_a_jour_remplace_le_composant_change_et_garde_les_bobines(machin
     assert machine.run('validate')['status'] == 'VALIDATED_OK'
     with pytest.raises(AssertionError, match='update_nothing_to_do'):
         machine.run('update')
+
+
+@pytest.mark.parametrize('command', ['T1', 'T1A'])
+def test_la_pose_et_la_mise_a_jour_passent_avec_la_memoire_du_dernier_outil(machine, command):
+    machine.status['box']['t_command'] = command
+    assert machine.run('preflight')['status'] == 'PREFLIGHT_OK'
+    installed(machine)
+    revise(machine, 'kctrl_spools_model.py')
+    assert machine.run('update')['status'] == 'UPDATED_IDLE_OK'
+    assert machine.run('validate')['status'] == 'VALIDATED_OK'
+
+
+def test_le_dernier_outil_qui_change_avant_l_arret_refuse_la_mise_a_jour(machine):
+    installed(machine)
+    target = revise(machine, 'kctrl_spools_model.py')
+    old = Path(target).read_bytes()
+    machine.hooks[machine.queries + 3] = lambda mm: mm.status['box'].update(t_command='T2')
+    with pytest.raises(AssertionError, match='cfs_command_changed'):
+        machine.run('update')
+    assert Path(target).read_bytes() == old and machine.actions == []
 
 
 def test_une_page_seule_se_met_a_jour_sans_redemarrer(machine):

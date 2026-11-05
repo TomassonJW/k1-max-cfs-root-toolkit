@@ -99,6 +99,16 @@ def finite(value):
     return type(value) in (int, float) and math.isfinite(value)
 
 
+def tool_memory(box):
+    """The last tool command the file sent, or ''. A memory, not a command in
+    progress: it stays after the end of a print and only a restart empties it
+    (document 105, section 11). Unknown closes; rest is proved elsewhere."""
+    value = box['t_command']
+    assert type(value) is str and (value == '' or value in TOOLS or value in SLOTS), \
+        'cfs_command_unknown'
+    return value
+
+
 def idle(s, code):
     """Nothing prints, heats, moves or changes filament; the owners are at rest.
 
@@ -121,7 +131,7 @@ def idle(s, code):
     assert head['print_time'] <= head['estimated_print_time'] + .05, 'motion_queued'
     box = s['box']
     assert box['enable'] == 1 and box['state'] == 'connect', 'cfs_not_ready'
-    assert box['t_command'] == '', 'cfs_command_present'
+    tool_memory(box)
     end = s['kctrl_end']
     assert end['enabled'] is True and end['pending'] is False, 'end_busy'
     assert end['phase'] not in END_ACTIVE, 'end_active'
@@ -148,6 +158,7 @@ def stable(code):
     second = state()
     idle(second, code)
     assert first['toolhead']['print_time'] == second['toolhead']['print_time'], 'motion_started'
+    assert first['box']['t_command'] == second['box']['t_command'], 'cfs_command_changed'
     return second
 
 
@@ -306,7 +317,7 @@ def run(request):
     pinned(protected)
     assert digest(TARGET) == manifest['before_sha256'], 'target_not_at_baseline'
     compiles(data)
-    stable('before')
+    reference = stable('before')
     assert not BACKUP.exists(), 'backup_already_exists'
     assert not Path(STAGE).exists(), 'stale_stage_file'
     if mode == 'preflight':
@@ -323,7 +334,9 @@ def run(request):
     # Checked again right before the stop: a print launched meanwhile ends
     # the installation here, with nothing changed.
     try:
-        idle(state(), 'before')
+        current = state()
+        idle(current, 'before')
+        assert current['box']['t_command'] == reference['box']['t_command'], 'cfs_command_changed'
     except Exception as error:
         shutil.rmtree(str(BACKUP))
         return {'status': 'NOT_INSTALLED_NOTHING_CHANGED', 'error': str(error)}

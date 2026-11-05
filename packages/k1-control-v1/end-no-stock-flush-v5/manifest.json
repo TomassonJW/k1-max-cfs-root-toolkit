@@ -6,7 +6,7 @@
   "destination": "/usr/share/klipper/klippy/extras/kctrl_end.py",
   "before_sha256": "f3656210863d57b479ac9bc46dfd55852688233fc3e015838db5c23eee716c86",
   "sha256": "b6c59f26cdc1f1665c3ca080e3430f24c5e3714f21f79eebd6d433631f5ecece",
-  "installer_sha256": "b51eb533a7e6aa6d5b218c681a414330f486233f5b01da8a66d28740b8dbabf7",
+  "installer_sha256": "68c23cef9a8ec24690b47c61f199c55810b38cfbdd9383add34265193763d9b5",
   "backup": "/usr/data/k1-control-v1/backups/end-no-stock-flush-v5",
   "effects": {
     "klipper_restart_idle_only": true,

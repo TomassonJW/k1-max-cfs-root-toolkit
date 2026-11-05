@@ -33,6 +33,8 @@ IDLE_PRINT = ('standby', 'cancelled', 'complete', 'error')
 # Allowed rather than refused phases: a phase added later counts as busy.
 END_REST = ('idle', 'disabled', 'complete', 'failed')
 START_REST = ('idle', 'complete')
+TOOLS = ['T%d' % index for index in range(16)]
+SLOTS = ['T%s%s' % (box, slot) for box in '1234' for slot in 'ABCD']
 
 
 def sha(data):
@@ -103,6 +105,16 @@ def finite(value):
     return type(value) in (int, float) and math.isfinite(value)
 
 
+def tool_memory(box):
+    """The last tool command the file sent, or ''. A memory, not a command in
+    progress: it stays after the end of a print and only a restart empties it
+    (document 105, section 11). Unknown closes; rest is proved elsewhere."""
+    value = box.get('t_command')
+    assert type(value) is str and (value == '' or value in TOOLS or value in SLOTS), \
+        'cfs_command_unknown'
+    return value
+
+
 def idle(s):
     """Nothing prints, heats, moves or changes filament; the owners are at rest.
 
@@ -123,7 +135,7 @@ def idle(s):
     assert all(finite(head[key]) for key in ('print_time', 'estimated_print_time')), \
         'motion_clock_unknown'
     assert head['print_time'] <= head['estimated_print_time'] + .05, 'motion_queued'
-    assert s['box'].get('t_command') == '', 'cfs_command_present'
+    tool_memory(s['box'])
     end = s['kctrl_end']
     assert end.get('pending') is False and end.get('phase') in END_REST, 'end_active'
     assert s['kctrl_start'].get('phase') in START_REST, 'start_active'
@@ -136,6 +148,7 @@ def stable():
     second = state()
     idle(second)
     assert first['toolhead']['print_time'] == second['toolhead']['print_time'], 'motion_started'
+    assert tool_memory(first['box']) == tool_memory(second['box']), 'cfs_command_changed'
     return second
 
 
@@ -212,7 +225,7 @@ def run(request):
     assert sha(before) == manifest['before_sha256'], 'target_not_at_baseline: ' + sha(before)
     data = edited(before)
     assert sha(data) == manifest['sha256'], 'candidate_hash_mismatch'
-    stable()
+    reference = stable()
     assert not BACKUP.exists(), 'backup_already_exists'
     assert not Path(STAGE).exists(), 'stale_stage_file'
     if mode == 'preflight':
@@ -231,7 +244,9 @@ def run(request):
     # Checked again right before the write: a print or a heat-up started
     # meanwhile ends the installation here, with nothing changed.
     try:
-        idle(state())
+        current = state()
+        idle(current)
+        assert tool_memory(current['box']) == tool_memory(reference['box']), 'cfs_command_changed'
     except Exception as error:
         shutil.rmtree(str(BACKUP))
         return {'status': 'NOT_INSTALLED_NOTHING_CHANGED', 'error': str(error)}
