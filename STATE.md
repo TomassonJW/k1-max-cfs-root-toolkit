@@ -5,9 +5,9 @@
 `spool-manager-install-v1` (pose et `update`), `end-no-stock-flush-v5`,
 `cold-push-guard-v1`, `resume-reload-guard-v1`, `flash-log-level-v1` : valeur
 connue et stable au lieu du vide. Rien de posé sur la K1, `validate` bobines en
-lecture seule `VALIDATED_OK`. `kctrl_spools.py` corrigé dans le dépôt pour la
-même lecture à l'exécution, pas encore posé : la K1 refuse d'écrire au CFS tant
-que `t_command` n'est pas vide. Détail : document 105, section 11.
+lecture seule `VALIDATED_OK`. `kctrl_spools.py` corrigé pour la même lecture à
+l'exécution et posé au repos par `deploy.py update` : `VALIDATED_OK`, révision 36,
+7 bobines. Klipper non redémarré. Détail : document 105, section 11.
 
 ## 5 novembre, 01:23 - garde capteur CFS posée et validée au repos
 

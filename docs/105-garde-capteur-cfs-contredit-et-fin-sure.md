@@ -432,7 +432,10 @@ valeur connue passe, le reste répond « commande CFS inconnue » et refuse. Le 
 reste prouvé par les autres champs lus juste avant l'écriture : impression, Klipper
 occupé, fin en cours, départ en attente, CFS connecté. La lecture est unique ici,
 il n'y a pas de comparaison entre deux lectures comme dans les installateurs.
-Reste à poser par `deploy.py update` ; jusque-là la K1 garde l'ancien fichier.
+Posé le 5 novembre au repos par `deploy.py update` (`UPDATED_IDLE_OK` puis
+`VALIDATED_OK`), seul ce fichier remplacé, seul le Moonraker K1 Control redémarré.
+[INCONNU] Le cas réel reste à voir : `t_command` est vide depuis le redémarrage du
+5 novembre, il faudra une impression à changement d'outil pour l'observer.
 
 **`objects/query`.** [FAIT] Klipper répond `{}` pour un objet non chargé. Le
 premier relevé a répondu `guard_already_running` pour cette raison ; le banc
