@@ -1,5 +1,13 @@
 # STATE
 
+## 5 novembre - garde capteur CFS prête à poser, pas posée
+
+Paquet de pose `cfs-sensor-guard-v1` écrit et testé hors imprimante. Relevé et
+préflight verts sur la K1 en lecture seule, 23 fichiers épinglés identiques,
+rien écrit. `box.t_command` tranché : mémoire du dernier `Tn`, pas une commande
+en cours ; le préflight l'accepte s'il est connu et stable. Les paquets plus
+anciens exigent encore le vide. Détail : document 105, section 11.
+
 ## 4 novembre - geste 5 validé, première fin réelle sous V5 bonne
 
 Petite impression en quatre couleurs de 23:32 à 00:25, 18,6 g décomptés,
