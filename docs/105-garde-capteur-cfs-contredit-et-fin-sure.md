@@ -400,9 +400,34 @@ pose sans rien prouver ; l'ignorer aurait perdu le seul signe d'un `Tn` reçu
 entre deux lectures. Le repos se prouve ailleurs : état d'impression, carte SD,
 pause, mouvement, phases.
 
-[FAIT] Les paquets plus anciens exigent encore le vide. Leurs préflights se
-ferment après une impression à changement d'outil, jusqu'au prochain
-redémarrage. Ils ne laissent rien passer de plus : c'est un refus de trop.
+[FAIT] Les paquets plus anciens exigeaient le vide : leurs préflights se
+fermaient après une impression à changement d'outil, jusqu'au prochain
+redémarrage, sans rien laisser passer de plus. Correction du 5 novembre : la
+même règle dans `spool-manager-install-v1` (pose et mode `update`),
+`end-no-stock-flush-v5`, `cold-push-guard-v1`, `resume-reload-guard-v1` et
+`flash-log-level-v1`. Une valeur inconnue répond `cfs_command_unknown`, un
+changement entre deux lectures ou avant l'arrêt `cfs_command_changed` ; un
+objet `box` absent reste refusé. Seul `installer_sha256` change dans les
+manifestes, et l'ancienne empreinte n'est épinglée nulle part ailleurs.
+
+[FAIT] Vérifié hors imprimante avec `T0`, `T1`, `T15`, `T1A`, `T4D`, et sur la
+K1 par un `validate` en lecture seule du module bobines : `VALIDATED_OK` avec
+le nouvel installateur, `t_command` vidé par le redémarrage de la pose. Le cas
+`T1` sur la vraie machine reste à voir au prochain préflight.
+
+[LIMITE] Ce correctif ne rouvre pas tout. `cold-push-guard-v1` et
+`resume-reload-guard-v1` épinglent encore une révision de fin d'avant V5
+(`cancel-retained-v4`, `end-rewind-confirm-v3`) : `end_revision_changed` sur la
+machine actuelle. Et V5, garde à froid, `resume-reload-guard-v1` refusent tant
+que la garde capteur a changé la configuration de fin (section 12). Les paquets
+clos ou déjà fermés par leur révision (`end-separated-v1`, `end-overlap-v2`,
+`cancel-retained-end-v4`, `end-rewind-confirm-v3`, `retained-start-v1`) gardent
+l'ancienne exigence.
+
+[FAIT] Même mauvaise lecture à l'exécution, dans le module bobines :
+`spool-manager-v1/kctrl_spools.py`, ligne 135, répond « le CFS exécute une
+commande » dès que `t_command` n'est pas vide. Non corrigé ici : il faut un
+candidat neuf et un `deploy.py update` sur la K1.
 
 **`objects/query`.** [FAIT] Klipper répond `{}` pour un objet non chargé. Le
 premier relevé a répondu `guard_already_running` pour cette raison ; le banc

@@ -6,7 +6,7 @@
   "destination": "/usr/share/klipper/klippy/extras/kctrl_purge_guard.py",
   "before_sha256": "c90de4c37c7a8762db1f5dd8509b8d5d7ae4959245c4c5ad33133cbff8573327",
   "sha256": "8c637cc4bf5724c4fb589c7e91ef0e5fc53f700934de0284fc1db20a3f7e1e9a",
-  "installer_sha256": "a64fa08e9097e3b892f6de800728cf60d99eee25783f900474a8cdc9cbb88ba2",
+  "installer_sha256": "4ba444a9546df3da10762a48b61b163d158979ce6579aa1920f4c032371bdd69",
   "backup": "/usr/data/k1-control-v1/backups/cold-push-guard-v1",
   "effects": {
     "klipper_restart_idle_only": true,

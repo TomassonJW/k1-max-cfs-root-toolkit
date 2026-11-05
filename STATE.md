@@ -1,12 +1,20 @@
 # STATE
 
+## 5 novembre - exigence `box.t_command` vide retirée des préflights
+
+`spool-manager-install-v1` (pose et `update`), `end-no-stock-flush-v5`,
+`cold-push-guard-v1`, `resume-reload-guard-v1`, `flash-log-level-v1` : valeur
+connue et stable au lieu du vide. Rien de posé sur la K1, `validate` bobines en
+lecture seule `VALIDATED_OK`. `kctrl_spools.py` garde la mauvaise lecture à
+l'exécution. Détail : document 105, section 11.
+
 ## 5 novembre, 01:23 - garde capteur CFS posée et validée au repos
 
 `cfs-sensor-guard-v1` en service dans Klipper : `INSTALLED_IDLE_OK`,
 `VALIDATED_IDLE_OK`, relecture indépendante bonne, Klipper redémarré une fois,
 ni chauffe, ni mouvement, ni filament. Pas encore vue sur une impression.
 `box.t_command` : mémoire du dernier `Tn`, pas une commande en cours, vidée par
-le redémarrage ; les paquets plus anciens exigent encore le vide. Une poussée à
+le redémarrage. Une poussée à
 la main dans les 15 min après une fin arrête la machine :
 `KCTRL_SENSOR_GUARD_RELEASE` d'abord. Détail : document 105, sections 11 et 12.
 

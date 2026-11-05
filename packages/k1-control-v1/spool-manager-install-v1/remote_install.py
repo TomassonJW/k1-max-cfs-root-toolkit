@@ -60,6 +60,8 @@ COMPONENT = 'kctrl_spools'
 MODULES = ['kctrl_spools_store', 'kctrl_spools_model', 'kctrl_spools_counter', 'kctrl_spools']
 PREFIX = '/machine/k1_control/spools/'
 TAG = b'<script type="module" src="/bobines/overlay.js"></script>'
+TOOLS = ['T%d' % index for index in range(16)]
+SLOTS = ['T%s%s' % (box, slot) for box in '1234' for slot in 'ABCD']
 IDLE_PRINT = ('standby', 'cancelled', 'complete', 'error')
 END_IDLE = ('disabled', 'idle', 'complete', 'failed', 'shutdown')
 START_IDLE = ('disabled', 'idle', 'complete', 'failed')
@@ -188,6 +190,16 @@ def field(s, name, key):
     return s[name][key]
 
 
+def tool_memory(s):
+    """The last tool command the file sent, or ''. A memory, not a command in
+    progress: it stays after the end of a print and only a restart empties it
+    (document 105, section 11). Unknown closes; rest is proved elsewhere."""
+    value = field(s, 'box', 't_command')
+    assert type(value) is str and (value == '' or value in TOOLS or value in SLOTS), \
+        'cfs_command_unknown'
+    return value
+
+
 def idle(s):
     """Nothing prints, heats, moves or changes filament; the owners are at rest.
 
@@ -209,7 +221,7 @@ def idle(s):
     assert clock[0] <= clock[1] + .05, 'motion_queued'
     assert field(s, 'box', 'enable') == 1 and field(s, 'box', 'state') == 'connect', \
         'cfs_not_ready'
-    assert field(s, 'box', 't_command') == '', 'cfs_command_present'
+    tool_memory(s)
     assert field(s, 'kctrl_end', 'pending') in (False, 0), 'end_busy'
     assert field(s, 'kctrl_end', 'phase') in END_IDLE, 'end_active'
     assert field(s, 'kctrl_start', 'phase') in START_IDLE, 'start_busy'
@@ -233,7 +245,15 @@ def stable():
     second = state()
     idle(second)
     assert first['toolhead']['print_time'] == second['toolhead']['print_time'], 'motion_started'
+    assert tool_memory(first) == tool_memory(second), 'cfs_command_changed'
     return second
+
+
+def still_idle(reference):
+    """Read again right before a stop, against the last stable reading."""
+    current = state()
+    idle(current)
+    assert tool_memory(current) == tool_memory(reference), 'cfs_command_changed'
 
 
 def http(port, path, timeout=10):
@@ -729,7 +749,7 @@ def run(request):
     sources = {Path(path).name[:-3]: data for path, data in payload.items()
                if str(Path(path).parent) == COMPONENTS}
     imported = import_check(sources)
-    stable()
+    reference = stable()
     if mode == 'preflight':
         return {'status': 'PREFLIGHT_OK', 'files': len(manifest['files']),
                 'protected': len(protected), 'materials': imported['materials'],
@@ -747,7 +767,7 @@ def run(request):
         modes = back_up(manifest)
         # Checked again right before the stop: a print launched meanwhile ends
         # the installation here, with nothing changed.
-        idle(state())
+        still_idle(reference)
         calibration_idle()
         oldpid = running(MOONRAKER_PID, 'moonraker_not_running')
         memory = meminfo()
@@ -805,7 +825,7 @@ def update(manifest, payload):
     files replaced are copied first under the backup; a failure puts them back."""
     protected = manifest['protected']
     pinned(protected)
-    stable()
+    reference = stable()
     backup_intact(manifest)
     todo = []
     for entry in manifest['files']:
@@ -840,7 +860,7 @@ def update(manifest, payload):
     (kept / 'modes.json').write_text(json.dumps(modes), encoding='utf-8')
     names = [Path(entry['destination']).name for entry in todo]
     # Checked again right before the stop, as for the installation.
-    idle(state())
+    still_idle(reference)
     calibration_idle()
     oldpid = running(MOONRAKER_PID, 'moonraker_not_running')
     memory = meminfo()

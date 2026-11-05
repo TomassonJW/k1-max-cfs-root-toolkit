@@ -123,7 +123,7 @@
     "available_kb": 71680,
     "swap_growth_kb": 8192
   },
-  "installer_sha256": "b3188877cc2703b487c1a1ffb5c17f74fe5c50c61dc02966a7ec641b43fb137f",
+  "installer_sha256": "164d225b42c8d6d6040605b9b80c88e014523a201a150a29eac40fbb8878fc38",
   "effects": {
     "moonraker_restart_idle_only": true,
     "gateway_reload": true,

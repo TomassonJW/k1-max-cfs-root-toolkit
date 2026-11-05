@@ -6,7 +6,7 @@
   "destination": "/usr/share/klipper/klippy/extras/kctrl_tool_change.py",
   "before_sha256": "a203b0ec4bcbf42508daa5d2905542f6fc890740c7d1cc08bb5936d01b34b414",
   "sha256": "2e33eb3793ef70a5c1603742aa2e0104f2036ed029511f63ecb96bf1ee2154c2",
-  "installer_sha256": "b80d1950a3cac221ae5d336f9a85dfcc31d8c65f3024de7ff6ac56157fdf209d",
+  "installer_sha256": "74073f03d6fd78977185c9ca508aeb83af21c825205dc467deca276fed62a963",
   "backup": "/usr/data/k1-control-v1/backups/resume-reload-guard-v1",
   "effects": {
     "klipper_restart_idle_only": true,

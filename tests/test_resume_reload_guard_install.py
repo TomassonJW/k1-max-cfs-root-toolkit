@@ -181,6 +181,69 @@ def test_une_impression_lancee_avant_l_arret_annule_la_pose_sans_rien_changer(tm
     assert not machine.m.BACKUP.exists()
 
 
+@pytest.mark.parametrize('command', ['', 'T0', 'T1', 'T15', 'T1A', 'T4D'])
+def test_la_memoire_du_dernier_outil_n_empeche_pas_la_pose(tmp_path, monkeypatch, command):
+    # Document 105, section 11 : ce champ garde le dernier outil de la derniere impression.
+    machine = Machine(tmp_path, monkeypatch)
+    machine.status['box']['t_command'] = command
+    assert machine.run('preflight')['status'] == 'PREFLIGHT_OK'
+    assert machine.run('install')['status'] == 'INSTALLED_IDLE_OK'
+
+
+@pytest.mark.parametrize('command', ['T16', 'T5A', 'T1E', 'G28', 'BOX_LOAD', ' T1', None, 1])
+def test_une_valeur_inconnue_du_dernier_outil_ferme_la_pose(tmp_path, monkeypatch, command):
+    machine = Machine(tmp_path, monkeypatch)
+    machine.status['box']['t_command'] = command
+    with pytest.raises(AssertionError, match='cfs_command_unknown'):
+        machine.run('install')
+    assert machine.actions == []
+    assert machine.target.read_bytes() == machine.original
+    assert not machine.m.BACKUP.exists()
+
+
+def test_le_dernier_outil_qui_change_entre_deux_lectures_ferme_la_pose(tmp_path, monkeypatch):
+    machine = Machine(tmp_path, monkeypatch)
+    calls = []
+
+    def command_arrives():
+        calls.append(1)
+        if len(calls) == 2:
+            machine.status['box']['t_command'] = 'T2'
+    machine.hook = command_arrives
+    with pytest.raises(AssertionError, match='cfs_command_changed'):
+        machine.run('install')
+    assert machine.actions == []
+    assert machine.target.read_bytes() == machine.original
+    assert not machine.m.BACKUP.exists()
+
+
+def test_le_dernier_outil_qui_change_avant_l_arret_annule_la_pose_sans_rien_changer(
+        tmp_path, monkeypatch):
+    machine = Machine(tmp_path, monkeypatch)
+    calls = []
+
+    def command_arrives():
+        calls.append(1)
+        if len(calls) == 3:
+            machine.status['box']['t_command'] = 'T2'
+    machine.hook = command_arrives
+    assert machine.run('install') == {'status': 'NOT_INSTALLED_NOTHING_CHANGED',
+                                      'error': 'cfs_command_changed'}
+    assert machine.actions == []
+    assert machine.target.read_bytes() == machine.original
+    assert not machine.m.BACKUP.exists()
+
+
+def test_le_retour_arriere_et_la_validation_acceptent_la_memoire_du_dernier_outil(
+        tmp_path, monkeypatch):
+    machine = Machine(tmp_path, monkeypatch)
+    machine.run('install')
+    machine.status['box']['t_command'] = 'T1'
+    assert machine.run('validate')['status'] == 'VALIDATED_IDLE_OK'
+    assert machine.run('rollback')['status'] == 'ROLLED_BACK'
+    assert machine.target.read_bytes() == machine.original
+
+
 @pytest.mark.parametrize('changes,error', [
     ({'print_stats': {'state': 'printing'}}, 'job_busy'),
     ({'print_stats': {'state': 'paused'}}, 'job_busy'),
@@ -190,7 +253,7 @@ def test_une_impression_lancee_avant_l_arret_annule_la_pose_sans_rien_changer(tm
     ({'heater_bed': {'target': 55.0}}, 'heater_target_set'),
     ({'motion_report': {'live_velocity': 12.0}}, 'motion_active'),
     ({'toolhead': {'print_time': 93800.0}}, 'motion_queued'),
-    ({'box': {'t_command': 'T1A'}}, 'cfs_command_present'),
+    ({'box': {'t_command': 'T16'}}, 'cfs_command_unknown'),
     ({'box': {'state': 'disconnect'}}, 'cfs_not_ready'),
     ({'kctrl_end': {'phase': 'rewinding'}}, 'end_active'),
     ({'kctrl_end': {'pending': True}}, 'end_busy'),

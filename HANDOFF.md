@@ -1,5 +1,18 @@
 # HANDOFF — index de reprise
 
+## 5 novembre - `box.t_command` : préflights assouplis, sans toucher à la K1
+
+Les cinq installateurs encore en service acceptent la mémoire du dernier outil :
+valeur connue, identique sur les lectures et juste avant l'arrêt, sinon refus
+(`cfs_command_unknown`, `cfs_command_changed`). Le mode `update` du module
+bobines n'est plus bloqué après une impression à changement d'outil. Rien n'est
+écrit sur la K1 : un seul `validate` en lecture seule, `VALIDATED_OK`.
+
+Reste fermé pour une autre raison : `cold-push-guard-v1` et
+`resume-reload-guard-v1` épinglent une révision de fin d'avant V5, et V5 comme
+eux refusent tant que la garde capteur est là (document 105, section 11).
+Suite : `kctrl_spools.py` ligne 135 fait la même mauvaise lecture à l'exécution.
+
 ## 5 novembre, 01:23 - garde capteur CFS posée et validée au repos
 
 Sur l'accord de Thomas, `cfs-sensor-guard-v1` est posée : `INSTALLED_IDLE_OK`
@@ -12,10 +25,8 @@ un objet non chargé, le banc le croyait absent. Corrigé.
 
 `box.t_command` : c'est la mémoire du dernier `Tn` reçu, jamais vidée en fin
 d'impression, vide après un redémarrage (document 105, section 11). Le préflight
-accepte une valeur connue et stable. Les paquets plus anciens, eux, exigent
-encore le vide et se ferment après une impression à changement d'outil, jusqu'au
-prochain redémarrage : à prévoir pour toute remise à jour, y compris le mode
-`update` du module bobines.
+accepte une valeur connue et stable. Même règle posée depuis dans les paquets
+plus anciens encore en service (section ci-dessus).
 
 Depuis la pose, la configuration de fin vaut `8ecf4a40...` : les paquets qui
 épinglent l'ancienne `c3f2d83e...` (fin V5, garde à froid,
