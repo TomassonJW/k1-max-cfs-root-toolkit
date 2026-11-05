@@ -1537,9 +1537,11 @@ def test_a_disabled_guard_reads_every_option_and_installs_nothing():
     cfg = section()
     assert [name for name, _ in config.read] == list(cfg)
     for name, default in config.read:
-        value = cfg.getboolean(name) if type(default) is bool else type(default)(cfg[name])
-        assert value == default, name
-    assert cfg.getboolean('enabled') is False
+        if name == 'enabled':
+            continue
+        assert type(default)(cfg[name]) == default, name
+    # The block the installer adds, so on once it is added.
+    assert cfg.getboolean('enabled') is True
 
 
 @pytest.mark.parametrize('breakage, reason', [

@@ -142,10 +142,10 @@ moyenne, les 180 s décident ; en dessous, les 400 mm.
 ## 4. La garde
 
 Module Klipper `kctrl_sensor_guard`, révision `cfs-sensor-guard-v1`, section
-`[kctrl_sensor_guard]`, `enabled: False` par défaut. Activée, elle exige
-`[kctrl_end]` activé (`end-no-stock-flush-v5`), sinon Klipper refuse de
-démarrer : la fin stock pousse après le fichier, et la règle de fin arrêterait
-chaque impression.
+`[kctrl_sensor_guard]`, `enabled: False` par défaut dans le module, `True` dans
+la section posée. Activée, elle exige `[kctrl_end]` activé
+(`end-no-stock-flush-v5`), sinon Klipper refuse de démarrer : la fin stock
+pousse après le fichier, et la règle de fin arrêterait chaque impression.
 
 ### Pendant l'impression
 
@@ -369,11 +369,41 @@ Limites principales ; la liste complète est dans le README :
 
 ## 10. Suite
 
-1. Rien à poser avant la fin V5 posée et sa première fin validée (document 104,
-   section « Suite »).
-2. Ensuite, mission de pose : script d'installation avec sauvegarde, préflight,
-   validation et retour arrière, au repos revérifié, Thomas présent, préflight
-   d'abord. Ordre de pose : garde à froid (en service), fin V5, garde capteur.
-   Retour arrière dans l'ordre inverse : garde capteur d'abord, puis fin V5.
-3. Backlog : borner la poussée nette en `finalizing` ; filtrer le bavardage CFS
+1. Fait : fin V5 posée le 2 novembre, première fin réelle bonne le 5 novembre
+   à 00:25.
+2. Fait : paquet de pose écrit, relevé puis préflight verts sur la K1 le
+   5 novembre, en lecture seule (section 11).
+3. Pose au repos revérifié, avec l'accord de Thomas. Retour arrière : garde
+   capteur d'abord, puis fin V5, garde à froid en dernier.
+4. Backlog : borner la poussée nette en `finalizing` ; filtrer le bavardage CFS
    au handler du fichier si l'option 4 du document 103 est retenue.
+
+## 11. Préparation de la pose, 5 novembre 2026
+
+Lectures seules sur la K1, deux fois (relevé, préflight) : 23 fichiers épinglés
+identiques, module absent, pas de `.pyc`, pas de sauvegarde, configuration de
+fin `c3f2d83e...`, candidat compilé par l'interpréteur de Klipper, repos
+(`standby`, tête libre, phase de fin `complete`, auto-remplacement à 1).
+
+**`box.t_command`.** [FAIT] Il vaut `T1` au repos depuis la fin de 00:25.
+[FAIT] Le fichier du Benchy a pour dernier outil `T1`, ligne 99927 ; les
+documents 96 et 92 montrent `T0` et `T1A` restés de la même façon, et le
+document 36 le voit vide pendant un retrait. Il garde le dernier `Tn` reçu, nom
+d'outil du fichier ou slot, n'est pas vidé en fin d'impression et l'est au
+redémarrage. Ce n'est ni une commande en cours ni une preuve de repos.
+
+Décision du préflight : valeur connue et identique sur les lectures, y compris
+juste avant l'arrêt. Une valeur inconnue ferme. Exiger le vide aurait refusé la
+pose sans rien prouver ; l'ignorer aurait perdu le seul signe d'un `Tn` reçu
+entre deux lectures. Le repos se prouve ailleurs : état d'impression, carte SD,
+pause, mouvement, phases.
+
+[FAIT] Les paquets plus anciens exigent encore le vide. Leurs préflights se
+ferment après une impression à changement d'outil, jusqu'au prochain
+redémarrage. Ils ne laissent rien passer de plus : c'est un refus de trop.
+
+**`objects/query`.** [FAIT] Klipper répond `{}` pour un objet non chargé. Le
+premier relevé a répondu `guard_already_running` pour cette raison ; le banc
+hors imprimante supposait l'objet absent, c'est corrigé.
+
+[INCONNU] `box.filament` vaut 1 tête vide : rapporté, jamais jugé.

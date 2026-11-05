@@ -1,20 +1,20 @@
 # CFS sensor guard V1 - capteur CFS contredit et fin sûre, dans Klipper
 
-Statut : **versionnée et testée hors imprimante, jamais posée**. ADR-077,
-document 105.
+Statut : **paquet de pose prêt, relevé et préflight verts sur la K1 le
+5 novembre 2026 en lecture seule, pas encore posée**. ADR-077, document 105.
 
 - `kctrl_sensor_guard.py` : le module Klipper, objet `kctrl_sensor_guard`. Il
   tourne sur la K1, sans le PC. `parse()` lit une ligne du journal,
   `SensorWatch` porte les règles du slot sur des instants donnés, sans objet
   Klipper ; `KctrlSensorGuard` lit la K1, coupe, rétablit et arrête.
-- `sections.cfg` : la section candidate, `enabled: False`.
+- `sections.cfg` : la section posée, `enabled: True`. Le module reste à
+  `False` par défaut : sans cette section, rien.
+- `remote_install.py`, `deploy.py`, `build_manifest.py`, `manifest.json` : la
+  pose, voir « Pose » plus bas.
 
-Aucun script de pose : la pose est une mission à part, après la pose de la fin
-V5 (`end-no-stock-flush-v5`) et la validation de sa première fin, au repos
-revérifié, Thomas présent, préflight d'abord. Activée, la garde exige
-`[kctrl_end]` activé, sinon Klipper refuse de démarrer : sans la fin K1
-Control, la fin stock pousse après le fichier et la règle de fin arrêterait
-chaque impression.
+Activée, la garde exige `[kctrl_end]` activé, sinon Klipper refuse de démarrer :
+sans la fin K1 Control, la fin stock pousse après le fichier et la règle de fin
+arrêterait chaque impression.
 
 ## Pourquoi
 
@@ -238,7 +238,46 @@ slot de secours : recharger, puis reprendre.
 - Hypothèse : `BOX_ENABLE_AUTO_REFILL` pendant l'impression ne fait que poser
   le drapeau.
 
-Validation : **126 tests ciblés verts** (`tests/test_kctrl_sensor_guard_v1.py`) :
+## Pose
+
+    python deploy.py survey|preflight|install|validate|rollback
+
+`survey` et `preflight` ne font que lire. `install` et `rollback` redémarrent
+Klipper, au repos seulement, sans chauffe, sans mouvement, sans filament.
+
+Deux cibles : `/usr/share/klipper/klippy/extras/kctrl_sensor_guard.py`, nouveau,
+et la section ajoutée à la fin de `k1-control-owned-end-candidate.cfg`, après
+`[kctrl_end]`. `printer.cfg` n'est pas touché. Le module s'écrit d'abord, la
+configuration ensuite. La configuration passe de `c3f2d83e...` à `8ecf4a40...` :
+tant que la garde est posée, les retours arrière de la fin V5, de la garde à
+froid et de `resume-reload-guard-v1`, qui attendent l'ancienne valeur, se
+ferment. Retour arrière : celui-ci d'abord.
+
+Sauvegarde sur la K1 : `/usr/data/k1-control-v1/backups/cfs-sensor-guard-v1`.
+Échec après la pose : retour arrière automatique et redémarrage,
+`INSTALL_FAILED_ROLLED_BACK`.
+
+Le préflight exige les 23 fichiers épinglés identiques, la K1 au repos sur deux
+lectures et le candidat compilé par l'interpréteur de Klipper. Le repos est
+revérifié juste avant l'arrêt (`NOT_INSTALLED_NOTHING_CHANGED` sinon). Après le
+redémarrage, le validateur exige `hook = inside_cold_guard`, la révision, aucun
+échec, le niveau du journal, et un état de garde daté après l'arrêt.
+
+Deux faits relevés sur la K1, qui règlent le préflight :
+
+- `objects/query` répond `{}` pour un objet non chargé, il ne l'omet pas. Avant
+  la pose, `printer.kctrl_sensor_guard` vaut donc `{}`, pas absent.
+- `box.t_command` est la mémoire du dernier `Tn` reçu, pas une commande en
+  cours : jamais vidé à la fin d'une impression, vide après un redémarrage. Le
+  préflight accepte une valeur connue (`''`, `T0`..`T15`, `T1A`..`T4D`) si elle
+  ne bouge pas entre les lectures ; le repos se prouve par l'état d'impression,
+  la carte SD, la pause, le mouvement et les phases. Document 105, section 11.
+
+`box.filament` vaut 1 tête vide, sens inconnu : rapporté, jamais jugé.
+
+Validation : **114 tests de pose** (`tests/test_cfs_sensor_guard_install.py`)
+sur une fausse imprimante en mémoire, et **126 tests ciblés** du module
+(`tests/test_kctrl_sensor_guard_v1.py`) :
 faux Klipper sur horloge simulée, aucun réseau, aucun SSH. Ils rejouent à la
 seconde, sur les chronologies du document 105, les fins du 15 septembre, du
 31 octobre et du 1er novembre, la vraie fin de T1B du 31 octobre, la suite du

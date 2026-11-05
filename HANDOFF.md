@@ -1,5 +1,27 @@
 # HANDOFF — index de reprise
 
+## 5 novembre - garde capteur CFS : paquet de pose prêt, pas posée
+
+Paquet `packages/k1-control-v1/cfs-sensor-guard-v1` complet : `remote_install.py`,
+`deploy.py`, `build_manifest.py`, `manifest.json`, `sections.cfg` à
+`enabled: True`, `tests/test_cfs_sensor_guard_install.py`. Sur la K1, en lecture
+seule : `SURVEY_OK` sans écart sur 23 épingles, module absent, puis
+`PREFLIGHT_OK`. Rien écrit, rien redémarré.
+
+Le premier relevé a refusé (`guard_already_running`) : Klipper répond `{}` pour
+un objet non chargé, le banc le croyait absent. Corrigé.
+
+`box.t_command` : c'est la mémoire du dernier `Tn` reçu, jamais vidée en fin
+d'impression, vide après un redémarrage (document 105, section 11). Le préflight
+accepte une valeur connue et stable. Les paquets plus anciens, eux, exigent
+encore le vide et se ferment après une impression à changement d'outil, jusqu'au
+prochain redémarrage : à prévoir pour toute remise à jour, y compris le mode
+`update` du module bobines.
+
+Reprise : poser au repos revérifié avec l'accord de Thomas, verrou K1 pris,
+`deploy.py install` puis `deploy.py validate`. Retour arrière : garde capteur
+d'abord.
+
 ## 4 novembre - impression multicouleur pesée (geste 5) et première vraie fin sous V5
 
 Thomas a imprimé un petit bateau en quatre couleurs le 4 novembre, de 23:32 à

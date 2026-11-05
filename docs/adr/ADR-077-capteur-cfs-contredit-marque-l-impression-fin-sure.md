@@ -1,7 +1,7 @@
 # ADR-077 - Un capteur CFS contredit marque l'impression ; après la fin, toute poussée hors des étapes K1 Control arrête la machine
 
-Date : 1er novembre 2026. Statut : accepté ; construite et testée hors
-imprimante, pas posée.
+Date : 1er novembre 2026. Statut : accepté ; paquet de pose prêt, relevé et
+préflight verts sur la K1 le 5 novembre en lecture seule, pas posée.
 
 ## Contexte
 
@@ -71,10 +71,13 @@ refuse de démarrer.
 - Contrôle stock, garde capteur, puis garde à froid jugent chaque poussée, dans
   cet ordre, quel que soit l'ordre de démarrage.
 - Désactiver la fin V5 impose de désactiver d'abord la garde.
-- Pose seulement après la pose de la fin V5 et la validation de sa première
-  fin, au repos revérifié, Thomas présent, préflight d'abord. Ordre : garde à
-  froid (en service), fin V5, garde capteur ; retour arrière dans l'ordre
-  inverse, garde capteur d'abord.
+- Pose au repos revérifié, avec l'accord de Thomas, préflight d'abord. Ordre :
+  garde à froid, fin V5 (en service), garde capteur ; retour arrière dans
+  l'ordre inverse, garde capteur d'abord. La configuration de fin changée ferme
+  les retours arrière de la V5, de la garde à froid et de
+  `resume-reload-guard-v1` tant que la garde est là.
+- Le préflight lit `box.t_command` comme une mémoire du dernier `Tn`, pas comme
+  une commande en cours (document 105, section 11).
 - Une boucle stock dans le `BOX_END` de `finalizing`, la forme du 15 septembre,
   n'est pas bornée, ni une poussée stock pendant `cutting`.
 - Une poussée à la main dans la fenêtre arrête la machine :

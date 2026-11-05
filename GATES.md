@@ -1,5 +1,14 @@
 # GATES
 
+## 5 novembre - garde capteur CFS : pose préparée, attend l'accord de Thomas (ADR-077)
+
+Paquet `cfs-sensor-guard-v1` complet. Relevé puis `PREFLIGHT_OK` sur la K1 le
+5 novembre, en lecture seule : 23 fichiers épinglés identiques, repos. Aucune
+écriture. Gate suivante : pose au repos revérifié, accord de Thomas juste avant,
+verrou K1 pris. Retour arrière : garde capteur d'abord, V5 ensuite, garde à
+froid en dernier.
+[Document 105](docs/105-garde-capteur-cfs-contredit-et-fin-sure.md), section 11.
+
 ## 2 novembre - module bobines posé et validé au repos (ADR-075)
 
 Paquet `spool-manager-install-v1` posé le 2 novembre à 08:40, après la fin V5 :
