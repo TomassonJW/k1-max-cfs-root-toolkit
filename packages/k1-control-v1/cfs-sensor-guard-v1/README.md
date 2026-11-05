@@ -1,7 +1,7 @@
 # CFS sensor guard V1 - capteur CFS contredit et fin sûre, dans Klipper
 
-Statut : **paquet de pose prêt, relevé et préflight verts sur la K1 le
-5 novembre 2026 en lecture seule, pas encore posée**. ADR-077, document 105.
+Statut : **posée et validée au repos le 5 novembre 2026 à 01:23**, pas encore
+vue sur une impression. ADR-077, document 105.
 
 - `kctrl_sensor_guard.py` : le module Klipper, objet `kctrl_sensor_guard`. Il
   tourne sur la K1, sans le PC. `parse()` lit une ligne du journal,

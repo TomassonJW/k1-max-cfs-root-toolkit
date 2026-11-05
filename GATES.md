@@ -1,13 +1,15 @@
 # GATES
 
-## 5 novembre - garde capteur CFS : pose préparée, attend l'accord de Thomas (ADR-077)
+## 5 novembre - garde capteur CFS posée et validée au repos (ADR-077)
 
-Paquet `cfs-sensor-guard-v1` complet. Relevé puis `PREFLIGHT_OK` sur la K1 le
-5 novembre, en lecture seule : 23 fichiers épinglés identiques, repos. Aucune
-écriture. Gate suivante : pose au repos revérifié, accord de Thomas juste avant,
-verrou K1 pris. Retour arrière : garde capteur d'abord, V5 ensuite, garde à
-froid en dernier.
-[Document 105](docs/105-garde-capteur-cfs-contredit-et-fin-sure.md), section 11.
+`kctrl_sensor_guard.py` révision `cfs-sensor-guard-v1` posé le 5 novembre à
+01:23 sur l'accord de Thomas : `PREFLIGHT_OK` (23 fichiers épinglés),
+`INSTALLED_IDLE_OK`, `VALIDATED_IDLE_OK`, sauvegarde
+`/usr/data/k1-control-v1/backups/cfs-sensor-guard-v1`. Gate de pose close OK au
+repos. Gate suivante : première impression sous la garde, à relire. Retour
+arrière : garde capteur d'abord, V5 ensuite, garde à froid en dernier ; tant
+qu'elle est là, les retours arrière de ces paquets sont fermés.
+[Document 105](docs/105-garde-capteur-cfs-contredit-et-fin-sure.md), section 12.
 
 ## 2 novembre - module bobines posé et validé au repos (ADR-075)
 
