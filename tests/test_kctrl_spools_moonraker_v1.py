@@ -460,7 +460,7 @@ def test_a_failed_write_shows_its_gap_and_is_never_sent_again(make, mode, result
     ("kctrl_end", "phase", "purge", "fin d'impression en cours"),
     ("kctrl_end", "pending", True, "fin d'impression en cours"),
     ("webhooks", "state", "startup", "Klipper n'est pas prêt"),
-    ("box", "t_command", "T1A", "le CFS exécute une commande"),
+    ("box", "t_command", "G28", "commande CFS inconnue"),
     ("box", "enable", 0, "CFS non prêt"),
     ("print_stats", None, None, "état d'impression inconnu (absent)"),
 ])
@@ -472,6 +472,30 @@ def test_a_write_is_refused_unless_the_k1_rests(make, name, field, value, proble
         rig.apis.status[name][field] = value
     rig.refused("cfs-write", {"slot": "T1A"}, 409, "écriture refusée : " + problem)
     assert rig.apis.gcodes == [] and rig.public()["pending_cfs"] == {}
+
+
+@pytest.mark.parametrize("command", ["", "T0", "T1", "T15", "T1A", "T4D"])
+def test_the_last_tool_of_a_print_is_a_memory_not_a_command_in_progress(make, command):
+    # Document 105, section 11: only a restart empties this field.
+    rig = make(saved=library(*BASE))
+    rig.apis.status["box"]["t_command"] = command
+    assert rig.call("cfs-write", {"slot": "T1A"})["result"]["result"] == "ok"
+    assert rig.apis.gcodes == [WRITE_RED]
+
+
+@pytest.mark.parametrize("command", ["T16", "T5A", "T1E", "BOX_LOAD", " T1", None, 1, ["T1"]])
+def test_an_unknown_last_tool_closes_the_write(make, command):
+    rig = make(saved=library(*BASE))
+    rig.apis.status["box"]["t_command"] = command
+    rig.refused("cfs-write", {"slot": "T1A"}, 409, "écriture refusée : commande CFS inconnue")
+    assert rig.apis.gcodes == []
+
+
+def test_a_box_that_hides_the_last_tool_closes_the_write(make):
+    rig = make(saved=library(*BASE))
+    del rig.apis.status["box"]["t_command"]
+    rig.refused("cfs-write", {"slot": "T1A"}, 409, "écriture refusée : commande CFS inconnue")
+    assert rig.apis.gcodes == []
 
 
 def test_a_k1_without_the_end_of_print_object_still_rests(make):
@@ -530,6 +554,17 @@ def test_writes_queued_during_a_print_go_out_at_its_end_in_slot_order(make):
     notes = public["prints"][0]["notes"]
     assert counting.MIDWAY in notes
     assert any(note.startswith("fichier illisible") for note in notes)
+
+
+def test_writes_queued_during_a_tool_change_print_go_out_with_the_last_tool_still_shown(make):
+    # The case of document 105, section 11: the field keeps T1A after the end.
+    rig = make(status=printing_status(slots={"T1A": WHITE, "T1B": RED}), saved=library(*BASE, *SECOND))
+    assert rig.call("cfs-write", {"slot": "T1A"})["result"]["queued"] is True
+    rig.apis.status["box"]["t_command"] = "T1A"
+    rig.push(ENDED, 1)
+    rig.tick(6)
+    assert rig.apis.gcodes == [WRITE_RED]
+    assert rig.public()["pending_cfs"] == {}
 
 
 def test_a_queued_write_klipper_refuses_holds_the_next_until_the_retry(make):

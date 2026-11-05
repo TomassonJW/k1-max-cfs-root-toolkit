@@ -425,9 +425,14 @@ clos ou déjà fermés par leur révision (`end-separated-v1`, `end-overlap-v2`,
 l'ancienne exigence.
 
 [FAIT] Même mauvaise lecture à l'exécution, dans le module bobines :
-`spool-manager-v1/kctrl_spools.py`, ligne 135, répond « le CFS exécute une
-commande » dès que `t_command` n'est pas vide. Non corrigé ici : il faut un
-candidat neuf et un `deploy.py update` sur la K1.
+`spool-manager-v1/kctrl_spools.py` répondait « le CFS exécute une commande » dès
+que `t_command` n'était pas vide, et refusait donc d'écrire au CFS au repos après
+une impression à changement d'outil. Corrigé dans le dépôt le 5 novembre : une
+valeur connue passe, le reste répond « commande CFS inconnue » et refuse. Le repos
+reste prouvé par les autres champs lus juste avant l'écriture : impression, Klipper
+occupé, fin en cours, départ en attente, CFS connecté. La lecture est unique ici,
+il n'y a pas de comparaison entre deux lectures comme dans les installateurs.
+Reste à poser par `deploy.py update` ; jusque-là la K1 garde l'ancien fichier.
 
 **`objects/query`.** [FAIT] Klipper répond `{}` pour un objet non chargé. Le
 premier relevé a répondu `guard_already_running` pour cette raison ; le banc

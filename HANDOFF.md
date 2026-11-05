@@ -11,7 +11,10 @@ bobines n'est plus bloqué après une impression à changement d'outil. Rien n'e
 Reste fermé pour une autre raison : `cold-push-guard-v1` et
 `resume-reload-guard-v1` épinglent une révision de fin d'avant V5, et V5 comme
 eux refusent tant que la garde capteur est là (document 105, section 11).
-Suite : `kctrl_spools.py` ligne 135 fait la même mauvaise lecture à l'exécution.
+`kctrl_spools.py` faisait la même mauvaise lecture à l'exécution : corrigé dans
+le dépôt, manifeste régénéré. Suite : le poser par `deploy.py update`, au repos
+revérifié et sous le verrou K1 ; seul ce fichier change, seul le Moonraker
+K1 Control redémarre.
 
 ## 5 novembre, 01:23 - garde capteur CFS posée et validée au repos
 

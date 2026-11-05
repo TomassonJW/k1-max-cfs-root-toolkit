@@ -6,9 +6,8 @@
 [document 105](docs/105-garde-capteur-cfs-contredit-et-fin-sure.md)). Suite :
 relire la première impression sous la garde. Exigence `box.t_command` vide
 retirée des installateurs encore en service le 5 novembre (document 105,
-section 11). Backlog : la même lecture dans `kctrl_spools.py`, qui refuse
-d'écrire au CFS au repos après une impression à changement d'outil, correction
-à poser par `deploy.py update` ; borner la
+section 11). La même lecture est corrigée dans `kctrl_spools.py`, dans le dépôt :
+pose par `deploy.py update` à faire au repos. Backlog : borner la
 poussée nette dans la phase `finalizing` de la fin K1 Control, où une boucle
 stock dans `BOX_END` comme le 15 septembre n'est pas arrêtée ; filtrer le
 bavardage CFS au handler du fichier, jamais au logger racine, si l'option 4 du

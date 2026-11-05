@@ -34,7 +34,7 @@
       "destination": "/usr/data/k1-control-v1/current/moonraker/moonraker/moonraker/components/kctrl_spools.py",
       "before_sha256": null,
       "installed_sha256": "45c0d8af7015a62fbfd49ac4ec57f735af20433151cdc5fd785e750ad9530f3f",
-      "sha256": "45c0d8af7015a62fbfd49ac4ec57f735af20433151cdc5fd785e750ad9530f3f",
+      "sha256": "bf0132d41429ddd2d0aa2fd9d4cd90b5cb20685f467d0128c4e61bf2e90b8931",
       "mode": "0644"
     },
     {
