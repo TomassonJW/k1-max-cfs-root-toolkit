@@ -1,7 +1,7 @@
 # ADR-078 - En impression, l'auto-remplacement CFS reste actif ; la marque d'un capteur contredit ne fait que parler
 
-Date : 12 novembre 2026. Statut : accepté ; construite et testée hors
-imprimante, pas posée. Remplace le point 2 et le point 4 de ADR-077.
+Date : 12 novembre 2026. Statut : accepté ; posée et validée au repos le
+12 novembre à 16:27, pas encore vue sur une impression. Remplace le point 2 et le point 4 de ADR-077.
 
 ## Contexte
 
