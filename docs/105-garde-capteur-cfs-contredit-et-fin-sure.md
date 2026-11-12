@@ -357,7 +357,9 @@ Limites principales ; la liste complète est dans le README :
 ## 9. Inconnues
 
 - Comportement stock sur `FILAMENT_ERR` avec l'auto-remplacement à 0
-  (document 104).
+  (document 104). Observé le 12 novembre en impression : pause, purge de
+  3000 mm, CFS laissé au repos. La coupe de la section 4 est remplacée par la
+  V2 (ADR-078, document 107).
 - Délai de preuve et millimètres consommés par d'autres vraies fins que celles
   lues ici.
 - Que `BOX_END` puisse encore boucler sous la V5.
@@ -377,7 +379,9 @@ Limites principales ; la liste complète est dans le README :
    garde capteur d'abord, puis fin V5, garde à froid en dernier.
 4. Première impression sous la garde, à relire : aucun arrêt, aucune marque à
    tort, `blind` nul, `tap_dropped` à 0.
-5. Backlog : borner la poussée nette en `finalizing` ; filtrer le bavardage CFS
+5. Fait hors imprimante le 12 novembre : V2, l'auto-remplacement reste actif
+   en impression (ADR-078, document 107), après la pause du 12 novembre.
+6. Backlog : borner la poussée nette en `finalizing` ; filtrer le bavardage CFS
    au handler du fichier si l'option 4 du document 103 est retenue.
 
 ## 11. Préparation de la pose, 5 novembre 2026
