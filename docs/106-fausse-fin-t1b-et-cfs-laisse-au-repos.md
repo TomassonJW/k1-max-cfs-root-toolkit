@@ -29,9 +29,10 @@ sortie de case (« box extrude position »), pas sur la présence de la bobine.
 légèrement décalé, glissement du galet). Déjà vu en fin d'impression sur T1A
 (documents 81, 104, 105), c'est la première fois en pleine impression.
 
-[INCONNU] Pourquoi `auto_refill` valait déjà 0 à 06:04:09 : la fenêtre de
-journal lue commence à 06:00:48. Probablement une marque antérieure de la garde
-capteur (ADR-077), à confirmer dans le journal de la nuit.
+[FAIT] `auto_refill` valait 0 à 06:04:09 parce que la garde capteur V1 avait
+marqué T1B à 04:25:06 et coupé l'auto-remplacement (ADR-077). À 04:22:06, la
+même erreur, auto-remplacement actif, n'avait rien arrêté. La coupe a changé la
+fausse erreur en pause et purge : document 107, ADR-078.
 
 ## 2. Pourquoi la première reprise imprimait dans le vide
 
@@ -86,9 +87,10 @@ zéro à 09:53:50, tête libre (`filament_sensor_2` faux), Klipper `ready`.
 
 ## 5. Suite proposée
 
-- Garde de reprise : sur une pause `key839` avec la case encore vue, couper la
-  routine « extrude all material » et ne pas laisser le CFS au repos. À
-  construire hors imprimante, comme la garde capteur (ADR-077).
+- Garde de reprise : construite hors imprimante le 12 novembre, pas posée
+  (`cfs-sensor-guard-v2`, ADR-078, document 107). Elle garde
+  l'auto-remplacement actif en impression, ce qui évite la pause, et en pause
+  dit la fausse fin et le mode repos sans agir.
 - Procédure de reprise en un geste dans K1 Control : vider `tn_cur_tnn`, mode
   impression sur la case engagée, purge courte, retour au point exact.
 - Nettoyer le capteur de sortie de la case B du CFS 1.

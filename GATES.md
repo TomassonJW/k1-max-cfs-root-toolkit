@@ -1,5 +1,14 @@
 # GATES
 
+## 12 novembre - garde capteur CFS V2 : construite hors imprimante, gate de pose ouverte (ADR-078)
+
+`cfs-sensor-guard-v2` testée hors imprimante (164 tests du module, 98 de
+pose), relevé en lecture seule `SURVEY_OK`, 24 épingles identiques. Gate
+suivante : pose au repos revérifié, Thomas d'accord, préflight d'abord ;
+seul `kctrl_sensor_guard.py` change. Puis première impression sous la V2.
+Ordre de retour arrière : V2, V1, fin V5, garde à froid.
+[Document 107](docs/107-garde-capteur-cfs-v2-reprise-gardee.md).
+
 ## 5 novembre - garde capteur CFS posée et validée au repos (ADR-077)
 
 `kctrl_sensor_guard.py` révision `cfs-sensor-guard-v1` posé le 5 novembre à

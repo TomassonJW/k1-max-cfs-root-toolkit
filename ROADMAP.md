@@ -2,6 +2,12 @@
 
 ## Garde capteur CFS (1er novembre)
 
+V2 `cfs-sensor-guard-v2` construite hors imprimante le 12 novembre (ADR-078,
+[document 107](docs/107-garde-capteur-cfs-v2-reprise-gardee.md)) : plus de
+coupe de l'auto-remplacement en impression, messages de fausse fin et de CFS
+au repos en pause. Suite : pose au repos avec Thomas, puis relire la première
+impression sous la V2 ; procédure de reprise en un geste dans K1 Control.
+
 `cfs-sensor-guard-v1` posée et validée au repos le 5 novembre (ADR-077,
 [document 105](docs/105-garde-capteur-cfs-contredit-et-fin-sure.md)). Suite :
 relire la première impression sous la garde. Exigence `box.t_command` vide

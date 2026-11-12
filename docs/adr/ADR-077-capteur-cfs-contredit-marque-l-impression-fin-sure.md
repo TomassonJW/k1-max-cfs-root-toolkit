@@ -1,7 +1,8 @@
 # ADR-077 - Un capteur CFS contredit marque l'impression ; après la fin, toute poussée hors des étapes K1 Control arrête la machine
 
 Date : 1er novembre 2026. Statut : accepté ; posée et validée au repos le
-5 novembre à 01:23, pas encore vue sur une impression.
+5 novembre à 01:23. Points 2 et 4 remplacés par ADR-078 (12 novembre) : la
+coupe en impression a changé une fausse erreur en pause et purge.
 
 ## Contexte
 

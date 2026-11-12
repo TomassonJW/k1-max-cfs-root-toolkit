@@ -1,5 +1,19 @@
 # HANDOFF — index de reprise
 
+## 12 novembre - garde capteur CFS V2 prête, pas posée
+
+Paquet `packages/k1-control-v1/cfs-sensor-guard-v2` (ADR-078, document 107) :
+même module, la marque ne coupe plus l'auto-remplacement, il est remis à 1
+s'il tombe à 0 en impression, `START_PRINT` le remet, et en pause la console
+dit « fausse fin probable » et la commande `BOX_SET_BOX_MODE` si le CFS est au
+repos. Relevé en lecture seule `SURVEY_OK` le 12 novembre à 10:29.
+
+Point de reprise : pose au repos revérifié, accord de Thomas,
+`python deploy.py preflight` puis `install` puis `validate` dans le dossier du
+paquet. Seul le module change, Klipper redémarre une fois. Le redémarrage
+efface la restitution en attente de la V1 : `auto_refill` reste à 0 jusqu'au
+prochain `START_PRINT`, qui le remet. Retour arrière : V2 d'abord.
+
 ## 12 novembre - reprise T1B sauvée, cause comprise
 
 Impression `el-dorado-tray-2` finie à 100 % après une fausse fin `key839` sur

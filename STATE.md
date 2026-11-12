@@ -1,5 +1,15 @@
 # STATE
 
+## 12 novembre - garde capteur CFS V2 construite hors imprimante (ADR-078)
+
+Cause de la pause de la nuit : la V1 a coupé l'auto-remplacement à 04:25:06 ;
+la fausse erreur de 06:04:09 a donc mis en pause et purgé, alors que la même
+erreur à 04:22:06, auto-remplacement actif, n'avait rien fait. La V2 ne coupe
+plus : elle tient l'auto-remplacement à 1 en impression et parle en pause.
+164 tests du module (vraies lignes de la nuit rejouées), 98 tests de pose.
+Relevé en lecture seule à 10:29 : 24 épingles identiques, V1 en place.
+Rien posé. Détail : document 107.
+
 ## 12 novembre - fausse fin T1B en impression, reprise sauvée, impression finie
 
 `key839` du CFS 1 sur la case B à 06:04:09 alors que la bobine était pleine ;
