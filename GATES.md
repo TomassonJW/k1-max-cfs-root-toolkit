@@ -1,5 +1,13 @@
 # GATES
 
+## 12 novembre, 16:27 - garde capteur CFS V2 posée et validée au repos (ADR-078)
+
+Gate de pose close OK au repos : `PREFLIGHT_OK`, `INSTALLED_IDLE_OK`,
+`VALIDATED_IDLE_OK`, sauvegarde
+`/usr/data/k1-control-v1/backups/cfs-sensor-guard-v2`. Gate suivante :
+première impression sous la V2, à relire. Retour arrière : V2, V1, fin V5,
+garde à froid.
+
 ## 12 novembre - garde capteur CFS V2 : construite hors imprimante, gate de pose ouverte (ADR-078)
 
 `cfs-sensor-guard-v2` testée hors imprimante (164 tests du module, 98 de

@@ -1,5 +1,13 @@
 # STATE
 
+## 12 novembre, 16:27 - garde capteur CFS V2 posée et validée au repos (ADR-078)
+
+`cfs-sensor-guard-v2` en service : `PREFLIGHT_OK` (24 épingles),
+`INSTALLED_IDLE_OK`, `VALIDATED_IDLE_OK`, Klipper redémarré une fois, ni
+chauffe, ni mouvement, ni filament. `auto_refill` à 1, garde à l'écoute du CFS
+(`tap_seen` 10, `tap_dropped` 0). Pas encore vue sur une impression.
+Document 107, section 10.
+
 ## 12 novembre - garde capteur CFS V2 construite hors imprimante (ADR-078)
 
 Cause de la pause de la nuit : la V1 a coupé l'auto-remplacement à 04:25:06 ;

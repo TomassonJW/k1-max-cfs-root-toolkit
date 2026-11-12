@@ -114,7 +114,30 @@ de la V1.
 
 ## 9. Suite
 
-1. Pose au repos, Thomas d'accord, préflight d'abord.
+1. Fait : posée au repos le 12 novembre à 16:27 (section 10).
 2. Relire la première impression sous la V2 : aucune pause sur fausse erreur,
    `kept` et `keep`, `blind` nul, `tap_dropped` à 0.
 3. Procédure de reprise en un geste dans K1 Control (document 106, section 5).
+
+## 10. Pose, 12 novembre 2026
+
+[FAIT] Sur l'accord de Thomas, imprimante dite disponible, depuis `main` après
+la PR #106 :
+
+- `PREFLIGHT_OK` : 24 fichiers épinglés identiques, `standby`, V1 en service
+  (travail 3, T1B marqué, restitution en attente), `auto_refill` à 0 ;
+- `INSTALLED_IDLE_OK` à 16:27:34 : module remplacé, Klipper redémarré une fois,
+  aucune trace d'erreur dans le journal depuis l'arrêt ; ni chauffe, ni
+  mouvement, ni filament ;
+- `VALIDATED_IDLE_OK` : révision `cfs-sensor-guard-v2`, `hook =
+  inside_cold_guard`, `keep_auto_refill` vrai, `blind` nul, `tap_seen` 10,
+  `tap_dropped` 0, aucune marque ;
+- relecture : empreinte `7920ba39...`, sauvegarde
+  `/usr/data/k1-control-v1/backups/cfs-sensor-guard-v2` complète.
+
+[FAIT] `auto_refill` lu à 1 juste après le redémarrage, sans action de la
+garde : l'écran le renvoie à sa connexion. `box.t_command` vide après le
+redémarrage, comme attendu.
+
+Retour arrière : `python deploy.py rollback` dans le paquet V2, au repos ; il
+remet la V1 exacte.

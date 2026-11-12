@@ -1,8 +1,7 @@
 # CFS sensor guard V2 - une fausse erreur CFS ne devient plus pause et purge
 
-Statut : **construite et testée hors imprimante, pas posée**. Relevé en lecture
-seule sur la K1 le 12 novembre 2026 : 24 fichiers épinglés identiques, V1 en
-place. ADR-078, document 107. Remplace la coupe de l'auto-remplacement de
+Statut : **posée et validée au repos le 12 novembre 2026 à 16:27**, pas encore
+vue sur une impression. ADR-078, document 107. Remplace la coupe de l'auto-remplacement de
 ADR-077 (document 105) ; tout le reste de la V1 est gardé.
 
 - `kctrl_sensor_guard.py` : le module Klipper, même objet `kctrl_sensor_guard`,

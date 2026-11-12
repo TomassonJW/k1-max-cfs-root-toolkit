@@ -1,6 +1,14 @@
 # HANDOFF — index de reprise
 
-## 12 novembre - garde capteur CFS V2 prête, pas posée
+## 12 novembre, 16:27 - garde capteur CFS V2 posée et validée au repos
+
+Sur l'accord de Thomas : `PREFLIGHT_OK`, `INSTALLED_IDLE_OK`,
+`VALIDATED_IDLE_OK`, relecture de l'empreinte et de la sauvegarde bonne
+(document 107, section 10). `auto_refill` à 1 après le redémarrage.
+Reprise : relire la première impression sous la V2 (aucune pause sur fausse
+erreur, `kept`, `blind` nul, `tap_dropped` à 0). Retour arrière : V2 d'abord.
+
+## 12 novembre - garde capteur CFS V2 construite (historique)
 
 Paquet `packages/k1-control-v1/cfs-sensor-guard-v2` (ADR-078, document 107) :
 même module, la marque ne coupe plus l'auto-remplacement, il est remis à 1
