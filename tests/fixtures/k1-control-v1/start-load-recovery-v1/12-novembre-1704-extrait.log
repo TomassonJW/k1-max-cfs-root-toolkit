@@ -1,0 +1,113 @@
+17:08:08,851 K1 Control: probing window closed
+17:08:08,984 K1 Control: fenetre de chargement CFS ouverte, plafond buse 210 C
+17:08:09,415 K1 Control: T0 -> filament 1 (T1A) sur T1B, PLA #000000, fiche 00001 (Generic PLA) deja a 195 C, premiere couche
+17:08:09,426 YJY K1X cmd_T vtnn=T1A
+17:08:09,437 YJY K1X cmd_T last_tnn = self.box_action.box_save.last_cmd = None
+17:08:09,438 YJY K1X cmd_T tnn = sel.box_state.Tnn_map[T1A] = T1B
+17:08:09,439 YJY K1X cmd_T self.box_action.box_save.close_model_fan()
+17:08:09,442 YJY K1X cmd_T self.box_action.z_down
+17:08:09,861 z_down move_z: 0.8
+17:08:09,872 YJY K1X cmd_T self.box_action.box_save.last_cmd=None, self.box_action.get_fialment_sensor_detect()=False
+17:08:09,884 record_z_pos:24.961276796603975
+17:08:12,114 z_down move_z: 20.001611819095228
+17:08:12,256 record_z_pos:34.97975526616704
+17:08:13,619 z_down move_z: 30.040335022491252
+17:08:15,167 YJY K1X cmd_T ret = self.box_action.box_extrude_material(T1B)
+17:08:59,508 extrude_process_stage7 ret: True,OK
+17:09:00,495 OOObox_extrude_material_stage8_1: {'addr': 1, 'num': 'B'}
+17:09:00,496 OOObox_extrude_material_stage8_2: {'addr': 1, 'num': 'B'}
+17:09:02,828 OOObox_extrude_material_stage8_2_0: {'addr': 1, 'num': 'B'}
+17:09:06,865 OOObox_extrude_material_stage8_5_0: 1
+17:09:07,010 OOObox_extrude_material_stage8_2_1: {'addr': 1, 'num': 'B'}
+17:09:07,011 OOObox_extrude_material_stage8_3: True
+17:09:11,491 OOObox_extrude_material_stage8_5_1: 1
+17:09:11,498 OOObox_extrude_material_stage8_2: {'addr': 1, 'num': 'B'}
+17:09:11,506 OOObox_extrude_material_stage8_2_0: {'addr': 1, 'num': 'B'}
+17:09:15,543 OOObox_extrude_material_stage8_5_0: 1
+17:09:15,771 OOObox_extrude_material_stage8_2_1: {'addr': 1, 'num': 'B'}
+17:09:15,773 OOObox_extrude_material_stage8_3: True
+17:09:18,500 OOObox_extrude_material_stage8_5_1: 1
+17:09:18,501 OOObox_extrude_material_stage8_2: {'addr': 1, 'num': 'B'}
+17:09:18,507 OOObox_extrude_material_stage8_2_0: {'addr': 1, 'num': 'B'}
+17:09:22,552 OOObox_extrude_material_stage8_5_0: 1
+17:09:22,858 OOObox_extrude_material_stage8_2_1: {'addr': 1, 'num': 'B'}
+17:09:22,859 OOObox_extrude_material_stage8_3: True
+17:09:25,430 OOObox_extrude_material_stage8_5_1: 1
+17:09:25,432 OOObox_extrude_material_stage8_2: {'addr': 1, 'num': 'B'}
+17:09:25,440 OOObox_extrude_material_stage8_2_0: {'addr': 1, 'num': 'B'}
+17:09:29,530 OOObox_extrude_material_stage8_5_0: 1
+17:09:29,856 OOObox_extrude_material_stage8_2_1: {'addr': 1, 'num': 'B'}
+17:09:29,856 OOObox_extrude_material_stage8_3: True
+17:09:32,450 OOObox_extrude_material_stage8_5_1: 1
+17:09:32,451 OOObox_extrude_material_stage8_2: {'addr': 1, 'num': 'B'}
+17:09:32,456 OOObox_extrude_material_stage8_2_0: {'addr': 1, 'num': 'B'}
+17:09:36,569 OOObox_extrude_material_stage8_5_0: 1
+17:09:36,897 OOObox_extrude_material_stage8_2_1: {'addr': 1, 'num': 'B'}
+17:09:36,898 OOObox_extrude_material_stage8_3: True
+17:09:39,436 OOObox_extrude_material_stage8_5_1: 1
+17:09:39,438 OOObox_extrude_material_stage8_2: {'addr': 1, 'num': 'B'}
+17:09:39,442 OOObox_extrude_material_stage8_2_0: {'addr': 1, 'num': 'B'}
+17:09:43,475 OOObox_extrude_material_stage8_5_0: 1
+17:09:43,828 OOObox_extrude_material_stage8_2_1: {'addr': 1, 'num': 'B'}
+17:09:43,835 OOObox_extrude_material_stage8_3: True
+17:09:46,400 OOObox_extrude_material_stage8_5_1: 1
+17:09:46,401 buffer is always full
+17:09:46,403 OOOextrude_process_auto_retry_process: T1B, auto_retry_extruder_gear, [0, 0, 0, 0]
+17:09:51,332 cmd: SET_BOX_MODE
+17:10:13,334 z_down move_z: 30.14079720429162
+17:10:26,706 extrude_process_stage7 ret: True,OK
+17:10:27,652 OOObox_extrude_material_stage8_1: {'addr': 1, 'num': 'B'}
+17:10:27,653 OOObox_extrude_material_stage8_2: {'addr': 1, 'num': 'B'}
+17:10:30,033 OOObox_extrude_material_stage8_2_0: {'addr': 1, 'num': 'B'}
+17:10:34,095 OOObox_extrude_material_stage8_5_0: 1
+17:10:34,236 OOObox_extrude_material_stage8_2_1: {'addr': 1, 'num': 'B'}
+17:10:34,237 OOObox_extrude_material_stage8_3: True
+17:10:38,640 OOObox_extrude_material_stage8_5_1: 1
+17:10:38,641 OOObox_extrude_material_stage8_2: {'addr': 1, 'num': 'B'}
+17:10:38,646 OOObox_extrude_material_stage8_2_0: {'addr': 1, 'num': 'B'}
+17:10:42,679 OOObox_extrude_material_stage8_5_0: 1
+17:10:42,899 OOObox_extrude_material_stage8_2_1: {'addr': 1, 'num': 'B'}
+17:10:42,900 OOObox_extrude_material_stage8_3: True
+17:10:45,606 OOObox_extrude_material_stage8_5_1: 1
+17:10:45,608 OOObox_extrude_material_stage8_2: {'addr': 1, 'num': 'B'}
+17:10:45,614 OOObox_extrude_material_stage8_2_0: {'addr': 1, 'num': 'B'}
+17:10:49,647 OOObox_extrude_material_stage8_5_0: 1
+17:10:49,914 OOObox_extrude_material_stage8_2_1: {'addr': 1, 'num': 'B'}
+17:10:49,915 OOObox_extrude_material_stage8_3: True
+17:10:52,641 OOObox_extrude_material_stage8_5_1: 1
+17:10:52,643 OOObox_extrude_material_stage8_2: {'addr': 1, 'num': 'B'}
+17:10:52,647 OOObox_extrude_material_stage8_2_0: {'addr': 1, 'num': 'B'}
+17:10:56,697 OOObox_extrude_material_stage8_5_0: 1
+17:10:56,959 OOObox_extrude_material_stage8_2_1: {'addr': 1, 'num': 'B'}
+17:10:56,960 OOObox_extrude_material_stage8_3: True
+17:10:59,664 OOObox_extrude_material_stage8_5_1: 1
+17:10:59,665 OOObox_extrude_material_stage8_2: {'addr': 1, 'num': 'B'}
+17:10:59,670 OOObox_extrude_material_stage8_2_0: {'addr': 1, 'num': 'B'}
+17:11:03,712 OOObox_extrude_material_stage8_5_0: 1
+17:11:04,022 OOObox_extrude_material_stage8_2_1: {'addr': 1, 'num': 'B'}
+17:11:04,023 OOObox_extrude_material_stage8_3: True
+17:11:06,602 OOObox_extrude_material_stage8_5_1: 1
+17:11:06,603 OOObox_extrude_material_stage8_2: {'addr': 1, 'num': 'B'}
+17:11:06,608 OOObox_extrude_material_stage8_2_0: {'addr': 1, 'num': 'B'}
+17:11:10,683 OOObox_extrude_material_stage8_5_0: 1
+17:11:10,970 OOObox_extrude_material_stage8_2_1: {'addr': 1, 'num': 'B'}
+17:11:10,970 OOObox_extrude_material_stage8_3: True
+17:11:13,559 OOObox_extrude_material_stage8_5_1: 1
+17:11:13,560 buffer is always full
+17:11:13,561 !! {"code":"key837", "msg":"extrude error, maybe there is a blockage between the filament sensor and the extrusion gear", "values": [1, "B"]}
+17:11:13,569 error: printing to pause
+17:11:13,597 error: printing to pause1
+17:11:13,607 BOX_MOVE_TO_SAFE_POS1
+17:11:14,472 BOX_MOVE_TO_SAFE_POS2
+17:11:14,480 record_z_pos:4.79887143241797
+17:11:14,482 kctrl_purge_guard: refused (210.0, 291.5, 35.013334646079755, 168.0) -> (210.0, 291.5, 4.79887143241797, 168.0): purge_bed_clearance_below_30mm
+17:11:14,483 K1 Control: mouvement refuse pour proteger le bac (purge_bed_clearance_below_30mm). Plateau >=30 mm et sortie vers Y<=280 avant remontee.
+17:11:14,486 An exception occurred: K1 Control: mouvement refuse pour proteger le bac (purge_bed_clearance_below_30mm). Plateau >=30 mm et sortie vers Y<=280 avant remontee.
+17:11:14,488 YJY K1X cmd_T ret = self.box_action_extrude_material(T1B) = False
+17:11:14,490 YJY K1X cmd_T box_extrude_err last_tnn=None, tnn=T1B return False
+17:11:14,491 recode_err: box_extrude_err, last_tnn: None, tnn: T1B, addr: None, vtnn: None, cover: False
+17:11:14,492 error: box_extrude_err, last_tnn: None, tnn: T1B, addr: None
+17:11:14,498 K1 Control: depart interrompu (start_paused)
+17:11:14,502 K1 Control: depart interrompu (start_paused)
+17:11:14,518 Exiting SD card print (position 15606)
+17:11:14,960 K1 Control: fin du fichier, garde de fin active 15 min. Une poussee de filament hors des etapes de fin arrete la machine. KCTRL_SENSOR_GUARD_RELEASE avant une poussee a la main.

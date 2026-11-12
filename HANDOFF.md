@@ -1,5 +1,21 @@
 # HANDOFF — index de reprise
 
+## 12 novembre - départ repris après un chargement stock raté (construit)
+
+Paquet `packages/k1-control-v1/start-load-recovery-v1` (ADR-079, document
+108) : si le `T` stock d'un départ échoue sur `key837` du slot demandé et/ou
+une pause stock, filament prouvé en tête, le départ lève la pause, efface la
+levée du CFS, purge au bac et continue. Pas posé.
+
+Point de reprise, imprimante au repos uniquement :
+1. `python deploy.py survey` dans le dossier du paquet (lecture seule) ;
+2. reporter le relevé dans `build_manifest.py` (`SURVEYED`) et reconstruire
+   le manifeste, puis relancer les tests ;
+3. avec l'accord de Thomas, repos revérifié juste avant : `preflight`,
+   `install`, `validate`. Klipper redémarre une fois.
+Retour arrière : ce paquet avant tout autre. Reste aussi : relire la première
+impression sous la garde V2 (celle de 17:43, relais T1B vers T1C attendu).
+
 ## 12 novembre, 16:27 - garde capteur CFS V2 posée et validée au repos
 
 Sur l'accord de Thomas : `PREFLIGHT_OK`, `INSTALLED_IDLE_OK`,

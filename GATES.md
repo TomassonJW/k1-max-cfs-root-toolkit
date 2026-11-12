@@ -1,5 +1,15 @@
 # GATES
 
+## 12 novembre - départ repris après un chargement stock raté : construit hors imprimante, gate de pose ouverte (ADR-079)
+
+`start-load-recovery-v1` testé hors imprimante (90 tests du module dont le
+rejeu de 17:08, 102 de pose). Seul `kctrl_start.py` changera, de
+`retained-start-v1` à `start-load-recovery-v1`. Gates suivantes, dans l'ordre :
+relevé en lecture seule à l'imprimante au repos, report du relevé dans le
+manifeste, puis pose au repos revérifié avec l'accord de Thomas (préflight,
+pose, validation), puis premier départ sous la reprise. Retour arrière : ce
+paquet d'abord. [Document 108](docs/108-depart-repris-apres-chargement-stock-rate.md).
+
 ## 12 novembre, 16:27 - garde capteur CFS V2 posée et validée au repos (ADR-078)
 
 Gate de pose close OK au repos : `PREFLIGHT_OK`, `INSTALLED_IDLE_OK`,
