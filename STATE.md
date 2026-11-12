@@ -1,5 +1,14 @@
 # STATE
 
+## 12 novembre - fausse fin T1B en impression, reprise sauvée, impression finie
+
+`key839` du CFS 1 sur la case B à 06:04:09 alors que la bobine était pleine ;
+routine stock de 3000 mm au bac puis CFS laissé au repos (`mode = 0`), sans mou.
+Reprise : `tn_cur_tnn` vidé (sauvegarde sur la K1), `BOX_SET_BOX_MODE ADDR=1
+MODE=PRINT NUM=B`, purge 50 mm, retour au point exact, un `RESUME_BASE`.
+Fichier `complete` à 09:53, fin V5 `complete`, cibles zéro. `filament_useup`
+reste à 1. Rien posé ni redémarré. Détail : document 106.
+
 ## 5 novembre - exigence `box.t_command` vide retirée des préflights
 
 `spool-manager-install-v1` (pose et `update`), `end-no-stock-flush-v5`,

@@ -1,5 +1,17 @@
 # HANDOFF — index de reprise
 
+## 12 novembre - reprise T1B sauvée, cause comprise
+
+Impression `el-dorado-tray-2` finie à 100 % après une fausse fin `key839` sur
+T1B (document 106). La cause du « rien ne sort » à la première reprise : CFS 1
+laissé en mode repos par la routine stock, corrigé par `BOX_SET_BOX_MODE
+MODE=PRINT`. Pas de buse bouchée. Sur la K1 : `print_file_name.json` réécrit
+(`tn_cur_tnn` vide, sauvegarde `.bak-20261112-reprise-t1b`), aucun module posé.
+`filament_useup` = 1 et `auto_refill` = 0 : `START_PRINT` remet
+l'auto-remplacement au prochain départ. Suite proposée : garde de reprise
+hors imprimante (document 106, section 5) et nettoyage du capteur de sortie
+de la case B.
+
 ## 5 novembre - `box.t_command` : préflights assouplis, sans toucher à la K1
 
 Les cinq installateurs encore en service acceptent la mémoire du dernier outil :
