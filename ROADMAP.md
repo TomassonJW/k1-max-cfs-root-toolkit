@@ -1,5 +1,14 @@
 # ROADMAP
 
+## Départ toujours repris (12 novembre)
+
+`start-load-recovery-v1` construit hors imprimante (ADR-079,
+[document 108](docs/108-depart-repris-apres-chargement-stock-rate.md)) : un
+chargement stock raté sur `key837`, filament en tête, est repris dans le même
+départ par la purge au bac. Suite : relevé, pose au repos, premier départ
+relu. Backlog : `key845` si observé avec filament en tête ; affichage écran
+après `key601`/`key602`.
+
 ## Garde capteur CFS (1er novembre)
 
 V2 `cfs-sensor-guard-v2` posée et validée au repos le 12 novembre (ADR-078,

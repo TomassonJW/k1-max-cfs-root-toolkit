@@ -1,5 +1,15 @@
 # STATE
 
+## 12 novembre - départ repris après un chargement stock raté, construit hors imprimante (ADR-079)
+
+Départ de 17:04 arrêté : le chargement stock de T1B a amené le filament en
+tête, puis `key837` (« buffer is always full ») et pause stock ; la garde du
+bac a refusé la remontée du plateau et coupé les chauffes. Relancé à 17:43, le
+départ a purgé T1B lui-même et l'impression est partie. Paquet
+`start-load-recovery-v1` : la même reprise dans le même départ, preuves
+lues avant tout effet, une seule fois, sinon arrêt chauffes coupées.
+90 tests du module, 102 de pose. Rien posé, relevé pas fait. Document 108.
+
 ## 12 novembre, 16:27 - garde capteur CFS V2 posée et validée au repos (ADR-078)
 
 `cfs-sensor-guard-v2` en service : `PREFLIGHT_OK` (24 épingles),
