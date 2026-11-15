@@ -30,7 +30,7 @@ SOURCES = {'kctrl_start.py': 'kctrl_start.py',
            'logic.js': 'www/bobines/logic.js',
            'bobines.js': 'www/bobines/bobines.js'}
 REPINNED = {}
-SURVEYED = None
+SURVEYED = '2026-11-15'
 
 
 def sha(data):

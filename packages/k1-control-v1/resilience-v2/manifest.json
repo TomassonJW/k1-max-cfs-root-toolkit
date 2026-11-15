@@ -3,8 +3,8 @@
   "name": "resilience-v2",
   "adr": "ADR-081",
   "document": "docs/111-relais-et-reprise-sans-impasse.md",
-  "surveyed": false,
-  "surveyed_on": null,
+  "surveyed": true,
+  "surveyed_on": "2026-11-15",
   "targets": [
     {
       "source": "packages/k1-control-v1/resilience-v2/kctrl_start.py",
