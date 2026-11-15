@@ -43,7 +43,7 @@ Sept principes, fixés par ADR-080. Tout paquet futur s'y mesure.
 | A. Chargement stock raté au départ, filament pourtant en tête (`key837`) | 21/09, 23/09, 12/11, 15/11 ; 4 chargements sur 7 | repris dans le même départ (ADR-079), posé, pas encore vu | fait ; à observer |
 | B. Preuve perdue après redémarrage ou arrêt d'urgence, départ refusé | 2/10, 15/11 | `KCTRL_RETAINED_ADOPT` à la console | tranche 1 : fiche du filament en tête écrite sur disque |
 | C. Fin d'impression : la routine stock pousse en boucle | 15/09, 31/10, 1/11 | gardes posées (buse froide, fin V5, capteur V2) ; l'arrêt d'urgence demande d'éteindre | tranche 3 : arrêt propre avant l'arrêt d'urgence, boucle bornée |
-| D. Changement de bobine en cours d'impression qui échoue | 23/09 | reprise protégée (ADR-072) ; l'échec lui-même arrête la pièce | tranche 2 : même reprise qu'au départ, sinon vraie pause |
+| D. Changement de bobine en cours d'impression qui échoue | 23/09, 15/11 (document 110) | reprise protégée (ADR-072) ; l'échec lui-même arrête la pièce | tranche 2 : même reprise qu'au départ, sinon vraie pause |
 | E. Fausse fin de bobine, pause, reprise dans le vide | 12/11 | un message indique la commande à taper | tranche 2 : « Reprendre » remet le CFS en service et purge |
 | F. Fin ou annulation ratée qui bloque le lancement suivant | 2/10, 5/11 | redémarrer Klipper, puis famille B | tranche 1 : le lancement suivant repart, le départ reprouve tout |
 | G. Arrêt d'urgence : Klipper quitte, il faut éteindre et rallumer | 5 fois | Thomas rallume ; puis famille B | tranches 1 et 3 : plus rien de bloqué au retour, moins d'arrêts |
@@ -146,7 +146,9 @@ Ce que la tranche 1 laisse, vérifié dans le code et le banc :
 2. **Reprise en un geste.** « Reprendre » remet le CFS en mode impression sur
    la bobine engagée, purge au bac avec preuve, revient et reprend. Un
    chargement raté en cours d'impression est repris comme au départ ; un
-   refus devient une vraie pause.
+   refus devient une vraie pause. Le relais raté du 15 novembre en fixe le
+   détail : courant extrudeur, route écrite, capteur de tête, garde du bac
+   verrouillée au parc (document 110, section 5).
 3. **Moins d'arrêts d'urgence.** La garde capteur arrête la poussée par un
    arrêt propre avant de couper Klipper ; un chargement lancé à l'écran ne la
    déclenche plus ; la boucle de fin stock est bornée.

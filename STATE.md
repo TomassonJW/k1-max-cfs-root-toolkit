@@ -1,5 +1,19 @@
 # STATE
 
+## 15 novembre, 14:36 - relais de bobine raté en impression, repris à la main (document 110)
+
+Vraie fin de T1C à 13:31, pause à 13:39, relais stock vers T1B raté deux fois
+(`EXTRUDE_ERR9` puis `key836`), filament de B en tête, extrudeur laissé à
+0,28 A, CFS au repos, garde du bac verrouillée au parc. Reprise sans
+redémarrage : erreur levée, courant et mode impression remis, 95 mm purgés au
+bac avec le tampon lu vidé à chaque poussée, route remise sur T1B
+(`BOX_MODIFY_TN_DATA ... PART=filament`), capteur de tête réactivé, un seul
+`RESUME_BASE` à 14:36:23. Relu jusqu'à 14:41 : `printing`, aucune erreur.
+Pas encore vu : le dépôt au point de reprise (à dire par Thomas) et le retrait
+de T1B en fin d'impression. Rien de posé, aucun redémarrage ; sur l'imprimante,
+seul `tn_cur_tnn` a été vidé dans `print_file_name.json`, copie gardée à côté.
+La mission résilience est en pause sur la question de la pose de la tranche 1.
+
 ## 15 novembre - résilience, tranche 1 construite hors imprimante (ADR-080)
 
 Demande de Thomas : plus d'impasse, plus de commande à taper, plus d'IA pour

@@ -1,5 +1,21 @@
 # HANDOFF — index de reprise
 
+## 15 novembre, 14:36 - relais de bobine raté, impression reprise à la main
+
+Document 110. L'impression `_events_places_PLA_3h16m` tourne de nouveau sur
+T1B depuis 14:36:23, sans redémarrage. La recette est en section 3 du
+document ; elle n'est pas un correctif.
+
+Point de reprise :
+1. à la fin de cette impression, relire le retrait : la fin doit rembobiner
+   T1B (route remise à la main), tête vide, phase `idle` ;
+2. demander à Thomas ce qu'il voit au point de reprise (Z3,8) ;
+3. reprendre la question en attente : pose de la tranche 1 au repos, ou
+   tranche 2 d'abord ;
+4. tranche 2 : document 110, section 5, en plus du document 109, section 7.
+Ne jamais faire presser « Reprendre » après un relais raté : garde du bac
+verrouillée, chauffes coupées.
+
 ## 15 novembre - résilience, tranche 1 (construite, pas posée)
 
 Paquet `packages/k1-control-v1/resilience-v1` (ADR-080, document 109, README
