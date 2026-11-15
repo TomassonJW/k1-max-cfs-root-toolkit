@@ -107,3 +107,14 @@ jobs:
 
       - name: Spool manager logic
         run: node --test packages/k1-control-v1/spool-choice-gate-v1/spools-logic.test.mjs
+
+      # resilience-v1 ships only the two page files it changes: its tests run
+      # on the installed page with those two files put over it.
+      - name: Bobines page after resilience-v1
+        run: |
+          page="$RUNNER_TEMP/resilience-page"
+          mkdir -p "$page"
+          cp -r packages/k1-control-v1/spool-choice-gate-v1/www "$page/www"
+          cp packages/k1-control-v1/resilience-v1/www/bobines/*.js "$page/www/bobines/"
+          cp packages/k1-control-v1/resilience-v1/logic.test.mjs "$page/"
+          cd "$page" && node --test logic.test.mjs
