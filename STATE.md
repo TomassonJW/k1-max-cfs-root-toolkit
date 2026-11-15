@@ -1,5 +1,17 @@
 # STATE
 
+## 15 novembre, 11:53 - départ repris posé et validé au repos (ADR-079)
+
+Même panne à 11:28 sur T1C (`key837` après deux « buffer is always full »,
+filament en tête) : du 12 au 15, quatre chargements depuis une tête vide sur
+sept l'ont dit au moins une fois, deux départs arrêtés.
+`start-load-recovery-v1` en service : `kctrl_start.py` à `dbdb1554...`,
+révision relue, phase `idle`, délai de reprise 180 s, Klipper redémarré une
+fois. Avant la pose : pause stock levée (`CLEAR_PAUSE`) et tête sortie du bac
+vers Y273, accord de Thomas. Après : T1C réattribué au filament en tête
+(`KCTRL_RETAINED_ADOPT`), accord de Thomas. Pas encore vu sur une impression.
+Document 108, sections 8 à 10.
+
 ## 12 novembre - départ repris après un chargement stock raté, construit hors imprimante (ADR-079)
 
 Départ de 17:04 arrêté : le chargement stock de T1B a amené le filament en

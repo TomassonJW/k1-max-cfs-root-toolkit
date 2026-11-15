@@ -1,6 +1,6 @@
 # 108 - Départ repris après un chargement stock raté (ADR-079)
 
-Date : 12 novembre 2026. Suite du document 107 (garde capteur V2). Conventions
+Date : 12 novembre 2026, pose le 15 novembre (section 10). Suite du document 107 (garde capteur V2). Conventions
 du document 70 : **[FAIT]** lu dans un journal, un fichier ou un test ;
 **[HYPOTHÈSE]** cohérent, non démontré ; **[INCONNU]** non observé.
 
@@ -121,9 +121,81 @@ le manifeste, puis préflight, pose et validation au repos revérifié, avec
 l'accord de Thomas, jamais pendant une impression. Retour arrière de ce paquet
 avant celui de tout paquet antérieur.
 
-## 8. Suite
+## 8. Le 15 novembre à 11:28 : la même panne sur T1C
 
-1. Relevé en lecture seule, imprimante au repos.
-2. Pose au repos, accord de Thomas.
-3. Relire le premier départ sous la reprise ; si un chargement stock rate, la
-   console doit dire « reprise automatique par purge au bac ».
+Thomas : filament bien introduit, purgé, sorti de la buse, et pourtant arrêt.
+
+- [FAIT] 11:22:28 : départ de `_events_places_PLA_3h16m.gcode`, filament 1 du
+  fichier sur T1C. 11:25:20 : capteur de tête à faux, tête vide.
+- [FAIT] 11:25:19,842 : `T0` résolu en T1A sur T1C, chargement stock.
+- [FAIT] 11:26:55 : « buffer is always full », capteur de tête à vrai, réessai
+  stock.
+- [FAIT] 11:28:25,172 : de nouveau « buffer is always full » ; 11:28:25,173 :
+  `!! key837` avec `values [1, "C"]`.
+- [FAIT] 11:28:26,134 : la garde du bac refuse la remontée de Z 35,01 à
+  Z 4,80, tête à X210 Y291,5 ; 11:28:26,158 : « depart interrompu
+  (start_paused) ».
+
+Même enchaînement que le 12, autre bobine : ni la bobine ni la garde capteur
+V2 ne sont en cause.
+
+## 9. Fréquence, du 12 au 15 novembre
+
+[FAIT] Sept chargements stock depuis une tête vide, lus dans les journaux
+datés :
+
+| Issue | Nombre | Quand |
+| --- | --- | --- |
+| Net au premier essai | 3 | 13/11 13:59, 13/11 22:16, 14/11 11:42 |
+| Sauvé par le second essai stock | 2 | 12/11 01:45 (T1B), 13/11 19:20 (T1C) |
+| Raté deux fois, départ arrêté | 2 | 12/11 17:11 (T1B), 15/11 11:28 (T1C) |
+
+Intermittent : quatre chargements sur sept disent au moins une fois « buffer
+is always full ».
+
+## 10. Pose du 15 novembre
+
+Sur l'accord de Thomas (« Oui, installe »), imprimante au repos.
+
+État laissé par le départ arrêté : `print_stats` en erreur, pause stock
+restée posée, tête référencée à X210 Y291,5 Z35,01, verrou de la garde du bac
+posé, chauffes à zéro. L'installateur a refusé deux fois, à raison :
+`BUSY paused`, puis `BUSY bin_guard_not_at_rest`.
+
+- [FAIT] `CLEAR_PAUSE` : il ne baisse que les deux drapeaux de pause ;
+  `is_paused` relu à faux.
+- [FAIT] Avec un second accord de Thomas, sortie canonique du bac : `G90`
+  puis `G1 Y273 F3000`. Tête relue à X210 Y273 Z35,02, plateau immobile,
+  `bin_latched` à faux.
+- [FAIT] 11:51 : `SURVEY_OK`, aucune dérive sur les 24 épingles, module à
+  `d112cf29...`, les quatre noms du CFS présents. Manifeste passé à
+  `surveyed: true` (`surveyed_on` 2026-11-15), 192 tests verts.
+- [FAIT] 11:52 : `PREFLIGHT_OK` (24 épingles). 11:53 : `INSTALLED_IDLE_OK`
+  puis `VALIDATED_IDLE_OK`. Klipper redémarré une fois, ni chauffe, ni
+  filament, aucune trace d'erreur au journal.
+- [FAIT] Relecture indépendante : module à `dbdb1554...`, mode 644 ;
+  sauvegarde `module.before` à `d112cf29...` ; départ en révision
+  `start-load-recovery-v1`, phase `idle`, aucune reprise, délai 180 s ; garde
+  du bac, garde à froid et garde capteur V2 en place ; Moonraker sans
+  composant en échec.
+
+Collatéral du redémarrage : le filament est en tête, mais le CFS ne déclare
+aucune route (son chargement a échoué) et la preuve « prise ratée attribuable »
+vit dans le processus Klipper, donc elle a disparu. Le départ suivant aurait
+refusé (`retained_identity_or_continuity_unproven`). [FAIT] Avec l'accord de
+Thomas, `KCTRL_RETAINED_ADOPT SLOT=T1C`, sans mouvement, chauffe ni trame
+CFS ; `retained_attribution` relu à `T1C`. Preuve de l'emplacement : les
+lignes de 11:25:19 à 11:28:25 ci-dessus, aucune opération filament depuis.
+
+À retenir pour une pose juste après un départ arrêté ainsi : lever la pause,
+sortir la tête vers Y273 à hauteur constante, poser, puis réattribuer
+l'emplacement en tête. Sans urgence, relancer d'abord (branche `recover`) et
+poser à la fin de l'impression évite ces trois gestes.
+
+## 11. Suite
+
+1. Relire le premier départ où un chargement stock rate : la console doit
+   dire « reprise automatique par purge au bac » puis « filament ... pret
+   (empty, repris) ». La relance du 15 passe par `recover`, pas par la
+   reprise.
+2. [INCONNU] Affichage de l'écran après `key601` puis `key602`.

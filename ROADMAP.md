@@ -2,12 +2,14 @@
 
 ## Départ toujours repris (12 novembre)
 
-`start-load-recovery-v1` construit hors imprimante (ADR-079,
+`start-load-recovery-v1` posé et validé au repos le 15 novembre (ADR-079,
 [document 108](docs/108-depart-repris-apres-chargement-stock-rate.md)) : un
 chargement stock raté sur `key837`, filament en tête, est repris dans le même
-départ par la purge au bac. Suite : relevé, pose au repos, premier départ
-relu. Backlog : `key845` si observé avec filament en tête ; affichage écran
-après `key601`/`key602`.
+départ par la purge au bac. Suite : premier départ repris à relire. Backlog :
+`key845` si observé avec filament en tête ; affichage écran après
+`key601`/`key602` ; un installateur qui, après un départ arrêté, dit quoi
+lever (pause, tête au bac) et garde l'attribution du filament en tête à
+travers le redémarrage.
 
 ## Garde capteur CFS (1er novembre)
 
