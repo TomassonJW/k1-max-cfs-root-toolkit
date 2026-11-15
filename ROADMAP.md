@@ -1,5 +1,22 @@
 # ROADMAP
 
+## Résilience : plus d'impasse (15 novembre)
+
+Règle ADR-080,
+[document 109](docs/109-resilience-plus-d-impasse.md) : après n'importe quel
+arrêt, l'action normale suivante marche, sans console ni IA. Six tranches,
+dans l'ordre :
+
+1. `resilience-v1`, construite hors imprimante le 15 novembre, à poser au
+   repos : filament en tête noté sur disque, fin ratée qui ne bloque plus,
+   sortie du bac après un départ arrêté. L'attribution gardée à travers le
+   redémarrage d'une pose, notée au backlog du 12 novembre, est faite ici.
+2. Reprise en un geste : « Reprendre » remet le CFS en service et purge.
+3. Moins d'arrêts d'urgence : arrêt propre d'abord, boucle de fin bornée.
+4. Veilles de nuit et de fin dans Klipper.
+5. Page Dépannage : chaque refus, une phrase et un bouton.
+6. Installation unique, autocontrôle au démarrage, repose en un geste.
+
 ## Départ toujours repris (12 novembre)
 
 `start-load-recovery-v1` posé et validé au repos le 15 novembre (ADR-079,

@@ -92,8 +92,9 @@ Une impasse : un état d'où l'on ne sort que par une console ou un redémarrage
 
 ## 6. Tranche 1 : `resilience-v1`
 
-Paquet `packages/k1-control-v1/resilience-v1`. Trois fichiers changent sur
-l'imprimante, rien d'autre.
+Paquet `packages/k1-control-v1/resilience-v1`. Quatre fichiers changent sur
+l'imprimante, rien d'autre : le départ, la porte de lancement et deux
+fichiers de la page Bobines.
 
 - **La fiche du filament en tête** (`kctrl_start.py`, impasse 2). Le slot
   prouvé en tête est écrit dans `state/kctrl_head.json`, seulement quand il
@@ -104,17 +105,41 @@ l'imprimante, rien d'autre.
   doit encore prouver que le tampon du CFS se vide. Plus de
   `KCTRL_RETAINED_ADOPT` après un redémarrage.
 - **Une fin ratée ne bloque plus** (`kctrl_print_gate.py`, `logic.js`,
-  impasse 1). La porte ne refuse que si la fin est en cours, illisible, ou si
-  l'arrêt des chauffes n'est pas confirmé. La page explique, sans bloquer.
+  `bobines.js`, impasse 1). La porte ne refuse que si la fin est en cours,
+  illisible, ou si l'arrêt des chauffes n'est pas confirmé. La page explique,
+  sans bloquer : un avis, dit une fois dans la fenêtre Mainsail, jusqu'à
+  « Compris » ou au départ suivant. La porte publie sa révision.
 - **Sortie du bac après un départ arrêté** (`kctrl_start.py`, impasse 3).
   Tête au bac, axes référencés, plateau à 30 mm au moins : sortie vers Y273 à
   hauteur constante, sous la garde du bac. Sinon rien ne bouge.
-- **Une pose à plusieurs fichiers**, base de l'installation unique.
+- **Une pose à plusieurs fichiers**, base de l'installation unique. Elle
+  écrit elle-même la fiche depuis la route du CFS lue juste avant d'arrêter
+  Klipper : son propre redémarrage ne fait plus perdre la preuve. Si une
+  preuve manque après la pose, elle remet les quatre fichiers quoi qu'ils
+  contiennent, range la sauvegarde et laisse la pose suivante possible sans
+  nettoyage. Un fichier voisin qui change pendant ce temps est nommé dans la
+  réponse, jamais écrit. Tant que le relevé de l'imprimante n'est pas noté
+  dans le manifeste, tout est refusé sauf ce relevé.
 
 Limites de la fiche : un filament changé à la main imprimante éteinte n'est
 pas vu ; la purge refuse alors si le tampon du CFS ne se vide pas. Si la
 bobine demandée n'est pas celle de la fiche, le départ refuse encore, en le
 disant ; le changement automatique vient en tranche 5.
+
+Ce que la tranche 1 laisse, vérifié dans le code et le banc :
+
+- [FAIT] impasse 3 quand les moteurs sont coupés tête au bac : rien ne
+  bouge, tranche 3 ;
+- [FAIT] impasse 4 : une fin « coupé mais pas rembobiné » passe la porte,
+  le départ s'arrête proprement sur `buffer_consumption_unconfirmed`, puis
+  `partial_filament_requires_recovery`, tranche 5 ;
+- [FAIT] une coupe, un retrait ou un chargement manuel refusé avant tout
+  effet efface quand même la fiche ; après un redémarrage le départ
+  redemande l'attribution, tranche 5 ;
+- [HYPOTHÈSE] un chargement lancé à l'écran passe par les commandes G-code
+  surveillées ; sinon la fiche est corrigée à la lecture suivante de la
+  route, 5 s au plus ;
+- [INCONNU] ce que l'écran affiche avec un drapeau de pause resté posé.
 
 ## 7. Tranches suivantes, dans l'ordre
 
@@ -140,4 +165,22 @@ de la suite : c'est ce que visent les tranches 1 à 5.
 
 ## 9. Preuves et pose
 
-Voir le README du paquet. Pose au repos seulement, sur l'accord de Thomas.
+Hors imprimante, sans réseau ni SSH, le 15 novembre :
+
+- [FAIT] départ : 152 tests, dont 37 des départs précédents rejoués ;
+- [FAIT] porte : 171 tests, dont 41 de l'ancienne porte, le vrai module de
+  fin, et la page comparée cas par cas ;
+- [FAIT] page : 70 tests sous node ;
+- [FAIT] pose : 231 tests sur une fausse machine qui répond comme Klipper,
+  la fiche écrite par la pose relue par le vrai départ ;
+- [FAIT] 49 pannes provoquées exprès dans l'installeur : 48 vues par le
+  banc, une équivalente. Un vrai défaut trouvé et corrigé : après une
+  écriture corrompue, l'installeur refusait de défaire sa propre pose ;
+- [FAIT] suite complète du dépôt : 4504 tests verts, le seul rouge est le
+  test volontairement rouge déjà écarté en CI.
+
+[INCONNU] tant que le relevé n'est pas fait : si les quatre cibles et les 32
+fichiers épinglés sont bien ceux attendus sur l'imprimante.
+
+Pose : README du paquet. Au repos seulement, sur l'accord de Thomas, relevé
+d'abord. Rien n'a été posé ni lu sur l'imprimante pendant cette mission.

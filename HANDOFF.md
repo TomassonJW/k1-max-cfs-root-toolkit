@@ -1,5 +1,26 @@
 # HANDOFF — index de reprise
 
+## 15 novembre - résilience, tranche 1 (construite, pas posée)
+
+Paquet `packages/k1-control-v1/resilience-v1` (ADR-080, document 109, README
+du paquet) : filament en tête noté sur disque, fin ratée qui ne bloque plus,
+sortie du bac après un départ arrêté, page Bobines, installeur à quatre
+fichiers. Rien n'a touché l'imprimante : une impression tournait.
+
+Point de reprise, imprimante au repos uniquement :
+1. `python deploy.py survey` dans le dossier du paquet (lecture seule) ;
+2. une dérive relue va dans `REPINNED` de `build_manifest.py` ; tout
+   conforme : date dans `SURVEYED`, manifeste reconstruit, tests relancés ;
+3. avec l'accord de Thomas, repos revérifié juste avant : `preflight`,
+   `install`, `validate`. Klipper redémarre une fois ; la pose écrit
+   elle-même la fiche du filament en tête, pas de `KCTRL_RETAINED_ADOPT` ;
+4. recharger une fois la page Bobines dans le navigateur ;
+5. relire le premier départ après la pose, puis tranche 2 (reprise en un
+   geste), document 109, section 7.
+Retour arrière : ce paquet avant tout autre. Le point de reprise du matin
+reste entier (premier départ repris à relire, écran après `key601`/`key602`,
+impressions sous la garde V2).
+
 ## 15 novembre, 11:53 - départ repris posé et validé au repos
 
 `start-load-recovery-v1` est en service (ADR-079, document 108, section 10) :

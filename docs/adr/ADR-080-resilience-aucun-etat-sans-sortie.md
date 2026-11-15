@@ -29,7 +29,9 @@ Thomas demande que ce ne soit plus possible.
    bac. Les drapeaux de pause stock et l'erreur CFS gardée ne sont pas
    touchés.
 5. Les poses deviennent multi-fichiers, une sauvegarde et un retour par
-   fichier.
+   fichier. Une pose garde le filament en tête à travers son propre
+   redémarrage, défait elle-même ce qu'elle a écrit si une preuve manque, et
+   ne laisse jamais une sauvegarde qui bloque la pose suivante.
 
 ## Alternatives écartées
 
@@ -52,4 +54,7 @@ Thomas demande que ce ne soit plus possible.
   refuse si le tampon ne se vide pas.
 - Les paquets antérieurs épinglent les anciens `kctrl_start.py` et
   `kctrl_print_gate.py` : retour arrière de celui-ci d'abord.
+- Restent après la tranche 1 : tête au bac moteurs coupés (tranche 3),
+  filament coupé mais pas rembobiné, et fiche effacée par un geste manuel
+  refusé (tranche 5).
 - Les tranches 2 à 6 restent à construire, dans l'ordre du document 109.
