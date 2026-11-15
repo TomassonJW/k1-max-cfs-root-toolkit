@@ -2,7 +2,7 @@
 
 Date : 15 novembre 2026. Paquet `resilience-v2`, ADR-081. Suite du document 110
 (relais raté du 15 novembre) et de la tranche 1 (document 109). Construit hors
-imprimante, **non posé**. Conventions : **[FAIT]** vérifié par un essai sur
+imprimante, **posé le 15 novembre 2026** au repos. Conventions : **[FAIT]** vérifié par un essai sur
 banc ou lu dans le code ; **[HYPOTHÈSE]** cohérent, non démontré ;
 **[INCONNU]** non observé.
 
@@ -80,7 +80,9 @@ normale ; `action.extrude_tnn` après un relais raté ; durée de
 `virtual_sdcard` attend-il le verrou avant de rejouer `resume_tnn`. Le relevé
 au repos et la première lecture réelle les fermeront.
 
-## 6. Pose
+## 6. Pose (faite)
+
+`INSTALLED_IDLE_OK` puis `VALIDATED_IDLE_OK` : départ `resilience-v2`, porte `resilience-v1`, bloc relais installé, repos prouvé avant et après, aucune chauffe ni mouvement. Procédure, pour mémoire :
 
 Au repos seulement, avec l'accord de Thomas, repos revérifié juste avant l'arrêt
 de Klipper : relevé (lecture seule), manifeste, `preflight`, `install`,

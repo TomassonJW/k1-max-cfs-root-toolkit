@@ -1,7 +1,7 @@
 # ADR-081 - Relais raté et « Reprendre » sans impasse
 
-Date : 15 novembre 2026. Statut : accepté ; tranche 2 construite hors
-imprimante, non posée. Documents 110 et 111. Complète ADR-080.
+Date : 15 novembre 2026. Statut : accepté ; tranche 2 posée le 15 novembre
+2026 au repos. Documents 110 et 111. Complète ADR-080.
 
 ## Contexte
 

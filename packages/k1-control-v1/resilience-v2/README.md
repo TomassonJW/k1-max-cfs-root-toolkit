@@ -1,8 +1,7 @@
 # Résilience, tranches 1 et 2 : plus d'impasse après un arrêt ni un relais raté
 
-Statut : **construit et validé hors imprimante le 15 novembre 2026, non
-posé**. Le relevé de l'imprimante reste à faire (`surveyed: false`) : tant
-qu'il manque, l'installeur refuse tout sauf ce relevé.
+Statut : **construit et validé hors imprimante, relevé sans dérive, posé au repos
+le 15 novembre 2026** (`INSTALLED_IDLE_OK`, `VALIDATED_IDLE_OK`).
 ADR-080 et ADR-081, documents 109, 110 et 111. Remplace `kctrl_start.py` de `start-load-recovery-v1`,
 la porte de lancement et deux fichiers de la page Bobines ; tout le reste est
 gardé et épinglé.
@@ -121,7 +120,7 @@ Ce que fait `install` :
   fiche est retirée ;
 - écrit chaque fichier à côté puis le remplace d'un coup, relit son
   empreinte, écrit les pages en `0644`, efface le bytecode des deux modules ;
-- redémarre, attend le repos, puis exige : départ et porte à la révision
+- redémarre, attend le repos, puis exige : départ à la révision `resilience-v2`, porte à la révision
   `resilience-v1`, départ neuf, fiche relue par le départ, délai de reprise
   180 s, voisins inchangés, pages lisibles. Réponse : `INSTALLED_IDLE_OK`.
 
@@ -165,4 +164,4 @@ Hors imprimante, sans réseau ni SSH :
   vrai défaut, corrigé : après une écriture corrompue, l'installeur refusait
   de défaire sa propre pose.
 
-Pas encore posé, pas encore vu sur une impression réelle.
+Posé le 15 novembre 2026 ; pas encore vu sur une impression réelle.

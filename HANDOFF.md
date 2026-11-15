@@ -16,11 +16,13 @@ Point de reprise :
 Ne jamais faire presser « Reprendre » après un relais raté : garde du bac
 verrouillée, chauffes coupées.
 
-## 15 novembre, soir - résilience, tranche 2 (construite, pas posée)
+## 15 novembre, soir - résilience, tranche 2 (POSÉE le 15 novembre, au repos)
 
 Paquet `packages/k1-control-v1/resilience-v2` (tranches 1 et 2 ensemble), ADR-081,
-documents 110 et 111. Remplace le point de reprise de la tranche 1 ci-dessous :
-une seule pose, au repos, avec l'accord de Thomas.
+documents 110 et 111. Posée en une fois (tranches 1 et 2) : relevé sans dérive, `INSTALLED_IDLE_OK`,
+`VALIDATED_IDLE_OK`. Reste : recharger la page Bobines, regarder la première
+impression et le premier relais réel (document 111, section 5). Retour arrière :
+`python deploy.py rollback` au repos. Les étapes 1 à 3 ci-dessous sont faites.
 1. `python deploy.py survey` dans le dossier du paquet (lecture seule) ; dérive
    relue dans `REPINNED`, date dans `SURVEYED`, `python build_manifest.py`,
    tests relancés ;
