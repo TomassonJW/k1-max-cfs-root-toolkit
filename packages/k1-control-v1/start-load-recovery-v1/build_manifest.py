@@ -19,7 +19,7 @@ PACKAGE = Path(__file__).resolve().parent
 ROOT = PACKAGE.parents[2]
 NAME = 'packages/k1-control-v1/start-load-recovery-v1/'
 SENSOR = ROOT / 'packages/k1-control-v1/cfs-sensor-guard-v2/'
-SURVEYED = None
+SURVEYED = '2026-11-15'
 
 
 def sha(data):
