@@ -15,8 +15,8 @@ observé.
 | 13:39:10 | Courant extrudeur baissé à 0,28 A par la pause stock. L'auto-remplacement choisit T1B (`T1A -> T1B`, `T1C -> T1B`). |
 | 13:39:38 à 13:40:16 | Chargement stock de T1B à 195 °C : étape 7 réussie, étape 8 « tampon toujours plein » à chaque lecture, `EXTRUDE_ERR9[0xe]`. |
 | 13:40:35 à 13:40:49 | Reprise stock `auto_retry_extruder_gear` : coupe, rembobinage, recul de 20 mm. |
-| 13:40:56 à 13:42:27 | Deuxième chargement : `EXTRUDE_ERR8[0xc]` avec le capteur de tête vrai, délai dépassé, `key836` `[1, "B"]`. Tête au parc X210 Y291,5. |
-| 13:42:27 | `kctrl_tool_change: reload T1A ended, error=False, head=True, paused=True`. |
+| 13:40:56 à 13:42:29 | Deuxième chargement : `EXTRUDE_ERR8[0xc]` avec le capteur de tête vrai, délai dépassé, `key836` `[1, "B"]`. Tête au parc X210 Y291,5. |
+| 13:42:29 | `kctrl_tool_change: reload T1A ended, error=False, head=True, paused=True`. |
 
 [FAIT] Après l'échec : impression en pause, filament de B dans la tête,
 `box.T1.mode` = `"0"`, courant extrudeur 0,28 A, erreur `EXTRUDE_ERR8` répétée
@@ -68,8 +68,8 @@ la mémoire de route du module CFS, sans trame ni moteur (document 96). Le
 constructeur l'emploie lui-même avec `PART=state`. Sans cette écriture, la fin
 `end-no-stock-flush-v5` aurait lu la route T1C et rembobiné une case vide.
 
-[INCONNU] Qualité du dépôt au point de reprise, à dire par Thomas. Retrait de
-T1B à la fin de cette impression, à relire.
+[FAIT] Qualité du dépôt au point de reprise : « niquel », dit par Thomas.
+Retrait de T1B à la fin de l'impression : réussi (16:15).
 
 ## 4. Comparaison avec le 12 novembre (document 106)
 

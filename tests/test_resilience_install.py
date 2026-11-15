@@ -1,4 +1,4 @@
-"""Put resilience-v1 on the printer: four files together, refused or undone.
+"""Put resilience-v2 on the printer: four files together, refused or undone.
 
 The printer is replaced by a status dictionary answered the way Klipper's
 `objects/query` answers (a key an object does not publish comes back None),
@@ -18,6 +18,7 @@ import types
 import pytest
 
 import test_resilience_gate as rg
+import test_resilience_resume as rr
 import test_resilience_start as rs
 
 # Each harness builds the candidate module only under its own fixture.
@@ -26,7 +27,7 @@ gate_harness = rg.new_module
 
 ROOT = Path(__file__).resolve().parents[1]
 PACKAGES = ROOT / 'packages/k1-control-v1'
-PACKAGE = PACKAGES / 'resilience-v1'
+PACKAGE = PACKAGES / 'resilience-v2'
 RECOVERY = PACKAGES / 'start-load-recovery-v1'
 PAGES = PACKAGES / 'spool-manager-install-v1'
 END = PACKAGES / 'end-no-stock-flush-v5'
@@ -47,7 +48,7 @@ OLD = {'kctrl_start.py': b'# installed start-load-recovery-v1\n',
        'kctrl_print_gate.py': b'# installed gate, publishes no revision\n',
        'logic.js': b'// installed logic\n',
        'bobines.js': b'// installed page\n'}
-NEW = {'kctrl_start.py': b'# candidate start resilience-v1\n',
+NEW = {'kctrl_start.py': b'# candidate start resilience-v2\n',
        'kctrl_print_gate.py': b'# candidate gate resilience-v1\n',
        'logic.js': b'// candidate logic\n',
        'bobines.js': b'// candidate page\n'}
@@ -56,11 +57,15 @@ SIBLINGS = ['kctrl_start_policy.py', 'kctrl_start_context.py', 'kctrl_purge_guar
             'kctrl_slot_map.py', 'kctrl_tool_change.py']
 PAGE_SIBLINGS = ['app.js', 'index.html', 'overlay.js', 'styles.css']
 VENDOR = {
-    'virtual_sdcard.py': b'must_pause_work\ndef is_active(self):\nrecord_tn_move_z(0)\nmove_z\n',
-    'pause_resume.py': b'reportInformation\npause_command_sent\nsd_paused\ninside_error\n',
+    'virtual_sdcard.py': b'must_pause_work\ndef is_active(self):\nrecord_tn_move_z(0)\nmove_z\nresume_tnn\nfile_position\n',
+    'pause_resume.py': b'reportInformation\npause_command_sent\nsd_paused\ninside_error\nis_paused\nsend_resume_command\nPAUSE_STATE\n',
     'gcode_move.py': b'def reset_last_position(self):\n',
 }
 OLD_GATE = {'pending': 0, 'wrapped': 1}
+NAMES_CFS = [b'inside_error', b'record_tn_move_z', b'last_err', b'move_z',
+             b'BOX_CHECK_MATERIAL_REFILL', b'BOX_RESUME_EXTRUDE', b'BOX_ERROR_CLEAR',
+             b'BOX_MODIFY_TN_DATA', b'Tnn_map', b'last_cmd', b'update_filament_pos',
+             b'extrude_tnn']
 NEW_GATE = {'pending': 0, 'wrapped': 1, 'revision': 'resilience-v1'}
 
 
@@ -86,9 +91,10 @@ def before_status(**changes):
 
 
 def after_status(**changes):
-    value = {'enabled': True, 'installed': True, 'phase': 'idle', 'revision': 'resilience-v1',
+    value = {'enabled': True, 'installed': True, 'phase': 'idle', 'revision': 'resilience-v2',
              'failure': '', 'recovery': None, 'recovery_timeout': 180.0,
-             'head': None, 'head_saved': True, 'rest': None}
+             'head': None, 'head_saved': True, 'rest': None,
+             'relay': {'installed': True, 'failure': '', 'note': None, 'last': None}}
     value.update(changes)
     return value
 
@@ -152,7 +158,7 @@ class Machine:
                             ('START', extras.as_posix() + '/kctrl_start.py'),
                             ('GATE', extras.as_posix() + '/kctrl_print_gate.py'),
                             ('BYTECODE', self.cache.as_posix()),
-                            ('BACKUP', tmp_path / 'backups' / 'resilience-v1'),
+                            ('BACKUP', tmp_path / 'backups' / 'resilience-v2'),
                             ('STATE', self.state_directory.as_posix()),
                             ('HEAD_FILE', self.head_file.as_posix()),
                             ('LOG', self.log), ('PIDFILE', self.pid)):
@@ -180,7 +186,7 @@ class Machine:
             path.write_bytes(data)
             self.vendor[name] = path
         self.cfs = extras / 'box_wrapper.so'
-        self.cfs.write_bytes(b'\x00inside_error\x00record_tn_move_z\x00last_err\x00move_z\x00')
+        self.cfs.write_bytes(b'\x00' + b'\x00'.join(NAMES_CFS) + b'\x00')
         monkeypatch.setattr(m, 'FEATURES', {str(self.vendor[name]): needles
                                             for name, needles in features.items()})
         monkeypatch.setattr(m, 'CFS_FILES', [str(extras / 'box.py'), str(self.cfs)])
@@ -337,8 +343,7 @@ def test_le_releve_lit_les_epingles_sans_rien_changer(tmp_path, monkeypatch):
         assert found['sha256'] == found['expected'] == sha(OLD[name])
     assert len(result['protected']) == len(SIBLINGS + PAGE_SIBLINGS)
     assert result['bytecode'] == [] and result['stage'] == [] and result['backup'] is False
-    assert result['features'] == {'cfs': {'inside_error': True, 'record_tn_move_z': True,
-                                          'last_err': True, 'move_z': True}}
+    assert result['features'] == {'cfs': {name.decode(): True for name in NAMES_CFS}}
     assert result['state_directory'] is True and result['head_record'] is None
     assert result['head_seed'] is None
     rest = result['rest']
@@ -401,7 +406,7 @@ def test_le_releve_lit_aussi_une_machine_deja_posee(tmp_path, monkeypatch):
     result = machine.run('survey')
     assert result['status'] == 'SURVEY_OK' and result['backup'] is True
     assert result['target_drift'] == [machine.destination[name] for name in NAMES]
-    assert result['rest']['start_revision'] == result['rest']['gate_revision'] == 'resilience-v1'
+    assert result['rest']['start_revision'] == 'resilience-v2'
     assert len(result['bytecode']) == 2
 
 
@@ -446,8 +451,8 @@ def test_un_nom_absent_du_cfs_compile_est_seulement_rapporte(tmp_path, monkeypat
     machine = Machine(tmp_path, monkeypatch)
     machine.cfs.write_bytes(b'\x00inside_error\x00')
     result = machine.run('preflight')
-    assert result['cfs_features'] == {'inside_error': True, 'record_tn_move_z': False,
-                                      'last_err': False, 'move_z': False}
+    assert result['cfs_features'] == {name.decode(): name == b'inside_error'
+                                      for name in NAMES_CFS}
 
 
 @pytest.mark.parametrize('name', MODULES)
@@ -483,7 +488,7 @@ def test_la_pose_remplace_les_quatre_fichiers_redemarre_et_prouve_les_revisions(
     (machine.cache / 'kctrl_sensor_guard.cpython-38.pyc').write_bytes(b'other module')
     result = machine.run('install')
     assert result['status'] == 'INSTALLED_IDLE_OK'
-    assert result['revision'] == result['gate_revision'] == 'resilience-v1'
+    assert result['revision'] == 'resilience-v2' and result['gate_revision'] == 'resilience-v1'
     assert result['recovery_timeout'] == 180 and result['head_seed'] is None
     rest = result['rest']
     assert rest['start_phase'] == 'idle' and rest['start_recovery'] is None
@@ -515,7 +520,7 @@ def test_la_pose_remplace_les_quatre_fichiers_redemarre_et_prouve_les_revisions(
     assert not machine.head_file.exists()
     validated = machine.run('validate')
     assert validated['status'] == 'VALIDATED_IDLE_OK'
-    assert validated['revision'] == validated['gate_revision'] == 'resilience-v1'
+    assert validated['revision'] == 'resilience-v2' and validated['gate_revision'] == 'resilience-v1'
     assert validated['recovery'] is None and validated['recovery_timeout'] == 180
     assert machine.actions == ['stop', 'start']
 
@@ -798,7 +803,7 @@ def test_ce_qui_arrive_juste_avant_l_arret_annule_la_pose_sans_rien_changer(
     ({'kctrl_start': {'phase': 'planned'}}, 'start_busy'),
     ({'kctrl_start': {'phase': 'material'}}, 'start_busy'),
     ({'kctrl_start': {'revision': 'retained-start-v1'}}, 'start_revision_changed'),
-    ({'kctrl_start': {'revision': 'resilience-v1'}}, 'start_revision_changed'),
+    ({'kctrl_start': {'revision': 'resilience-v2'}}, 'start_revision_changed'),
     ({'kctrl_tool_change': {'wrapped': TOOLS[:4]}}, 'tool_wrappers_changed'),
     ({'kctrl_tool_change': {'missing': ['T7']}}, 'tool_wrappers_changed'),
     ({'kctrl_tool_change': {'reloads': []}}, 'reloads_not_wrapped'),
@@ -861,7 +866,7 @@ def restored(machine, result, error):
     # The backup is kept, moved aside: the next installation finds the place free.
     assert not machine.m.BACKUP.exists()
     assert machine.archives() == [result['backup']]
-    assert result['backup'].startswith('resilience-v1.install-failed-')
+    assert result['backup'].startswith('resilience-v2.install-failed-')
     receipt = json.loads((machine.root / 'backups' / result['backup'] / 'receipt.json')
                          .read_text())
     assert receipt['status'] == 'INSTALL_FAILED_ROLLED_BACK'
@@ -892,7 +897,7 @@ def restored(machine, result, error):
 def test_un_demarrage_qui_n_est_pas_celui_prevu_remet_les_quatre_fichiers(
         tmp_path, monkeypatch, change, error):
     def once(start, gate):
-        if start['revision'] == 'resilience-v1':
+        if start['revision'] == 'resilience-v2':
             change(start, gate)
     machine = Machine(tmp_path, monkeypatch, loaded=once)
     machine.engage('T1B')
@@ -918,7 +923,7 @@ def test_une_tete_vue_sans_enregistrement_laisse_n_importe_quelle_case_connue(
 
 def test_une_tete_illisible_sans_enregistrement_revient_a_l_ancien(tmp_path, monkeypatch):
     def unknown(start, gate):
-        if start['revision'] == 'resilience-v1':
+        if start['revision'] == 'resilience-v2':
             start.update(head={'slot': 'T9Z'})
     machine = Machine(tmp_path, monkeypatch, loaded=unknown)
     restored(machine, machine.run('install'), 'start_head_unknown')
@@ -926,7 +931,7 @@ def test_une_tete_illisible_sans_enregistrement_revient_a_l_ancien(tmp_path, mon
 
 def test_un_voisin_qui_change_pendant_la_pose_la_defait_et_se_voit(tmp_path, monkeypatch):
     def changed(start, gate):
-        if start['revision'] == 'resilience-v1':
+        if start['revision'] == 'resilience-v2':
             machine.sibling('kctrl_end.py').write_bytes(b'changed meanwhile\n')
     machine = Machine(tmp_path, monkeypatch, loaded=changed)
     machine.engage('T1B')
@@ -948,7 +953,7 @@ def test_un_voisin_qui_change_pendant_le_retour_arriere_se_voit(tmp_path, monkey
     result = machine.run('rollback')
     assert result['status'] == 'ROLLED_BACK' and machine.content() == OLD
     assert result['neighbour'].startswith('protected_file_drift: ')
-    assert result['backup'].startswith('resilience-v1.rolled-back-')
+    assert result['backup'].startswith('resilience-v2.rolled-back-')
     assert not machine.m.BACKUP.exists()
 
 
@@ -1195,7 +1200,7 @@ def test_le_retour_arriere_remet_les_quatre_fichiers_exacts_et_libere_la_place(
     # The installed start never kept a record: none is left for a later one.
     assert not machine.head_file.exists()
     assert not machine.m.BACKUP.exists() and machine.archives() == [result['backup']]
-    assert result['backup'].startswith('resilience-v1.rolled-back-')
+    assert result['backup'].startswith('resilience-v2.rolled-back-')
     kept = machine.root / 'backups' / result['backup']
     assert json.loads((kept / 'receipt.json').read_text())['status'] == 'ROLLED_BACK'
     assert (kept / 'bobines.js.before').read_bytes() == OLD['bobines.js']
@@ -1279,13 +1284,14 @@ def test_le_journal_est_lu_depuis_l_arret_par_morceaux_bornes(tmp_path, monkeypa
                                'kctrl_print_gate: wrapped']
 
 
-def test_les_champs_lus_sont_ceux_du_vrai_depart(tmp_path):
+def test_les_champs_lus_sont_ceux_du_vrai_depart(tmp_path, monkeypatch):
+    rr.adopt(monkeypatch)
     m = load()
-    start = json.loads(json.dumps(rs.machine(tmp_path).owner.get_status()))
+    start = json.loads(json.dumps(rr.ResumeMachine(tmp_path).owner.get_status()))
     assert set(m.QUERY['kctrl_start']) <= set(start)
     # Fresh as the installer wants it after the restart.
     m.start_fresh({key: start[key] for key in m.QUERY['kctrl_start']})
-    assert start['revision'] == rs.module.REVISION == m.REVISIONS['after'] == m.NAME
+    assert start['revision'] == rr.module.REVISION == m.REVISIONS['after'] == m.NAME
     assert "REVISION = '%s'" % m.REVISIONS['before'] in (RECOVERY / 'kctrl_start.py').read_text(
         encoding='utf-8')
     assert (m.HEAD_FILE, m.HEAD_SCHEMA) == (rs.module.HEAD_STATE_FILE, rs.module.HEAD_SCHEMA)
@@ -1298,7 +1304,7 @@ def test_les_champs_lus_sont_ceux_de_la_vraie_porte(tmp_path, monkeypatch):
     new = json.loads(json.dumps(rg.machine(tmp_path).get_status()))
     assert set(asked) <= set(new)
     m.gate_running({key: new[key] for key in asked}, m.GATE_REVISIONS['after'])
-    assert rg.MOD.REVISION == m.NAME
+    assert rg.MOD.REVISION == m.GATE_REVISIONS['after']
     # The installed gate publishes no revision: Klipper answers None for it.
     monkeypatch.setattr(rg.base, 'MOD', rg.OLD)
     old = json.loads(json.dumps(rg.machine(tmp_path).get_status()))
@@ -1313,9 +1319,12 @@ def test_le_nouveau_depart_n_appelle_que_les_noms_constructeur_verifies():
     source = (PACKAGE / 'kctrl_start.py').read_bytes()
     for needles in list(m.FEATURES.values()) + [m.CFS_FEATURES]:
         for needle in needles:
-            assert needle.replace(b'def ', b'') in source, needle
+            if needle not in (b'send_resume_command', b'PAUSE_STATE'):  # read by the stock macros
+                assert needle.replace(b'def ', b'') in source, needle
     recovery = load_other(RECOVERY)
-    assert m.FEATURES == recovery.FEATURES and m.CFS_FEATURES == recovery.CFS_FEATURES
+    for path, needles in recovery.FEATURES.items():
+        assert set(needles) <= set(m.FEATURES[path])
+    assert set(recovery.CFS_FEATURES) <= set(m.CFS_FEATURES)
 
 
 def load_other(package):
@@ -1344,7 +1353,7 @@ def manifest():
 def test_le_manifeste_epingle_les_quatre_candidats_et_l_installateur():
     pins = manifest()
     m = load()
-    assert pins['schema'] == 2 and pins['name'] == m.NAME and pins['adr'] == 'ADR-080'
+    assert pins['schema'] == 2 and pins['name'] == m.NAME and pins['adr'] == 'ADR-081'
     assert [entry['destination'] for entry in pins['targets']] == list(m.targets())
     for entry in pins['targets']:
         assert sha((ROOT / entry['source']).read_bytes()) == entry['sha256']
@@ -1352,7 +1361,7 @@ def test_le_manifeste_epingle_les_quatre_candidats_et_l_installateur():
         assert entry.get('mode') == ('0644' if entry['kind'] == 'page' else None)
         assert entry['destination'] not in pins['protected']
     assert sha((PACKAGE / 'remote_install.py').read_bytes()) == pins['installer_sha256']
-    assert pins['backup'] == '/usr/data/k1-control-v1/backups/resilience-v1'
+    assert pins['backup'] == '/usr/data/k1-control-v1/backups/resilience-v2'
     assert pins['head_record'] == '/usr/data/k1-control-v1/state/kctrl_head.json'
     assert (ROOT / pins['document']).exists()
     assert pins['surveyed'] is (pins['surveyed_on'] is not None)
@@ -1425,7 +1434,7 @@ def test_l_envoi_porte_les_quatre_candidats_verifies(monkeypatch, tmp_path):
     entries, payloads = m.checked(body)
     assert [sha(payloads[entry['destination']]) for entry in entries] == [
         entry['sha256'] for entry in entries]
-    assert deploy.RAW == ROOT / 'inventory/raw/resilience-v1'
+    assert deploy.RAW == ROOT / 'inventory/raw/resilience-v2'
     # A candidate edited after the manifest was built never leaves.
     changed = json.loads((PACKAGE / 'manifest.json').read_text(encoding='utf-8'))
     changed['targets'][2]['sha256'] = '0' * 64

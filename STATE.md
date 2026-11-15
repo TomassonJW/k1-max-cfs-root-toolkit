@@ -14,6 +14,17 @@ de T1B en fin d'impression. Rien de posé, aucun redémarrage ; sur l'imprimante
 seul `tn_cur_tnn` a été vidé dans `print_file_name.json`, copie gardée à côté.
 La mission résilience est en pause sur la question de la pose de la tranche 1.
 
+## 15 novembre, soir - résilience, tranche 2 posée (ADR-081)
+
+Suite du relais raté (document 110). Paquet `resilience-v2` : courant remis
+avant le relais, chargement raté repris seul par purge au bac ou pause réelle
+avec phrase, « Reprendre » qui sort d'abord du bac (document 111). 388 essais
+du relais, les 76 du départ rejoués deux fois, 231 de pose. POSÉ le 15 novembre au repos : `INSTALLED_IDLE_OK` puis `VALIDATED_IDLE_OK`,
+tranches 1 et 2 ensemble. En service : départ `resilience-v2`, porte
+`resilience-v1`. Pas encore vu sur une impression réelle. Deux échecs de la suite complète ne
+viennent pas de ce travail (`test_cfs_direct_owner_offline_v1`,
+`test_job_lifecycle_offline_v1`).
+
 ## 15 novembre - résilience, tranche 1 construite hors imprimante (ADR-080)
 
 Demande de Thomas : plus d'impasse, plus de commande à taper, plus d'IA pour

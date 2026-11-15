@@ -1,0 +1,85 @@
+{
+  "schema": 2,
+  "name": "resilience-v2",
+  "adr": "ADR-081",
+  "document": "docs/111-relais-et-reprise-sans-impasse.md",
+  "surveyed": true,
+  "surveyed_on": "2026-11-15",
+  "targets": [
+    {
+      "source": "packages/k1-control-v1/resilience-v2/kctrl_start.py",
+      "destination": "/usr/share/klipper/klippy/extras/kctrl_start.py",
+      "kind": "module",
+      "before_sha256": "dbdb1554f683cc4ff5f28f74ea7deb5274b5417a4650f587ed04a52d74ebcf34",
+      "sha256": "92c3f0b078b010284517c4cc313fe9ed96fd45eb2b6a93c47ffb598edfec2736"
+    },
+    {
+      "source": "packages/k1-control-v1/resilience-v2/kctrl_print_gate.py",
+      "destination": "/usr/share/klipper/klippy/extras/kctrl_print_gate.py",
+      "kind": "module",
+      "before_sha256": "69578e579409b7c4d253acb8c680ceaeb25b60b40502732530a4a786e0966516",
+      "sha256": "9240b95cf785f4f05eb375f236c8b9074d494806aaa2937a513a923a591ac65e"
+    },
+    {
+      "source": "packages/k1-control-v1/resilience-v2/www/bobines/logic.js",
+      "destination": "/usr/data/k1-control-v1/current/www/bobines/logic.js",
+      "kind": "page",
+      "before_sha256": "3f7513c8bf6eecea1452519438c862b8d901784718c7e1bf07b4519fa2ae8ab8",
+      "sha256": "b3000196a02eb71fa3b9f629c52c151b154bad0319c9f5d7eb7c4d9c74a46c27",
+      "mode": "0644"
+    },
+    {
+      "source": "packages/k1-control-v1/resilience-v2/www/bobines/bobines.js",
+      "destination": "/usr/data/k1-control-v1/current/www/bobines/bobines.js",
+      "kind": "page",
+      "before_sha256": "52760957f8d3b32997e1236ea4b744efc1047c16b11eb06a7a987a69a4417ed4",
+      "sha256": "da677a5a3ee5411ebe5ac63ed1089bd5de0e3a6af491e6ff95c17e2166b54d2b",
+      "mode": "0644"
+    }
+  ],
+  "installer_sha256": "b0cc7f409a7a06a517df80551425c144a4762505861f767bb4b3decf15a607d9",
+  "backup": "/usr/data/k1-control-v1/backups/resilience-v2",
+  "head_record": "/usr/data/k1-control-v1/state/kctrl_head.json",
+  "effects": {
+    "klipper_restart_idle_only": true,
+    "heating": false,
+    "motion": false,
+    "filament": false,
+    "config_change": false,
+    "printer_cfg_change": false
+  },
+  "protected": {
+    "/usr/share/klipper/klippy/extras/kctrl_purge_guard.py": "8c637cc4bf5724c4fb589c7e91ef0e5fc53f700934de0284fc1db20a3f7e1e9a",
+    "/usr/share/klipper/klippy/extras/kctrl_tool_change.py": "2e33eb3793ef70a5c1603742aa2e0104f2036ed029511f63ecb96bf1ee2154c2",
+    "/usr/share/klipper/klippy/extras/kctrl_slot_map.py": "041de62865702148ec796ea9a502a9067bf11252ffd678ea8886732c48e8c134",
+    "/usr/share/klipper/klippy/extras/kctrl_start_policy.py": "27ab49cccc78f0b335d133dd77eee2a92c6c8f9667e0f05f99075d0f691d264f",
+    "/usr/share/klipper/klippy/extras/kctrl_start_context.py": "8b6896eb7bea4b4e157441539eb497ef18f4ea1ea640041e54e4d0581c05d273",
+    "/usr/share/klipper/klippy/extras/kctrl_bin_motion.py": "2f388f0ffcfaf7be3b1bf3f49f3da5045a0dc4baedd4823e60aa26354e98a8a8",
+    "/usr/share/klipper/klippy/extras/virtual_sdcard.py": "e1354dac12671983af1c12bed2b0d70762237d041f0e74c51a173a5adc47c86f",
+    "/usr/share/klipper/klippy/extras/pause_resume.py": "fcb0964da497d0be25dbbd85af98846fe1f226b8d6a4049ada8e53951134e45b",
+    "/usr/share/klipper/klippy/extras/filament_switch_sensor.py": "cc2fa8c08c67b1d8461df803b5fdb8ac07c32a954a52b85b9b3ed72168b26066",
+    "/usr/share/klipper/klippy/extras/box.py": "6d7486e1a15cde03f3152eef0d771d0bdd4a90df9b5ef7ecb88bc5d944f20ac4",
+    "/usr/share/klipper/klippy/extras/box_wrapper.cpython-38-mipsel-linux-gnu.so": "af630c02ccdb51b57585114e5be2be7fcf91fdb10d88872eb6a0c65f048de777",
+    "/usr/share/klipper/klippy/extras/heaters.py": "45a7c35c51b019530dda6ef3cbfaab980fe5573839861b2f4460fd7adb9cf3ed",
+    "/usr/share/klipper/klippy/extras/gcode_move.py": "cc0a501eec173e7e3fe6d1592a947889a60d958f875de7875d9e39eb75de4327",
+    "/usr/share/klipper/klippy/toolhead.py": "6abeaca5ca4503ff4f360dc84332af5206b1ccf48a961f90ccbe82f653afc9b6",
+    "/usr/share/klipper/klippy/kinematics/extruder.py": "f33b4cd8f9bbd401a5c9500d0a69d66333a2ff1205fabde275b9b1d3f0d5f0fa",
+    "/usr/share/klipper/klippy/gcode.py": "20d21ace63ac249c5e38d237898ff18d924047d4532a917124cb92eaed24cde7",
+    "/usr/data/printer_data/config/printer.cfg": "07864b095b39ef6d74e5b857567938fc85564146ffb604e5793cf0605cd9a45b",
+    "/usr/data/printer_data/config/box.cfg": "8bb0416d9c7a6c46792e1ac2497849befb371bc73ac9864d946ad5b588930194",
+    "/usr/data/printer_data/config/gcode_macro.cfg": "864fedde88fbb345c220ae5658f7b04779b3981bd78d68eda6fa63c59c79a04f",
+    "/usr/data/printer_data/config/k1-control-owned-start-print-v2.cfg": "61bd5f6519a5387eb233a30de6ee9a84d86de7ea88593d5c9cc35b288215d6e9",
+    "/usr/share/klipper/klippy/extras/kctrl_end.py": "b6c59f26cdc1f1665c3ca080e3430f24c5e3714f21f79eebd6d433631f5ecece",
+    "/usr/data/printer_data/config/k1-control-owned-end-candidate.cfg": "8ecf4a405edf1b1ba8fd7ee30c796f9cf764dae4d839510b771735b53fc725c9",
+    "/usr/share/klipper/klippy/extras/kctrl_sensor_guard.py": "7920ba39613f6cbe48bba11dccdbf51216911d0cb9758f20c513c0293dff1451",
+    "/usr/data/k1-control-v1/current/www/bobines/LICENSE-SpoolmanDB.txt": "0e32583112190cdace7fcba056c3ccadc1e4952b6fa0f6210c8e6faa8048411e",
+    "/usr/data/k1-control-v1/current/www/bobines/overlay.js": "209589d7961d6badd74a25ec08748e3dd0e916e19b82be8f02d6004b741cacec",
+    "/usr/data/k1-control-v1/current/www/bobines/spools-logic.js": "4506ce153cee24b4a8f28cf3b7f2e3fcf831856313c7cb2b94c11630614cbbb8",
+    "/usr/data/k1-control-v1/current/www/bobines/spools.js": "60711eada60f472d2e18d8b20342d193ffcbeaae1e0c475eace77b8d1f0725cc",
+    "/usr/data/k1-control-v1/current/www/bobines/styles.css": "80c26e024e3b0c940bdd4c2651dec228d2dacda37b47271b82c4857260f2bad5",
+    "/usr/data/k1-control-v1/current/www/bobines/tares.json": "4064be64bb26a52285d5d182b982ea59b71c810fd37900fc2861f867fb612c7c",
+    "/usr/data/k1-control-v1/current/www/bobines/app.js": "520a3fc0c4329b61f4e6f82f88cd0155a422ceb4a165c0d6438cf9352b2465c7",
+    "/usr/data/k1-control-v1/current/www/bobines/index.html": "83209ebacbbdb97ecf6fcd0db404a7f25237a25496b605b2a7748c4d45a6b309",
+    "/usr/data/k1-control-v1/current/www/mainsail/index.html": "ab7237694495207f7deccd1a825c0daaba8d6f1123ddfaf804c0251f9e2bf4df"
+  }
+}
