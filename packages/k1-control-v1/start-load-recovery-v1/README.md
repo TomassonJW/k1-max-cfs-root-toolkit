@@ -1,6 +1,7 @@
 # Départ repris après un chargement stock raté
 
-Statut : **construit et testé hors imprimante le 12 novembre 2026, pas posé.**
+Statut : **posé et validé au repos le 15 novembre 2026** (document 108,
+section 10). Pas encore vu sur une impression réelle.
 ADR-079, document 108. Remplace `kctrl_start.py` de `retained-start-v1` ; tout
 le reste du départ K1 Control est gardé.
 
@@ -83,8 +84,16 @@ Ordre : ce paquet vient après la garde capteur V2. Les paquets antérieurs
 épinglent `kctrl_start.py` à `d112cf29...` : retour arrière de celui-ci
 d'abord.
 
-Le relevé en lecture seule n'est pas encore fait : `surveyed: false`,
-l'installateur refuse tout sauf `survey`.
+Relevé du 15 novembre : `SURVEY_OK`, aucune dérive, manifeste
+`surveyed: true`. Pose le même jour : `PREFLIGHT_OK`, `INSTALLED_IDLE_OK`,
+`VALIDATED_IDLE_OK`.
+
+Après un départ arrêté sur `key837`, l'installateur refuse tant que la pause
+stock est posée (`BUSY paused`) et que la tête est au bac
+(`BUSY bin_guard_not_at_rest`) : `CLEAR_PAUSE`, puis sortie vers Y273 à
+hauteur constante avec l'accord de Thomas. Le redémarrage efface la preuve
+du filament en tête : `KCTRL_RETAINED_ADOPT SLOT=...` ensuite, sur son
+accord, sinon le départ suivant refuse.
 
 Validation : 90 tests du module (`tests/test_start_load_recovery.py`), dont
 le rejeu des vraies lignes de 17:08 et 23 tests du départ gardé rejoués sur

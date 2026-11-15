@@ -1,7 +1,8 @@
 # ADR-079 - Un chargement stock raté, filament en tête, est repris dans le même départ
 
-Date : 12 novembre 2026. Statut : accepté ; construit et testé hors
-imprimante, pas posé. Complète le départ gardé (`retained-start-v1`).
+Date : 12 novembre 2026. Statut : accepté ; posé et validé au repos le
+15 novembre 2026 (document 108, section 10), pas encore vu sur une impression.
+Complète le départ gardé (`retained-start-v1`).
 
 ## Contexte
 
@@ -51,3 +52,8 @@ Paquet `packages/k1-control-v1/start-load-recovery-v1`, même module
 - Pose au repos revérifié, accord de Thomas, relevé puis préflight d'abord.
   Retour arrière de ce paquet avant tout paquet antérieur, qui épingle le
   module `retained-start-v1`.
+- Le 15 novembre à 11:28, même panne sur T1C : quatre chargements depuis une
+  tête vide sur sept ont dit « buffer is always full » du 12 au 15. Posé le
+  jour même.
+- Poser redémarre Klipper : la preuve d'une prise ratée attribuable est
+  perdue. Filament en tête, il faut ensuite `KCTRL_RETAINED_ADOPT`.

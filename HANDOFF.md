@@ -1,5 +1,22 @@
 # HANDOFF — index de reprise
 
+## 15 novembre, 11:53 - départ repris posé et validé au repos
+
+`start-load-recovery-v1` est en service (ADR-079, document 108, section 10) :
+relevé, préflight, pose et validation verts, empreinte et sauvegarde relues.
+Filament T1C en tête, réattribué après le redémarrage ; Thomas relance
+`_events_places_PLA_3h16m.gcode`, ce départ passe par `recover`.
+
+Point de reprise :
+1. relire le premier départ où un chargement stock rate : console « reprise
+   automatique par purge au bac », puis « filament ... pret (empty, repris) »,
+   statut `recovery` du départ ;
+2. noter ce que l'écran affiche après `key601` puis `key602` ;
+3. relire les impressions sous la garde V2 (aucune pause sur fausse erreur).
+Retour arrière : ce paquet avant tout autre. Après un départ arrêté sur
+`key837`, un installateur exige la pause levée et la tête hors du bac ; un
+redémarrage exige ensuite `KCTRL_RETAINED_ADOPT` sur l'accord de Thomas.
+
 ## 12 novembre - départ repris après un chargement stock raté (construit)
 
 Paquet `packages/k1-control-v1/start-load-recovery-v1` (ADR-079, document

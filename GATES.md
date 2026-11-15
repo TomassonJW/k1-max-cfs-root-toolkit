@@ -1,5 +1,16 @@
 # GATES
 
+## 15 novembre, 11:53 - départ repris posé et validé au repos (ADR-079)
+
+Gate de pose close OK au repos, sur l'accord de Thomas : `SURVEY_OK` sans
+dérive, `PREFLIGHT_OK` (24 épingles), `INSTALLED_IDLE_OK`,
+`VALIDATED_IDLE_OK`, sauvegarde
+`/usr/data/k1-control-v1/backups/start-load-recovery-v1`. Gate suivante :
+premier départ où un chargement stock rate, à relire (« reprise automatique
+par purge au bac »). Retour arrière : ce paquet, puis V2, V1, fin V5, garde à
+froid. [Document 108](docs/108-depart-repris-apres-chargement-stock-rate.md),
+section 10.
+
 ## 12 novembre - départ repris après un chargement stock raté : construit hors imprimante, gate de pose ouverte (ADR-079)
 
 `start-load-recovery-v1` testé hors imprimante (90 tests du module dont le
