@@ -1,5 +1,17 @@
 # GATES
 
+## 15 novembre - résilience, tranche 1 : construite hors imprimante, gate de pose ouverte (ADR-080)
+
+`resilience-v1` testé hors imprimante (152 tests du départ, 171 de la porte,
+70 de la page, 231 de pose). Quatre fichiers changeront : `kctrl_start.py`,
+`kctrl_print_gate.py`, `logic.js` et `bobines.js` de la page Bobines ; 32
+fichiers épinglés. Gates suivantes, dans l'ordre : relevé en lecture seule à
+l'imprimante au repos, report du relevé dans le manifeste (l'installeur
+refuse tout le reste d'ici là), puis pose au repos revérifié avec l'accord de
+Thomas (préflight, pose, validation), puis premier départ après la pose.
+Retour arrière : ce paquet d'abord.
+[Document 109](docs/109-resilience-plus-d-impasse.md).
+
 ## 15 novembre, 11:53 - départ repris posé et validé au repos (ADR-079)
 
 Gate de pose close OK au repos, sur l'accord de Thomas : `SURVEY_OK` sans

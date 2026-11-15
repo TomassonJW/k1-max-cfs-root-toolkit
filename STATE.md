@@ -1,5 +1,19 @@
 # STATE
 
+## 15 novembre - résilience, tranche 1 construite hors imprimante (ADR-080)
+
+Demande de Thomas : plus d'impasse, plus de commande à taper, plus d'IA pour
+dépanner. Onze familles de pannes et onze impasses relevées dans le code
+(document 109), sept principes fixés (ADR-080), six tranches.
+Paquet `resilience-v1`, tranche 1 : filament en tête noté sur disque, fin
+ratée qui ne bloque plus le lancement suivant, sortie du bac après un départ
+arrêté, page Bobines qui l'explique, installeur à quatre fichiers qui défait
+sa propre pose. 152 tests du départ, 171 de la porte, 70 de la page, 231 de
+pose, 49 pannes provoquées dans l'installeur (48 vues, une équivalente).
+Rien posé, relevé pas fait : une impression tournait (lancée vers 12:01, fin
+attendue vers 15:17), aucun accès à l'imprimante de toute la mission. En
+service, inchangé : `start-load-recovery-v1`.
+
 ## 15 novembre, 11:53 - départ repris posé et validé au repos (ADR-079)
 
 Même panne à 11:28 sur T1C (`key837` après deux « buffer is always full »,
